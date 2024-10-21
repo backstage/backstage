@@ -261,8 +261,4 @@ export type ResourcePermission<TResourceType extends string = string> =
 export function toPermissionEvaluator(
   permissionAuthorizer: PermissionAuthorizer,
 ): PermissionEvaluator;
-
-// Warnings were encountered during analysis:
-//
-// src/types/permission.d.ts:71:5 - (ae-undocumented) Missing documentation for "authorize".
 ```

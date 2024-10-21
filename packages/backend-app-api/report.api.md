@@ -32,14 +32,4 @@ export interface CreateSpecializedBackendOptions {
   // (undocumented)
   defaultServiceFactories: ServiceFactory[];
 }
-
-// Warnings were encountered during analysis:
-//
-// src/wiring/createSpecializedBackend.d.ts:5:1 - (ae-undocumented) Missing documentation for "createSpecializedBackend".
-// src/wiring/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "Backend".
-// src/wiring/types.d.ts:6:5 - (ae-undocumented) Missing documentation for "add".
-// src/wiring/types.d.ts:9:5 - (ae-undocumented) Missing documentation for "start".
-// src/wiring/types.d.ts:10:5 - (ae-undocumented) Missing documentation for "stop".
-// src/wiring/types.d.ts:15:1 - (ae-undocumented) Missing documentation for "CreateSpecializedBackendOptions".
-// src/wiring/types.d.ts:16:5 - (ae-undocumented) Missing documentation for "defaultServiceFactories".
 ```

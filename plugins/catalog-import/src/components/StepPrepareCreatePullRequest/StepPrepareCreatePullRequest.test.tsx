@@ -16,7 +16,7 @@
 
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TestApiProvider, MockConfigApi } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import TextField from '@material-ui/core/TextField';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -43,7 +43,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     post: jest.fn(),
   };
 
-  const configApi = new MockConfigApi({});
+  const configApi = mockApis.config();
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <TestApiProvider

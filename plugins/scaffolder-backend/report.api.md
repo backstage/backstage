@@ -9,6 +9,7 @@ import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-n
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
@@ -333,7 +334,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -559,6 +560,10 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
+
+// @public
+const scaffolderPlugin: BackendFeature;
+export default scaffolderPlugin;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
@@ -839,117 +844,4 @@ export type TemplatePermissionRuleInput<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TParams
 >;
-
-// Warnings were encountered during analysis:
-//
-// src/deprecated.d.ts:8:1 - (ae-undocumented) Missing documentation for "ActionContext".
-// src/deprecated.d.ts:13:22 - (ae-undocumented) Missing documentation for "createTemplateAction".
-// src/deprecated.d.ts:18:1 - (ae-undocumented) Missing documentation for "TaskSecrets".
-// src/deprecated.d.ts:23:1 - (ae-undocumented) Missing documentation for "TemplateAction".
-// src/lib/templating/SecureTemplater.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateFilter".
-// src/lib/templating/SecureTemplater.d.ts:11:1 - (ae-undocumented) Missing documentation for "TemplateGlobal".
-// src/scaffolder/actions/TemplateActionRegistry.d.ts:8:5 - (ae-undocumented) Missing documentation for "register".
-// src/scaffolder/actions/TemplateActionRegistry.d.ts:9:5 - (ae-undocumented) Missing documentation for "get".
-// src/scaffolder/actions/TemplateActionRegistry.d.ts:10:5 - (ae-undocumented) Missing documentation for "list".
-// src/scaffolder/actions/builtin/createBuiltinActions.d.ts:36:5 - (ae-undocumented) Missing documentation for "additionalTemplateGlobals".
-// src/scaffolder/actions/deprecated.d.ts:12:22 - (ae-undocumented) Missing documentation for "createGithubActionsDispatchAction".
-// src/scaffolder/actions/deprecated.d.ts:17:22 - (ae-undocumented) Missing documentation for "createGithubDeployKeyAction".
-// src/scaffolder/actions/deprecated.d.ts:22:22 - (ae-undocumented) Missing documentation for "createGithubEnvironmentAction".
-// src/scaffolder/actions/deprecated.d.ts:27:22 - (ae-undocumented) Missing documentation for "createGithubIssuesLabelAction".
-// src/scaffolder/actions/deprecated.d.ts:32:1 - (ae-undocumented) Missing documentation for "CreateGithubPullRequestActionOptions".
-// src/scaffolder/actions/deprecated.d.ts:37:22 - (ae-undocumented) Missing documentation for "createGithubRepoCreateAction".
-// src/scaffolder/actions/deprecated.d.ts:42:22 - (ae-undocumented) Missing documentation for "createGithubRepoPushAction".
-// src/scaffolder/actions/deprecated.d.ts:47:22 - (ae-undocumented) Missing documentation for "createGithubWebhookAction".
-// src/scaffolder/actions/deprecated.d.ts:52:22 - (ae-undocumented) Missing documentation for "createPublishGithubAction".
-// src/scaffolder/actions/deprecated.d.ts:57:22 - (ae-undocumented) Missing documentation for "createPublishGithubPullRequestAction".
-// src/scaffolder/actions/deprecated.d.ts:79:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketAction".
-// src/scaffolder/actions/deprecated.d.ts:84:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketCloudAction".
-// src/scaffolder/actions/deprecated.d.ts:89:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerAction".
-// src/scaffolder/actions/deprecated.d.ts:94:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerPullRequestAction".
-// src/scaffolder/actions/deprecated.d.ts:99:22 - (ae-undocumented) Missing documentation for "createPublishAzureAction".
-// src/scaffolder/actions/deprecated.d.ts:104:22 - (ae-undocumented) Missing documentation for "createPublishGerritAction".
-// src/scaffolder/actions/deprecated.d.ts:109:22 - (ae-undocumented) Missing documentation for "createPublishGerritReviewAction".
-// src/scaffolder/actions/deprecated.d.ts:114:22 - (ae-undocumented) Missing documentation for "createPublishGitlabAction".
-// src/scaffolder/actions/deprecated.d.ts:119:22 - (ae-undocumented) Missing documentation for "createPublishGitlabMergeRequestAction".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:42:5 - (ae-undocumented) Missing documentation for "create".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:49:5 - (ae-undocumented) Missing documentation for "list".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:68:5 - (ae-undocumented) Missing documentation for "getTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:69:5 - (ae-undocumented) Missing documentation for "createTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:70:5 - (ae-undocumented) Missing documentation for "claimTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:71:5 - (ae-undocumented) Missing documentation for "heartbeatTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:72:5 - (ae-undocumented) Missing documentation for "listStaleTasks".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:80:5 - (ae-undocumented) Missing documentation for "completeTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:85:5 - (ae-undocumented) Missing documentation for "emitLogEvent".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:88:5 - (ae-undocumented) Missing documentation for "getTaskState".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:93:5 - (ae-undocumented) Missing documentation for "saveTaskState".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:97:5 - (ae-undocumented) Missing documentation for "listEvents".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:100:5 - (ae-undocumented) Missing documentation for "shutdownTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:101:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:105:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:108:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:112:5 - (ae-undocumented) Missing documentation for "cancelTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:115:5 - (ae-undocumented) Missing documentation for "retryTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:118:5 - (ae-undocumented) Missing documentation for "recoverTasks".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:25:5 - (ae-undocumented) Missing documentation for "create".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:27:5 - (ae-undocumented) Missing documentation for "spec".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:28:5 - (ae-undocumented) Missing documentation for "cancelSignal".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:29:5 - (ae-undocumented) Missing documentation for "secrets".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:30:5 - (ae-undocumented) Missing documentation for "createdBy".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:31:5 - (ae-undocumented) Missing documentation for "getWorkspaceName".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:32:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:36:5 - (ae-undocumented) Missing documentation for "done".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:37:5 - (ae-undocumented) Missing documentation for "emitLog".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:38:5 - (ae-undocumented) Missing documentation for "getTaskState".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:41:5 - (ae-undocumented) Missing documentation for "updateCheckpoint".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:50:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:53:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:54:5 - (ae-undocumented) Missing documentation for "complete".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:56:5 - (ae-undocumented) Missing documentation for "getInitiatorCredentials".
-// src/scaffolder/tasks/TaskWorker.d.ts:60:5 - (ae-undocumented) Missing documentation for "create".
-// src/scaffolder/tasks/TaskWorker.d.ts:61:5 - (ae-undocumented) Missing documentation for "recoverTasks".
-// src/scaffolder/tasks/TaskWorker.d.ts:62:5 - (ae-undocumented) Missing documentation for "start".
-// src/scaffolder/tasks/TaskWorker.d.ts:63:5 - (ae-undocumented) Missing documentation for "stop".
-// src/scaffolder/tasks/TaskWorker.d.ts:64:5 - (ae-undocumented) Missing documentation for "onReadyToClaimTask".
-// src/scaffolder/tasks/TaskWorker.d.ts:65:5 - (ae-undocumented) Missing documentation for "runOneTask".
-// src/scaffolder/tasks/types.d.ts:124:5 - (ae-undocumented) Missing documentation for "cancelTask".
-// src/scaffolder/tasks/types.d.ts:125:5 - (ae-undocumented) Missing documentation for "createTask".
-// src/scaffolder/tasks/types.d.ts:126:5 - (ae-undocumented) Missing documentation for "retryTask".
-// src/scaffolder/tasks/types.d.ts:129:5 - (ae-undocumented) Missing documentation for "recoverTasks".
-// src/scaffolder/tasks/types.d.ts:132:5 - (ae-undocumented) Missing documentation for "getTask".
-// src/scaffolder/tasks/types.d.ts:133:5 - (ae-undocumented) Missing documentation for "claimTask".
-// src/scaffolder/tasks/types.d.ts:134:5 - (ae-undocumented) Missing documentation for "completeTask".
-// src/scaffolder/tasks/types.d.ts:139:5 - (ae-undocumented) Missing documentation for "heartbeatTask".
-// src/scaffolder/tasks/types.d.ts:140:5 - (ae-undocumented) Missing documentation for "listStaleTasks".
-// src/scaffolder/tasks/types.d.ts:147:5 - (ae-undocumented) Missing documentation for "list".
-// src/scaffolder/tasks/types.d.ts:167:5 - (ae-undocumented) Missing documentation for "list".
-// src/scaffolder/tasks/types.d.ts:186:5 - (ae-undocumented) Missing documentation for "emitLogEvent".
-// src/scaffolder/tasks/types.d.ts:187:5 - (ae-undocumented) Missing documentation for "getTaskState".
-// src/scaffolder/tasks/types.d.ts:192:5 - (ae-undocumented) Missing documentation for "saveTaskState".
-// src/scaffolder/tasks/types.d.ts:196:5 - (ae-undocumented) Missing documentation for "listEvents".
-// src/scaffolder/tasks/types.d.ts:199:5 - (ae-undocumented) Missing documentation for "shutdownTask".
-// src/scaffolder/tasks/types.d.ts:200:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
-// src/scaffolder/tasks/types.d.ts:204:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
-// src/scaffolder/tasks/types.d.ts:207:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
-// src/service/router.d.ts:17:1 - (ae-undocumented) Missing documentation for "TemplatePermissionRuleInput".
-// src/service/router.d.ts:22:1 - (ae-undocumented) Missing documentation for "ActionPermissionRuleInput".
-// src/service/router.d.ts:30:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:31:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:32:5 - (ae-undocumented) Missing documentation for "reader".
-// src/service/router.d.ts:33:5 - (ae-undocumented) Missing documentation for "lifecycle".
-// src/service/router.d.ts:34:5 - (ae-undocumented) Missing documentation for "database".
-// src/service/router.d.ts:35:5 - (ae-undocumented) Missing documentation for "catalogClient".
-// src/service/router.d.ts:36:5 - (ae-undocumented) Missing documentation for "scheduler".
-// src/service/router.d.ts:37:5 - (ae-undocumented) Missing documentation for "actions".
-// src/service/router.d.ts:42:5 - (ae-undocumented) Missing documentation for "taskWorkers".
-// src/service/router.d.ts:48:5 - (ae-undocumented) Missing documentation for "taskBroker".
-// src/service/router.d.ts:49:5 - (ae-undocumented) Missing documentation for "additionalTemplateFilters".
-// src/service/router.d.ts:50:5 - (ae-undocumented) Missing documentation for "additionalTemplateGlobals".
-// src/service/router.d.ts:51:5 - (ae-undocumented) Missing documentation for "additionalWorkspaceProviders".
-// src/service/router.d.ts:52:5 - (ae-undocumented) Missing documentation for "permissions".
-// src/service/router.d.ts:53:5 - (ae-undocumented) Missing documentation for "permissionRules".
-// src/service/router.d.ts:54:5 - (ae-undocumented) Missing documentation for "auth".
-// src/service/router.d.ts:55:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/service/router.d.ts:56:5 - (ae-undocumented) Missing documentation for "identity".
-// src/service/router.d.ts:57:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/service/router.d.ts:58:5 - (ae-undocumented) Missing documentation for "autocompleteHandlers".
 ```

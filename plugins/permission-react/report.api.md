@@ -100,10 +100,4 @@ export function usePermission(
         resourceRef: string | undefined;
       },
 ): AsyncPermissionResult;
-
-// Warnings were encountered during analysis:
-//
-// src/apis/IdentityPermissionApi.d.ts:14:5 - (ae-undocumented) Missing documentation for "create".
-// src/apis/IdentityPermissionApi.d.ts:19:5 - (ae-undocumented) Missing documentation for "authorize".
-// src/hooks/usePermission.d.ts:3:1 - (ae-undocumented) Missing documentation for "AsyncPermissionResult".
 ```

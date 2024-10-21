@@ -33,12 +33,4 @@ export interface VMwareCloudAuthenticatorContext {
 export type VMwarePassportProfile = PassportProfile & {
   organizationId?: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:4:1 - (ae-undocumented) Missing documentation for "VMwareCloudAuthenticatorContext".
-// src/authenticator.d.ts:5:5 - (ae-undocumented) Missing documentation for "organizationId".
-// src/authenticator.d.ts:6:5 - (ae-undocumented) Missing documentation for "providerStrategy".
-// src/authenticator.d.ts:7:5 - (ae-undocumented) Missing documentation for "helper".
-// src/authenticator.d.ts:10:1 - (ae-undocumented) Missing documentation for "VMwarePassportProfile".
 ```

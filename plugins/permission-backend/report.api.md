@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
@@ -15,6 +16,10 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// @public
+const permissionPlugin: BackendFeature;
+export default permissionPlugin;
 
 // @public @deprecated
 export interface RouterOptions {
@@ -35,15 +40,4 @@ export interface RouterOptions {
   // (undocumented)
   userInfo?: UserInfoService;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:14:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/service/router.d.ts:15:5 - (ae-undocumented) Missing documentation for "policy".
-// src/service/router.d.ts:16:5 - (ae-undocumented) Missing documentation for "identity".
-// src/service/router.d.ts:17:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:18:5 - (ae-undocumented) Missing documentation for "auth".
-// src/service/router.d.ts:19:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/service/router.d.ts:20:5 - (ae-undocumented) Missing documentation for "userInfo".
 ```

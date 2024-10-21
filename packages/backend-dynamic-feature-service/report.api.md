@@ -33,11 +33,12 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
 
 // @public (undocumented)
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
   // (undocumented)
-  installer: BackendDynamicPluginInstaller;
+  installer?: BackendDynamicPluginInstaller;
   // (undocumented)
   platform: 'node';
 }
@@ -50,11 +51,13 @@ export type BackendDynamicPluginInstaller =
 // @public (undocumented)
 export interface BackendPluginProvider {
   // (undocumented)
-  backendPlugins(): BackendDynamicPlugin[];
+  backendPlugins(options?: { includeFailed?: boolean }): BackendDynamicPlugin[];
 }
 
 // @public (undocumented)
 export interface BaseDynamicPlugin {
+  // (undocumented)
+  failure?: string;
   // (undocumented)
   name: string;
   // (undocumented)
@@ -75,15 +78,19 @@ export class DynamicPluginManager implements DynamicPluginProvider {
   // (undocumented)
   get availablePackages(): ScannedPluginPackage[];
   // (undocumented)
-  backendPlugins(): BackendDynamicPlugin[];
+  backendPlugins(options?: { includeFailed?: boolean }): BackendDynamicPlugin[];
   // (undocumented)
   static create(
     options: DynamicPluginManagerOptions,
   ): Promise<DynamicPluginManager>;
   // (undocumented)
-  frontendPlugins(): FrontendDynamicPlugin[];
+  frontendPlugins(options?: {
+    includeFailed?: boolean;
+  }): FrontendDynamicPlugin[];
   // (undocumented)
-  plugins(): DynamicPlugin[];
+  getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage;
+  // (undocumented)
+  plugins(options?: { includeFailed?: boolean }): DynamicPlugin[];
 }
 
 // @public (undocumented)
@@ -103,20 +110,19 @@ export interface DynamicPluginProvider
   extends FrontendPluginProvider,
     BackendPluginProvider {
   // (undocumented)
-  plugins(): DynamicPlugin[];
+  getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage;
+  // (undocumented)
+  plugins(options?: { includeFailed?: boolean }): DynamicPlugin[];
 }
 
 // @public (undocumented)
 export interface DynamicPluginsFactoryOptions {
   // (undocumented)
-  moduleLoader?(logger: LoggerService): ModuleLoader;
+  moduleLoader?(logger: LoggerService): ModuleLoader | Promise<ModuleLoader>;
 }
 
-// @public
-export const dynamicPluginsFeatureDiscoveryLoader: ((
-  options?: DynamicPluginsFactoryOptions,
-) => BackendFeature) &
-  BackendFeature;
+// @public @deprecated (undocumented)
+export const dynamicPluginsFeatureDiscoveryLoader: BackendFeature;
 
 // @public @deprecated (undocumented)
 export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
@@ -125,15 +131,31 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
   'singleton'
 >;
 
+// @public
+export const dynamicPluginsFeatureLoader: ((
+  options?: DynamicPluginsFeatureLoaderOptions,
+) => BackendFeature) &
+  BackendFeature;
+
 // @public (undocumented)
+export type DynamicPluginsFeatureLoaderOptions = DynamicPluginsFactoryOptions &
+  DynamicPluginsSchemasOptions &
+  DynamicPluginsRootLoggerFactoryOptions;
+
+// @public @deprecated (undocumented)
 export const dynamicPluginsFrontendSchemas: BackendFeature;
 
 // @public (undocumented)
-export const dynamicPluginsRootLoggerServiceFactory: ServiceFactory<
-  RootLoggerService,
-  'root',
-  'singleton'
+export type DynamicPluginsRootLoggerFactoryOptions = Omit<
+  WinstonLoggerOptions,
+  'meta'
 >;
+
+// @public @deprecated (undocumented)
+export const dynamicPluginsRootLoggerServiceFactory: ((
+  options?: DynamicPluginsRootLoggerFactoryOptions,
+) => ServiceFactory<RootLoggerService, 'root', 'singleton'>) &
+  ServiceFactory<RootLoggerService, 'root', 'singleton'>;
 
 // @public (undocumented)
 export interface DynamicPluginsSchemasOptions {
@@ -148,31 +170,24 @@ export interface DynamicPluginsSchemasService {
   }>;
 }
 
-// @public (undocumented)
-export const dynamicPluginsSchemasServiceFactory: ServiceFactory<
-  DynamicPluginsSchemasService,
-  'root',
-  'singleton'
->;
-
-// @public (undocumented)
-export const dynamicPluginsSchemasServiceFactoryWithOptions: (
+// @public @deprecated (undocumented)
+export const dynamicPluginsSchemasServiceFactory: ((
   options?: DynamicPluginsSchemasOptions,
-) => ServiceFactory<DynamicPluginsSchemasService, 'root', 'singleton'>;
+) => ServiceFactory<DynamicPluginsSchemasService, 'root', 'singleton'>) &
+  ServiceFactory<DynamicPluginsSchemasService, 'root', 'singleton'>;
 
 // @public @deprecated (undocumented)
-export const dynamicPluginsServiceFactory: ServiceFactory<
-  DynamicPluginProvider,
-  'root',
-  'singleton'
->;
+export const dynamicPluginsServiceFactory: ((
+  options?: DynamicPluginsFactoryOptions,
+) => ServiceFactory<DynamicPluginProvider, 'root', 'singleton'>) &
+  ServiceFactory<DynamicPluginProvider, 'root', 'singleton'>;
 
 // @public @deprecated (undocumented)
 export const dynamicPluginsServiceFactoryWithOptions: (
   options?: DynamicPluginsFactoryOptions,
 ) => ServiceFactory<DynamicPluginProvider, 'root', 'singleton'>;
 
-// @public @deprecated (undocumented)
+// @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
   'root',
@@ -188,7 +203,9 @@ export interface FrontendDynamicPlugin extends BaseDynamicPlugin {
 // @public (undocumented)
 export interface FrontendPluginProvider {
   // (undocumented)
-  frontendPlugins(): FrontendDynamicPlugin[];
+  frontendPlugins(options?: {
+    includeFailed?: boolean;
+  }): FrontendDynamicPlugin[];
 }
 
 // @public (undocumented)
@@ -275,72 +292,6 @@ export interface ScannedPluginPackage {
   // (undocumented)
   manifest: ScannedPluginManifest;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/loader/types.d.ts:4:1 - (ae-undocumented) Missing documentation for "ModuleLoader".
-// src/loader/types.d.ts:5:5 - (ae-undocumented) Missing documentation for "bootstrap".
-// src/loader/types.d.ts:6:5 - (ae-undocumented) Missing documentation for "load".
-// src/manager/plugin-manager.d.ts:10:1 - (ae-undocumented) Missing documentation for "DynamicPluginManagerOptions".
-// src/manager/plugin-manager.d.ts:11:5 - (ae-undocumented) Missing documentation for "config".
-// src/manager/plugin-manager.d.ts:12:5 - (ae-undocumented) Missing documentation for "logger".
-// src/manager/plugin-manager.d.ts:13:5 - (ae-undocumented) Missing documentation for "preferAlpha".
-// src/manager/plugin-manager.d.ts:14:5 - (ae-undocumented) Missing documentation for "moduleLoader".
-// src/manager/plugin-manager.d.ts:19:1 - (ae-undocumented) Missing documentation for "DynamicPluginManager".
-// src/manager/plugin-manager.d.ts:23:5 - (ae-undocumented) Missing documentation for "create".
-// src/manager/plugin-manager.d.ts:27:5 - (ae-undocumented) Missing documentation for "availablePackages".
-// src/manager/plugin-manager.d.ts:28:5 - (ae-undocumented) Missing documentation for "addBackendPlugin".
-// src/manager/plugin-manager.d.ts:31:5 - (ae-undocumented) Missing documentation for "backendPlugins".
-// src/manager/plugin-manager.d.ts:32:5 - (ae-undocumented) Missing documentation for "frontendPlugins".
-// src/manager/plugin-manager.d.ts:33:5 - (ae-undocumented) Missing documentation for "plugins".
-// src/manager/plugin-manager.d.ts:39:22 - (ae-undocumented) Missing documentation for "dynamicPluginsServiceRef".
-// src/manager/plugin-manager.d.ts:43:1 - (ae-undocumented) Missing documentation for "DynamicPluginsFactoryOptions".
-// src/manager/plugin-manager.d.ts:44:5 - (ae-undocumented) Missing documentation for "moduleLoader".
-// src/manager/plugin-manager.d.ts:50:22 - (ae-undocumented) Missing documentation for "dynamicPluginsServiceFactoryWithOptions".
-// src/manager/plugin-manager.d.ts:55:22 - (ae-undocumented) Missing documentation for "dynamicPluginsServiceFactory".
-// src/manager/plugin-manager.d.ts:60:22 - (ae-undocumented) Missing documentation for "dynamicPluginsFeatureDiscoveryServiceFactory".
-// src/manager/types.d.ts:27:1 - (ae-undocumented) Missing documentation for "LegacyPluginEnvironment".
-// src/manager/types.d.ts:45:1 - (ae-undocumented) Missing documentation for "DynamicPluginProvider".
-// src/manager/types.d.ts:46:5 - (ae-undocumented) Missing documentation for "plugins".
-// src/manager/types.d.ts:51:1 - (ae-undocumented) Missing documentation for "BackendPluginProvider".
-// src/manager/types.d.ts:52:5 - (ae-undocumented) Missing documentation for "backendPlugins".
-// src/manager/types.d.ts:57:1 - (ae-undocumented) Missing documentation for "FrontendPluginProvider".
-// src/manager/types.d.ts:58:5 - (ae-undocumented) Missing documentation for "frontendPlugins".
-// src/manager/types.d.ts:63:1 - (ae-undocumented) Missing documentation for "BaseDynamicPlugin".
-// src/manager/types.d.ts:64:5 - (ae-undocumented) Missing documentation for "name".
-// src/manager/types.d.ts:65:5 - (ae-undocumented) Missing documentation for "version".
-// src/manager/types.d.ts:66:5 - (ae-undocumented) Missing documentation for "role".
-// src/manager/types.d.ts:67:5 - (ae-undocumented) Missing documentation for "platform".
-// src/manager/types.d.ts:72:1 - (ae-undocumented) Missing documentation for "DynamicPlugin".
-// src/manager/types.d.ts:76:1 - (ae-undocumented) Missing documentation for "FrontendDynamicPlugin".
-// src/manager/types.d.ts:77:5 - (ae-undocumented) Missing documentation for "platform".
-// src/manager/types.d.ts:82:1 - (ae-undocumented) Missing documentation for "BackendDynamicPlugin".
-// src/manager/types.d.ts:83:5 - (ae-undocumented) Missing documentation for "platform".
-// src/manager/types.d.ts:84:5 - (ae-undocumented) Missing documentation for "installer".
-// src/manager/types.d.ts:89:1 - (ae-undocumented) Missing documentation for "BackendDynamicPluginInstaller".
-// src/manager/types.d.ts:93:1 - (ae-undocumented) Missing documentation for "NewBackendPluginInstaller".
-// src/manager/types.d.ts:94:5 - (ae-undocumented) Missing documentation for "kind".
-// src/manager/types.d.ts:95:5 - (ae-undocumented) Missing documentation for "install".
-// src/manager/types.d.ts:108:1 - (ae-undocumented) Missing documentation for "LegacyBackendPluginInstaller".
-// src/manager/types.d.ts:109:5 - (ae-undocumented) Missing documentation for "kind".
-// src/manager/types.d.ts:110:5 - (ae-undocumented) Missing documentation for "router".
-// src/manager/types.d.ts:114:5 - (ae-undocumented) Missing documentation for "catalog".
-// src/manager/types.d.ts:115:5 - (ae-undocumented) Missing documentation for "scaffolder".
-// src/manager/types.d.ts:116:5 - (ae-undocumented) Missing documentation for "search".
-// src/manager/types.d.ts:117:5 - (ae-undocumented) Missing documentation for "events".
-// src/manager/types.d.ts:118:5 - (ae-undocumented) Missing documentation for "permissions".
-// src/manager/types.d.ts:125:1 - (ae-undocumented) Missing documentation for "isBackendDynamicPluginInstaller".
-// src/scanner/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "ScannedPluginPackage".
-// src/scanner/types.d.ts:6:5 - (ae-undocumented) Missing documentation for "location".
-// src/scanner/types.d.ts:7:5 - (ae-undocumented) Missing documentation for "manifest".
-// src/scanner/types.d.ts:12:1 - (ae-undocumented) Missing documentation for "ScannedPluginManifest".
-// src/schemas/appBackendModule.d.ts:2:22 - (ae-undocumented) Missing documentation for "dynamicPluginsFrontendSchemas".
-// src/schemas/rootLoggerServiceFactory.d.ts:2:22 - (ae-undocumented) Missing documentation for "dynamicPluginsRootLoggerServiceFactory".
-// src/schemas/schemas.d.ts:7:1 - (ae-undocumented) Missing documentation for "DynamicPluginsSchemasService".
-// src/schemas/schemas.d.ts:8:5 - (ae-undocumented) Missing documentation for "addDynamicPluginsSchemas".
-// src/schemas/schemas.d.ts:21:1 - (ae-undocumented) Missing documentation for "DynamicPluginsSchemasOptions".
-// src/schemas/schemas.d.ts:36:22 - (ae-undocumented) Missing documentation for "dynamicPluginsSchemasServiceFactoryWithOptions".
-// src/schemas/schemas.d.ts:40:22 - (ae-undocumented) Missing documentation for "dynamicPluginsSchemasServiceFactory".
 
 // (No @packageDocumentation comment for this package)
 ```

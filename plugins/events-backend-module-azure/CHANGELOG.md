@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.2.12
+
+### Patch Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/backend-plugin-api@1.0.1
+
 ## 0.2.12-next.1
 
 ### Patch Changes

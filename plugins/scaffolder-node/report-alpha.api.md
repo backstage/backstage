@@ -109,17 +109,5 @@ export interface WorkspaceProvider {
   }): Promise<void>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:9:5 - (ae-undocumented) Missing documentation for "addActions".
-// src/alpha.d.ts:23:5 - (ae-undocumented) Missing documentation for "setTaskBroker".
-// src/alpha.d.ts:37:5 - (ae-undocumented) Missing documentation for "addTemplateFilters".
-// src/alpha.d.ts:38:5 - (ae-undocumented) Missing documentation for "addTemplateGlobals".
-// src/alpha.d.ts:64:5 - (ae-undocumented) Missing documentation for "addAutocompleteProvider".
-// src/alpha.d.ts:81:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
-// src/alpha.d.ts:85:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
-// src/alpha.d.ts:88:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
-// src/alpha.d.ts:99:5 - (ae-undocumented) Missing documentation for "addProviders".
-
 // (No @packageDocumentation comment for this package)
 ```

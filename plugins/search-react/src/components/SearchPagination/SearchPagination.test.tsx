@@ -19,7 +19,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
-  MockConfigApi,
+  mockApis,
   renderWithEffects,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -31,10 +31,12 @@ import { SearchPagination } from './SearchPagination';
 import { configApiRef } from '@backstage/core-plugin-api';
 
 describe('SearchPagination', () => {
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pagelimit: 10,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pagelimit: 10,
+        },
       },
     },
   });

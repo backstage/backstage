@@ -15,11 +15,8 @@
  */
 
 import ReactDOM from 'react-dom/client';
-import { signInPageModule } from './overrides/SignInPage';
 import { createPublicSignInApp } from '@backstage/frontend-defaults';
 
-const app = createPublicSignInApp({
-  features: [signInPageModule],
-});
+const app = createPublicSignInApp();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

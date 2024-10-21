@@ -56,20 +56,29 @@ import { merge } from 'lodash';
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
 
-const useStyles = makeStyles(theme => ({
-  backButton: {
-    marginRight: theme.spacing(1),
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'right',
-    marginTop: theme.spacing(2),
-  },
-  formWrapper: {
-    padding: theme.spacing(2),
-  },
-}));
+/** @alpha */
+export type BackstageTemplateStepperClassKey =
+  | 'backButton'
+  | 'footer'
+  | 'formWrapper';
+
+const useStyles = makeStyles(
+  theme => ({
+    backButton: {
+      marginRight: theme.spacing(1),
+    },
+    footer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'right',
+      marginTop: theme.spacing(2),
+    },
+    formWrapper: {
+      padding: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageTemplateStepper' },
+);
 
 /**
  * The Props for {@link Stepper} component
@@ -115,15 +124,14 @@ export const Stepper = (stepperProps: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
+
   const [initialState] = useFormDataFromQuery(props.initialState);
-  const [formState, setFormState] = useState<{
-    [step: string]: Record<string, JsonValue>;
-  }>();
+  const [stepsState, setStepsState] = useState<Record<string, JsonValue>[]>(
+    steps.map(() => initialState),
+  );
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
-
-  const makeStepKey = (step: string | number) => `step-${step}`;
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -159,15 +167,15 @@ export const Stepper = (stepperProps: StepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleChange = useCallback(
-    (e: IChangeEvent) => {
-      setFormState(current => ({
-        ...current,
-        [makeStepKey(activeStep)]: e.formData,
-      }));
-    },
-    [setFormState, activeStep],
-  );
+  const handleChange = (e: IChangeEvent) => {
+    setStepsState(current => {
+      const newState = [...current];
+      newState[activeStep] = {
+        ...e.formData,
+      };
+      return newState;
+    });
+  };
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
@@ -188,6 +196,13 @@ export const Stepper = (stepperProps: StepperProps) => {
     if (hasErrors(returnedValidation)) {
       setErrors(returnedValidation);
     } else {
+      setStepsState(current => {
+        const newState = [...current];
+        newState[activeStep] = {
+          ...formData,
+        };
+        return newState;
+      });
       setErrors(undefined);
       setActiveStep(prevActiveStep => {
         const stepNum = prevActiveStep + 1;
@@ -195,10 +210,6 @@ export const Stepper = (stepperProps: StepperProps) => {
         return stepNum;
       });
     }
-    setFormState(current => ({
-      ...current,
-      [makeStepKey(activeStep)]: formData,
-    }));
   };
 
   const {
@@ -209,23 +220,14 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const mergedState = useMemo(() => {
-    if (!formState) {
-      return initialState;
-    }
-    const { [makeStepKey(activeStep)]: activeState, ...historicalState } =
-      formState;
-    const chronologicalState = {
-      ...historicalState,
-      [makeStepKey(activeStep)]: activeState,
-    };
-    return merge({}, ...Object.values(chronologicalState));
-  }, [formState, activeStep, initialState]);
+  const formState = stepsState.reduce((acc, step) => {
+    return { ...acc, ...step };
+  }, {});
 
   const handleCreate = useCallback(() => {
-    props.onCreate(mergedState);
+    props.onCreate(formState);
     analytics.captureEvent('click', `${createLabel}`);
-  }, [props, mergedState, analytics, createLabel]);
+  }, [props, formState, analytics, createLabel]);
 
   return (
     <>
@@ -260,12 +262,15 @@ export const Stepper = (stepperProps: StepperProps) => {
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form
+            key={activeStep}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={mergedState}
-            formContext={{ ...propFormContext, formData: mergedState }}
+            formData={{ ...stepsState[activeStep] }}
+            formContext={{ ...propFormContext, formData: formState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
+            omitExtraData
+            liveOmit
             onSubmit={handleNext}
             fields={fields}
             showErrorList="top"
@@ -299,7 +304,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={mergedState}
+            formData={formState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -307,7 +312,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={mergedState} schemas={steps} />
+            <ReviewStateComponent formState={formState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}

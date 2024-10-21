@@ -16,24 +16,18 @@
 
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiRegistry,
+  renderInTestApp,
+  mockApis,
+} from '@backstage/test-utils';
 import { DismissableBanner } from './DismissableBanner';
-import { ApiProvider, WebStorage } from '@backstage/core-app-api';
-import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { storageApiRef } from '@backstage/core-plugin-api';
 import { screen } from '@testing-library/react';
 
 describe('<DismissableBanner />', () => {
-  let apis: TestApiRegistry;
-  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
-  const createWebStorage = (): StorageApi => {
-    return WebStorage.create({
-      errorApi: mockErrorApi,
-    });
-  };
-
-  beforeEach(() => {
-    apis = TestApiRegistry.from([storageApiRef, createWebStorage()]);
-  });
+  const apis = TestApiRegistry.from([storageApiRef, mockApis.storage()]);
 
   it('renders the message and the popover', async () => {
     await renderInTestApp(

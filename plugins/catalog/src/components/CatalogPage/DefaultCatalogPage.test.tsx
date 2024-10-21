@@ -17,12 +17,7 @@
 import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
-import {
-  IdentityApi,
-  identityApiRef,
-  ProfileInfo,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
+import { identityApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   entityRouteRef,
@@ -31,9 +26,8 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import {
-  MockPermissionApi,
-  MockStorageApi,
   TestApiProvider,
+  mockApis,
   renderInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
@@ -54,7 +48,6 @@ describe('DefaultCatalogPage', () => {
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
-
     jest.clearAllMocks();
   });
 
@@ -166,19 +159,11 @@ describe('DefaultCatalogPage', () => {
       }),
   });
 
-  const testProfile: Partial<ProfileInfo> = {
+  const identityApi = mockApis.identity({
+    userEntityRef: 'user:default/guest',
+    ownershipEntityRefs: ['user:default/guest', 'group:default/tools'],
     displayName: 'Display Name',
-  };
-  const identityApi: Partial<IdentityApi> = {
-    getBackstageIdentity: async () => ({
-      type: 'user',
-      userEntityRef: 'user:default/guest',
-      ownershipEntityRefs: ['user:default/guest', 'group:default/tools'],
-    }),
-    getCredentials: async () => ({ token: undefined }),
-    getProfileInfo: async () => testProfile,
-  };
-  const storageApi = MockStorageApi.create();
+  });
 
   const renderWrapped = (children: React.ReactNode) =>
     renderInTestApp(
@@ -186,9 +171,9 @@ describe('DefaultCatalogPage', () => {
         apis={[
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
-          [storageApiRef, storageApi],
+          [storageApiRef, mockApis.storage()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         {children}

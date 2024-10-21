@@ -22,7 +22,7 @@ import {
   act,
   renderHook,
 } from '@testing-library/react';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {
   SearchContextProvider,
@@ -37,7 +37,7 @@ describe('SearchContext', () => {
   } satisfies typeof searchApiRef.T;
 
   const wrapper = ({ children, initialState, config = {} }: any) => {
-    const configApiMock = new MockConfigApi(config);
+    const configApiMock = mockApis.config({ data: config });
     return (
       <TestApiProvider
         apis={[
@@ -422,9 +422,7 @@ describe('SearchContext', () => {
 
   describe('analytics', () => {
     it('captures analytics events if enabled in app', async () => {
-      const analyticsApiMock = {
-        captureEvent: jest.fn(),
-      } satisfies typeof analyticsApiRef.T;
+      const analyticsApiMock = mockApis.analytics();
 
       searchApiMock.query.mockResolvedValue({
         results: [],
@@ -433,7 +431,7 @@ describe('SearchContext', () => {
 
       const { result } = renderHook(() => useSearch(), {
         wrapper: ({ children }) => {
-          const configApiMock = new MockConfigApi({});
+          const configApiMock = mockApis.config();
           return (
             <TestApiProvider
               apis={[
@@ -481,9 +479,7 @@ describe('SearchContext', () => {
   });
 
   it('captures analytics events even if number of results does not exist', async () => {
-    const analyticsApiMock = {
-      captureEvent: jest.fn(),
-    } satisfies typeof analyticsApiRef.T;
+    const analyticsApiMock = mockApis.analytics();
 
     searchApiMock.query.mockResolvedValue({
       results: [],
@@ -491,7 +487,7 @@ describe('SearchContext', () => {
 
     const { result } = renderHook(() => useSearch(), {
       wrapper: ({ children }) => {
-        const configApiMock = new MockConfigApi({});
+        const configApiMock = mockApis.config();
         return (
           <TestApiProvider
             apis={[

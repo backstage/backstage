@@ -26,7 +26,6 @@ import homePlugin, {
 import {
   coreExtensionData,
   createExtension,
-  ApiBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -41,14 +40,7 @@ import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
-import {
-  ScmAuth,
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import { signInPageModule } from './overrides/SignInPage';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
@@ -118,28 +110,6 @@ const customHomePageModule = createFrontendModule({
   ],
 });
 
-const scmModule = createFrontendModule({
-  pluginId: 'app',
-  extensions: [
-    ApiBlueprint.make({
-      name: 'scm-auth',
-      params: {
-        factory: ScmAuth.createDefaultApiFactory(),
-      },
-    }),
-    ApiBlueprint.make({
-      name: 'scm-integrations',
-      params: {
-        factory: createApiFactory({
-          api: scmIntegrationsApiRef,
-          deps: { configApi: configApiRef },
-          factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-        }),
-      },
-    }),
-  ],
-});
-
 const notFoundErrorPageModule = createFrontendModule({
   pluginId: 'app',
   extensions: [notFoundErrorPage],
@@ -159,8 +129,6 @@ const app = createApp({
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
-    signInPageModule,
-    scmModule,
     notFoundErrorPageModule,
     customHomePageModule,
     ...collectedLegacyPlugins,

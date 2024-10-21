@@ -17,6 +17,13 @@ import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import { command as generateClient } from './client';
 import { command as generateServer } from './server';
+import chokidar from 'chokidar';
+import {
+  getPathToCurrentOpenApiSpec,
+  loadAndValidateOpenApiYaml,
+} from '../../../../../lib/openapi/helpers';
+import { debounce } from 'lodash';
+import { block } from '../../../../../lib/runner';
 
 export async function command(opts: OptionValues) {
   if (!opts.clientPackage && !opts.server) {
@@ -25,10 +32,70 @@ export async function command(opts: OptionValues) {
     );
     process.exit(1);
   }
-  if (opts.clientPackage) {
-    await generateClient(opts.clientPackage, opts.clientAdditionalProperties);
-  }
-  if (opts.server) {
-    await generateServer();
+
+  const sharedCommand = async (abortSignal?: AbortController) => {
+    const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
+    await loadAndValidateOpenApiYaml(resolvedOpenapiPath);
+    const promises = [];
+    const options = {
+      isWatch: opts.watch,
+      abortSignal,
+    };
+    if (opts.clientPackage) {
+      promises.push(
+        generateClient(
+          opts.clientPackage,
+          opts.clientAdditionalProperties,
+          options,
+        ),
+      );
+    }
+    if (opts.server) {
+      promises.push(generateServer(options));
+    }
+    await Promise.all(promises);
+  };
+
+  if (opts.watch) {
+    try {
+      const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
+      let abortController = new AbortController();
+      const watcher = chokidar.watch(resolvedOpenapiPath);
+
+      // The generate command currently takes ~8 seconds to run, so let's debounce calling it so we don't have to cancel it so much.
+      const debouncedCommand = debounce(() => {
+        console.log('Detected changes! Regenerating...');
+        abortController.abort();
+        abortController = new AbortController();
+        sharedCommand(abortController).catch(err => {
+          console.error(chalk.red('Error: ', err));
+        });
+      }, 500);
+
+      watcher.on('change', () => {
+        debouncedCommand();
+      });
+      watcher.on('error', error => {
+        console.error('Error happened', error);
+      });
+
+      watcher.on('ready', async () => {
+        console.log(
+          'Watching for changes in OpenAPI spec. Press Ctrl+C to stop.',
+        );
+      });
+
+      debouncedCommand();
+      await block();
+    } catch (err) {
+      console.error(chalk.red('Error: ', err));
+      process.exit(1);
+    }
+  } else {
+    try {
+      await sharedCommand();
+    } catch (err) {
+      process.exit(1);
+    }
   }
 }

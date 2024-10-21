@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.1
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.7
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+
 ## 0.3.1-next.1
 
 ### Patch Changes

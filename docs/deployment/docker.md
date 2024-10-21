@@ -90,7 +90,7 @@ COPY --chown=node:node .yarnrc.yml ./
 ENV NODE_ENV=production
 
 # This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS "--no-node-snapshot"
+ENV NODE_OPTIONS="--no-node-snapshot"
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
@@ -287,7 +287,7 @@ COPY --chown=node:node examples ./examples
 ENV NODE_ENV=production
 
 # This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS "--no-node-snapshot"
+ENV NODE_OPTIONS="--no-node-snapshot"
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
@@ -349,7 +349,7 @@ package, which is done as follows:
 2. Remove the following line from `packages/backend/src/index.ts`:
 
    ```ts
-   backend.add(import('@backstage/plugin-app-backend/alpha'));
+   backend.add(import('@backstage/plugin-app-backend'));
    ```
 
 3. Remove the `@backstage/plugin-app-backend` and the app package dependency

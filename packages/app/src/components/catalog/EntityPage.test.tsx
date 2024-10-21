@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockPermissionApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -46,7 +46,6 @@ describe('EntityPage Test', () => {
     },
   };
 
-  const mockPermissionApi = new MockPermissionApi();
   const rootRouteRef = catalogPlugin.routes.catalogIndex;
 
   describe('cicdContent', () => {
@@ -55,7 +54,7 @@ describe('EntityPage Test', () => {
         <TestApiProvider
           apis={[
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-            [permissionApiRef, mockPermissionApi],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <EntityProvider entity={entity}>

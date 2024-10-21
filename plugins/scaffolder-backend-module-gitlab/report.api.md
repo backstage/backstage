@@ -193,7 +193,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -277,13 +277,4 @@ export enum IssueType {
   // (undocumented)
   TEST = 'test_case',
 }
-
-// Warnings were encountered during analysis:
-//
-// src/commonGitlabConfig.d.ts:23:5 - (ae-undocumented) Missing documentation for "ISSUE".
-// src/commonGitlabConfig.d.ts:24:5 - (ae-undocumented) Missing documentation for "INCIDENT".
-// src/commonGitlabConfig.d.ts:25:5 - (ae-undocumented) Missing documentation for "TEST".
-// src/commonGitlabConfig.d.ts:26:5 - (ae-undocumented) Missing documentation for "TASK".
-// src/commonGitlabConfig.d.ts:34:5 - (ae-undocumented) Missing documentation for "CLOSE".
-// src/commonGitlabConfig.d.ts:35:5 - (ae-undocumented) Missing documentation for "REOPEN".
 ```

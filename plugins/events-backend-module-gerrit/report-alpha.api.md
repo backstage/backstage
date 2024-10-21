@@ -5,10 +5,12 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// @alpha
-const eventsModuleGerritEventRouter: BackendFeature;
-export default eventsModuleGerritEventRouter;
-export { eventsModuleGerritEventRouter };
+// @alpha (undocumented)
+export const eventsModuleGerritEventRouter: BackendFeature;
+
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

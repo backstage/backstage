@@ -17,7 +17,7 @@
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import GithubAuth from './GithubAuth';
-import { MockConfigApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 
 const getSession = jest.fn();
 
@@ -33,7 +33,7 @@ describe('GithubAuth', () => {
     jest.resetAllMocks();
   });
 
-  const configApi = new MockConfigApi({});
+  const configApi = mockApis.config();
 
   it('should forward access token request to session manager', async () => {
     const githubAuth = GithubAuth.create({

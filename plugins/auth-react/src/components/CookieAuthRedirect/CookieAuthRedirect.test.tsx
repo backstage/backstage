@@ -16,12 +16,16 @@
 
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
-import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiProvider,
+  renderInTestApp,
+  mockApis,
+} from '@backstage/test-utils';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { CookieAuthRedirect } from './CookieAuthRedirect';
 
 describe('CookieAuthRedirect', () => {
-  const identityApiMock = { getCredentials: jest.fn() };
+  const identityApiMock = mockApis.identity.mock();
 
   beforeEach(() => {
     jest.clearAllMocks();

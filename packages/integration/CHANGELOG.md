@@ -1,5 +1,16 @@
 # @backstage/integration
 
+## 1.15.1
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- 090e49a: Updated functions parseHarnessUrl, getHarnessLatestCommitUrl, getHarnessFileContentsUrl and getHarnessArchiveUrl to fix parsing of urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.15.1-next.1
 
 ### Patch Changes

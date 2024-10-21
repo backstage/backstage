@@ -1,5 +1,59 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.26.0
+
+### Minor Changes
+
+- 3ec4e6d: Added pagination support for listing of tasks and the ability to filter on several users and task statuses.
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+
+### Patch Changes
+
+- 734c2d4: Add `fetch:template:file` scaffolder action to download a single file and template the contents. Example usage:
+
+  ```yaml
+  - id: fetch-file
+    name: Fetch File
+    action: fetch:template:file
+    input:
+      url: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/create-react-app/skeleton/catalog-info.yaml
+      targetPath: './target/catalog-info.yaml'
+      values:
+        component_id: My Component
+        owner: Test
+  ```
+
+- f1f0076: handle step.if: false
+- 2f90932: Include step name and step id to checkpoint key
+- 094eaa3: Remove references to in-repo backend-common
+- 8f0898b: Updated dependency `esbuild` to `^0.24.0`.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.1
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.0
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.1
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.26.0-next.2
 
 ### Patch Changes

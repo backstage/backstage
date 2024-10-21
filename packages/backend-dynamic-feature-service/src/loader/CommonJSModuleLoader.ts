@@ -18,7 +18,11 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import path from 'path';
 
 export class CommonJSModuleLoader implements ModuleLoader {
-  constructor(public readonly logger: LoggerService) {}
+  private module: any;
+
+  constructor(public readonly logger: LoggerService) {
+    this.module = require('node:module');
+  }
 
   async bootstrap(
     backstageRoot: string,
@@ -28,9 +32,8 @@ export class CommonJSModuleLoader implements ModuleLoader {
     const dynamicNodeModulesPaths = [
       ...dynamicPluginsPaths.map(p => path.resolve(p, 'node_modules')),
     ];
-    const Module = require('module');
-    const oldNodeModulePaths = Module._nodeModulePaths;
-    Module._nodeModulePaths = (from: string): string[] => {
+    const oldNodeModulePaths = this.module._nodeModulePaths;
+    this.module._nodeModulePaths = (from: string): string[] => {
       const result: string[] = oldNodeModulePaths(from);
       if (!dynamicPluginsPaths.some(p => from.startsWith(p))) {
         return result;
@@ -49,6 +52,6 @@ export class CommonJSModuleLoader implements ModuleLoader {
   }
 
   async load(packagePath: string): Promise<any> {
-    return await require(/* webpackIgnore: true */ packagePath);
+    return await this.module.prototype.require(packagePath);
   }
 }

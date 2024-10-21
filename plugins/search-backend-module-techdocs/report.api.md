@@ -6,17 +6,25 @@
 /// <reference types="node" />
 
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
+import { TechDocsCollatorDocumentTransformer as TechDocsCollatorDocumentTransformer_2 } from '@backstage/plugin-search-backend-module-techdocs';
+import { TechDocsCollatorEntityTransformer as TechDocsCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
@@ -69,6 +77,19 @@ export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
 ) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;
 
+// @public (undocumented)
+export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  // (undocumented)
+  setDocumentTransformer(
+    transformer: TechDocsCollatorDocumentTransformer_2,
+  ): void;
+  // (undocumented)
+  setTransformer(transformer: TechDocsCollatorEntityTransformer_2): void;
+}
+
+// @public
+export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>;
+
 // @public @deprecated
 export type TechDocsCollatorFactoryOptions = {
   discovery: DiscoveryService;
@@ -83,19 +104,4 @@ export type TechDocsCollatorFactoryOptions = {
   entityTransformer?: TechDocsCollatorEntityTransformer;
   documentTransformer?: TechDocsCollatorDocumentTransformer;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:38:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:39:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:50:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:3:1 - (ae-undocumented) Missing documentation for "MkSearchIndexDoc".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:4:5 - (ae-undocumented) Missing documentation for "title".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:5:5 - (ae-undocumented) Missing documentation for "text".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:6:5 - (ae-undocumented) Missing documentation for "location".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:7:5 - (ae-undocumented) Missing documentation for "tags".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:10:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorDocumentTransformer".
-// src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
-// src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
 ```

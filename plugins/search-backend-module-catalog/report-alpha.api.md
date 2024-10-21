@@ -4,20 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-catalog';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
 
-// @alpha
-export type CatalogCollatorExtensionPoint = {
-  setEntityTransformer(transformer: CatalogCollatorEntityTransformer): void;
-};
-
-// @alpha
-export const catalogCollatorExtensionPoint: ExtensionPoint<CatalogCollatorExtensionPoint>;
-
-// @alpha
-const _default: BackendFeature;
-export default _default;
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

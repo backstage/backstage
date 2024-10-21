@@ -1,5 +1,31 @@
 # @backstage/test-utils
 
+## 1.7.0
+
+### Minor Changes
+
+- 9cc7dd6: Added a `mockApis` export, which will replace the `MockX` API implementation classes and their related types. This is analogous with the backend's `mockServices`.
+
+  **DEPRECATED** several old helpers:
+
+  - Deprecated `MockAnalyticsApi`, please use `mockApis.analytics` instead.
+  - Deprecated `MockConfigApi`, please use `mockApis.config` instead.
+  - Deprecated `MockPermissionApi`, please use `mockApis.permission` instead.
+  - Deprecated `MockStorageApi`, please use `mockApis.storage` instead.
+  - Deprecated `MockTranslationApi`, please use `mockApis.translation` instead.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/core-app-api@1.15.1
+  - @backstage/theme@0.6.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 1.6.1-next.2
 
 ### Patch Changes

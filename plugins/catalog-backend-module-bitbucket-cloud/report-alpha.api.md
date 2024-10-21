@@ -6,12 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
-const catalogModuleBitbucketCloudEntityProvider: BackendFeature;
-export default catalogModuleBitbucketCloudEntityProvider;
-
-// Warnings were encountered during analysis:
-//
-// src/module/catalogModuleBitbucketCloudEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleBitbucketCloudEntityProvider".
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```
