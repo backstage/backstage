@@ -129,9 +129,15 @@ export class DefaultCatalogProcessingEngine {
   }
 
   private startPipeline(): () => void {
+    const lowWatermark = this.config.has('catalog.processing.concurrency')
+      ? this.config.getNumber('catalog.processing.concurrency.min')
+      : 5;
+    const highWatermark = this.config.has('catalog.processing.concurrency')
+      ? this.config.getNumber('catalog.processing.concurrency.max')
+      : 10;
     return startTaskPipeline<RefreshStateItem>({
-      lowWatermark: 5,
-      highWatermark: 10,
+      lowWatermark: lowWatermark,
+      highWatermark: highWatermark,
       pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {

@@ -192,6 +192,25 @@ Setting this value too low risks exhausting rate limits on external systems that
 are queried by processors, such as version control systems housing catalog-info
 files.
 
+## Pipeline configuration
+
+You can configure the number of entities that are processed in parallel during the processing loop.
+Both the minimum and maximum amount of entities process can be configured.
+
+- `min` defines the target minimum number of items to process in parallel.
+  Once the number of in-flight tasks reaches this count, more tasks will be loaded in.
+- `max` defines the maximum number of items to process in parallel.
+
+Keep in mind that the `min` has to be less than `max` or an error will be thrown.
+
+```yaml title="app-config.yaml"
+catalog:
+  processing:
+    concurrency:
+      min: 5
+      max: 10
+```
+
 ## Stitching strategy
 
 [Stitching](./life-of-an-entity.md#stitching) finalizes the entity. It can be run in
