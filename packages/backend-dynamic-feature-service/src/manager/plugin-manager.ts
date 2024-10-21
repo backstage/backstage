@@ -36,7 +36,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { findPaths } from '@backstage/cli-common';
-import path from 'path';
 import * as fs from 'fs';
 import {
   FeatureDiscoveryService,
@@ -79,13 +78,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     );
 
     const dynamicPluginsPaths = scannedPlugins.map(p =>
-      fs.realpathSync(
-        path.dirname(
-          path.dirname(
-            path.resolve(url.fileURLToPath(p.location), p.manifest.main),
-          ),
-        ),
-      ),
+      fs.realpathSync(url.fileURLToPath(p.location)),
     );
 
     await moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
@@ -164,8 +157,13 @@ export class DynamicPluginManager implements DynamicPluginProvider {
   private async loadBackendPlugin(
     plugin: ScannedPluginPackage,
   ): Promise<BackendDynamicPlugin> {
+    const usedPluginManifest =
+      plugin.alphaManifest?.main ?? plugin.manifest.main;
+    const usedPluginLocation = plugin.alphaManifest?.main
+      ? `${plugin.location}/alpha`
+      : plugin.location;
     const packagePath = url.fileURLToPath(
-      `${plugin.location}/${plugin.manifest.main}`,
+      `${usedPluginLocation}/${usedPluginManifest}`,
     );
     const dynamicPlugin: BackendDynamicPlugin = {
       name: plugin.manifest.name,
@@ -194,12 +192,12 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       }
       if (dynamicPlugin.installer) {
         this.logger.info(
-          `loaded dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
+          `loaded dynamic backend plugin '${plugin.manifest.name}' from '${usedPluginLocation}'`,
         );
       } else {
         dynamicPlugin.failure = `the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`;
         this.logger.error(
-          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': ${dynamicPlugin.failure}`,
+          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${usedPluginLocation}': ${dynamicPlugin.failure}`,
         );
       }
       return dynamicPlugin;
@@ -210,7 +208,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
           : new Error(error);
       dynamicPlugin.failure = `${typedError.name}: ${typedError.message}`;
       this.logger.error(
-        `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
+        `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${usedPluginLocation}'`,
         typedError,
       );
       return dynamicPlugin;

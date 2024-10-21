@@ -29,8 +29,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
 import * as winston from 'winston';
+import * as url from 'url';
 import { MESSAGE } from 'triple-beam';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
+import { ScannedPluginPackage } from '../scanner';
 
 // these can get a bit slow in CI
 jest.setTimeout(60_000);
@@ -67,6 +69,8 @@ class MockedTransport extends winston.transports.Console {
 
 class DynamicPluginLister {
   readonly loadedPlugins: DynamicPlugin[] = [];
+  getScannedPackage?: (plugin: DynamicPlugin) => ScannedPluginPackage;
+
   feature(): BackendFeature {
     // eslint-disable-next-line consistent-this
     const that = this;
@@ -78,6 +82,8 @@ class DynamicPluginLister {
             dynamicPlugins: dynamicPluginsServiceRef,
           },
           async init({ dynamicPlugins }) {
+            that.getScannedPackage = plugin =>
+              dynamicPlugins.getScannedPackage(plugin);
             that.loadedPlugins.push(
               ...dynamicPlugins.plugins({ includeFailed: true }),
             );
@@ -305,6 +311,72 @@ describe('dynamicPluginsFeatureLoader', () => {
         name: 'backstage__plugin_test',
         pluginVersion: '0.0.0',
         publicPath: 'auto',
+      },
+    });
+  });
+
+  it('should load a backend plugin from the alpha package first', async () => {
+    const dynamicPLuginsLister = new DynamicPluginLister();
+    const mockedTransport = new MockedTransport();
+    const dynamicPluginsRootForAlpha = resolvePath(
+      __dirname,
+      '__fixtures__/dynamic-plugins-root-for-alpha',
+    );
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootForAlpha,
+            },
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          transports: [mockedTransport],
+          format: winston.format.simple(),
+        }),
+        dynamicPLuginsLister.feature(),
+      ],
+    });
+
+    expect(mockedTransport.logs).toContainEqual(
+      'info: This plugin has been loaded from the alpha package. {"service":"backstage"}',
+    );
+
+    const loadedPlugins = dynamicPLuginsLister.loadedPlugins;
+    expect(loadedPlugins).toMatchObject([
+      {
+        installer: {
+          kind: 'new',
+        },
+        name: 'plugin-test-backend-alpha-dynamic',
+        platform: 'node',
+        role: 'backend-plugin',
+        version: '0.0.0',
+      },
+    ]);
+    expect(
+      dynamicPLuginsLister.getScannedPackage?.(loadedPlugins[0]),
+    ).toMatchObject({
+      location: url.pathToFileURL(
+        path.resolve(dynamicPluginsRootForAlpha, 'test-backend-alpha-dynamic'),
+      ),
+      manifest: {
+        name: 'plugin-test-backend-alpha-dynamic',
+        version: '0.0.0',
+        description: 'A test dynamic backend module that exposes alpha API.',
+        backstage: {
+          role: 'backend-plugin',
+          pluginId: 'test-alpha',
+          pluginPackages: ['plugin-test-backend-alpha'],
+        },
+        keywords: ['backstage', 'dynamic'],
+      },
+      alphaManifest: {
+        name: 'plugin-test-backend-alpha-dynamic__alpha',
+        version: '0.0.0',
+        main: '../dist/alpha.cjs.js',
       },
     });
   });
