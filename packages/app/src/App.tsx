@@ -81,7 +81,10 @@ import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
-import { NotificationsPage } from '@backstage/plugin-notifications';
+import {
+  NotificationsPage,
+  UserNotificationSettingsCard,
+} from '@backstage/plugin-notifications';
 
 const app = createApp({
   apis,
@@ -205,6 +208,11 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />}>
       <SettingsLayout.Route path="/advanced" title="Advanced">
         <AdvancedSettings />
+      </SettingsLayout.Route>
+      <SettingsLayout.Route path="/notifications" title="Notifications">
+        <UserNotificationSettingsCard
+          originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
+        />
       </SettingsLayout.Route>
     </Route>
     <Route path="/devtools" element={<DevToolsPage />}>

@@ -37,10 +37,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
+  isNotificationsEnabledFor,
   NewNotificationSignal,
   Notification,
-  NotificationPayload,
   NotificationReadSignal,
+  NotificationSettings,
   notificationSeverities,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
@@ -77,6 +78,7 @@ export async function createRouter(
     signals,
   } = options;
 
+  const WEB_NOTIFICATION_CHANNEL = 'Web';
   const store = await DatabaseNotificationsStore.create({ database });
   const frontendBaseUrl = config.getString('app.baseUrl');
 
@@ -86,10 +88,62 @@ export async function createRouter(
     return info.userEntityRef;
   };
 
-  const filterProcessors = (payload: NotificationPayload) => {
+  const getNotificationChannels = () => {
+    return [WEB_NOTIFICATION_CHANNEL, ...processors.map(p => p.getName())];
+  };
+
+  const getNotificationSettings = async (user: string) => {
+    const { origins } = await store.getUserNotificationOrigins({ user });
+    const settings = await store.getNotificationSettings({ user });
+    const channels = getNotificationChannels();
+
+    const response: NotificationSettings = {
+      channels: channels.map(channel => {
+        const channelSettings = settings.channels.find(c => c.id === channel);
+        if (channelSettings) {
+          return channelSettings;
+        }
+        return {
+          id: channel,
+          origins: origins.map(origin => ({
+            id: origin,
+            enabled: true,
+          })),
+        };
+      }),
+    };
+    return response;
+  };
+
+  const isNotificationsEnabled = async (opts: {
+    user: string;
+    channel: string;
+    origin: string;
+  }) => {
+    const settings = await getNotificationSettings(opts.user);
+    return isNotificationsEnabledFor(settings, opts.channel, opts.origin);
+  };
+
+  const filterProcessors = async (
+    notification:
+      | Notification
+      | ({ origin: string; user: null } & NotificationSendOptions),
+  ) => {
     const result: NotificationProcessor[] = [];
+    const { payload, user, origin } = notification;
 
     for (const processor of processors) {
+      if (user) {
+        const enabled = await isNotificationsEnabled({
+          user,
+          origin,
+          channel: processor.getName(),
+        });
+        if (!enabled) {
+          continue;
+        }
+      }
+
       if (processor.getNotificationFilters) {
         const filters = processor.getNotificationFilters();
         if (filters.minSeverity) {
@@ -122,8 +176,11 @@ export async function createRouter(
     return result;
   };
 
-  const processOptions = async (opts: NotificationSendOptions) => {
-    const filtered = filterProcessors(opts.payload);
+  const processOptions = async (
+    opts: NotificationSendOptions,
+    origin: string,
+  ) => {
+    const filtered = await filterProcessors({ ...opts, origin, user: null });
     let ret = opts;
     for (const processor of filtered) {
       try {
@@ -143,7 +200,7 @@ export async function createRouter(
     notification: Notification,
     opts: NotificationSendOptions,
   ) => {
-    const filtered = filterProcessors(notification.payload);
+    const filtered = await filterProcessors(notification);
     let ret = notification;
     for (const processor of filtered) {
       try {
@@ -163,7 +220,7 @@ export async function createRouter(
     notification: Notification,
     opts: NotificationSendOptions,
   ) => {
-    const filtered = filterProcessors(notification.payload);
+    const filtered = await filterProcessors(notification);
     for (const processor of filtered) {
       if (processor.postProcess) {
         try {
@@ -260,6 +317,33 @@ export async function createRouter(
     const status = await store.getStatus({ user });
     res.json(status);
   });
+
+  router.get(
+    '/settings',
+    async (req: Request<any, NotificationSettings>, res) => {
+      const user = await getUser(req);
+      const response = await getNotificationSettings(user);
+      res.json(response);
+    },
+  );
+
+  router.post(
+    '/settings',
+    async (
+      req: Request<any, NotificationSettings, NotificationSettings>,
+      res,
+    ) => {
+      const user = await getUser(req);
+      const channels = getNotificationChannels();
+      const settings: NotificationSettings = req.body;
+      if (settings.channels.some(c => !channels.includes(c.id))) {
+        throw new InputError('Invalid channel');
+      }
+      await store.saveNotificationSettings({ user, settings });
+      const response = await getNotificationSettings(user);
+      res.json(response);
+    },
+  );
 
   // Make sure this is the last "GET" handler
   router.get('/:id', async (req, res) => {
@@ -380,37 +464,45 @@ export async function createRouter(
       };
       const notification = await preProcessNotification(userNotification, opts);
 
-      let existingNotification;
-      if (scope) {
-        existingNotification = await store.getExistingScopeNotification({
-          user,
-          scope,
-          origin,
-        });
-      }
+      const enabled = await isNotificationsEnabled({
+        user,
+        channel: WEB_NOTIFICATION_CHANNEL,
+        origin: userNotification.origin,
+      });
 
       let ret = notification;
-      if (existingNotification) {
-        const restored = await store.restoreExistingNotification({
-          id: existingNotification.id,
-          notification,
-        });
-        ret = restored ?? notification;
-      } else {
-        await store.saveNotification(notification);
-      }
+      if (enabled) {
+        let existingNotification;
+        if (scope) {
+          existingNotification = await store.getExistingScopeNotification({
+            user,
+            scope,
+            origin,
+          });
+        }
 
-      notifications.push(ret);
+        if (existingNotification) {
+          const restored = await store.restoreExistingNotification({
+            id: existingNotification.id,
+            notification,
+          });
+          ret = restored ?? notification;
+        } else {
+          await store.saveNotification(notification);
+        }
 
-      if (signals) {
-        await signals.publish<NewNotificationSignal>({
-          recipients: { type: 'user', entityRef: [user] },
-          message: {
-            action: 'new_notification',
-            notification_id: ret.id,
-          },
-          channel: 'notifications',
-        });
+        notifications.push(ret);
+
+        if (signals) {
+          await signals.publish<NewNotificationSignal>({
+            recipients: { type: 'user', entityRef: [user] },
+            message: {
+              action: 'new_notification',
+              notification_id: ret.id,
+            },
+            channel: 'notifications',
+          });
+        }
       }
       postProcessNotification(ret, opts);
     }
@@ -421,16 +513,16 @@ export async function createRouter(
   router.post(
     '/',
     async (req: Request<any, Notification[], NotificationSendOptions>, res) => {
-      const opts = await processOptions(req.body);
-      const { recipients, payload } = opts;
-      const notifications: Notification[] = [];
-      let users = [];
-
       const credentials = await httpAuth.credentials(req, {
         allow: ['service'],
       });
 
+      const origin = credentials.principal.subject;
+      const opts = await processOptions(req.body, origin);
+      const { recipients, payload } = opts;
       const { title, link } = payload;
+      const notifications: Notification[] = [];
+      let users = [];
 
       if (!recipients || !title) {
         logger.error(`Invalid notification request received`);
@@ -445,7 +537,6 @@ export async function createRouter(
         }
       }
 
-      const origin = credentials.principal.subject;
       const baseNotification = {
         payload: {
           ...payload,
