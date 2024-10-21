@@ -23,6 +23,14 @@ const paths = require('@backstage/cli-common').findPaths(process.cwd());
 
 const SRC_EXTS = ['ts', 'js', 'tsx', 'jsx', 'mts', 'cts', 'mjs', 'cjs'];
 
+const FRONTEND_ROLES = [
+  'frontend',
+  'web-library',
+  'common-library',
+  'frontend-plugin',
+  'frontend-plugin-module',
+];
+
 const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
 };
@@ -123,24 +131,13 @@ const transformIgnorePattern = [
 
 // Provides additional config that's based on the role of the target package
 function getRoleConfig(role) {
-  switch (role) {
-    case 'frontend':
-    case 'web-library':
-    case 'common-library':
-    case 'frontend-plugin':
-    case 'frontend-plugin-module':
-      return { testEnvironment: require.resolve('jest-environment-jsdom') };
-    case 'cli':
-    case 'backend':
-    case 'node-library':
-    case 'backend-plugin':
-    case 'backend-plugin-module':
-    default:
-      return { testEnvironment: require.resolve('jest-environment-node') };
+  if (FRONTEND_ROLES.includes(role)) {
+    return { testEnvironment: require.resolve('jest-environment-jsdom') };
   }
+  return { testEnvironment: require.resolve('jest-environment-node') };
 }
 
-async function getProjectConfig(targetPath, extraConfig) {
+async function getProjectConfig(targetPath, extraConfig, extraOptions) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
   // If the package has it's own jest config, we use that instead.
@@ -234,6 +231,17 @@ async function getProjectConfig(targetPath, extraConfig) {
 
   options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];
 
+  if (
+    extraOptions.rejectFrontendNetworkRequests &&
+    FRONTEND_ROLES.includes(pkgJson.backstage?.role)
+  ) {
+    // By adding this first we ensure that it's possible to for example override
+    // fetch with a mock in a custom setup file
+    options.setupFilesAfterEnv.unshift(
+      require.resolve('./jestRejectNetworkRequests.js'),
+    );
+  }
+
   if (options.testEnvironment === require.resolve('jest-environment-jsdom')) {
     // FIXME https://github.com/jsdom/jsdom/issues/1724
     options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
@@ -278,21 +286,31 @@ async function getRootConfig() {
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
   };
 
+  const { rejectFrontendNetworkRequests, ...rootOptions } =
+    rootPkgJson.jest ?? {};
+  const extraRootOptions = {
+    rejectFrontendNetworkRequests,
+  };
+
   const workspacePatterns =
     rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
 
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
   if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {
-    return getProjectConfig(paths.targetDir, {
-      ...baseCoverageConfig,
-      ...(rootPkgJson.jest ?? {}),
-    });
+    return getProjectConfig(
+      paths.targetDir,
+      {
+        ...baseCoverageConfig,
+        ...rootOptions,
+      },
+      extraRootOptions,
+    );
   }
 
   const globalRootConfig = { ...baseCoverageConfig };
   const globalProjectConfig = {};
 
-  for (const [key, value] of Object.entries(rootPkgJson.jest ?? {})) {
+  for (const [key, value] of Object.entries(rootOptions)) {
     if (projectConfigKeys.includes(key)) {
       globalProjectConfig[key] = value;
     } else {
@@ -323,10 +341,14 @@ async function getRootConfig() {
         testScript?.includes('backstage-cli test') ||
         testScript?.includes('backstage-cli package test');
       if (testScript && isSupportedTestScript) {
-        return await getProjectConfig(projectPath, {
-          ...globalProjectConfig,
-          displayName: packageData.name,
-        });
+        return await getProjectConfig(
+          projectPath,
+          {
+            ...globalProjectConfig,
+            displayName: packageData.name,
+          },
+          extraRootOptions,
+        );
       }
 
       return undefined;

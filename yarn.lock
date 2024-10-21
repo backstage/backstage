@@ -21628,7 +21628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.7, axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0, axios@npm:^1.7.4":
+"axios@npm:1.7.7, axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0, axios@npm:^1.7.4, axios@npm:^1.7.7":
   version: 1.7.7
   resolution: "axios@npm:1.7.7"
   dependencies:
@@ -26975,8 +26975,10 @@ __metadata:
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
     "@vitejs/plugin-react": ^4.3.1
+    axios: ^1.7.7
     cross-env: ^7.0.0
     history: ^5.0.0
+    msw: ^1.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router: ^6.3.0

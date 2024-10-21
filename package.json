@@ -133,6 +133,9 @@
     "sort-package-json": "^2.8.0",
     "typescript": "~5.2.0"
   },
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
   "packageManager": "yarn@3.8.1",
   "engines": {
     "node": "18 || 20"
