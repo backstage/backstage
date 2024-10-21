@@ -18,45 +18,58 @@ import { JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { ActionContext, TemplateAction } from './types';
+import { ScaffolderAction, ScaffolderActionContext } from './types';
 
-/**
- * @deprecated
- * @public
- */
-export type TemplateExample = {
+/** @public */
+export type ScaffolderExample = {
   description: string;
   example: string;
 };
 
-/**
- * @deprecated
- * @public
- */
-export type TemplateActionOptions<
-  TActionInput extends JsonObject = {},
-  TActionOutput extends JsonObject = {},
-  TInputSchema extends Schema | z.ZodType = {},
-  TOutputSchema extends Schema | z.ZodType = {},
+/** @public */
+export type ScaffolderActionOptions<
+  TInputParams extends JsonObject,
+  TOutputParams extends JsonObject,
+  TInputSchema extends Schema | z.ZodType,
+  TOutputSchema extends Schema | z.ZodType,
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TInputParams,
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TOutputParams,
 > = {
   id: string;
   description?: string;
-  examples?: TemplateExample[];
+  examples?: ScaffolderExample[];
   supportsDryRun?: boolean;
   schema?: {
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
+  handler: (
+    ctx: ScaffolderActionContext<TActionInput, TActionOutput>,
+  ) => Promise<void>;
 };
+
+function isZod(schema?: Schema | z.ZodType): schema is z.ZodType {
+  return !!(schema && 'safeParseAsync' in schema);
+}
 
 /**
  * This function is used to create new template actions to get type safety.
  * Will convert zod schemas to json schemas for use throughout the system.
- * @deprecated
  * @public
  */
-export const createTemplateAction = <
+export const createScaffolderAction = <
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends Schema | z.ZodType = {},
@@ -76,29 +89,29 @@ export const createTemplateAction = <
     ? IReturn
     : TOutputParams,
 >(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
+  action: ScaffolderActionOptions<
+    TInputParams,
+    TOutputParams,
     TInputSchema,
-    TOutputSchema
+    TOutputSchema,
+    TActionInput,
+    TActionOutput
   >,
-): TemplateAction<TActionInput, TActionOutput> => {
-  const inputSchema =
-    action.schema?.input && 'safeParseAsync' in action.schema.input
-      ? zodToJsonSchema(action.schema.input)
-      : action.schema?.input;
+): ScaffolderAction<TActionInput, TActionOutput> => {
+  const inputSchema = isZod(action.schema?.input)
+    ? (zodToJsonSchema(action.schema.input) as Schema)
+    : action.schema?.input;
 
-  const outputSchema =
-    action.schema?.output && 'safeParseAsync' in action.schema.output
-      ? zodToJsonSchema(action.schema.output)
-      : action.schema?.output;
+  const outputSchema = isZod(action.schema?.output)
+    ? (zodToJsonSchema(action.schema.output) as Schema)
+    : action.schema?.output;
 
   return {
     ...action,
     schema: {
       ...action.schema,
-      input: inputSchema as TInputSchema,
-      output: outputSchema as TOutputSchema,
+      input: inputSchema,
+      output: outputSchema,
     },
   };
 };
