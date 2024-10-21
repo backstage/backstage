@@ -6,7 +6,11 @@ sidebar_label: Extensions
 description: Frontend extensions
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+:::info
+The new frontend system is in alpha and is only supported by a small number of plugins. If you want to use the new
+plugin system, you must migrate your entire Backstage application or start a new application from scratch. We do not yet
+recommend migrating any apps to the new system.
+:::
 
 As mentioned in the [previous section](./10-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
 

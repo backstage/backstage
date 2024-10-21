@@ -6,7 +6,11 @@ sidebar_label: Common Extension Blueprints
 description: Extension blueprints provided by the frontend system and core features
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+:::info
+The new frontend system is in alpha and is only supported by a small number of plugins. If you want to use the new
+plugin system, you must migrate your entire Backstage application or start a new application from scratch. We do not yet
+recommend migrating any apps to the new system.
+:::
 
 This section covers many of the [extension blueprints](../architecture/23-extension-blueprints.md) available at your disposal when building Backstage frontend plugins.
 

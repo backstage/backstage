@@ -4,9 +4,7 @@ title: Plugin Development
 description: Documentation on Plugin Development
 ---
 
-Backstage plugins provide features to a Backstage App.
-
-Each plugin is treated as a self-contained web app and can include almost any
+Every frontend plugin is treated as a self-contained web app and can include almost any
 type of content. Plugins all use a common set of platform APIs and reusable UI
 components. Plugins can fetch data from external sources using the regular
 browser APIs or by depending on external modules to do the work.
@@ -19,9 +17,9 @@ browser APIs or by depending on external modules to do the work.
   otherwise go with [Material UI](https://material-ui.com/).
 - Check out the shared Backstage APIs before building a new one.
 
-## Plugin concepts / API
+## Frontend plugin concepts and methods
 
-### Routing
+### Routing and Paths
 
 Each plugin can export routable extensions, which are then imported into the app
 and mounted at a path.
