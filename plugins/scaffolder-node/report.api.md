@@ -191,6 +191,7 @@ export type ExecuteShellCommandOptions = {
   command: string;
   args: string[];
   options?: SpawnOptionsWithoutStdio;
+  logger?: Logger;
   logStream?: Writable;
 };
 

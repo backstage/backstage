@@ -3,9 +3,9 @@
   "version": "0.5.1",
   "description": "A module for the scaffolder backend that lets you template projects using Rails",
   "backstage": {
-    "role": "backend-plugin-module",
     "pluginId": "scaffolder",
-    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+    "pluginPackage": "@backstage/plugin-scaffolder-backend",
+    "role": "backend-plugin-module"
   },
   "publishConfig": {
     "access": "public"
