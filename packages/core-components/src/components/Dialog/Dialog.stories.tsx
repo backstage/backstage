@@ -25,15 +25,12 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
-import type { Meta, StoryObj } from '@storybook/react';
-
 const meta = {
   title: 'Layout/Dialog',
   component: Dialog,
-} satisfies Meta<typeof Dialog>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 const styles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +43,7 @@ const styles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const Default: Story = {
+export const Default = {
   args: {
     open: true,
   },

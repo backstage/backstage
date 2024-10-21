@@ -96,7 +96,6 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@storybook/react": "^8.3.5",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
