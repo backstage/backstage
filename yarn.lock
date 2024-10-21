@@ -5928,6 +5928,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
+    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 

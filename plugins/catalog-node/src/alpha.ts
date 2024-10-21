@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-export { catalogServiceRef } from './catalogService';
+import { ServiceRef } from '@backstage/backend-plugin-api';
+import { catalogServiceRef as _catalogServiceRef } from './catalogService';
+import { CatalogApi } from '@backstage/catalog-client';
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#catalogServiceRef} instead
+ */
+export const catalogServiceRef = _catalogServiceRef as ServiceRef<
+  CatalogApi,
+  'plugin',
+  'singleton'
+>;
+
 export type { CatalogLocationsExtensionPoint } from './extensions';
 export { catalogLocationsExtensionPoint } from './extensions';
 export type { CatalogProcessingExtensionPoint } from './extensions';
