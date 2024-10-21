@@ -39,6 +39,10 @@ import { GiteaIntegration, GiteaIntegrationConfig } from './gitea';
 import { AwsCodeCommitIntegration } from './awsCodeCommit/AwsCodeCommitIntegration';
 import { AwsCodeCommitIntegrationConfig } from './awsCodeCommit';
 import { HarnessIntegration, HarnessIntegrationConfig } from './harness';
+import {
+  AzureBlobStorageIntegrationConfig,
+  AzureBlobStorageIntergation,
+} from './azureBlobStorage';
 
 describe('ScmIntegrations', () => {
   const awsS3 = new AwsS3Integration({
@@ -52,6 +56,10 @@ describe('ScmIntegrations', () => {
   const azure = new AzureIntegration({
     host: 'azure.local',
   } as AzureIntegrationConfig);
+
+  const azureBlob = new AzureBlobStorageIntergation({
+    host: 'azureblobstorage.local',
+  } as AzureBlobStorageIntegrationConfig);
 
   const bitbucket = new BitbucketIntegration({
     host: 'bitbucket.local',
@@ -89,6 +97,7 @@ describe('ScmIntegrations', () => {
     awsS3: basicIntegrations([awsS3], item => item.config.host),
     awsCodeCommit: basicIntegrations([awsCodeCommit], item => item.config.host),
     azure: basicIntegrations([azure], item => item.config.host),
+    azureBlobStorage: basicIntegrations([azureBlob], item => item.config.host),
     bitbucket: basicIntegrations([bitbucket], item => item.config.host),
     bitbucketCloud: basicIntegrations([bitbucketCloud], item => item.title),
     bitbucketServer: basicIntegrations(
@@ -108,6 +117,9 @@ describe('ScmIntegrations', () => {
       awsCodeCommit,
     );
     expect(i.azure.byUrl('https://azure.local')).toBe(azure);
+    expect(i.azureBlobStorage.byUrl('https://azureblobstorage.local')).toBe(
+      azureBlob,
+    );
     expect(i.bitbucket.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.bitbucketCloud.byUrl('https://bitbucket.org')).toBe(
       bitbucketCloud,
@@ -128,6 +140,7 @@ describe('ScmIntegrations', () => {
         awsS3,
         awsCodeCommit,
         azure,
+        azureBlob,
         bitbucket,
         bitbucketCloud,
         bitbucketServer,
@@ -144,6 +157,9 @@ describe('ScmIntegrations', () => {
     expect(i.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.byUrl('https://awscodecommit.local')).toBe(awsCodeCommit);
     expect(i.byUrl('https://azure.local')).toBe(azure);
+    expect(i.azureBlobStorage.byUrl('https://azureblobstorage.local')).toBe(
+      azureBlob,
+    );
     expect(i.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.byUrl('https://bitbucket.org')).toBe(bitbucketCloud);
     expect(i.byUrl('https://bitbucket-server.local')).toBe(bitbucketServer);
@@ -156,6 +172,7 @@ describe('ScmIntegrations', () => {
     expect(i.byHost('awss3.local')).toBe(awsS3);
     expect(i.byHost('awscodecommit.local')).toBe(awsCodeCommit);
     expect(i.byHost('azure.local')).toBe(azure);
+    expect(i.byHost('azureblobstorage.local')).toBe(azureBlob);
     expect(i.byHost('bitbucket.local')).toBe(bitbucket);
     expect(i.byHost('bitbucket.org')).toBe(bitbucketCloud);
     expect(i.byHost('bitbucket-server.local')).toBe(bitbucketServer);
