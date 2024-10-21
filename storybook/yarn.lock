@@ -2262,14 +2262,6 @@ __metadata:
     typescript: ^5.5.3
     typescript-eslint: ^8.7.0
     vite: ^5.4.8
-  peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
   languageName: unknown
   linkType: soft
 

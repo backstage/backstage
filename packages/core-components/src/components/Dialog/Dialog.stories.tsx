@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
-import type { Meta, StoryObj } from 'backstage-storybook';
+import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
   title: 'Layout/Dialog',
@@ -50,7 +50,7 @@ export const Default: Story = {
   args: {
     open: true,
   },
-  render: ({ open }) => {
+  render: ({ open }: { open: boolean }) => {
     const classes = styles();
 
     return (
