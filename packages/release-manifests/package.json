@@ -41,6 +41,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   }
 }

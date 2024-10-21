@@ -115,7 +115,7 @@
     "@types/zen-observable": "^0.8.0",
     "cross-fetch": "^4.0.0",
     "history": "^5.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"

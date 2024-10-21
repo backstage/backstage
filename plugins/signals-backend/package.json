@@ -63,7 +63,7 @@
     "@backstage/plugin-events-backend": "workspace:^",
     "@types/supertest": "^2.0.8",
     "@types/ws": "^8.5.10",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0"
   }
 }

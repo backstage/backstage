@@ -116,7 +116,7 @@
     "@types/passport-saml": "^1.1.3",
     "@types/passport-strategy": "^0.2.35",
     "@types/xml2js": "^0.4.7",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

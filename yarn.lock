@@ -3504,7 +3504,7 @@ __metadata:
     minimatch: ^9.0.0
     minimist: ^1.2.5
     morgan: ^1.10.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     node-forge: ^1.3.1
     path-to-regexp: ^8.0.0
@@ -3664,7 +3664,7 @@ __metadata:
     minimatch: ^9.0.0
     minimist: ^1.2.5
     morgan: ^1.10.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     mysql2: ^3.0.0
     node-fetch: ^2.7.0
     node-forge: ^1.3.1
@@ -3756,7 +3756,7 @@ __metadata:
     json-schema-to-ts: ^3.0.0
     lodash: ^4.17.21
     mockttp: ^3.13.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     openapi-merge: ^1.3.2
     openapi3-ts: ^3.1.2
     supertest: ^7.0.0
@@ -3830,7 +3830,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     cross-fetch: ^4.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     uri-template: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -3996,7 +3996,7 @@ __metadata:
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^9.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     node-libs-browser: ^2.2.1
     nodemon: ^3.0.1
@@ -4103,7 +4103,7 @@ __metadata:
     json-schema-traverse: ^1.0.0
     lodash: ^4.17.21
     minimist: ^1.2.5
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     typescript-json-schema: ^0.65.0
     yaml: ^2.0.0
@@ -4143,7 +4143,7 @@ __metadata:
     history: ^5.0.0
     i18next: ^22.4.15
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     prop-types: ^15.7.2
     react: ^18.0.2
     react-dom: ^18.0.2
@@ -4250,7 +4250,7 @@ __metadata:
     linkify-react: 4.1.3
     linkifyjs: 4.1.3
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     pluralize: ^8.0.0
     qs: ^6.9.4
     rc-progress: 3.5.1
@@ -4379,7 +4379,7 @@ __metadata:
     fs-extra: ^11.2.0
     handlebars: ^4.7.3
     inquirer: ^8.2.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     nodemon: ^3.0.1
     ora: ^5.3.0
@@ -4628,7 +4628,7 @@ __metadata:
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^18.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -4659,7 +4659,7 @@ __metadata:
     git-url-parse: ^15.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -4824,7 +4824,7 @@ __metadata:
     "@testing-library/react": ^16.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^18.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -5065,7 +5065,7 @@ __metadata:
     "@types/passport-microsoft": ^1.0.0
     express: ^4.18.2
     jose: ^5.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     passport-microsoft: ^1.0.0
     supertest: ^7.0.0
@@ -5118,7 +5118,7 @@ __metadata:
     express-promise-router: ^4.1.1
     express-session: ^1.17.3
     jose: ^5.0.0
-    msw: ^1.3.1
+    msw: ^2.0.0
     openid-client: ^5.5.0
     passport: ^0.7.0
     supertest: ^7.0.0
@@ -5175,7 +5175,7 @@ __metadata:
     express-session: ^1.17.3
     jose: ^5.0.0
     luxon: ^3.4.3
-    msw: ^1.3.0
+    msw: ^2.0.0
     openid-client: ^5.4.3
     passport: ^0.7.0
     supertest: ^7.0.0
@@ -5265,7 +5265,7 @@ __metadata:
     luxon: ^3.0.0
     minimatch: ^9.0.0
     morgan: ^1.10.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-cache: ^5.1.2
     node-fetch: ^2.7.0
     openid-client: ^5.2.1
@@ -5303,7 +5303,7 @@ __metadata:
     express-promise-router: ^4.1.1
     jose: ^5.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     passport: ^0.7.0
     supertest: ^7.0.0
@@ -5330,7 +5330,7 @@ __metadata:
     "@testing-library/react": ^16.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^18.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -5353,7 +5353,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@openapitools/openapi-generator-cli": ^2.4.26
     cross-fetch: ^4.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     ts-morph: ^22.0.0
   languageName: unknown
   linkType: soft
@@ -5403,7 +5403,7 @@ __metadata:
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -5445,7 +5445,7 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5464,7 +5464,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -5499,7 +5499,7 @@ __metadata:
     "@types/fs-extra": ^11.0.0
     fs-extra: ^11.2.0
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -5543,7 +5543,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^9.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -5585,7 +5585,7 @@ __metadata:
     "@types/uuid": ^9.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -5667,7 +5667,7 @@ __metadata:
     "@types/node-fetch": ^2.5.12
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     p-limit: ^3.0.2
     qs: ^6.9.4
@@ -5712,7 +5712,7 @@ __metadata:
     "@types/lodash": ^4.14.151
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -5794,7 +5794,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^9.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     p-limit: ^3.0.2
     prom-client: ^15.0.0
@@ -5896,7 +5896,7 @@ __metadata:
     git-url-parse: ^15.0.0
     js-base64: ^3.6.0
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-hook-form: ^7.12.2
@@ -6324,7 +6324,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     cross-fetch: ^4.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     uri-template: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -6451,7 +6451,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     morgan: ^1.10.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     stream-buffers: ^3.0.2
     supertest: ^7.0.0
@@ -6532,7 +6532,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/types": "workspace:^"
     "@kubernetes/client-node": ^0.20.0
-    msw: ^1.3.1
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     supertest: ^7.0.0
     winston: ^3.2.1
@@ -6567,7 +6567,7 @@ __metadata:
     kubernetes-models: ^4.3.1
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.3.1
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -6684,7 +6684,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     supertest: ^7.0.0
     uuid: ^9.0.0
@@ -6717,7 +6717,7 @@ __metadata:
     "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     knex: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
@@ -6748,7 +6748,7 @@ __metadata:
     "@types/react": ^18.0.0
     lodash: ^4.17.21
     material-ui-confirm: ^3.0.12
-    msw: ^1.0.0
+    msw: ^2.0.0
     notistack: ^3.0.1
     react: ^18.0.2
     react-dom: ^18.0.2
@@ -6881,7 +6881,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     supertest: ^7.0.0
     yn: ^4.0.0
@@ -6898,7 +6898,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     cross-fetch: ^4.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     uuid: ^9.0.0
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
@@ -6921,7 +6921,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     supertest: ^7.0.0
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
@@ -7017,7 +7017,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7036,7 +7036,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7057,7 +7057,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7078,7 +7078,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     git-url-parse: ^15.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     node-html-markdown: ^1.3.0
     yaml: ^2.0.0
@@ -7138,7 +7138,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7156,7 +7156,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7541,7 +7541,7 @@ __metadata:
     jszip: ^3.10.1
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     qs: ^6.9.4
     react: ^18.0.2
     react-dom: ^18.0.2
@@ -7582,7 +7582,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: ^1.0.0
+    msw: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -7620,7 +7620,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: ^1.2.1
+    msw: ^2.0.0
     node-fetch: ^2.7.0
   languageName: unknown
   linkType: soft
@@ -7653,7 +7653,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: ^1.2.1
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     qs: ^6.9.4
   languageName: unknown
@@ -7677,7 +7677,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     p-limit: ^3.1.0
   languageName: unknown
@@ -7851,7 +7851,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     supertest: ^7.0.0
     uuid: ^9.0.0
@@ -7926,7 +7926,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^18.0.0
     jest-websocket-mock: ^2.5.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -8002,7 +8002,7 @@ __metadata:
     fs-extra: ^11.2.0
     knex: ^3.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.7.0
     p-limit: ^3.1.0
     supertest: ^7.0.0
@@ -8250,7 +8250,7 @@ __metadata:
     "@testing-library/react": ^16.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^18.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -8274,7 +8274,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     cross-fetch: ^4.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -8357,7 +8357,7 @@ __metadata:
     "@types/react": ^18.0.0
     cross-fetch: ^4.0.0
     i18next: ^22.4.15
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -11484,32 +11484,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/cookies@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@mswjs/cookies@npm:0.2.2"
-  dependencies:
-    "@types/set-cookie-parser": ^2.4.0
-    set-cookie-parser: ^2.4.6
-  checksum: 23b1ef56d57efcc1b44600076f531a1fb703855af342a31e01bad4adaf0dab51f6d3b5595a95a7988c3f612ba075835f9a06c52833205284d101eb9a51dd72b0
-  languageName: node
-  linkType: hard
-
-"@mswjs/interceptors@npm:^0.17.10":
-  version: 0.17.10
-  resolution: "@mswjs/interceptors@npm:0.17.10"
-  dependencies:
-    "@open-draft/until": ^1.0.3
-    "@types/debug": ^4.1.7
-    "@xmldom/xmldom": ^0.8.3
-    debug: ^4.3.3
-    headers-polyfill: 3.2.5
-    outvariant: ^1.2.1
-    strict-event-emitter: ^0.2.4
-    web-encoding: ^1.1.5
-  checksum: 0e6d32f399144b5cefe6fd7620f2776c83adc9bbbbccf2eb4ea347332be059f585136c44168c09b544c41cd3d686f88e43432e10192227a24fbb0c98a2f52dc8
-  languageName: node
-  linkType: hard
-
 "@mswjs/interceptors@npm:^0.35.8":
   version: 0.35.9
   resolution: "@mswjs/interceptors@npm:0.35.9"
@@ -12754,13 +12728,6 @@ __metadata:
     is-node-process: ^1.2.0
     outvariant: ^1.4.0
   checksum: 7adfe3d0ed8ca32333ce2a77f9a93d561ebc89c989eaa9722f1dc8a2d2854f5de1bef6fa6894cdf58e16fa4dd9cfa99444ea1f5cac6eb1518e9247911ed042d5
-  languageName: node
-  linkType: hard
-
-"@open-draft/until@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@open-draft/until@npm:1.0.3"
-  checksum: 323e92ebef0150ed0f8caedc7d219b68cdc50784fa4eba0377eef93533d3f46514eb2400ced83dda8c51bddc3d2c7b8e9cf95e5ec85ab7f62dfc015d174f62f2
   languageName: node
   linkType: hard
 
@@ -17570,13 +17537,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cookie@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@types/cookie@npm:0.4.1"
-  checksum: 3275534ed69a76c68eb1a77d547d75f99fedc80befb75a3d1d03662fb08d697e6f8b1274e12af1a74c6896071b11510631ba891f64d30c78528d0ec45a9c1a18
-  languageName: node
-  linkType: hard
-
 "@types/cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "@types/cookie@npm:0.6.0"
@@ -17672,7 +17632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/debug@npm:^4.0.0, @types/debug@npm:^4.1.12, @types/debug@npm:^4.1.7":
+"@types/debug@npm:^4.0.0, @types/debug@npm:^4.1.12":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
   dependencies:
@@ -18008,13 +17968,6 @@ __metadata:
   version: 2.2.6
   resolution: "@types/js-cookie@npm:2.2.6"
   checksum: 97c50ff6cd0a27409b028aad94b0c4eb5cc43623532a1bdbbcccdb200539593eff3cc7f0d874b6b9bee586167638e3a10093c811ff6603ff2a9639564c82b3b1
-  languageName: node
-  linkType: hard
-
-"@types/js-levenshtein@npm:^1.1.1":
-  version: 1.1.3
-  resolution: "@types/js-levenshtein@npm:1.1.3"
-  checksum: eb338696da976925ea8448a42d775d7615a14323dceeb08909f187d0b3d3b4c1f67a1c36ef586b1c2318b70ab141bba8fc58311ba1c816711704605aec09db8b
   languageName: node
   linkType: hard
 
@@ -18801,15 +18754,6 @@ __metadata:
     "@types/node": "*"
     "@types/send": "*"
   checksum: bbbf00dbd84719da2250a462270dc68964006e8d62f41fe3741abd94504ba3688f420a49afb2b7478921a1544d3793183ffa097c5724167da777f4e0c7f1a7d6
-  languageName: node
-  linkType: hard
-
-"@types/set-cookie-parser@npm:^2.4.0":
-  version: 2.4.3
-  resolution: "@types/set-cookie-parser@npm:2.4.3"
-  dependencies:
-    "@types/node": "*"
-  checksum: 8c0ded364c5a53598dc58f6c668d6fdbefa3bb78fcb1181202b92f4d8495ca33b4317f54ac0fe42824278e789d730ee5cbd2f7f864466e708589ff4eab2bf457
   languageName: node
   linkType: hard
 
@@ -19932,7 +19876,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.3, @xmldom/xmldom@npm:^0.8.5":
+"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5":
   version: 0.8.10
   resolution: "@xmldom/xmldom@npm:0.8.10"
   checksum: 4c136aec31fb3b49aaa53b6fcbfe524d02a1dc0d8e17ee35bd3bf35e9ce1344560481cd1efd086ad1a4821541482528672306d5e37cdbd187f33d7fadd3e2cf0
@@ -20534,13 +20478,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zxing/text-encoding@npm:0.9.0":
-  version: 0.9.0
-  resolution: "@zxing/text-encoding@npm:0.9.0"
-  checksum: c23b12aee7639382e4949961304a1294776afaffa40f579e09ffecd0e5e68cf26ef3edd75009de46da8a536e571448755ca68b3e2ea707d53793c0edb2e2c34a
-  languageName: node
-  linkType: hard
-
 "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#master":
   version: 1.0.0
   resolution: "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#commit=6e8d4c1d2342556a2e8e719f19385b266001ebae"
@@ -21037,7 +20974,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@types/react": ^18.0.0
     cross-fetch: ^4.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
@@ -23827,13 +23764,6 @@ __metadata:
   version: 0.7.2
   resolution: "cookie@npm:0.7.2"
   checksum: 9bf8555e33530affd571ea37b615ccad9b9a34febbf2c950c86787088eb00a8973690833b0f8ebd6b69b753c62669ea60cec89178c1fb007bf0749abed74f93e
-  languageName: node
-  linkType: hard
-
-"cookie@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "cookie@npm:0.4.2"
-  checksum: a00833c998bedf8e787b4c342defe5fa419abd96b32f4464f718b91022586b8f1bafbddd499288e75c037642493c83083da426c6a9080d309e3bd90fd11baa9b
   languageName: node
   linkType: hard
 
@@ -26978,7 +26908,7 @@ __metadata:
     axios: ^1.7.7
     cross-env: ^7.0.0
     history: ^5.0.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router: ^6.3.0
@@ -29220,13 +29150,6 @@ __metadata:
   bin:
     he: bin/he
   checksum: 3d4d6babccccd79c5c5a3f929a68af33360d6445587d628087f39a965079d84f18ce9c3d3f917ee1e3978916fc833bb8b29377c3b403f919426f91bc6965e7a7
-  languageName: node
-  linkType: hard
-
-"headers-polyfill@npm:3.2.5":
-  version: 3.2.5
-  resolution: "headers-polyfill@npm:3.2.5"
-  checksum: a3c4bdd661584fd39e40c0f91412abc514616edfbd20d29a75567e591f90ef5c445c8e209b7f3c2b2375d27e95e4690f33417368a168d4832484a93861ab6a3c
   languageName: node
   linkType: hard
 
@@ -31704,13 +31627,6 @@ __metadata:
   version: 0.4.12
   resolution: "js-file-download@npm:0.4.12"
   checksum: a03847eef0184fbf34a7b7fd365ea6aa1a6cc142efeac52c4baa0cdde845dc93718eb66808dfcffd6c91b37ddc9d058d352ac9698b4280744bad3587240c93b6
-  languageName: node
-  linkType: hard
-
-"js-levenshtein@npm:^1.1.6":
-  version: 1.1.6
-  resolution: "js-levenshtein@npm:1.1.6"
-  checksum: 409f052a7f1141be4058d97da7860e08efd97fc588b7a4c5cfa0548bc04f6d576644dae65ab630266dff685d56fb90d494e03d4d79cb484c287746b4f1bf0694
   languageName: node
   linkType: hard
 
@@ -34857,40 +34773,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^1.0.0, msw@npm:^1.2.1, msw@npm:^1.3.0, msw@npm:^1.3.1":
-  version: 1.3.4
-  resolution: "msw@npm:1.3.4"
-  dependencies:
-    "@mswjs/cookies": ^0.2.2
-    "@mswjs/interceptors": ^0.17.10
-    "@open-draft/until": ^1.0.3
-    "@types/cookie": ^0.4.1
-    "@types/js-levenshtein": ^1.1.1
-    chalk: ^4.1.1
-    chokidar: ^3.4.2
-    cookie: ^0.4.2
-    graphql: ^16.8.1
-    headers-polyfill: 3.2.5
-    inquirer: ^8.2.0
-    is-node-process: ^1.2.0
-    js-levenshtein: ^1.1.6
-    node-fetch: ^2.6.7
-    outvariant: ^1.4.0
-    path-to-regexp: ^6.2.0
-    strict-event-emitter: ^0.4.3
-    type-fest: ^2.19.0
-    yargs: ^17.3.1
-  peerDependencies:
-    typescript: ">= 4.4.x"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  bin:
-    msw: cli/index.js
-  checksum: 57646ecb831e98f00387e60bad4d535e426d406ae2645340e59500c219059be225f1f02a5ff21aee9daeb7a8bdde922a00fb82930781d27e3f3fdaf6b292c25f
-  languageName: node
-  linkType: hard
-
 "msw@npm:^2.0.0, msw@npm:^2.0.8":
   version: 2.4.11
   resolution: "msw@npm:2.4.11"
@@ -36215,7 +36097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"outvariant@npm:^1.2.1, outvariant@npm:^1.4.0, outvariant@npm:^1.4.3":
+"outvariant@npm:^1.4.0, outvariant@npm:^1.4.3":
   version: 1.4.3
   resolution: "outvariant@npm:1.4.3"
   checksum: 4a3551fb2b45309e585eebf88bad094dbe56ac6d3a28d59dd2e4050b431aa2beb6097a0763fce3cd82ca0f077026f380a9b60fffc306aaf430141421e7a7b6ed
@@ -36881,7 +36763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.2.0, path-to-regexp@npm:^6.3.0":
+"path-to-regexp@npm:^6.3.0":
   version: 6.3.0
   resolution: "path-to-regexp@npm:6.3.0"
   checksum: eca78602e6434a1b6799d511d375ec044e8d7e28f5a48aa5c28d57d8152fb52f3fc62fb1cfc5dfa2198e1f041c2a82ed14043d75740a2fe60e91b5089a153250
@@ -40737,13 +40619,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-cookie-parser@npm:^2.4.6":
-  version: 2.6.0
-  resolution: "set-cookie-parser@npm:2.6.0"
-  checksum: bf11ebc594c53d84588f1b4c04f1b8ce14e0498b1c011b3d76b5c6d5aac481bbc3f7c5260ec4ce99bdc1d9aed19f9fc315e73166a36ca74d0f12349a73f6bdc9
-  languageName: node
-  linkType: hard
-
 "set-function-length@npm:^1.2.1":
   version: 1.2.2
   resolution: "set-function-length@npm:1.2.2"
@@ -41701,22 +41576,6 @@ __metadata:
     bare-events:
       optional: true
   checksum: 6bbb4c38c0ab6ddbe0857d55e72f71288f308f2a9f4413b7b07391cdf9f94232ffc2bbe40a1212d2e09634ecdbd5052b444c73cc8d67ae1c97e2b7e553dad559
-  languageName: node
-  linkType: hard
-
-"strict-event-emitter@npm:^0.2.4":
-  version: 0.2.8
-  resolution: "strict-event-emitter@npm:0.2.8"
-  dependencies:
-    events: ^3.3.0
-  checksum: 6ac06fe72a6ee6ae64d20f1dd42838ea67342f1b5f32b03b3050d73ee6ecee44b4d5c4ed2965a7154b47991e215f373d4e789e2b2be2769cd80e356126c2ca53
-  languageName: node
-  linkType: hard
-
-"strict-event-emitter@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "strict-event-emitter@npm:0.4.3"
-  checksum: ee335aba8a43bc6749d3337d78b9f6dbe8358d34b6eb38e7075dadf7f1cae621d96588663dda22dce17e6e7c7e281ddac79ca47421da8250bb4bf53b979508a5
   languageName: node
   linkType: hard
 
@@ -44522,19 +44381,6 @@ __metadata:
   dependencies:
     defaults: ^1.0.3
   checksum: 814e9d1ddcc9798f7377ffa448a5a3892232b9275ebb30a41b529607691c0491de47cba426e917a4d08ded3ee7e9ba2f3fe32e62ee3cd9c7d3bafb7754bd553c
-  languageName: node
-  linkType: hard
-
-"web-encoding@npm:^1.1.5":
-  version: 1.1.5
-  resolution: "web-encoding@npm:1.1.5"
-  dependencies:
-    "@zxing/text-encoding": 0.9.0
-    util: ^0.12.3
-  dependenciesMeta:
-    "@zxing/text-encoding":
-      optional: true
-  checksum: 2234a2b122f41006ce07859b3c0bf2e18f46144fda2907d5db0b571b76aa5c26977c646100ad9c00d2f8a4f6f2b848bc02147845d8c447ab365ec4eff376338d
   languageName: node
   linkType: hard
 
