@@ -28,7 +28,7 @@ import {
   createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import appPlugin from '@backstage/plugin-app';
 
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
@@ -92,7 +92,7 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      parameters: readAppExtensionsConfig(new MockConfigApi({})),
+      parameters: readAppExtensionsConfig(mockApis.config()),
       forbidden: new Set(['root']),
     }),
   );

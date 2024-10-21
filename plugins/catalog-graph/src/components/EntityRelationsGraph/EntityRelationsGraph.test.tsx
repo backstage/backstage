@@ -28,6 +28,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { FunctionComponent } from 'react';
 import { EntityRelationsGraph } from './EntityRelationsGraph';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 /*
   The tests in this file have been disabled for the following error:
@@ -142,19 +143,7 @@ describe.skip('<EntityRelationsGraph/>', () => {
       ],
     },
   };
-  const catalog = {
-    getEntities: jest.fn(),
-    getEntityByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    getLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalog = catalogApiMock.mock();
   const CUSTOM_TEST_ID = 'custom-test-id';
 
   beforeEach(() => {

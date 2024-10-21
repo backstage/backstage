@@ -1,5 +1,23 @@
 # @backstage/plugin-auth-backend-module-atlassian-provider
 
+## 0.3.1
+
+### Patch Changes
+
+- 217458a: Updated configuration schema to include the new `allowedDomains` option for the `emailLocalPartMatchingUserEntityName` sign-in resolver.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/backend-plugin-api@1.0.1
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- 217458a: Updated configuration schema to include the new `allowedDomains` option for the `emailLocalPartMatchingUserEntityName` sign-in resolver.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes

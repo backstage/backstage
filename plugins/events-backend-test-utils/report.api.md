@@ -60,27 +60,4 @@ export class TestEventSubscriber implements EventSubscriber {
   // (undocumented)
   readonly topics: string[];
 }
-
-// Warnings were encountered during analysis:
-//
-// src/testUtils/TestEventBroker.d.ts:6:1 - (ae-undocumented) Missing documentation for "TestEventBroker".
-// src/testUtils/TestEventBroker.d.ts:7:5 - (ae-undocumented) Missing documentation for "published".
-// src/testUtils/TestEventBroker.d.ts:8:5 - (ae-undocumented) Missing documentation for "subscribed".
-// src/testUtils/TestEventBroker.d.ts:9:5 - (ae-undocumented) Missing documentation for "publish".
-// src/testUtils/TestEventBroker.d.ts:10:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/testUtils/TestEventPublisher.d.ts:6:1 - (ae-undocumented) Missing documentation for "TestEventPublisher".
-// src/testUtils/TestEventPublisher.d.ts:8:5 - (ae-undocumented) Missing documentation for "setEventBroker".
-// src/testUtils/TestEventPublisher.d.ts:9:5 - (ae-undocumented) Missing documentation for "eventBroker".
-// src/testUtils/TestEventSubscriber.d.ts:6:1 - (ae-undocumented) Missing documentation for "TestEventSubscriber".
-// src/testUtils/TestEventSubscriber.d.ts:7:5 - (ae-undocumented) Missing documentation for "name".
-// src/testUtils/TestEventSubscriber.d.ts:8:5 - (ae-undocumented) Missing documentation for "topics".
-// src/testUtils/TestEventSubscriber.d.ts:9:5 - (ae-undocumented) Missing documentation for "receivedEvents".
-// src/testUtils/TestEventSubscriber.d.ts:11:5 - (ae-undocumented) Missing documentation for "supportsEventTopics".
-// src/testUtils/TestEventSubscriber.d.ts:12:5 - (ae-undocumented) Missing documentation for "onEvent".
-// src/testUtils/TestEventsService.d.ts:3:1 - (ae-undocumented) Missing documentation for "TestEventsService".
-// src/testUtils/TestEventsService.d.ts:5:5 - (ae-undocumented) Missing documentation for "publish".
-// src/testUtils/TestEventsService.d.ts:6:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/testUtils/TestEventsService.d.ts:7:5 - (ae-undocumented) Missing documentation for "published".
-// src/testUtils/TestEventsService.d.ts:8:5 - (ae-undocumented) Missing documentation for "subscribed".
-// src/testUtils/TestEventsService.d.ts:9:5 - (ae-undocumented) Missing documentation for "reset".
 ```

@@ -173,6 +173,7 @@ export type ScaffolderCustomFieldExplorerClassKey =
 // @public (undocumented)
 export type ScaffolderTemplateEditorClassKey =
   | 'root'
+  | 'toolbar'
   | 'browser'
   | 'editor'
   | 'preview'
@@ -181,6 +182,7 @@ export type ScaffolderTemplateEditorClassKey =
 // @public (undocumented)
 export type ScaffolderTemplateFormPreviewerClassKey =
   | 'root'
+  | 'toolbar'
   | 'controls'
   | 'textArea'
   | 'preview';
@@ -235,6 +237,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'actionsPage.content.tableCell.name': 'Name';
     readonly 'actionsPage.content.tableCell.title': 'Title';
     readonly 'actionsPage.content.tableCell.description': 'Description';
+    readonly 'actionsPage.content.searchFieldPlaceholder': 'Search for an action';
     readonly 'actionsPage.content.noRowsDescription': 'No schema defined';
     readonly 'actionsPage.title': 'Installed actions';
     readonly 'actionsPage.action.input': 'Input';
@@ -274,9 +277,13 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
     readonly 'templateTypePicker.title': 'Categories';
-    readonly 'templateFormPage.title': 'Template Form Playground';
-    readonly 'templateFormPage.subtitle': 'Edit, preview, and try out templates and template forms';
-    readonly 'templateEditorPage.title': 'Manage Templates';
+    readonly 'templateIntroPage.title': 'Manage Templates';
+    readonly 'templateIntroPage.subtitle': 'Edit, preview, and try out templates, forms, and custom fields';
+    readonly 'templateFormPage.title': 'Template Editor';
+    readonly 'templateFormPage.subtitle': 'Edit, preview, and try out templates forms';
+    readonly 'templateCustomFieldPage.title': 'Custom Field Explorer';
+    readonly 'templateCustomFieldPage.subtitle': 'Edit, preview, and try out custom fields';
+    readonly 'templateEditorPage.title': 'Template Editor';
     readonly 'templateEditorPage.subtitle': 'Edit, preview, and try out templates and template forms';
     readonly 'templateEditorPage.dryRunResults.title': 'Dry-run results';
     readonly 'templateEditorPage.dryRunResultsList.title': 'Result {{resultId}}';
@@ -302,12 +309,13 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorIntro.createLocal.title': 'Create New Template';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.description': 'Create a local template directory, allowing you to both edit and try executing your own template.';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
-    readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template playground';
+    readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template Form Playground';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.description': 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.description': 'View and play around with available installed custom field extensions.';
     readonly 'templateEditorPage.templateEditorTextArea.saveIconTooltip': 'Save file';
     readonly 'templateEditorPage.templateEditorTextArea.refreshIconTooltip': 'Reload file';
+    readonly 'templateEditorPage.templateEditorTextArea.emptyStateParagraph': 'Please select an action on the file menu.';
     readonly 'templateEditorPage.templateFormPreviewer.title': 'Load Existing Template';
     readonly 'templateListPage.title': 'Create a new component';
     readonly 'templateListPage.subtitle': 'Create new software components using standard templates in your organization';
@@ -321,6 +329,19 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
     readonly 'templateWizardPage.pageTitle': 'Create a new component';
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
+    readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
+    readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
+    readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
+    readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
+    readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
+    readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsListItems': 'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationUrl': 'https://backstage.io/docs/features/software-templates/adding-templates/';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationButton': 'Go to the documentation';
+    readonly 'templateEditorToolbarFileMenu.button': 'File';
+    readonly 'templateEditorToolbarFileMenu.options.openDirectory': 'Open template directory';
+    readonly 'templateEditorToolbarFileMenu.options.createDirectory': 'Create template directory';
+    readonly 'templateEditorToolbarFileMenu.options.closeEditor': 'Close template editor';
+    readonly 'templateEditorToolbarTemplatesMenu.button': 'Templates';
   }
 >;
 
@@ -357,16 +378,6 @@ export type TemplateWizardPageProps = {
     subtitle?: string;
   };
 };
-
-// Warnings were encountered during analysis:
-//
-// src/alpha/components/TemplateEditorPage/CustomFieldExplorer.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderCustomFieldExplorerClassKey".
-// src/alpha/components/TemplateEditorPage/TemplateEditor.d.ts:6:1 - (ae-undocumented) Missing documentation for "ScaffolderTemplateEditorClassKey".
-// src/alpha/components/TemplateEditorPage/TemplateFormPreviewer.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderTemplateFormPreviewerClassKey".
-// src/alpha/components/TemplateListPage/TemplateListPage.d.ts:7:1 - (ae-undocumented) Missing documentation for "TemplateListPageProps".
-// src/alpha/components/TemplateWizardPage/TemplateWizardPage.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateWizardPageProps".
-// src/alpha/plugin.d.ts:3:15 - (ae-undocumented) Missing documentation for "_default".
-// src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "scaffolderTranslationRef".
 
 // (No @packageDocumentation comment for this package)
 ```

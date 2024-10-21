@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
@@ -17,6 +18,10 @@ import { SearchEngine } from '@backstage/plugin-search-backend-node';
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
+// @public
+const _default: BackendFeature;
+export default _default;
+
 // @public @deprecated (undocumented)
 export type RouterOptions = {
   engine: SearchEngine;
@@ -28,9 +33,4 @@ export type RouterOptions = {
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/service/router.d.ts:11:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:25:1 - (ae-undocumented) Missing documentation for "createRouter".
 ```

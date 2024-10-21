@@ -36,7 +36,10 @@ export interface Config {
           resolvers: Array<
             | { resolver: 'emailMatchingUserEntityAnnotation' }
             | { resolver: 'idMatchingUserEntityAnnotation' }
-            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | {
+                resolver: 'emailLocalPartMatchingUserEntityName';
+                allowedDomains?: string[];
+              }
             | { resolver: 'emailMatchingUserEntityProfileEmail' }
           >;
         };

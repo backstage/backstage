@@ -71,12 +71,5 @@ export interface SearchResultListItemBlueprintParams {
   predicate?: SearchResultItemExtensionPredicate;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/blueprints/SearchResultListItemBlueprint.d.ts:3:1 - (ae-undocumented) Missing documentation for "SearchResultListItemBlueprintParams".
-// src/alpha/blueprints/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "BaseSearchResultListItemProps".
-// src/alpha/blueprints/types.d.ts:10:1 - (ae-undocumented) Missing documentation for "SearchResultItemExtensionComponent".
-// src/alpha/blueprints/types.d.ts:12:1 - (ae-undocumented) Missing documentation for "SearchResultItemExtensionPredicate".
-
 // (No @packageDocumentation comment for this package)
 ```

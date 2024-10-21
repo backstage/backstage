@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { ReactNode } from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
@@ -22,8 +23,8 @@ import {
   DefaultEntityFilters,
   EntityKindFilter,
   EntityListContextProps,
-  MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('CursorPaginatedCatalogTable', () => {
   const data = new Array(100).fill(0).map((_, index) => {

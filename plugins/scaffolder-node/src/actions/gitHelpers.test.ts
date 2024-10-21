@@ -32,6 +32,7 @@ jest.mock('../scm', () => ({
       init: jest.fn(),
       add: jest.fn(),
       checkout: jest.fn(),
+      branch: jest.fn(),
       commit: jest
         .fn()
         .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
@@ -444,7 +445,7 @@ describe('createBranch', () => {
     });
 
     it('create the branch', () => {
-      expect(mockedGit.checkout).toHaveBeenCalledWith({
+      expect(mockedGit.branch).toHaveBeenCalledWith({
         ref: 'trunk',
         dir: '/tmp/repo/dir/',
       });
@@ -460,7 +461,7 @@ describe('createBranch', () => {
       },
     });
 
-    expect(mockedGit.checkout).toHaveBeenCalledWith({
+    expect(mockedGit.branch).toHaveBeenCalledWith({
       ref: 'trunk',
       dir: '/tmp/repo/dir/',
     });

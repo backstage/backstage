@@ -25,6 +25,10 @@ import { isValidUrl } from '../../lib/urls';
 import chalk from 'chalk';
 
 export async function command(opts: OptionValues): Promise<void> {
+  const rspack = process.env.EXPERIMENTAL_RSPACK
+    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
+    : undefined;
+
   const role = await findRoleFromCommand(opts);
 
   if (role === 'frontend' || role === 'backend') {
@@ -40,6 +44,7 @@ export async function command(opts: OptionValues): Promise<void> {
         targetDir: paths.targetDir,
         configPaths,
         writeStats: Boolean(opts.stats),
+        rspack,
       });
     }
     return buildBackend({
@@ -62,6 +67,7 @@ export async function command(opts: OptionValues): Promise<void> {
       configPaths: [],
       writeStats: Boolean(opts.stats),
       isModuleFederationRemote: true,
+      rspack,
     });
   }
 

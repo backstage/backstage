@@ -407,6 +407,48 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(output.result).toBeUndefined();
     });
+    describe('should apply boolean step conditions', () => {
+      it('executes when true', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'conditional',
+              name: 'conditional',
+              action: 'output-action',
+              if: true,
+            },
+          ],
+          output: {
+            result: '${{ steps.conditional.output.mock }}',
+          },
+          parameters: {},
+        });
+
+        const { output } = await runner.execute(task);
+        expect(output.result).toBe('backstage');
+      });
+      it('skips when false', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'conditional',
+              name: 'conditional',
+              action: 'output-action',
+              if: false,
+            },
+          ],
+          output: {
+            result: '${{ steps.conditional.output.mock }}',
+          },
+          parameters: {},
+        });
+
+        const { output } = await runner.execute(task);
+        expect(output.result).toBeUndefined();
+      });
+    });
   });
 
   describe('templating', () => {

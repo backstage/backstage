@@ -155,16 +155,4 @@ export class ServiceUnavailableError extends CustomErrorBase {}
 
 // @public
 export function stringifyError(error: unknown): string;
-
-// Warnings were encountered during analysis:
-//
-// src/errors/ResponseError.d.ts:32:5 - (ae-undocumented) Missing documentation for "statusCode".
-// src/errors/ResponseError.d.ts:33:5 - (ae-undocumented) Missing documentation for "statusText".
-// src/errors/common.d.ts:8:5 - (ae-undocumented) Missing documentation for "name".
-// src/errors/common.d.ts:16:5 - (ae-undocumented) Missing documentation for "name".
-// src/errors/common.d.ts:24:5 - (ae-undocumented) Missing documentation for "name".
-// src/errors/common.d.ts:35:5 - (ae-undocumented) Missing documentation for "name".
-// src/errors/common.d.ts:44:5 - (ae-undocumented) Missing documentation for "name".
-// src/errors/common.d.ts:52:5 - (ae-undocumented) Missing documentation for "name".
-// src/errors/common.d.ts:60:5 - (ae-undocumented) Missing documentation for "name".
 ```

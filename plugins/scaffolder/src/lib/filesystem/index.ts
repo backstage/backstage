@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export type { TemplateFileAccess, TemplateDirectoryAccess } from './types';
 export { blobToBase64 } from './helpers';
-export { WebFileSystemAccess, WebFileSystemStore } from './WebFileSystemAccess';
+export { createExampleTemplate } from './createExampleTemplate';
+export type { TemplateFileAccess, TemplateDirectoryAccess } from './types';
+export { WebFileSystemStore } from './WebFileSystemStore';
+export { WebDirectoryAccess, WebFileSystemAccess } from './WebFileSystemAccess';

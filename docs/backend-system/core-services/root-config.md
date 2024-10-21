@@ -44,7 +44,7 @@ There's additional configuration that you can optionally pass to setup the `conf
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { rootConfigServiceFactory } from '@backstage/backend-app-api';
+import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
 
 const backend = createBackend();
 

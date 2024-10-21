@@ -20,6 +20,8 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
+export * from './module';
 export {
   decodeElasticSearchPageCursor,
   ElasticSearchSearchEngine,

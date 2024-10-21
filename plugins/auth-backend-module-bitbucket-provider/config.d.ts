@@ -29,7 +29,10 @@ export interface Config {
           signIn?: {
             resolvers: Array<
               | { resolver: 'userIdMatchingUserEntityAnnotation' }
-              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | {
+                  resolver: 'emailLocalPartMatchingUserEntityName';
+                  allowedDomains?: string[];
+                }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };

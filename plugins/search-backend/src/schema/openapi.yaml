@@ -140,7 +140,6 @@ paths:
           in: query
           required: false
           style: deepObject
-          explode: true
           allowReserved: true
           schema:
             # JsonObject is used here instead of the full ZOD schema definition as
@@ -167,3 +166,13 @@ paths:
           allowReserved: true
           schema:
             type: integer
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: true

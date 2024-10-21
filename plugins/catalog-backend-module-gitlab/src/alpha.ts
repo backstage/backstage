@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { catalogModuleGitlabDiscoveryEntityProvider as default } from './module/catalogModuleGitlabDiscoveryEntityProvider';
+import { catalogModuleGitlabDiscoveryEntityProvider } from './module/catalogModuleGitlabDiscoveryEntityProvider';
+
+/** @alpha */
+const _feature = catalogModuleGitlabDiscoveryEntityProvider;
+export default _feature;

@@ -27,9 +27,4 @@ export namespace gitlabSignInResolvers {
     unknown
   >;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:3:22 - (ae-undocumented) Missing documentation for "gitlabAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleGitlabProvider".
 ```

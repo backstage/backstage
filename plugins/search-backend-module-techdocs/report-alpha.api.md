@@ -4,26 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
-
-// @alpha
-const _default: BackendFeature;
-export default _default;
 
 // @alpha (undocumented)
-export interface TechDocsCollatorEntityTransformerExtensionPoint {
-  // (undocumented)
-  setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
-}
-
-// @alpha
-export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>;
-
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:3:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformerExtensionPoint".
-// src/alpha.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTransformer".
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

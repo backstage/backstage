@@ -24,9 +24,12 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
-import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  MkSearchIndexDoc,
+  TechDocsCollatorDocumentTransformer,
+} from './TechDocsCollatorDocumentTransformer';
 
 const logger = mockServices.logger.mock();
 
@@ -254,11 +257,11 @@ describe('DefaultTechDocsCollatorFactory', () => {
     });
 
     it('should transform the entity using the entityTransformer function', async () => {
+      // @ts-ignore
       const entityTransformer: TechDocsCollatorEntityTransformer = (
         entity: Entity,
       ) => {
         return {
-          ...defaultTechDocsCollatorEntityTransformer(entity),
           tags: entity.metadata.tags,
         };
       };
@@ -286,6 +289,43 @@ describe('DefaultTechDocsCollatorFactory', () => {
           kind: entity.kind.toLocaleLowerCase('en-US'),
           name: entity.metadata.name,
           tags: entity.metadata.tags,
+        });
+      });
+    });
+
+    it('should transform the doc using the documentTransformer function', async () => {
+      // @ts-ignore
+      const documentTransformer: TechDocsCollatorDocumentTransformer = (
+        _: MkSearchIndexDoc,
+      ) => {
+        return {
+          tags: ['static-tag'],
+        };
+      };
+
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        documentTransformer,
+      });
+
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      const entity = expectedEntities[0];
+      documents.forEach((document, idx) => {
+        expect(document).toMatchObject({
+          title: mockSearchDocIndex.docs[idx].title,
+          location: `/docs/default/component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
+          text: mockSearchDocIndex.docs[idx].text,
+          namespace: 'default',
+          entityTitle: entity!.metadata.title,
+          componentType: entity!.spec!.type,
+          lifecycle: entity!.spec!.lifecycle,
+          owner: '',
+          kind: entity.kind.toLocaleLowerCase('en-US'),
+          name: entity.metadata.name,
+          tags: ['static-tag'],
         });
       });
     });

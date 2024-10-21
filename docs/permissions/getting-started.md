@@ -34,7 +34,7 @@ To help validate the permission framework is setup we'll create a Test Permissio
 
    ```ts title="packages/backend/src/index.ts"
    // permission plugin
-   backend.add(import('@backstage/plugin-permission-backend/alpha'));
+   backend.add(import('@backstage/plugin-permission-backend'));
    /* highlight-remove-start */
    backend.add(
      import('@backstage/plugin-permission-backend-module-allow-all-policy'),
@@ -85,7 +85,7 @@ To help validate the permission framework is setup we'll create a Test Permissio
 
    ```ts title="packages/backend/src/index.ts"
    // permission plugin
-   backend.add(import('@backstage/plugin-permission-backend/alpha'));
+   backend.add(import('@backstage/plugin-permission-backend'));
    /* highlight-add-next-line */
    backend.add(import('./extensions/permissionsPolicyExtension'));
    ```

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings",
-  "version": "0.8.14-next.1",
+  "version": "0.8.14",
   "description": "A Backstage plugin that provides a settings page",
   "backstage": {
     "role": "frontend-plugin",
@@ -55,6 +55,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",

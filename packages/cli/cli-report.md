@@ -34,7 +34,7 @@ Commands:
 Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
 
 Options:
-  --alwaysYarnPack
+  --alwaysPack
   -h, --help
 ```
 
@@ -237,6 +237,7 @@ Usage: backstage-cli package lint [options] [directories...]
 Options:
   --format <format>
   --fix
+  --max-warnings <number>
   -h, --help
 ```
 
@@ -445,6 +446,8 @@ Usage: backstage-cli repo lint [options]
 Options:
   --format <format>
   --since <ref>
+  --successCache
+  --successCacheDir <path>
   --fix
   -h, --help
 ```
@@ -466,6 +469,8 @@ Usage: backstage-cli repo test [options]
 
 Options:
   --since <ref>
+  --successCache
+  --successCacheDir <path>
   --jest-help
   -h, --help
 ```

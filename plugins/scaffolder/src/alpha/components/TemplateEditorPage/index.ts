@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export { TemplatePage } from './TemplatePage';
-export { TemplateFormPage } from './TemplateFormPage';
 export { TemplateEditorPage } from './TemplateEditorPage';
+export { TemplateFormPage } from './TemplateFormPage';
+export { TemplateIntroPage } from './TemplateIntroPage';
 export { CustomFieldsPage } from './CustomFieldsPage';
 export type { ScaffolderCustomFieldExplorerClassKey } from './CustomFieldExplorer';
 export type { ScaffolderTemplateEditorClassKey } from './TemplateEditor';

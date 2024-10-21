@@ -176,29 +176,5 @@ export function useNotificationsApi<T>(
       value: T;
     };
 
-// Warnings were encountered during analysis:
-//
-// src/api/NotificationsApi.d.ts:3:22 - (ae-undocumented) Missing documentation for "notificationsApiRef".
-// src/api/NotificationsApi.d.ts:5:1 - (ae-undocumented) Missing documentation for "GetNotificationsOptions".
-// src/api/NotificationsApi.d.ts:17:1 - (ae-undocumented) Missing documentation for "UpdateNotificationsOptions".
-// src/api/NotificationsApi.d.ts:23:1 - (ae-undocumented) Missing documentation for "GetNotificationsResponse".
-// src/api/NotificationsApi.d.ts:28:1 - (ae-undocumented) Missing documentation for "NotificationsApi".
-// src/api/NotificationsApi.d.ts:29:5 - (ae-undocumented) Missing documentation for "getNotifications".
-// src/api/NotificationsApi.d.ts:30:5 - (ae-undocumented) Missing documentation for "getNotification".
-// src/api/NotificationsApi.d.ts:31:5 - (ae-undocumented) Missing documentation for "getStatus".
-// src/api/NotificationsApi.d.ts:32:5 - (ae-undocumented) Missing documentation for "updateNotifications".
-// src/api/NotificationsClient.d.ts:5:1 - (ae-undocumented) Missing documentation for "NotificationsClient".
-// src/api/NotificationsClient.d.ts:12:5 - (ae-undocumented) Missing documentation for "getNotifications".
-// src/api/NotificationsClient.d.ts:13:5 - (ae-undocumented) Missing documentation for "getNotification".
-// src/api/NotificationsClient.d.ts:14:5 - (ae-undocumented) Missing documentation for "getStatus".
-// src/api/NotificationsClient.d.ts:15:5 - (ae-undocumented) Missing documentation for "updateNotifications".
-// src/components/NotificationsPage/NotificationsPage.d.ts:3:1 - (ae-undocumented) Missing documentation for "NotificationsPageProps".
-// src/components/NotificationsSideBarItem/NotificationsSideBarItem.d.ts:12:22 - (ae-undocumented) Missing documentation for "NotificationsSidebarItem".
-// src/components/NotificationsTable/NotificationsTable.d.ts:5:1 - (ae-undocumented) Missing documentation for "NotificationsTableProps".
-// src/components/NotificationsTable/NotificationsTable.d.ts:15:22 - (ae-undocumented) Missing documentation for "NotificationsTable".
-// src/hooks/useNotificationsApi.d.ts:3:1 - (ae-undocumented) Missing documentation for "useNotificationsApi".
-// src/plugin.d.ts:3:22 - (ae-undocumented) Missing documentation for "notificationsPlugin".
-// src/plugin.d.ts:7:22 - (ae-undocumented) Missing documentation for "NotificationsPage".
-
 // (No @packageDocumentation comment for this package)
 ```

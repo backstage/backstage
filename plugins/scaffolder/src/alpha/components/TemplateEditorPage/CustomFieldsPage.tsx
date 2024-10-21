@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
 import { Page, Header, Content } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -32,25 +31,19 @@ interface CustomFieldsPageProps {
 }
 
 export function CustomFieldsPage(props: CustomFieldsPageProps) {
-  const navigate = useNavigate();
   const editLink = useRouteRef(editRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
-
-  const handleClose = useCallback(() => {
-    navigate(editLink());
-  }, [navigate, editLink]);
 
   return (
     <Page themeId="home">
       <Header
-        title={t('templateEditorPage.title')}
-        subtitle={t('templateEditorPage.subtitle')}
+        title={t('templateCustomFieldPage.title')}
+        subtitle={t('templateCustomFieldPage.subtitle')}
+        type={t('templateIntroPage.title')}
+        typeLink={editLink()}
       />
       <Content>
-        <CustomFieldExplorer
-          customFieldExtensions={props.fieldExtensions}
-          onClose={handleClose}
-        />
+        <CustomFieldExplorer customFieldExtensions={props.fieldExtensions} />
       </Content>
     </Page>
   );

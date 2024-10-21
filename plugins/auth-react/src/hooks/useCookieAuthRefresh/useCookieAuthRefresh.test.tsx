@@ -17,15 +17,11 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { fetchApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { useCookieAuthRefresh } from './useCookieAuthRefresh';
 
 describe('useCookieAuthRefresh', () => {
-  const discoveryApiMock = {
-    getBaseUrl: jest
-      .fn()
-      .mockResolvedValue('http://localhost:7000/api/techdocs'),
-  };
+  const discoveryApiMock = mockApis.discovery();
 
   const now = 1710316886171;
   const tenMinutesInMilliseconds = 10 * 60 * 1000;
@@ -269,7 +265,7 @@ describe('useCookieAuthRefresh', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7000/api/techdocs/.backstage/auth/v1/cookie',
+        'http://example.com/api/techdocs/.backstage/auth/v1/cookie',
         { credentials: 'include' },
       ),
     );

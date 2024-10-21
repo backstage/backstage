@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
-  "version": "0.12.5-next.1",
+  "version": "0.12.5",
   "description": "A Backstage plugin the helps you import entities into your catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -70,7 +70,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
-    "git-url-parse": "^14.0.0",
+    "git-url-parse": "^15.0.0",
     "js-base64": "^3.6.0",
     "lodash": "^4.17.21",
     "react-hook-form": "^7.12.2",

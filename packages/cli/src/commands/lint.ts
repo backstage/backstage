@@ -29,6 +29,13 @@ export default async (directories: string[], opts: OptionValues) => {
     directories.length ? directories : ['.'],
   );
 
+  const maxWarnings = opts.maxWarnings ?? 0;
+
+  const failed =
+    results.some(r => r.errorCount > 0) ||
+    results.reduce((current, next) => current + next.warningCount, 0) >
+      maxWarnings;
+
   if (opts.fix) {
     await ESLint.outputFixes(results);
   }
@@ -39,12 +46,14 @@ export default async (directories: string[], opts: OptionValues) => {
   if (opts.format === 'eslint-formatter-friendly') {
     process.chdir(paths.targetRoot);
   }
+
   const resultText = formatter.format(results);
 
-  // If there is any feedback at all, we treat it as a lint failure. This should be
-  // consistent with our old behavior of passing `--max-warnings=0` when invoking eslint.
   if (resultText) {
     console.log(resultText);
+  }
+
+  if (failed) {
     process.exit(1);
   }
 };

@@ -22,7 +22,6 @@ import {
   LifecycleServiceStartupOptions,
   LoggerService,
   PluginMetadataService,
-  RootLifecycleService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
@@ -31,14 +30,18 @@ import {
 export class BackendPluginLifecycleImpl implements LifecycleService {
   constructor(
     private readonly logger: LoggerService,
-    private readonly rootLifecycle: RootLifecycleService,
     private readonly pluginMetadata: PluginMetadataService,
   ) {}
 
   #hasStarted = false;
+  #hasShutdown = false;
   #startupTasks: Array<{
     hook: LifecycleServiceStartupHook;
     options?: LifecycleServiceStartupOptions;
+  }> = [];
+  #shutdownTasks: Array<{
+    hook: LifecycleServiceShutdownHook;
+    options?: LifecycleServiceShutdownOptions;
   }> = [];
 
   addStartupHook(
@@ -77,10 +80,41 @@ export class BackendPluginLifecycleImpl implements LifecycleService {
     hook: LifecycleServiceShutdownHook,
     options?: LifecycleServiceShutdownOptions,
   ): void {
+    if (this.#hasShutdown) {
+      throw new Error('Attempted to add shutdown hook after shutdown');
+    }
     const plugin = this.pluginMetadata.getId();
-    this.rootLifecycle.addShutdownHook(hook, {
-      logger: options?.logger?.child({ plugin }) ?? this.logger,
+    const logger = options?.logger?.child({ plugin }) ?? this.logger;
+    this.#shutdownTasks.push({
+      hook,
+      options: {
+        ...options,
+        logger,
+      },
     });
+  }
+
+  async shutdown(): Promise<void> {
+    if (this.#hasShutdown) {
+      return;
+    }
+    this.#hasShutdown = true;
+
+    this.logger.debug(
+      `Running ${this.#shutdownTasks.length} plugin shutdown tasks...`,
+    );
+
+    await Promise.all(
+      this.#shutdownTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
+        try {
+          await hook();
+          logger.debug(`Plugin shutdown hook succeeded`);
+        } catch (error) {
+          logger.error('Plugin shutdown hook failed', error);
+        }
+      }),
+    );
   }
 }
 
@@ -97,14 +131,9 @@ export const lifecycleServiceFactory = createServiceFactory({
   service: coreServices.lifecycle,
   deps: {
     logger: coreServices.logger,
-    rootLifecycle: coreServices.rootLifecycle,
     pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ rootLifecycle, logger, pluginMetadata }) {
-    return new BackendPluginLifecycleImpl(
-      logger,
-      rootLifecycle,
-      pluginMetadata,
-    );
+  async factory({ logger, pluginMetadata }) {
+    return new BackendPluginLifecycleImpl(logger, pluginMetadata);
   },
 });

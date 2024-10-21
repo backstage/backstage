@@ -50,6 +50,41 @@ export function createGithubAutolinksAction(options: {
 >;
 
 // @public
+export function createGithubBranchProtectionAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    branch?: string | undefined;
+    enforceAdmins?: boolean | undefined;
+    requiredApprovingReviewCount?: number | undefined;
+    requireCodeOwnerReviews?: boolean | undefined;
+    dismissStaleReviews?: boolean | undefined;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredStatusCheckContexts?: string[] | undefined;
+    requireBranchesToBeUpToDate?: boolean | undefined;
+    requiredConversationResolution?: boolean | undefined;
+    requireLastPushApproval?: boolean | undefined;
+    requiredCommitSigning?: boolean | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createGithubDeployKeyAction(options: {
   integrations: ScmIntegrationRegistry;
 }): TemplateAction<

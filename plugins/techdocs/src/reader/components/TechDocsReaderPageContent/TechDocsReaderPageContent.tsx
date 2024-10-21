@@ -26,13 +26,16 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { Content, ErrorPage } from '@backstage/core-components';
+import { Content, ErrorPage, Progress } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
 import { useTechDocsReaderDom } from './dom';
-import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
+import {
+  useTechDocsReader,
+  withTechDocsReaderProvider,
+} from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
 
 const useStyles = makeStyles({
@@ -81,6 +84,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       entityRef,
       setShadowRoot,
     } = useTechDocsReaderPage();
+    const { state } = useTechDocsReader();
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
     const hash = window.location.hash;
@@ -143,6 +147,8 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
           )}
           <Grid xs={12} item>
             {/* Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times */}
+            {(state === 'CHECKING' || isStyleLoading) && <Progress />}
+
             <TechDocsShadowDom element={dom} onAppend={handleAppend}>
               <TechDocsReaderPageContentAddons />
             </TechDocsShadowDom>

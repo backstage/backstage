@@ -31,6 +31,11 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
+import { useSearchParams } from 'react-router-dom';
+import { useMountEffect } from '@react-hookz/web';
+import { ForwardedError } from '@backstage/errors';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -87,6 +92,19 @@ export const useSignInProviders = (
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
   const [loading, setLoading] = useState(true);
+
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  // User was redirected back to sign in page with error from auth redirect flow
+  const [searchParams, _setSearchParams] = useSearchParams();
+
+  useMountEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      errorApi.post(
+        new ForwardedError(t('signIn.loginFailed'), new Error(errorParam)),
+      );
+    }
+  });
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(

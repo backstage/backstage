@@ -22,16 +22,33 @@ import {
 } from '@backstage/core-plugin-api';
 import { useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { UserEntity } from '@backstage/catalog-model';
 
 /** @public */
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);
+  const catalogApi = useApi(catalogApiRef);
 
   const { value, loading, error } = useAsync(async () => {
+    let identityProfile = await identityApi.getProfileInfo();
+    const backStageIdentity = await identityApi.getBackstageIdentity();
+    const catalogProfile = (await catalogApi.getEntityByRef(
+      backStageIdentity.userEntityRef,
+    )) as unknown as UserEntity;
+    if (
+      identityProfile.picture === undefined &&
+      catalogProfile?.spec?.profile?.picture
+    ) {
+      identityProfile = {
+        ...identityProfile,
+        picture: catalogProfile.spec.profile.picture,
+      };
+    }
     return {
-      profile: await identityApi.getProfileInfo(),
-      identity: await identityApi.getBackstageIdentity(),
+      profile: identityProfile,
+      identity: backStageIdentity,
     };
   }, []);
 

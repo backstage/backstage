@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { mockApis } from '@backstage/test-utils';
 import { PluginProtocolResolverFetchMiddleware } from './PluginProtocolResolverFetchMiddleware';
 
 describe('PluginProtocolResolverFetchMiddleware', () => {
   it.each([['https://passthrough.com/a']])(
     'passes through regular URLs, %p',
     async url => {
-      const resolve = jest.fn();
-      const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+      const discoveryApi = mockApis.discovery.mock();
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );
@@ -31,7 +30,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
 
       await outer(url);
       expect(inner.mock.calls[0][0]).toBe(url);
-      expect(resolve).not.toHaveBeenCalled();
+      expect(discoveryApi.getBaseUrl).not.toHaveBeenCalled();
     },
   );
 
@@ -76,29 +75,28 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
   ])(
     'resolves backstage URLs, %p',
     async (original, host, resolved, result) => {
-      const resolve = jest.fn();
-      const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+      const discoveryApi = mockApis.discovery.mock({
+        getBaseUrl: async () => resolved,
+      });
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );
       const inner = jest.fn();
       const outer = middleware.apply(inner);
 
-      resolve.mockResolvedValueOnce(resolved);
       await outer(original);
       expect(inner.mock.calls[0][0]).toBe(result);
-      expect(resolve).toHaveBeenLastCalledWith(host);
+      expect(discoveryApi.getBaseUrl).toHaveBeenLastCalledWith(host);
     },
   );
 
   it('properly supports transferring request bodies too', async () => {
-    const resolve = jest.fn();
-    const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+    const discoveryApi = mockApis.discovery.mock({
+      getBaseUrl: async () => 'https://elsewhere.com',
+    });
     const middleware = new PluginProtocolResolverFetchMiddleware(discoveryApi);
     const inner = jest.fn();
     const outer = middleware.apply(inner);
-
-    resolve.mockResolvedValue('https://elsewhere.com');
 
     await outer('plugin://a', {
       method: 'POST',

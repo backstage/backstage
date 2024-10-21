@@ -36,15 +36,5 @@ export const SignalsDisplay: () => null;
 // @public (undocumented)
 export const signalsPlugin: BackstagePlugin<{}, {}>;
 
-// Warnings were encountered during analysis:
-//
-// src/api/SignalClient.d.ts:5:1 - (ae-undocumented) Missing documentation for "SignalClient".
-// src/api/SignalClient.d.ts:10:5 - (ae-undocumented) Missing documentation for "DEFAULT_CONNECT_TIMEOUT_MS".
-// src/api/SignalClient.d.ts:11:5 - (ae-undocumented) Missing documentation for "DEFAULT_RECONNECT_TIMEOUT_MS".
-// src/api/SignalClient.d.ts:16:5 - (ae-undocumented) Missing documentation for "create".
-// src/api/SignalClient.d.ts:23:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/plugin.d.ts:2:22 - (ae-undocumented) Missing documentation for "signalsPlugin".
-// src/plugin.d.ts:4:22 - (ae-undocumented) Missing documentation for "SignalsDisplay".
-
 // (No @packageDocumentation comment for this package)
 ```

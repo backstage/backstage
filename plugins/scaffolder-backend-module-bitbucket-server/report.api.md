@@ -44,6 +44,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     description?: string | undefined;
     targetBranch?: string | undefined;
     sourceBranch: string;
+    reviewers?: string[] | undefined;
     token?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;

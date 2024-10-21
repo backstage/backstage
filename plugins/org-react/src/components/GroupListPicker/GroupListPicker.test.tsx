@@ -19,10 +19,10 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApiProvider } from '@backstage/core-app-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { CatalogApi } from '@backstage/catalog-client';
 import { GroupListPicker } from '../GroupListPicker';
 import { GroupEntity } from '@backstage/catalog-model';
 import { TestApiRegistry } from '@backstage/test-utils';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockGroups: GroupEntity[] = [
   {
@@ -57,9 +57,9 @@ const mockGroups: GroupEntity[] = [
   },
 ];
 
-const mockCatalogApi = {
-  getEntities: () => Promise.resolve({ items: mockGroups }),
-} as Partial<CatalogApi>;
+const mockCatalogApi = catalogApiMock.mock({
+  getEntities: jest.fn(() => Promise.resolve({ items: mockGroups })),
+});
 
 const apis = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
 

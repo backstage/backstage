@@ -14,58 +14,46 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
-  ConfigApi,
-  configApiRef,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
-import {
-  CatalogApi,
+  MockStarredEntitiesApi,
   catalogApiRef,
   starredEntitiesApiRef,
-  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockStorageApi,
-  renderInTestApp,
   TestApiRegistry,
+  mockApis,
+  renderInTestApp,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
 import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
-const mockCatalogApi: Partial<CatalogApi> = {
-  getEntityFacets: async () => ({ facets: { 'relations.ownedBy': [] } }),
-  getEntitiesByRefs: () => Promise.resolve({ items: [] }),
-  getEntities: async () => ({
-    items: [
-      {
-        apiVersion: 'version',
-        kind: 'User',
-        metadata: {
-          name: 'owned',
-          namespace: 'default',
-        },
+const mockCatalogApi = catalogApiMock({
+  entities: [
+    {
+      apiVersion: 'version',
+      kind: 'User',
+      metadata: {
+        name: 'owned',
+        namespace: 'default',
       },
-    ],
-  }),
-};
+    },
+  ],
+});
 
 describe('TechDocs Home', () => {
-  const configApi: ConfigApi = new ConfigReader({
-    organization: {
-      name: 'My Company',
-    },
+  const configApi = mockApis.config({
+    data: { organization: { name: 'My Company' } },
   });
-
-  const storageApi = MockStorageApi.create();
 
   const apiRegistry = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
-    [storageApiRef, storageApi],
+    [storageApiRef, mockApis.storage()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
   );
 

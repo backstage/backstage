@@ -40,9 +40,7 @@ auth:
         issuer: https://<company>.onelogin.com/oidc/2
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # See https://backstage.io/docs/auth/onelogin/provider#resolvers for more resolvers
             - resolver: usernameMatchingUserEntityName
 ```
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   EntityRefPresentation,
   EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
 import { DefaultEntityPresentationApi } from './DefaultEntityPresentationApi';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('DefaultEntityPresentationApi', () => {
   it('works in local mode', async () => {
@@ -99,12 +99,8 @@ describe('DefaultEntityPresentationApi', () => {
   });
 
   it('works in catalog mode', async () => {
-    const catalogApi = {
-      getEntitiesByRefs: jest.fn(),
-    };
-    const api = DefaultEntityPresentationApi.create({
-      catalogApi: catalogApi as Partial<CatalogApi> as any,
-    });
+    const catalogApi = catalogApiMock.mock();
+    const api = DefaultEntityPresentationApi.create({ catalogApi });
 
     catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
       items: [

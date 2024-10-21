@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { ReactNode } from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { CatalogTableRow } from './types';
@@ -20,8 +21,8 @@ import { renderInTestApp } from '@backstage/test-utils';
 import {
   DefaultEntityFilters,
   EntityListContextProps,
-  MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
 
 describe('OffsetPaginatedCatalogTable', () => {

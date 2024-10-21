@@ -24,7 +24,7 @@ import { capitalize } from 'lodash';
 import { default as React } from 'react';
 import { catalogApiRef } from '../../api';
 import { EntityKindFilter } from '../../filters';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityKindPicker } from './EntityKindPicker';
 
 const entities: Entity[] = [

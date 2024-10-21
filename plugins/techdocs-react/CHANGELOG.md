@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.9
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+
+## 1.2.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+
 ## 1.2.9-next.1
 
 ### Patch Changes

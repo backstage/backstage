@@ -29,6 +29,7 @@ import {
   entityRouteRef,
   catalogApiRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
@@ -74,9 +75,7 @@ const entities = [
   },
 ];
 
-const mockCatalogApi = {
-  getEntities: async () => ({ items: entities }),
-};
+const catalogApi = catalogApiMock({ entities });
 
 const starredEntitiesApi = new MockStarredEntitiesApi();
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
@@ -92,7 +91,7 @@ export default {
         <>
           <TestApiProvider
             apis={[
-              [catalogApiRef, mockCatalogApi],
+              [catalogApiRef, catalogApi],
               [starredEntitiesApiRef, starredEntitiesApi],
               [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],
               [

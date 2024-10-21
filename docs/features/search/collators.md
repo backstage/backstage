@@ -24,10 +24,10 @@ const backend = createBackend();
 // Other plugins...
 
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 /* highlight-add-end */
 
 backend.start();
@@ -68,10 +68,10 @@ const backend = createBackend();
 // Other plugins...
 
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 /* highlight-add-end */
 
 backend.start();

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { act, render, waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import {
@@ -41,10 +41,12 @@ jest.mock('@backstage/plugin-search-react', () => ({
 }));
 
 describe('SearchType.Accordion', () => {
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pagelimit: 10,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pagelimit: 10,
+        },
       },
     },
   });
@@ -138,18 +140,6 @@ describe('SearchType.Accordion', () => {
     await user.click(getByText(expectedType.name));
 
     expect(setPageCursorMock).toHaveBeenCalledWith(undefined);
-  });
-
-  it('should collapse when a new type is selected', async () => {
-    const { getByText, queryByText } = render(
-      <Wrapper>
-        <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-      </Wrapper>,
-    );
-
-    await user.click(getByText(expectedType.name));
-
-    expect(queryByText('Collapse')).not.toBeInTheDocument();
   });
 
   it('should show result counts if enabled', async () => {

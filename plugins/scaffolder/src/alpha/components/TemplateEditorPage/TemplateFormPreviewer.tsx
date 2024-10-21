@@ -14,35 +14,40 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import yaml from 'yaml';
+import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAsync from 'react-use/esm/useAsync';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Paper from '@material-ui/core/Paper';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import React, { useCallback, useState } from 'react';
-import useAsync from 'react-use/esm/useAsync';
-import yaml from 'yaml';
 import {
   LayoutOptions,
   FieldExtensionOptions,
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
+
+import { editRouteRef } from '../../../routes';
+
+import {
+  TemplateEditorLayout,
+  TemplateEditorLayoutToolbar,
+  TemplateEditorLayoutFiles,
+  TemplateEditorLayoutPreview,
+} from './TemplateEditorLayout';
 import { TemplateEditorToolbar } from './TemplateEditorToolbar';
+import { TemplateEditorToolbarFileMenu } from './TemplateEditorToolbarFileMenu';
+import {
+  TemplateOption,
+  TemplateEditorToolbarTemplatesMenu,
+} from './TemplateEditorToolbarTemplatesMenu';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { scaffolderTranslationRef } from '../../../translation';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -83,14 +88,10 @@ steps:
         name: \${{parameters.name}}
 `;
 
-type TemplateOption = {
-  label: string;
-  value: Entity;
-};
-
 /** @public */
 export type ScaffolderTemplateFormPreviewerClassKey =
   | 'root'
+  | 'toolbar'
   | 'controls'
   | 'textArea'
   | 'preview';
@@ -102,36 +103,21 @@ const useStyles = makeStyles(
       gridArea: 'pageContent',
       display: 'grid',
       gridTemplateAreas: `
+      "toolbar"
+      "textArea"
+      "preview"
+    `,
+      [theme.breakpoints.up('md')]: {
+        gridTemplateAreas: `
       "toolbar toolbar"
       "textArea preview"
     `,
-      gridTemplateRows: 'auto 1fr',
-      gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'auto 1fr',
+        gridTemplateColumns: '1fr 1fr',
+      },
     },
-    toolbar: {
-      gridArea: 'toolbar',
-    },
-    textArea: {
+    files: {
       gridArea: 'textArea',
-      height: '100%',
-    },
-    preview: {
-      gridArea: 'preview',
-      position: 'relative',
-      borderLeft: `1px solid ${theme.palette.divider}`,
-      backgroundColor: theme.palette.background.default,
-    },
-    scroll: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      padding: theme.spacing(1),
-    },
-    formControl: {
-      minWidth: 120,
-      maxWidth: 300,
     },
   }),
   { name: 'ScaffolderTemplateFormPreviewer' },
@@ -140,7 +126,6 @@ const useStyles = makeStyles(
 export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
   customFieldExtensions = [],
-  onClose,
   layouts = [],
   formProps,
 }: {
@@ -151,16 +136,21 @@ export const TemplateFormPreviewer = ({
   formProps?: FormProps;
 }) => {
   const classes = useStyles();
-  const { t } = useTranslationRef(scaffolderTranslationRef);
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const navigate = useNavigate();
+  const editLink = useRouteRef(editRouteRef);
+
   const [errorText, setErrorText] = useState<string>();
-  const [selectedTemplate, setSelectedTemplate] =
-    useState<TemplateOption | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateOption>();
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
 
-  const { loading } = useAsync(
+  const handleCloseDirectory = useCallback(() => {
+    navigate(editLink());
+  }, [navigate, editLink]);
+
+  useAsync(
     () =>
       catalogApi
         .getEntities({
@@ -196,76 +186,44 @@ export const TemplateFormPreviewer = ({
 
   const handleSelectChange = useCallback(
     // TODO(Rugvip): Afaik this should be Entity, but didn't want to make runtime changes while fixing types
-    (selected: any) => {
+    (selected: TemplateOption) => {
       setSelectedTemplate(selected);
-      setTemplateYaml(yaml.stringify(selected.spec));
+      setTemplateYaml(yaml.stringify(selected.value.spec));
     },
-    [setTemplateYaml],
+    [setSelectedTemplate, setTemplateYaml],
   );
 
   return (
-    <>
-      {loading && <LinearProgress />}
-      <Paper
-        className={classes.root}
-        component="main"
-        variant="outlined"
-        square
-      >
-        <div className={classes.toolbar}>
-          <TemplateEditorToolbar fieldExtensions={customFieldExtensions}>
-            <Tooltip title="Close editor">
-              <IconButton onClick={onClose}>
-                <CloseIcon />
-              </IconButton>
-            </Tooltip>
-            <FormControl className={classes.formControl}>
-              <Select
-                displayEmpty
-                value={selectedTemplate}
-                onChange={e => handleSelectChange(e.target.value)}
-                input={<Input />}
-                renderValue={selected => {
-                  if (!selected) {
-                    return t('templateEditorPage.templateFormPreviewer.title');
-                  }
-                  return (selected as Entity).metadata.title;
-                }}
-                inputProps={{
-                  'aria-label': t(
-                    'templateEditorPage.templateFormPreviewer.title',
-                  ),
-                }}
-              >
-                {templateOptions.map((option, index) => (
-                  <MenuItem key={index} value={option.value as any}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </TemplateEditorToolbar>
-        </div>
-        <div className={classes.textArea}>
-          <TemplateEditorTextArea
-            content={templateYaml}
-            onUpdate={setTemplateYaml}
-            errorText={errorText}
+    <TemplateEditorLayout classes={{ root: classes.root }}>
+      <TemplateEditorLayoutToolbar>
+        <TemplateEditorToolbar fieldExtensions={customFieldExtensions}>
+          <TemplateEditorToolbarFileMenu
+            onCloseDirectory={handleCloseDirectory}
           />
-        </div>
-        <div className={classes.preview}>
-          <div className={classes.scroll}>
-            <TemplateEditorForm
-              content={templateYaml}
-              contentIsSpec
-              fieldExtensions={customFieldExtensions}
-              setErrorText={setErrorText}
-              layouts={layouts}
-              formProps={formProps}
-            />
-          </div>
-        </div>
-      </Paper>
-    </>
+          <TemplateEditorToolbarTemplatesMenu
+            options={templateOptions}
+            selectedOption={selectedTemplate}
+            onSelectOption={handleSelectChange}
+          />
+        </TemplateEditorToolbar>
+      </TemplateEditorLayoutToolbar>
+      <TemplateEditorLayoutFiles classes={{ root: classes.files }}>
+        <TemplateEditorTextArea
+          content={templateYaml}
+          onUpdate={setTemplateYaml}
+          errorText={errorText}
+        />
+      </TemplateEditorLayoutFiles>
+      <TemplateEditorLayoutPreview>
+        <TemplateEditorForm
+          content={templateYaml}
+          contentIsSpec
+          fieldExtensions={customFieldExtensions}
+          setErrorText={setErrorText}
+          layouts={layouts}
+          formProps={formProps}
+        />
+      </TemplateEditorLayoutPreview>
+    </TemplateEditorLayout>
   );
 };

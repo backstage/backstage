@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.102-next.1",
+  "version": "0.2.102",
   "backstage": {
     "role": "frontend"
   },
@@ -73,6 +73,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
+    "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@octokit/rest": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.1",
     "history": "^5.0.0",
@@ -97,7 +98,9 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0"
+    "axios": "^1.7.7",
+    "cross-env": "^7.0.0",
+    "msw": "^1.0.0"
   },
   "bundled": true
 }

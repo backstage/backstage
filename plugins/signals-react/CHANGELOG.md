@@ -1,5 +1,14 @@
 # @backstage/plugin-signals-react
 
+## 0.0.6
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/types@1.1.1
+
 ## 0.0.6-next.1
 
 ### Patch Changes

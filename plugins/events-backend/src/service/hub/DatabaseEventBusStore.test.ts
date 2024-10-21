@@ -27,7 +27,10 @@ const databases = TestDatabases.create({
   ids: ['POSTGRES_9', 'POSTGRES_13', 'POSTGRES_16'],
 });
 
-describe('DatabaseEventBusStore', () => {
+const maybeDescribe =
+  databases.eachSupportedId().length > 0 ? describe : describe.skip;
+
+maybeDescribe('DatabaseEventBusStore', () => {
   it.each(databases.eachSupportedId())(
     'should clean up old events, %p',
     async databaseId => {

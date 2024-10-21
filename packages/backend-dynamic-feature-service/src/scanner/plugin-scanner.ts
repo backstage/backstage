@@ -35,6 +35,8 @@ export interface ScanRootResponse {
   packages: ScannedPluginPackage[];
 }
 
+export const configKey = 'dynamicPlugins';
+
 export class PluginScanner {
   private _rootDirectory?: string;
   private configUnsubscribe?: () => void;
@@ -68,27 +70,27 @@ export class PluginScanner {
   }
 
   private applyConfig(): void | never {
-    const dynamicPlugins = this.config.getOptional('dynamicPlugins');
+    const dynamicPlugins = this.config.getOptional(configKey);
     if (!dynamicPlugins) {
-      this.logger.info("'dynamicPlugins' config entry not found.");
+      this.logger.info(`'${configKey}' config entry not found.`);
       this._rootDirectory = undefined;
       return;
     }
     if (typeof dynamicPlugins !== 'object') {
-      this.logger.warn("'dynamicPlugins' config entry should be an object.");
+      this.logger.warn(`'${configKey}' config entry should be an object.`);
       this._rootDirectory = undefined;
       return;
     }
     if (!('rootDirectory' in dynamicPlugins)) {
       this.logger.warn(
-        "'dynamicPlugins' config entry does not contain the 'rootDirectory' field.",
+        `'${configKey}' config entry does not contain the 'rootDirectory' field.`,
       );
       this._rootDirectory = undefined;
       return;
     }
     if (typeof dynamicPlugins.rootDirectory !== 'string') {
       this.logger.warn(
-        "'dynamicPlugins.rootDirectory' config entry should be a string.",
+        `'${configKey}.rootDirectory' config entry should be a string.`,
       );
       this._rootDirectory = undefined;
       return;

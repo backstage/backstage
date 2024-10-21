@@ -1,5 +1,25 @@
 # @backstage/core-compat-api
 
+## 0.3.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 4a5ba19: Internal update to remove deprecated `BackstagePlugin` type and move to `FrontendPlugin`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/version-bridge@1.0.10-next.0
+
 ## 0.3.1-next.1
 
 ### Patch Changes

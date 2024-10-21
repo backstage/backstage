@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
 export { BitbucketCloudEntityProvider } from './providers/BitbucketCloudEntityProvider';

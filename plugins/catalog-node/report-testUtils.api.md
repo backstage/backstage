@@ -22,6 +22,4 @@ export namespace catalogServiceMock {
     partialImpl?: Partial<CatalogApi> | undefined,
   ) => ServiceMock<CatalogApi>;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

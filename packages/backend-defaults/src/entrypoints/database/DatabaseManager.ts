@@ -19,6 +19,8 @@ import {
   LifecycleService,
   LoggerService,
   RootConfigService,
+  RootLifecycleService,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { stringifyError } from '@backstage/errors';
@@ -42,6 +44,8 @@ function pluginPath(pluginId: string): string {
  */
 export type DatabaseManagerOptions = {
   migrations?: DatabaseService['migrations'];
+  rootLogger?: RootLoggerService;
+  rootLifecycle?: RootLifecycleService;
 };
 
 /**
@@ -53,7 +57,19 @@ export class DatabaseManagerImpl {
     private readonly connectors: Record<string, Connector>,
     private readonly options?: DatabaseManagerOptions,
     private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
-  ) {}
+    private readonly keepaliveIntervals: Map<
+      string,
+      NodeJS.Timeout
+    > = new Map(),
+  ) {
+    // If a rootLifecycle service was provided, register a shutdown hook to
+    // clean up any database connections.
+    if (options?.rootLifecycle !== undefined) {
+      options.rootLifecycle.addShutdownHook(async () => {
+        await this.shutdown({ logger: options.rootLogger });
+      });
+    }
+  }
 
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
@@ -87,6 +103,33 @@ export class DatabaseManagerImpl {
       false;
 
     return { getClient, migrations: { skip } };
+  }
+
+  /**
+   * Destroys all known connections.
+   */
+  private async shutdown(deps?: { logger?: LoggerService }): Promise<void> {
+    const pluginIds = Array.from(this.databaseCache.keys());
+    await Promise.allSettled(
+      pluginIds.map(async pluginId => {
+        // We no longer need to keep connections alive.
+        clearInterval(this.keepaliveIntervals.get(pluginId));
+
+        const connection = await this.databaseCache.get(pluginId);
+        if (connection) {
+          if (connection.client.config.includes('sqlite3')) {
+            return; // sqlite3 does not support destroy, it hangs
+          }
+          await connection.destroy().catch((error: unknown) => {
+            deps?.logger?.error(
+              `Problem closing database connection for ${pluginId}: ${stringifyError(
+                error,
+              )}`,
+            );
+          });
+        }
+      }),
+    );
   }
 
   /**
@@ -154,25 +197,28 @@ export class DatabaseManagerImpl {
   ): void {
     let lastKeepaliveFailed = false;
 
-    setInterval(() => {
-      // During testing it can happen that the environment is torn down and
-      // this client is `undefined`, but this interval is still run.
-      client?.raw('select 1').then(
-        () => {
-          lastKeepaliveFailed = false;
-        },
-        (error: unknown) => {
-          if (!lastKeepaliveFailed) {
-            lastKeepaliveFailed = true;
-            logger.warn(
-              `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
-                error,
-              )}`,
-            );
-          }
-        },
-      );
-    }, 60 * 1000);
+    this.keepaliveIntervals.set(
+      pluginId,
+      setInterval(() => {
+        // During testing it can happen that the environment is torn down and
+        // this client is `undefined`, but this interval is still run.
+        client?.raw('select 1').then(
+          () => {
+            lastKeepaliveFailed = false;
+          },
+          (error: unknown) => {
+            if (!lastKeepaliveFailed) {
+              lastKeepaliveFailed = true;
+              logger.warn(
+                `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
+                  error,
+                )}`,
+              );
+            }
+          },
+        );
+      }, 60 * 1000),
+    );
   }
 }
 

@@ -93,6 +93,20 @@ describe('parseFilterExpression', () => {
     );
   });
 
+  it('recognizes negation key', () => {
+    const component = { kind: 'Component' } as unknown as Entity;
+    expect(run('not:kind:user')(component)).toBe(true);
+  });
+
+  it('supports negation and affirmative expressions', () => {
+    const component = {
+      kind: 'Component',
+      spec: { type: 'service' },
+    } as unknown as Entity;
+    expect(run('not:kind:user type:service')(component)).toBe(true);
+    expect(run('type:service not:kind:user')(component)).toBe(true);
+  });
+
   it('rejects unknown keys', () => {
     expect(() => run('unknown:foo')).toThrowErrorMatchingInlineSnapshot(
       `"'unknown' is not a valid filter expression key, expected one of 'kind','type','is','has'"`,
@@ -123,17 +137,25 @@ describe('splitFilterExpression', () => {
     expect(run('')).toEqual([]);
     expect(run('   ')).toEqual([]);
     expect(run('kind:component')).toEqual([
-      { key: 'kind', parameters: ['component'] },
+      { key: 'kind', parameters: ['component'], negation: false },
     ]);
     expect(run('kind:component,user')).toEqual([
-      { key: 'kind', parameters: ['component', 'user'] },
+      { key: 'kind', parameters: ['component', 'user'], negation: false },
+    ]);
+    expect(run('kind:component,user not:type:foo')).toEqual([
+      { key: 'kind', parameters: ['component', 'user'], negation: false },
+      { key: 'type', parameters: ['foo'], negation: true },
+    ]);
+    expect(run('not:type:foo kind:component,user')).toEqual([
+      { key: 'type', parameters: ['foo'], negation: true },
+      { key: 'kind', parameters: ['component', 'user'], negation: false },
     ]);
     expect(run('kind:component,user type:foo')).toEqual([
-      { key: 'kind', parameters: ['component', 'user'] },
-      { key: 'type', parameters: ['foo'] },
+      { key: 'kind', parameters: ['component', 'user'], negation: false },
+      { key: 'type', parameters: ['foo'], negation: false },
     ]);
     expect(run('with:multiple:colons')).toEqual([
-      { key: 'with', parameters: ['multiple:colons'] },
+      { key: 'with', parameters: ['multiple:colons'], negation: false },
     ]);
   });
 

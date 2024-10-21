@@ -213,6 +213,9 @@ export class DatabaseTaskStore implements TaskStore {
       queryBuilder.whereIn('status', [...new Set(arr)]);
     }
 
+    const countQuery = queryBuilder.clone();
+    countQuery.count('tasks.id', { as: 'count' });
+
     if (order) {
       order.forEach(f => {
         queryBuilder.orderBy(f.field, f.order);
@@ -220,9 +223,6 @@ export class DatabaseTaskStore implements TaskStore {
     } else {
       queryBuilder.orderBy('created_at', 'desc');
     }
-
-    const countQuery = queryBuilder.clone();
-    countQuery.count('tasks.id', { as: 'count' });
 
     if (pagination?.limit !== undefined) {
       queryBuilder.limit(pagination.limit);

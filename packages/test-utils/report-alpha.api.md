@@ -8,7 +8,7 @@ import { TranslationApi } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export class MockTranslationApi implements TranslationApi {
   // (undocumented)
   static create(): MockTranslationApi;
@@ -27,13 +27,6 @@ export class MockTranslationApi implements TranslationApi {
     },
   >(): Observable<TranslationSnapshot<TMessages>>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:4:1 - (ae-undocumented) Missing documentation for "MockTranslationApi".
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:6:5 - (ae-undocumented) Missing documentation for "create".
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:8:5 - (ae-undocumented) Missing documentation for "getTranslation".
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "translation$".
 
 // (No @packageDocumentation comment for this package)
 ```

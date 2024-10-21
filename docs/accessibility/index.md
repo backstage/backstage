@@ -58,6 +58,6 @@ If your Backstage plugin lives outside of the [Backstage main repository](https:
 
 ### Report identified issues
 
-It’s important to remember that automated checks can only catch a small number of accessibility issues, therefore we also encourage you to conduct manual testing of your plugins using Assistive technology (screen readers, alternative navigation, and screen magnifiers are a few examples).
+It’s important to remember that automated checks can only catch a small number of accessibility issues, therefore, we also encourage you to conduct manual testing of your plugins using Assistive technology (screen readers, alternative navigation, and screen magnifiers are a few examples).
 
 If you have identified accessibility issues and don’t have time to contribute a fix, please open an issue over at [Backstage Issues](https://github.com/backstage/backstage/issues) to let us know.

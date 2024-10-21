@@ -140,19 +140,4 @@ export type SidebarSearchProps = {
 
 // @public
 export function useSearchModal(initialState?: boolean): SearchModalValue;
-
-// Warnings were encountered during analysis:
-//
-// src/components/SearchModal/SearchModal.d.ts:6:1 - (ae-undocumented) Missing documentation for "SearchModalChildrenProps".
-// src/components/SearchModal/SearchModal.d.ts:19:1 - (ae-undocumented) Missing documentation for "SearchModalProps".
-// src/components/SearchModal/SearchModal.d.ts:50:22 - (ae-undocumented) Missing documentation for "SearchModal".
-// src/components/SearchPage/SearchPage.d.ts:6:22 - (ae-undocumented) Missing documentation for "SearchPage".
-// src/components/SearchType/SearchType.Accordion.d.ts:5:1 - (ae-undocumented) Missing documentation for "SearchTypeAccordionProps".
-// src/components/SearchType/SearchType.Tabs.d.ts:5:1 - (ae-undocumented) Missing documentation for "SearchTypeTabsProps".
-// src/components/SearchType/SearchType.d.ts:18:15 - (ae-undocumented) Missing documentation for "SearchType".
-// src/components/SidebarSearch/SidebarSearch.d.ts:14:22 - (ae-undocumented) Missing documentation for "SidebarSearch".
-// src/plugin.d.ts:7:22 - (ae-undocumented) Missing documentation for "searchPlugin".
-// src/plugin.d.ts:13:22 - (ae-undocumented) Missing documentation for "SearchPage".
-// src/plugin.d.ts:17:22 - (ae-undocumented) Missing documentation for "SidebarSearchModal".
-// src/plugin.d.ts:21:22 - (ae-undocumented) Missing documentation for "HomePageSearchBar".
 ```

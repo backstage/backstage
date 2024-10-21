@@ -86,8 +86,13 @@ export default ({ theme, sidebar }: RuleOptions) => `
   scrollbar-width: thin;
 }
 .md-sidebar .md-sidebar__scrollwrap {
-  width: calc(12.1rem);
+  width: calc(16rem);
   overflow-y: hidden;
+}
+@supports selector(::-webkit-scrollbar) {
+  [dir=ltr] .md-sidebar__inner {
+      padding-right: calc(100% - 15.1rem);
+  }
 }
 .md-sidebar--secondary {
   right: ${theme.spacing(3)}px;
@@ -202,16 +207,20 @@ export default ({ theme, sidebar }: RuleOptions) => `
     height: 100%;
   }
   .md-sidebar--primary {
-    width: 12.1rem !important;
+    width: 16rem !important;
     z-index: 200;
     left: ${
       sidebar.isPinned
-        ? `calc(-12.1rem + ${SIDEBAR_WIDTH})`
-        : 'calc(-12.1rem + 72px)'
+        ? `calc(-16rem + ${SIDEBAR_WIDTH})`
+        : 'calc(-16rem + 72px)'
     } !important;
   }
   .md-sidebar--secondary:not([hidden]) {
     display: none;
+  }
+
+  [data-md-toggle=drawer]:checked~.md-container .md-sidebar--primary {
+    transform: translateX(16rem);
   }
 
   .md-content {
@@ -241,8 +250,8 @@ export default ({ theme, sidebar }: RuleOptions) => `
 
 @media screen and (max-width: 600px) {
   .md-sidebar--primary {
-    left: -12.1rem !important;
-    width: 12.1rem;
+    left: -16rem !important;
+    width: 16rem;
   }
 }
 

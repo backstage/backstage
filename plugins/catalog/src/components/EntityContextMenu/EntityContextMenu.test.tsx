@@ -17,7 +17,7 @@
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockPermissionApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -26,11 +26,9 @@ import { fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
 
-const mockPermissionApi = new MockPermissionApi();
-
 function render(children: React.ReactNode) {
   return renderInTestApp(
-    <TestApiProvider apis={[[permissionApiRef, mockPermissionApi]]}>
+    <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
       <EntityProvider
         entity={{ apiVersion: 'a', kind: 'b', metadata: { name: 'c' } }}
         children={children}

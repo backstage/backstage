@@ -52,11 +52,11 @@ Team: @backstage/search-maintainers
 
 Scope: The Backstage Search plugin
 
-| Name                     | Organization | Team           | GitHub                                        | Discord           |
-| ------------------------ | ------------ | -------------- | --------------------------------------------- | ----------------- |
-| Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal)      | emmaindal#7503    |
-| Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)          | raghunandanb#1114 |
-| Alex Lorenzi             | Spotify      | ProTean        | [AlexLorenzi](https://github.com/AlexLorenzi) | alexlorenzi       |
+| Name            | Organization | Team    | GitHub                                            | Discord          |
+| --------------- | ------------ | ------- | ------------------------------------------------- | ---------------- |
+| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | alexlorenzi      |
+| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | john_philip#2399 |
+| Morgan Da Costa | Spotify      | ProTean | [morgandc](https://github.com/morgandc)           | -                |
 
 ### Helm Charts
 
@@ -102,17 +102,13 @@ Team: @backstage/techdocs-maintainers
 
 Scope: The TechDocs plugin and related tooling
 
-| Name                     | Organization | Team    | GitHub                                            | Discord             |
-| ------------------------ | ------------ | ------- | ------------------------------------------------- | ------------------- |
-| Alex Lorenzi             | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`       |
-| Bond Yan                 | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`           |
-| Daniel Lochrie           | Spotify      | ProTean | [dlochrie](https://github.com/dlochrie)           | -                   |
-| Jackson Chen             | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`     |
-| John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399`  |
-| Morgan Bentell           | Spotify      | ProTean | [agentbellnorm](http://github.com/agentbellnorm)  | `morganbentell`     |
-| Raghunandan Balachandran | Spotify      | BUX     | [soapraj](http://github.com/soapraj)              | `raghunandanb#1114` |
-| Sydney Achinger          | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
-| Vojta Burian             | Spotify      | ProTean | [sankaritan](https://github.com/sankaritan)       | `vojtabu`           |
+| Name            | Organization | Team    | GitHub                                            | Discord            |
+| --------------- | ------------ | ------- | ------------------------------------------------- | ------------------ |
+| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`      |
+| Bond Yan        | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`          |
+| Jackson Chen    | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`    |
+| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399` |
+| Sydney Achinger | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                  |
 
 ## Incubating Project Areas
 
@@ -185,11 +181,11 @@ Scope: The Backstage Documentation
 
 ## Sponsors
 
-| Name              | Organization | GitHub                                      | Email              |
-| ----------------- | ------------ | ------------------------------------------- | ------------------ |
-| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com    |
-| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com  |
-| Helen Greul       | Spotify      | [helengreul](https://github.com/helengreul) | heleng@spotify.com |
+| Name              | Organization | GitHub                                      | Email             |
+| ----------------- | ------------ | ------------------------------------------- | ----------------- |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
+| Pia Nilsson       | Spotify      | [pianilsson](https://github.com/pianilsson) | pia@spotify.com   |
 
 ## Organization Members
 
@@ -224,9 +220,10 @@ Scope: The Backstage Documentation
 
 ## Emeritus End User Sponsors
 
-| Name      | Organization | GitHub                                      | Discord        |
-| --------- | ------------ | ------------------------------------------- | -------------- |
-| Lee Mills | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+| Name        | Organization | GitHub                                      | Discord        |
+| ----------- | ------------ | ------------------------------------------- | -------------- |
+| Lee Mills   | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+| Helen Greul | Spotify      | [helengreul](https://github.com/helengreul) | `helen_greul`  |
 
 ## Emeritus Project Area Maintainers
 

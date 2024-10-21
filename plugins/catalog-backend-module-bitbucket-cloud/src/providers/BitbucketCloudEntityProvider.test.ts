@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
   SchedulerServiceTaskInvocationDefinition,
   SchedulerServiceTaskRunner,
@@ -92,11 +91,6 @@ describe('BitbucketCloudEntityProvider', () => {
     applyMutation: jest.fn(),
     refresh: jest.fn(),
   };
-  const tokenManager = {
-    getToken: async () => {
-      return { token: 'fake-token' };
-    },
-  } as any as TokenManager;
   const repoPushEvent: Events.RepoPushEvent = {
     actor: {
       type: 'user',
@@ -158,8 +152,14 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('no provider config', () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
     const config = new ConfigReader({});
+    const events = DefaultEventsService.create({ logger });
     const providers = BitbucketCloudEntityProvider.fromConfig(config, {
+      auth,
+      catalogApi,
+      events,
       logger,
       schedule,
     });
@@ -168,7 +168,13 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('single simple provider config', () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    const events = DefaultEventsService.create({ logger });
     const providers = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth,
+      catalogApi,
+      events,
       logger,
       schedule,
     });
@@ -180,14 +186,24 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('fail without schedule and scheduler', () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    const events = DefaultEventsService.create({ logger });
+
     expect(() =>
       BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+        auth,
+        catalogApi,
+        events,
         logger,
       }),
     ).toThrow('Either schedule or scheduler must be provided.');
   });
 
   it('fail with scheduler but no schedule config', () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    const events = DefaultEventsService.create({ logger });
     const scheduler = mockServices.scheduler.mock();
     const config = new ConfigReader({
       catalog: {
@@ -201,6 +217,9 @@ describe('BitbucketCloudEntityProvider', () => {
 
     expect(() =>
       BitbucketCloudEntityProvider.fromConfig(config, {
+        auth,
+        catalogApi,
+        events,
         logger,
         scheduler,
       }),
@@ -210,6 +229,9 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('single simple provider config with schedule in config', () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    const events = DefaultEventsService.create({ logger });
     const scheduler = mockServices.scheduler.mock();
     const config = new ConfigReader({
       catalog: {
@@ -226,6 +248,9 @@ describe('BitbucketCloudEntityProvider', () => {
     });
 
     const providers = BitbucketCloudEntityProvider.fromConfig(config, {
+      auth,
+      catalogApi,
+      events,
       logger,
       scheduler,
     });
@@ -237,6 +262,8 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('multiple provider configs', () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
     const config = new ConfigReader({
       catalog: {
         providers: {
@@ -251,7 +278,11 @@ describe('BitbucketCloudEntityProvider', () => {
         },
       },
     });
+    const events = DefaultEventsService.create({ logger });
     const providers = BitbucketCloudEntityProvider.fromConfig(config, {
+      auth,
+      catalogApi,
+      events,
       logger,
       schedule,
     });
@@ -266,7 +297,13 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('apply full update on scheduled execution', async () => {
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
+      auth,
+      catalogApi,
+      events,
       logger,
       schedule,
     })[0];
@@ -436,6 +473,9 @@ describe('BitbucketCloudEntityProvider', () => {
       'added-module/catalog-custom.yaml',
     );
 
+    const auth = mockServices.auth.mock({
+      getPluginRequestToken: async () => ({ token: 'fake-token' }),
+    });
     const events = DefaultEventsService.create({ logger });
     const catalogApi = catalogServiceMock.mock({
       getEntities: async (
@@ -457,11 +497,11 @@ describe('BitbucketCloudEntityProvider', () => {
       },
     });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
+      auth,
       catalogApi,
       events,
       logger,
       schedule,
-      tokenManager,
     })[0];
 
     server.use(
@@ -569,14 +609,16 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('no onRepoPush update on non-matching workspace slug', async () => {
-    const catalogApi = catalogServiceMock.mock();
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    jest.spyOn(catalogApi, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
+      auth,
       catalogApi,
       events,
       logger,
       schedule,
-      tokenManager,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -599,14 +641,16 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('no onRepoPush update on non-matching repo slug', async () => {
-    const catalogApi = catalogServiceMock.mock();
+    const auth = mockServices.auth.mock();
+    const catalogApi = catalogServiceMock();
+    jest.spyOn(catalogApi, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
+      auth,
       catalogApi,
       events,
       logger,
       schedule,
-      tokenManager,
     })[0];
 
     await provider.connect(entityProviderConnection);

@@ -81,6 +81,9 @@ export type BackstagePaletteAdditions = {
     closeButtonColor?: string;
     warning?: string;
   };
+  code?: {
+    background?: string;
+  };
 };
 
 // @public @deprecated
@@ -459,30 +462,4 @@ export interface UnifiedThemeProviderProps {
   // (undocumented)
   theme: UnifiedTheme;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/base/createBaseThemeOptions.d.ts:14:5 - (ae-undocumented) Missing documentation for "palette".
-// src/base/createBaseThemeOptions.d.ts:15:5 - (ae-undocumented) Missing documentation for "defaultPageTheme".
-// src/base/createBaseThemeOptions.d.ts:16:5 - (ae-undocumented) Missing documentation for "pageTheme".
-// src/base/createBaseThemeOptions.d.ts:17:5 - (ae-undocumented) Missing documentation for "fontFamily".
-// src/base/createBaseThemeOptions.d.ts:18:5 - (ae-undocumented) Missing documentation for "htmlFontSize".
-// src/base/createBaseThemeOptions.d.ts:19:5 - (ae-undocumented) Missing documentation for "typography".
-// src/unified/UnifiedTheme.d.ts:17:5 - (ae-undocumented) Missing documentation for "palette".
-// src/unified/UnifiedTheme.d.ts:18:5 - (ae-undocumented) Missing documentation for "defaultPageTheme".
-// src/unified/UnifiedTheme.d.ts:19:5 - (ae-undocumented) Missing documentation for "pageTheme".
-// src/unified/UnifiedTheme.d.ts:20:5 - (ae-undocumented) Missing documentation for "fontFamily".
-// src/unified/UnifiedTheme.d.ts:21:5 - (ae-undocumented) Missing documentation for "htmlFontSize".
-// src/unified/UnifiedTheme.d.ts:22:5 - (ae-undocumented) Missing documentation for "components".
-// src/unified/UnifiedTheme.d.ts:23:5 - (ae-undocumented) Missing documentation for "typography".
-// src/unified/UnifiedThemeProvider.d.ts:9:5 - (ae-undocumented) Missing documentation for "children".
-// src/unified/UnifiedThemeProvider.d.ts:10:5 - (ae-undocumented) Missing documentation for "theme".
-// src/unified/UnifiedThemeProvider.d.ts:11:5 - (ae-undocumented) Missing documentation for "noCssBaseline".
-// src/unified/types.d.ts:25:5 - (ae-undocumented) Missing documentation for "getTheme".
-// src/v4/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "palette".
-// src/v4/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "page".
-// src/v4/types.d.ts:33:5 - (ae-undocumented) Missing documentation for "getPageTheme".
-// src/v4/types.d.ts:42:5 - (ae-undocumented) Missing documentation for "palette".
-// src/v4/types.d.ts:43:5 - (ae-undocumented) Missing documentation for "page".
-// src/v4/types.d.ts:44:5 - (ae-undocumented) Missing documentation for "getPageTheme".
 ```

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
-  ConfigApi,
   configApiRef,
   errorApiRef,
-  IdentityApi,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
@@ -41,7 +39,6 @@ import {
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
 import { useMountEffect } from '@react-hookz/web';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
-import { MockTranslationApi } from '@backstage/test-utils/alpha';
 import { EntityListPagination } from '../types';
 
 const entities: Entity[] = [
@@ -67,21 +64,13 @@ const entities: Entity[] = [
   },
 ];
 
-const mockConfigApi = {
-  getOptionalString: () => '',
-} as Partial<ConfigApi>;
-
 const ownershipEntityRefs = ['user:default/guest'];
 
-const mockIdentityApi: Partial<IdentityApi> = {
-  getBackstageIdentity: async () => ({
-    type: 'user',
-    userEntityRef: 'user:default/guest',
-    ownershipEntityRefs,
-  }),
-  getCredentials: async () => ({ token: undefined }),
-};
-const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
+const mockIdentityApi = mockApis.identity({
+  userEntityRef: 'user:default/guest',
+  ownershipEntityRefs,
+});
+const mockCatalogApi = catalogApiMock.mock({
   getEntities: jest.fn().mockResolvedValue({ items: entities }),
   queryEntities: jest.fn().mockResolvedValue({
     items: entities,
@@ -89,7 +78,7 @@ const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
     totalItems: 10,
   }),
   getEntityByRef: jest.fn().mockResolvedValue(undefined),
-};
+});
 
 const createWrapper =
   (options: { location?: string; pagination: EntityListPagination }) =>
@@ -108,13 +97,13 @@ const createWrapper =
       <MemoryRouter initialEntries={[options.location ?? '']}>
         <TestApiProvider
           apis={[
-            [configApiRef, mockConfigApi],
+            [configApiRef, mockApis.config()],
             [catalogApiRef, mockCatalogApi],
             [identityApiRef, mockIdentityApi],
-            [storageApiRef, MockStorageApi.create()],
+            [storageApiRef, mockApis.storage()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
             [alertApiRef, { post: jest.fn() }],
-            [translationApiRef, MockTranslationApi.create()],
+            [translationApiRef, mockApis.translation()],
             [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
           ]}
         >

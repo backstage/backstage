@@ -25,9 +25,8 @@ auth:
       region: 'us-west-2'
       signIn:
         resolvers:
-          # typically you would pick one of these
+          # See https://backstage.io/docs/auth/aws-alb/provider#resolvers for more resolvers
           - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
 ```
 
 Ensure that you have set the signer correctly. It is also recommended that you restrict your target groups' security policy to only accept connections from that ALB.

@@ -18,7 +18,7 @@ import React from 'react';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
 import { EntityTextFilter } from '../../filters';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('EntitySearchBar', () => {

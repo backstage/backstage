@@ -40,13 +40,13 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   cardGrid: {
-    display: 'grid',
     maxWidth: 1000,
-    gridTemplateColumns: '1fr 1fr',
-    gridAutoRows: '1fr 1fr',
-    gap: '1rem',
-    [theme.breakpoints.down('sm')]: {
-      gridAutoFlow: 'row',
+    display: 'grid',
+    gridGap: theme.spacing(2),
+    gridAutoFlow: 'row',
+    [theme.breakpoints.up('md')]: {
+      gridTemplateRows: '1fr 1fr',
+      gridTemplateColumns: '1fr 1fr',
     },
   },
   card: {
@@ -168,6 +168,15 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
           />
 
           <ActionCard
+            title={t('templateEditorPage.templateEditorIntro.formEditor.title')}
+            description={t(
+              'templateEditorPage.templateEditorIntro.formEditor.description',
+            )}
+            Icon={ListAltIcon}
+            action={() => props.onSelect?.('form')}
+          />
+
+          <ActionCard
             title={t(
               'templateEditorPage.templateEditorIntro.fieldExplorer.title',
             )}
@@ -176,15 +185,6 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             )}
             Icon={FormatListBulletedIcon}
             action={() => props.onSelect?.('field-explorer')}
-          />
-
-          <ActionCard
-            title={t('templateEditorPage.templateEditorIntro.formEditor.title')}
-            description={t(
-              'templateEditorPage.templateEditorIntro.formEditor.description',
-            )}
-            Icon={ListAltIcon}
-            action={() => props.onSelect?.('form')}
           />
         </div>
       </div>

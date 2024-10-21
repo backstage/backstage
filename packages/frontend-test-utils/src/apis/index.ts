@@ -24,6 +24,8 @@ export {
   MockPermissionApi,
   MockStorageApi,
   type MockStorageBucket,
+  mockApis,
+  type ApiMock,
 } from '@backstage/test-utils';
 
 export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';

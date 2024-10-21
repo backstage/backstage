@@ -13,42 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   catalogApiRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
+  mockApis,
 } from '@backstage/test-utils';
 import React from 'react';
 import { rootRouteRef } from '../../../routes';
 import { TemplateListPage } from './TemplateListPage';
 
 describe('TemplateListPage', () => {
-  const mockCatalogApi = {
-    getEntities: async () => ({
-      items: [
-        {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          kind: 'Template',
-          metadata: { name: 'blob', tags: ['blob'] },
-          spec: {
-            type: 'service',
-          },
+  const mockCatalogApi = catalogApiMock({
+    entities: [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: { name: 'blob', tags: ['blob'] },
+        spec: {
+          type: 'service',
         },
-      ],
-    }),
-    getEntityFacets: async () => ({
-      facets: { 'spec.type': [{ value: 'service', count: 1 }] },
-    }),
-    getEntitiesByRefs: async () => ({
-      items: [],
-    }),
-  };
+      },
+    ],
+  });
 
   it('should render the search bar for templates', async () => {
     const { getByPlaceholderText } = await renderInTestApp(
@@ -58,10 +52,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -80,10 +74,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -103,10 +97,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -125,10 +119,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -148,10 +142,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -170,10 +164,10 @@ describe('TemplateListPage', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <TemplateListPage />
@@ -191,10 +185,10 @@ describe('TemplateListPage', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <TemplateListPage

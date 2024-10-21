@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { CardHeader } from './CardHeader';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { lightTheme } from '@backstage/theme';
 import {
-  MockStorageApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -44,7 +45,7 @@ describe('CardHeader', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
         ]}
@@ -75,7 +76,7 @@ describe('CardHeader', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
         ]}
@@ -135,7 +136,7 @@ describe('CardHeader', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
         ]}
@@ -164,7 +165,7 @@ describe('CardHeader', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
         ]}

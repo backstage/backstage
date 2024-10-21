@@ -67,22 +67,5 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<ValidateEntityResponse>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/testUtils/InMemoryCatalogClient.d.ts:15:5 - (ae-undocumented) Missing documentation for "getEntities".
-// src/testUtils/InMemoryCatalogClient.d.ts:16:5 - (ae-undocumented) Missing documentation for "getEntitiesByRefs".
-// src/testUtils/InMemoryCatalogClient.d.ts:17:5 - (ae-undocumented) Missing documentation for "queryEntities".
-// src/testUtils/InMemoryCatalogClient.d.ts:18:5 - (ae-undocumented) Missing documentation for "getEntityAncestors".
-// src/testUtils/InMemoryCatalogClient.d.ts:19:5 - (ae-undocumented) Missing documentation for "getEntityByRef".
-// src/testUtils/InMemoryCatalogClient.d.ts:20:5 - (ae-undocumented) Missing documentation for "removeEntityByUid".
-// src/testUtils/InMemoryCatalogClient.d.ts:21:5 - (ae-undocumented) Missing documentation for "refreshEntity".
-// src/testUtils/InMemoryCatalogClient.d.ts:22:5 - (ae-undocumented) Missing documentation for "getEntityFacets".
-// src/testUtils/InMemoryCatalogClient.d.ts:23:5 - (ae-undocumented) Missing documentation for "getLocationById".
-// src/testUtils/InMemoryCatalogClient.d.ts:24:5 - (ae-undocumented) Missing documentation for "getLocationByRef".
-// src/testUtils/InMemoryCatalogClient.d.ts:25:5 - (ae-undocumented) Missing documentation for "addLocation".
-// src/testUtils/InMemoryCatalogClient.d.ts:26:5 - (ae-undocumented) Missing documentation for "removeLocationById".
-// src/testUtils/InMemoryCatalogClient.d.ts:27:5 - (ae-undocumented) Missing documentation for "getLocationByEntity".
-// src/testUtils/InMemoryCatalogClient.d.ts:28:5 - (ae-undocumented) Missing documentation for "validateEntity".
-
 // (No @packageDocumentation comment for this package)
 ```

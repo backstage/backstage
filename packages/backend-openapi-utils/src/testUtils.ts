@@ -15,6 +15,47 @@
  */
 import { Express } from 'express';
 import { Server } from 'http';
+import { Proxy } from './proxy/setup';
+
+const proxiesToCleanup: Proxy[] = [];
+
+/**
+ * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
+ * Setup a server with a custom OpenAPI proxy. This proxy will capture all requests and responses and make sure they
+ *  conform to the spec.
+ * @param app - express server, needed to ensure we have the correct ports for the proxy.
+ * @returns - a configured HTTP server that should be used with supertest.
+ * @public
+ */
+export async function wrapServer(app: Express): Promise<Server> {
+  const proxy = new Proxy();
+  proxiesToCleanup.push(proxy);
+  await proxy.setup();
+
+  const server = app.listen(proxy.forwardTo.port);
+  await proxy.initialize(`http://localhost:${proxy.forwardTo.port}`, server);
+
+  return { ...server, address: () => new URL(proxy.url) } as any;
+}
+
+let registered = false;
+function registerHooks() {
+  if (typeof afterAll !== 'function' || typeof beforeAll !== 'function') {
+    return;
+  }
+  if (registered) {
+    return;
+  }
+  registered = true;
+
+  afterAll(() => {
+    for (const proxy of proxiesToCleanup) {
+      proxy.stop();
+    }
+  });
+}
+
+registerHooks();
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!

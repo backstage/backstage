@@ -23,37 +23,37 @@ const backend = createBackend();
 // access root-scoped services by adding `deps`.
 const searchLoader = createBackendFeatureLoader({
   *loader() {
-    yield import('@backstage/plugin-search-backend/alpha');
-    yield import('@backstage/plugin-search-backend-module-catalog/alpha');
-    yield import('@backstage/plugin-search-backend-module-explore/alpha');
-    yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+    yield import('@backstage/plugin-search-backend');
+    yield import('@backstage/plugin-search-backend-module-catalog');
+    yield import('@backstage/plugin-search-backend-module-explore');
+    yield import('@backstage/plugin-search-backend-module-techdocs');
   },
 });
 
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
-backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
-backend.add(import('@backstage/plugin-events-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-devtools-backend'));
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-kubernetes-backend'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
-backend.add(import('@backstage/plugin-permission-backend/alpha'));
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-permission-backend'));
+backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
 );
 backend.add(searchLoader);
-backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 

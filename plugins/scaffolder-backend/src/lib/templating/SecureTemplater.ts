@@ -52,14 +52,17 @@ const { render, renderCompat } = (() => {
   });
   compatEnv.addFilter('jsonify', compatEnv.getFilter('dump'));
 
+  const handleFunctionResult = (value) => {
+    return value === '' ? undefined : JSON.parse(value);
+  };
   for (const name of JSON.parse(availableTemplateFilters)) {
-    env.addFilter(name, (...args) => JSON.parse(callFilter(name, args)));
+    env.addFilter(name, (...args) => handleFunctionResult(callFilter(name, args)));
   }
   for (const [name, value] of Object.entries(JSON.parse(availableTemplateGlobals))) {
     env.addGlobal(name, value);
   }
   for (const name of JSON.parse(availableTemplateCallbacks)) {
-    env.addGlobal(name, (...args) => JSON.parse(callGlobal(name, args)));
+    env.addGlobal(name, (...args) => handleFunctionResult(callGlobal(name, args)));
   }
 
   let uninstallCompat = undefined;
@@ -187,7 +190,8 @@ export class SecureTemplater {
         if (!Object.hasOwn(templateFilters, filterName)) {
           return '';
         }
-        return JSON.stringify(templateFilters[filterName](...args));
+        const rz = templateFilters[filterName](...args);
+        return rz === undefined ? '' : JSON.stringify(rz);
       },
     );
 
@@ -201,7 +205,8 @@ export class SecureTemplater {
         if (typeof global !== 'function') {
           return '';
         }
-        return JSON.stringify(global(...args));
+        const rz = global(...args);
+        return rz === undefined ? '' : JSON.stringify(rz);
       },
     );
 

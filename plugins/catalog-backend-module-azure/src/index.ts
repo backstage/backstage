@@ -20,5 +20,6 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
 export { AzureDevOpsDiscoveryProcessor } from './processors';
 export { AzureDevOpsEntityProvider } from './providers';

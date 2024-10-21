@@ -493,4 +493,95 @@ d@^1:
       );
     });
   });
+
+  describe('getDependencyTreeHash', () => {
+    const content = `${MODERN_HEADER}
+"a@npm:^1":
+  version: "1.0.0"
+  checksum: sha512-a-1
+  dependencies:
+    b: "^2"
+
+"b@npm:2.0.x, b@npm:^2":
+  version: "2.0.0"
+  checksum: sha512-b-1
+
+"b@npm:4":
+  version: "3.0.0"
+  checksum: sha512-b-2
+
+"c@npm:^1":
+  version: "4.0.0"
+  checksum: sha512-c-1
+`;
+    const lockfile = Lockfile.parse(content);
+
+    const hashA = lockfile.getDependencyTreeHash('a');
+    const hashB = lockfile.getDependencyTreeHash('b');
+    const hashC = lockfile.getDependencyTreeHash('c');
+
+    it('should generate stable dependency hashes', () => {
+      expect(hashA).toMatchInlineSnapshot(
+        `"2d1d4c1c577c291e815e87779c72fc78a78e56cc"`,
+      );
+      expect(hashB).toMatchInlineSnapshot(
+        `"7e46d0c7337540179b442c87a7c5555543798f15"`,
+      );
+      expect(hashC).toMatchInlineSnapshot(
+        `"e65103abd217954bad40e2f834b990a5e6fa4054"`,
+      );
+    });
+
+    it('should generate different hashes for different versions', () => {
+      const lockfileNewA = Lockfile.parse(content.replace('1.0.0', '1.0.1'));
+      expect(lockfileNewA.getDependencyTreeHash('a')).not.toBe(hashA);
+      expect(lockfileNewA.getDependencyTreeHash('b')).toBe(hashB);
+      expect(lockfileNewA.getDependencyTreeHash('c')).toBe(hashC);
+
+      const lockfileNewB1 = Lockfile.parse(content.replace('2.0.0', '2.0.1'));
+      expect(lockfileNewB1.getDependencyTreeHash('a')).not.toBe(hashA);
+      expect(lockfileNewB1.getDependencyTreeHash('b')).not.toBe(hashB);
+      expect(lockfileNewB1.getDependencyTreeHash('c')).toBe(hashC);
+
+      const lockfileNewB2 = Lockfile.parse(content.replace('3.0.0', '3.0.1'));
+      expect(lockfileNewB2.getDependencyTreeHash('a')).not.toBe(hashA);
+      expect(lockfileNewB2.getDependencyTreeHash('b')).not.toBe(hashB);
+      expect(lockfileNewB2.getDependencyTreeHash('c')).toBe(hashC);
+
+      const lockfileNewC = Lockfile.parse(content.replace('4.0.0', '4.0.1'));
+      expect(lockfileNewC.getDependencyTreeHash('a')).toBe(hashA);
+      expect(lockfileNewC.getDependencyTreeHash('b')).toBe(hashB);
+      expect(lockfileNewC.getDependencyTreeHash('c')).not.toBe(hashC);
+    });
+
+    it('should generate different hashes for different checksums', () => {
+      const lockfileNewA = Lockfile.parse(
+        content.replace('sha512-a-1', 'sha512-a-1-new'),
+      );
+      expect(lockfileNewA.getDependencyTreeHash('a')).not.toBe(hashA);
+      expect(lockfileNewA.getDependencyTreeHash('b')).toBe(hashB);
+      expect(lockfileNewA.getDependencyTreeHash('c')).toBe(hashC);
+
+      const lockfileNewB1 = Lockfile.parse(
+        content.replace('sha512-b-1', 'sha512-b-1-new'),
+      );
+      expect(lockfileNewB1.getDependencyTreeHash('a')).not.toBe(hashA);
+      expect(lockfileNewB1.getDependencyTreeHash('b')).not.toBe(hashB);
+      expect(lockfileNewB1.getDependencyTreeHash('c')).toBe(hashC);
+
+      const lockfileNewB2 = Lockfile.parse(
+        content.replace('sha512-b-2', 'sha512-b-2-new'),
+      );
+      expect(lockfileNewB2.getDependencyTreeHash('a')).not.toBe(hashA);
+      expect(lockfileNewB2.getDependencyTreeHash('b')).not.toBe(hashB);
+      expect(lockfileNewB2.getDependencyTreeHash('c')).toBe(hashC);
+
+      const lockfileNewC = Lockfile.parse(
+        content.replace('sha512-c-1', 'sha512-c-1-new'),
+      );
+      expect(lockfileNewC.getDependencyTreeHash('a')).toBe(hashA);
+      expect(lockfileNewC.getDependencyTreeHash('b')).toBe(hashB);
+      expect(lockfileNewC.getDependencyTreeHash('c')).not.toBe(hashC);
+    });
+  });
 });

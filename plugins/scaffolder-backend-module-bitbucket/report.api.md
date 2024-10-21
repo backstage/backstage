@@ -56,11 +56,4 @@ export const createPublishBitbucketServerAction: typeof bitbucketServer.createPu
 
 // @public @deprecated (undocumented)
 export const createPublishBitbucketServerPullRequestAction: typeof bitbucketServer.createPublishBitbucketServerPullRequestAction;
-
-// Warnings were encountered during analysis:
-//
-// src/deprecated.d.ts:8:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketCloudAction".
-// src/deprecated.d.ts:13:22 - (ae-undocumented) Missing documentation for "createBitbucketPipelinesRunAction".
-// src/deprecated.d.ts:29:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerAction".
-// src/deprecated.d.ts:34:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerPullRequestAction".
 ```

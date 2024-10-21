@@ -349,8 +349,11 @@ class MockDirectoryImpl {
  */
 export interface CreateMockDirectoryOptions {
   /**
-   * In addition to creating a temporary directory, also mock `os.tmpdir()` to return the
-   * mock directory path until the end of the test suite.
+   * In addition to creating a temporary directory, also mock `os.tmpdir()` to
+   * return the mock directory path until the end of the test suite.
+   *
+   * When this option is provided the `createMockDirectory` call must happen in
+   * a scope where calling `afterAll` from Jest is allowed
    *
    * @returns
    */
@@ -361,6 +364,34 @@ export interface CreateMockDirectoryOptions {
    */
   content?: MockDirectoryContent;
 }
+
+const cleanupCallbacks = new Array<() => void>();
+
+let registered = false;
+function registerTestHooks() {
+  if (typeof afterAll !== 'function') {
+    return;
+  }
+  if (registered) {
+    return;
+  }
+  registered = true;
+
+  afterAll(async () => {
+    for (const callback of cleanupCallbacks) {
+      try {
+        callback();
+      } catch (error) {
+        console.error(
+          `Failed to clean up mock directory after tests, ${error}`,
+        );
+      }
+    }
+    cleanupCallbacks.length = 0;
+  });
+}
+
+registerTestHooks();
 
 /**
  * Creates a new temporary mock directory that will be removed after the tests have completed.
@@ -410,17 +441,14 @@ export function createMockDirectory(
     process.on('beforeExit', mocker.remove);
   }
 
-  try {
+  if (needsCleanup) {
+    cleanupCallbacks.push(() => mocker.remove());
+  }
+
+  if (origTmpdir) {
     afterAll(() => {
-      if (origTmpdir) {
-        os.tmpdir = origTmpdir;
-      }
-      if (needsCleanup) {
-        mocker.remove();
-      }
+      os.tmpdir = origTmpdir;
     });
-  } catch {
-    /* ignore */
   }
 
   if (options?.content) {

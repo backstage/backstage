@@ -22,10 +22,5 @@ export interface PackagePathResolutionOverride {
   restore(): void;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/testUtils.d.ts:2:1 - (ae-undocumented) Missing documentation for "PackagePathResolutionOverride".
-// src/testUtils.d.ts:7:1 - (ae-undocumented) Missing documentation for "OverridePackagePathResolutionOptions".
-
 // (No @packageDocumentation comment for this package)
 ```

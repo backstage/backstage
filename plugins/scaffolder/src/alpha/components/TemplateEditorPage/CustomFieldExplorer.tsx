@@ -19,13 +19,7 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
@@ -35,6 +29,10 @@ import validator from '@rjsf/validator-ajv8';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 /** @public */
 export type ScaffolderCustomFieldExplorerClassKey =
@@ -48,25 +46,35 @@ const useStyles = makeStyles(
     root: {
       gridArea: 'pageContent',
       display: 'grid',
+      gridGap: theme.spacing(2),
       gridTemplateAreas: `
+      "controls"
+      "fieldForm"
+      "preview"
+    `,
+      [theme.breakpoints.up('md')]: {
+        gridTemplateAreas: `
       "controls controls"
       "fieldForm preview"
     `,
-      gridTemplateRows: 'auto 1fr',
-      gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'auto 1fr',
+        gridTemplateColumns: '1fr 1fr',
+      },
     },
     controls: {
       gridArea: 'controls',
       display: 'flex',
       flexFlow: 'row nowrap',
       alignItems: 'center',
-      margin: theme.spacing(1),
     },
     fieldForm: {
       gridArea: 'fieldForm',
     },
     preview: {
       gridArea: 'preview',
+      display: 'grid',
+      gridGap: theme.spacing(2),
+      alignContent: 'start',
     },
   }),
   { name: 'ScaffolderCustomFieldExplorer' },
@@ -74,35 +82,34 @@ const useStyles = makeStyles(
 
 export const CustomFieldExplorer = ({
   customFieldExtensions = [],
-  onClose,
 }: {
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
-  onClose?: () => void;
 }) => {
   const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const fieldOptions = customFieldExtensions.filter(field => !!field.schema);
-  const [selectedField, setSelectedField] = useState(fieldOptions[0]);
+  const [selectedField, setSelectedField] = useState(fieldOptions?.[0]);
   const [fieldFormState, setFieldFormState] = useState({});
   const [refreshKey, setRefreshKey] = useState(Date.now());
-  const sampleFieldTemplate = useMemo(
-    () =>
-      yaml.stringify({
-        parameters: [
-          {
-            title: `${selectedField.name} Example`,
-            properties: {
-              [selectedField.name]: {
-                type: selectedField.schema?.returnValue?.type,
-                'ui:field': selectedField.name,
-                'ui:options': fieldFormState,
-              },
+  const sampleFieldTemplate = useMemo(() => {
+    if (!selectedField) {
+      return '';
+    }
+    return yaml.stringify({
+      parameters: [
+        {
+          title: `${selectedField.name} Example`,
+          properties: {
+            [selectedField.name]: {
+              type: selectedField.schema?.returnValue?.type,
+              'ui:field': selectedField.name,
+              'ui:options': fieldFormState,
             },
           },
-        ],
-      }),
-    [fieldFormState, selectedField],
-  );
+        },
+      ],
+    });
+  }, [fieldFormState, selectedField]);
 
   const fieldComponents = useMemo(() => {
     return Object.fromEntries(
@@ -131,29 +138,39 @@ export const CustomFieldExplorer = ({
   return (
     <main className={classes.root}>
       <div className={classes.controls}>
-        <FormControl variant="outlined" size="small" fullWidth>
-          <InputLabel id="select-field-label">
-            {t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
-          </InputLabel>
-          <Select
-            value={selectedField}
-            label={t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
-            labelId="select-field-label"
-            onChange={e =>
-              handleSelectionChange(e.target.value as FieldExtensionOptions)
+        <Autocomplete
+          id="custom-fields-autocomplete"
+          value={selectedField}
+          options={fieldOptions}
+          getOptionLabel={option => option.name}
+          renderInput={params => (
+            <TextField
+              {...params}
+              aria-label={t(
+                'templateEditorPage.customFieldExplorer.selectFieldLabel',
+              )}
+              placeholder={t(
+                'templateEditorPage.customFieldExplorer.selectFieldLabel',
+              )}
+              variant="outlined"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+          onChange={(_event, option) => {
+            if (option) {
+              handleSelectionChange(option);
             }
-          >
-            {fieldOptions.map((option, idx) => (
-              <MenuItem key={idx} value={option as any}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <IconButton size="medium" onClick={onClose} aria-label="Close">
-          <CloseIcon />
-        </IconButton>
+          }}
+          disableClearable
+          fullWidth
+        />
       </div>
       <div className={classes.fieldForm}>
         <Card>
@@ -169,7 +186,7 @@ export const CustomFieldExplorer = ({
               formContext={{ fieldFormState }}
               onSubmit={e => handleFieldConfigChange(e.formData)}
               validator={validator}
-              schema={selectedField.schema?.uiOptions || {}}
+              schema={selectedField?.schema?.uiOptions || {}}
               experimental_defaultFormStateBehavior={{
                 allOf: 'populateDefaults',
               }}
@@ -178,7 +195,7 @@ export const CustomFieldExplorer = ({
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={!selectedField.schema?.uiOptions}
+                disabled={!selectedField?.schema?.uiOptions}
               >
                 {t(
                   'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle',

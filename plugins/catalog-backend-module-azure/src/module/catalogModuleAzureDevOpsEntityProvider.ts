@@ -24,7 +24,7 @@ import { AzureDevOpsEntityProvider } from '../providers';
 /**
  * Registers the AzureDevOpsEntityProvider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModuleAzureDevOpsEntityProvider = createBackendModule({
   pluginId: 'catalog',

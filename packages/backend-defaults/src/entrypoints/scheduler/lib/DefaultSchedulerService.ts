@@ -17,6 +17,7 @@
 import {
   DatabaseService,
   LoggerService,
+  RootLifecycleService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { once } from 'lodash';
@@ -34,6 +35,7 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
+    rootLifecycle?: RootLifecycleService;
   }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await options.database.getClient();
@@ -43,17 +45,24 @@ export class DefaultSchedulerService {
       }
 
       if (process.env.NODE_ENV !== 'test') {
+        const abortController = new AbortController();
         const janitor = new PluginTaskSchedulerJanitor({
           knex,
           waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
           logger: options.logger,
         });
-        janitor.start();
+
+        options.rootLifecycle?.addShutdownHook(() => abortController.abort());
+        janitor.start(abortController.signal);
       }
 
       return knex;
     });
 
-    return new PluginTaskSchedulerImpl(databaseFactory, options.logger);
+    return new PluginTaskSchedulerImpl(
+      databaseFactory,
+      options.logger,
+      options.rootLifecycle,
+    );
   }
 }

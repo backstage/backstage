@@ -506,36 +506,4 @@ export class TechDocsStorageClient implements TechDocsStorageApi_2 {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult_2>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/api.d.ts:31:5 - (ae-undocumented) Missing documentation for "getApiOrigin".
-// src/api.d.ts:32:5 - (ae-undocumented) Missing documentation for "getStorageUrl".
-// src/api.d.ts:33:5 - (ae-undocumented) Missing documentation for "getBuilder".
-// src/api.d.ts:34:5 - (ae-undocumented) Missing documentation for "getEntityDocs".
-// src/api.d.ts:35:5 - (ae-undocumented) Missing documentation for "syncEntityDocs".
-// src/api.d.ts:36:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
-// src/api.d.ts:45:5 - (ae-undocumented) Missing documentation for "getApiOrigin".
-// src/api.d.ts:46:5 - (ae-undocumented) Missing documentation for "getTechDocsMetadata".
-// src/api.d.ts:47:5 - (ae-undocumented) Missing documentation for "getEntityMetadata".
-// src/client.d.ts:11:5 - (ae-undocumented) Missing documentation for "configApi".
-// src/client.d.ts:12:5 - (ae-undocumented) Missing documentation for "discoveryApi".
-// src/client.d.ts:19:5 - (ae-undocumented) Missing documentation for "getCookie".
-// src/client.d.ts:22:5 - (ae-undocumented) Missing documentation for "getApiOrigin".
-// src/client.d.ts:49:5 - (ae-undocumented) Missing documentation for "configApi".
-// src/client.d.ts:50:5 - (ae-undocumented) Missing documentation for "discoveryApi".
-// src/client.d.ts:59:5 - (ae-undocumented) Missing documentation for "getApiOrigin".
-// src/client.d.ts:60:5 - (ae-undocumented) Missing documentation for "getStorageUrl".
-// src/client.d.ts:61:5 - (ae-undocumented) Missing documentation for "getBuilder".
-// src/client.d.ts:80:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
-// src/home/components/TechDocsCustomHome.d.ts:16:5 - (ae-undocumented) Missing documentation for "title".
-// src/home/components/TechDocsCustomHome.d.ts:17:5 - (ae-undocumented) Missing documentation for "description".
-// src/home/components/TechDocsCustomHome.d.ts:18:5 - (ae-undocumented) Missing documentation for "panelType".
-// src/home/components/TechDocsCustomHome.d.ts:19:5 - (ae-undocumented) Missing documentation for "panelCSS".
-// src/home/components/TechDocsCustomHome.d.ts:20:5 - (ae-undocumented) Missing documentation for "filterPredicate".
-// src/home/components/TechDocsCustomHome.d.ts:28:5 - (ae-undocumented) Missing documentation for "label".
-// src/home/components/TechDocsCustomHome.d.ts:29:5 - (ae-undocumented) Missing documentation for "panels".
-// src/index.d.ts:21:1 - (ae-undocumented) Missing documentation for "DeprecatedTechDocsMetadata".
-// src/index.d.ts:27:1 - (ae-undocumented) Missing documentation for "DeprecatedTechDocsEntityMetadata".
-// src/reader/components/TechDocsReaderPage/TechDocsReaderPage.d.ts:27:1 - (ae-undocumented) Missing documentation for "TechDocsReaderPageProps".
 ```

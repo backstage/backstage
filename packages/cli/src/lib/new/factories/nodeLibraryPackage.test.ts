@@ -75,7 +75,7 @@ describe('nodeLibraryPackage factory', () => {
       `availability  ${joinPath('packages', expectedNodeLibraryPackageName)}`,
       'creating      temp dir',
       'Executing Template:',
-      'copying       .eslintrc.js',
+      'templating    .eslintrc.js.hbs',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
       'templating    index.ts.hbs',

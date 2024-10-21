@@ -123,6 +123,8 @@ export async function makeRollupConfigs(
         format: 'commonjs',
         interop: 'compat',
         sourcemap: true,
+        preserveModules: true,
+        preserveModulesRoot: `${targetDir}/src`,
         exports: 'named',
       });
     }

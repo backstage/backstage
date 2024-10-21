@@ -1,5 +1,36 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.40
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.24.0
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-techdocs-react@1.2.9
+  - @backstage/core-app-api@1.15.1
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/plugin-search-react@1.8.1
+  - @backstage/test-utils@1.7.0
+  - @backstage/plugin-techdocs@1.11.0
+
+## 1.0.40-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.24.0-next.2
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/plugin-techdocs@1.11.0-next.2
+  - @backstage/core-app-api@1.15.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/test-utils@1.6.1-next.2
+  - @backstage/plugin-search-react@1.8.1-next.2
+  - @backstage/plugin-techdocs-react@1.2.9-next.2
+
 ## 1.0.40-next.1
 
 ### Patch Changes

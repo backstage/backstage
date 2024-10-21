@@ -275,13 +275,4 @@ export type VendorConfig = {
   dnAttributeName?: string;
   uuidAttributeName?: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/ldap/client.d.ts:16:5 - (ae-undocumented) Missing documentation for "create".
-// src/processors/LdapOrgEntityProvider.d.ts:107:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/LdapOrgEntityProvider.d.ts:108:5 - (ae-undocumented) Missing documentation for "fromLegacyConfig".
-// src/processors/LdapOrgReaderProcessor.d.ts:16:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/LdapOrgReaderProcessor.d.ts:27:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/LdapOrgReaderProcessor.d.ts:28:5 - (ae-undocumented) Missing documentation for "readLocation".
 ```

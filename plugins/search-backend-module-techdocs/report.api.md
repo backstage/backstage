@@ -6,17 +6,25 @@
 /// <reference types="node" />
 
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
+import { TechDocsCollatorDocumentTransformer as TechDocsCollatorDocumentTransformer_2 } from '@backstage/plugin-search-backend-module-techdocs';
+import { TechDocsCollatorEntityTransformer as TechDocsCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
@@ -37,9 +45,50 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
 }
 
 // @public (undocumented)
+export interface MkSearchIndexDoc {
+  // (undocumented)
+  location: string;
+  // (undocumented)
+  tags?: string[];
+  // (undocumented)
+  text: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export type TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => Partial<
+  Omit<
+    TechDocsDocument,
+    | 'location'
+    | 'authorization'
+    | 'kind'
+    | 'namespace'
+    | 'name'
+    | 'lifecycle'
+    | 'owner'
+  >
+>;
+
+// @public (undocumented)
 export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
-) => Omit<TechDocsDocument, 'location' | 'authorization'>;
+) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;
+
+// @public (undocumented)
+export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  // (undocumented)
+  setDocumentTransformer(
+    transformer: TechDocsCollatorDocumentTransformer_2,
+  ): void;
+  // (undocumented)
+  setTransformer(transformer: TechDocsCollatorEntityTransformer_2): void;
+}
+
+// @public
+export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>;
 
 // @public @deprecated
 export type TechDocsCollatorFactoryOptions = {
@@ -53,14 +102,6 @@ export type TechDocsCollatorFactoryOptions = {
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
+  documentTransformer?: TechDocsCollatorDocumentTransformer;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:36:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:37:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:47:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:48:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
-// src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
 ```

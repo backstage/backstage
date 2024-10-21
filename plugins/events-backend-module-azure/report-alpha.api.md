@@ -5,10 +5,12 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// @alpha
-const eventsModuleAzureDevOpsEventRouter: BackendFeature;
-export default eventsModuleAzureDevOpsEventRouter;
-export { eventsModuleAzureDevOpsEventRouter };
+// @alpha (undocumented)
+export const eventsModuleAzureDevOpsEventRouter: BackendFeature;
+
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

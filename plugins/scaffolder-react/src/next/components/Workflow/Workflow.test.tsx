@@ -16,7 +16,7 @@
 
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -25,7 +25,8 @@ import React from 'react';
 import { Workflow } from './Workflow';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi, scaffolderApiRef } from '../../../api';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),
@@ -38,14 +39,13 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listTasks: jest.fn(),
   autocomplete: jest.fn(),
 };
-const catalogApiMock: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
 
-const analyticsMock = new MockAnalyticsApi();
+const catalogApi = catalogApiMock.mock();
+
+const analyticsMock = mockApis.analytics();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
-  [catalogApiRef, catalogApiMock],
+  [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsMock],
 );
 

@@ -61,6 +61,8 @@ export function TemplateFormPage(props: TemplateFormPageProps) {
       <Header
         title={t('templateFormPage.title')}
         subtitle={t('templateFormPage.subtitle')}
+        type={t('templateIntroPage.title')}
+        typeLink={editLink()}
       />
       <Content className={classes.root}>
         <TemplateFormPreviewer

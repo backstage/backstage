@@ -16,11 +16,13 @@
 
 import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import React from 'react';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import {
+  MockEntityListContextProvider,
+  catalogApiMock,
+} from '@backstage/plugin-catalog-react/testUtils';
 import { EntityAutocompletePicker } from './EntityAutocompletePicker';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { DefaultEntityFilters } from '../../hooks';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '../../types';
@@ -46,17 +48,15 @@ class EntityOptionFilter implements EntityFilter {
   }
 }
 
-const makeMockCatalogApi = (
-  opts: string[] = defaultOptions,
-): Partial<jest.Mocked<CatalogApi>> => {
-  return {
+function makeMockCatalogApi(opts: string[] = defaultOptions) {
+  return catalogApiMock.mock({
     getEntityFacets: jest.fn().mockResolvedValue({
       facets: {
         'spec.options': opts.map((value, idx) => ({ value, count: idx })),
       },
     }),
-  };
-};
+  });
+}
 
 describe('<EntityAutocompletePicker/>', () => {
   beforeEach(() => {
@@ -64,9 +64,9 @@ describe('<EntityAutocompletePicker/>', () => {
   });
 
   it('renders all options', async () => {
-    const mockCatalogApi = makeMockCatalogApi();
+    const catalogApi = makeMockCatalogApi();
     render(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityAutocompletePicker<EntityFilters>
             label="Options"
@@ -82,7 +82,7 @@ describe('<EntityAutocompletePicker/>', () => {
     );
 
     // should have called catalog backend without any filters applied
-    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+    expect(catalogApi.getEntityFacets).toHaveBeenCalledWith({
       facets: ['spec.options'],
       filter: {},
     });

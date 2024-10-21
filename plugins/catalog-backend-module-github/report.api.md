@@ -5,6 +5,7 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
@@ -36,6 +37,10 @@ export const defaultUserTransformer: (
   item: GithubUser,
   _ctx: TransformerContext,
 ) => Promise<UserEntity | undefined>;
+
+// @public
+const githubCatalogModule: BackendFeature;
+export default githubCatalogModule;
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -318,41 +323,4 @@ export type UserTransformer = (
   item: GithubUser,
   ctx: TransformerContext,
 ) => Promise<Entity | undefined>;
-
-// Warnings were encountered during analysis:
-//
-// src/analyzers/GithubLocationAnalyzer.d.ts:8:1 - (ae-undocumented) Missing documentation for "GithubLocationAnalyzerOptions".
-// src/analyzers/GithubLocationAnalyzer.d.ts:17:1 - (ae-undocumented) Missing documentation for "GithubLocationAnalyzer".
-// src/analyzers/GithubLocationAnalyzer.d.ts:23:5 - (ae-undocumented) Missing documentation for "supports".
-// src/analyzers/GithubLocationAnalyzer.d.ts:24:5 - (ae-undocumented) Missing documentation for "analyze".
-// src/deprecated.d.ts:9:1 - (ae-undocumented) Missing documentation for "GitHubOrgEntityProvider".
-// src/deprecated.d.ts:10:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/deprecated.d.ts:16:1 - (ae-undocumented) Missing documentation for "GitHubOrgEntityProviderOptions".
-// src/deprecated.d.ts:21:1 - (ae-undocumented) Missing documentation for "GitHubEntityProvider".
-// src/deprecated.d.ts:23:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/deprecated.d.ts:29:5 - (ae-undocumented) Missing documentation for "connect".
-// src/deprecated.d.ts:30:5 - (ae-undocumented) Missing documentation for "getProviderName".
-// src/deprecated.d.ts:31:5 - (ae-undocumented) Missing documentation for "refresh".
-// src/lib/defaultTransformers.d.ts:10:5 - (ae-undocumented) Missing documentation for "client".
-// src/lib/defaultTransformers.d.ts:11:5 - (ae-undocumented) Missing documentation for "query".
-// src/lib/defaultTransformers.d.ts:12:5 - (ae-undocumented) Missing documentation for "org".
-// src/processors/GithubDiscoveryProcessor.d.ts:25:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/GithubDiscoveryProcessor.d.ts:34:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/GithubDiscoveryProcessor.d.ts:35:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/processors/GithubMultiOrgReaderProcessor.d.ts:19:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/GithubMultiOrgReaderProcessor.d.ts:33:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/GithubMultiOrgReaderProcessor.d.ts:34:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/processors/GithubOrgReaderProcessor.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/GithubOrgReaderProcessor.d.ts:27:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/GithubOrgReaderProcessor.d.ts:28:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/providers/GithubEntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GithubEntityProvider.d.ts:33:5 - (ae-undocumented) Missing documentation for "refresh".
-// src/providers/GithubEntityProvider.d.ts:51:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/GithubEntityProvider.d.ts:60:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/GithubEntityProvider.d.ts:71:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/GithubEntityProvider.d.ts:81:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/GithubEntityProvider.d.ts:93:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/GithubEntityProvider.d.ts:102:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/GithubMultiOrgEntityProvider.d.ts:84:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GithubOrgEntityProvider.d.ts:71:5 - (ae-undocumented) Missing documentation for "fromConfig".
 ```

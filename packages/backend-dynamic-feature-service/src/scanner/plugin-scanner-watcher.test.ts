@@ -125,7 +125,7 @@ describe('plugin-scanner', () => {
       });
 
       expect(logger.logs).toEqual<Logs>({
-        infos: [
+        infos: expect.arrayContaining([
           {
             message: `rootDirectory changed (addDir - ${path.resolve(
               backstageRootDirectory,
@@ -138,7 +138,7 @@ describe('plugin-scanner', () => {
               'first-dir/test-backend-plugin/package.json',
             )}): scanning plugins again`,
           },
-        ],
+        ]),
       });
       logger.logs = {};
 
@@ -156,14 +156,14 @@ describe('plugin-scanner', () => {
       });
 
       expect(logger.logs).toEqual<Logs>({
-        infos: [
+        infos: expect.arrayContaining([
           {
             message: `rootDirectory changed in Config from '${path.resolve(
               backstageRootDirectory,
               'first-dir',
             )}' to '${path.resolve(backstageRootDirectory, 'second-dir')}'`,
           },
-        ],
+        ]),
       });
       logger.logs = {};
 
@@ -212,7 +212,7 @@ describe('plugin-scanner', () => {
       });
 
       expect(logger.logs).toEqual<Logs>({
-        infos: [
+        infos: expect.arrayContaining([
           {
             message: `rootDirectory changed (addDir - ${path.resolve(
               backstageRootDirectory,
@@ -225,7 +225,7 @@ describe('plugin-scanner', () => {
               'second-dir/second-test-backend-plugin/package.json',
             )}): scanning plugins again`,
           },
-        ],
+        ]),
       });
       logger.logs = {};
 
@@ -291,41 +291,37 @@ describe('plugin-scanner', () => {
       expect(info).toHaveBeenCalledTimes(0);
       debug.mockClear();
 
-      const onWindows = path.sep === '\\';
       // Order of events is not fixed on Windows.
       // Windows sometimes even adds a 'change' event when a file is unlinked.
       // So let's not try to tes the detail of received events on Windows
-      if (!onWindows) {
-        // eslint-disable-next-line
-        expect(logger.logs).toEqual<Logs>({
-          debugs: [
-            {
-              message: `rootDirectory changed (addDir - ${path.resolve(
-                backstageRootDirectory,
-                'second-dir/second-test-backend-plugin/sub-directory',
-              )}): no need to scan plugins again`,
-            },
-            {
-              message: `rootDirectory changed (add - ${path.resolve(
-                backstageRootDirectory,
-                'second-dir/second-test-backend-plugin/not-package.json',
-              )}): no need to scan plugins again`,
-            },
-            {
-              message: `rootDirectory changed (unlink - ${path.resolve(
-                backstageRootDirectory,
-                'second-dir/second-test-backend-plugin/not-package.json',
-              )}): no need to scan plugins again`,
-            },
-            {
-              message: `rootDirectory changed (unlinkDir - ${path.resolve(
-                backstageRootDirectory,
-                'second-dir/second-test-backend-plugin/sub-directory',
-              )}): no need to scan plugins again`,
-            },
-          ],
-        });
-      }
+      expect(logger.logs).toEqual<Logs>({
+        debugs: expect.arrayContaining([
+          {
+            message: `rootDirectory changed (addDir - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/sub-directory',
+            )}): no need to scan plugins again`,
+          },
+          {
+            message: `rootDirectory changed (add - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/not-package.json',
+            )}): no need to scan plugins again`,
+          },
+          {
+            message: `rootDirectory changed (unlink - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/not-package.json',
+            )}): no need to scan plugins again`,
+          },
+          {
+            message: `rootDirectory changed (unlinkDir - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/sub-directory',
+            )}): no need to scan plugins again`,
+          },
+        ]),
+      });
       logger.logs = {};
 
       // Now check that removal of some plugin home directory triggers a new scan of plugins
@@ -346,39 +342,40 @@ describe('plugin-scanner', () => {
         expect(scannedPlugins).toEqual([]);
       });
 
-      if (!onWindows) {
-        // eslint-disable-next-line
-        expect(logger.logs.infos).toEqual<LogContent[] | undefined>([
+      expect(logger.logs.infos).toEqual<LogContent[] | undefined>(
+        expect.arrayContaining([
           {
             message: `rootDirectory changed (unlink - ${path.resolve(
               backstageRootDirectory,
               'second-dir/second-test-backend-plugin/package.json',
             )}): scanning plugins again`,
           },
-        ]);
-      }
-      expect(logger.logs.errors).toEqual<LogContent[] | undefined>([
-        {
-          message: `failed to load dynamic plugin manifest from '${path.resolve(
-            backstageRootDirectory,
-            'second-dir/second-test-backend-plugin',
-          )}'`,
-          meta: {
-            code: 'ENOENT',
-            errno: path.sep === '\\' ? -4058 : -2,
-            message: `ENOENT: no such file or directory, open '${path.resolve(
+        ]),
+      );
+      expect(logger.logs.errors).toEqual<LogContent[] | undefined>(
+        expect.arrayContaining([
+          {
+            message: `failed to load dynamic plugin manifest from '${path.resolve(
               backstageRootDirectory,
-              'second-dir/second-test-backend-plugin/package.json',
+              'second-dir/second-test-backend-plugin',
             )}'`,
-            name: 'Error',
-            path: `${path.resolve(
-              backstageRootDirectory,
-              'second-dir/second-test-backend-plugin/package.json',
-            )}`,
-            syscall: 'open',
+            meta: {
+              code: 'ENOENT',
+              errno: path.sep === '\\' ? -4058 : -2,
+              message: `ENOENT: no such file or directory, open '${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin/package.json',
+              )}'`,
+              name: 'Error',
+              path: `${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin/package.json',
+              )}`,
+              syscall: 'open',
+            },
           },
-        },
-      ]);
+        ]),
+      );
       logger.logs = {};
 
       await rm(
@@ -394,19 +391,16 @@ describe('plugin-scanner', () => {
       });
       rootDirectorySubscriber.mockClear();
 
-      if (!onWindows) {
-        // eslint-disable-next-line
-        expect(logger.logs).toEqual<Logs>({
-          infos: [
-            {
-              message: `rootDirectory changed (unlinkDir - ${path.resolve(
-                backstageRootDirectory,
-                'second-dir/second-test-backend-plugin',
-              )}): scanning plugins again`,
-            },
-          ],
-        });
-      }
+      expect(logger.logs).toEqual<Logs>({
+        infos: expect.arrayContaining([
+          {
+            message: `rootDirectory changed (unlinkDir - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin',
+            )}): scanning plugins again`,
+          },
+        ]),
+      });
       logger.logs = {};
 
       getOptional.mockReturnValue({
@@ -415,7 +409,7 @@ describe('plugin-scanner', () => {
       await onConfigChange!();
 
       expect(logger.logs).toEqual<Logs>({
-        errors: [
+        errors: expect.arrayContaining([
           {
             message: 'failed to apply new config for dynamic plugins',
             meta: {
@@ -432,7 +426,7 @@ Please add '${path.resolve(
               name: 'Error',
             },
           },
-        ],
+        ]),
       });
     }, 120000);
   });

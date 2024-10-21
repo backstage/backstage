@@ -1,5 +1,42 @@
 # @backstage/backend-app-api
 
+## 1.0.1
+
+### Patch Changes
+
+- ffd1f4a: Plugin lifecycle shutdown hooks are now performed before root lifecycle shutdown hooks.
+- fd6e6f4: build(deps): bump `cookie` from 0.6.0 to 0.7.0
+- 094eaa3: Remove references to in-repo backend-common
+- 04af116: The backend will no longer exit immediately if any plugin or modules fails to initialize. Instead, the backend will wait for all plugins and modules to either start up successfully or throw, and then shut down the backend if there were any initialization errors.
+
+  This fixes an issue where backend initialization errors in adjacent plugins during database schema migration could cause the database migrations to be stuck in a locked state.
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- ffd1f4a: Plugin lifecycle shutdown hooks are now performed before root lifecycle shutdown hooks.
+- fd6e6f4: build(deps): bump `cookie` from 0.6.0 to 0.7.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.8.4-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

@@ -34,7 +34,7 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { PackageRoles } from '@backstage/cli-node';
+import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { findPaths } from '@backstage/cli-common';
 import path from 'path';
 import * as fs from 'fs';
@@ -88,7 +88,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       ),
     );
 
-    moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
+    await moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
 
     scanner.subscribeToRootDirectoryChange(async () => {
       manager._availablePackages = (await scanner.scanRoot()).packages;
@@ -104,7 +104,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
 
   private constructor(
     private readonly logger: LoggerService,
-    private packages: ScannedPluginPackage[],
+    private readonly packages: ScannedPluginPackage[],
     private readonly moduleLoader: ModuleLoader,
   ) {
     this._plugins = [];
@@ -123,26 +123,39 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     const loadedPlugins: DynamicPlugin[] = [];
 
     for (const scannedPlugin of this.packages) {
-      const platform = PackageRoles.getRoleInfo(
-        scannedPlugin.manifest.backstage.role,
-      ).platform;
+      const role = scannedPlugin.manifest.backstage.role;
+      const platform = PackageRoles.getRoleInfo(role).platform;
+      const isPlugin =
+        role.endsWith('-plugin') ||
+        role.endsWith('-plugin-module') ||
+        role === ('frontend-dynamic-container' as PackageRole);
 
-      if (
-        platform === 'node' &&
-        scannedPlugin.manifest.backstage.role.includes('-plugin')
-      ) {
-        const plugin = await this.loadBackendPlugin(scannedPlugin);
-        if (plugin !== undefined) {
-          loadedPlugins.push(plugin);
-        }
-      } else {
-        loadedPlugins.push({
-          name: scannedPlugin.manifest.name,
-          version: scannedPlugin.manifest.version,
-          role: scannedPlugin.manifest.backstage.role,
-          platform: 'web',
-          // TODO(davidfestal): add required front-end plugin information here.
-        });
+      if (!isPlugin) {
+        this.logger.info(
+          `skipping dynamic plugin package '${scannedPlugin.manifest.name}' from '${scannedPlugin.location}': incompatible role '${role}'`,
+        );
+        continue;
+      }
+
+      switch (platform) {
+        case 'node':
+          loadedPlugins.push(await this.loadBackendPlugin(scannedPlugin));
+          break;
+
+        case 'web':
+          loadedPlugins.push({
+            name: scannedPlugin.manifest.name,
+            version: scannedPlugin.manifest.version,
+            role: scannedPlugin.manifest.backstage.role,
+            platform: 'web',
+            // TODO(davidfestal): add required front-end plugin information here.
+          });
+          break;
+
+        default:
+          this.logger.info(
+            `skipping dynamic plugin package '${scannedPlugin.manifest.name}' from '${scannedPlugin.location}': unrelated platform '${platform}'`,
+          );
       }
     }
     return loadedPlugins;
@@ -150,72 +163,97 @@ export class DynamicPluginManager implements DynamicPluginProvider {
 
   private async loadBackendPlugin(
     plugin: ScannedPluginPackage,
-  ): Promise<BackendDynamicPlugin | undefined> {
+  ): Promise<BackendDynamicPlugin> {
     const packagePath = url.fileURLToPath(
       `${plugin.location}/${plugin.manifest.main}`,
     );
+    const dynamicPlugin: BackendDynamicPlugin = {
+      name: plugin.manifest.name,
+      version: plugin.manifest.version,
+      platform: 'node',
+      role: plugin.manifest.backstage.role,
+    };
+
     try {
       const pluginModule = await this.moduleLoader.load(packagePath);
 
-      let dynamicPluginInstaller;
       if (isBackendFeature(pluginModule.default)) {
-        dynamicPluginInstaller = {
+        dynamicPlugin.installer = {
           kind: 'new',
           install: () => pluginModule.default,
         };
       } else if (isBackendFeatureFactory(pluginModule.default)) {
-        dynamicPluginInstaller = {
+        dynamicPlugin.installer = {
           kind: 'new',
           install: pluginModule.default,
         };
-      } else {
-        dynamicPluginInstaller = pluginModule.dynamicPluginInstaller;
+      } else if (
+        isBackendDynamicPluginInstaller(pluginModule.dynamicPluginInstaller)
+      ) {
+        dynamicPlugin.installer = pluginModule.dynamicPluginInstaller;
       }
-      if (!isBackendDynamicPluginInstaller(dynamicPluginInstaller)) {
-        this.logger.error(
-          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`,
+      if (dynamicPlugin.installer) {
+        this.logger.info(
+          `loaded dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
         );
-        return undefined;
+      } else {
+        dynamicPlugin.failure = `the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`;
+        this.logger.error(
+          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': ${dynamicPlugin.failure}`,
+        );
       }
-      this.logger.info(
-        `loaded dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
-      );
-      return {
-        name: plugin.manifest.name,
-        version: plugin.manifest.version,
-        platform: 'node',
-        role: plugin.manifest.backstage.role,
-        installer: dynamicPluginInstaller,
-      };
+      return dynamicPlugin;
     } catch (error) {
+      const typedError =
+        typeof error === 'object' && 'message' in error && 'name' in error
+          ? error
+          : new Error(error);
+      dynamicPlugin.failure = `${typedError.name}: ${typedError.message}`;
       this.logger.error(
         `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
-        error,
+        typedError,
       );
-      return undefined;
+      return dynamicPlugin;
     }
   }
 
-  backendPlugins(): BackendDynamicPlugin[] {
-    return this._plugins.filter(
+  backendPlugins(options?: {
+    includeFailed?: boolean;
+  }): BackendDynamicPlugin[] {
+    return this.plugins(options).filter(
       (p): p is BackendDynamicPlugin => p.platform === 'node',
     );
   }
 
-  frontendPlugins(): FrontendDynamicPlugin[] {
-    return this._plugins.filter(
+  frontendPlugins(options?: {
+    includeFailed?: boolean;
+  }): FrontendDynamicPlugin[] {
+    return this.plugins(options).filter(
       (p): p is FrontendDynamicPlugin => p.platform === 'web',
     );
   }
 
-  plugins(): DynamicPlugin[] {
-    return this._plugins;
+  plugins(options?: { includeFailed?: boolean }): DynamicPlugin[] {
+    return this._plugins.filter(p => options?.includeFailed || !p.failure);
+  }
+
+  getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage {
+    const pkg = this.packages.find(
+      p =>
+        p.manifest.name === plugin.name &&
+        p.manifest.version === plugin.version,
+    );
+    if (pkg === undefined) {
+      throw new Error(
+        `The scanned package of a dynamic plugin should always be available: ${plugin.name}/${plugin.version}`,
+      );
+    }
+    return pkg;
   }
 }
 
 /**
  * @public
- * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsServiceRef = createServiceRef<DynamicPluginProvider>(
   {
@@ -228,12 +266,12 @@ export const dynamicPluginsServiceRef = createServiceRef<DynamicPluginProvider>(
  * @public
  */
 export interface DynamicPluginsFactoryOptions {
-  moduleLoader?(logger: LoggerService): ModuleLoader;
+  moduleLoader?(logger: LoggerService): ModuleLoader | Promise<ModuleLoader>;
 }
 
 /**
  * @public
- * @deprecated Use {@link dynamicPluginsFeatureDiscoveryLoader} instead.
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
  */
 export const dynamicPluginsServiceFactoryWithOptions = (
   options?: DynamicPluginsFactoryOptions,
@@ -249,17 +287,19 @@ export const dynamicPluginsServiceFactoryWithOptions = (
         config,
         logger,
         preferAlpha: true,
-        moduleLoader: options?.moduleLoader?.(logger),
+        moduleLoader: await options?.moduleLoader?.(logger),
       });
     },
   });
 
 /**
  * @public
- * @deprecated Use {@link dynamicPluginsFeatureDiscoveryLoader} instead.
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
  */
-export const dynamicPluginsServiceFactory =
-  dynamicPluginsServiceFactoryWithOptions();
+export const dynamicPluginsServiceFactory = Object.assign(
+  dynamicPluginsServiceFactoryWithOptions,
+  dynamicPluginsServiceFactoryWithOptions(),
+);
 
 class DynamicPluginsEnabledFeatureDiscoveryService
   implements FeatureDiscoveryService
@@ -279,7 +319,7 @@ class DynamicPluginsEnabledFeatureDiscoveryService
         ...this.dynamicPlugins
           .backendPlugins()
           .flatMap((plugin): BackendFeature[] => {
-            if (plugin.installer.kind === 'new') {
+            if (plugin.installer?.kind === 'new') {
               const installed = plugin.installer.install();
               if (Array.isArray(installed)) {
                 return installed;
@@ -296,7 +336,7 @@ class DynamicPluginsEnabledFeatureDiscoveryService
 
 /**
  * @public
- * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} instead.
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
  */
 export const dynamicPluginsFeatureDiscoveryServiceFactory =
   createServiceFactory({
@@ -310,65 +350,22 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
     },
   });
 
-const dynamicPluginsFeatureDiscoveryLoaderWithOptions = (
-  options?: DynamicPluginsFactoryOptions,
-) =>
-  createBackendFeatureLoader({
-    deps: {
-      config: coreServices.rootConfig,
-      logger: coreServices.rootLogger,
-    },
-    async loader({ config, logger }) {
-      const manager = await DynamicPluginManager.create({
-        config,
-        logger,
-        preferAlpha: true,
-        moduleLoader: options?.moduleLoader?.(logger),
-      });
-      const service = new DynamicPluginsEnabledFeatureDiscoveryService(manager);
-      const { features } = await service.getBackendFeatures();
-      return features;
-    },
-  });
-
 /**
- * A backend feature loader that uses the dynamic plugins system to discover features.
- *
  * @public
- *
- * @example
- * Using the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
- * ```ts
- * //...
- * import { createBackend } from '@backstage/backend-defaults';
- * import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
- *
- * const backend = createBackend();
- * backend.add(dynamicPluginsFeatureDiscoveryLoader);
- * //...
- * backend.start();
- * ```
- *
- * @example
- * Passing options to the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
- * ```ts
- * //...
- * import { createBackend } from '@backstage/backend-defaults';
- * import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
- * import { myCustomModuleLoader } from './myCustomModuleLoader';
- *
- * const backend = createBackend();
- * backend.add(dynamicPluginsFeatureDiscoveryLoader({
- *   moduleLoader: myCustomModuleLoader
- * }));
- * //...
- * backend.start();
- * ```
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
  */
-export const dynamicPluginsFeatureDiscoveryLoader = Object.assign(
-  dynamicPluginsFeatureDiscoveryLoaderWithOptions,
-  dynamicPluginsFeatureDiscoveryLoaderWithOptions(),
-);
+export const dynamicPluginsFeatureDiscoveryLoader = createBackendFeatureLoader({
+  deps: {
+    dynamicPlugins: dynamicPluginsServiceRef,
+  },
+  async loader({ dynamicPlugins }) {
+    const service = new DynamicPluginsEnabledFeatureDiscoveryService(
+      dynamicPlugins,
+    );
+    const { features } = await service.getBackendFeatures();
+    return features;
+  },
+});
 
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (

@@ -843,9 +843,18 @@ export class CatalogBuilder {
       });
     }
 
+    if (!Boolean(config.get('catalog.processingInterval'))) {
+      return () => {
+        throw new Error(
+          'catalog.processingInterval is set to false, processing is disabled.',
+        );
+      };
+    }
+
     const duration = readDurationFromConfig(config, {
       key: processingIntervalKey,
     });
+
     const seconds = Math.max(
       1,
       Math.round(durationToMilliseconds(duration) / 1000),

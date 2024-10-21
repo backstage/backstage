@@ -1,5 +1,93 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.4.0
+
+### Minor Changes
+
+- 6343c8d: Fixes the event-based updates at `BitbucketCloudEntityProvider`.
+
+  Previously, this entity provider had optional event support for legacy backends
+  that could be enabled by passing `catalogApi`, `events`, and `tokenManager`.
+
+  For the new/current backend system, the `catalogModuleBitbucketCloudEntityProvider`
+  (`catalog.bitbucket-cloud-entity-provider`), event support was enabled by default.
+
+  A recent change removed `tokenManager` as a dependency from the module as well as removed it as input.
+  While this didn't break the instantiation of the module, it broke the event-based updates,
+  and led to a runtime misbehavior, accompanied by an info log message.
+
+  This change will replace the use of `tokenManager` with the use of `auth` (`AuthService`).
+
+  Additionally, to simplify, it will make `catalogApi` and `events` required dependencies.
+  For the current backend system, this change is transparent and doesn't require any action.
+  For the legacy backend system, this change will require you to pass those dependencies
+  if you didn't do it already.
+
+  BREAKING CHANGES:
+
+  _(For legacy backend users only.)_
+
+  Previously optional `catalogApi`, and `events` are required now.
+  A new required dependency `auth` was added.
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24
+  - @backstage/plugin-catalog-common@1.1.0
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 6343c8d: Fixes the event-based updates at `BitbucketCloudEntityProvider`.
+
+  Previously, this entity provider had optional event support for legacy backends
+  that could be enabled by passing `catalogApi`, `events`, and `tokenManager`.
+
+  For the new/current backend system, the `catalogModuleBitbucketCloudEntityProvider`
+  (`catalog.bitbucket-cloud-entity-provider`), event support was enabled by default.
+
+  A recent change removed `tokenManager` as a dependency from the module as well as removed it as input.
+  While this didn't break the instantiation of the module, it broke the event-based updates,
+  and led to a runtime misbehavior, accompanied by an info log message.
+
+  This change will replace the use of `tokenManager` with the use of `auth` (`AuthService`).
+
+  Additionally, to simplify, it will make `catalogApi` and `events` required dependencies.
+  For the current backend system, this change is transparent and doesn't require any action.
+  For the legacy backend system, this change will require you to pass those dependencies
+  if you didn't do it already.
+
+  BREAKING CHANGES:
+
+  _(For legacy backend users only.)_
+
+  Previously optional `catalogApi`, and `events` are required now.
+  A new required dependency `auth` was added.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24-next.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-events-node@0.4.1-next.1
+
 ## 0.3.3-next.1
 
 ### Patch Changes

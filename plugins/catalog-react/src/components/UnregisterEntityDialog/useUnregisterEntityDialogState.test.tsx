@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { CatalogApi, Location } from '@backstage/catalog-client';
+import { Location } from '@backstage/catalog-client';
 import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
 import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 import { TestApiProvider } from '@backstage/test-utils';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 function defer<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
   let resolve: (value: T) => void = () => {};
@@ -31,13 +32,7 @@ function defer<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
 }
 
 describe('useUnregisterEntityDialogState', () => {
-  const catalogApiMock = {
-    getLocationByRef: jest.fn(),
-    getEntities: jest.fn(),
-    removeLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  };
-  const catalogApi = catalogApiMock as Partial<CatalogApi> as CatalogApi;
+  const catalogApi = catalogApiMock.mock();
 
   const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -58,8 +53,8 @@ describe('useUnregisterEntityDialogState', () => {
     resolveLocation = deferredLocation.resolve;
     resolveColocatedEntities = deferredColocatedEntities.resolve;
 
-    catalogApiMock.getLocationByRef.mockReturnValue(deferredLocation.promise);
-    catalogApiMock.getEntities.mockReturnValue(
+    catalogApi.getLocationByRef.mockReturnValue(deferredLocation.promise);
+    catalogApi.getEntities.mockReturnValue(
       deferredColocatedEntities.promise.then(items => ({ items })),
     );
 
