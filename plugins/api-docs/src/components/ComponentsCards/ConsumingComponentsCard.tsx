@@ -34,6 +34,8 @@ import {
   TableColumn,
   WarningPanel,
 } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
 /**
  * @public
@@ -48,10 +50,11 @@ export const ConsumingComponentsCard = (props: {
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_CONSUMED_BY,
   });
+  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title="Consumers">
+      <InfoCard variant={variant} title={t('consumingComponentsCard.title')}>
         <Progress />
       </InfoCard>
     );
@@ -59,10 +62,10 @@ export const ConsumingComponentsCard = (props: {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title="Consumers">
+      <InfoCard variant={variant} title={t('consumingComponentsCard.title')}>
         <WarningPanel
           severity="error"
-          title="Could not load components"
+          title={t('consumingComponentsCard.error.title')}
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
@@ -71,16 +74,16 @@ export const ConsumingComponentsCard = (props: {
 
   return (
     <EntityTable
-      title="Consumers"
+      title={t('consumingComponentsCard.title')}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
-            No component consumes this API.
+            {t('consumingComponentsCard.emptyContent.title')}
           </Typography>
           <Typography variant="body2">
             <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-              Learn how to change this.
+              {t('consumingComponentsCard.emptyContent.helpLinkTitle')}
             </Link>
           </Typography>
         </div>

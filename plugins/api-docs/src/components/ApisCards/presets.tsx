@@ -22,10 +22,14 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import React, { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
+import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
+import { apiDocsTranslationRef } from '../../translation';
 
-export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
+export function createSpecApiTypeColumn(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity> {
   return {
-    title: 'Type',
+    title: t('apiEntityColumns.typeTitle'),
     field: 'spec.type',
     render: entity => <ApiTypeTitle apiEntity={entity} />,
   };
@@ -51,19 +55,25 @@ const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   );
 };
 
-function createApiDefinitionColumn(): TableColumn<ApiEntity> {
+function createApiDefinitionColumn(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity> {
   return {
-    title: 'API Definition',
+    title: t('apiEntityColumns.apiDefinitionTitle'),
     render: entity => <ApiDefinitionButton apiEntity={entity} />,
   };
 }
 
-export const apiEntityColumns: TableColumn<ApiEntity>[] = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
-  EntityTable.columns.createSystemColumn(),
-  EntityTable.columns.createOwnerColumn(),
-  createSpecApiTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-  createApiDefinitionColumn(),
-];
+export const getApiEntityColumns = (
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity>[] => {
+  return [
+    EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
+    EntityTable.columns.createSystemColumn(),
+    EntityTable.columns.createOwnerColumn(),
+    createSpecApiTypeColumn(t),
+    EntityTable.columns.createSpecLifecycleColumn(),
+    EntityTable.columns.createMetadataDescriptionColumn(),
+    createApiDefinitionColumn(t),
+  ];
+};
