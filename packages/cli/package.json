@@ -195,7 +195,7 @@
     "@types/webpack-sources": "^3.2.3",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "@vitejs/plugin-react": "^4.3.1",
-    "del": "^7.0.0",
+    "del": "^8.0.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
     "vite": "^5.0.0",
