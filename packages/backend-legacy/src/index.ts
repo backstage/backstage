@@ -76,7 +76,6 @@ function makeCreateEnv(config: Config) {
   const eventsService = DefaultEventsService.create({ logger: root, config });
   const eventBroker = new DefaultEventBroker(
     root.child({ type: 'plugin' }),
-    config,
     eventsService,
   );
   const signalsService = DefaultSignalsService.create({
