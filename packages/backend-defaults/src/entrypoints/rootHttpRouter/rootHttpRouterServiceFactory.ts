@@ -15,13 +15,13 @@
  */
 
 import {
-  RootConfigService,
   coreServices,
   createServiceFactory,
   LifecycleService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import express, { RequestHandler, Express } from 'express';
+import express, { Express, RequestHandler } from 'express';
 import type { Server } from 'node:http';
 import {
   createHttpServer,
@@ -85,6 +85,10 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
       const app = express();
 
+      const trustProxy = config.getOptional<boolean | number>(
+        'backend.trustProxy',
+      );
+
       const router = DefaultRootHttpRouter.create({ indexPath });
       const middleware = MiddlewareFactory.create({ config, logger });
       const routes = router.handler();
@@ -109,6 +113,10 @@ const rootHttpRouterServiceFactoryWithOptions = (
           if (process.env.NODE_ENV === 'development') {
             app.set('json spaces', 2);
           }
+          if (trustProxy) {
+            app.set('trust proxy', trustProxy);
+          }
+          app.use(middleware.rateLimit());
           app.use(middleware.helmet());
           app.use(middleware.cors());
           app.use(middleware.compression());
