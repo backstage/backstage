@@ -80,8 +80,19 @@ export const EntityDisplayName = (
 
   // The innermost "body" content
   let content = (
-    <Tooltip title={primaryTitle} placement="top" arrow>
-      <Typography noWrap>{primaryTitle}</Typography>
+    <Tooltip
+      title={primaryTitle}
+      placement="top"
+      arrow
+      aria-label={primaryTitle}
+    >
+      <Typography
+        noWrap
+        title={primaryTitle}
+        aria-describedby="tooltip-description"
+      >
+        {primaryTitle}
+      </Typography>
     </Tooltip>
   );
 
