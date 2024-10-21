@@ -14,36 +14,41 @@
  * limitations under the License.
  */
 
-export { coreServices } from './coreServices';
+export type {
+  AuditorCreateEvent,
+  AuditorEventOptions,
+  AuditorEventSeverityLevel,
+  AuditorEventStatus,
+  AuditorService,
+} from './AuditorService';
 export type {
   AuthService,
   BackstageCredentials,
-  BackstageUserPrincipal,
-  BackstageServicePrincipal,
+  BackstageNonePrincipal,
   BackstagePrincipalAccessRestrictions,
   BackstagePrincipalTypes,
-  BackstageNonePrincipal,
+  BackstageServicePrincipal,
+  BackstageUserPrincipal,
 } from './AuthService';
 export type {
   CacheService,
   CacheServiceOptions,
   CacheServiceSetOptions,
 } from './CacheService';
-export type { RootConfigService } from './RootConfigService';
+export { coreServices } from './coreServices';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
-export type { RootHealthService } from './RootHealthService';
+export type { HttpAuthService } from './HttpAuthService';
 export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,
 } from './HttpRouterService';
-export type { HttpAuthService } from './HttpAuthService';
 export type {
   LifecycleService,
-  LifecycleServiceStartupHook,
-  LifecycleServiceStartupOptions,
   LifecycleServiceShutdownHook,
   LifecycleServiceShutdownOptions,
+  LifecycleServiceStartupHook,
+  LifecycleServiceStartupOptions,
 } from './LifecycleService';
 export type { LoggerService } from './LoggerService';
 export type {
@@ -51,6 +56,8 @@ export type {
   PermissionsServiceRequestOptions,
 } from './PermissionsService';
 export type { PluginMetadataService } from './PluginMetadataService';
+export type { RootConfigService } from './RootConfigService';
+export type { RootHealthService } from './RootHealthService';
 export type { RootHttpRouterService } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';
 export type { RootLoggerService } from './RootLoggerService';
@@ -65,15 +72,15 @@ export type {
   SchedulerServiceTaskScheduleDefinitionConfig,
 } from './SchedulerService';
 export type {
+  UrlReaderService,
   UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadTreeResponseDirOptions,
   UrlReaderServiceReadTreeResponseFile,
-  UrlReaderServiceReadUrlResponse,
   UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
   UrlReaderServiceSearchResponseFile,
-  UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';

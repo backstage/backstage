@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  createBackendPlugin,
-  coreServices,
-} from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
@@ -113,6 +113,7 @@ export const scaffolderPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
+        auditor: coreServices.auditor,
         catalogClient: catalogServiceRef,
       },
       async init({
@@ -127,6 +128,7 @@ export const scaffolderPlugin = createBackendPlugin({
         httpAuth,
         catalogClient,
         permissions,
+        auditor,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -189,6 +191,7 @@ export const scaffolderPlugin = createBackendPlugin({
           permissions,
           autocompleteHandlers,
           additionalWorkspaceProviders,
+          auditor,
         });
         httpRouter.use(router);
       },

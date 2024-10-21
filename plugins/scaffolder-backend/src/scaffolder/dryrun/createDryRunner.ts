@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-import { ScmIntegrations } from '@backstage/integration';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject } from '@backstage/types';
-import { v4 as uuid } from 'uuid';
-import { pathToFileURL } from 'url';
-import { Logger } from 'winston';
 import {
-  createTemplateAction,
-  TaskSecrets,
-  TemplateFilter,
-  TemplateGlobal,
-  deserializeDirectoryContents,
-  SerializedFile,
-  serializeDirectoryContents,
-} from '@backstage/plugin-scaffolder-node';
-import { TemplateActionRegistry } from '../actions';
-import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
-import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
-import fs from 'fs-extra';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
+  AuditorService,
   BackstageCredentials,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
+import { ScmIntegrations } from '@backstage/integration';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import {
+  createTemplateAction,
+  deserializeDirectoryContents,
+  SerializedFile,
+  serializeDirectoryContents,
+  TaskSecrets,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
+import fs from 'fs-extra';
+import { pathToFileURL } from 'url';
+import { v4 as uuid } from 'uuid';
+import { Logger } from 'winston';
+import { TemplateActionRegistry } from '../actions';
+import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
+import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -60,6 +61,7 @@ interface DryRunResult {
 /** @internal */
 export type TemplateTesterCreateOptions = {
   logger: Logger;
+  auditor?: AuditorService;
   integrations: ScmIntegrations;
   actionRegistry: TemplateActionRegistry;
   workingDirectory: string;
@@ -107,6 +109,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       const abortSignal = new AbortController().signal;
 
       const result = await workflowRunner.execute({
+        taskId: dryRunId,
         spec: {
           ...input.spec,
           steps: [

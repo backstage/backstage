@@ -24,6 +24,73 @@ import { Readable } from 'stream';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
 
+// @public (undocumented)
+export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
+  eventId: string;
+  severityLevel?: AuditorEventSeverityLevel;
+  request?: Request_2<any, any, any, any, any>;
+  meta?: TRootMeta;
+}) => Promise<{
+  success<TMeta extends JsonObject>(options?: { meta?: TMeta }): Promise<void>;
+  fail<TMeta extends JsonObject, TError extends Error>(
+    options: {
+      meta?: TMeta;
+    } & (
+      | {
+          error: TError;
+        }
+      | {
+          errors: TError[];
+        }
+    ),
+  ): Promise<void>;
+}>;
+
+// @public
+export type AuditorEventOptions<TMeta extends JsonObject> = {
+  eventId: string;
+  severityLevel?: AuditorEventSeverityLevel;
+  request?: Request_2<any, any, any, any, any>;
+  meta?: TMeta;
+} & AuditorEventStatus;
+
+// @public
+export type AuditorEventSeverityLevel = 'low' | 'medium' | 'high' | 'critical';
+
+// @public (undocumented)
+export type AuditorEventStatus<TError extends Error = Error> =
+  | {
+      status: 'unknown';
+    }
+  | {
+      status: 'initiated';
+    }
+  | {
+      status: 'succeeded';
+    }
+  | ({
+      status: 'failed';
+    } & (
+      | {
+          error: TError;
+        }
+      | {
+          errors: TError[];
+        }
+    ));
+
+// @public
+export interface AuditorService {
+  // (undocumented)
+  createEvent<TMeta extends JsonObject>(
+    options: Parameters<AuditorCreateEvent<TMeta>>[0],
+  ): ReturnType<AuditorCreateEvent<TMeta>>;
+  // (undocumented)
+  log<TMeta extends JsonObject>(
+    options: AuditorEventOptions<TMeta>,
+  ): Promise<void>;
+}
+
 // @public
 export interface AuthService {
   authenticate(
@@ -183,6 +250,7 @@ export namespace coreServices {
   const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
   const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  const auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
   const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
   const pluginMetadata: ServiceRef<
     PluginMetadataService,

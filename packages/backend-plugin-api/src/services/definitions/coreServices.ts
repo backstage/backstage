@@ -162,6 +162,19 @@ export namespace coreServices {
   >({ id: 'core.logger' });
 
   /**
+   * Plugin-level auditing.
+   *
+   * See {@link AuditorService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/auditor | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const auditor = createServiceRef<
+    import('./AuditorService').AuditorService
+  >({ id: 'core.auditor' });
+
+  /**
    * Permission system integration for authorization of user actions.
    *
    * See {@link PermissionsService}
