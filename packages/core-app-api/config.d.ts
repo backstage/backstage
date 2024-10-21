@@ -26,6 +26,12 @@ export interface Config {
     baseUrl: string;
 
     /**
+     * The URL to redirect to upon sign out.
+     * @visibility frontend
+     */
+    signOutUrl?: string;
+
+    /**
      * The title of the app, as shown in the Backstage web interface.
      * @visibility frontend
      */
