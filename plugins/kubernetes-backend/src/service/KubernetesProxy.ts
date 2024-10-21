@@ -22,6 +22,7 @@ import {
 } from '@backstage/errors';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  SERVICEACCOUNT_CA_PATH,
   kubernetesProxyPermission,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
@@ -29,7 +30,6 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   bufferFromFileOrString,
   Cluster,
-  Config,
   KubeConfig,
 } from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
@@ -263,7 +263,7 @@ export class KubernetesProxy {
 
     if (
       authProvider === 'serviceAccount' &&
-      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH) &&
+      fs.pathExistsSync(SERVICEACCOUNT_CA_PATH) &&
       !cluster.authMetadata.serviceAccountToken
     ) {
       const kc = new KubeConfig();
