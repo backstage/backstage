@@ -47,7 +47,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
-    "@types/node": "^18.17.8",
+    "@types/node": "^20.16.0",
     "nodemon": "^3.0.1"
   }
 }

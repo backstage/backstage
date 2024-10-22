@@ -29,13 +29,13 @@ jobs:
       - name: setup-node
         uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
         with:
-          node-version: 18.x
+          node-version: 20.x
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
         uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
         with:
-          cache-prefix: linux-v18
+          cache-prefix: linux-v20
 
       - name: breaking changes check
         run: |

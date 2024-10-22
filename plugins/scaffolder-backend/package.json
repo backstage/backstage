@@ -95,7 +95,7 @@
     "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
     "isbinaryfile": "^5.0.0",
-    "isolated-vm": "^4.5.0",
+    "isolated-vm": "^5.0.1",
     "jsonschema": "^1.2.6",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",

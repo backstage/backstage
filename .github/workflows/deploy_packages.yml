@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
 
     services:
       postgres16:
@@ -61,7 +61,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=8192 --no-node-snapshot' || '--max-old-space-size=8192' }}
+      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
@@ -143,7 +143,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
 
     steps:
       - name: Harden Runner
