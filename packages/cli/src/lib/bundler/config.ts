@@ -25,13 +25,10 @@ import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
-import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { paths as cliPaths } from '../../lib/paths';
 import fs from 'fs-extra';
-import { getPackages } from '@manypkg/get-packages';
-import { isChildPath } from '@backstage/cli-common';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
 import { runPlain } from '../run';
@@ -130,8 +127,6 @@ export async function createConfig(
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
   // separate resolution logic.
-  const { packages } = await getPackages(cliPaths.targetDir);
-  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const validBaseUrl = resolveBaseUrl(frontendConfig, moduleFederation);
   let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
@@ -406,7 +401,6 @@ export async function createConfig(
       // FIXME: see also https://github.com/web-infra-dev/rspack/issues/3408
       ...(!rspack && {
         plugins: [
-          new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
           new ModuleScopePlugin(
             [paths.targetSrc, paths.targetDev],
             [paths.targetPackageJson, ...reactRefreshFiles],
