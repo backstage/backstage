@@ -26,6 +26,7 @@ export async function command(opts: OptionValues): Promise<void> {
   const options = {
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),
+    linkedWorkspace: opts.link,
     inspectEnabled: opts.inspect,
     inspectBrkEnabled: opts.inspectBrk,
     require: opts.require,

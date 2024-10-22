@@ -271,6 +271,7 @@ Options:
   --inspect [host]
   --inspect-brk [host]
   --require <path>
+  --link <path>
   -h, --help
 ```
 
