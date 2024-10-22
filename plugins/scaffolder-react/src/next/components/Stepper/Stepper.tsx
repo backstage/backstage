@@ -52,6 +52,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
+import { useSchemaUtils } from './schemaUtils';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -124,10 +125,12 @@ export const Stepper = (stepperProps: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
-
   const [initialState] = useFormDataFromQuery(props.initialState);
-  const [stepsState, setStepsState] = useState<Record<string, JsonValue>[]>(
-    steps.map(() => initialState),
+  const [stepsState, setStepsState] =
+    useState<Record<string, JsonValue>>(initialState);
+
+  const [trimmedState, setTrimmedState] = useState<Record<string, JsonValue>>(
+    {},
   );
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
@@ -170,17 +173,25 @@ export const Stepper = (stepperProps: StepperProps) => {
   const handleChange = useCallback(
     (e: IChangeEvent) => {
       setStepsState(current => {
-        const newState = [...current];
-        newState[activeStep] = {
-          ...e.formData,
-        };
-        return newState;
+        return { ...current, ...e.formData };
       });
     },
-    [activeStep, setStepsState],
+    [setStepsState],
   );
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+  const schemaUtils = useSchemaUtils({
+    validator,
+    schema: currentStep?.schema,
+  });
+
+  const {
+    formContext: propFormContext,
+    uiSchema: propUiSchema,
+    liveOmit: shouldLiveOmit,
+    omitExtraData: shouldOmitExtraData,
+    ...restFormProps
+  } = props.formProps ?? {};
 
   const handleNext = useCallback(
     async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
@@ -191,18 +202,21 @@ export const Stepper = (stepperProps: StepperProps) => {
 
       const returnedValidation = await validation(formData);
 
+      const trimmedData =
+        shouldLiveOmit && shouldOmitExtraData && schemaUtils
+          ? schemaUtils.omitExtraData(formData)
+          : formData;
+
+      setTrimmedState(current => ({
+        ...current,
+        ...trimmedData,
+      }));
+
       setIsValidating(false);
 
       if (hasErrors(returnedValidation)) {
         setErrors(returnedValidation);
       } else {
-        setStepsState(current => {
-          const newState = [...current];
-          newState[activeStep] = {
-            ...formData,
-          };
-          return newState;
-        });
         setErrors(undefined);
         setActiveStep(prevActiveStep => {
           const stepNum = prevActiveStep + 1;
@@ -211,40 +225,15 @@ export const Stepper = (stepperProps: StepperProps) => {
         });
       }
     },
-    [
-      activeStep,
-      validation,
-      analytics,
-      setActiveStep,
-      setErrors,
-      setStepsState,
-    ],
+    [validation, shouldLiveOmit, shouldOmitExtraData, schemaUtils, analytics],
   );
-
-  const {
-    formContext: propFormContext,
-    uiSchema: propUiSchema,
-    ...restFormProps
-  } = props.formProps ?? {};
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const formState = stepsState.reduce((acc, step) => {
-    return { ...acc, ...step };
-  }, {});
-
-  const formData = useMemo(
-    () => stepsState[activeStep],
-    // stepsState is recreated on every render, so we cache formData
-    // using the stringified version instead.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(stepsState[activeStep])],
-  );
-
-  const handleCreate = useCallback(() => {
-    props.onCreate(formState);
+  const handleCreate = () => {
+    props.onCreate(trimmedState);
     analytics.captureEvent('click', `${createLabel}`);
-  }, [props, formState, analytics, createLabel]);
+  };
 
   return (
     <>
@@ -282,12 +271,10 @@ export const Stepper = (stepperProps: StepperProps) => {
             key={activeStep}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={formData}
-            formContext={{ ...propFormContext, formData: formState }}
+            formData={stepsState}
+            formContext={{ ...propFormContext, formData: stepsState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
-            omitExtraData
-            liveOmit
             onSubmit={handleNext}
             fields={fields}
             showErrorList="top"
@@ -321,7 +308,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={formState}
+            formData={trimmedState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -329,7 +316,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={formState} schemas={steps} />
+            <ReviewStateComponent formState={trimmedState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
