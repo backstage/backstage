@@ -124,11 +124,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
-
   const [initialState] = useFormDataFromQuery(props.initialState);
-  const [stepsState, setStepsState] = useState<Record<string, JsonValue>[]>(
-    steps.map(() => initialState),
-  );
+  const [stepsState, setStepsState] =
+    useState<Record<string, JsonValue>>(initialState);
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
@@ -163,71 +161,65 @@ export const Stepper = (stepperProps: StepperProps) => {
     });
   }, [steps, activeStep, validators, apiHolder]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
-
-  const handleChange = (e: IChangeEvent) => {
-    setStepsState(current => {
-      const newState = [...current];
-      newState[activeStep] = {
-        ...e.formData,
-      };
-      return newState;
-    });
-  };
+  }, [setActiveStep]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
-
-  const handleNext = async ({
-    formData = {},
-  }: {
-    formData?: Record<string, JsonValue>;
-  }) => {
-    // The validation should never throw, as the validators are wrapped in a try/catch.
-    // This makes it fine to set and unset state without try/catch.
-    setErrors(undefined);
-    setIsValidating(true);
-
-    const returnedValidation = await validation(formData);
-
-    setIsValidating(false);
-
-    if (hasErrors(returnedValidation)) {
-      setErrors(returnedValidation);
-    } else {
-      setStepsState(current => {
-        const newState = [...current];
-        newState[activeStep] = {
-          ...formData,
-        };
-        return newState;
-      });
-      setErrors(undefined);
-      setActiveStep(prevActiveStep => {
-        const stepNum = prevActiveStep + 1;
-        analytics.captureEvent('click', `Next Step (${stepNum})`);
-        return stepNum;
-      });
-    }
-  };
 
   const {
     formContext: propFormContext,
     uiSchema: propUiSchema,
+    liveOmit: _shouldLiveOmit,
+    omitExtraData: _shouldOmitExtraData,
     ...restFormProps
   } = props.formProps ?? {};
 
+  const handleChange = useCallback(
+    (e: IChangeEvent) => {
+      setStepsState(current => {
+        return { ...current, ...e.formData };
+      });
+    },
+    [setStepsState],
+  );
+
+  const handleNext = useCallback(
+    async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
+      // The validation should never throw, as the validators are wrapped in a try/catch.
+      // This makes it fine to set and unset state without try/catch.
+      setErrors(undefined);
+      setIsValidating(true);
+
+      const returnedValidation = await validation(formData);
+
+      setStepsState(current => ({
+        ...current,
+        ...formData,
+      }));
+
+      setIsValidating(false);
+
+      if (hasErrors(returnedValidation)) {
+        setErrors(returnedValidation);
+      } else {
+        setErrors(undefined);
+        setActiveStep(prevActiveStep => {
+          const stepNum = prevActiveStep + 1;
+          analytics.captureEvent('click', `Next Step (${stepNum})`);
+          return stepNum;
+        });
+      }
+    },
+    [validation, analytics],
+  );
+
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const formState = stepsState.reduce((acc, step) => {
-    return { ...acc, ...step };
-  }, {});
-
   const handleCreate = useCallback(() => {
-    props.onCreate(formState);
+    props.onCreate(stepsState);
     analytics.captureEvent('click', `${createLabel}`);
-  }, [props, formState, analytics, createLabel]);
+  }, [props, stepsState, analytics, createLabel]);
 
   return (
     <>
@@ -265,12 +257,10 @@ export const Stepper = (stepperProps: StepperProps) => {
             key={activeStep}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={{ ...stepsState[activeStep] }}
-            formContext={{ ...propFormContext, formData: formState }}
+            formData={stepsState}
+            formContext={{ ...propFormContext, formData: stepsState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
-            omitExtraData
-            liveOmit
             onSubmit={handleNext}
             fields={fields}
             showErrorList="top"
@@ -304,7 +294,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={formState}
+            formData={stepsState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -312,7 +302,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={formState} schemas={steps} />
+            <ReviewStateComponent formState={stepsState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
