@@ -288,6 +288,8 @@ export type ScannedPluginManifest = BackstagePackageJson &
 // @public (undocumented)
 export interface ScannedPluginPackage {
   // (undocumented)
+  alphaManifest?: BackstagePackageJson;
+  // (undocumented)
   location: URL;
   // (undocumented)
   manifest: ScannedPluginManifest;

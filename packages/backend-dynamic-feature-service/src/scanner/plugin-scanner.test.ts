@@ -430,15 +430,18 @@ Please add '${mockDir.resolve(
         expectedPluginPackages: [
           {
             location: url.pathToFileURL(
-              mockDir.resolve(
-                'backstageRoot/dist-dynamic/test-backend-plugin/alpha',
-              ),
+              mockDir.resolve('backstageRoot/dist-dynamic/test-backend-plugin'),
             ),
             manifest: {
               name: 'test-backend-plugin-dynamic',
               version: '0.0.0',
-              main: '../dist/alpha.cjs.js',
+              main: 'dist/index.cjs.js',
               backstage: { role: 'backend-plugin' },
+            },
+            alphaManifest: {
+              name: 'test-backend-plugin-dynamic',
+              version: '0.0.0',
+              main: '../dist/alpha.cjs.js',
             },
           },
         ],
@@ -541,7 +544,7 @@ Please add '${mockDir.resolve(
             {
               message: `failed to load dynamic plugin manifest from '${mockDir.resolve(
                 'backstageRoot/dist-dynamic/test-backend-plugin/alpha',
-              )}'`,
+              )}'; caused by SyntaxError: Unexpected token 'i', "invalid js"... is not valid JSON`,
               meta: {
                 name: 'SyntaxError',
                 message: expect.stringContaining('Unexpected token'),
