@@ -48,6 +48,9 @@ interface UserListOptions extends CommonListOptions {
   exclude_internal?: boolean | undefined;
 }
 
+const tooManyRequests = 429;
+export const maxRetry = 5;
+
 export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
   private readonly logger: LoggerService;
@@ -421,21 +424,39 @@ export class GitLabClient {
       }
     }
 
-    this.logger.debug(`Fetching: ${request.toString()}`);
-    const response = await fetch(
-      request.toString(),
-      getGitLabRequestOptions(this.config),
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
-        } - ${response.statusText}`,
+    for (let i = 0; ; i++) {
+      this.logger.debug(`Fetching: ${request.toString()}`);
+      const response = await fetch(
+        request.toString(),
+        getGitLabRequestOptions(this.config),
       );
-    }
 
-    return Promise.resolve(response);
+      if (response.status === tooManyRequests && i < maxRetry) {
+        const retryAfter = response.headers.get('Retry-After');
+
+        if (retryAfter) {
+          const delay = isNaN(Number(retryAfter))
+            ? new Date(retryAfter).getTime() - Date.now() // Retry-After is a date
+            : parseInt(retryAfter, 10) * 1000; // Retry-After is in seconds
+
+          this.logger.debug(
+            `Rate limited. Retrying after ${delay / 1000} seconds...`,
+          );
+          await new Promise(resolve => setTimeout(resolve, delay));
+
+          continue;
+        }
+      }
+      if (!response.ok) {
+        throw new Error(
+          `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+            response.status
+          } - ${response.statusText}`,
+        );
+      }
+
+      return Promise.resolve(response);
+    }
   }
 }
 

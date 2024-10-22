@@ -23,7 +23,7 @@ import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
-import { GitLabClient, paginated } from './client';
+import { GitLabClient, maxRetry, paginated } from './client';
 import { GitLabGroup, GitLabUser } from './types';
 
 const server = setupServer(...handlers);
@@ -632,4 +632,45 @@ describe('pagedRequest search params', () => {
       },
     ]);
   });
+
+  it(
+    `fails after ${maxRetry} retries`,
+    async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+      // non-200 status code should throw
+      await expect(() =>
+        client.pagedRequest(mock.retry_endpoint_forever),
+      ).rejects.toThrow();
+    },
+    maxRetry * 1100,
+  );
+
+  it(
+    `successfully handles ${maxRetry} retries`,
+    async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const { items } = await client.pagedRequest<{ endpoint: string }>(
+        mock.retry_endpoint_recover,
+      );
+      // fake page contains exactly one item
+      expect(items).toHaveLength(1);
+      expect(items).toEqual([
+        {
+          endpoint: 'https://example.com/api/v4/retry-endpoint-recover',
+        },
+      ]);
+    },
+    maxRetry * 1100,
+  );
 });
