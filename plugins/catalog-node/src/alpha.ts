@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-import { ServiceRef } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+  createServiceRef,
+} from '@backstage/backend-plugin-api';
 import { catalogServiceRef as _catalogServiceRef } from './catalogService';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 /**
  * @alpha
  * @deprecated Use {@link @backstage/plugin-catalog-node#catalogServiceRef} instead
  */
-export const catalogServiceRef = _catalogServiceRef as ServiceRef<
-  CatalogApi,
-  'plugin',
-  'singleton'
->;
+export const catalogServiceRef = createServiceRef<CatalogApi>({
+  id: 'catalog-client',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        discoveryApi: coreServices.discovery,
+      },
+      async factory({ discoveryApi }) {
+        return new CatalogClient({ discoveryApi });
+      },
+    }),
+});
 
 export type { CatalogLocationsExtensionPoint } from './extensions';
 export { catalogLocationsExtensionPoint } from './extensions';
