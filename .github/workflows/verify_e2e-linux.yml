@@ -36,7 +36,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=8192 --no-node-snapshot' || '--max-old-space-size=8192' }}
+      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot
 
     name: E2E Linux ${{ matrix.node-version }}
     steps:
