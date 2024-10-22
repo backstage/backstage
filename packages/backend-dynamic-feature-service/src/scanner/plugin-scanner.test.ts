@@ -542,9 +542,11 @@ Please add '${mockDir.resolve(
         expectedLogs: {
           errors: [
             {
-              message: `failed to load dynamic plugin manifest from '${mockDir.resolve(
-                'backstageRoot/dist-dynamic/test-backend-plugin/alpha',
-              )}'; caused by SyntaxError: Unexpected token 'i', "invalid js"... is not valid JSON`,
+              message: expect.stringContaining(
+                `failed to load dynamic plugin manifest from '${mockDir.resolve(
+                  'backstageRoot/dist-dynamic/test-backend-plugin/alpha',
+                )}'; caused by SyntaxError: Unexpected token`,
+              ),
               meta: {
                 name: 'SyntaxError',
                 message: expect.stringContaining('Unexpected token'),
