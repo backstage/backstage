@@ -40,6 +40,8 @@ export type RunBackendOptions = {
   inspectBrkEnabled: boolean;
   /** Additional module to require via the --require flag to the node process */
   require?: string;
+  /** An external linked workspace to override module resolution towards */
+  linkedWorkspace?: string;
 };
 
 export async function runBackend(options: RunBackendOptions) {
@@ -119,6 +121,7 @@ export async function runBackend(options: RunBackendOptions) {
         stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
         env: {
           ...process.env,
+          LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
           ESBK_TSCONFIG_PATH: paths.resolveTargetRoot('tsconfig.json'),
         },

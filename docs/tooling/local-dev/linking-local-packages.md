@@ -22,7 +22,6 @@ instance of Backstage.
 
 :::info
 Workspace linking is an experimental feature and may not work in all cases.
-It currently only works for frontend packages.
 :::
 
 The `backstage-cli package start` command that is used for local development of all packages supports a `--link` flag that can be used to link a single external workspace to the current workspace. It hooks into the module resolution and will override all imports of packages in the linked workspace to be imported from there instead. The only exception are the `react` and `react-dom` packages, which will always be resolved from the target package.
@@ -38,6 +37,8 @@ yarn start --link ../../../backstage
 The path provided to the `--link` option can be a relative or absolute path, and should point to the root of the external workspace.
 
 With the `start` command up and running and serving the development version of your frontend app in the browser, you can now make changes to both workspaces and see the changes reflected in the browser.
+
+You can also link backend packages using the exact same process, simply start your backend package with the same `--link <workspace-path>` option.
 
 ## Common Problems
 

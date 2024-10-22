@@ -16,6 +16,39 @@
 
 const { transformSync } = require('@swc/core');
 const { addHook } = require('pirates');
+const { Module } = require('module');
+
+// This hooks into module resolution and overrides imports of packages that
+// exist in the linked workspace to instead be resolved from the linked workspace.
+if (process.env.LINKED_WORKSPACE) {
+  const { join: joinPath } = require('path');
+  const { getPackagesSync } = require('@manypkg/get-packages');
+  const { packages: linkedPackages, root: linkedRoot } = getPackagesSync(
+    process.env.LINKED_WORKSPACE,
+  );
+
+  // Matches all packages in the linked workspaces, as well as sub-path exports from them
+  const replacementRegex = new RegExp(
+    `^(?:${linkedPackages
+      .map(pkg => pkg.packageJson.name)
+      .join('|')})(?:/.*)?$`,
+  );
+
+  const origLoad = Module._load;
+  Module._load = function requireHook(request, parent) {
+    if (!replacementRegex.test(request)) {
+      return origLoad.call(this, request, parent);
+    }
+
+    // The package import that we're overriding will always existing in the root
+    // node_modules of the linked workspace, so it's enough to override the the
+    // parent paths with that single entry
+    return origLoad.call(this, request, {
+      ...parent,
+      paths: [joinPath(linkedRoot.dir, 'node_modules')],
+    });
+  };
+}
 
 addHook(
   (code, filename) => {
