@@ -19,7 +19,6 @@ import {
   createServiceRef,
   coreServices,
   BackstageCredentials,
-  DiscoveryService,
   AuthService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -46,192 +45,229 @@ import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 /**
  * @public
  */
-export interface CatalogServiceRequestOptions extends CatalogRequestOptions {
-  credentials?: BackstageCredentials;
+export interface CatalogServiceRequestOptions {
+  credentials: BackstageCredentials;
 }
 
 /**
  * A version of the {@link @backstage/catalog-client#CatalogApi | CatalogApi} that
- * accepts backend credentials in addition to a token.
+ * requires backend credentials to be passed instead of a token.
  *
  * @public
  */
-export interface CatalogService extends CatalogApi {
+export interface CatalogService {
   getEntities(
-    request?: GetEntitiesRequest,
-    options?: CatalogServiceRequestOptions,
+    request: GetEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntitiesResponse>;
 
   getEntitiesByRefs(
     request: GetEntitiesByRefsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntitiesByRefsResponse>;
 
   queryEntities(
-    request?: QueryEntitiesRequest,
-    options?: CatalogServiceRequestOptions,
+    request: QueryEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<QueryEntitiesResponse>;
 
   getEntityAncestors(
     request: GetEntityAncestorsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntityAncestorsResponse>;
 
   getEntityByRef(
     entityRef: string | CompoundEntityRef,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Entity | undefined>;
 
   removeEntityByUid(
     uid: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void>;
 
   refreshEntity(
     entityRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void>;
 
   getEntityFacets(
     request: GetEntityFacetsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
 
   getLocationById(
     id: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location | undefined>;
 
   getLocationByRef(
     locationRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location | undefined>;
 
   addLocation(
     location: AddLocationRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<AddLocationResponse>;
 
   removeLocationById(
     id: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void>;
 
   getLocationByEntity(
     entityRef: string | CompoundEntityRef,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location | undefined>;
 
   validateEntity(
     entity: Entity,
     locationRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<ValidateEntityResponse>;
 }
 
-class DefaultCatalogService extends CatalogClient {
+class DefaultCatalogService implements CatalogService {
   readonly #auth: AuthService;
+  readonly #catalogApi: CatalogApi;
 
   constructor({
-    discoveryApi,
+    catalogApi,
     auth,
   }: {
-    discoveryApi: DiscoveryService;
+    catalogApi: CatalogApi;
     auth: AuthService;
   }) {
-    super({ discoveryApi });
+    this.#catalogApi = catalogApi;
     this.#auth = auth;
   }
 
   async getEntities(
-    request?: GetEntitiesRequest,
-    options?: CatalogServiceRequestOptions,
+    request: GetEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntitiesResponse> {
-    return super.getEntities(request, await this.#getOptions(options));
+    return this.#catalogApi.getEntities(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async getEntitiesByRefs(
     request: GetEntitiesByRefsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntitiesByRefsResponse> {
-    return super.getEntitiesByRefs(request, await this.#getOptions(options));
+    return this.#catalogApi.getEntitiesByRefs(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async queryEntities(
-    request?: QueryEntitiesRequest,
-    options?: CatalogServiceRequestOptions,
+    request: QueryEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<QueryEntitiesResponse> {
-    return super.queryEntities(request, await this.#getOptions(options));
+    return this.#catalogApi.queryEntities(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async getEntityAncestors(
     request: GetEntityAncestorsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntityAncestorsResponse> {
-    return super.getEntityAncestors(request, await this.#getOptions(options));
+    return this.#catalogApi.getEntityAncestors(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async getEntityByRef(
     entityRef: string | CompoundEntityRef,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Entity | undefined> {
-    return super.getEntityByRef(entityRef, await this.#getOptions(options));
+    return this.#catalogApi.getEntityByRef(
+      entityRef,
+      await this.#getOptions(options),
+    );
   }
 
   async removeEntityByUid(
     uid: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void> {
-    return super.removeEntityByUid(uid, await this.#getOptions(options));
+    return this.#catalogApi.removeEntityByUid(
+      uid,
+      await this.#getOptions(options),
+    );
   }
 
   async refreshEntity(
     entityRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void> {
-    return super.refreshEntity(entityRef, await this.#getOptions(options));
+    return this.#catalogApi.refreshEntity(
+      entityRef,
+      await this.#getOptions(options),
+    );
   }
 
   async getEntityFacets(
     request: GetEntityFacetsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntityFacetsResponse> {
-    return super.getEntityFacets(request, await this.#getOptions(options));
+    return this.#catalogApi.getEntityFacets(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async getLocationById(
     id: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location | undefined> {
-    return super.getLocationById(id, await this.#getOptions(options));
+    return this.#catalogApi.getLocationById(
+      id,
+      await this.#getOptions(options),
+    );
   }
 
   async getLocationByRef(
     locationRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location | undefined> {
-    return super.getLocationByRef(locationRef, await this.#getOptions(options));
+    return this.#catalogApi.getLocationByRef(
+      locationRef,
+      await this.#getOptions(options),
+    );
   }
 
   async addLocation(
     location: AddLocationRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<AddLocationResponse> {
-    return super.addLocation(location, await this.#getOptions(options));
+    return this.#catalogApi.addLocation(
+      location,
+      await this.#getOptions(options),
+    );
   }
 
   async removeLocationById(
     id: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void> {
-    return super.removeLocationById(id, await this.#getOptions(options));
+    return this.#catalogApi.removeLocationById(
+      id,
+      await this.#getOptions(options),
+    );
   }
 
   async getLocationByEntity(
     entityRef: string | CompoundEntityRef,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location | undefined> {
-    return super.getLocationByEntity(
+    return this.#catalogApi.getLocationByEntity(
       entityRef,
       await this.#getOptions(options),
     );
@@ -240,9 +276,9 @@ class DefaultCatalogService extends CatalogClient {
   async validateEntity(
     entity: Entity,
     locationRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<ValidateEntityResponse> {
-    return super.validateEntity(
+    return this.#catalogApi.validateEntity(
       entity,
       locationRef,
       await this.#getOptions(options),
@@ -250,18 +286,12 @@ class DefaultCatalogService extends CatalogClient {
   }
 
   async #getOptions(
-    options?: CatalogServiceRequestOptions,
-  ): Promise<CatalogRequestOptions | undefined> {
-    if (options?.token) {
-      return options;
-    }
-    if (options?.credentials) {
-      return this.#auth.getPluginRequestToken({
-        onBehalfOf: options.credentials,
-        targetPluginId: 'catalog',
-      });
-    }
-    return options;
+    options: CatalogServiceRequestOptions,
+  ): Promise<CatalogRequestOptions> {
+    return this.#auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: 'catalog',
+    });
   }
 }
 
@@ -279,8 +309,11 @@ export const catalogServiceRef = createServiceRef<CatalogService>({
         auth: coreServices.auth,
         discoveryApi: coreServices.discovery,
       },
-      async factory(deps) {
-        return new DefaultCatalogService(deps);
+      async factory({ auth, discoveryApi }) {
+        return new DefaultCatalogService({
+          auth,
+          catalogApi: new CatalogClient({ discoveryApi }),
+        });
       },
     }),
 });

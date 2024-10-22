@@ -2,4 +2,6 @@
 '@backstage/plugin-catalog-node': minor
 ---
 
-The `catalogServiceRef` now have its own accompanying `CatalogService` interface, which also supports passing Backstage `credentials` objects in addition to tokens. In addition, it has been promoted from the `/alpha` export and is now available from the main `@backstage/plugin-catalog-node` entry point.
+The `catalogServiceRef` now has its own accompanying `CatalogService` interface that requires Backstage `credentials` objects to be passed. This new version of the `catalogServiceRef` has been promoted and is now available via the main `@backstage/plugin-catalog-node` entry point.
+
+The old `catalogServiceRef` with the old `CatalogApi` type is still available from the `/alpha` entry point.

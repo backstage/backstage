@@ -11,8 +11,6 @@ import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common'
 import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
@@ -120,77 +118,77 @@ export type CatalogProcessorResult =
   | CatalogProcessorRefreshKeysResult;
 
 // @public
-export interface CatalogService extends CatalogApi {
+export interface CatalogService {
   // (undocumented)
   addLocation(
     location: AddLocationRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<AddLocationResponse>;
   // (undocumented)
   getEntities(
-    request?: GetEntitiesRequest,
-    options?: CatalogServiceRequestOptions,
+    request: GetEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntitiesResponse>;
   // (undocumented)
   getEntitiesByRefs(
     request: GetEntitiesByRefsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntitiesByRefsResponse>;
   // (undocumented)
   getEntityAncestors(
     request: GetEntityAncestorsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntityAncestorsResponse>;
   // (undocumented)
   getEntityByRef(
     entityRef: string | CompoundEntityRef,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Entity | undefined>;
   // (undocumented)
   getEntityFacets(
     request: GetEntityFacetsRequest,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
   // (undocumented)
   getLocationByEntity(
     entityRef: string | CompoundEntityRef,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
   getLocationById(
     id: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
   getLocationByRef(
     locationRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
   queryEntities(
-    request?: QueryEntitiesRequest,
-    options?: CatalogServiceRequestOptions,
+    request: QueryEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<QueryEntitiesResponse>;
   // (undocumented)
   refreshEntity(
     entityRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void>;
   // (undocumented)
   removeEntityByUid(
     uid: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void>;
   // (undocumented)
   removeLocationById(
     id: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<void>;
   // (undocumented)
   validateEntity(
     entity: Entity,
     locationRef: string,
-    options?: CatalogServiceRequestOptions,
+    options: CatalogServiceRequestOptions,
   ): Promise<ValidateEntityResponse>;
 }
 
@@ -202,9 +200,9 @@ export const catalogServiceRef: ServiceRef<
 >;
 
 // @public (undocumented)
-export interface CatalogServiceRequestOptions extends CatalogRequestOptions {
+export interface CatalogServiceRequestOptions {
   // (undocumented)
-  credentials?: BackstageCredentials;
+  credentials: BackstageCredentials;
 }
 
 // @public
