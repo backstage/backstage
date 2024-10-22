@@ -36,6 +36,7 @@ import { transforms } from './transforms';
 import { version } from '../../lib/version';
 import yn from 'yn';
 import { hasReactDomClient } from './hasReactDomClient';
+import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -294,6 +295,15 @@ export async function createConfig(
       'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
     }),
   );
+
+  if (options.linkedWorkspace) {
+    plugins.push(
+      ...(await createWorkspaceLinkingPlugins(
+        bundler,
+        options.linkedWorkspace,
+      )),
+    );
+  }
 
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files

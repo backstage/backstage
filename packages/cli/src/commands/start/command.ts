@@ -26,6 +26,7 @@ export async function command(opts: OptionValues): Promise<void> {
   const options = {
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),
+    linkedWorkspace: opts.link,
     inspectEnabled: opts.inspect,
     inspectBrkEnabled: opts.inspectBrk,
     require: opts.require,
@@ -33,10 +34,20 @@ export async function command(opts: OptionValues): Promise<void> {
 
   switch (role) {
     case 'backend':
+      if (options.linkedWorkspace) {
+        throw new Error(
+          'The --link flag is not supported for this package role',
+        );
+      }
       return startBackend(options);
     case 'backend-plugin':
     case 'backend-plugin-module':
     case 'node-library':
+      if (options.linkedWorkspace) {
+        throw new Error(
+          'The --link flag is not supported for this package role',
+        );
+      }
       return startBackendPlugin(options);
     case 'frontend':
       return startFrontend({
