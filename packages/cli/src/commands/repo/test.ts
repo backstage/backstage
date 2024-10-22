@@ -54,26 +54,36 @@ interface GlobalWithCache extends Global {
  * Use git to get the HEAD tree hashes of each package in the project.
  */
 async function readPackageTreeHashes(graph: PackageGraph) {
-  const pkgs = Array.from(graph.values());
+  const pkgs = Array.from(graph.values()).map(pkg => ({
+    ...pkg,
+    path: relativePath(paths.targetRoot, pkg.dir),
+  }));
   const output = await runPlain(
     'git',
     'ls-tree',
-    '--object-only',
+    '--format="%(objectname)=%(path)"',
     'HEAD',
     '--',
-    ...pkgs.map(pkg => relativePath(paths.targetRoot, pkg.dir)),
+    ...pkgs.map(pkg => pkg.path),
   );
-
-  const treeShaList = output.trim().split(/\r?\n/);
-  if (treeShaList.length !== pkgs.length) {
-    throw new Error(
-      `Error listing project git tree hashes, output length does not equal input length`,
-    );
-  }
 
   const map = new Map(
-    pkgs.map((pkg, i) => [pkg.packageJson.name, treeShaList[i]]),
+    output
+      .trim()
+      .split(/\r?\n/)
+      .map(line => {
+        const [itemSha, ...itemPathParts] = line.split('=');
+        const itemPath = itemPathParts.join('=');
+        const pkg = pkgs.find(p => p.path === itemPath);
+        if (!pkg) {
+          throw new Error(
+            `Unexpectedly missing tree sha entry for path ${itemPath}`,
+          );
+        }
+        return [pkg.packageJson.name, itemSha];
+      }),
   );
+
   return (pkgName: string) => {
     const sha = map.get(pkgName);
     if (!sha) {
