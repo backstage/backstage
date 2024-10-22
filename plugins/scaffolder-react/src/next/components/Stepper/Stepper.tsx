@@ -52,7 +52,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
-import { useSchemaUtils } from './schemaUtils';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
