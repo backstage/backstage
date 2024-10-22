@@ -258,7 +258,7 @@ export class ScmAuth implements ScmAuthApi {
    *
    * The default scopes are:
    *
-   * `PUBLIC_REPOS REPOS_READ`
+   * `PUBLIC_REPOS REPO_READ`
    *
    * If the additional `repoWrite` permission is requested, these scopes are added:
    *
@@ -277,10 +277,7 @@ export class ScmAuth implements ScmAuthApi {
     return this.forBitbucket(bitbucketAuthApi, {
       host: options.host,
       scopeMapping: {
-        default: options.scopeMapping?.default ?? [
-          'PUBLIC_REPOS',
-          'REPOS_READ',
-        ],
+        default: options.scopeMapping?.default ?? ['PUBLIC_REPOS', 'REPO_READ'],
         repoWrite: options.scopeMapping?.repoWrite ?? ['REPO_WRITE'],
       },
     });
