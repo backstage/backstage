@@ -209,7 +209,7 @@ export async function createConfig(
         minify: false,
         publicPath: '<%= publicPath %>',
         filename: 'index.html.tmpl',
-        template: `raw-loader!${paths.targetHtml}`,
+        template: `${require.resolve('raw-loader')}!${paths.targetHtml}`,
       }),
     );
   }
