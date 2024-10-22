@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.32.0-next.2",
+  "version": "1.32.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
     "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
-    "storybook": "yarn --cwd storybook && yarn --cwd storybook start",
+    "storybook": "yarn ./storybook run storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
     "test": "backstage-cli repo test",
@@ -132,6 +132,9 @@
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
     "typescript": "~5.2.0"
+  },
+  "jest": {
+    "rejectFrontendNetworkRequests": true
   },
   "packageManager": "yarn@3.8.1",
   "engines": {

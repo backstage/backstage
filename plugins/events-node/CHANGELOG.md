@@ -1,5 +1,17 @@
 # @backstage/plugin-events-node
 
+## 0.4.1
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 2f88f88: Updated backend installation instructions.
+- a90ce4a: The default implementation of the `EventsService` now uses the new event bus for distributing events across multiple backend instances if the events backend plugin is installed.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.1-next.1
 
 ### Patch Changes

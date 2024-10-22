@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.3.1
+
+### Patch Changes
+
+- 217458a: Updated configuration schema to include the new `allowedDomains` option for the `emailLocalPartMatchingUserEntityName` sign-in resolver.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.3.1-next.1
 
 ### Patch Changes

@@ -34,7 +34,7 @@ Commands:
 Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
 
 Options:
-  --alwaysYarnPack
+  --alwaysPack
   -h, --help
 ```
 

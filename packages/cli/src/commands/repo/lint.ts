@@ -16,9 +16,8 @@
 
 import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
-import fs from 'fs-extra';
 import { createHash } from 'crypto';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath } from 'path';
 import {
   PackageGraph,
   BackstagePackageJson,
@@ -27,6 +26,7 @@ import {
 import { paths } from '../../lib/paths';
 import { runWorkerQueueThreads } from '../../lib/parallel';
 import { createScriptOptionsParser } from './optionsParser';
+import { SuccessCache } from '../../lib/cache/SuccessCache';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -36,39 +36,13 @@ function depCount(pkg: BackstagePackageJson) {
   return deps + devDeps;
 }
 
-const CACHE_FILE_NAME = 'lint-cache.json';
-
-type Cache = string[];
-
-async function readCache(dir: string): Promise<Cache | undefined> {
-  try {
-    const data = await fs.readJson(resolvePath(dir, CACHE_FILE_NAME));
-    if (!Array.isArray(data)) {
-      return undefined;
-    }
-    if (data.some(x => typeof x !== 'string')) {
-      return undefined;
-    }
-    return data as Cache;
-  } catch {
-    return undefined;
-  }
-}
-
-async function writeCache(dir: string, cache: Cache) {
-  await fs.mkdirp(dir);
-  await fs.writeJson(resolvePath(dir, CACHE_FILE_NAME), cache, { spaces: 2 });
-}
-
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  const cacheDir = resolvePath(
-    opts.successCacheDir ?? 'node_modules/.cache/backstage-cli',
-  );
+  const cache = new SuccessCache('lint', opts.successCacheDir);
   const cacheContext = opts.successCache
     ? {
-        cache: await readCache(cacheDir),
+        entries: await cache.read(),
         lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
       }
     : undefined;
@@ -136,7 +110,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
-      successCache: cacheContext?.cache,
+      successCache: cacheContext?.entries,
       rootDir: paths.targetRoot,
     },
     workerFactory: async ({
@@ -202,7 +176,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
             hash.update('\0');
           }
           sha = await hash.digest('hex');
-          if (successCache?.includes(sha)) {
+          if (successCache?.has(sha)) {
             console.log(`Skipped ${relativeDir} due to cache hit`);
             return { relativeDir, sha, failed: false };
           }
@@ -262,7 +236,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   if (cacheContext) {
-    await writeCache(cacheDir, outputSuccessCache);
+    await cache.write(outputSuccessCache);
   }
 
   if (failed) {

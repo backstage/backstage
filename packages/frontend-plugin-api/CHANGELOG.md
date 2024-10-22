@@ -1,5 +1,56 @@
 # @backstage/frontend-plugin-api
 
+## 0.9.0
+
+### Minor Changes
+
+- 4a5ba19: Removed deprecated `namespace` option from `createExtension` and `createExtensionBlueprint`, including `.make` and `.makeWithOverides`, it's no longer necessary and will use the `pluginId` instead.
+
+  Removed deprecated `createExtensionOverrides` this should be replaced with `createFrontendModule` instead.
+
+  Removed deprecated `BackstagePlugin` type, use `FrontendPlugin` type instead from this same package.
+
+- bfd4bec: **BREAKING PRODUCERS**: The `IconComponent` no longer accepts `fontSize="default"`. This has effectively been removed from Material-UI since its last two major versions, and has not worked properly for them in a long time.
+
+  This change should not have an effect on neither users of MUI4 nor MUI5/6, since the updated interface should still let you send the respective `SvgIcon` types into interfaces where relevant (e.g. as app icons).
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 873e424: Internal refactor of usage of opaque types.
+- 323aae8: It is now possible to override the blueprint parameters when overriding an extension created from a blueprint:
+
+  ```ts
+  const myExtension = MyBlueprint.make({
+    params: {
+      myParam: 'myDefault',
+    },
+  });
+
+  const myOverride = myExtension.override({
+    params: {
+      myParam: 'myOverride',
+    },
+  });
+  const myFactoryOverride = myExtension.override({
+    factory(origFactory) {
+      return origFactory({
+        params: {
+          myParam: 'myOverride',
+        },
+      });
+    },
+  });
+  ```
+
+  The provided parameters will be merged with the original parameters of the extension.
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/types@1.1.1
+
 ## 0.9.0-next.2
 
 ### Patch Changes

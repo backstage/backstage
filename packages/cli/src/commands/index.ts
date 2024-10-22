@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { assertError } from '@backstage/errors';
 import { exitWithError } from '../lib/errors';
 
@@ -375,8 +375,16 @@ export function registerCommands(program: Command) {
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
+    .addOption(
+      new Option(
+        '--alwaysYarnPack',
+        'Alias for --alwaysPack for backwards compatibility.',
+      )
+        .implies({ alwaysPack: true })
+        .hideHelp(true),
+    )
     .option(
-      '--alwaysYarnPack',
+      '--alwaysPack',
       'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
     )
     .description('Builds a temporary dist workspace from the provided packages')

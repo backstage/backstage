@@ -199,7 +199,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.primaryTitle!
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}

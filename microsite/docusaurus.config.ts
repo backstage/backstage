@@ -84,7 +84,10 @@ const config: Config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       {
         docs: {
-          editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
+          editUrl: ({ docPath }) => {
+            // Always point to the non-versioned directory when editing a doc page
+            return `https://github.com/backstage/backstage/edit/master/docs/${docPath}`;
+          },
           path: '../docs',
           sidebarPath: 'sidebars.js',
           ...(useVersionedDocs

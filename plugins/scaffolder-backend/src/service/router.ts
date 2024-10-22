@@ -493,6 +493,7 @@ export async function createRouter(
       });
 
       const credentials = await httpAuth.credentials(req);
+
       await checkPermission({
         credentials,
         permissions: [taskCreatePermission],
@@ -563,7 +564,11 @@ export async function createRouter(
       const secrets: InternalTaskSecrets = {
         ...req.body.secrets,
         backstageToken: token,
-        __initiatorCredentials: JSON.stringify(credentials),
+        __initiatorCredentials: JSON.stringify({
+          ...credentials,
+          // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+          token: (credentials as any).token,
+        }),
       };
 
       const result = await taskBroker.dispatch({

@@ -1,5 +1,22 @@
 # @backstage/backend-test-utils
 
+## 1.0.1
+
+### Patch Changes
+
+- fd6e6f4: build(deps): bump `cookie` from 0.6.0 to 0.7.0
+- a19ce00: The `createMockDirectory` cleanup strategy has been changed, no longer requiring it to be called outside individual tests.
+- 9cc7dd6: Minor doc string changes
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/backend-app-api@1.0.1
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.0.1-next.2
 
 ### Patch Changes

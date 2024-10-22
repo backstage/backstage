@@ -15,12 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import YAML from 'js-yaml';
-import { isEqual, cloneDeep } from 'lodash';
+import { isEqual } from 'lodash';
 import { join } from 'path';
 import chalk from 'chalk';
 import { relative as relativePath, resolve as resolvePath } from 'path';
-import Parser from '@apidevtools/swagger-parser';
 import { runner } from '../../../../lib/runner';
 import { paths as cliPaths } from '../../../../lib/paths';
 import {
@@ -28,7 +26,10 @@ import {
   TS_SCHEMA_PATH,
   YAML_SCHEMA_PATH,
 } from '../../../../lib/openapi/constants';
-import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
+import {
+  getPathToOpenApiSpec,
+  loadAndValidateOpenApiYaml,
+} from '../../../../lib/openapi/helpers';
 
 async function verify(directoryPath: string) {
   let openapiPath = '';
@@ -38,8 +39,7 @@ async function verify(directoryPath: string) {
     // Unable to find spec at path.
     return;
   }
-  const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
-  await Parser.validate(cloneDeep(yaml) as any);
+  const yaml = await loadAndValidateOpenApiYaml(openapiPath);
 
   const schemaPath = join(directoryPath, TS_SCHEMA_PATH);
   if (!(await fs.pathExists(schemaPath))) {

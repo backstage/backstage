@@ -24,7 +24,6 @@ import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import {
   CompoundEntityRef,
-  Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -33,45 +32,40 @@ import { Table, TableColumn } from '@backstage/core-components';
 import { EntityRefLink } from '../EntityRefLink';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-const mockCatalogApi = catalogApiMock.mock({
-  getEntityByRef: async (entityRef: string) => {
-    if (entityRef === 'component:default/playback') {
-      return {
-        kind: 'Component',
-        metadata: {
-          name: 'playback',
-          namespace: 'default',
-          description: 'Details about the playback service',
+const mockCatalogApi = catalogApiMock({
+  entities: [
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'playback',
+        namespace: 'default',
+        description: 'Details about the playback service',
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        name: 'fname.lname',
+        namespace: 'default',
+      },
+      spec: {
+        profile: {
+          email: 'fname.lname@example.com',
         },
-      } as unknown as Entity;
-    }
-    if (entityRef === 'user:default/fname.lname') {
-      return {
-        kind: 'User',
-        metadata: {
-          name: 'fname.lname',
-          namespace: 'default',
-        },
-        spec: {
-          profile: {
-            email: 'fname.lname@example.com',
-          },
-        },
-      } as unknown as Entity;
-    }
-    if (entityRef === 'component:default/slow.catalog.item') {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      return {
-        kind: 'Component',
-        metadata: {
-          name: 'slow.catalog.item',
-          namespace: 'default',
-          description: 'Details about the slow.catalog.item service',
-        },
-      } as unknown as Entity;
-    }
-    return undefined;
-  },
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'slow.catalog.item',
+        namespace: 'default',
+        description: 'Details about the slow.catalog.item service',
+      },
+    },
+  ],
 });
 
 const defaultArgs = {

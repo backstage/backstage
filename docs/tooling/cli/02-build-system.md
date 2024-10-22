@@ -556,6 +556,22 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
+### Additional Configuration Options
+
+When using the built-in `@backstage/cli/config/jest` configuration the following options are available in addition to the standard Jest options.
+
+#### `rejectFrontendNetworkRequests` **[boolean]**
+
+Default: `false`
+
+If set to `true`, any attempt to make a network request in frontend package tests will result in an error. This option can only be set in the root `package.json` and will apply to all frontend packages in the monorepo.
+
+```json title="Example - in your root package.json"
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
+```
+
 ## Caching
 
 Caching is used sparingly throughout the Backstage build system. It is always used as a way to squeeze out a little bit of extra performance, rather than requirement to keep things fast. The following is a list of places where optional caching is available:

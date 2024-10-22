@@ -545,6 +545,26 @@ techdocs:
 This way, all iframes where the host in the src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
 
+## How to enable custom elements in TechDocs
+
+TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to
+sanitize HTML and prevent XSS attacks.
+
+It's possible to allow custom elements based on a list of allowed patterns. To do
+this, add the allowed elements and attributes in the `techdocs.sanitizer.allowedCustomElementTagNameRegExp`
+and `allowedCustomElementAttributeNameRegExp` configuration of your `app-config.yaml`.
+
+For example:
+
+```yaml
+techdocs:
+  sanitizer:
+    allowedCustomElementTagNameRegExp: '^backstage-',
+    allowedCustomElementAttributeNameRegExp: 'attribute1|attribute2',
+```
+
+This way, custom element like `<backstage-element attribute1="value"></backstage-element>` will be allowed in the result HTML.
+
 ## How to render PlantUML diagram in TechDocs
 
 PlantUML allows you to create diagrams from plain text language. Each diagram description begins with the keyword - (@startXYZ and @endXYZ, depending on the kind of diagram). For UML Diagrams, Keywords @startuml & @enduml should be used. Further details for all types of diagrams can be found at [PlantUML Language Reference Guide](https://plantuml.com/guide).

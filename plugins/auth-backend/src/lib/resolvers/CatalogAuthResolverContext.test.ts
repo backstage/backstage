@@ -26,9 +26,8 @@ describe('CatalogAuthResolverContext', () => {
     jest.clearAllMocks();
   });
 
-  const catalogApi = catalogServiceMock.mock({
-    getEntities: jest.fn().mockResolvedValue({ items: [] }),
-  });
+  const catalogApi = catalogServiceMock();
+  jest.spyOn(catalogApi, 'getEntities');
 
   it('adds kind to filter when missing', async () => {
     const context = CatalogAuthResolverContext.create({

@@ -1,5 +1,15 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.11
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-plugin-api@1.10.0
+
 ## 0.1.11-next.2
 
 ### Patch Changes

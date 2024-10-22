@@ -28,13 +28,14 @@ describe('getUsersForEntityRef', () => {
     await expect(
       getUsersForEntityRef(null, [], {
         auth: mockServices.auth(),
-        catalogClient: catalogServiceMock.mock(),
+        catalogClient: catalogServiceMock(),
       }),
     ).resolves.toEqual([]);
   });
 
   it('should resolve users without calling catalog', async () => {
-    const catalogClient = catalogServiceMock.mock();
+    const catalogClient = catalogServiceMock();
+    jest.spyOn(catalogClient, 'getEntitiesByRefs');
     await expect(
       getUsersForEntityRef(['user:foo', 'user:ignored'], ['user:ignored'], {
         auth: mockServices.auth(),

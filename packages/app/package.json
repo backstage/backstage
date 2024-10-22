@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.102-next.2",
+  "version": "0.2.102",
   "backstage": {
     "role": "frontend"
   },
@@ -98,7 +98,9 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0"
+    "axios": "^1.7.7",
+    "cross-env": "^7.0.0",
+    "msw": "^1.0.0"
   },
   "bundled": true
 }

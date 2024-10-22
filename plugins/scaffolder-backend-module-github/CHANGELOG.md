@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.5.1
+
+### Patch Changes
+
+- 8ce0c4c: Add `github:branch-protection:create` scaffolder action to set branch protection on an existing repository. Example usage:
+
+  ```yaml
+  - id: set-branch-protection
+    name: Set Branch Protection
+    action: github:branch-protection:create
+    input:
+      repoUrl: 'github.com?repo=backstage&owner=backstage'
+      branch: master
+      enforceAdmins: true # default
+      requiredApprovingReviewCount: 1 # default
+      requireBranchesToBeUpToDate: true # default
+      requireCodeOwnerReviews: true
+      dismissStaleReviews: true
+      requiredConversationResolution: true
+  ```
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/integration@1.15.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.5.1-next.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-node",
-  "version": "0.2.9-next.0",
+  "version": "0.2.9",
   "description": "Node.js library for Backstage CLIs",
   "backstage": {
     "role": "node-library"

@@ -42,7 +42,8 @@ export class DefaultEventBroker implements EventBroker {
    * @deprecated use `DefaultEventsService` directly instead
    */
   constructor(logger: LoggerService, events?: EventsService) {
-    this.events = events ?? DefaultEventsService.create({ logger });
+    this.events =
+      events ?? DefaultEventsService.create({ logger, useEventBus: 'never' });
   }
 
   async publish(params: EventParams): Promise<void> {

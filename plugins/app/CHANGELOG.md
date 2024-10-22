@@ -1,5 +1,18 @@
 # @backstage/plugin-app
 
+## 0.1.1
+
+### Patch Changes
+
+- b36be7a: Added missing default `SignInPageExtension` which by default uses guest auth, missing `ApiExtensions` for `scmAuth`
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/theme@0.6.0
+
 ## 0.1.1-next.2
 
 ### Patch Changes
