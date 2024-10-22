@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-node
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- a0a9a4a: Browsers silently drop cookies that exceed 4KB, which can be problematic for refresh tokens and other large cookies.This update ensures that large cookies, like refresh tokens, are not dropped by browsers, maintaining the integrity of the authentication process. The changes include both the implementation of the cookie splitting logic and corresponding tests to validate the new functionality.
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.5.3
 
 ### Patch Changes

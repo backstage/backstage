@@ -1,5 +1,13 @@
 # @backstage/plugin-notifications-common
 
+## 0.0.6-next.0
+
+### Patch Changes
+
+- 97ba58f: Add support for user specific notification settings
+- Updated dependencies
+  - @backstage/config@1.2.0
+
 ## 0.0.5
 
 ### Patch Changes

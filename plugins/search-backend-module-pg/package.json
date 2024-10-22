@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-pg",
-  "version": "0.5.36",
+  "version": "0.5.38-next.0",
   "description": "A module for the search backend that implements search using PostgreSQL",
   "backstage": {
     "role": "backend-plugin-module",

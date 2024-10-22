@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.13.2-next.0
+
+### Patch Changes
+
+- 8b5ff7e: Fix issue with form state not refreshing when updating
+- ade301c: Fix issue with `Stepper` and trying to trim additional properties. This is now all behind `liveOmit` and `omitExtraData` instead.
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/theme@0.6.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.13.0
 
 ### Minor Changes
