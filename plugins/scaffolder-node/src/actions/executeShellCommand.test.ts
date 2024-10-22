@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// Copyright 2024 DB Systel GmbH
-// Licensed under the DBISL, see the accompanying file LICENSE.
-
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';
