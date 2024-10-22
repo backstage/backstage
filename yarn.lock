@@ -4821,6 +4821,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@types/node-fetch": ^2.5.12
     node-fetch: 2.7.0
     p-throttle: ^4.1.1
   languageName: unknown
