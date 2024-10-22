@@ -432,6 +432,10 @@ export interface ResourceRef {
   namespace: string;
 }
 
+// @public
+export const SERVICEACCOUNT_CA_PATH =
+  '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt';
+
 // @public (undocumented)
 export interface ServiceFetchResponse {
   // (undocumented)
