@@ -1105,6 +1105,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/addon-storysource@npm:^8.3.6":
+  version: 8.3.6
+  resolution: "@storybook/addon-storysource@npm:8.3.6"
+  dependencies:
+    "@storybook/source-loader": 8.3.6
+    estraverse: ^5.2.0
+    tiny-invariant: ^1.3.1
+  peerDependencies:
+    storybook: ^8.3.6
+  checksum: 39d3bda7a706b474b93d3763b46701e845cd41468cf6ceaa3e6841752bc3e06c70f2a550267352a8039e0bb2f5fd6e116df13b5a8e21187fbfca8616221b1be5
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-themes@npm:^8.3.6":
   version: 8.3.6
   resolution: "@storybook/addon-themes@npm:8.3.6"
@@ -1373,6 +1386,20 @@ __metadata:
     typescript:
       optional: true
   checksum: 4df2dfbab580cc09df9e4acf5eda0e0558671a42086795a432c3987a30006136372b126258ddff5e5c28e3fea5f8e4354f10bc129f3f326d90f5845df8346d98
+  languageName: node
+  linkType: hard
+
+"@storybook/source-loader@npm:8.3.6":
+  version: 8.3.6
+  resolution: "@storybook/source-loader@npm:8.3.6"
+  dependencies:
+    "@storybook/csf": ^0.1.11
+    estraverse: ^5.2.0
+    lodash: ^4.17.21
+    prettier: ^3.1.1
+  peerDependencies:
+    storybook: ^8.3.6
+  checksum: 73e556ef53f42fdf3d58eb6221284d15d3ec50740ff40a727c83da5deaccd32ebc419e36b7a832b87f090e1dfec3f541d91d5191f52ba66d068f757e57e1cf7d
   languageName: node
   linkType: hard
 
@@ -2242,6 +2269,7 @@ __metadata:
     "@storybook/addon-essentials": ^8.3.5
     "@storybook/addon-interactions": ^8.3.5
     "@storybook/addon-links": ^8.3.5
+    "@storybook/addon-storysource": ^8.3.6
     "@storybook/addon-themes": ^8.3.6
     "@storybook/blocks": ^8.3.5
     "@storybook/react": ^8.3.5
@@ -4738,6 +4766,15 @@ __metadata:
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
   checksum: cd192ec0d0a8e4c6da3bb80e4f62afe336df3f76271ac6deb0e6a36187133b6073a19e9727a1ff108cd8b9982e4768850d413baa71214dd80c7979617dca827a
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.1.1":
+  version: 3.3.3
+  resolution: "prettier@npm:3.3.3"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: bc8604354805acfdde6106852d14b045bb20827ad76a5ffc2455b71a8257f94de93f17f14e463fe844808d2ccc87248364a5691488a3304f1031326e62d9276e
   languageName: node
   linkType: hard
 
