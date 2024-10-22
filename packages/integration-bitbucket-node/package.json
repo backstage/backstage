@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Provides a rate limited fetch api for Bitbucket clients",
   "backstage": {
-    "role": "node-library"
+    "role": "common-library"
   },
   "publishConfig": {
     "access": "public",

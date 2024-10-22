@@ -6,5 +6,5 @@ metadata:
   description: Provides a rate limited fetch api for Bitbucket clients.
 spec:
   lifecycle: experimental
-  type: backstage-node-library
+  type: backstage-common-library
   owner: maintainers
