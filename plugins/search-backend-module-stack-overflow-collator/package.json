@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-stack-overflow-collator",
-  "version": "0.3.1",
+  "version": "0.3.3-next.0",
   "description": "A module for the search backend that exports stack overflow modules",
   "backstage": {
     "role": "backend-plugin-module",

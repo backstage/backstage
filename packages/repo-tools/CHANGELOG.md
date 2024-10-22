@@ -1,5 +1,21 @@
 # @backstage/repo-tools
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 47fdbb4: Adds a `--watch` mode to the `schema openapi generate` command for a better local schema writing experience.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.9
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+
 ## 0.10.0
 
 ### Minor Changes

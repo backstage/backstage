@@ -1,5 +1,22 @@
 # @backstage/plugin-api-docs
 
+## 0.11.12-next.0
+
+### Patch Changes
+
+- 11f57de: bump `@asyncapi/react-component` to latest `2.x`
+- 3cd1dee: Uses theme values to style the API definition schema so that theme overrides apply.
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/plugin-catalog@1.24.1-next.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-permission-react@0.4.27
+
 ## 0.11.11
 
 ### Patch Changes

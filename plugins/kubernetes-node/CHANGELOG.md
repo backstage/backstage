@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.3
+
 ## 0.1.20
 
 ### Patch Changes
