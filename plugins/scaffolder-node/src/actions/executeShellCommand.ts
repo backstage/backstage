@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { PassThrough, Writable } from 'stream';
-import { Logger } from 'winston';
 
 /**
  * Options for {@link executeShellCommand}.
@@ -31,7 +31,7 @@ export type ExecuteShellCommandOptions = {
   /** options to pass to spawn */
   options?: SpawnOptionsWithoutStdio;
   /** logger to capture stdout and stderr output */
-  logger?: Logger;
+  logger?: LoggerService;
   /**
    * stream to capture stdout and stderr output
    * @deprecated  please provide a logger instead.
@@ -60,15 +60,13 @@ export async function executeShellCommand(
 
     process.stdout.on('data', chunk => {
       logStream?.write(chunk);
-      logger?.log(
-        'info',
+      logger?.info(
         Buffer.isBuffer(chunk) ? chunk.toString('utf8').trim() : chunk.trim(),
       );
     });
     process.stderr.on('data', chunk => {
       logStream?.write(chunk);
-      logger?.log(
-        'error',
+      logger?.error(
         Buffer.isBuffer(chunk) ? chunk.toString('utf8').trim() : chunk.trim(),
       );
     });

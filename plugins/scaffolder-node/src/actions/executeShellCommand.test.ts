@@ -17,9 +17,9 @@
 // Copyright 2024 DB Systel GmbH
 // Licensed under the DBISL, see the accompanying file LICENSE.
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';
-import { Logger } from 'winston';
 import { executeShellCommand } from './executeShellCommand';
 
 jest.mock('child_process', () => ({
@@ -29,7 +29,7 @@ jest.mock('child_process', () => ({
 describe('executeShellCommand', () => {
   let mockSpawn: jest.Mock;
   let mockProcess: any;
-  let mockLogger: jest.Mocked<Logger>;
+  let mockLogger: jest.Mocked<LoggerService>;
   let mockLogStream: Writable;
 
   beforeEach(() => {
@@ -48,8 +48,9 @@ describe('executeShellCommand', () => {
     mockLogStream = new PassThrough();
 
     mockLogger = {
-      log: jest.fn(),
-    } as unknown as jest.Mocked<Logger>;
+      info: jest.fn(),
+      error: jest.fn(),
+    } as unknown as jest.Mocked<LoggerService>;
     jest.clearAllMocks();
   });
 
@@ -80,11 +81,8 @@ describe('executeShellCommand', () => {
     mockProcess.on('close', (code: any) => {
       expect(code).toBe(0);
       expect(logStreamSpy).not.toHaveBeenCalled();
-      expect(mockLogger.log).toHaveBeenCalledWith('info', 'Hello World');
-      expect(mockLogger.log).not.toHaveBeenCalledWith(
-        'error',
-        expect.anything(),
-      );
+      expect(mockLogger.info).toHaveBeenCalledWith('Hello World');
+      expect(mockLogger.error).not.toHaveBeenCalledWith(expect.anything());
     });
   });
 
@@ -103,7 +101,7 @@ describe('executeShellCommand', () => {
     mockProcess.on('close', () => {
       expect(logStreamSpy).toHaveBeenCalledWith(expect.any(Buffer));
       expect(logStreamSpy).toHaveBeenCalledTimes(2);
-      expect(mockLogger.log).not.toHaveBeenCalled();
+      expect(mockLogger.info).not.toHaveBeenCalled();
     });
   });
 
@@ -121,8 +119,8 @@ describe('executeShellCommand', () => {
     mockProcess.stderr.emit('data', Buffer.from('Command not found\n'));
 
     mockProcess.on('close', () => {
-      expect(mockLogger.log).toHaveBeenCalledWith('info', 'Hello World');
-      expect(mockLogger.log).toHaveBeenCalledWith('error', 'Command not found');
+      expect(mockLogger.info).toHaveBeenCalledWith('Hello World');
+      expect(mockLogger.error).toHaveBeenCalledWith('Command not found');
       expect(logStreamSpy).toHaveBeenCalledTimes(2);
     });
   });
