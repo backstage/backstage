@@ -36,6 +36,9 @@ requires the first two steps.
 There is also a contrib guide to deploying Backstage with
 [AWS Fargate and Aurora PostgreSQL](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-fargate-deployment.md).
 
+There is also a contrib guide to deploying Backstage with
+[Cloud Foundry](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/cloudfoundry-deployment.md).
+
 Please consider contributing other deployment guides if you get Backstage set up
 on common infrastructure, it would be a great benefit to the community.
 

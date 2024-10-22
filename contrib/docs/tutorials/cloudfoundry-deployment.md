@@ -1,10 +1,3 @@
----
-id: cloudfoundry
-title: Deploying to Cloud Foundry
-sidebar_label: Cloud Foundry
-description: How to deploy Backstage to Cloud Foundry
----
-
 Cloud Foundry (CF) is an open-source cloud application platform that makes it fast and easy to build, test, deploy, and scale apps in your choice language, framework, and cloud.
 
 ## Prerequisites & the Cloud Foundry CLI
