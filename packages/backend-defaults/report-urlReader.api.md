@@ -447,5 +447,78 @@ export type UrlReadersOptions = {
   factories?: ReaderFactory[];
 };
 
+// Warnings were encountered during analysis:
+//
+// src/entrypoints/urlReader/lib/AwsS3UrlReader.d.ts:28:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/AwsS3UrlReader.d.ts:40:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/AwsS3UrlReader.d.ts:41:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/AwsS3UrlReader.d.ts:42:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/AwsS3UrlReader.d.ts:43:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/AwsS3UrlReader.d.ts:44:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/AzureUrlReader.d.ts:14:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/AzureUrlReader.d.ts:19:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/AzureUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/AzureUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/AzureUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/AzureUrlReader.d.ts:23:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/BitbucketCloudUrlReader.d.ts:14:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/BitbucketCloudUrlReader.d.ts:19:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/BitbucketCloudUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/BitbucketCloudUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/BitbucketCloudUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/BitbucketCloudUrlReader.d.ts:23:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/BitbucketServerUrlReader.d.ts:14:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/BitbucketServerUrlReader.d.ts:19:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/BitbucketServerUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/BitbucketServerUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/BitbucketServerUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/BitbucketServerUrlReader.d.ts:23:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/BitbucketUrlReader.d.ts:17:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/BitbucketUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/BitbucketUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/BitbucketUrlReader.d.ts:23:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/BitbucketUrlReader.d.ts:24:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/BitbucketUrlReader.d.ts:25:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/FetchUrlReader.d.ts:24:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/FetchUrlReader.d.ts:25:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/FetchUrlReader.d.ts:26:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/FetchUrlReader.d.ts:27:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/FetchUrlReader.d.ts:28:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/GerritUrlReader.d.ts:29:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/GerritUrlReader.d.ts:33:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/GerritUrlReader.d.ts:34:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/GerritUrlReader.d.ts:35:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/GerritUrlReader.d.ts:36:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/GerritUrlReader.d.ts:37:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/GiteaUrlReader.d.ts:14:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/GiteaUrlReader.d.ts:18:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/GiteaUrlReader.d.ts:19:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/GiteaUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/GiteaUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/GiteaUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/GithubUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/GithubUrlReader.d.ts:25:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/GithubUrlReader.d.ts:27:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/GithubUrlReader.d.ts:28:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/GithubUrlReader.d.ts:29:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/GithubUrlReader.d.ts:30:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:14:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:18:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:19:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:31:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:32:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
+// src/entrypoints/urlReader/lib/GitlabUrlReader.d.ts:35:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:15:5 - (ae-undocumented) Missing documentation for "factory".
+// src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:19:5 - (ae-undocumented) Missing documentation for "read".
+// src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readUrl".
+// src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "readTree".
+// src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "search".
+// src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:23:5 - (ae-undocumented) Missing documentation for "toString".
+// src/entrypoints/urlReader/lib/types.d.ts:74:5 - (ae-undocumented) Missing documentation for "fromTarArchive".
+// src/entrypoints/urlReader/lib/types.d.ts:81:5 - (ae-undocumented) Missing documentation for "fromZipArchive".
+// src/entrypoints/urlReader/lib/types.d.ts:82:5 - (ae-undocumented) Missing documentation for "fromReadableArray".
+
 // (No @packageDocumentation comment for this package)
 ```

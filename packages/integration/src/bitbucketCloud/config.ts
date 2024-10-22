@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { ThrottlingConfig, readThrottlingConfig } from '../bitbucket/config';
 
 const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
 const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';
@@ -51,6 +52,13 @@ export type BitbucketCloudIntegrationConfig = {
    * The access token to use for requests to Bitbucket Cloud (bitbucket.org).
    */
   token?: string;
+
+  /**
+   * The throttling configuration for requests to Bitbucket Cloud (bitbucket.org).
+   *
+   * If not specified, no throttling will be applied.
+   */
+  throttling?: ThrottlingConfig;
 };
 
 /**
@@ -68,12 +76,16 @@ export function readBitbucketCloudIntegrationConfig(
   // (as the anonymous one is provided by default).
   const username = config.getString('username');
   const appPassword = config.getString('appPassword')?.trim();
+  const throttling = config.has('throttling')
+    ? readThrottlingConfig(config.getConfig('throttling'))
+    : undefined;
 
   return {
     host,
     apiBaseUrl,
     username,
     appPassword,
+    throttling,
   };
 }
 

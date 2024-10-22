@@ -3618,6 +3618,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-aws-node": "workspace:^"
+    "@backstage/integration-bitbucket-node": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -4812,6 +4813,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/integration-bitbucket-node@workspace:^, @backstage/integration-bitbucket-node@workspace:packages/integration-bitbucket-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/integration-bitbucket-node@workspace:packages/integration-bitbucket-node"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/types": "workspace:^"
+    node-fetch: 2.7.0
+    p-throttle: ^4.1.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/integration-react@^1.2.0, @backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
@@ -4852,14 +4866,18 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
+    "@types/node-fetch": ^2.5.12
     cross-fetch: ^4.0.0
     git-url-parse: ^15.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
+    node-fetch: ^2.6.7
+    p-throttle: ^4.1.1
   languageName: unknown
   linkType: soft
 
@@ -5603,9 +5621,11 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-bitbucket-node": "workspace:^"
     "@openapitools/openapi-generator-cli": ^2.4.26
     cross-fetch: ^4.0.0
     msw: ^1.0.0
+    node-fetch: ^2.7.0
     ts-morph: ^22.0.0
   languageName: unknown
   linkType: soft
@@ -5713,6 +5733,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-bitbucket-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
@@ -35452,7 +35473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
+"node-fetch@npm:2.7.0, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:

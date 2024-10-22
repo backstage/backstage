@@ -1,9 +1,9 @@
 {
-  "name": "@backstage/integration",
-  "version": "1.15.1",
-  "description": "Helpers for managing integrations towards external systems",
+  "name": "@backstage/integration-bitbucket-node",
+  "version": "0.1.0",
+  "description": "Provides a rate limited fetch api for Bitbucket clients",
   "backstage": {
-    "role": "common-library"
+    "role": "node-library"
   },
   "publishConfig": {
     "access": "public",
@@ -18,15 +18,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/integration"
+    "directory": "packages/integration-aws-node"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist",
-    "config.d.ts"
+    "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -37,25 +36,13 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@azure/identity": "^4.0.0",
     "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@octokit/auth-app": "^4.0.0",
-    "@octokit/rest": "^19.0.3",
-    "@types/node-fetch": "^2.5.12",
-    "cross-fetch": "^4.0.0",
-    "git-url-parse": "^15.0.0",
-    "lodash": "^4.17.21",
-    "luxon": "^3.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "2.7.0",
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@backstage/config-loader": "workspace:^",
-    "@types/luxon": "^3.0.0",
-    "msw": "^1.0.0"
-  },
-  "configSchema": "config.d.ts"
+    "@backstage/cli": "workspace:^"
+  }
 }

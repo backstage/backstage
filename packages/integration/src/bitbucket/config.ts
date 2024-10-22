@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
+import { HumanDuration } from '@backstage/types';
 
 const BITBUCKET_HOST = 'bitbucket.org';
 const BITBUCKET_API_BASE_URL = 'https://api.bitbucket.org/2.0';
@@ -128,3 +129,23 @@ export function readBitbucketIntegrationConfigs(
 
   return result;
 }
+
+/**
+ * Reads the throttling configuration from the provided config object.
+ * @public
+ */
+export function readThrottlingConfig(config: Config): ThrottlingConfig {
+  return {
+    count: config.getNumber('count'),
+    interval: readDurationFromConfig(config.getConfig('interval')),
+  };
+}
+
+/**
+ * Configuration for the throttling of HTTP requests.
+ * @public
+ */
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};
