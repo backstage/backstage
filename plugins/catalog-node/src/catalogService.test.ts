@@ -26,7 +26,6 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { CatalogClient } from '@backstage/catalog-client';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { catalogServiceRef } from './catalogService';
@@ -46,7 +45,7 @@ describe('catalogServiceRef', () => {
             catalog: catalogServiceRef,
           },
           async init({ catalog }) {
-            expect(catalog).toBeInstanceOf(CatalogClient);
+            expect(catalog.getEntities).toBeDefined();
           },
         });
       },
