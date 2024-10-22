@@ -59,7 +59,6 @@ export class FetchService {
         interval: durationToMilliseconds(options.throttling.interval),
       });
       func = throttle(async (url: RequestInfo, init?: RequestInit) => {
-        console.log(`fetch_throttled(${(url as any).url})`);
         return fetch(url, init);
       });
     }
