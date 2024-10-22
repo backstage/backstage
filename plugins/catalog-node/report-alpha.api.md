@@ -95,7 +95,7 @@ export interface CatalogProcessingExtensionPoint {
 // @alpha (undocumented)
 export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
-// @alpha
+// @alpha @deprecated (undocumented)
 export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin', 'singleton'>;
 
 // (No @packageDocumentation comment for this package)
