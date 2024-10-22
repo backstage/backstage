@@ -20,11 +20,11 @@ const { Module } = require('module');
 
 // This hooks into module resolution and overrides imports of packages that
 // exist in the linked workspace to instead be resolved from the linked workspace.
-if (process.env.LINKED_WORKSPACE) {
+if (process.env.BACKSTAGE_CLI_LINKED_WORKSPACE) {
   const { join: joinPath } = require('path');
   const { getPackagesSync } = require('@manypkg/get-packages');
   const { packages: linkedPackages, root: linkedRoot } = getPackagesSync(
-    process.env.LINKED_WORKSPACE,
+    process.env.BACKSTAGE_CLI_LINKED_WORKSPACE,
   );
 
   // Matches all packages in the linked workspaces, as well as sub-path exports from them

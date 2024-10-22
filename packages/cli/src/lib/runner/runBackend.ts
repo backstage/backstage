@@ -121,7 +121,7 @@ export async function runBackend(options: RunBackendOptions) {
         stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
         env: {
           ...process.env,
-          LINKED_WORKSPACE: options.linkedWorkspace,
+          BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
           ESBK_TSCONFIG_PATH: paths.resolveTargetRoot('tsconfig.json'),
         },
