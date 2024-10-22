@@ -129,10 +129,6 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
 
-  const [trimmedState, setTrimmedState] = useState<Record<string, JsonValue>>(
-    {},
-  );
-
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
@@ -170,6 +166,16 @@ export const Stepper = (stepperProps: StepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   }, [setActiveStep]);
 
+  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+
+  const {
+    formContext: propFormContext,
+    uiSchema: propUiSchema,
+    liveOmit: _shouldLiveOmit,
+    omitExtraData: _shouldOmitExtraData,
+    ...restFormProps
+  } = props.formProps ?? {};
+
   const handleChange = useCallback(
     (e: IChangeEvent) => {
       setStepsState(current => {
@@ -178,20 +184,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     },
     [setStepsState],
   );
-
-  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
-  const schemaUtils = useSchemaUtils({
-    validator,
-    schema: currentStep?.schema,
-  });
-
-  const {
-    formContext: propFormContext,
-    uiSchema: propUiSchema,
-    liveOmit: shouldLiveOmit,
-    omitExtraData: shouldOmitExtraData,
-    ...restFormProps
-  } = props.formProps ?? {};
 
   const handleNext = useCallback(
     async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
@@ -202,14 +194,9 @@ export const Stepper = (stepperProps: StepperProps) => {
 
       const returnedValidation = await validation(formData);
 
-      const trimmedData =
-        shouldLiveOmit && shouldOmitExtraData && schemaUtils
-          ? schemaUtils.omitExtraData(formData)
-          : formData;
-
-      setTrimmedState(current => ({
+      setStepsState(current => ({
         ...current,
-        ...trimmedData,
+        ...formData,
       }));
 
       setIsValidating(false);
@@ -225,15 +212,15 @@ export const Stepper = (stepperProps: StepperProps) => {
         });
       }
     },
-    [validation, shouldLiveOmit, shouldOmitExtraData, schemaUtils, analytics],
+    [validation, analytics],
   );
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const handleCreate = () => {
-    props.onCreate(trimmedState);
+  const handleCreate = useCallback(() => {
+    props.onCreate(stepsState);
     analytics.captureEvent('click', `${createLabel}`);
-  };
+  }, [props, stepsState, analytics, createLabel]);
 
   return (
     <>
@@ -308,7 +295,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={trimmedState}
+            formData={stepsState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -316,7 +303,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={trimmedState} schemas={steps} />
+            <ReviewStateComponent formState={stepsState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
