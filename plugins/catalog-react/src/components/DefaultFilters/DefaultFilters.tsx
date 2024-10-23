@@ -27,6 +27,7 @@ import { EntityProcessingStatusPicker } from '../EntityProcessingStatusPicker';
 import { EntityTagPicker } from '../EntityTagPicker';
 import { EntityTypePicker } from '../EntityTypePicker';
 import { UserListPicker } from '../UserListPicker';
+import { EntityOwnerPicker2 } from '../EntityOwnerPicker/EntityOwnerPicker2';
 
 /**
  * Props for default filters.
@@ -45,7 +46,7 @@ export const DefaultFilters = (props: DefaultFiltersProps) => {
   const {
     initialKind,
     initiallySelectedFilter,
-    ownerPickerMode,
+    ownerPickerMode: _,
     initiallySelectedNamespaces,
   } = props;
   return (
@@ -53,7 +54,7 @@ export const DefaultFilters = (props: DefaultFiltersProps) => {
       <EntityKindPicker initialFilter={initialKind} />
       <EntityTypePicker />
       <UserListPicker initialFilter={initiallySelectedFilter} />
-      <EntityOwnerPicker mode={ownerPickerMode} />
+      <EntityOwnerPicker2 />
       <EntityLifecyclePicker />
       <EntityTagPicker />
       <EntityProcessingStatusPicker />
