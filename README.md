@@ -1,3 +1,6 @@
+> [!NOTE]
+> 🏖 From Monday 28th October through November 4th, Maintainers and Spotify Employees will be on Vacation due to Wellness Week, expect the project to move a little slower than normal, and support to be limited. Normal service will resume after that! 🏝
+
 [![headline](docs/assets/headline.png)](https://backstage.io/)
 
 # [Backstage](https://backstage.io)
