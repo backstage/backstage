@@ -1,5 +1,11 @@
 # @backstage/plugin-events-node
 
+## 0.4.3
+
+### Patch Changes
+
+- 7bd2fe9: Fix `events.useEventBus` by propagating config to `DefaultEventsService`
+
 ## 0.4.2
 
 ### Patch Changes
