@@ -15,6 +15,7 @@
  */
 
 import {
+  BlobDownloadOptions,
   BlobServiceClient,
   ContainerClient,
   StorageSharedKeyCredential,
@@ -142,7 +143,8 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
 
       const abortController = new AbortController();
 
-      const getBlobOptions = {
+      const getBlobOptions: BlobDownloadOptions = {
+        abortSignal: abortController.signal,
         conditions: {
           ...(etag && { ifNoneMatch: etag }),
           ...(lastModifiedAfter && { ifModifiedSince: lastModifiedAfter }),
@@ -156,14 +158,13 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
         getBlobOptions,
       );
 
-      const data = await this.retrieveAzureBlobData(
+      return ReadUrlResponseFactory.fromReadable(
         downloadBlockBlobResponse.readableStreamBody as Readable,
+        {
+          etag: downloadBlockBlobResponse.etag,
+          lastModifiedAt: downloadBlockBlobResponse.lastModified,
+        },
       );
-
-      return ReadUrlResponseFactory.fromReadable(data, {
-        etag: downloadBlockBlobResponse.etag,
-        lastModifiedAt: downloadBlockBlobResponse.lastModified,
-      });
     } catch (e) {
       if (e.$metadata && e.$metadata.httpStatusCode === 304) {
         throw new NotModifiedError();
@@ -195,12 +196,11 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
           abortController.abort(),
         );
         const downloadBlockBlobResponse = await blobClient.download();
-        const data = await this.retrieveAzureBlobData(
-          downloadBlockBlobResponse.readableStreamBody as Readable,
-        );
 
         responses.push({
-          data: Readable.from(data),
+          data: Readable.from(
+            downloadBlockBlobResponse.readableStreamBody as Readable,
+          ),
           path: relative(path, blob.name),
           lastModifiedAt: blob.properties.lastModified,
         });
@@ -225,20 +225,5 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     return `azureBlobStorage{accountName=${accountName},authed=${Boolean(
       accountKey,
     )}}`;
-  }
-
-  private async retrieveAzureBlobData(stream: Readable): Promise<Readable> {
-    return new Promise((resolve, reject) => {
-      try {
-        const chunks: any[] = [];
-        stream.on('data', chunk => chunks.push(chunk));
-        stream.on('error', (e: Error) =>
-          reject(new ForwardedError('Unable to read stream', e)),
-        );
-        stream.on('end', () => resolve(Readable.from(Buffer.concat(chunks))));
-      } catch (e) {
-        throw new ForwardedError('Unable to parse the response data', e);
-      }
-    });
   }
 }
