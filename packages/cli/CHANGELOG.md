@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.28.1
+
+### Patch Changes
+
+- c5276b6: Fixed an issue with the `--successCache` flag for `repo test` where the tree hash for the wrong package directory would sometimes be used to generate the cache key.
+
 ## 0.28.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.13.2
+
+### Patch Changes
+
+- e2f94f7: Fix issue with `Stepper` and trying to trim additional properties. This is now all behind `liveOmit` and `omitExtraData` instead.
+
 ## 1.13.1
 
 ### Patch Changes

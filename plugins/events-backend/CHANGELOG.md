@@ -1,5 +1,13 @@
 # @backstage/plugin-events-backend
 
+## 0.3.15
+
+### Patch Changes
+
+- 7bd2fe9: Fix `events.useEventBus` by propagating config to `DefaultEventsService`
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3
+
 ## 0.3.14
 
 ### Patch Changes

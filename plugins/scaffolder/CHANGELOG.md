@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.2
+
+### Patch Changes
+
+- a2acc0d: fix(scaffolder): use `onInputChange` in `RepoUrlPicker` to fix issue with the value not updating properly
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.13.2
+
 ## 1.26.1
 
 ### Patch Changes
