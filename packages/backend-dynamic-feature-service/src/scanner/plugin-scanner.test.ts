@@ -30,6 +30,7 @@ const mockDir = createMockDirectory();
 
 describe('plugin-scanner', () => {
   const env = process.env;
+
   beforeEach(() => {
     jest.resetModules();
   });
@@ -38,7 +39,6 @@ describe('plugin-scanner', () => {
     mockDir.clear();
     process.env = env;
   });
-
   describe('applyConfig', () => {
     type TestCase = {
       name: string;
