@@ -141,7 +141,7 @@ yarn lint:docs # Lint all the Markdown files
 yarn lint:type-deps # Verify that @types/* dependencies are placed correctly in packages
 
 yarn test # Test packages that have changed since later commit on origin/master
-yarn test --watchAll=false # Test packages and include unchanged ones
+yarn test --no-watch # Test packages and include unchanged ones
 yarn test:all # Test all packages
 
 yarn clean # Remove all output folders and @backstage/cli cache
