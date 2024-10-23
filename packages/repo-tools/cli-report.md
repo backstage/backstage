@@ -16,6 +16,7 @@ Commands:
   type-deps
   peer-deps [options]
   generate-catalog-info [options]
+  generate-patch [options] <package>
   knip-reports [options] [paths...]
   package [command]
   repo [command]
@@ -49,6 +50,19 @@ Usage: backstage-repo-tools generate-catalog-info [options]
 Options:
   --dry-run
   --ci
+  -h, --help
+```
+
+### `backstage-repo-tools generate-patch`
+
+```
+Usage: backstage-repo-tools generate-patch [options] <package>
+
+Options:
+  --target <target-repo>
+  --registry-url <registry-url>
+  --base-version <version>
+  --query <query>
   -h, --help
 ```
 

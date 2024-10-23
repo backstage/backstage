@@ -45,3 +45,21 @@ You can also link backend packages using the exact same process, simply start yo
 ### React errors
 
 If you are encountering errors related to React, it is likely that the versions of React in the two workspaces are different. Make sure that the versions of `react` and `react-dom` are the same in both workspaces, or at least that they are in sync between the package that you're serving the app from and the external workspace.
+
+## Generating temporary patches
+
+!!!info
+This feature is experimental and currently only supports Yarn workspaces.
+!!!
+
+After making local changes to a package in an external workspace you might often want to merge and deploy these changes in your own project. You can use Yarn patches for this purpose, but it can be quite cumbersome to create these patches manually. To make this process easier, you can use `yarn backstage-repo-tool generate-patch` command from the `@backstage/repo-tools` package to generate a patch and resolution entries in the external workspace.
+
+For example, if you've made changes to the `@backstage/backend-app-api` package in a local clone of the main `backstage` repository, you can generate a patch for your internal project as follows:
+
+```bash title="Run in the cloned backstage repository"
+yarn backstage-repo-tool generate patch @backstage/backend-app-api --target ../our-developer-portal
+```
+
+This will generate a patch file in your `our-developer-portal` workspace. The patch will be based on the most recently released version of the source package, with the additional changes on top.
+
+If you want to base the patch on a different version of the source package, you can specify the version using the `--base-version <version>` option, and if you want to only use the patch for a specific version query, you can specify that using the `--query <query>` option.

@@ -254,6 +254,33 @@ export function registerCommands(program: Command) {
     );
 
   program
+    .command('generate-patch <package>')
+    .requiredOption(
+      '--target <target-repo>',
+      'The target repository to generate patches for',
+    )
+    .option(
+      '--registry-url <registry-url>',
+      'The registry to use for downloading artifacts (default: https://registry.npmjs.org)',
+    )
+    .option(
+      '--base-version <version>',
+      'Override the base version to generate the patch towards instead',
+    )
+    .option(
+      '--query <query>',
+      'Only apply the patch for a specific version query in the target repository',
+    )
+    .description(
+      'Generate a patch for the selected package in the target repository',
+    )
+    .action(
+      lazy(() =>
+        import('./generate-patch/generate-patch').then(m => m.default),
+      ),
+    );
+
+  program
     .command('knip-reports [paths...]')
     .option('--ci', 'CI run checks that there is no changes on knip reports')
     .description('Generate a knip report for selected packages')
