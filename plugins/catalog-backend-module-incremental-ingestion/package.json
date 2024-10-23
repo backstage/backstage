@@ -60,8 +60,8 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
-    "@types/luxon": "^3.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
@@ -71,6 +71,7 @@
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@types/luxon": "^3.0.0"
   }
 }

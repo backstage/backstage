@@ -18,16 +18,17 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'perf_hooks';
-import { Duration, DurationObjectUnits } from 'luxon';
+import { Duration } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { HumanDuration } from '@backstage/types';
 
 export class IncrementalIngestionEngine
   implements IterationEngine, EventSubscriber
 {
   private readonly restLength: Duration;
-  private readonly backoff: DurationObjectUnits[];
+  private readonly backoff: HumanDuration[];
 
   private manager: IncrementalIngestionDatabaseManager;
 
