@@ -4871,14 +4871,11 @@ __metadata:
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
-    "@types/node-fetch": ^2.5.12
     cross-fetch: ^4.0.0
     git-url-parse: ^15.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
-    p-throttle: ^4.1.1
   languageName: unknown
   linkType: soft
 
