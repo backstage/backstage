@@ -16,22 +16,19 @@
 
 import Box from '@material-ui/core/Box';
 import { TextFieldProps } from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useMemo, useState, ReactNode } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
-import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
 import {
   DefaultEntityFilters,
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
 import { reduceBackendCatalogFilters } from '../../utils';
+import { Autocomplete } from '@backstage/core-components';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -52,7 +49,7 @@ export type EntityAutocompletePickerProps<
   path: string;
   showCounts?: boolean;
   Filter: { new (values: string[]): NonNullable<T[Name]> };
-  InputProps?: TextFieldProps;
+  InputProps?: TextFieldProps['InputProps'];
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
 };
@@ -83,7 +80,6 @@ export function EntityAutocompletePicker<
     initialSelectedOptions = [],
     filtersForAvailableValues = ['kind'],
   } = props;
-
   const classes = useStyles();
 
   const {
@@ -149,36 +145,25 @@ export function EntityAutocompletePicker<
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
-      <Typography className={classes.label} variant="button" component="label">
-        {label}
-        <Autocomplete<string, true>
-          PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children as ReactNode}</div>
-          )}
-          multiple
-          disableCloseOnSelect
-          options={availableOptions}
-          value={selectedOptions}
-          onChange={(_event: object, options: string[]) =>
-            setSelectedOptions(options)
-          }
-          renderOption={(option, { selected }) => (
-            <EntityAutocompletePickerOption
-              selected={selected}
-              value={option}
-              availableOptions={availableValues}
-              showCounts={!!showCounts}
-            />
-          )}
-          size="small"
-          popupIcon={
-            <ExpandMoreIcon data-testid={`${String(name)}-picker-expand`} />
-          }
-          renderInput={params => (
-            <EntityAutocompletePickerInput {...params} {...InputProps} />
-          )}
-        />
-      </Typography>
+      <Autocomplete<string, true>
+        multiple
+        disableCloseOnSelect
+        label={label}
+        name={String(name)}
+        options={availableOptions}
+        value={selectedOptions}
+        onChange={(_event: object, options: string[]) =>
+          setSelectedOptions(options)
+        }
+        renderOption={(option, { selected }) => (
+          <EntityAutocompletePickerOption
+            selected={selected}
+            value={option}
+            availableOptions={availableValues}
+            showCounts={!!showCounts}
+          />
+        )}
+      />
     </Box>
   );
 }
