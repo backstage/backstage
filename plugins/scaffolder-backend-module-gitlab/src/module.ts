@@ -24,6 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGitlabGroupEnsureExistsAction,
+  createGitlabProjectMigrateAction,
   createGitlabIssueAction,
   createGitlabProjectAccessTokenAction,
   createGitlabProjectDeployTokenAction,
@@ -55,6 +56,7 @@ export const gitlabModule = createBackendModule({
 
         scaffolder.addActions(
           createGitlabGroupEnsureExistsAction({ integrations }),
+          createGitlabProjectMigrateAction({ integrations }),
           createGitlabIssueAction({ integrations }),
           createGitlabProjectAccessTokenAction({ integrations }),
           createGitlabProjectDeployTokenAction({ integrations }),
