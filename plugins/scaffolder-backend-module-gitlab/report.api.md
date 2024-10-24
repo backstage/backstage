@@ -76,11 +76,11 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
+    scopes: string[];
     repoUrl: string;
     projectId: string | number;
     username?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
   },
   {
     user: string;
