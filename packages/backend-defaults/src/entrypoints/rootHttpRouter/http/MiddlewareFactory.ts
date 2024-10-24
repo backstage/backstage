@@ -15,15 +15,15 @@
  */
 
 import {
-  RootConfigService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import {
-  Request,
-  Response,
   ErrorRequestHandler,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
 } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -38,12 +38,16 @@ import {
   InputError,
   NotAllowedError,
   NotFoundError,
+  NotImplementedError,
   NotModifiedError,
-  ServiceUnavailableError,
   serializeError,
+  ServiceUnavailableError,
 } from '@backstage/errors';
-import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
+import { rateLimit } from 'express-rate-limit';
+import { Config } from '@backstage/config';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { RateLimitStoreFactory } from './RateLimitStoreFactory';
 
 /**
  * Options used to create a {@link MiddlewareFactory}.
@@ -181,6 +185,77 @@ export class MiddlewareFactory {
    */
   cors(): RequestHandler {
     return cors(readCorsOptions(this.#config.getOptionalConfig('backend')));
+  }
+
+  /**
+   * Returns a middleware that implements rate limiting.
+   *
+   * @remarks
+   *
+   * Rate limiting is a common technique to prevent abuse of APIs. This middleware is
+   * configured using the config key `backend.rateLimit`.
+   *
+   * @returns An Express request handler
+   */
+  rateLimit(): RequestHandler {
+    const conf = this.#config.getOptional<boolean | Config>(
+      'backend.rateLimit',
+    );
+    if (!conf || typeof conf !== 'object') {
+      return (_req: Request, _res: Response, next: NextFunction) => {
+        next();
+      };
+    }
+    const rateLimitOptions = conf as Config;
+    const window = rateLimitOptions.getOptional<number | HumanDuration>(
+      'window',
+    );
+    let windowMs: number | undefined;
+    if (window !== undefined) {
+      if (typeof window === 'number') {
+        windowMs = window;
+      } else if (typeof window === 'object' && !Array.isArray(window)) {
+        windowMs = durationToMilliseconds(window);
+      } else {
+        throw new Error(
+          `Invalid configuration backend.rateLimit.window: ${window}, expected milliseconds number or HumanDuration object`,
+        );
+      }
+    }
+
+    const ipAllowList = rateLimitOptions.getOptionalStringArray(
+      'ipAllowList',
+    ) ?? ['127.0.0.1', '0:0:0:0:0:0:0:1', '::1'];
+
+    return rateLimit({
+      windowMs,
+      limit: rateLimitOptions.getOptionalNumber('incomingRequestLimit'),
+      skipSuccessfulRequests: rateLimitOptions.getOptionalBoolean(
+        'skipSuccessfulRequests',
+      ),
+      skipFailedRequests:
+        rateLimitOptions.getOptionalBoolean('skipFailedRequests'),
+      passOnStoreError: rateLimitOptions.getOptionalBoolean('passOnStoreError'),
+      keyGenerator(req, _res): string {
+        if (!req.ip) {
+          return req.socket.remoteAddress!;
+        }
+        return req.ip;
+      },
+      skip: (req, _res) => {
+        return (
+          Boolean(req.ip && ipAllowList.includes(req.ip)) ||
+          Boolean(
+            req.socket.remoteAddress &&
+              ipAllowList.includes(req.socket.remoteAddress),
+          )
+        );
+      },
+      validate: {
+        trustProxy: false,
+      },
+      store: new RateLimitStoreFactory(this.#config).create(),
+    });
   }
 
   /**
