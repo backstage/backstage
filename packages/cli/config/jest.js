@@ -264,7 +264,7 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
       .createHash('sha256')
       .update(version)
       .update(Buffer.alloc(1))
-      .update(JSON.stringify(config.transform))
+      .update(JSON.stringify(config.transform).replaceAll(paths.targetRoot, ''))
       .digest('hex');
     config.id = `backstage_cli_${configHash}`;
   }
