@@ -78,6 +78,9 @@ export default async (
     );
   }
 
+  await verifyYarnVersion(sourceRepo.root.dir);
+  await verifyYarnVersion(targetRepo.root.dir);
+
   const sourcePkg = sourceRepo.packages.find(
     pkg =>
       pkg.packageJson.name === packageArg ||
@@ -219,6 +222,22 @@ async function loadTrimmedRootPkg(ctx: PatchContext, query?: string) {
       },
     );
   };
+}
+
+// Verify that a repo is using a supported Yarn version
+async function verifyYarnVersion(cwd: string) {
+  const { stdout } = await exec('yarn', ['--version'], {
+    cwd,
+  });
+  const version = stdout.toString('utf8').trim();
+
+  if (version.startsWith('1.')) {
+    throw new Error(
+      `Unsupported Yarn version in target repository, got ${stdout
+        .toString('utf8')
+        .trim()} but 2+ is required`,
+    );
+  }
 }
 
 // Generate a new patch and return the path to the generated patch file. Will
