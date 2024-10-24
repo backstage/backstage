@@ -249,12 +249,18 @@ export type BitbucketServerIntegrationConfig = {
   password?: string;
 };
 
-// @public
+// @public @deprecated
 export function buildGerritGitilesArchiveUrl(
   config: GerritIntegrationConfig,
   project: string,
   branch: string,
   filePath: string,
+): string;
+
+// @public
+export function buildGerritGitilesArchiveUrlFromLocation(
+  config: GerritIntegrationConfig,
+  url: string,
 ): string;
 
 // @public
@@ -741,7 +747,7 @@ export interface IntegrationsByType {
   harness: ScmIntegrationsGroup<HarnessIntegration>;
 }
 
-// @public
+// @public @deprecated
 export function parseGerritGitilesUrl(
   config: GerritIntegrationConfig,
   url: string,
