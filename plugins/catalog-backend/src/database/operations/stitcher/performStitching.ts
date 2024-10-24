@@ -212,11 +212,12 @@ export async function performStitching(options: {
       final_entity: JSON.stringify(entity),
       hash,
       last_updated_at: knex.fn.now(),
+      entity_ref: entityRef,
     })
     .where('entity_id', entityId)
     .where('stitch_ticket', stitchTicket)
     .onConflict('entity_id')
-    .merge(['final_entity', 'hash', 'last_updated_at']);
+    .merge(['final_entity', 'hash', 'last_updated_at', 'entity_ref']);
 
   const markDeferred = async () => {
     if (options.strategy.mode !== 'deferred') {
