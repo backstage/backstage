@@ -219,7 +219,7 @@ These are the deprecation messages for the most common replacements:
 - `createLegacyAuthAdapters` - Migrate to use the new backend system and auth services instead.
 - `errorHandler` - Use `MiddlewareFactory.create.error` from `@backstage/backend-defaults/rootHttpRouter` instead.
 - `getRootLogger` - This function will be removed in the future. If you need to get the root logger in the new system, please check out this documentation: https://backstage.io/docs/backend-system/core-services/logger
-- `getVoidLogger` - This function will be removed in the future. If you need to mock the root logger in the new system, please use `mockServices.logger.mock()` from `@backstage/test-utils` instead.
+- `getVoidLogger` - This function will be removed in the future. If you need to mock the root logger in the new system, please use `mockServices.logger.mock()` from `@backstage/backend-test-utils` instead.
 - `legacyPlugin` - Fully use the new backend system instead.
 - `loadBackendConfig` - Please migrate to the new backend system and use `coreServices.rootConfig` instead, or the [@backstage/config-loader#ConfigSources](https://backstage.io/docs/reference/config-loader.configsources) facilities if required.
 - `loggerToWinstonLogger` - Migrate to use the new `LoggerService` instead.
