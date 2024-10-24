@@ -52,7 +52,7 @@ If you are encountering errors related to React, it is likely that the versions 
 This feature is experimental and currently only supports Yarn workspaces.
 !!!
 
-After making local changes to a package in an external workspace you might often want to merge and deploy these changes in your own project. You can use Yarn patches for this purpose, but it can be quite cumbersome to create these patches manually. To make this process easier, you can use `yarn backstage-repo-tool generate-patch` command from the `@backstage/repo-tools` package to generate a patch and resolution entries in the external workspace.
+After making local changes to a package in an external workspace you might often want to merge and deploy these changes in your own project. You can use Yarn patches for this purpose, but it can be quite cumbersome to create these patches manually. To make this process easier, you can use `yarn backstage-repo-tools generate-patch` command from the `@backstage/repo-tools` package to generate a patch and resolution entries in the external workspace.
 
 For example, if you've made changes to the `@backstage/backend-app-api` package in a local clone of the main `backstage` repository, you can generate a patch for your internal project as follows:
 
