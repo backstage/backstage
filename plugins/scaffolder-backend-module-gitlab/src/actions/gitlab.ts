@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Gitlab } from '@gitbeaker/node';
+import { Gitlab, VariableType } from '@gitbeaker/rest';
 import {
   initRepoAndPush,
   getRepoSourceDirectory,
@@ -362,7 +362,7 @@ export function createPublishGitlabAction(options: {
         throw e;
       }
 
-      const { id: userId } = (await client.Users.current()) as {
+      const { id: userId } = (await client.Users.showCurrentUser()) as {
         id: number;
       };
 
@@ -371,7 +371,7 @@ export function createPublishGitlabAction(options: {
       }
 
       const { id: projectId, http_url_to_repo } = await client.Projects.create({
-        namespace_id: targetNamespaceId,
+        namespaceId: targetNamespaceId,
         name: repo,
         visibility: repoVisibility,
         ...(topics.length ? { topics } : {}),
@@ -457,7 +457,8 @@ export function createPublishGitlabAction(options: {
       if (projectVariables) {
         for (const variable of projectVariables) {
           const variableWithDefaults = Object.assign(variable, {
-            variable_type: variable.variable_type ?? 'env_var',
+            variable_type: (variable.variable_type ??
+              'env_var') as VariableType,
             protected: variable.protected ?? false,
             masked: variable.masked ?? false,
             raw: variable.raw ?? false,
@@ -467,7 +468,16 @@ export function createPublishGitlabAction(options: {
           try {
             await client.ProjectVariables.create(
               projectId,
-              variableWithDefaults,
+              variableWithDefaults.key,
+              variableWithDefaults.value,
+              {
+                variableType: variableWithDefaults.variable_type,
+                protected: variableWithDefaults.protected,
+                masked: variableWithDefaults.masked,
+                environmentScope: variableWithDefaults.environment_scope,
+                description: variableWithDefaults.description,
+                raw: variableWithDefaults.raw,
+              },
             );
           } catch (e) {
             throw new InputError(

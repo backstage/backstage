@@ -7497,9 +7497,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    "@gitbeaker/core": ^35.8.0
-    "@gitbeaker/node": ^35.8.0
-    "@gitbeaker/rest": ^39.25.0
+    "@gitbeaker/rest": ^41.1.1
     luxon: ^3.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -9828,7 +9826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.8.0, @gitbeaker/core@npm:^35.8.1":
+"@gitbeaker/core@npm:^35.8.1":
   version: 35.8.1
   resolution: "@gitbeaker/core@npm:35.8.1"
   dependencies:
@@ -9842,29 +9840,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^39.34.3":
-  version: 39.34.3
-  resolution: "@gitbeaker/core@npm:39.34.3"
+"@gitbeaker/core@npm:^40.6.0":
+  version: 40.6.0
+  resolution: "@gitbeaker/core@npm:40.6.0"
   dependencies:
-    "@gitbeaker/requester-utils": ^39.34.3
-    qs: ^6.11.2
-    xcase: ^2.0.1
-  checksum: 2b0ccd6137ee717b6f51c51c8f7063b84beeebfdb044574f2257f282864411c4f0932f2619893385f2a86bb4fa342b75be972fd1868640ab4e260f2280cc52b3
-  languageName: node
-  linkType: hard
-
-"@gitbeaker/core@npm:^40.5.1":
-  version: 40.5.1
-  resolution: "@gitbeaker/core@npm:40.5.1"
-  dependencies:
-    "@gitbeaker/requester-utils": ^40.5.1
+    "@gitbeaker/requester-utils": ^40.6.0
     qs: ^6.12.2
     xcase: ^2.0.1
-  checksum: 2e2344ac81b153ef64e93da7a94cc40ead9619e2aefcadb1bcae0b92c2c741e6c08faf36e3b150f15bc80ea35f73bfdc94fbe2792ae462ee8881354f4d7481fd
+  checksum: 3d75175f8adcf04294b5cfb8f040ad372d218473ec35d02b3b59c0538eb16228fc915a92a8582ecff5cad0a8dddcddb5a90b12cfe2ce5aaf9c3b6fccffe7259b
   languageName: node
   linkType: hard
 
-"@gitbeaker/node@npm:^35.1.0, @gitbeaker/node@npm:^35.8.0":
+"@gitbeaker/core@npm:^41.1.1":
+  version: 41.1.1
+  resolution: "@gitbeaker/core@npm:41.1.1"
+  dependencies:
+    "@gitbeaker/requester-utils": ^41.1.1
+    qs: ^6.12.2
+    xcase: ^2.0.1
+  checksum: d724098ae77725018425587c81362c28205c07b998cf1cdbbb38df2c9bfe652e0f98e3d87af04a72b35bf3edc880402f6abb7a1f0b0457c293a1a530c7b4132f
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/node@npm:^35.1.0":
   version: 35.8.1
   resolution: "@gitbeaker/node@npm:35.8.1"
   dependencies:
@@ -9888,47 +9886,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/requester-utils@npm:^39.34.3":
-  version: 39.34.3
-  resolution: "@gitbeaker/requester-utils@npm:39.34.3"
-  dependencies:
-    picomatch-browser: ^2.2.6
-    qs: ^6.11.2
-    rate-limiter-flexible: ^4.0.0
-    xcase: ^2.0.1
-  checksum: 55881864f42e243d9cd73840ea44c9eee13be7974fa13fde241f19bc47915712532d5f7339a598cdd258c32193a37375719984d2630620ab8d962d6d7724cbeb
-  languageName: node
-  linkType: hard
-
-"@gitbeaker/requester-utils@npm:^40.5.1":
-  version: 40.5.1
-  resolution: "@gitbeaker/requester-utils@npm:40.5.1"
+"@gitbeaker/requester-utils@npm:^40.6.0":
+  version: 40.6.0
+  resolution: "@gitbeaker/requester-utils@npm:40.6.0"
   dependencies:
     picomatch-browser: ^2.2.6
     qs: ^6.12.2
     rate-limiter-flexible: ^4.0.1
     xcase: ^2.0.1
-  checksum: d39e9cc526f4969a6724dd2a0ae9c27f353e4e03b0b8ec569955d7a7b09c4520137b4768f0ec51a5f53f6156505ffa02164815702f77c1d460dd0f68d369af53
+  checksum: 8744487bdba27f2995e483473cb4c3d6926228fa2f0c842bec300e165a09508a5e5ad047d478aeebe226a8f264c92a1dcb0a21f6af316b8fe4ebb679d7283e49
   languageName: node
   linkType: hard
 
-"@gitbeaker/rest@npm:^39.25.0":
-  version: 39.34.3
-  resolution: "@gitbeaker/rest@npm:39.34.3"
+"@gitbeaker/requester-utils@npm:^41.1.1":
+  version: 41.1.1
+  resolution: "@gitbeaker/requester-utils@npm:41.1.1"
   dependencies:
-    "@gitbeaker/core": ^39.34.3
-    "@gitbeaker/requester-utils": ^39.34.3
-  checksum: e2a484891b12c71d4218168ab3884af14d036fb16a710ea023556a3d57dd220b13feaebd1f4aa3f61d0180c9f17b66f283650cd543416bb402d3bed8b6eaa465
+    picomatch-browser: ^2.2.6
+    qs: ^6.12.2
+    rate-limiter-flexible: ^4.0.1
+    xcase: ^2.0.1
+  checksum: 54cb3603d17831dbece37ee8c73e9004ecffbe24a0b026d95d01481f4c88b54dde2bbd96740be3483b3220e081aa08bfa2ae85d7c80660ba3c9f3d977de0cbe0
   languageName: node
   linkType: hard
 
 "@gitbeaker/rest@npm:^40.0.3":
-  version: 40.5.1
-  resolution: "@gitbeaker/rest@npm:40.5.1"
+  version: 40.6.0
+  resolution: "@gitbeaker/rest@npm:40.6.0"
   dependencies:
-    "@gitbeaker/core": ^40.5.1
-    "@gitbeaker/requester-utils": ^40.5.1
-  checksum: 902ab38daad16dfd1638fce91a1c39baf6409e9bb17c1e13bd904801e85fa796a4cf015ebf4fe3d9cf0b0028a8b26493502a9f331cf990fa73398a752ee41d7e
+    "@gitbeaker/core": ^40.6.0
+    "@gitbeaker/requester-utils": ^40.6.0
+  checksum: e2ae3f460378c0fe226ac13dcc75bcddf44c8bd594c212020d2a088016a2d1735552639cb9a8fe43f85dad0305a918aef485313c5bed8ad62e351affee21da80
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/rest@npm:^41.1.1":
+  version: 41.1.1
+  resolution: "@gitbeaker/rest@npm:41.1.1"
+  dependencies:
+    "@gitbeaker/core": ^41.1.1
+    "@gitbeaker/requester-utils": ^41.1.1
+  checksum: bd25b1eb4536ab37519991084f61e1e23a68d82de7d2b34be2646ab6ce5a8d871bd0c34fa284cb7a5f5048df57f5345768ab7a9a013ea02fd8d14869c716e47b
   languageName: node
   linkType: hard
 
@@ -38484,7 +38482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.13.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.9.4":
+"qs@npm:6.13.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.12.2, qs@npm:^6.9.4":
   version: 6.13.0
   resolution: "qs@npm:6.13.0"
   dependencies:
@@ -38671,7 +38669,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rate-limiter-flexible@npm:^4.0.0, rate-limiter-flexible@npm:^4.0.1":
+"rate-limiter-flexible@npm:^4.0.1":
   version: 4.0.1
   resolution: "rate-limiter-flexible@npm:4.0.1"
   checksum: 88cb4ae4c6a94646eb4987f08ae203896fc340d84038e145958607ab711d9c703e47e55f177a4bf9bab4c637c73ee2254fffe2ec4e289d41389c8502194ca868

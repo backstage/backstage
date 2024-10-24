@@ -17,8 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { DeployTokenScope } from '@gitbeaker/core/dist/types/templates/ResourceDeployTokens';
-import { Gitlab } from '@gitbeaker/node';
+import { Gitlab } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
@@ -47,7 +46,7 @@ export const createGitlabProjectDeployTokenAction = (options: {
           username: z
             .string({ description: 'Deploy Token Username' })
             .optional(),
-          scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
+          scopes: z.array(z.string(), { description: 'Scopes' }),
         }),
       ),
       output: z.object({
@@ -60,19 +59,22 @@ export const createGitlabProjectDeployTokenAction = (options: {
       const { projectId, name, username, scopes } = ctx.input;
       const { token, integrationConfig } = getToken(ctx.input, integrations);
 
+      if (scopes.length === 0) {
+        throw new InputError(
+          `Could not create token for project "${ctx.input.projectId}": scopes cannot be empty.`,
+        );
+      }
+
       const api = new Gitlab({
         host: integrationConfig.config.baseUrl,
         token: token,
       });
 
-      const deployToken = await api.ProjectDeployTokens.add(
+      const deployToken = await api.DeployTokens.create(name, scopes, {
         projectId,
-        name,
-        scopes as DeployTokenScope[],
-        {
-          username: username,
-        },
-      );
+        // @ts-ignore Until gitbeaker improves its API definition
+        username,
+      });
 
       if (!deployToken.hasOwnProperty('token')) {
         throw new InputError(`No deploy_token given from gitlab instance`);
