@@ -21,8 +21,9 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
+import { EventsService } from '@backstage/plugin-events-node';
 
-const createStore = async () => {
+const createStore = async (events?: EventsService) => {
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
@@ -35,6 +36,7 @@ const createStore = async () => {
   ).forPlugin('scaffolder');
   const store = await DatabaseTaskStore.create({
     database: manager,
+    events,
   });
   return { store, manager };
 };
@@ -52,6 +54,14 @@ const workspaceDir = createMockDirectory({
 });
 
 describe('DatabaseTaskStore', () => {
+  const eventsService = {
+    publish: jest.fn(),
+  } as unknown as EventsService;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should create the database store and run migration', async () => {
     const { store, manager } = await createStore();
     expect(store).toBeDefined();
@@ -222,7 +232,7 @@ describe('DatabaseTaskStore', () => {
   });
 
   it('should sent an event to start cancelling the task', async () => {
-    const { store } = await createStore();
+    const { store } = await createStore(eventsService);
 
     const { taskId } = await store.createTask({
       spec: {} as TaskSpec,
@@ -244,10 +254,24 @@ describe('DatabaseTaskStore', () => {
     const event = events[0];
     expect(event.taskId).toBe(taskId);
     expect(event.body.status).toBe('cancelled');
+
+    expect(eventsService.publish).toHaveBeenCalledWith({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: 1,
+        taskId,
+        status: 'cancelled',
+        body: {
+          message: `Step 2 has been cancelled.`,
+          stepId: 2,
+          status: 'cancelled',
+        },
+      },
+    });
   });
 
   it('should emit a log event', async () => {
-    const { store } = await createStore();
+    const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({
       spec: {} as TaskSpec,
       createdBy: 'me',
@@ -310,7 +334,7 @@ describe('DatabaseTaskStore', () => {
   });
 
   it('should complete the task', async () => {
-    const { store } = await createStore();
+    const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({
       spec: {} as TaskSpec,
       createdBy: 'me',
@@ -327,10 +351,21 @@ describe('DatabaseTaskStore', () => {
 
     const taskAfterCompletion = await store.getTask(taskId);
     expect(taskAfterCompletion.status).toBe('cancelled');
+
+    expect(eventsService.publish).toHaveBeenCalledWith({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: taskId,
+        status: 'cancelled',
+        createdAt: expect.any(String),
+        lastHeartbeatAt: null,
+        createdBy: 'me',
+      },
+    });
   });
 
   it('should claim a new task', async () => {
-    const { store } = await createStore();
+    const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({
       spec: {} as TaskSpec,
       createdBy: 'me',
@@ -341,10 +376,22 @@ describe('DatabaseTaskStore', () => {
 
     const claimedTask = await store.getTask(taskId);
     expect(claimedTask.status).toBe('processing');
+
+    expect(eventsService.publish).toHaveBeenCalledWith({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: taskId,
+        status: 'processing',
+        createdAt: expect.any(String),
+        lastHeartbeatAt: null,
+        createdBy: 'me',
+        spec: {},
+      },
+    });
   });
 
   it('should restore the state of the task after the task recovery', async () => {
-    const { store } = await createStore();
+    const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({
       spec: {} as TaskSpec,
       createdBy: 'me',
@@ -379,10 +426,22 @@ describe('DatabaseTaskStore', () => {
 
     const claimedTask = await store.getTask(taskId);
     expect(claimedTask.state).toEqual({ state: state.state });
+
+    expect(eventsService.publish).toHaveBeenCalledWith({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: 1,
+        taskId,
+        body: {
+          recoverStrategy: 'none',
+        },
+        status: 'recovered',
+      },
+    });
   });
 
   it('should shutdown the running task', async () => {
-    const { store } = await createStore();
+    const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({
       spec: {} as TaskSpec,
       createdBy: 'me',
@@ -394,6 +453,17 @@ describe('DatabaseTaskStore', () => {
 
     const claimedTask = await store.getTask(taskId);
     expect(claimedTask.status).toBe('failed');
+
+    expect(eventsService.publish).toHaveBeenCalledWith({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: taskId,
+        status: 'failed',
+        createdAt: expect.any(String),
+        lastHeartbeatAt: expect.any(String),
+        createdBy: 'me',
+      },
+    });
   });
 
   it('should be not possible to shutdown not running task', async () => {

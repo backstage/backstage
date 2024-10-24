@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
+import { EventsService } from '@backstage/plugin-events-node';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
@@ -500,6 +501,7 @@ export class DatabaseTaskStore implements TaskStore {
 // @public
 export type DatabaseTaskStoreOptions = {
   database: PluginDatabaseManager | Knex;
+  events?: EventsService;
 };
 
 // @public @deprecated
@@ -531,6 +533,8 @@ export interface RouterOptions {
   database: DatabaseService;
   // (undocumented)
   discovery?: DiscoveryService;
+  // (undocumented)
+  events?: EventsService;
   // (undocumented)
   httpAuth?: HttpAuthService;
   // (undocumented)
