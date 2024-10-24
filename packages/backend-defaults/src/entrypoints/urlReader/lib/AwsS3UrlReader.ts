@@ -59,6 +59,8 @@ export const DEFAULT_REGION = 'us-east-1';
  * The region can also be on the old form: https://s3-(region).amazonaws.com/(bucket)/(key)
  * Virtual hosted style URLs: https://(bucket).s3.(region).amazonaws.com/(key)
  * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#path-style-access
+ * Virtual private cloud endpoint URLs: https://bucket.(vpce-id).s3.(region).vpce.amazonaws.com/(bucket)/(key)
+ * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/privatelink-interface-endpoints.html#accessing-bucket-and-aps-from-interface-endpoints
  */
 export function parseUrl(
   url: string,
@@ -74,9 +76,13 @@ export function parseUrl(
   const host = parsedUrl.host;
 
   // Treat Amazon hosted separately because it has special region logic
-  if (config.host === 'amazonaws.com' || config.host === 'amazonaws.com.cn') {
+  if (
+    config.host === 'amazonaws.com' ||
+    config.host === 'amazonaws.com.cn' ||
+    config.host.endsWith('vpce.amazonaws.com')
+  ) {
     const match = host.match(
-      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com(\.cn)?$/,
+      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.(vpce\.)?amazonaws\.com(\.cn)?$/,
     );
     if (!match) {
       throw new Error(`Invalid AWS S3 URL ${url}`);
