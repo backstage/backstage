@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type {
+  AuditorService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import { ConfigSchema, loadConfigSchema } from '@backstage/config-loader';
 import { getPackages } from '@manypkg/get-packages';
 
 /** @public */
-export async function createConfigSecretEnumerator(options: {
-  logger: LoggerService;
-  dir?: string;
-  schema?: ConfigSchema;
-}): Promise<(config: Config) => Iterable<string>> {
-  const { logger, dir = process.cwd() } = options;
+export async function createConfigSecretEnumerator(
+  options: {
+    dir?: string;
+    schema?: ConfigSchema;
+  } & ({ logger: LoggerService } | { auditor: AuditorService }),
+): Promise<(config: Config) => Iterable<string>> {
+  const { dir = process.cwd() } = options;
   const { packages } = await getPackages(dir);
   const schema =
     options.schema ??
@@ -46,9 +50,21 @@ export async function createConfigSecretEnumerator(options: {
       JSON.stringify(secretsData.data),
       (_, v) => typeof v === 'string' && secrets.add(v),
     );
-    logger.info(
-      `Found ${secrets.size} new secrets in config that will be redacted`,
-    );
+
+    if ('logger' in options) {
+      options.logger.info(
+        `Found ${secrets.size} new secrets in config that will be redacted`,
+      );
+    } else if ('auditor' in options) {
+      options.auditor
+        .log({
+          // Does rootConfig have access to PluginMetadataService?
+          eventId: 'redact-secrets',
+          status: 'succeeded',
+        })
+        .then();
+    }
+
     return secrets;
   };
 }

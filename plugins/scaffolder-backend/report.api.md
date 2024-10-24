@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
@@ -16,8 +17,8 @@ import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bit
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import type { DatabaseService } from '@backstage/backend-plugin-api';
+import type { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
@@ -26,23 +27,23 @@ import { fetchContents as fetchContents_2 } from '@backstage/plugin-scaffolder-n
 import * as gerrit from '@backstage/plugin-scaffolder-backend-module-gerrit';
 import * as github from '@backstage/plugin-scaffolder-backend-module-github';
 import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
+import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { LifecycleService } from '@backstage/backend-plugin-api';
+import type { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import type { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
-import { SchedulerService } from '@backstage/backend-plugin-api';
+import type { SchedulerService } from '@backstage/backend-plugin-api';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -386,6 +387,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
+  auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
@@ -519,6 +521,8 @@ export interface RouterOptions {
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   // (undocumented)
+  auditor?: AuditorService;
+  // (undocumented)
   auth?: AuthService;
   // (undocumented)
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
@@ -606,6 +610,7 @@ export class TaskManager implements TaskContext_2 {
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
+    auditor?: AuditorService,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
