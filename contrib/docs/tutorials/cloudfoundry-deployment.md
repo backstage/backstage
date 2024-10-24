@@ -17,6 +17,7 @@ From the top-level of your Backstage project, change directory into the `package
 This is important because the [Node.js buildpack](https://github.com/cloudfoundry/nodejs-buildpack) [does not currently support newer versions of Yarn](https://github.com/cloudfoundry/nodejs-buildpack/pull/679); you need to modify the `package.json` to swap any references of `link:..` With `file:..`.
 
 For example, update:
+
 ```
 "dependencies": {
   ...
@@ -25,7 +26,9 @@ For example, update:
   ...
 },
 ```
+
 to be:
+
 ```
 "dependencies": {
   ...
@@ -54,6 +57,7 @@ cp -v \
 ```
 
 To use Yarn v1, create a new `.yarnrc` file in the build directory with the following content:
+
 ```
 yarn-offline-mirror "./npm-packages-offline-cache"
 yarn-offline-mirror-pruning true
@@ -138,6 +142,7 @@ The following steps utilize the UAA CLI (`uaac`). Installation and getting start
 First create an API reference. This allows for dependency injection of our OIDC Auth API and gives a reference to our new provider API.
 
 In `packages/app/src/apis.ts`:
+
 ```
 export const uaaOIDCAuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -149,6 +154,7 @@ export const uaaOIDCAuthApiRef: ApiRef<
 Next, create an API factory to create an instance of our custom OIDC API Provider.
 
 In `packages/app/src/apis.ts`:
+
 ```
 export const apis: AnyApiFactory[] = [
   ... // previous apis
@@ -191,7 +197,7 @@ import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-pr
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { NotFoundError } from '@backstage/errors';
 
-const uaaAuthProviderModule = createBackendModule({
+export const uaaAuthProviderModule = createBackendModule({
 	// This ID must be exactly "auth" because that's the plugin it targets
 	pluginId: 'auth',
 	// This ID must be unique, but can be anything
@@ -246,7 +252,6 @@ const uaaAuthProviderModule = createBackendModule({
 	},
   });
 
-export default uaaAuthProviderModule;
 ```
 
 Reference your newly created custom provider with custom email resolver in `packages/backend/src/index.ts`:
@@ -260,6 +265,7 @@ backend.add(import('./oidcProvider'));
 #### Configuration
 
 In UAA, create a new OAuth client with scopes that give Backstage the following permissions:
+
 - Ability for the UAA client to issue refresh tokens
 - Obtain a user's openid, profile, and email
 - Redirect back to the Backstage instance, after login
