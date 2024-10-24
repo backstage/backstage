@@ -69,6 +69,11 @@
               "description": "An entity reference to another component of which the component is a part.",
               "minLength": 1
             },
+            "tier": {
+              "type": "string",
+              "description": "The tier of the component.",
+              "minLength": 1
+            },
             "providesApis": {
               "type": "array",
               "description": "An array of entity references to the APIs that are provided by the component.",
