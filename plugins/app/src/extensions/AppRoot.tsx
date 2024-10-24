@@ -50,6 +50,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { getSignOutTargetUrl } from '../../../../packages/frontend-app-api/src/routing/getSignOutTargetUrl';
 
 export const AppRoot = createExtension({
   name: 'root',
@@ -136,13 +138,14 @@ function SignInPageWrapper({
   const [identityApi, setIdentityApi] = useState<IdentityApi>();
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
+  const signOutTargetUrl = getSignOutTargetUrl(configApi);
 
   if (!identityApi) {
     return <Component onSignInSuccess={setIdentityApi} />;
   }
 
   appIdentityProxy.setTarget(identityApi, {
-    signOutTargetUrl: basePath || '/',
+    signOutTargetUrl: signOutTargetUrl ?? (basePath || '/'),
   });
   return <>{children}</>;
 }
