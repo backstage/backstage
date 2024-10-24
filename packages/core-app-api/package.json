@@ -52,9 +52,10 @@
     "@backstage/version-bridge": "workspace:^",
     "@types/prop-types": "^15.7.3",
     "history": "^5.0.0",
-    "i18next": "^22.4.15",
+    "i18next": "^23.16.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
+    "react-i18next": "^15.0.3",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4"

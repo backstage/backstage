@@ -37,6 +37,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 import { UiSchema } from '@rjsf/utils';
 import { WidgetProps } from '@rjsf/utils';
 import { z } from 'zod';
@@ -211,6 +212,30 @@ export type ScaffolderReactComponentsNameToClassKey = {
 
 // @alpha (undocumented)
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
+
+// @alpha (undocumented)
+export const scaffolderReactTranslationRef: TranslationRef<
+  'scaffolder-react',
+  {
+    readonly 'workflow.noDescription': 'No description';
+    readonly 'stepper.backButtonText': 'Back';
+    readonly 'stepper.createButtonText': 'Create';
+    readonly 'stepper.reviewButtonText': 'Review';
+    readonly 'stepper.nextButtonText': 'Next';
+    readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'passwordWidget.content': 'This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of `ui:widget: password`';
+    readonly 'scaffolderPageContextMenu.createLabel': 'Create';
+    readonly 'scaffolderPageContextMenu.moreLabel': 'more';
+    readonly 'scaffolderPageContextMenu.editorLabel': 'Manage Templates';
+    readonly 'scaffolderPageContextMenu.actionsLabel': 'Installed Actions';
+    readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
+    readonly 'templateCategoryPicker.title': 'Categories';
+    readonly 'templateCard.noDescription': 'No description';
+    readonly 'templateCard.chooseButtonText': 'Choose';
+    readonly 'templateCard.noTemplatesFound': 'No templates found that match your filter. Learn more about <2>adding templates</2>.';
+    readonly 'templateOutputs.title': 'Text Output';
+  }
+>;
 
 // @alpha
 export const SecretWidget: (

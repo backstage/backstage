@@ -20,7 +20,7 @@ import {
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, render, renderHook, waitFor } from '@testing-library/react';
 import { createTranslationRef, TranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -39,6 +39,7 @@ const plainRef = createTranslationRef({
   messages: {
     key1: 'default1',
     key2: 'default2',
+    component: 'prefix <1>en content</1> suffix',
   },
 });
 
@@ -85,7 +86,13 @@ describe('useTranslationRef', () => {
           ref: plainRef,
           translations: {
             en: () =>
-              Promise.resolve({ default: { key1: 'en1', key2: 'en2' } }),
+              Promise.resolve({
+                default: {
+                  key1: 'en1',
+                  key2: 'en2',
+                  component: 'prefix <1>content</1> suffix',
+                },
+              }),
           },
         }),
       ],
@@ -113,7 +120,13 @@ describe('useTranslationRef', () => {
           ref: plainRef,
           translations: {
             de: () =>
-              Promise.resolve({ default: { key1: 'de1', key2: 'de2' } }),
+              Promise.resolve({
+                default: {
+                  key1: 'de1',
+                  key2: 'de2',
+                  component: 'prefix <1>content</1> suffix',
+                },
+              }),
           },
         }),
       ],
@@ -318,5 +331,55 @@ describe('useTranslationRef', () => {
     expect(result.current.t('key')).toBe('default1');
     rerender({ translationRef: ref2 });
     expect(result.current.t('key')).toBe('default2');
+  });
+
+  it('should support Translation component', async () => {
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'de'],
+    });
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref: plainRef,
+          translations: {
+            de: () =>
+              Promise.resolve({
+                default: {
+                  key1: 'de1',
+                  key2: 'de2',
+                  component: 'prefix <1>de content</1> suffix',
+                },
+              }),
+          },
+        }),
+      ],
+    });
+
+    const { result } = renderHook(() => useTranslationRef(plainRef), {
+      wrapper: makeWrapper(translationApi),
+    });
+
+    const { Translation } = result.current;
+
+    const { getByTestId, rerender } = render(
+      <Translation i18nKey="component">
+        prefix <span data-testid="content">default content</span> suffix
+      </Translation>,
+    );
+
+    expect(getByTestId('content').textContent).toBe('en content');
+
+    languageApi.setLanguage('de');
+
+    await new Promise(resolve => setTimeout(resolve, 100)); // Wait a long tick
+
+    rerender(
+      <Translation i18nKey="component">
+        prefix <span data-testid="content">default content</span> suffix
+      </Translation>,
+    );
+
+    expect(getByTestId('content').textContent).toBe('de content');
   });
 });
