@@ -142,30 +142,31 @@ Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if
 > We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on migrating these in the repository over time too.
 
 
-### Template Example
+### Adding a TemplateExample
 
-A Template Example is a predefined format or structure that can be used to create custom actions in your software templates. It serves as a blueprint to ensure consistency and standardization across different custom actions.
+A TemplateExample is a predefined structure that can be used to create custom actions in your software templates.  It serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure consistency and standardization across different custom actions.
 
-#### How to Use a Template Example:
+#### How to Use a TemplateExample
 
 1. Identify the custom action you want to create.
-2. Refer to the Template Example to understand the required structure and components.
+2. Refer to the TemplateExample to understand the required structure and components.
 3. Fill in the necessary details in the template, such as action name, parameters, and logic.
 4. Integrate the completed template into your software template to enable the custom action.
 
-#### Benefits:
+#### Benefits
 
+- Serves as templates for users to understand how to configure and use the actions.
 - Ensures consistency in custom actions.
 - Simplifies the creation process by providing a clear structure.
 - Helps in maintaining standardization across different templates.
 
-#### Define an Example and add to your Custom Action
+#### Define a TemplateExample and add to your Custom Action
 
 ```ts title="With JSON Schema"
 import { TemplateExample } from "@backstage/plugin-scaffolder-node";
 import yaml from "yaml";
 
-export const AcmeExample: TemplateExample[] = [
+export const examples: TemplateExample[] = [
   {
     description: "Template Example for Creating an Acme file",
     example: yaml.stringify({
@@ -187,11 +188,13 @@ export const AcmeExample: TemplateExample[] = [
 Add the example to the `createTemplateAction` under the object property `examples`:
 
 ```ts title="With JSON Schema"
+import { examples } from './acmeExample.examples';
+
 export const createNewFileAction = () => {
   return createTemplateAction<{ contents: string; filename: string }>({
     id: 'acme:file:create',
     description: 'Create an Acme file.',
-    examples: AcmeExample,
+    examples,
     schema: {
       input: {
         required: ['contents', 'filename'],
