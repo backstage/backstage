@@ -38,6 +38,8 @@ export const projectID: number = 1;
 export const paged_endpoint: string = `/paged-endpoint`;
 export const some_endpoint: string = `/some-endpoint`;
 export const unhealthy_endpoint = `/unhealthy-endpoint`;
+export const retry_endpoint_recover = '/retry-endpoint-recover';
+export const retry_endpoint_forever = '/retry-endpoint-forever';
 
 /**
  * Integration Configurations
