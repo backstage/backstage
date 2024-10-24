@@ -76,16 +76,30 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
+    scopes: string[];
     repoUrl: string;
     projectId: string | number;
     username?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
   },
   {
     user: string;
     deploy_token: string;
   }
+>;
+
+// @public
+export const createGitlabProjectMigrateAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    destinationAccessToken: string;
+    destinationUrl: string;
+    sourceAccessToken: string;
+    sourceFullPath: string;
+    sourceUrl: string;
+  },
+  JsonObject
 >;
 
 // @public
@@ -149,8 +163,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_off'
             | 'default_on'
+            | 'default_off'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
