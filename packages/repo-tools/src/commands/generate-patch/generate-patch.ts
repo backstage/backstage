@@ -299,7 +299,7 @@ async function readResolutionMap(
     ['why', '--json', ctx.packageName],
     {
       cwd: ctx.targetRoot,
-      maxBuffer: 1024 * 1024 * 1024,
+      maxBuffer: 64 * 1024 * 1024,
     },
   );
 
@@ -353,12 +353,11 @@ async function downloadArchive(
   }
 
   try {
-    const res = await fetch(
-      `${ctx.registryUrl}/${ctx.packageName}/-/${tarName}`,
-    );
+    const url = `${ctx.registryUrl}/${ctx.packageName}/-/${tarName}`;
+    const res = await fetch(url);
     if (!res.ok) {
       throw new Error(
-        `Request failed with status ${res.status} ${res.statusText}`,
+        `Request to ${url} failed with status ${res.status} ${res.statusText}`,
       );
     }
     if (!res.body) {
@@ -398,7 +397,7 @@ async function generatePatchForArchives(
     PATCH_GITIGNORE.join(os.EOL),
   );
 
-  // Init git an populate index
+  // Init git and populate index
   await exec('git', ['init'], { cwd: patchDir });
   await exec('git', ['add', '.'], { cwd: patchDir });
 
