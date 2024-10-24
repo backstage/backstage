@@ -37,10 +37,37 @@ import {
   CatalogFilterLayout,
   EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+
+/**
+ * Props for default filters.
+ *
+ * @public
+ */
+export type DefaultFiltersProps = {
+  initialKind?: string;
+  initiallySelectedFilter?: UserListFilterKind;
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  initiallySelectedNamespaces?: string[];
+};
+
+/** @public */
+export const DefaultFilters = (props: DefaultFiltersProps) => {
+  const { initiallySelectedFilter, ownerPickerMode } = props;
+  return (
+    <>
+      <EntityKindPicker initialFilter="api" hidden />
+      <EntityTypePicker />
+      <UserListPicker initialFilter={initiallySelectedFilter} />
+      <EntityOwnerPicker mode={ownerPickerMode} />
+      <EntityLifecyclePicker />
+      <EntityTagPicker />
+    </>
+  );
+};
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createTitleColumn({ hidden: true }),
@@ -62,6 +89,7 @@ export type DefaultApiExplorerPageProps = {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  filters?: ReactNode;
 };
 
 /**
@@ -74,6 +102,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
     columns,
     actions,
     ownerPickerMode,
+    filters,
   } = props;
 
   const configApi = useApi(configApiRef);
@@ -105,12 +134,12 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter="api" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker mode={ownerPickerMode} />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
+              {filters ?? (
+                <DefaultFilters
+                  initiallySelectedFilter={initiallySelectedFilter}
+                  ownerPickerMode={ownerPickerMode}
+                />
+              )}
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable
