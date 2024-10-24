@@ -20,14 +20,16 @@ export {
 } from './config';
 export {
   buildGerritGitilesArchiveUrl,
+  buildGerritGitilesUrl,
   getGerritBranchApiUrl,
   getGerritCloneRepoUrl,
   getGerritFileContentsApiUrl,
   getGerritProjectsApiUrl,
   getGerritRequestOptions,
-  parseGerritJsonResponse,
+  getGitilesAuthenticationUrl,
   parseGerritGitilesUrl,
   parseGitilesUrlRef,
+  parseGerritJsonResponse,
 } from './core';
 
 export type { GerritIntegrationConfig } from './config';

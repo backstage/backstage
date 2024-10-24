@@ -1,0 +1,30 @@
+)]}'
+{
+  "id": "d84874ac8e27a8592ece6eb3e61e1fc3cd668348",
+  "entries": [
+    {
+      "mode": 40960,
+      "type": "blob",
+      "id": "9abe6322fdb76e3c2d972f12aad46088fa785fbc",
+      "name": "catalog-info.yaml"
+    },
+    {
+      "mode": 33188,
+      "type": "blob",
+      "id": "7a472379c27f165a1472f0c3d455fa3b811585b9",
+      "name": "README.md"
+    },
+    {
+      "mode": 33199,
+      "type": "blob",
+      "id": "1a472379c27f165a1472f0c3d455fa3b811585b9",
+      "name": "microservices/petstore-api/catalog-info.yaml"
+    },
+    {
+      "mode": 32199,
+      "type": "blob",
+      "id": "2a472379c27f165a1472f0c3d455fa3b811585b9",
+      "name": "microservices/petstore-consumer/catalog-info.yaml"
+    }
+  ]
+}
