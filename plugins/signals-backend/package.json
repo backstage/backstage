@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.2.3-next.0",
+  "version": "0.2.3-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
