@@ -21,7 +21,6 @@ import {
   getRepoSourceDirectory,
   commitAndPushBranch,
   addFiles,
-  createBranch as createGitBranch,
   cloneRepo,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
@@ -406,13 +405,6 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         const sourceDir = getRepoSourceDirectory(ctx.workspacePath, undefined);
         await cloneRepo({
           url: remoteUrl,
-          dir: tempDir,
-          auth,
-          logger: ctx.logger,
-          ref: sourceBranch,
-        });
-
-        await createGitBranch({
           dir: tempDir,
           auth,
           logger: ctx.logger,
