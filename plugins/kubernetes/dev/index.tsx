@@ -34,6 +34,8 @@ import fixture2 from '../src/__fixtures__/2-deployments.json';
 import fixture3 from '../src/__fixtures__/1-cronjobs.json';
 import fixture4 from '../src/__fixtures__/2-cronjobs.json';
 import fixture5 from '../src/__fixtures__/1-rollouts.json';
+import fixture6 from '../src/__fixtures__/3-ingresses.json';
+import fixture7 from '../src/__fixtures__/2-statefulsets.json';
 import { TestApiProvider } from '@backstage/test-utils';
 
 const mockEntity: Entity = {
@@ -193,6 +195,32 @@ createDevApp()
     element: (
       <TestApiProvider
         apis={[[kubernetesApiRef, new MockKubernetesClient(fixture5)]]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <EntityKubernetesContent />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+  })
+  .addPage({
+    path: '/fixture-6',
+    title: 'Fixture 6',
+    element: (
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture6)]]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <EntityKubernetesContent />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+  })
+  .addPage({
+    path: '/fixture-7',
+    title: 'Fixture 7',
+    element: (
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture7)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
