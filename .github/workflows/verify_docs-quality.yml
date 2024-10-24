@@ -1,0 +1,35 @@
+name: Verify Docs Quality
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/workflows/verify_docs-quality.yml'
+      - '**.md'
+
+jobs:
+  check-all-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      # Vale does not support file excludes, so we use the script to generate a list of files instead
+      # The action also does not allow args or a local config file to be passed in, so the files array
+      # also contains an "--config=.github/vale/config.ini" option
+      - name: generate vale args
+        id: generate
+        run: echo "args=$(node scripts/check-docs-quality.js --ci-args)" >> $GITHUB_OUTPUT
+
+      - name: documentation quality check
+        uses: errata-ai/vale-action@d89dee975228ae261d22c15adcd03578634d429c # v2.1.1
+        with:
+          # This also contains --config=.github/vale/config.ini ... :/
+          files: '${{ steps.generate.outputs.args }}'
+          version: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
