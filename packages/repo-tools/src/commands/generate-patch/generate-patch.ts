@@ -60,6 +60,7 @@ export default async (
     query?: string;
     registryUrl?: string;
     baseVersion?: string;
+    skipInstall?: boolean;
   },
 ) => {
   const sourceRepo = await getPackages(process.cwd());
@@ -115,9 +116,18 @@ export default async (
 
     await updateTargetRootPkg(patchEntry);
 
-    console.log(
-      'Done, be sure to reinstall dependencies in the target workspace',
-    );
+    if (!opts.skipInstall) {
+      console.log("Running 'yarn install' in target workspace");
+      await exec('yarn', ['install'], {
+        cwd: ctx.targetRoot,
+      }).catch(() => {
+        throw new Error(
+          "Failed to run 'yarn install' in target workspace, please run it manually to troubleshoot",
+        );
+      });
+    } else {
+      console.log("Skipped running 'yarn install'");
+    }
   } finally {
     fs.rmSync(tmpDir, { force: true, recursive: true, maxRetries: 3 });
   }

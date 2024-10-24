@@ -271,6 +271,10 @@ export function registerCommands(program: Command) {
       '--query <query>',
       'Only apply the patch for a specific version query in the target repository',
     )
+    .option(
+      '--skip-install',
+      'Skip dependency installation in the target repository after applying the patch',
+    )
     .description(
       'Generate a patch for the selected package in the target repository',
     )

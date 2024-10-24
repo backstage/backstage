@@ -63,6 +63,7 @@ Options:
   --registry-url <registry-url>
   --base-version <version>
   --query <query>
+  --skip-install
   -h, --help
 ```
 
