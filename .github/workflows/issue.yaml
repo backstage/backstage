@@ -1,0 +1,31 @@
+name: Issue
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    permissions:
+      contents: read # for github/issue-labeler to get repo contents
+      issues: write # for github/issue-labeler to create or remove labels
+    runs-on: ubuntu-latest
+
+    if: github.repository == 'backstage/backstage'
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: Add issue labels
+        uses: github/issue-labeler@c1b0f9f52a63158c4adc09425e858e87b32e9685 # v3.4
+        with:
+          include-title: 1
+          include-body: 0
+          configuration-path: .github/issue-labeler.yml
+          enable-versioned-regex: 0
+          not-before: 2024-04-19T15:03:51Z
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'

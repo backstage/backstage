@@ -1,0 +1,49 @@
+# This workflow is triggered by "PR Review Comment Trigger"
+
+name: PR Review Comment
+on:
+  workflow_run:
+    workflows: [PR Review Comment Trigger]
+    types:
+      - completed
+
+jobs:
+  re-review:
+    runs-on: ubuntu-latest
+
+    # The triggering workflow will report success if the PR needs re-review
+    if: github.repository == 'backstage/backstage' && github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      # Inspired by https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: Read PR Number
+        id: pr-number
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            const [artifact] = allArtifacts.data.artifacts.filter(artifact => artifact.name.startsWith('pr_number-'))
+            if (!artifact) {
+              throw new Error('No PR Number artifact available')
+            }
+
+            const prNumber = artifact.name.slice('pr_number-'.length)
+            core.setOutput('pr-number', prNumber);
+
+      - uses: backstage/actions/re-review@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-id: PVT_kwDOBFKqdc02LQ
+          issue-number: ${{ steps.pr-number.outputs.pr-number }}
