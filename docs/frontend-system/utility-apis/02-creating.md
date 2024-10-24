@@ -6,7 +6,11 @@ sidebar_label: Creating APIs
 description: Creating new utility APIs in your plugins and app
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+:::info
+The new frontend system is in alpha and is only supported by a small number of plugins. If you want to use the new
+plugin system, you must migrate your entire Backstage application or start a new application from scratch. We do not yet
+recommend migrating any apps to the new system.
+:::
 
 This section describes how to make a Utility API from scratch, or to add configurability and inputs to an existing one. If you are instead interested in migrating an existing Utility API from the old frontend system, check out the [Migrating APIs section](../building-plugins/05-migrating.md#migrating-apis).
 

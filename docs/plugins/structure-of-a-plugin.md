@@ -57,9 +57,10 @@ In the `src` folder we get to the interesting bits. Check out the `plugin.ts`:
 
 ```jsx
 import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
+  createFrontendPlugin,
+  FrontendPlugin,
+} from '@backstage/frontend-plugin-api';
+import { createRoutableExtension } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 
