@@ -455,6 +455,101 @@ const customAuth = createBackendModule({
 
 Remember to `backend.add` the created module just like above.
 
+### Custom Transformer for Entra (Azure AD) Example
+
+One of the most common identity management platforms used in enterprise is Entra (formerly known as Azure Active Directory), and Backstage comes with [a provider](./microsoft/provider.md) for ingesting users from Entra via MSGraph. The provider is easy to install and configure, but when first trying it out you may find that the way users are ingested is not ideal for your use case due to the default Transformer provided. By default, the `name` of the user will be set to their email address (with some character substitutions), which means that we would need to refer to them as `user:s.developer_mycompaniesdomain.tld` when referencing them in a metadata file.
+
+We now know that transformers can be customised, so lets create a custom transform function to standardise the user's name field for ingested users.
+
+We don't want to completely remove the default transformer, we just want to override certain attributes of the entity it produces, so let's begin by creating a custom transformer function that passes through the default transformer.
+
+```ts
+// MyCustomUserTransformer.ts
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { defaultUserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
+
+export async function myCustomUserTransformer(
+  graphUser: MicrosoftGraph.User,
+  userPhoto?: string,
+): Promise<UserEntity | undefined> {
+  // Call the default transformer to create the user entity as normal
+  const backstageUser = (await defaultUserTransformer(
+    graphUser,
+    userPhoto,
+  )) as UserEntity;
+
+  // Make sure the default transformer returned an entity
+  if (backstageUser) {
+    // Return the completed entity to the catalog processor
+    return backstageUser;
+  }
+  // Return undefined to skip creating a user entity from this transformer
+  return undefined;
+}
+```
+
+This sets up the core of the transformer. We have created a function that accepts an MSGraph objects returned from the processor and called the default transformer to transform it into an entity. Now we can take that entity and apply the changes that we need.
+
+```ts
+// MyCustomUserTransformer.ts
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { defaultUserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
+
+export async function myCustomUserTransformer(
+  graphUser: MicrosoftGraph.User,
+  userPhoto?: string,
+): Promise<UserEntity | undefined> {
+  // Call the default transformer to create the user entity as normal
+  const backstageUser = (await defaultUserTransformer(
+    graphUser,
+    userPhoto,
+  )) as UserEntity;
+
+  // Make sure the default transformer returned an entity
+  if (backstageUser) {
+    // highlight-add-start
+    // Update the description to make it obvious where this entity came from
+    backstageUser.metadata.description =
+      'Loaded from Microsoft Entra ID via MyCustomUserTransformer';
+
+    // Set the username to the local part of the email address in lowercase
+    const newName = backstageUser.metadata.name.split('_')[0].toLowerCase();
+    backstageUser.metadata.name = newName;
+    // highlight-add-end
+
+    // Return the completed entity to the catalog processor
+    return backstageUser;
+  }
+  // Return undefined to skip creating a user entity from this transformer
+  return undefined;
+}
+```
+
+Now we have our custom transform function ready to go, we need to inject it into the catalog module that provides the MSGraph integration. We do this by setting up a new [module](../backend-system/architecture/06-modules.md) that uses an [extension point](../backend-system/architecture/05-extension-points.md) to add the new transformer.
+
+```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-msgraph';
+import { myCustomUserTransformer } from './MyCustomUserTransformer';
+
+export const catalogModuleMsgraphOrg = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'msgraph-org',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        microsoftGraphTransformers:
+          microsoftGraphOrgEntityProviderTransformExtensionPoint,
+      },
+      async init({ microsoftGraphTransformers }) {
+        // Set the User Transformer to our custom function
+        microsoftGraphTransformers.setUserTransformer(myCustomUserTransformer);
+      },
+    });
+  },
+});
+```
+
 ## Common Sign-In Resolver Errors
 
 There are two common Sign-In Resolver errors you might run into.
