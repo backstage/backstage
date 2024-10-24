@@ -58,7 +58,7 @@ metadata:
       type: admin-dashboard
 spec:
   type: website
-  lifecycle: production
+  lifecycle: maintained
   owner: artist-relations-team
   system: public-websites
 ```
@@ -93,7 +93,7 @@ This is the same entity as returned in JSON from the software catalog API:
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
   },
   "spec": {
-    "lifecycle": "production",
+    "lifecycle": "maintained",
     "owner": "artist-relations-team",
     "type": "website",
     "system": "public-websites"
@@ -139,7 +139,7 @@ metadata:
   description: The Petstore API
 spec:
   type: openapi
-  lifecycle: production
+  lifecycle: maintained
   owner: petstore@example.com
   definition:
     $text: https://petstore.swagger.io/v2/swagger.json
@@ -522,7 +522,7 @@ metadata:
   description: The place to be, for great artists
 spec:
   type: website
-  lifecycle: production
+  lifecycle: maintained
   owner: artist-relations-team
   system: artist-engagement-portal
   dependsOn:
@@ -558,17 +558,17 @@ The current set of well-known and common values for this field is:
 
 ### `spec.lifecycle` [required]
 
-The lifecycle state of the component, e.g. `production`. This field is required.
+The lifecycle state of the component, e.g. `maintained`. This field is required.
 
 The software catalog accepts any lifecycle value, but an organization should
 take great care to establish a proper taxonomy for these.
 
 The current set of well-known and common values for this field is:
 
-- `experimental` - an experiment or early, non-production component, signaling
+- `experimental` - an experiment or early, non-maintained component, signaling
   that users may not prefer to consume it over other more established
   components, or that there are low or no reliability guarantees
-- `production` - an established, owned, maintained component
+- `maintained` - an established, owned, maintained component
 - `deprecated` - a component that is at the end of its lifecycle, and may
   disappear at a later point in time
 
@@ -821,7 +821,7 @@ metadata:
   description: Retrieve artist details
 spec:
   type: openapi
-  lifecycle: production
+  lifecycle: maintained
   owner: artist-relations-team
   system: artist-engagement-portal
   definition: |
@@ -873,17 +873,17 @@ The current set of well-known and common values for this field is:
 
 ### `spec.lifecycle` [required]
 
-The lifecycle state of the API, e.g. `production`. This field is required.
+The lifecycle state of the API, e.g. `maintained`. This field is required.
 
 The software catalog accepts any lifecycle value, but an organization should
 take great care to establish a proper taxonomy for these.
 
 The current set of well-known and common values for this field is:
 
-- `experimental` - an experiment or early, non-production API, signaling that
+- `experimental` - an experiment or early, non-maintained API, signaling that
   users may not prefer to consume it over other more established APIs, or that
   there are low or no reliability guarantees
-- `production` - an established, owned, maintained API
+- `maintained` - an established, owned, maintained API
 - `deprecated` - an API that is at the end of its lifecycle, and may disappear
   at a later point in time
 
