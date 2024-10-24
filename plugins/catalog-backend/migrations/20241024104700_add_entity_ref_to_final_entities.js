@@ -30,10 +30,20 @@ exports.up = async function up(knex) {
       );
   });
 
-  // Set the default entity_ref in final_entities from the refresh_state table
-  await knex.raw(
-    `UPDATE final_entities SET entity_ref = refresh_state.entity_ref FROM refresh_state WHERE refresh_state.entity_id = final_entities.entity_id`,
-  );
+  // // Set the default entity_ref in final_entities from the table
+  // await knex.raw(
+  //   `UPDATE final_entities SET entity_ref = refresh_state.entity_ref FROM refresh_state WHERE refresh_state.entity_id = final_entities.entity_id`,
+  // );
+
+  // 2
+  await knex
+    .update({
+      entity_ref: knex
+        .select('r.entity_ref')
+        .from('refresh_state as r')
+        .where('r.entity_id', knex.raw('f.entity_id')),
+    })
+    .table('final_entities as f');
 };
 
 /**
