@@ -47,7 +47,7 @@ export const EmptyFlags = () => (
         <Button
           variant="contained"
           color="primary"
-          href="https://backstage.io/docs/api/utility-apis"
+          href="https://backstage.io/docs/plugins/feature-flags/"
         >
           Read More
         </Button>
