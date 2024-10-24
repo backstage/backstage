@@ -55,3 +55,8 @@ export type EventsServiceSubscribeOptions = {
  * @public
  */
 export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;
+
+/**
+ * @public
+ */
+export const EVENTS_NOTIFY_TIMEOUT_HEADER = 'backstage-events-notify-timeout';
