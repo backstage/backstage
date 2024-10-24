@@ -1,6 +1,6 @@
 ---
 title: Backstage Notifications System
-status: implementable
+status: implemented
 authors:
   - '@Rugvip'
   - '@drodil'
