@@ -125,8 +125,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const globby = require('globby') as typeof import('globby');
       const { readFile } =
         require('fs/promises') as typeof import('fs/promises');
-      const { relative: workerRelativePath } =
-        require('path') as typeof import('path');
+      const workerPath = require('path') as typeof import('path');
 
       return async ({
         fullDir,
@@ -163,15 +162,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           hash.update('\0');
 
           for (const path of result.sort()) {
-            if (await eslint.isPathIgnored(path)) {
+            const absPath = workerPath.resolve(rootDir, path);
+            const pathInPackage = workerPath.relative(fullDir, absPath);
+
+            if (await eslint.isPathIgnored(pathInPackage)) {
               continue;
             }
-            hash.update(workerRelativePath(fullDir, path));
+            hash.update(pathInPackage);
             hash.update('\0');
-            hash.update(await readFile(path));
+            hash.update(await readFile(absPath));
             hash.update('\0');
             hash.update(
-              JSON.stringify(await eslint.calculateConfigForFile(path)),
+              JSON.stringify(
+                await eslint.calculateConfigForFile(pathInPackage),
+              ).replaceAll(rootDir, ''),
             );
             hash.update('\0');
           }

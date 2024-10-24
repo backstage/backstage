@@ -300,7 +300,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         baseHash.update('\0');
         baseHash.update(process.version); // Node.js version
         baseHash.update('\0');
-        baseHash.update(JSON.stringify(globalRootConfig)); // Variable global jest config
+        baseHash.update(
+          SuccessCache.trimPaths(JSON.stringify(globalRootConfig)),
+        ); // Variable global jest config
         const baseSha = baseHash.digest('hex');
 
         return projectConfigs.filter(project => {
@@ -326,7 +328,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
           // The project ID is a hash of the transform configuration, which helps
           // us bust the cache when any changes are made to the transform implementation.
-          hash.update(JSON.stringify(project));
+          hash.update(SuccessCache.trimPaths(JSON.stringify(project)));
           hash.update(lockfile.getDependencyTreeHash(packageName));
 
           const sha = hash.digest('hex');
