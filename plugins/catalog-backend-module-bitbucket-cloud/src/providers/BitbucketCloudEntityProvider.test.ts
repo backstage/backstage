@@ -313,6 +313,19 @@ describe('BitbucketCloudEntityProvider', () => {
 
     server.use(
       rest.get(
+        `https://api.bitbucket.org/2.0/workspaces/test-ws/projects`,
+        (_req, res, ctx) => {
+          const response = {
+            values: [
+              {
+                key: 'TEST',
+              },
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+      rest.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (_req, res, ctx) => {
           const response = {
@@ -505,6 +518,19 @@ describe('BitbucketCloudEntityProvider', () => {
     })[0];
 
     server.use(
+      rest.get(
+        `https://api.bitbucket.org/2.0/workspaces/test-ws/projects`,
+        (_req, res, ctx) => {
+          const response = {
+            values: [
+              {
+                key: 'TEST',
+              },
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
       rest.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (req, res, ctx) => {

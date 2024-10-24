@@ -323,6 +323,28 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       catalogPath.lastIndexOf('/') + 1,
     );
 
+    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
+    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
+    const projects = this.client
+      .listProjectsByWorkspace(workspace)
+      .iterateResults();
+
+    let results: IngestionTarget[] = [];
+
+    for await (const project of projects) {
+      const projectQuery = `${query} project:${project.key}`;
+      const result = await this.processQuery(workspace, projectQuery);
+      results = results.concat(result);
+    }
+
+    return results;
+  }
+
+  private async processQuery(
+    workspace: string,
+    query: string,
+  ): Promise<IngestionTarget[]> {
     // load all fields relevant for creating refs later, but not more
     const fields = [
       // exclude code/content match details
@@ -338,8 +360,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       // ...except the one we need
       '+values.file.commit.repository.links.html.href',
     ].join(',');
-    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
-    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
     const searchResults = this.client
       .searchCode(workspace, query, { fields })
       .iterateResults();
