@@ -15,16 +15,16 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { ScmIntegrations } from '@backstage/integration';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { createFetchCookiecutterAction } from './cookiecutter';
-import { join } from 'path';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { JsonObject } from '@backstage/types';
+import { join } from 'path';
 import { Writable } from 'stream';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { createFetchCookiecutterAction } from './cookiecutter';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
