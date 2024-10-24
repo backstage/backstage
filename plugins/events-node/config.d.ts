@@ -30,5 +30,11 @@ export interface Config {
      * will never be disabled, even if the events backend returns a 404.
      */
     useEventBus?: 'never' | 'always' | 'auto';
+    /**
+     * Timeout in milliseconds for how long to wait for the hanging polling request
+     * on the event bus until triggering a new request. By default, the request will
+     * hang indefinitely until the bus ends the response to signal a new event.
+     */
+    eventBusPollingTimeoutMs?: number;
   };
 }

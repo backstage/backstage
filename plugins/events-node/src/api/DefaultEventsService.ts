@@ -118,6 +118,7 @@ class PluginEventsService implements EventsService {
     private readonly mode: EventBusMode,
     private client?: DefaultApiClient,
     private readonly auth?: AuthService,
+    private readonly pollingTimeoutMs?: number,
   ) {}
 
   async publish(params: EventParams): Promise<void> {
@@ -227,7 +228,14 @@ class PluginEventsService implements EventsService {
           // immediately again
           if (res.status === 202) {
             lock.release();
-            await res.body?.getReader()?.closed;
+            await Promise.race([
+              res.body?.getReader()?.closed,
+              this.pollingTimeoutMs
+                ? new Promise(resolve =>
+                    setTimeout(resolve, this.pollingTimeoutMs),
+                  )
+                : null,
+            ]);
             process.nextTick(poll);
           } else if (res.status === 200) {
             const data = await res.json();
@@ -367,6 +375,7 @@ export class DefaultEventsService implements EventsService {
     private readonly logger: LoggerService,
     private readonly localBus: LocalEventBus,
     private readonly mode: EventBusMode,
+    private readonly pollingTimeoutMs?: number,
   ) {}
 
   static create(options: {
@@ -390,6 +399,7 @@ export class DefaultEventsService implements EventsService {
       options.logger,
       new LocalEventBus(options.logger),
       eventBusMode,
+      options.config?.getOptionalNumber('events.eventBusPollingTimeoutMs'),
     );
   }
 
@@ -423,6 +433,7 @@ export class DefaultEventsService implements EventsService {
       this.mode,
       client,
       options?.auth,
+      this.pollingTimeoutMs,
     );
     options?.lifecycle.addShutdownHook(async () => {
       await service.shutdown();
