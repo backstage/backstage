@@ -276,6 +276,31 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.hideLogsButtonTitle': 'Hide Logs';
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
+    readonly 'renderSchema.undefined': 'No schema defined';
+    readonly 'renderSchema.tableCell.type': 'Type';
+    readonly 'renderSchema.tableCell.name': 'Name';
+    readonly 'renderSchema.tableCell.title': 'Title';
+    readonly 'renderSchema.tableCell.description': 'Description';
+    readonly 'templateExtensions.content.values.title': 'Values';
+    readonly 'templateExtensions.content.values.notAvailable': 'There are no global template values defined.';
+    readonly 'templateExtensions.content.emptyState.title': 'No information to display';
+    readonly 'templateExtensions.content.emptyState.description': 'There are no template extensions available or there was an issue communicating with the backend.';
+    readonly 'templateExtensions.content.filters.title': 'Filters';
+    readonly 'templateExtensions.content.filters.schema.input': 'Input';
+    readonly 'templateExtensions.content.filters.schema.output': 'Output';
+    readonly 'templateExtensions.content.filters.schema.arguments': 'Arguments';
+    readonly 'templateExtensions.content.filters.examples': 'Examples';
+    readonly 'templateExtensions.content.filters.notAvailable': 'There are no template filters defined.';
+    readonly 'templateExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
+    readonly 'templateExtensions.content.searchFieldPlaceholder': 'Search for an extension';
+    readonly 'templateExtensions.content.functions.title': 'Functions';
+    readonly 'templateExtensions.content.functions.schema.output': 'Output';
+    readonly 'templateExtensions.content.functions.schema.arguments': 'Arguments';
+    readonly 'templateExtensions.content.functions.examples': 'Examples';
+    readonly 'templateExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
+    readonly 'templateExtensions.title': 'Template extensions';
+    readonly 'templateExtensions.subtitle': 'This is the collection of available template extensions';
+    readonly 'templateExtensions.pageTitle': 'Template extensions';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateIntroPage.title': 'Manage Templates';
     readonly 'templateIntroPage.subtitle': 'Edit, preview, and try out templates, forms, and custom fields';
@@ -331,6 +356,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
+    readonly 'templateEditorToolbar.templateExtensionsDocumentationTooltip': 'Template Extensions Documentation';
     readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
@@ -356,6 +382,8 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    templateFilters?: boolean;
+    templateGlobals?: boolean;
   };
   headerOptions?: {
     pageTitleOverride?: string;

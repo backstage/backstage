@@ -45,14 +45,23 @@ export type ScaffolderTask = {
 };
 
 /**
- * A single action example
+ * A single scaffolder usage example
  *
  * @public
  */
-export type ActionExample = {
-  description: string;
+export type ScaffolderUsageExample = {
+  description?: string;
   example: string;
+  notes?: string;
 };
+
+/**
+ * A single action example
+ *
+ * @public
+ * @deprecated in favor of ScaffolderUsageExample
+ */
+export type ActionExample = ScaffolderUsageExample;
 
 /**
  * The response shape for a single action in the `listActions` call to the `scaffolder-backend`
@@ -75,6 +84,58 @@ export type Action = {
  * @public
  */
 export type ListActionsResponse = Array<Action>;
+
+/**
+ * The response shape for a single filter in the `listTemplateExtensions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
+export type TemplateFilter = {
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+/**
+ * The response shape for a single global function in the `listTemplateExtensions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
+export type TemplateGlobalFunction = {
+  description?: string;
+  schema?: {
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+/**
+ * The response shape for a single global value in the `listTemplateExtensions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
+export type TemplateGlobalValue = {
+  description?: string;
+  value: JsonValue;
+};
+
+/**
+ * The response shape for the `listTemplateExtensions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
+export type ListTemplateExtensionsResponse = {
+  filters: Record<string, TemplateFilter>;
+  globals: {
+    functions: Record<string, TemplateGlobalFunction>;
+    values: Record<string, TemplateGlobalValue>;
+  };
+};
 
 /** @public */
 export type ScaffolderOutputLink = {
@@ -235,6 +296,11 @@ export interface ScaffolderApi {
    * Returns a list of all installed actions.
    */
   listActions(): Promise<ListActionsResponse>;
+
+  /**
+   * Returns a structure describing the available templating extensions.
+   */
+  listTemplateExtensions?(): Promise<ListTemplateExtensionsResponse>;
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 
