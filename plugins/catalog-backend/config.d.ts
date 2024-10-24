@@ -192,5 +192,29 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
+    /**
+     * Parameters affecting setting up the pipeline for processing entities.
+     */
+    processing?: {
+      concurrency?: {
+        /**
+         * The target minimum number of items to process in parallel. Once the number
+         * of in-flight tasks reaches this count, more tasks will be loaded in.
+         *
+         * @default 5
+         * @remarks
+         * Has to be lower than `max`.
+         */
+        min: number;
+        /**
+         * The maximum number of items to process in parallel.
+         *
+         * @default 10
+         * @remarks
+         * Has to be higher than `min`.
+         */
+        max: number;
+      };
+    };
   };
 }
