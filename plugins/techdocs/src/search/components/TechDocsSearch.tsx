@@ -24,6 +24,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
+import { useTechDocsLocation } from './useTechDocsLocation';
 
 /**
  * Props for {@link TechDocsSearch}
@@ -34,6 +35,7 @@ export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
   entityTitle?: string;
   debounceTime?: number;
+  redirectToEntityPage?: boolean;
 };
 
 type TechDocsDoc = {
@@ -58,7 +60,12 @@ const isTechDocsSearchResult = (
 };
 
 const TechDocsSearchBar = (props: TechDocsSearchProps) => {
-  const { entityId, entityTitle, debounceTime = 150 } = props;
+  const {
+    entityId,
+    entityTitle,
+    debounceTime = 150,
+    redirectToEntityPage = false,
+  } = props;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const {
@@ -96,13 +103,15 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
     });
   }, [kind, namespace, name, setFilters]);
 
+  const techDocsLocation = useTechDocsLocation(entityId, redirectToEntityPage);
+
   const handleSelection = (
     _: any,
     selection: TechDocsSearchResult | string | null,
   ) => {
     if (isTechDocsSearchResult(selection)) {
       const { location } = selection.document;
-      navigate(location);
+      navigate(techDocsLocation(location));
     }
   };
 
