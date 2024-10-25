@@ -33,6 +33,7 @@ import {
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 
 const HTTP_OPTION_TIMEOUT = 10000;
 const createHttpOptionsProvider =
@@ -88,12 +89,11 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       );
     }
 
-    const timeoutHumanDuration = config.getOptional<HumanDuration>('timeout');
-    const timeoutMilliseconds =
-      typeof timeoutHumanDuration === 'object'
-        ? durationToMilliseconds(timeoutHumanDuration)
-        : undefined;
-
+    const timeoutMilliseconds = config.has('timeout')
+      ? durationToMilliseconds(
+          readDurationFromConfig(config, { key: 'timeout' }),
+        )
+      : undefined;
     const httpOptionsProvider = createHttpOptionsProvider({
       timeout: timeoutMilliseconds,
     });
