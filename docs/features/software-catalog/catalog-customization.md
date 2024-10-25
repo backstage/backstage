@@ -63,7 +63,51 @@ There are many options that can be set using `tableOptions`, the full list of se
 
 ## Customize Columns
 
-By default the columns you see in the `CatalogIndexPage` were selected to be a good starting point for most but there may be reasons that you would like to customize these with more or less columns. One primary use case for this customization is if you added a custom Kind. Support for this was added in v1.23.0 of Backstage, make sure you are on that version or newer to use this feature. Here's an example of how to make this customization:
+The columns you see in the `CatalogIndexPage` were selected to be a good starting point for most, but there may be cases where you would like to add or remove columns from existing or custom Kinds.
+
+### Adding a column to an existing Kind
+
+Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by creating a new column factory in `/plugins/catalog/src/components/CatalogTable/columns.tsx`:
+
+```tsx title="packages/catalog/src/components/CatalogTable/columns.tsx"
+export const columnFactories = Object.freeze({
+  createNameColumn(options?: {
+    defaultKind?: string;
+  }): TableColumn<CatalogTableRow> {
+    // ...
+    createUserEmailColumn(): TableColumn<CatalogTableRow> {
+      return {
+        title: 'User Email',
+        field: 'entity.spec?.profile?.["email"]',
+        render: ({ entity }) => (
+          <OverflowTooltip
+            text={entity.spec?.profile?.['email'] || 'N/A'}
+            placement="bottom-start"
+          />
+        ),
+      };
+    },
+  }
+});
+```
+
+Then, we can call this new column factory in `/plugins/catalog/src/components/CatalogTable/defaultCatalogTableColumnsFunc.tsx`:
+
+```tsx title="packages/catalog/src/components/CatalogTable/defaultCatalogTableColumnsFunc.tsx"
+// ...
+    switch (filters.kind?.value) {
+      case 'user':
+        return [
+          ...descriptionTagColumns,
+          {/* highlight-add-next-line */}
+          columnFactories.createUserEmailColumn(),
+        ];
+// ...
+```
+
+### Adding columns to a custom or specific Kind
+
+Another use case for customization is when adding a custom `Kind`. This feature is available in Backstage >= `v1.23.0`. For example:
 
 ```tsx title="packages/app/src/App.tsx"
 import {
