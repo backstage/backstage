@@ -234,16 +234,10 @@ async function loadTrimmedRootPkg(ctx: PatchContext, query?: string) {
 
 // Verify that a repo is using a supported Yarn version
 async function verifyYarnVersion(cwd: string) {
-  const { stdout } = await exec('yarn', ['--version'], {
-    cwd,
-  });
-  const version = stdout.toString('utf8').trim();
-
-  if (version.startsWith('1.')) {
+  const exists = await fs.pathExists(joinPath(cwd, '.yarnrc.yml'));
+  if (!exists) {
     throw new Error(
-      `Unsupported Yarn version in target repository, got ${stdout
-        .toString('utf8')
-        .trim()} but 2+ is required`,
+      `Missing .yarnrc.yml in ${cwd}, Yarn v1 (classic) is not support by this command`,
     );
   }
 }
