@@ -17613,11 +17613,11 @@ __metadata:
   linkType: hard
 
 "@types/ansi-regex@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@types/ansi-regex@npm:5.0.0"
+  version: 5.0.4
+  resolution: "@types/ansi-regex@npm:5.0.4"
   dependencies:
     ansi-regex: "*"
-  checksum: c0aa7a15e18c12c06fa06d49a77884797555c6114de9fd899acb996934b84c7a036a60c980aa3f9fd10abaf85ab427590a9f5ee7a321d733a7b7d7d9be57d0b8
+  checksum: 0860a94fbed9c56d53c92e16bcd16d8452952cff369c879d4da1dfe330c07d6971fef8b2fda628be8ce5dd542726bd55960cfdc0221595882d0c0c21346effa2
   languageName: node
   linkType: hard
 
