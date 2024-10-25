@@ -46,11 +46,19 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
     ];
     switch (filters.kind?.value) {
       case 'user':
-        return [...descriptionTagColumns];
+        return [
+          columnFactories.createDisplayNameColumn({ hidden: true }),
+          ...descriptionTagColumns,
+        ];
       case 'domain':
       case 'system':
         return [columnFactories.createOwnerColumn(), ...descriptionTagColumns];
       case 'group':
+        return [
+          columnFactories.createDisplayNameColumn({ hidden: true }),
+          columnFactories.createSpecTypeColumn({ hidden: !showTypeColumn }),
+          ...descriptionTagColumns,
+        ];
       case 'template':
         return [
           columnFactories.createSpecTypeColumn({ hidden: !showTypeColumn }),
