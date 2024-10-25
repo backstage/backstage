@@ -205,7 +205,7 @@ export type EntityAutocompletePickerProps<
   Filter: {
     new (values: string[]): NonNullable<T[Name]>;
   };
-  InputProps?: TextFieldProps;
+  InputProps?: TextFieldProps['InputProps'];
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
 };

@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
@@ -33,6 +34,7 @@ import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Options } from 'react-markdown';
 import { Options as Options_2 } from '@material-table/core';
+import { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -75,6 +77,18 @@ export type AppIconProps = IconComponentProps & {
   id: string;
   Fallback?: IconComponent;
 };
+
+// Warning: (ae-forgotten-export) The symbol "AutocompleteComponentProps" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function Autocomplete<
+  T,
+  Multiple extends boolean | undefined = undefined,
+  DisableClearable extends boolean | undefined = undefined,
+  FreeSolo extends boolean | undefined = undefined,
+>(
+  props: AutocompleteComponentProps<T, Multiple, DisableClearable, FreeSolo>,
+): React_2.JSX.Element;
 
 // @public
 export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
