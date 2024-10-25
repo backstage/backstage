@@ -320,6 +320,9 @@ describe('BitbucketCloudEntityProvider', () => {
               {
                 key: 'TEST',
               },
+              {
+                key: 'TEST2',
+              },
             ],
           };
           return res(ctx.json(response));
@@ -460,6 +463,27 @@ describe('BitbucketCloudEntityProvider', () => {
         },
         locationKey: 'bitbucketCloud-provider:myProvider',
       },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+              'bitbucket.org/repo-url':
+                'https://bitbucket.org/test-ws/test-repo2',
+            },
+            name: 'generated-7c2e6263b6cc2d14e69fd4d029afba601ad6dc3b',
+          },
+          spec: {
+            presence: 'required',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'bitbucketCloud-provider:myProvider',
+      },
     ];
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
@@ -526,6 +550,9 @@ describe('BitbucketCloudEntityProvider', () => {
               {
                 key: 'TEST',
               },
+              {
+                key: 'TEST2',
+              },
             ],
           };
           return res(ctx.json(response));
@@ -535,7 +562,11 @@ describe('BitbucketCloudEntityProvider', () => {
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (req, res, ctx) => {
           const query = req.url.searchParams.get('search_query');
-          if (!query || !query.includes('repo:test-repo')) {
+          if (
+            !query ||
+            !query.includes('repo:test-repo') ||
+            !query.includes('project:TEST')
+          ) {
             return res(ctx.json({ values: [] }));
           }
 
@@ -608,6 +639,10 @@ describe('BitbucketCloudEntityProvider', () => {
     await events.publish(repoPushEventParams);
 
     const addedEntities = [
+      {
+        entity: addedModule,
+        locationKey: 'bitbucketCloud-provider:myProvider',
+      },
       {
         entity: addedModule,
         locationKey: 'bitbucketCloud-provider:myProvider',
