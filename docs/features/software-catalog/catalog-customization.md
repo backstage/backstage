@@ -75,6 +75,7 @@ export const columnFactories = Object.freeze({
     defaultKind?: string;
   }): TableColumn<CatalogTableRow> {
     // ...
+    {/* highlight-add-start */}
     createUserEmailColumn(): TableColumn<CatalogTableRow> {
       return {
         title: 'User Email',
@@ -87,6 +88,7 @@ export const columnFactories = Object.freeze({
         ),
       };
     },
+    {/* highlight-add-end */}
   }
 });
 ```
@@ -141,7 +143,7 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 
 :::note Note
 
-The above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+In the examples above, the contents of the files have been shortened for simplicity.
 
 :::
 
@@ -212,15 +214,15 @@ const customActions: TableProps<CatalogTableRow>['actions'] = [
 
 :::note Note
 
-The above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+In the example above, the contents of `App.tsx` has been shortened for simplicity.
 
 :::
 
-The above customization will override the existing actions. Currently the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
+The above customization will override the existing actions. Currently, the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
 
 ## Customize Filters
 
-There are three options you have for filters: adjusting the existing filters with props, adding or removing the default filters, or creating a brand new custom filter. The following sections cover these cases
+There are various ways to customize filters: adjusting the existing filters with props, adding or removing default filters, creating brand-new custom filters, etc. The following sections cover these cases:
 
 ### Default Filter Props
 
@@ -249,7 +251,7 @@ import { DefaultFilters } from '@backstage/plugin-catalog-react';
 
 ### Removing Default Filters
 
-You may have reasons not use the Lifecycle, Tag, and Processing Status filters, here's an example of how you would remove them:
+If you have reasons not to use the Lifecycle, Tag, and Processing Status filters, here's an example of how to remove them:
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -280,7 +282,7 @@ import {
 
 ### Custom Filters
 
-You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
+You can add custom filters. For example, suppose that we want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
 
 First we need to create a new filter that implements the `EntityFilter` interface:
 
