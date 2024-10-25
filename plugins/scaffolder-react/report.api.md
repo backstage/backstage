@@ -215,6 +215,7 @@ export interface ScaffolderApi {
   }): Promise<{
     results: {
       title: string;
+      id?: string;
     }[];
   }>;
   cancelTask(taskId: string): Promise<void>;

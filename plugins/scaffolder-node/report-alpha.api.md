@@ -23,6 +23,7 @@ export type AutocompleteHandler = ({
 }) => Promise<{
   results: {
     title: string;
+    id?: string;
   }[];
 }>;
 
