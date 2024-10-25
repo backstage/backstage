@@ -17765,11 +17765,11 @@ __metadata:
   linkType: hard
 
 "@types/classnames@npm:^2.2.9":
-  version: 2.3.1
-  resolution: "@types/classnames@npm:2.3.1"
+  version: 2.3.0
+  resolution: "@types/classnames@npm:2.3.0"
   dependencies:
     classnames: "*"
-  checksum: 09a17ea08fcb83380921efdfdac94cfa162f87025cae0bf6f4ba508c2fa5f436459ce7612905a3f968fdddb68c03b8e6ff08e762ed2d0c110c5c4fceb244dc55
+  checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
   languageName: node
   linkType: hard
 
