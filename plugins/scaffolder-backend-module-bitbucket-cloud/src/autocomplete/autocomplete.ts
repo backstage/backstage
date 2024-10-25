@@ -25,7 +25,7 @@ export async function handleAutocompleteRequest({
   resource: string;
   token: string;
   context: Record<string, string>;
-}): Promise<{ results: { title: string }[] }> {
+}): Promise<{ results: { title: string; id?: string }[] }> {
   const client = BitbucketCloudClient.fromConfig({
     host: 'bitbucket.org',
     apiBaseUrl: 'https://api.bitbucket.org/2.0',
@@ -34,10 +34,13 @@ export async function handleAutocompleteRequest({
 
   switch (resource) {
     case 'workspaces': {
-      const results: { title: string }[] = [];
+      const results: { title: string; id: string }[] = [];
 
       for await (const page of client.listWorkspaces().iteratePages()) {
-        const slugs = [...page.values!].map(p => ({ title: p.slug! }));
+        const slugs = [...page.values!].map(p => ({
+          title: p.slug!,
+          id: p.uuid!,
+        }));
         results.push(...slugs);
       }
 
@@ -47,12 +50,15 @@ export async function handleAutocompleteRequest({
       if (!context.workspace)
         throw new InputError('Missing workspace context parameter');
 
-      const results: { title: string }[] = [];
+      const results: { title: string; id: string }[] = [];
 
       for await (const page of client
         .listProjectsByWorkspace(context.workspace)
         .iteratePages()) {
-        const keys = [...page.values!].map(p => ({ title: p.key! }));
+        const keys = [...page.values!].map(p => ({
+          title: p.key!,
+          id: p.uuid!,
+        }));
         results.push(...keys);
       }
 
@@ -64,14 +70,17 @@ export async function handleAutocompleteRequest({
           'Missing workspace and/or project context parameter',
         );
 
-      const results: { title: string }[] = [];
+      const results: { title: string; id: string }[] = [];
 
       for await (const page of client
         .listRepositoriesByWorkspace(context.workspace, {
           q: `project.key="${context.project}"`,
         })
         .iteratePages()) {
-        const slugs = [...page.values!].map(p => ({ title: p.slug! }));
+        const slugs = [...page.values!].map(p => ({
+          title: p.slug!,
+          id: p.uuid!,
+        }));
         results.push(...slugs);
       }
 

@@ -15,26 +15,26 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  scmIntegrationsApiRef,
   scmAuthApiRef,
+  scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { GithubRepoPicker } from './GithubRepoPicker';
-import { GiteaRepoPicker } from './GiteaRepoPicker';
-import { GitlabRepoPicker } from './GitlabRepoPicker';
-import { AzureRepoPicker } from './AzureRepoPicker';
-import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { GerritRepoPicker } from './GerritRepoPicker';
-import { RepoUrlPickerHost } from './RepoUrlPickerHost';
-import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
-import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
-import { RepoUrlPickerFieldSchema } from './schema';
-import { RepoUrlPickerState } from './types';
-import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useDebounce from 'react-use/esm/useDebounce';
+import { AzureRepoPicker } from './AzureRepoPicker';
+import { BitbucketRepoPicker } from './BitbucketRepoPicker';
+import { GerritRepoPicker } from './GerritRepoPicker';
+import { GiteaRepoPicker } from './GiteaRepoPicker';
+import { GithubRepoPicker } from './GithubRepoPicker';
+import { GitlabRepoPicker } from './GitlabRepoPicker';
+import { RepoUrlPickerHost } from './RepoUrlPickerHost';
+import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
+import { RepoUrlPickerFieldSchema } from './schema';
+import { RepoUrlPickerState } from './types';
+import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -203,6 +203,10 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'bitbucket' && (

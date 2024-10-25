@@ -13,28 +13,97 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { Select, SelectItem } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
-import { Select, SelectItem } from '@backstage/core-components';
-import { BaseRepoUrlPickerProps } from './types';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useCallback, useState } from 'react';
+import useDebounce from 'react-use/esm/useDebounce';
 import { scaffolderTranslationRef } from '../../../translation';
+import { BaseRepoUrlPickerProps } from './types';
 
 export const GitlabRepoPicker = (
   props: BaseRepoUrlPickerProps<{
     allowedOwners?: string[];
     allowedRepos?: string[];
+    accessToken?: string;
   }>,
 ) => {
-  const { allowedOwners = [], state, onChange, rawErrors } = props;
+  const { allowedOwners = [], state, onChange, rawErrors, accessToken } = props;
+  const [availableGroups, setAvailableGroups] = useState<
+    { title: string; id: string }[]
+  >([]);
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const { owner } = state;
+  const { owner, host } = state;
+
+  const scaffolderApi = useApi(scaffolderApiRef);
+
+  const updateAvailableGroups = useCallback(() => {
+    if (!scaffolderApi.autocomplete || !accessToken || !host) {
+      setAvailableGroups([]);
+      return;
+    }
+
+    scaffolderApi
+      .autocomplete({
+        token: accessToken,
+        resource: 'groups',
+        provider: 'gitlab',
+        context: { host },
+      })
+      .then(({ results }) => {
+        setAvailableGroups(
+          results.map(r => {
+            return {
+              title: r.title,
+              id: r.id!,
+            };
+          }),
+        );
+      })
+      .catch(() => {
+        setAvailableGroups([]);
+      });
+  }, [scaffolderApi, accessToken, host]);
+
+  useDebounce(updateAvailableGroups, 500, [updateAvailableGroups]);
+
+  // Update available repositories when client is available and group changes
+  const updateAvailableRepositories = useCallback(() => {
+    if (!scaffolderApi.autocomplete || !accessToken || !host || !owner) {
+      onChange({ availableRepos: [] });
+      return;
+    }
+
+    const selectedGroup = availableGroups.find(group => group.title === owner);
+
+    scaffolderApi
+      .autocomplete({
+        token: accessToken,
+        resource: 'repositories',
+        context: {
+          id: selectedGroup?.id ?? '',
+          host,
+        },
+        provider: 'gitlab',
+      })
+      .then(({ results }) => {
+        onChange({ availableRepos: results.map(r => r.title) });
+      })
+      .catch(() => {
+        onChange({ availableRepos: [] });
+      });
+  }, [scaffolderApi, accessToken, host, owner, onChange, availableGroups]);
+
+  useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 
   return (
     <>
@@ -64,12 +133,21 @@ export const GitlabRepoPicker = (
             </FormHelperText>
           </>
         ) : (
-          <TextField
-            id="ownerInput"
-            label={t('fields.gitlabRepoPicker.owner.inputTitle')}
-            onChange={e => onChange({ owner: e.target.value })}
-            helperText={t('fields.gitlabRepoPicker.owner.description')}
+          <Autocomplete
             value={owner}
+            onChange={(_, newValue) => {
+              onChange({ owner: newValue || '' });
+            }}
+            options={availableGroups.map(group => group.title)}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={t('fields.gitlabRepoPicker.owner.title')}
+                required
+              />
+            )}
+            freeSolo
+            autoSelect
           />
         )}
       </FormControl>
