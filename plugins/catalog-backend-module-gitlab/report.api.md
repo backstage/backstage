@@ -51,6 +51,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       logger: LoggerService;
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
+      includeArchivedRepos?: boolean;
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)
@@ -116,6 +117,7 @@ export type GitlabProviderConfig = {
   orgEnabled?: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
   skipForkedRepos?: boolean;
+  includeArchivedRepos?: boolean;
   excludeRepos?: string[];
   includeUsersWithoutSeat?: boolean;
 };
