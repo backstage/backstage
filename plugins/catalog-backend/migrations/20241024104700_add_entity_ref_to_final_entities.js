@@ -38,6 +38,13 @@ exports.up = async function up(knex) {
         .where('r.entity_id', knex.raw('f.entity_id')),
     })
     .table('final_entities as f');
+
+  // SQLite does not support ALTER COLUMN.
+  if (!knex.client.config.client.includes('sqlite3')) {
+    await knex.schema.alterTable('final_entities', table => {
+      table.text('entity_ref').notNullable().alter({ alterNullable: true });
+    });
+  }
 };
 
 /**
