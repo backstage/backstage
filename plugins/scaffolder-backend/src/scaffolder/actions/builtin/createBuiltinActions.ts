@@ -41,6 +41,7 @@ import {
 } from './fetch';
 import {
   createFilesystemDeleteAction,
+  createFilesystemReadDirAction,
   createFilesystemRenameAction,
 } from './filesystem';
 import {
@@ -224,6 +225,7 @@ export const createBuiltinActions = (
     createFetchCatalogEntityAction({ catalogClient, auth }),
     createCatalogWriteAction(),
     createFilesystemDeleteAction(),
+    createFilesystemReadDirAction(),
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
       integrations,
