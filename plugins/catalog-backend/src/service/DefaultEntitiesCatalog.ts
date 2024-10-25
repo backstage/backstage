@@ -422,7 +422,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       } else {
         const matchQuery = db<DbSearchRow>('search')
           .select('search.entity_id')
-          .whereIn('key', textFilterFields)
+          // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
+          .whereIn(
+            'key',
+            textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+          )
           .andWhere(function keyFilter() {
             this.andWhereRaw(
               'value like ?',
