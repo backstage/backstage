@@ -28,6 +28,8 @@ exports.up = async function up(knex) {
       .comment(
         'The entity reference of the entity that was created from the catalog processing',
       );
+
+    table.index('entity_ref', 'entity_ref_idx');
   });
 
   await knex
@@ -53,6 +55,7 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('final_entities', table => {
+    table.dropIndex('entity_ref_idx');
     table.dropColumn('entity_ref');
   });
 };
