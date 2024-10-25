@@ -32,7 +32,7 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
-import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
 
 const HTTP_OPTION_TIMEOUT = 10000;
