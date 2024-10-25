@@ -17622,11 +17622,11 @@ __metadata:
   linkType: hard
 
 "@types/archiver@npm:^6.0.0":
-  version: 6.0.2
-  resolution: "@types/archiver@npm:6.0.2"
+  version: 6.0.3
+  resolution: "@types/archiver@npm:6.0.3"
   dependencies:
     "@types/readdir-glob": "*"
-  checksum: 4bef71e5b95863be9880339275ad92c2513dd78d56587653614dc5a74af1d078f5f5926ec996de06e7071a1003e0c2764d0e9d2bb0893a2ffb14ab1718eaf5ca
+  checksum: d0c5683cc68b52faf0c38e861319dcfdf5180cb235dc12d7c7ff6d6771f98d34f75dbd4bc9808b5a5999359412c5e13dadba6e714a0e50cfb3a9db4fefc4dce1
   languageName: node
   linkType: hard
 
