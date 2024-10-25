@@ -181,6 +181,13 @@ export const CatalogTable: {
           }
         | undefined,
     ): TableColumn<CatalogTableRow>;
+    createDisplayNameColumn(
+      options?:
+        | {
+            hidden?: boolean | undefined;
+          }
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
     createLabelColumn(
       key: string,
       options?:
