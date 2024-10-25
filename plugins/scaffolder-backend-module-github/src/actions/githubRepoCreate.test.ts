@@ -45,6 +45,7 @@ const mockOctokit = {
       createInOrg: jest.fn(),
       createForAuthenticatedUser: jest.fn(),
       replaceAllTopics: jest.fn(),
+      createRepoRuleset: jest.fn(),
     },
     teams: {
       addOrUpdateRepoPermissionsInOrg: jest.fn(),
@@ -753,5 +754,76 @@ describe('github:repo:create', () => {
       'remoteUrl',
       'https://github.com/clone/url.git',
     );
+  });
+
+  it('should add rulesets when provided', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    mockOctokit.rest.repos.createRepoRuleset.mockResolvedValue({
+      data: {
+        id: 42,
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        rulesets: [
+          {
+            name: 'super cool ruleset',
+            target: 'branch',
+            enforcement: 'active',
+            bypass_actors: [
+              { actor_id: 234, actor_type: 'Team', bypass_mode: 'always' },
+            ],
+            conditions: {
+              ref_name: {
+                include: ['refs/heads/main', 'refs/heads/master'],
+                exclude: ['refs/heads/dev*'],
+              },
+            },
+            rules: [
+              {
+                type: 'commit_author_email_pattern',
+                parameters: { operator: 'contains', pattern: 'github' },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    expect(mockOctokit.rest.repos.createRepoRuleset).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      name: 'super cool ruleset',
+      target: 'branch',
+      enforcement: 'active',
+      bypass_actors: [
+        { actor_id: 234, actor_type: 'Team', bypass_mode: 'always' },
+      ],
+      conditions: {
+        ref_name: {
+          include: ['refs/heads/main', 'refs/heads/master'],
+          exclude: ['refs/heads/dev*'],
+        },
+      },
+      rules: [
+        {
+          type: 'commit_author_email_pattern',
+          parameters: { operator: 'contains', pattern: 'github' },
+        },
+      ],
+    });
   });
 });
