@@ -34,7 +34,6 @@ import { PodScope } from './types';
  */
 export interface PodDeleteButtonProps {
   podScope: PodScope;
-  buttonText?: string;
 }
 
 /**
@@ -42,16 +41,13 @@ export interface PodDeleteButtonProps {
  *
  * @public
  */
-export const PodDeleteButton = ({
-  podScope,
-  buttonText,
-}: PodDeleteButtonProps) => {
+export const PodDeleteButton = ({ podScope }: PodDeleteButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const deletePod = usePodDelete();
 
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
-  const getButtonText = buttonText ?? t('podDrawer.buttons.delete');
+  const buttonText = t('podDrawer.buttons.delete');
 
   const handleDeleteClick = async () => {
     setIsLoading(true);
@@ -70,7 +66,7 @@ export const PodDeleteButton = ({
         <CardActions>
           <Button
             variant="outlined"
-            aria-label={getButtonText}
+            aria-label={buttonText}
             component="label"
             onClick={handleDeleteClick}
             startIcon={
@@ -78,7 +74,7 @@ export const PodDeleteButton = ({
             }
             disabled={isLoading}
           >
-            {getButtonText}
+            {buttonText}
           </Button>
         </CardActions>
         {hasError && (

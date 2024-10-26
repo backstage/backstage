@@ -40,11 +40,6 @@ export interface Config {
          * @visibility frontend
          */
         enabled?: boolean;
-        /**
-         * Override the `podDelete` button text
-         * @visibility frontend
-         */
-        buttonText?: string;
       };
     };
   };

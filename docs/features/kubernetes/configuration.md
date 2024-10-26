@@ -20,7 +20,6 @@ kubernetes:
   frontend:
     podDelete:
       enabled: true
-      buttonText: 'Restart pod'
   serviceLocatorMethod:
     type: 'multiTenant'
   clusterLocatorMethods:
@@ -67,7 +66,6 @@ This configures the behavior of the delete pod button in the container panel.
 Valid configurations are:
 
 - `enabled`
-- `buttonText`
 
 ##### `enabled`
 
@@ -79,10 +77,6 @@ Valid values are:
 - `false`
 
 The default value is `false`.
-
-##### `buttonText`
-
-This configuration allows you to override the button text. The default value is **Delete Pod**, which might be intimidating for audiences with minimal knowledge. For instance, you can change it to **Restart pod**.
 
 ### `serviceLocatorMethod`
 
