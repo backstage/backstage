@@ -78,6 +78,28 @@ Valid values are:
 
 The default value is `false`.
 
+#### Internationalization
+
+To customize or translate the **Delete Pod** text, use the following approach:
+
+```js
+import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '@backstage/plugin-kubernetes-react/alpha';
+
+const app = createApp({
+  __experimentalTranslations: {
+    resources: [
+      createTranslationMessages({
+        ref: kubernetesReactTranslationRef,
+        messages: {
+          "podDrawer.buttons.delete": 'Restart Pod'
+        }
+      })
+    ]
+  },
+  ...
+```
+
 ### `serviceLocatorMethod`
 
 This configures how to determine which clusters a component is running in.
