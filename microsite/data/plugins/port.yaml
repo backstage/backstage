@@ -3,9 +3,8 @@ title: Port IO for Backstage
 author: portlabs
 authorUrl: https://getport.io/
 category: Platform
-description: Boost your Backstage instantly with Port’s top features, all within your portal—automation, scorecards, and self-service actions made easy.
+description: Boost your Backstage instantly with Port's top features, all within your portal—automation, scorecards, and self-service actions made easy.
 documentation: https://github.com/port-labs/backstage-plugin
 iconUrl: https://raw.githubusercontent.com/port-labs/backstage-plugin/refs/heads/main/docs/icon.svg
 npmPackageName: '@port-labs/backstage-plugin-port-frontend'
 addedDate: '2024-10-27'
-
