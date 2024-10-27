@@ -198,20 +198,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     testGlobal.__backstageCli_watchProjectFilter = {
       async filter(projectConfigs) {
         const selectedProjects = [];
-        const usedArgs = new Set(parsedArgs);
+        const usedArgs = new Set();
 
         for (const project of projectConfigs) {
-          for (const arg of usedArgs) {
+          for (const arg of parsedArgs) {
             if (isChildPath(project.rootDir, String(arg))) {
               selectedProjects.push(project);
-              usedArgs.delete(arg);
+              usedArgs.add(arg);
             }
           }
         }
 
         // If we didn't end up using all args in the filtering we need to bail
         // and let Jest do the full filtering instead.
-        if (usedArgs.size > 0) {
+        if (usedArgs.size !== parsedArgs.length) {
           return projectConfigs;
         }
 
