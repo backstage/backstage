@@ -17,11 +17,14 @@
 import useAsync from 'react-use/esm/useAsync';
 import { scaffolderApiRef } from '../../api/ref';
 import { useApi } from '@backstage/core-plugin-api';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @alpha
  */
-export const useTemplateParameterSchema = (templateRef: string) => {
+export const useTemplateParameterSchema = (
+  templateRef: string,
+): { manifest?: TemplateParameterSchema; loading: boolean; error?: Error } => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const {
     value: manifest,

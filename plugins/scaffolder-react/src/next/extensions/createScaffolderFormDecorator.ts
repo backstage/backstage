@@ -17,6 +17,7 @@ import { AnyApiRef } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
 
+/** @alpha */
 export type ScaffolderFormDecoratorContext<TInput> = {
   input: TInput;
   formState: Record<string, JsonValue>;
@@ -29,6 +30,7 @@ export type ScaffolderFormDecoratorContext<TInput> = {
   ) => void;
 };
 
+/** @alpha */
 export type ScaffolderFormDecorator<
   TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
   TDeps extends { [key in string]: AnyApiRef } = { [key in string]: AnyApiRef },
@@ -53,7 +55,7 @@ export type ScaffolderFormDecorator<
 /**
  * Method for creating decorators which can be used to collect
  * secrets from the user before submitting to the backend.
- * @public
+ * @alpha
  */
 export function createScaffolderFormDecorator<
   TDeps extends { [key in string]: AnyApiRef },

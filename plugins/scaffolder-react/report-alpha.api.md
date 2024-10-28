@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -74,6 +75,35 @@ export function createFormField<
   TReturnValue extends z.ZodType,
   TUiOptions extends z.ZodType,
 >(opts: FormFieldExtensionData<TReturnValue, TUiOptions>): FormField;
+
+// @alpha
+export function createScaffolderFormDecorator<
+  TDeps extends {
+    [key in string]: AnyApiRef;
+  },
+  TInputSchema extends {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
+  TInput extends {} = {
+    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+  },
+>(options: {
+  id: string;
+  schema?: {
+    input?: TInputSchema;
+  };
+  deps?: TDeps;
+  fn: (
+    ctx: ScaffolderFormDecoratorContext<TInput>,
+    deps: TDeps extends {
+      [key in string]: AnyApiRef;
+    }
+      ? {
+          [key in keyof TDeps]: TDeps[key]['T'];
+        }
+      : never,
+  ) => Promise<void>;
+}): ScaffolderFormDecorator<TInputSchema, TDeps, TInput>;
 
 // @alpha
 export const DefaultTemplateOutputs: (props: {
@@ -189,6 +219,50 @@ export interface ScaffolderFieldProps {
   // (undocumented)
   required?: boolean;
 }
+
+// @alpha (undocumented)
+export type ScaffolderFormDecorator<
+  TInputSchema extends {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  } = {},
+  TDeps extends {
+    [key in string]: AnyApiRef;
+  } = {
+    [key in string]: AnyApiRef;
+  },
+  TInput extends {} = {
+    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+  },
+> = {
+  version: 'v1';
+  id: string;
+  schema?: {
+    input?: TInputSchema;
+  };
+  deps?: TDeps;
+  fn: (
+    ctx: ScaffolderFormDecoratorContext<TInput>,
+    deps: TDeps extends {
+      [key in string]: AnyApiRef;
+    }
+      ? {
+          [key in keyof TDeps]: TDeps[key]['T'];
+        }
+      : never,
+  ) => Promise<void>;
+};
+
+// @alpha (undocumented)
+export type ScaffolderFormDecoratorContext<TInput> = {
+  input: TInput;
+  formState: Record<string, JsonValue>;
+  setFormState: (
+    fn: (currentState: Record<string, JsonValue>) => Record<string, JsonValue>,
+  ) => void;
+  setSecrets: (
+    fn: (currentState: Record<string, string>) => Record<string, string>,
+  ) => void;
+};
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
@@ -346,9 +420,9 @@ export const useFormDataFromQuery: (
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest: TemplateParameterSchema | undefined;
+  manifest?: TemplateParameterSchema | undefined;
   loading: boolean;
-  error: Error | undefined;
+  error?: Error | undefined;
 };
 
 // @alpha
