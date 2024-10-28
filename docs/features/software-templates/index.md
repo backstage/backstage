@@ -25,7 +25,7 @@ locations like GitHub or GitLab.
 If you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
 use the templates feature.
 One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
-`export NODE_OPTIONS="$NODE_OPTIONS --no-node-snapshot"`
+`export NODE_OPTIONS="${NODE_OPTIONS:-} --no-node-snapshot"`
 
 > It's important to append to the existing `NODE_OPTIONS` value, if it's already set, rather than overwriting it, since some NodeJS Debugging tools may rely on this environment variable to work properly.
 
