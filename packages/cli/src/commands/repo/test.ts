@@ -16,20 +16,22 @@
 
 import os from 'os';
 import crypto from 'node:crypto';
-import fs from 'fs-extra';
 import yargs from 'yargs';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
+import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runCheck, runPlain } from '../../lib/run';
 import { isChildPath } from '@backstage/cli-common';
+import { SuccessCache } from '../../lib/cache/SuccessCache';
 
 type JestProject = {
   displayName: string;
+  rootDir: string;
 };
 
-interface GlobalWithCache extends Global {
+interface TestGlobal extends Global {
   __backstageCli_jestSuccessCache?: {
     filterConfigs(
       projectConfigs: JestProject[],
@@ -48,56 +50,45 @@ interface GlobalWithCache extends Global {
       }>;
     }): Promise<void>;
   };
-}
-
-const CACHE_FILE_NAME = 'test-cache.json';
-
-type Cache = string[];
-
-async function readCache(dir: string): Promise<Cache | undefined> {
-  try {
-    const data = await fs.readJson(resolvePath(dir, CACHE_FILE_NAME));
-    if (!Array.isArray(data)) {
-      return undefined;
-    }
-    if (data.some(x => typeof x !== 'string')) {
-      return undefined;
-    }
-    return data as Cache;
-  } catch {
-    return undefined;
-  }
-}
-
-function writeCache(dir: string, cache: Cache) {
-  fs.mkdirpSync(dir);
-  fs.writeJsonSync(resolvePath(dir, CACHE_FILE_NAME), cache, { spaces: 2 });
+  __backstageCli_watchProjectFilter?: {
+    filter(projectConfigs: JestProject[]): Promise<JestProject[]>;
+  };
 }
 
 /**
  * Use git to get the HEAD tree hashes of each package in the project.
  */
 async function readPackageTreeHashes(graph: PackageGraph) {
-  const pkgs = Array.from(graph.values());
+  const pkgs = Array.from(graph.values()).map(pkg => ({
+    ...pkg,
+    path: relativePath(paths.targetRoot, pkg.dir),
+  }));
   const output = await runPlain(
     'git',
     'ls-tree',
-    '--object-only',
+    '--format="%(objectname)=%(path)"',
     'HEAD',
     '--',
-    ...pkgs.map(pkg => relativePath(paths.targetRoot, pkg.dir)),
+    ...pkgs.map(pkg => pkg.path),
   );
-
-  const treeShaList = output.trim().split(/\r?\n/);
-  if (treeShaList.length !== pkgs.length) {
-    throw new Error(
-      `Error listing project git tree hashes, output length does not equal input length`,
-    );
-  }
 
   const map = new Map(
-    pkgs.map((pkg, i) => [pkg.packageJson.name, treeShaList[i]]),
+    output
+      .trim()
+      .split(/\r?\n/)
+      .map(line => {
+        const [itemSha, ...itemPathParts] = line.split('=');
+        const itemPath = itemPathParts.join('=');
+        const pkg = pkgs.find(p => p.path === itemPath);
+        if (!pkg) {
+          throw new Error(
+            `Unexpectedly missing tree sha entry for path ${itemPath}`,
+          );
+        }
+        return [pkg.packageJson.name, itemSha];
+      }),
   );
+
   return (pkgName: string) => {
     const sha = map.get(pkgName);
     if (!sha) {
@@ -152,6 +143,8 @@ function removeOptionArg(args: string[], option: string, size: number = 2) {
 }
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
+  const testGlobal = global as TestGlobal;
+
   // all args are forwarded to jest
   let parent = cmd;
   while (parent.parent) {
@@ -161,6 +154,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const args = allArgs.slice(allArgs.indexOf('test') + 1);
 
   const hasFlags = createFlagFinder(args);
+
+  // Parse the args to ensure that no file filters are provided, in which case we refuse to run
+  const { _: parsedArgs } = await yargs(args).options(jestYargsOptions).argv;
 
   // Only include our config if caller isn't passing their own config
   if (!hasFlags('-c', '--config')) {
@@ -172,6 +168,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   // Run in watch mode unless in CI, coverage mode, or running all tests
+  let isSingleWatchMode = args.includes('--watch');
   if (
     !opts.since &&
     !process.env.CI &&
@@ -182,10 +179,45 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
+      isSingleWatchMode = true;
       args.push('--watch');
     } else {
       args.push('--watchAll');
     }
+  }
+
+  // Due to our monorepo Jest project setup watch mode can be quite slow as it
+  // will always scan all projects for matches. This is an optimization where if
+  // the only provides filter paths from the repo root as args, we filter the
+  // projects to only run tests for those.
+  //
+  // This does mean you're not able to edit the watch filters during the watch
+  // session to point outside of the selected packages, but we consider that a
+  // worthwhile tradeoff, and you can always avoid providing paths upfront.
+  if (isSingleWatchMode && parsedArgs.length > 0) {
+    testGlobal.__backstageCli_watchProjectFilter = {
+      async filter(projectConfigs) {
+        const selectedProjects = [];
+        const usedArgs = new Set();
+
+        for (const project of projectConfigs) {
+          for (const arg of parsedArgs) {
+            if (isChildPath(project.rootDir, String(arg))) {
+              selectedProjects.push(project);
+              usedArgs.add(arg);
+            }
+          }
+        }
+
+        // If we didn't end up using all args in the filtering we need to bail
+        // and let Jest do the full filtering instead.
+        if (usedArgs.size !== parsedArgs.length) {
+          return projectConfigs;
+        }
+
+        return selectedProjects;
+      },
+    };
   }
 
   // When running tests from the repo root in large repos you can easily hit the heap limit.
@@ -264,21 +296,13 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     (process.stdout as any)._handle.setBlocking(true);
   }
 
-  const jestCli = require('jest-cli');
-
   // This code path is enabled by the --successCache flag, which is specific to
   // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
     removeOptionArg(args, '--successCache', 1);
     removeOptionArg(args, '--successCacheDir');
 
-    const cacheDir = resolvePath(
-      opts.successCacheDir ?? 'node_modules/.cache/backstage-cli',
-    );
-
-    // Parse the args to ensure that no file filters are provided, in which case we refuse to run
-    const { _: parsedArgs } = await yargs(args).options(jestCli.yargsOptions)
-      .argv;
+    // Refuse to run if file filters are provided
     if (parsedArgs.length > 0) {
       throw new Error(
         `The --successCache flag can not be combined with the following arguments: ${parsedArgs.join(
@@ -293,6 +317,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       );
     }
 
+    const cache = new SuccessCache('test', opts.successCacheDir);
     const graph = await getPackageGraph();
 
     // Shared state for the bridge
@@ -301,11 +326,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
     // are picked up by the config script itself, as well as the custom result processor.
-    const globalWithCache = global as GlobalWithCache;
-    globalWithCache.__backstageCli_jestSuccessCache = {
+    testGlobal.__backstageCli_jestSuccessCache = {
       // This is called by `config/jest.js` after the project configs have been gathered
       async filterConfigs(projectConfigs, globalRootConfig) {
-        const cache = await readCache(cacheDir);
+        const cacheEntries = await cache.read();
         const lockfile = await Lockfile.load(
           paths.resolveTargetRoot('yarn.lock'),
         );
@@ -317,7 +341,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         baseHash.update('\0');
         baseHash.update(process.version); // Node.js version
         baseHash.update('\0');
-        baseHash.update(JSON.stringify(globalRootConfig)); // Variable global jest config
+        baseHash.update(
+          SuccessCache.trimPaths(JSON.stringify(globalRootConfig)),
+        ); // Variable global jest config
         const baseSha = baseHash.digest('hex');
 
         return projectConfigs.filter(project => {
@@ -343,14 +369,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
           // The project ID is a hash of the transform configuration, which helps
           // us bust the cache when any changes are made to the transform implementation.
-          hash.update(JSON.stringify(project));
+          hash.update(SuccessCache.trimPaths(JSON.stringify(project)));
           hash.update(lockfile.getDependencyTreeHash(packageName));
 
           const sha = hash.digest('hex');
 
           projectHashes.set(packageName, sha);
 
-          if (cache?.includes(sha)) {
+          if (cacheEntries.has(sha)) {
             if (!selectedProjects || selectedProjects.includes(packageName)) {
               console.log(`Skipped ${packageName} due to cache hit`);
             }
@@ -391,10 +417,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           }
         }
 
-        await writeCache(cacheDir, outputSuccessCache);
+        await cache.write(outputSuccessCache);
       },
     };
   }
 
-  await jestCli.run(args);
+  await runJest(args);
 }

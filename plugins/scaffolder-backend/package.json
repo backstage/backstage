@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "1.26.0-next.2",
+  "version": "1.26.3-next.0",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -95,7 +95,7 @@
     "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
     "isbinaryfile": "^5.0.0",
-    "isolated-vm": "^4.5.0",
+    "isolated-vm": "^5.0.1",
     "jsonschema": "^1.2.6",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
@@ -124,7 +124,7 @@
     "@types/nunjucks": "^3.1.4",
     "@types/supertest": "^2.0.8",
     "@types/zen-observable": "^0.8.0",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.24.0",
     "strip-ansi": "^7.1.0",
     "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2"

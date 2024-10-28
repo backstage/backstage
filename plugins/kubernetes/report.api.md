@@ -47,11 +47,4 @@ export const Router: (props: {
 }) => React_2.JSX.Element;
 
 export * from '@backstage/plugin-kubernetes-react';
-
-// Warnings were encountered during analysis:
-//
-// src/Router.d.ts:3:22 - (ae-undocumented) Missing documentation for "isKubernetesAvailable".
-// src/Router.d.ts:4:22 - (ae-undocumented) Missing documentation for "Router".
-// src/plugin.d.ts:3:22 - (ae-undocumented) Missing documentation for "kubernetesPlugin".
-// src/plugin.d.ts:17:22 - (ae-undocumented) Missing documentation for "EntityKubernetesContent".
 ```

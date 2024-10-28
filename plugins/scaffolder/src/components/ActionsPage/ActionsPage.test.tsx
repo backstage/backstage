@@ -23,6 +23,7 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../routes';
 import { userEvent } from '@testing-library/user-event';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
@@ -36,7 +37,11 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   autocomplete: jest.fn(),
 };
 
-const apis = TestApiRegistry.from([scaffolderApiRef, scaffolderApiMock]);
+const mockPermissionApi = { authorize: jest.fn() };
+const apis = TestApiRegistry.from(
+  [scaffolderApiRef, scaffolderApiMock],
+  [permissionApiRef, mockPermissionApi],
+);
 
 describe('TemplatePage', () => {
   beforeEach(() => jest.resetAllMocks());

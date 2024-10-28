@@ -37,12 +37,4 @@ export class PinnipedStrategyCache {
     client: BaseClient;
   }>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:4:1 - (ae-undocumented) Missing documentation for "PinnipedStrategyCache".
-// src/authenticator.d.ts:11:5 - (ae-undocumented) Missing documentation for "getStrategy".
-// src/authenticator.d.ts:20:22 - (ae-undocumented) Missing documentation for "pinnipedAuthenticator".
-// src/deprecated.d.ts:5:22 - (ae-undocumented) Missing documentation for "authModulePinnipedProvider".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModulePinnipedProvider".
 ```

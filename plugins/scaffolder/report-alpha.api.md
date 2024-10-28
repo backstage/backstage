@@ -379,15 +379,5 @@ export type TemplateWizardPageProps = {
   };
 };
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/components/TemplateEditorPage/CustomFieldExplorer.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderCustomFieldExplorerClassKey".
-// src/alpha/components/TemplateEditorPage/TemplateEditor.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderTemplateEditorClassKey".
-// src/alpha/components/TemplateEditorPage/TemplateFormPreviewer.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderTemplateFormPreviewerClassKey".
-// src/alpha/components/TemplateListPage/TemplateListPage.d.ts:7:1 - (ae-undocumented) Missing documentation for "TemplateListPageProps".
-// src/alpha/components/TemplateWizardPage/TemplateWizardPage.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateWizardPageProps".
-// src/alpha/plugin.d.ts:3:15 - (ae-undocumented) Missing documentation for "_default".
-// src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "scaffolderTranslationRef".
-
 // (No @packageDocumentation comment for this package)
 ```

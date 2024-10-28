@@ -135,13 +135,14 @@ yarn build:backend # Build the backend package, depends on tsc
 yarn build:all # Build published versions of packages, depends on tsc
 yarn build:api-reports # Build API Reports used for documentation
 
-yarn lint # lint packages that have changed since later commit on origin/master
-yarn lint:all # lint all packages
-yarn lint:docs # lint all the Markdown files
-yarn lint:type-deps # verify that @types/* dependencies are placed correctly in packages
+yarn lint # Lint packages that have changed since later commit on origin/master
+yarn lint:all # Lint all packages
+yarn lint:docs # Lint all the Markdown files
+yarn lint:type-deps # Verify that @types/* dependencies are placed correctly in packages
 
-yarn test # test packages that have changed since later commit on origin/master
-yarn test:all # test all packages
+yarn test # Test packages that have changed since later commit on origin/master
+yarn test --no-watch # Test packages and include unchanged ones
+yarn test:all # Test all packages
 
 yarn clean # Remove all output folders and @backstage/cli cache
 

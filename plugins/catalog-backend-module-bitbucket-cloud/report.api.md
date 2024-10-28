@@ -41,11 +41,4 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 // @public (undocumented)
 const catalogModuleBitbucketCloudEntityProvider: BackendFeature;
 export default catalogModuleBitbucketCloudEntityProvider;
-
-// Warnings were encountered during analysis:
-//
-// src/module/catalogModuleBitbucketCloudEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleBitbucketCloudEntityProvider".
-// src/providers/BitbucketCloudEntityProvider.d.ts:26:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/BitbucketCloudEntityProvider.d.ts:42:5 - (ae-undocumented) Missing documentation for "refresh".
-// src/providers/BitbucketCloudEntityProvider.d.ts:44:5 - (ae-undocumented) Missing documentation for "onRepoPush".
 ```

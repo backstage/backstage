@@ -176,29 +176,4 @@ export interface UserTransformerOptions {
   // (undocumented)
   user: GitLabUser;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/GitLabDiscoveryProcessor.d.ts:14:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/GitLabDiscoveryProcessor.d.ts:20:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/GitLabDiscoveryProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/lib/types.d.ts:48:1 - (ae-undocumented) Missing documentation for "GitLabGroupSamlIdentity".
-// src/lib/types.d.ts:234:5 - (ae-undocumented) Missing documentation for "group".
-// src/lib/types.d.ts:235:5 - (ae-undocumented) Missing documentation for "providerConfig".
-// src/lib/types.d.ts:249:5 - (ae-undocumented) Missing documentation for "user".
-// src/lib/types.d.ts:250:5 - (ae-undocumented) Missing documentation for "integrationConfig".
-// src/lib/types.d.ts:251:5 - (ae-undocumented) Missing documentation for "providerConfig".
-// src/lib/types.d.ts:252:5 - (ae-undocumented) Missing documentation for "groupNameTransformer".
-// src/lib/types.d.ts:266:5 - (ae-undocumented) Missing documentation for "groups".
-// src/lib/types.d.ts:267:5 - (ae-undocumented) Missing documentation for "providerConfig".
-// src/lib/types.d.ts:268:5 - (ae-undocumented) Missing documentation for "groupNameTransformer".
-// src/providers/GitlabDiscoveryEntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GitlabDiscoveryEntityProvider.d.ts:33:5 - (ae-undocumented) Missing documentation for "getProviderName".
-// src/providers/GitlabDiscoveryEntityProvider.d.ts:34:5 - (ae-undocumented) Missing documentation for "connect".
-// src/providers/GitlabDiscoveryEntityProvider.d.ts:75:15 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/providers/GitlabDiscoveryEntityProvider.d.ts:76:30 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/providers/GitlabDiscoveryEntityProvider.d.ts:76:17 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:31:5 - (ae-undocumented) Missing documentation for "getProviderName".
-// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:32:5 - (ae-undocumented) Missing documentation for "connect".
 ```

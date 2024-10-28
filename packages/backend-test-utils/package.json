@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-test-utils",
-  "version": "1.0.1-next.2",
+  "version": "1.0.3-next.0",
   "description": "Test helpers library for Backstage backends",
   "backstage": {
     "role": "node-library"
@@ -65,7 +65,6 @@
     "fs-extra": "^11.0.0",
     "keyv": "^4.5.2",
     "knex": "^3.0.0",
-    "msw": "^1.0.0",
     "mysql2": "^3.0.0",
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",

@@ -11,8 +11,4 @@ export const grpcDocsApiWidget: {
   title: string;
   component: (definition: string) => React_2.JSX.Element;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/widgets.d.ts:5:22 - (ae-undocumented) Missing documentation for "grpcDocsApiWidget".
 ```

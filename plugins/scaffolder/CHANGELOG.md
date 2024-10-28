@@ -1,5 +1,82 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.2-next.0
+
+### Patch Changes
+
+- 99471cd: fix(scaffolder): use `onInputChange` in `RepoUrlPicker` to fix issue with the value not updating properly
+- 7669af3: Revert the change of the option label for `EntityPicker`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.13.2-next.0
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.26.0
+
+### Minor Changes
+
+- bf6eaf3: Added support for `FormFieldBlueprint` to create field extensions in the Scaffolder plugin
+- c433ae9: Improved the layout of the manage templates page (`/edit`) by adding icons and descriptions that better describe what each page is for. Updated the header menu to link back to the scaffolder create page.
+- 7bfaf23: Text field content of the `EntityPicker` is now more readable as it uses entity title instead of entity reference.
+- cc3f80c: Added ability to create a new local scaffolder template to ease onboarding when creating new templates.
+- 5492eb6: Added ability to link to a specific action on the actions page
+
+### Patch Changes
+
+- b2b2aa8: Fix extra divider displayed in owner list picker on list tasks page
+- 7f1f483: Create a separate route for the Scaffolder template editor and add the ability to refresh the page without closing the directory. Also, when the directory is closed, the user will stay on the editor page and can load a template folder from there.
+- f6c15d8: Apply `defaultValue` props in `MultiEntityPicker`
+- 7a3d622: Create a separate route for the template form editor so we refresh it without being redirected to scaffolder edit page.
+- 4698646: Change task list created at column to show timestamp
+- e969dc7: Move `@types/react` to a peer dependency.
+- e6bbfce: Add tests for the `TemplateEditorToolbarTemplatesMenu` component.
+- 4130291: Create a separate route for the custom fields explorer so we refresh it without being redirected to scaffolder edit page.
+- 4e9702e: Add tests for the new pages header navigation.
+- f25c9e3: Fix behavior of scaffolder entity pickers (EntityPicker, MultiEntityPicker, MyGroupsPicker) to not auto-fill and disable the field if there is only a single value option and the field is not required.
+- 785d68f: Add support for pagination in scaffolder tasks list
+- 94a7bcd: Change "Register Existing Component" CTA to outlined as it's not a primary action on the scaffolder pages
+- f989c47: Add translation to the editor toolbar component.
+- d4cafc8: Standardize template editor pages desktop and mobile layouts.
+- b1de959: Scaffolder task routes require read permission to access. The tasks list option in the scaffolder page context menu only shows with permission.
+- e698470: Updated dependency `@rjsf/utils` to `5.21.2`.
+  Updated dependency `@rjsf/core` to `5.21.2`.
+  Updated dependency `@rjsf/material-ui` to `5.21.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.2`.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 01ffa58: Add tests for the `useTemplateDirectory` hook.
+- 3ac4766: Add an actions filter on the list actions page and drawer.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- 09fcd95: Update the Scaffolder template editor to quickly access installed custom fields and actions when editing a template.
+- c18d925: Add tests for the `TemplateEditorToolbarFilesMenu` component.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/plugin-scaffolder-react@1.13.0
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/integration@1.15.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.26.0-next.2
 
 ### Patch Changes

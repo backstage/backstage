@@ -754,9 +754,5 @@ const appPlugin: FrontendPlugin<
 >;
 export default appPlugin;
 
-// Warnings were encountered during analysis:
-//
-// src/plugin.d.ts:3:22 - (ae-undocumented) Missing documentation for "appPlugin".
-
 // (No @packageDocumentation comment for this package)
 ```

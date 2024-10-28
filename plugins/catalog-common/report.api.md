@@ -64,16 +64,4 @@ export type LocationSpec = {
   target: string;
   presence?: 'optional' | 'required';
 };
-
-// Warnings were encountered during analysis:
-//
-// src/ingestion/LocationAnalyzer.d.ts:5:1 - (ae-undocumented) Missing documentation for "AnalyzeLocationRequest".
-// src/ingestion/LocationAnalyzer.d.ts:10:1 - (ae-undocumented) Missing documentation for "AnalyzeLocationResponse".
-// src/ingestion/LocationAnalyzer.d.ts:39:1 - (ae-undocumented) Missing documentation for "AnalyzeLocationEntityField".
-// src/search/CatalogEntityDocument.d.ts:9:5 - (ae-undocumented) Missing documentation for "componentType".
-// src/search/CatalogEntityDocument.d.ts:10:5 - (ae-undocumented) Missing documentation for "type".
-// src/search/CatalogEntityDocument.d.ts:11:5 - (ae-undocumented) Missing documentation for "namespace".
-// src/search/CatalogEntityDocument.d.ts:12:5 - (ae-undocumented) Missing documentation for "kind".
-// src/search/CatalogEntityDocument.d.ts:13:5 - (ae-undocumented) Missing documentation for "lifecycle".
-// src/search/CatalogEntityDocument.d.ts:14:5 - (ae-undocumented) Missing documentation for "owner".
 ```

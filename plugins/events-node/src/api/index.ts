@@ -21,6 +21,9 @@ export type {
   EventsServiceSubscribeOptions,
   EventsServiceEventHandler,
 } from './EventsService';
-export { DefaultEventsService } from './DefaultEventsService';
+export {
+  DefaultEventsService,
+  type EventBusMode,
+} from './DefaultEventsService';
 export * from './http';
 export { SubTopicEventRouter } from './SubTopicEventRouter';

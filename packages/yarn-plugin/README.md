@@ -9,5 +9,18 @@ version specified in the manifest for the Backstage release listed in
 backstage.json. If the dependent package is published, this version will be
 prefixed by `^`.
 
-**This plugin is still under active development, and requires some further
-testing before we recommend it for general use.**
+Detailed instructions for using the plugin can be found in [the docs](https://backstage.io/docs/getting-started/keeping-backstage-updated/#managing-package-versions-with-the-backstage-yarn-plugin).
+
+## Installation
+
+```bash
+yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin
+```
+
+The resulting changes in the file system should be committed to your repo.
+
+## Usage
+
+The yarn plugin recognizes the version string `"backstage:^"`, and replaces it
+with the appropriate version based on the overall Backstage version in
+backstage.json.

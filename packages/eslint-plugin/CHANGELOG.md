@@ -1,5 +1,12 @@
 # @backstage/eslint-plugin
 
+## 0.1.10
+
+### Patch Changes
+
+- b1c2a2d: Exclude `@material-ui/data-grid`
+- 63963f6: Internal refactor to deal with `estree` upgrade
+
 ## 0.1.10-next.1
 
 ### Patch Changes

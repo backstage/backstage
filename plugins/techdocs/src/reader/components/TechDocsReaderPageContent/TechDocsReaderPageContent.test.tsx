@@ -34,9 +34,11 @@ jest.mock('../useReaderState', () => ({
   ...jest.requireActual('../useReaderState'),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
+const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
 jest.mock('@backstage/plugin-techdocs-react', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-react'),
-  useShadowDomStylesLoading: jest.fn().mockReturnValue(false),
+  useShadowDomStylesLoading: (...args: any[]) =>
+    useShadowDomStylesLoading(...args),
   useShadowRootElements: jest.fn(),
 }));
 
@@ -219,5 +221,40 @@ describe('<TechDocsReaderPageContent />', () => {
     });
 
     window.location.hash = '';
+  });
+
+  it('should render progress bar when content is loading', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'CHECKING' });
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(rendered.queryByRole('progressbar')).toBeInTheDocument();
+    });
+  });
+
+  it('should render progress bar when styles are loading', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+    useShadowDomStylesLoading.mockReturnValue(true);
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(rendered.queryByRole('progressbar')).toBeInTheDocument();
+    });
   });
 });

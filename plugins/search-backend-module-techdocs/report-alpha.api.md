@@ -4,28 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { TechDocsCollatorDocumentTransformer } from '@backstage/plugin-search-backend-module-techdocs';
-import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
 
 // @alpha (undocumented)
 const _feature: BackendFeature;
 export default _feature;
-
-// Warning: (ae-forgotten-export) The symbol "TechDocsCollatorEntityTransformerExtensionPoint_2" needs to be exported by the entry point alpha.d.ts
-//
-// @alpha (undocumented)
-export type TechDocsCollatorEntityTransformerExtensionPoint =
-  TechDocsCollatorEntityTransformerExtensionPoint_2;
-
-// @alpha (undocumented)
-export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint_2>;
-
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:3:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/alpha.d.ts:6:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformerExtensionPoint".
-// src/alpha.d.ts:8:22 - (ae-undocumented) Missing documentation for "techdocsCollatorEntityTransformerExtensionPoint".
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -273,8 +273,7 @@ export class GitlabUrlReader implements UrlReaderService {
    *
    * E.g. `catalog/foo/*.yaml` will return `catalog/foo`.
    *
-   * @param globPattern the glob pattern
-   * @private
+   * @param globPattern - the glob pattern
    */
   private getStaticPart(globPattern: string) {
     const segments = globPattern.split('/');

@@ -1,5 +1,58 @@
 # @backstage/plugin-catalog-backend
 
+## 1.27.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.0
+  - @backstage/plugin-catalog-node@1.14.0-next.0
+  - @backstage/backend-openapi-utils@0.2.1-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.0
+
+## 1.27.0
+
+### Minor Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 83a8830: Added migration `20241003170511_alter_target_in_locations.js` to change the target column in the `locations` table to TEXT type.
+  Added a hash for the key column in the `refresh_keys` table.
+- 62747f8: Fixed a bug where the concurrency limiter for URL reading was not honored
+- c1f9764: Add configuration parameters for deferred stitcher
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- d1cf90a: Adds the ability to disable catalog processing `catalog.processingInterval: false` in `app-config`
+- f1cab41: Update catalog search table in transaction
+- 8206f49: Fix a bug where etags were expiring too soon in the URL reader
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.2.3
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/backend-openapi-utils@0.2.0
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 1.26.2-next.2
 
 ### Patch Changes

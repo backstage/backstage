@@ -20,9 +20,4 @@ export class AzureDevOpsEventRouter extends SubTopicEventRouter {
 // @public
 const eventsModuleAzureDevOpsEventRouter: BackendFeature;
 export default eventsModuleAzureDevOpsEventRouter;
-
-// Warnings were encountered during analysis:
-//
-// src/router/AzureDevOpsEventRouter.d.ts:13:5 - (ae-undocumented) Missing documentation for "getSubscriberId".
-// src/router/AzureDevOpsEventRouter.d.ts:14:5 - (ae-undocumented) Missing documentation for "determineSubTopic".
 ```

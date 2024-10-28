@@ -179,36 +179,4 @@ export const useUserProfile: () =>
       displayName: string;
       loading: false;
     };
-
-// Warnings were encountered during analysis:
-//
-// src/apis/StorageApi/UserSettingsStorage.d.ts:21:5 - (ae-undocumented) Missing documentation for "create".
-// src/apis/StorageApi/UserSettingsStorage.d.ts:29:5 - (ae-undocumented) Missing documentation for "forBucket".
-// src/apis/StorageApi/UserSettingsStorage.d.ts:30:5 - (ae-undocumented) Missing documentation for "remove".
-// src/apis/StorageApi/UserSettingsStorage.d.ts:31:5 - (ae-undocumented) Missing documentation for "set".
-// src/apis/StorageApi/UserSettingsStorage.d.ts:32:5 - (ae-undocumented) Missing documentation for "observe$".
-// src/apis/StorageApi/UserSettingsStorage.d.ts:33:5 - (ae-undocumented) Missing documentation for "snapshot".
-// src/components/AuthProviders/DefaultProviderSettings.d.ts:3:22 - (ae-undocumented) Missing documentation for "DefaultProviderSettings".
-// src/components/AuthProviders/ProviderSettingsItem.d.ts:4:22 - (ae-undocumented) Missing documentation for "ProviderSettingsItem".
-// src/components/AuthProviders/UserSettingsAuthProviders.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsAuthProviders".
-// src/components/FeatureFlags/UserSettingsFeatureFlags.d.ts:5:22 - (ae-undocumented) Missing documentation for "UserSettingsFeatureFlags".
-// src/components/General/UserSettingsAppearanceCard.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsAppearanceCard".
-// src/components/General/UserSettingsGeneral.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsGeneral".
-// src/components/General/UserSettingsIdentityCard.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsIdentityCard".
-// src/components/General/UserSettingsLanguageToggle.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsLanguageToggle".
-// src/components/General/UserSettingsMenu.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsMenu".
-// src/components/General/UserSettingsPinToggle.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsPinToggle".
-// src/components/General/UserSettingsProfileCard.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsProfileCard".
-// src/components/General/UserSettingsSignInAvatar.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsSignInAvatar".
-// src/components/General/UserSettingsThemeToggle.d.ts:3:22 - (ae-undocumented) Missing documentation for "UserSettingsThemeToggle".
-// src/components/Settings.d.ts:4:22 - (ae-undocumented) Missing documentation for "Settings".
-// src/components/SettingsLayout/SettingsLayout.d.ts:4:1 - (ae-undocumented) Missing documentation for "SettingsLayoutRouteProps".
-// src/components/SettingsLayout/SettingsLayout.d.ts:15:1 - (ae-undocumented) Missing documentation for "SettingsLayoutProps".
-// src/components/SettingsLayout/SettingsLayout.d.ts:23:22 - (ae-undocumented) Missing documentation for "SettingsLayout".
-// src/components/SettingsPage/SettingsPage.d.ts:3:22 - (ae-undocumented) Missing documentation for "SettingsPage".
-// src/components/UserSettingsTab/UserSettingsTab.d.ts:3:22 - (ae-undocumented) Missing documentation for "USER_SETTINGS_TAB_KEY".
-// src/components/UserSettingsTab/UserSettingsTab.d.ts:5:1 - (ae-undocumented) Missing documentation for "UserSettingsTabProps".
-// src/components/useUserProfileInfo.d.ts:3:22 - (ae-undocumented) Missing documentation for "useUserProfile".
-// src/plugin.d.ts:4:22 - (ae-undocumented) Missing documentation for "userSettingsPlugin".
-// src/plugin.d.ts:8:22 - (ae-undocumented) Missing documentation for "UserSettingsPage".
 ```

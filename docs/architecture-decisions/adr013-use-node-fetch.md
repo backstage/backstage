@@ -32,6 +32,8 @@ It uses `cross-fetch` internally. Example:
 
 ```ts
 import { useApi } from '@backstage/core-plugin-api';
+
+// Inside some functional React component...
 const { fetch } = useApi(fetchApiRef);
 
 const response = await fetch('https://example.com/api/v1/users.json');

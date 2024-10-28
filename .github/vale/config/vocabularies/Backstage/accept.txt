@@ -176,6 +176,7 @@ idempotency
 Iglesias
 iLert
 img
+impactful
 incentivised
 Indal
 indexable
@@ -368,6 +369,8 @@ scaffolded
 scaffolder
 Scaffolder
 scrollbar
+SCM
+SCMs
 sdks
 seb
 semlas

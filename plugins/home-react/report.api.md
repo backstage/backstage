@@ -74,15 +74,4 @@ export const SettingsModal: (props: {
   componentName?: string;
   children: JSX.Element;
 }) => React_2.JSX.Element;
-
-// Warnings were encountered during analysis:
-//
-// src/components/SettingsModal.d.ts:3:22 - (ae-undocumented) Missing documentation for "SettingsModal".
-// src/extensions.d.ts:6:1 - (ae-undocumented) Missing documentation for "ComponentRenderer".
-// src/extensions.d.ts:12:1 - (ae-undocumented) Missing documentation for "ComponentParts".
-// src/extensions.d.ts:21:1 - (ae-undocumented) Missing documentation for "RendererProps".
-// src/extensions.d.ts:27:1 - (ae-undocumented) Missing documentation for "CardExtensionProps".
-// src/extensions.d.ts:33:1 - (ae-undocumented) Missing documentation for "CardLayout".
-// src/extensions.d.ts:48:1 - (ae-undocumented) Missing documentation for "CardSettings".
-// src/extensions.d.ts:55:1 - (ae-undocumented) Missing documentation for "CardConfig".
 ```

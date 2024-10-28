@@ -12,9 +12,10 @@ import { ReactNode } from 'react';
 import { Theme } from '@mui/material/styles';
 import { Theme as Theme_2 } from '@material-ui/core/styles';
 import { Theme as Theme_3 } from '@material-ui/core';
+import type { Theme as Theme_4 } from '@material-ui/core/styles/createTheme';
 import { ThemeOptions } from '@mui/material/styles';
 import { ThemeOptions as ThemeOptions_2 } from '@material-ui/core/styles';
-import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core';
+import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core/styles/createTheme';
 import { UnifiedTheme as UnifiedTheme_2 } from '@backstage/theme';
 
 // @public @deprecated
@@ -91,7 +92,7 @@ export type BackstagePaletteOptions = PaletteOptions &
   BackstagePaletteAdditions;
 
 // @public @deprecated
-export interface BackstageTheme extends Theme_3 {
+export interface BackstageTheme extends Theme_4 {
   // (undocumented)
   getPageTheme: (selector: PageThemeSelector) => PageTheme;
   // (undocumented)
@@ -188,13 +189,13 @@ export function createBaseThemeOptions<PaletteOptions>(
 };
 
 // @public @deprecated
-export function createTheme(options: SimpleThemeOptions): Theme_3;
+export function createTheme(options: SimpleThemeOptions): Theme_4;
 
 // @public @deprecated
 export function createThemeOptions(options: SimpleThemeOptions): ThemeOptions_3;
 
 // @public @deprecated
-export function createThemeOverrides(theme: Theme_3): Overrides;
+export function createThemeOverrides(theme: Theme_4): Overrides;
 
 // @public
 export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme;
@@ -462,30 +463,4 @@ export interface UnifiedThemeProviderProps {
   // (undocumented)
   theme: UnifiedTheme;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/base/createBaseThemeOptions.d.ts:14:5 - (ae-undocumented) Missing documentation for "palette".
-// src/base/createBaseThemeOptions.d.ts:15:5 - (ae-undocumented) Missing documentation for "defaultPageTheme".
-// src/base/createBaseThemeOptions.d.ts:16:5 - (ae-undocumented) Missing documentation for "pageTheme".
-// src/base/createBaseThemeOptions.d.ts:17:5 - (ae-undocumented) Missing documentation for "fontFamily".
-// src/base/createBaseThemeOptions.d.ts:18:5 - (ae-undocumented) Missing documentation for "htmlFontSize".
-// src/base/createBaseThemeOptions.d.ts:19:5 - (ae-undocumented) Missing documentation for "typography".
-// src/unified/UnifiedTheme.d.ts:17:5 - (ae-undocumented) Missing documentation for "palette".
-// src/unified/UnifiedTheme.d.ts:18:5 - (ae-undocumented) Missing documentation for "defaultPageTheme".
-// src/unified/UnifiedTheme.d.ts:19:5 - (ae-undocumented) Missing documentation for "pageTheme".
-// src/unified/UnifiedTheme.d.ts:20:5 - (ae-undocumented) Missing documentation for "fontFamily".
-// src/unified/UnifiedTheme.d.ts:21:5 - (ae-undocumented) Missing documentation for "htmlFontSize".
-// src/unified/UnifiedTheme.d.ts:22:5 - (ae-undocumented) Missing documentation for "components".
-// src/unified/UnifiedTheme.d.ts:23:5 - (ae-undocumented) Missing documentation for "typography".
-// src/unified/UnifiedThemeProvider.d.ts:9:5 - (ae-undocumented) Missing documentation for "children".
-// src/unified/UnifiedThemeProvider.d.ts:10:5 - (ae-undocumented) Missing documentation for "theme".
-// src/unified/UnifiedThemeProvider.d.ts:11:5 - (ae-undocumented) Missing documentation for "noCssBaseline".
-// src/unified/types.d.ts:25:5 - (ae-undocumented) Missing documentation for "getTheme".
-// src/v4/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "palette".
-// src/v4/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "page".
-// src/v4/types.d.ts:33:5 - (ae-undocumented) Missing documentation for "getPageTheme".
-// src/v4/types.d.ts:42:5 - (ae-undocumented) Missing documentation for "palette".
-// src/v4/types.d.ts:43:5 - (ae-undocumented) Missing documentation for "page".
-// src/v4/types.d.ts:44:5 - (ae-undocumented) Missing documentation for "getPageTheme".
 ```

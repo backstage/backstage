@@ -323,14 +323,4 @@ export type UserTransformer = (
   user: MicrosoftGraph.User,
   userPhoto?: string,
 ) => Promise<UserEntity | undefined>;
-
-// Warnings were encountered during analysis:
-//
-// src/microsoftGraph/client.d.ts:109:5 - (ae-undocumented) Missing documentation for "getUserPhoto".
-// src/microsoftGraph/client.d.ts:129:5 - (ae-undocumented) Missing documentation for "getGroupPhoto".
-// src/microsoftGraph/client.d.ts:176:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "entityName"
-// src/processors/MicrosoftGraphOrgEntityProvider.d.ts:119:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/MicrosoftGraphOrgReaderProcessor.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/MicrosoftGraphOrgReaderProcessor.d.ts:31:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/MicrosoftGraphOrgReaderProcessor.d.ts:32:5 - (ae-undocumented) Missing documentation for "readLocation".
 ```

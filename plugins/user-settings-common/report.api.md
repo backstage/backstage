@@ -9,9 +9,5 @@ export type UserSettingsSignal = {
   key: string;
 };
 
-// Warnings were encountered during analysis:
-//
-// src/types.d.ts:2:1 - (ae-undocumented) Missing documentation for "UserSettingsSignal".
-
 // (No @packageDocumentation comment for this package)
 ```

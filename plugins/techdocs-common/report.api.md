@@ -8,9 +8,4 @@ export const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
 // @public (undocumented)
 export const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
-
-// Warnings were encountered during analysis:
-//
-// src/constants.d.ts:2:22 - (ae-undocumented) Missing documentation for "TECHDOCS_ANNOTATION".
-// src/constants.d.ts:4:22 - (ae-undocumented) Missing documentation for "TECHDOCS_EXTERNAL_ANNOTATION".
 ```

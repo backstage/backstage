@@ -16,10 +16,7 @@
 
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
-import {
-  HostDiscovery,
-  discoveryServiceFactory,
-} from '@backstage/backend-defaults/discovery';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
@@ -273,7 +270,12 @@ export namespace mockServices {
     );
   }
   export namespace discovery {
-    export const factory = () => discoveryServiceFactory;
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.discovery,
+        deps: {},
+        factory: () => discovery(),
+      });
     export const mock = simpleMock(coreServices.discovery, () => ({
       getBaseUrl: jest.fn(),
       getExternalBaseUrl: jest.fn(),

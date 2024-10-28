@@ -26,9 +26,5 @@ export const schedulerServiceFactory: ServiceFactory<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/entrypoints/scheduler/lib/DefaultSchedulerService.d.ts:8:5 - (ae-undocumented) Missing documentation for "create".
-
 // (No @packageDocumentation comment for this package)
 ```

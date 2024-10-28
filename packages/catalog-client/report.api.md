@@ -302,13 +302,4 @@ export type ValidateEntityResponse =
       valid: false;
       errors: SerializedError[];
     };
-
-// Warnings were encountered during analysis:
-//
-// src/CatalogClient.d.ts:50:5 - (ae-undocumented) Missing documentation for "getEntityByName".
-// src/types/api.d.ts:154:5 - (ae-undocumented) Missing documentation for "items".
-// src/types/api.d.ts:203:5 - (ae-undocumented) Missing documentation for "entityRef".
-// src/types/api.d.ts:211:5 - (ae-undocumented) Missing documentation for "rootEntityRef".
-// src/types/api.d.ts:212:5 - (ae-undocumented) Missing documentation for "items".
-// src/types/api.d.ts:305:5 - (ae-undocumented) Missing documentation for "token".
 ```

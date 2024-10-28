@@ -25,9 +25,4 @@ export class AwsSqsConsumingEventPublisher {
 // @public
 const eventsModuleAwsSqsConsumingEventPublisher: BackendFeature;
 export default eventsModuleAwsSqsConsumingEventPublisher;
-
-// Warnings were encountered during analysis:
-//
-// src/publisher/AwsSqsConsumingEventPublisher.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/publisher/AwsSqsConsumingEventPublisher.d.ts:28:5 - (ae-undocumented) Missing documentation for "start".
 ```

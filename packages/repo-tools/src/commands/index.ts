@@ -58,6 +58,8 @@ function registerPackageCommand(program: Command) {
     .description(
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
+    .option('--watch')
+    .description('Watch the OpenAPI spec for changes and regenerate on save.')
     .action(
       lazy(() =>
         import('./package/schema/openapi/generate').then(m => m.command),
@@ -248,6 +250,37 @@ export function registerCommands(program: Command) {
         import('./generate-catalog-info/generate-catalog-info').then(
           m => m.default,
         ),
+      ),
+    );
+
+  program
+    .command('generate-patch <package>')
+    .requiredOption(
+      '--target <target-repo>',
+      'The target repository to generate patches for',
+    )
+    .option(
+      '--registry-url <registry-url>',
+      'The registry to use for downloading artifacts (default: https://registry.npmjs.org)',
+    )
+    .option(
+      '--base-version <version>',
+      'Override the base version to generate the patch towards instead',
+    )
+    .option(
+      '--query <query>',
+      'Only apply the patch for a specific version query in the target repository',
+    )
+    .option(
+      '--skip-install',
+      'Skip dependency installation in the target repository after applying the patch',
+    )
+    .description(
+      'Generate a patch for the selected package in the target repository',
+    )
+    .action(
+      lazy(() =>
+        import('./generate-patch/generate-patch').then(m => m.default),
       ),
     );
 

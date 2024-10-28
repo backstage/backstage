@@ -1,5 +1,38 @@
 # @backstage/frontend-app-api
 
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-defaults@0.1.2-next.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.10.0
+
+### Minor Changes
+
+- 4a5ba19: Removed deprecated `createApp` and `CreateAppFeatureLoader` from `@backstage/frontend-app-api`, use the same `createApp` and `CreateAppFeatureLoader` import from `@backstage/frontend-defaults` instead.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/core-app-api@1.15.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-defaults@0.1.1
+  - @backstage/types@1.1.1
+
 ## 0.10.0-next.2
 
 ### Patch Changes

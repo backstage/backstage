@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.10
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
 ## 1.0.10-next.0
 
 ### Patch Changes

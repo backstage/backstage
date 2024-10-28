@@ -354,7 +354,7 @@ Passport-supported authentication method.
 
 ## Custom ScmAuthApi Implementation
 
-The default `ScmAuthAPi` provides integrations for `github`, `gitlab`, `azure` and `bitbucket` and is created by the following code in `packages/app/src/apis.ts`:
+The default `ScmAuthApi` provides integrations for `github`, `gitlab`, `azure` and `bitbucket` and is created by the following code in `packages/app/src/apis.ts`:
 
 ```ts
 ScmAuth.createDefaultApiFactory();
@@ -379,7 +379,7 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
-Then replace it with something like this, which will create an `ApiFactory` with only a github provider.
+Then replace it with something like this, which will create an `ApiFactory` with only a GitHub provider.
 
 ```ts title="packages/app/src/apis.ts"
 export const apis: AnyApiFactory[] = [

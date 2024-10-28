@@ -376,6 +376,7 @@ export async function runApiExtraction({
       logLevel: 'none',
     };
   }
+
   const warnings = new Array<string>();
 
   for (const [packageDir, packageEntryPoints] of Object.entries(
@@ -406,7 +407,7 @@ export async function runApiExtraction({
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
       const reportFileName = `report${suffix}`;
-      const reportPath = resolvePath(projectFolder, reportFileName);
+      const reportPath = resolvePath(projectFolder, `${reportFileName}.api.md`);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -602,6 +603,7 @@ export async function runApiExtraction({
       }
 
       const warningCountAfter = await countApiReportWarnings(reportPath);
+
       if (noBail) {
         console.log(`Skipping warnings check for ${packageDir}`);
       }

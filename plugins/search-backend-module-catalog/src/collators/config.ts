@@ -73,7 +73,7 @@ export function readCollatorConfigOptions(configRoot: Config): {
       config.getOptionalString('locationTemplate') ??
       defaults.collatorOptions.locationTemplate,
     filter:
-      config.getOptionalConfig('filter')?.get<EntityFilterQuery>() ??
+      config.getOptional<EntityFilterQuery>('filter') ??
       defaults.collatorOptions.filter,
     batchSize:
       config.getOptionalNumber('batchSize') ??

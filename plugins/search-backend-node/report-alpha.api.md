@@ -52,11 +52,5 @@ export const searchIndexServiceRef: ServiceRef<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:39:5 - (ae-undocumented) Missing documentation for "addCollator".
-// src/alpha.d.ts:40:5 - (ae-undocumented) Missing documentation for "addDecorator".
-// src/alpha.d.ts:47:5 - (ae-undocumented) Missing documentation for "setSearchEngine".
-
 // (No @packageDocumentation comment for this package)
 ```

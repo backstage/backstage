@@ -104,22 +104,4 @@ export type TechDocsCollatorFactoryOptions = {
   entityTransformer?: TechDocsCollatorEntityTransformer;
   documentTransformer?: TechDocsCollatorDocumentTransformer;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:38:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:39:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:50:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:3:1 - (ae-undocumented) Missing documentation for "MkSearchIndexDoc".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:4:5 - (ae-undocumented) Missing documentation for "title".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:5:5 - (ae-undocumented) Missing documentation for "text".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:6:5 - (ae-undocumented) Missing documentation for "location".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:7:5 - (ae-undocumented) Missing documentation for "tags".
-// src/collators/TechDocsCollatorDocumentTransformer.d.ts:10:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorDocumentTransformer".
-// src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
-// src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
-// src/module.d.ts:3:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformerExtensionPoint".
-// src/module.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTransformer".
-// src/module.d.ts:5:5 - (ae-undocumented) Missing documentation for "setDocumentTransformer".
 ```

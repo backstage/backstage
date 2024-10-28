@@ -87,7 +87,7 @@ describe('ExternalRouteRef', () => {
     const _3 = createExternalRouteRef({ id: '3', params: ['x', 'y'] });
     // @ts-expect-error
     validateType<{ x: string }, any>(_3);
-    // extra z, we validate this at runtime instead
+    // @ts-expect-error
     validateType<{ x: string; y: string; z: string }, any>(_3);
     validateType<{ x: string; y: string }, false>(_3);
 

@@ -15,16 +15,7 @@
  */
 
 import { default as feature } from './module';
-import {
-  IncrementalIngestionProviderExtensionPoint as ExtensionPoint,
-  incrementalIngestionProvidersExtensionPoint as extensionPoint,
-} from './module';
 
 /** @alpha */
 const _feature = feature;
 export default _feature;
-
-/** @alpha */
-export type IncrementalIngestionProviderExtensionPoint = ExtensionPoint;
-/** @alpha */
-export const incrementalIngestionProvidersExtensionPoint = extensionPoint;

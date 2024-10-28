@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.9
+
+### Patch Changes
+
+- fec7278: Added new `lockfile.getDependencyTreeHash(name)` utility.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.9-next.0
 
 ### Patch Changes

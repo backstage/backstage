@@ -58,12 +58,4 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
 // @public
 const catalogModuleAzureDevOpsEntityProvider: BackendFeature;
 export default catalogModuleAzureDevOpsEntityProvider;
-
-// Warnings were encountered during analysis:
-//
-// src/processors/AzureDevOpsDiscoveryProcessor.d.ts:26:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/AzureDevOpsDiscoveryProcessor.d.ts:33:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/AzureDevOpsDiscoveryProcessor.d.ts:34:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/providers/AzureDevOpsEntityProvider.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/AzureDevOpsEntityProvider.d.ts:29:5 - (ae-undocumented) Missing documentation for "refresh".
 ```

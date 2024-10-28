@@ -1,5 +1,66 @@
 # @backstage/backend-defaults
 
+## 0.5.3-next.0
+
+### Patch Changes
+
+- f6eaec2: Link to proper package in `rootLoggerServiceFactory` doc string.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.5.4-next.0
+  - @backstage/backend-app-api@1.0.2-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.9
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.8.5-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- 4b60e0c: Small tweaks to API reports to make them valid
+- 321a994: Sensitive internal fields on `BackstageCredentials` objects are now defined as read-only properties in order to minimize risk of leakage.
+- ffd1f4a: Plugin lifecycle shutdown hooks are now performed before root lifecycle shutdown hooks.
+- ffd1f4a: The database manager now attempts to close any database connections in a root lifecycle shutdown hook.
+- e36d12f: The task scheduler now attempts to abort any tasks if it detects that Backstage is being shut down.
+- fd6e6f4: build(deps): bump `cookie` from 0.6.0 to 0.7.0
+- 094eaa3: Remove references to in-repo backend-common
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- d7b44f0: Fix for backend shutdown hanging during local development due to SQLite connection shutdown never resolving.
+- 8fd7deb: The default root HTTP service implementation will now pretty-print JSON responses in development.
+
+  If you are overriding the `rootHttpRouterServiceFactory` with a `configure` function that doesn't call `applyDefaults`, you can introduce this functionality by adding the following snippet inside `configure`:
+
+  ```ts
+  if (process.env.NODE_ENV === 'development') {
+    app.set('json spaces', 2);
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/cli-node@0.2.9
+  - @backstage/backend-app-api@1.0.1
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/integration@1.15.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.5.1-next.2
 
 ### Patch Changes

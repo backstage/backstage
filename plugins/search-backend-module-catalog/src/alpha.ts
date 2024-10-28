@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  default as feature,
-  CatalogCollatorExtensionPoint as ExtensionPoint,
-  catalogCollatorExtensionPoint as extensionPoint,
-} from './module';
+import { default as feature } from './module';
 
 /** @alpha */
 const _feature = feature;
 export default _feature;
-
-/** @alpha */
-export type CatalogCollatorExtensionPoint = ExtensionPoint;
-/** @alpha */
-export const catalogCollatorExtensionPoint = extensionPoint;

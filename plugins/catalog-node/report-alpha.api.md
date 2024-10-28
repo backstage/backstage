@@ -95,28 +95,8 @@ export interface CatalogProcessingExtensionPoint {
 // @alpha (undocumented)
 export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
-// @alpha
+// @alpha @deprecated (undocumented)
 export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin', 'singleton'>;
-
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:8:1 - (ae-undocumented) Missing documentation for "CatalogLocationsExtensionPoint".
-// src/extensions.d.ts:18:22 - (ae-undocumented) Missing documentation for "catalogLocationsExtensionPoint".
-// src/extensions.d.ts:22:1 - (ae-undocumented) Missing documentation for "CatalogProcessingExtensionPoint".
-// src/extensions.d.ts:23:5 - (ae-undocumented) Missing documentation for "addProcessor".
-// src/extensions.d.ts:24:5 - (ae-undocumented) Missing documentation for "addEntityProvider".
-// src/extensions.d.ts:25:5 - (ae-undocumented) Missing documentation for "addPlaceholderResolver".
-// src/extensions.d.ts:26:5 - (ae-undocumented) Missing documentation for "setOnProcessingErrorHandler".
-// src/extensions.d.ts:32:1 - (ae-undocumented) Missing documentation for "CatalogModelExtensionPoint".
-// src/extensions.d.ts:50:22 - (ae-undocumented) Missing documentation for "catalogProcessingExtensionPoint".
-// src/extensions.d.ts:54:1 - (ae-undocumented) Missing documentation for "CatalogAnalysisExtensionPoint".
-// src/extensions.d.ts:77:22 - (ae-undocumented) Missing documentation for "catalogAnalysisExtensionPoint".
-// src/extensions.d.ts:79:22 - (ae-undocumented) Missing documentation for "catalogModelExtensionPoint".
-// src/extensions.d.ts:83:1 - (ae-undocumented) Missing documentation for "CatalogPermissionRuleInput".
-// src/extensions.d.ts:87:1 - (ae-undocumented) Missing documentation for "CatalogPermissionExtensionPoint".
-// src/extensions.d.ts:88:5 - (ae-undocumented) Missing documentation for "addPermissions".
-// src/extensions.d.ts:89:5 - (ae-undocumented) Missing documentation for "addPermissionRules".
-// src/extensions.d.ts:94:22 - (ae-undocumented) Missing documentation for "catalogPermissionExtensionPoint".
 
 // (No @packageDocumentation comment for this package)
 ```

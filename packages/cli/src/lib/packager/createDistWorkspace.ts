@@ -103,7 +103,7 @@ type Options = {
    * workspace. This ensures correct workspace output at significant cost to
    * command performance.
    */
-  alwaysYarnPack?: boolean;
+  alwaysPack?: boolean;
 
   /**
    * If set to true, the TypeScript feature detection will be enabled, which
@@ -242,7 +242,7 @@ export async function createDistWorkspace(
   await moveToDistWorkspace(
     targetDir,
     targets,
-    Boolean(options.alwaysYarnPack),
+    Boolean(options.alwaysPack),
     Boolean(options.enableFeatureDetection),
   );
 
@@ -286,13 +286,13 @@ const FAST_PACK_SCRIPTS = [
 async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: PackageGraphNode[],
-  alwaysYarnPack: boolean,
+  alwaysPack: boolean,
   enableFeatureDetection: boolean,
 ): Promise<void> {
   const [fastPackPackages, slowPackPackages] = partition(
     localPackages,
     pkg =>
-      !alwaysYarnPack &&
+      !alwaysPack &&
       FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
   );
 

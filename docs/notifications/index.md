@@ -350,6 +350,31 @@ export const myPlugin = createBackendPlugin({
 });
 ```
 
+### User-specific notification settings
+
+The notifications plugin provides a way for users to manage their notification settings. To enable this, you must
+add the `UserNotificationSettingsCard` to your frontend.
+
+```tsx
+// App.tsx example
+<Route path="/settings" element={<UserSettingsPage />}>
+  <SettingsLayout.Route path="/advanced" title="Advanced">
+    <AdvancedSettings />
+  </SettingsLayout.Route>
+  <SettingsLayout.Route path="/notifications" title="Notifications">
+    <UserNotificationSettingsCard
+      originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
+    />
+  </SettingsLayout.Route>
+</Route>
+```
+
+![Notification Settings](notificationSettings.png)
+
+You can customize the origin names shown in the UI by passing an object where the keys are the origins and the values are the names you want to show in the UI.
+
+Each notification processor will receive its own column in the settings page, where the user can enable or disable notifications from that processor.
+
 ### External Services
 
 When the emitter of a notification is a Backstage backend plugin, it is mandatory to use the integration via `@backstage/plugin-notifications-node` as described above.

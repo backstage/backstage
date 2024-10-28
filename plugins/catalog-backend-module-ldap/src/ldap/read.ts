@@ -80,7 +80,10 @@ export async function defaultUserTransformer(
     entity.metadata.annotations![LDAP_UUID_ANNOTATION] = v;
   });
   mapStringAttr(entry, vendor, vendor.dnAttributeName, v => {
-    entity.metadata.annotations![LDAP_DN_ANNOTATION] = v;
+    entity.metadata.annotations![LDAP_DN_ANNOTATION] = getCaseSensitivityValue(
+      v,
+      vendor,
+    );
   });
   mapStringAttr(entry, vendor, map.displayName, v => {
     entity.spec.profile!.displayName = v;
@@ -122,6 +125,8 @@ export async function readLdapUsers(
       vendorConfig?.dnAttributeName ?? vendorDefaults.dnAttributeName,
     uuidAttributeName:
       vendorConfig?.uuidAttributeName ?? vendorDefaults.uuidAttributeName,
+    dnCaseSensitive:
+      vendorConfig?.dnCaseSensitive ?? vendorDefaults.dnCaseSensitive,
     decodeStringAttribute: vendorDefaults.decodeStringAttribute,
   };
   const transformer = opts?.transformer ?? defaultUserTransformer;
@@ -190,7 +195,10 @@ export async function defaultGroupTransformer(
     entity.metadata.annotations![LDAP_UUID_ANNOTATION] = v;
   });
   mapStringAttr(entry, vendor, vendor.dnAttributeName, v => {
-    entity.metadata.annotations![LDAP_DN_ANNOTATION] = v;
+    entity.metadata.annotations![LDAP_DN_ANNOTATION] = getCaseSensitivityValue(
+      v,
+      vendor,
+    );
   });
   mapStringAttr(entry, vendor, map.type, v => {
     entity.spec.type = v;
@@ -240,6 +248,8 @@ export async function readLdapGroups(
       vendorConfig?.dnAttributeName ?? vendorDefaults.dnAttributeName,
     uuidAttributeName:
       vendorConfig?.uuidAttributeName ?? vendorDefaults.uuidAttributeName,
+    dnCaseSensitive:
+      vendorConfig?.dnCaseSensitive ?? vendorDefaults.dnCaseSensitive,
     decodeStringAttribute: vendorDefaults.decodeStringAttribute,
   };
 
@@ -341,9 +351,23 @@ function mapReferencesAttr(
     const values = vendor.decodeStringAttribute(entry, attributeName);
     const dn = vendor.decodeStringAttribute(entry, vendor.dnAttributeName);
     if (values && dn && dn.length === 1) {
-      setter(dn[0], values);
+      if (vendor.dnCaseSensitive) {
+        setter(
+          dn[0].toLocaleLowerCase('en-US'),
+          values.map(v => v.toLocaleLowerCase('en-US')),
+        );
+      } else {
+        setter(dn[0], values);
+      }
     }
   }
+}
+
+/** Validates value exists and if required forced sensitivty value to lowercase */
+function getCaseSensitivityValue(value: string, vendor: LdapVendor) {
+  return value && vendor.dnCaseSensitive
+    ? value.toLocaleLowerCase('en-US')
+    : value;
 }
 
 // Inserts a number of values in a key-values mapping

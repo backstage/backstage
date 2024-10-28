@@ -117,17 +117,4 @@ export type EksClusterEntityTransformer = (
   cluster: Cluster,
   accountId: string,
 ) => Promise<Entity>;
-
-// Warnings were encountered during analysis:
-//
-// src/processors/AwsEKSClusterProcessor.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/AwsEKSClusterProcessor.d.ts:26:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/AwsEKSClusterProcessor.d.ts:27:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/processors/AwsOrganizationCloudAccountProcessor.d.ts:17:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/AwsOrganizationCloudAccountProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/AwsOrganizationCloudAccountProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/processors/AwsS3DiscoveryProcessor.d.ts:15:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/AwsS3DiscoveryProcessor.d.ts:16:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/providers/AwsS3EntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/AwsS3EntityProvider.d.ts:31:5 - (ae-undocumented) Missing documentation for "refresh".
 ```

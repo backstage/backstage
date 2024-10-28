@@ -1331,7 +1331,9 @@ export type SubvalueCellClassKey = 'value' | 'subvalue';
 // Warning: (ae-missing-release-tag) "SupportButton" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SupportButton(props: SupportButtonProps): React_2.JSX.Element;
+export function SupportButton(
+  props: SupportButtonProps,
+): React_2.JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "SupportButtonClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1578,188 +1580,9 @@ export type WarningPanelClassKey =
 
 // Warnings were encountered during analysis:
 //
-// src/components/AutoLogout/AutoLogout.d.ts:3:1 - (ae-undocumented) Missing documentation for "AutoLogoutProps".
-// src/components/Avatar/Avatar.d.ts:3:1 - (ae-undocumented) Missing documentation for "AvatarClassKey".
-// src/components/DependencyGraph/DefaultLabel.d.ts:4:1 - (ae-undocumented) Missing documentation for "DependencyGraphDefaultLabelClassKey".
-// src/components/DependencyGraph/DefaultNode.d.ts:4:1 - (ae-undocumented) Missing documentation for "DependencyGraphDefaultNodeClassKey".
-// src/components/DependencyGraph/Edge.d.ts:15:1 - (ae-undocumented) Missing documentation for "DependencyGraphEdgeClassKey".
-// src/components/DependencyGraph/Node.d.ts:5:1 - (ae-undocumented) Missing documentation for "DependencyGraphNodeClassKey".
 // src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
-// src/components/DependencyGraph/types.d.ts:143:9 - (ae-undocumented) Missing documentation for "LEFT".
-// src/components/DependencyGraph/types.d.ts:144:9 - (ae-undocumented) Missing documentation for "RIGHT".
-// src/components/DependencyGraph/types.d.ts:145:9 - (ae-undocumented) Missing documentation for "CENTER".
-// src/components/DismissableBanner/DismissableBanner.d.ts:3:1 - (ae-undocumented) Missing documentation for "DismissableBannerClassKey".
-// src/components/DismissableBanner/DismissableBanner.d.ts:8:1 - (ae-undocumented) Missing documentation for "DismissbleBannerClassKey".
-// src/components/DismissableBanner/DismissableBanner.d.ts:16:22 - (ae-undocumented) Missing documentation for "DismissableBanner".
-// src/components/EmptyState/EmptyState.d.ts:3:1 - (ae-undocumented) Missing documentation for "EmptyStateClassKey".
-// src/components/EmptyState/EmptyStateImage.d.ts:6:1 - (ae-undocumented) Missing documentation for "EmptyStateImageClassKey".
-// src/components/EmptyState/MissingAnnotationEmptyState.d.ts:10:1 - (ae-undocumented) Missing documentation for "MissingAnnotationEmptyState".
-// src/components/ErrorPanel/ErrorPanel.d.ts:3:1 - (ae-undocumented) Missing documentation for "ErrorPanelClassKey".
-// src/components/ErrorPanel/ErrorPanel.d.ts:5:1 - (ae-undocumented) Missing documentation for "ErrorPanelProps".
-// src/components/FavoriteToggle/FavoriteToggle.d.ts:6:1 - (ae-undocumented) Missing documentation for "FavoriteToggleIconClassKey".
-// src/components/FeatureDiscovery/FeatureCalloutCircular.d.ts:3:1 - (ae-undocumented) Missing documentation for "FeatureCalloutCircleClassKey".
-// src/components/HeaderIconLinkRow/HeaderIconLinkRow.d.ts:4:1 - (ae-undocumented) Missing documentation for "HeaderIconLinkRowClassKey".
-// src/components/HeaderIconLinkRow/IconLinkVertical.d.ts:2:1 - (ae-undocumented) Missing documentation for "IconLinkVerticalProps".
-// src/components/HeaderIconLinkRow/IconLinkVertical.d.ts:12:1 - (ae-undocumented) Missing documentation for "IconLinkVerticalClassKey".
-// src/components/HeaderIconLinkRow/IconLinkVertical.d.ts:14:1 - (ae-undocumented) Missing documentation for "IconLinkVertical".
-// src/components/HorizontalScrollGrid/HorizontalScrollGrid.d.ts:8:1 - (ae-undocumented) Missing documentation for "HorizontalScrollGridClassKey".
-// src/components/Lifecycle/Lifecycle.d.ts:7:1 - (ae-undocumented) Missing documentation for "LifecycleClassKey".
-// src/components/Lifecycle/Lifecycle.d.ts:8:1 - (ae-undocumented) Missing documentation for "Lifecycle".
-// src/components/Link/Link.d.ts:6:1 - (ae-undocumented) Missing documentation for "LinkClassKey".
-// src/components/Link/Link.d.ts:8:1 - (ae-undocumented) Missing documentation for "LinkProps".
-// src/components/LinkButton/LinkButton.d.ts:24:22 - (ae-undocumented) Missing documentation for "Button".
-// src/components/LinkButton/LinkButton.d.ts:29:1 - (ae-undocumented) Missing documentation for "ButtonProps".
-// src/components/MarkdownContent/MarkdownContent.d.ts:3:1 - (ae-undocumented) Missing documentation for "MarkdownContentClassKey".
-// src/components/OAuthRequestDialog/LoginRequestListItem.d.ts:3:1 - (ae-undocumented) Missing documentation for "LoginRequestListItemClassKey".
-// src/components/OAuthRequestDialog/OAuthRequestDialog.d.ts:2:1 - (ae-undocumented) Missing documentation for "OAuthRequestDialogClassKey".
-// src/components/OAuthRequestDialog/OAuthRequestDialog.d.ts:3:1 - (ae-undocumented) Missing documentation for "OAuthRequestDialog".
-// src/components/OverflowTooltip/OverflowTooltip.d.ts:9:1 - (ae-undocumented) Missing documentation for "OverflowTooltipClassKey".
-// src/components/OverflowTooltip/OverflowTooltip.d.ts:10:1 - (ae-undocumented) Missing documentation for "OverflowTooltip".
-// src/components/Progress/Progress.d.ts:3:1 - (ae-undocumented) Missing documentation for "Progress".
-// src/components/ProgressBars/Gauge.d.ts:4:1 - (ae-undocumented) Missing documentation for "GaugeClassKey".
-// src/components/ProgressBars/Gauge.d.ts:6:1 - (ae-undocumented) Missing documentation for "GaugeProps".
-// src/components/ProgressBars/Gauge.d.ts:19:1 - (ae-undocumented) Missing documentation for "GaugePropsGetColorOptions".
-// src/components/ProgressBars/Gauge.d.ts:26:1 - (ae-undocumented) Missing documentation for "GaugePropsGetColor".
-// src/components/ProgressBars/GaugeCard.d.ts:20:1 - (ae-undocumented) Missing documentation for "GaugeCardClassKey".
-// src/components/ProgressBars/LinearGauge.d.ts:11:1 - (ae-undocumented) Missing documentation for "LinearGauge".
-// src/components/ResponseErrorPanel/ResponseErrorPanel.d.ts:3:1 - (ae-undocumented) Missing documentation for "ResponseErrorPanelClassKey".
-// src/components/Select/Select.d.ts:3:1 - (ae-undocumented) Missing documentation for "SelectInputBaseClassKey".
-// src/components/Select/Select.d.ts:5:1 - (ae-undocumented) Missing documentation for "SelectClassKey".
-// src/components/Select/Select.d.ts:7:1 - (ae-undocumented) Missing documentation for "SelectItem".
-// src/components/Select/Select.d.ts:12:1 - (ae-undocumented) Missing documentation for "SelectedItems".
-// src/components/Select/Select.d.ts:27:1 - (ae-undocumented) Missing documentation for "SelectComponent".
-// src/components/Select/static/ClosedDropdown.d.ts:3:1 - (ae-undocumented) Missing documentation for "ClosedDropdownClassKey".
-// src/components/Select/static/OpenedDropdown.d.ts:2:1 - (ae-undocumented) Missing documentation for "OpenedDropdownClassKey".
-// src/components/SimpleStepper/SimpleStepper.d.ts:16:1 - (ae-undocumented) Missing documentation for "SimpleStepper".
-// src/components/SimpleStepper/SimpleStepperFooter.d.ts:3:1 - (ae-undocumented) Missing documentation for "SimpleStepperFooterClassKey".
-// src/components/SimpleStepper/SimpleStepperStep.d.ts:3:1 - (ae-undocumented) Missing documentation for "SimpleStepperStepClassKey".
-// src/components/SimpleStepper/SimpleStepperStep.d.ts:4:1 - (ae-undocumented) Missing documentation for "SimpleStepperStep".
-// src/components/Status/Status.d.ts:2:1 - (ae-undocumented) Missing documentation for "StatusClassKey".
-// src/components/Status/Status.d.ts:3:1 - (ae-undocumented) Missing documentation for "StatusOK".
-// src/components/Status/Status.d.ts:4:1 - (ae-undocumented) Missing documentation for "StatusWarning".
-// src/components/Status/Status.d.ts:5:1 - (ae-undocumented) Missing documentation for "StatusError".
-// src/components/Status/Status.d.ts:6:1 - (ae-undocumented) Missing documentation for "StatusPending".
-// src/components/Status/Status.d.ts:7:1 - (ae-undocumented) Missing documentation for "StatusRunning".
-// src/components/Status/Status.d.ts:8:1 - (ae-undocumented) Missing documentation for "StatusAborted".
-// src/components/StructuredMetadataTable/MetadataTable.d.ts:3:1 - (ae-undocumented) Missing documentation for "MetadataTableTitleCellClassKey".
-// src/components/StructuredMetadataTable/MetadataTable.d.ts:4:1 - (ae-undocumented) Missing documentation for "MetadataTableCellClassKey".
-// src/components/StructuredMetadataTable/MetadataTable.d.ts:5:1 - (ae-undocumented) Missing documentation for "MetadataTableListClassKey".
-// src/components/StructuredMetadataTable/MetadataTable.d.ts:6:1 - (ae-undocumented) Missing documentation for "MetadataTableListItemClassKey".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:2:1 - (ae-undocumented) Missing documentation for "StructuredMetadataTableListClassKey".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:3:1 - (ae-undocumented) Missing documentation for "StructuredMetadataTableNestedListClassKey".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:5:1 - (ae-undocumented) Missing documentation for "StructuredMetadataTableProps".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:6:5 - (ae-undocumented) Missing documentation for "metadata".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:9:5 - (ae-undocumented) Missing documentation for "dense".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:10:5 - (ae-undocumented) Missing documentation for "options".
-// src/components/StructuredMetadataTable/StructuredMetadataTable.d.ts:21:1 - (ae-undocumented) Missing documentation for "StructuredMetadataTable".
-// src/components/SupportButton/SupportButton.d.ts:8:1 - (ae-undocumented) Missing documentation for "SupportButtonClassKey".
-// src/components/SupportButton/SupportButton.d.ts:9:1 - (ae-undocumented) Missing documentation for "SupportButton".
-// src/components/TabbedLayout/RoutedTabs.d.ts:8:1 - (ae-undocumented) Missing documentation for "RoutedTabs".
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
-// src/components/TabbedLayout/TabbedLayout.d.ts:29:1 - (ae-undocumented) Missing documentation for "TabbedLayout".
-// src/components/TabbedLayout/TabbedLayout.d.ts:30:9 - (ae-undocumented) Missing documentation for "Route".
-// src/components/Table/Filters.d.ts:3:1 - (ae-undocumented) Missing documentation for "TableFiltersClassKey".
-// src/components/Table/SubvalueCell.d.ts:2:1 - (ae-undocumented) Missing documentation for "SubvalueCellClassKey".
-// src/components/Table/SubvalueCell.d.ts:7:1 - (ae-undocumented) Missing documentation for "SubvalueCell".
-// src/components/Table/Table.d.ts:4:1 - (ae-undocumented) Missing documentation for "TableHeaderClassKey".
-// src/components/Table/Table.d.ts:5:1 - (ae-undocumented) Missing documentation for "TableToolbarClassKey".
-// src/components/Table/Table.d.ts:7:1 - (ae-undocumented) Missing documentation for "FiltersContainerClassKey".
-// src/components/Table/Table.d.ts:8:1 - (ae-undocumented) Missing documentation for "TableClassKey".
-// src/components/Table/Table.d.ts:9:1 - (ae-undocumented) Missing documentation for "TableColumn".
-// src/components/Table/Table.d.ts:10:5 - (ae-undocumented) Missing documentation for "highlight".
-// src/components/Table/Table.d.ts:11:5 - (ae-undocumented) Missing documentation for "width".
-// src/components/Table/Table.d.ts:13:1 - (ae-undocumented) Missing documentation for "TableFilter".
-// src/components/Table/Table.d.ts:17:1 - (ae-undocumented) Missing documentation for "TableState".
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
-// src/components/Table/Table.d.ts:22:1 - (ae-undocumented) Missing documentation for "TableProps".
-// src/components/Table/Table.d.ts:23:5 - (ae-undocumented) Missing documentation for "columns".
-// src/components/Table/Table.d.ts:24:5 - (ae-undocumented) Missing documentation for "subtitle".
-// src/components/Table/Table.d.ts:25:5 - (ae-undocumented) Missing documentation for "filters".
-// src/components/Table/Table.d.ts:26:5 - (ae-undocumented) Missing documentation for "initialState".
-// src/components/Table/Table.d.ts:27:5 - (ae-undocumented) Missing documentation for "emptyContent".
-// src/components/Table/Table.d.ts:28:5 - (ae-undocumented) Missing documentation for "isLoading".
-// src/components/Table/Table.d.ts:29:5 - (ae-undocumented) Missing documentation for "onStateChange".
-// src/components/Table/Table.d.ts:31:1 - (ae-undocumented) Missing documentation for "TableOptions".
-// src/components/Table/Table.d.ts:44:1 - (ae-undocumented) Missing documentation for "Table".
-// src/components/Table/Table.d.ts:45:1 - (ae-undocumented) Missing documentation for "Table".
-// src/components/Table/Table.d.ts:46:9 - (ae-undocumented) Missing documentation for "icons".
-// src/components/TrendLine/TrendLine.d.ts:3:1 - (ae-undocumented) Missing documentation for "TrendLine".
-// src/components/WarningPanel/WarningPanel.d.ts:2:1 - (ae-undocumented) Missing documentation for "WarningPanelClassKey".
-// src/hooks/useQueryParamState.d.ts:2:1 - (ae-undocumented) Missing documentation for "useQueryParamState".
-// src/hooks/useSupportConfig.d.ts:1:1 - (ae-undocumented) Missing documentation for "SupportItemLink".
-// src/hooks/useSupportConfig.d.ts:5:1 - (ae-undocumented) Missing documentation for "SupportItem".
-// src/hooks/useSupportConfig.d.ts:10:1 - (ae-undocumented) Missing documentation for "SupportConfig".
-// src/hooks/useSupportConfig.d.ts:14:1 - (ae-undocumented) Missing documentation for "useSupportConfig".
-// src/icons/icons.d.ts:27:1 - (ae-undocumented) Missing documentation for "CatalogIcon".
-// src/icons/icons.d.ts:29:1 - (ae-undocumented) Missing documentation for "ChatIcon".
-// src/icons/icons.d.ts:31:1 - (ae-undocumented) Missing documentation for "DashboardIcon".
-// src/icons/icons.d.ts:33:1 - (ae-undocumented) Missing documentation for "DocsIcon".
-// src/icons/icons.d.ts:35:1 - (ae-undocumented) Missing documentation for "EmailIcon".
-// src/icons/icons.d.ts:37:1 - (ae-undocumented) Missing documentation for "GitHubIcon".
-// src/icons/icons.d.ts:39:1 - (ae-undocumented) Missing documentation for "GroupIcon".
-// src/icons/icons.d.ts:41:1 - (ae-undocumented) Missing documentation for "HelpIcon".
-// src/icons/icons.d.ts:43:1 - (ae-undocumented) Missing documentation for "UserIcon".
-// src/icons/icons.d.ts:45:1 - (ae-undocumented) Missing documentation for "WarningIcon".
-// src/icons/icons.d.ts:47:1 - (ae-undocumented) Missing documentation for "StarIcon".
-// src/icons/icons.d.ts:49:1 - (ae-undocumented) Missing documentation for "UnstarredIcon".
-// src/layout/BottomLink/BottomLink.d.ts:3:1 - (ae-undocumented) Missing documentation for "BottomLinkClassKey".
-// src/layout/BottomLink/BottomLink.d.ts:5:1 - (ae-undocumented) Missing documentation for "BottomLinkProps".
-// src/layout/Breadcrumbs/Breadcrumbs.d.ts:5:1 - (ae-undocumented) Missing documentation for "BreadcrumbsClickableTextClassKey".
-// src/layout/Breadcrumbs/Breadcrumbs.d.ts:7:1 - (ae-undocumented) Missing documentation for "BreadcrumbsStyledBoxClassKey".
-// src/layout/Breadcrumbs/Breadcrumbs.d.ts:9:1 - (ae-undocumented) Missing documentation for "BreadcrumbsCurrentPageClassKey".
-// src/layout/Content/Content.d.ts:3:1 - (ae-undocumented) Missing documentation for "BackstageContentClassKey".
-// src/layout/ContentHeader/ContentHeader.d.ts:6:1 - (ae-undocumented) Missing documentation for "ContentHeaderClassKey".
-// src/layout/ErrorBoundary/ErrorBoundary.d.ts:7:1 - (ae-undocumented) Missing documentation for "ErrorBoundaryProps".
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
-// src/layout/ErrorBoundary/ErrorBoundary.d.ts:16:22 - (ae-undocumented) Missing documentation for "ErrorBoundary".
-// src/layout/ErrorPage/ErrorPage.d.ts:10:1 - (ae-undocumented) Missing documentation for "ErrorPageClassKey".
-// src/layout/ErrorPage/MicDrop.d.ts:2:1 - (ae-undocumented) Missing documentation for "MicDropClassKey".
-// src/layout/ErrorPage/StackDetails.d.ts:6:1 - (ae-undocumented) Missing documentation for "StackDetailsClassKey".
-// src/layout/Header/Header.d.ts:3:1 - (ae-undocumented) Missing documentation for "HeaderClassKey".
-// src/layout/HeaderActionMenu/HeaderActionMenu.d.ts:6:1 - (ae-undocumented) Missing documentation for "HeaderActionMenuItem".
-// src/layout/HeaderActionMenu/HeaderActionMenu.d.ts:16:1 - (ae-undocumented) Missing documentation for "HeaderActionMenuProps".
-// src/layout/HeaderActionMenu/HeaderActionMenu.d.ts:22:1 - (ae-undocumented) Missing documentation for "HeaderActionMenu".
-// src/layout/HeaderLabel/HeaderLabel.d.ts:3:1 - (ae-undocumented) Missing documentation for "HeaderLabelClassKey".
-// src/layout/HeaderTabs/HeaderTabs.d.ts:4:1 - (ae-undocumented) Missing documentation for "HeaderTabsClassKey".
-// src/layout/HeaderTabs/HeaderTabs.d.ts:5:1 - (ae-undocumented) Missing documentation for "Tab".
-// src/layout/InfoCard/InfoCard.d.ts:6:1 - (ae-undocumented) Missing documentation for "InfoCardClassKey".
-// src/layout/InfoCard/InfoCard.d.ts:8:1 - (ae-undocumented) Missing documentation for "CardActionsTopRightClassKey".
-// src/layout/InfoCard/InfoCard.d.ts:10:1 - (ae-undocumented) Missing documentation for "InfoCardVariants".
-// src/layout/ItemCard/ItemCardGrid.d.ts:4:1 - (ae-undocumented) Missing documentation for "ItemCardGridClassKey".
-// src/layout/ItemCard/ItemCardGrid.d.ts:7:1 - (ae-undocumented) Missing documentation for "ItemCardGridProps".
-// src/layout/ItemCard/ItemCardHeader.d.ts:4:1 - (ae-undocumented) Missing documentation for "ItemCardHeaderClassKey".
-// src/layout/ItemCard/ItemCardHeader.d.ts:7:1 - (ae-undocumented) Missing documentation for "ItemCardHeaderProps".
-// src/layout/Page/Page.d.ts:2:1 - (ae-undocumented) Missing documentation for "PageClassKey".
-// src/layout/Page/Page.d.ts:7:1 - (ae-undocumented) Missing documentation for "Page".
-// src/layout/Page/PageWithHeader.d.ts:6:1 - (ae-undocumented) Missing documentation for "PageWithHeader".
-// src/layout/Sidebar/Bar.d.ts:4:1 - (ae-undocumented) Missing documentation for "SidebarClassKey".
-// src/layout/Sidebar/Bar.d.ts:6:1 - (ae-undocumented) Missing documentation for "SidebarProps".
-// src/layout/Sidebar/Items.d.ts:6:1 - (ae-undocumented) Missing documentation for "SidebarItemClassKey".
-// src/layout/Sidebar/Items.d.ts:53:1 - (ae-undocumented) Missing documentation for "SidebarSearchField".
-// src/layout/Sidebar/Items.d.ts:54:1 - (ae-undocumented) Missing documentation for "SidebarSpaceClassKey".
-// src/layout/Sidebar/Items.d.ts:55:22 - (ae-undocumented) Missing documentation for "SidebarSpace".
-// src/layout/Sidebar/Items.d.ts:56:1 - (ae-undocumented) Missing documentation for "SidebarSpacerClassKey".
-// src/layout/Sidebar/Items.d.ts:57:22 - (ae-undocumented) Missing documentation for "SidebarSpacer".
-// src/layout/Sidebar/Items.d.ts:58:1 - (ae-undocumented) Missing documentation for "SidebarDividerClassKey".
-// src/layout/Sidebar/Items.d.ts:59:22 - (ae-undocumented) Missing documentation for "SidebarDivider".
-// src/layout/Sidebar/Items.d.ts:60:22 - (ae-undocumented) Missing documentation for "SidebarScrollWrapper".
-// src/layout/Sidebar/Page.d.ts:2:1 - (ae-undocumented) Missing documentation for "SidebarPageClassKey".
-// src/layout/Sidebar/Page.d.ts:11:1 - (ae-undocumented) Missing documentation for "SidebarPage".
-// src/layout/Sidebar/SidebarSubmenu.d.ts:3:1 - (ae-undocumented) Missing documentation for "SidebarSubmenuClassKey".
-// src/layout/Sidebar/SidebarSubmenuItem.d.ts:4:1 - (ae-undocumented) Missing documentation for "SidebarSubmenuItemClassKey".
-// src/layout/Sidebar/config.d.ts:3:1 - (ae-undocumented) Missing documentation for "SidebarOptions".
-// src/layout/Sidebar/config.d.ts:8:1 - (ae-undocumented) Missing documentation for "SubmenuOptions".
-// src/layout/Sidebar/config.d.ts:12:22 - (ae-undocumented) Missing documentation for "sidebarConfig".
-// src/layout/Sidebar/config.d.ts:52:22 - (ae-undocumented) Missing documentation for "SIDEBAR_INTRO_LOCAL_STORAGE".
-// src/layout/SignInPage/SignInPage.d.ts:26:1 - (ae-undocumented) Missing documentation for "SignInPage".
-// src/layout/SignInPage/customProvider.d.ts:3:1 - (ae-undocumented) Missing documentation for "CustomProviderClassKey".
-// src/layout/SignInPage/styles.d.ts:2:1 - (ae-undocumented) Missing documentation for "SignInPageClassKey".
-// src/layout/SignInPage/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "SignInProviderConfig".
-// src/layout/SignInPage/types.d.ts:10:1 - (ae-undocumented) Missing documentation for "IdentityProviders".
-// src/layout/TabbedCard/TabbedCard.d.ts:5:1 - (ae-undocumented) Missing documentation for "TabbedCardClassKey".
-// src/layout/TabbedCard/TabbedCard.d.ts:7:1 - (ae-undocumented) Missing documentation for "BoldHeaderClassKey".
-// src/layout/TabbedCard/TabbedCard.d.ts:18:1 - (ae-undocumented) Missing documentation for "TabbedCard".
-// src/layout/TabbedCard/TabbedCard.d.ts:20:1 - (ae-undocumented) Missing documentation for "CardTabClassKey".
-// src/overridableComponents.d.ts:83:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
 ```

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration-react",
-  "version": "1.2.0-next.2",
+  "version": "1.2.0",
   "description": "Frontend package for managing integrations towards external systems",
   "backstage": {
     "role": "web-library"

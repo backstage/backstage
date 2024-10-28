@@ -28,22 +28,38 @@ import Tab from '@material-ui/core/Tab';
 import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  tabs: {
+    marginBottom: theme.spacing(1),
+  },
+  list: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+}));
+
+/**
+ * Props for the StarredEntities component
+ *
+ * @public
+ */
+export type StarredEntitiesProps = {
+  noStarredEntitiesMessage?: React.ReactNode | undefined;
+  groupByKind?: boolean;
+};
 
 /**
  * A component to display a list of starred entities for the user.
  *
  * @public
  */
-
-export type StarredEntitiesProps = {
-  noStarredEntitiesMessage?: React.ReactNode | undefined;
-  groupByKind?: boolean;
-};
-
 export const Content = ({
   noStarredEntitiesMessage,
   groupByKind,
 }: StarredEntitiesProps) => {
+  const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [activeTab, setActiveTab] = React.useState(0);
@@ -57,12 +73,7 @@ export const Content = ({
     return (
       await catalogApi.getEntitiesByRefs({
         entityRefs: [...starredEntities],
-        fields: [
-          'kind',
-          'metadata.namespace',
-          'metadata.name',
-          'metadata.title',
-        ],
+        fields: ['kind', 'metadata.namespace', 'metadata.name', 'spec.type'],
       })
     ).items.filter((e): e is Entity => !!e);
   }, [catalogApi, starredEntities]);
@@ -95,7 +106,7 @@ export const Content = ({
   ) : (
     <div>
       {!groupByKind && (
-        <List>
+        <List className={classes.list}>
           {entities.value
             ?.sort((a, b) =>
               (a.metadata.title ?? a.metadata.name).localeCompare(
@@ -107,6 +118,7 @@ export const Content = ({
                 key={stringifyEntityRef(entity)}
                 entity={entity}
                 onToggleStarredEntity={toggleStarredEntity}
+                showKind
               />
             ))}
         </List>
@@ -114,6 +126,7 @@ export const Content = ({
 
       {groupByKind && (
         <Tabs
+          className={classes.tabs}
           value={activeTab}
           onChange={(_, newValue) => setActiveTab(newValue)}
           variant="scrollable"
@@ -129,7 +142,7 @@ export const Content = ({
       {groupByKind &&
         groupByKindEntries.map(([kind, entitiesByKind], index) => (
           <div key={kind} hidden={groupByKind && activeTab !== index}>
-            <List>
+            <List className={classes.list}>
               {entitiesByKind
                 ?.sort((a, b) =>
                   (a.metadata.title ?? a.metadata.name).localeCompare(
@@ -141,6 +154,7 @@ export const Content = ({
                     key={stringifyEntityRef(entity)}
                     entity={entity}
                     onToggleStarredEntity={toggleStarredEntity}
+                    showKind={false}
                   />
                 ))}
             </List>

@@ -1,5 +1,71 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- 8593dfa: Improve the way alpha packages are supported when loading dynamic backend plugins.
+  The `ScannedPluginPackage` descriptor of dynamic backend plugins loaded from their alpha `package.json` now contain both the main package manifest and the alpha manifest. Previously it used to contain only the content of the alpha `package.json`, which is nearly empty.
+  This will make it easier to use or display metadata of loaded dynamic backend plugins, which is contained in the main manifest.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/plugin-events-backend@0.3.15-next.0
+  - @backstage/plugin-auth-node@0.5.4-next.0
+  - @backstage/backend-defaults@0.5.3-next.0
+  - @backstage/backend-app-api@1.0.2-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.9
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.27-next.0
+  - @backstage/plugin-catalog-backend@1.27.2-next.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.0
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.5-next.0
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.4.2
+
+### Patch Changes
+
+- d18d494: Enhance and simplify the activation of the dynamic plugins feature:
+
+  - The dynamic plugins service (which implements the `DynamicPluginsProvider`) is restored, since it is required for plugins to depend on it in order to get the details of loaded dynamic plugins (possibly with loading errors to be surfaced in some UI).
+  - A new all-in-one feature loader (`dynamicPluginsFeatureLoader`) is provided that allows a 1-liner activation of both the dynamic features and additional services or plugins required to have the dynamic plugins work correctly with dynamic plugins config schemas. Previous service factories or feature loaders are deprecated.
+
+- e6c0550: Enhance the API of the `DynamicPluginProvider` (available as a service) to:
+
+  - expose the new `getScannedPackage()` method that returns the `ScannedPluginPackage` from which a given plugin has been loaded,
+  - add an optional `includeFailed` argument in the plugins list retrieval methods, to include the plugins that could be successfully loaded (`false` by default).
+
+- 4c89e47: Allow passing an async module loader in the `DynamicPluginsFeatureLoaderOptions`.
+- 094eaa3: Remove references to in-repo backend-common
+- 2f88f88: Updated backend installation instructions.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/cli-node@0.2.9
+  - @backstage/backend-app-api@1.0.1
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-search-backend-node@1.3.3
+  - @backstage/plugin-catalog-backend@1.27.0
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/plugin-events-backend@0.3.13
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.26
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+
 ## 0.4.2-next.2
 
 ### Patch Changes

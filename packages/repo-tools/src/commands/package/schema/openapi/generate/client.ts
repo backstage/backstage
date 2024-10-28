@@ -30,6 +30,7 @@ import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers'
 async function generate(
   outputDirectory: string,
   clientAdditionalProperties?: string,
+  abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
@@ -69,6 +70,7 @@ async function generate(
       additionalProperties,
     ],
     {
+      signal: abortSignal?.signal,
       maxBuffer: Number.MAX_VALUE,
       cwd: resolvePackagePath('@backstage/repo-tools'),
       env: {
@@ -79,11 +81,15 @@ async function generate(
 
   await exec(
     `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
+    [],
+    { signal: abortSignal?.signal },
   );
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`);
+    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
+      signal: abortSignal?.signal,
+    });
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
@@ -97,17 +103,29 @@ async function generate(
 export async function command(
   outputPackage: string,
   clientAdditionalProperties?: string,
+  {
+    abortSignal,
+    isWatch = false,
+  }: { abortSignal?: AbortController; isWatch?: boolean } = {},
 ): Promise<void> {
   try {
-    await generate(outputPackage, clientAdditionalProperties);
+    await generate(outputPackage, clientAdditionalProperties, abortSignal);
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
     );
   } catch (err) {
-    console.log();
-    console.log(chalk.red(`Client generation failed:`));
-    console.log(err);
-
-    process.exit(1);
+    if (err.name === 'AbortError') {
+      console.debug('Server generation aborted.');
+      return;
+    }
+    if (isWatch) {
+      console.log(chalk.red(`Client generation failed:`));
+      console.group();
+      console.log(chalk.red(err.message));
+      console.groupEnd();
+    } else {
+      console.log(chalk.red(`Client generation failed.`));
+      console.log(chalk.red(err.message));
+    }
   }
 }

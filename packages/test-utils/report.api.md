@@ -403,33 +403,4 @@ export function wrapInTestApp(
   Component: ComponentType | ReactNode,
   options?: TestAppOptions,
 ): ReactElement;
-
-// Warnings were encountered during analysis:
-//
-// src/deprecated.d.ts:5:1 - (ae-undocumented) Missing documentation for "setupRequestMockHandlers".
-// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "captureEvent".
-// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:12:5 - (ae-undocumented) Missing documentation for "getEvents".
-// src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:28:5 - (ae-undocumented) Missing documentation for "post".
-// src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:29:5 - (ae-undocumented) Missing documentation for "error$".
-// src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:33:5 - (ae-undocumented) Missing documentation for "getErrors".
-// src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:34:5 - (ae-undocumented) Missing documentation for "waitForError".
-// src/testUtils/apis/PermissionApi/MockPermissionApi.d.ts:14:5 - (ae-undocumented) Missing documentation for "authorize".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:21:5 - (ae-undocumented) Missing documentation for "create".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:22:5 - (ae-undocumented) Missing documentation for "forBucket".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:23:5 - (ae-undocumented) Missing documentation for "snapshot".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:24:5 - (ae-undocumented) Missing documentation for "set".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:25:5 - (ae-undocumented) Missing documentation for "remove".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:26:5 - (ae-undocumented) Missing documentation for "observe$".
-// src/testUtils/apis/mockApis.d.ts:58:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:59:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:125:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:128:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:150:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:158:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:177:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:180:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:197:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:200:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:215:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:216:15 - (ae-undocumented) Missing documentation for "mock".
 ```

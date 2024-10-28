@@ -1,5 +1,30 @@
 # @backstage/app-defaults
 
+## 1.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/theme@0.6.0
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.5.12
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 46b5a20: Added `externalLink` to icon defaults
+- 8c40e55: Updated the `bitbucket-server-auth` default API to set its environment based on the `auth.environment` config option instead of being hardcoded to `development`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/core-app-api@1.15.1
+  - @backstage/theme@0.6.0
+
 ## 1.5.12-next.2
 
 ### Patch Changes

@@ -32,9 +32,4 @@ export type OAuth2ProxyResult<JWTPayload = {}> = {
   headers: IncomingHttpHeaders;
   getHeader(name: string): string | undefined;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:10:22 - (ae-undocumented) Missing documentation for "oauth2ProxyAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleOauth2ProxyProvider".
 ```

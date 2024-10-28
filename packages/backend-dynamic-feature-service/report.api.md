@@ -288,81 +288,12 @@ export type ScannedPluginManifest = BackstagePackageJson &
 // @public (undocumented)
 export interface ScannedPluginPackage {
   // (undocumented)
+  alphaManifest?: BackstagePackageJson;
+  // (undocumented)
   location: URL;
   // (undocumented)
   manifest: ScannedPluginManifest;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/features/features.d.ts:7:1 - (ae-undocumented) Missing documentation for "DynamicPluginsFeatureLoaderOptions".
-// src/loader/types.d.ts:4:1 - (ae-undocumented) Missing documentation for "ModuleLoader".
-// src/loader/types.d.ts:5:5 - (ae-undocumented) Missing documentation for "bootstrap".
-// src/loader/types.d.ts:6:5 - (ae-undocumented) Missing documentation for "load".
-// src/manager/plugin-manager.d.ts:10:1 - (ae-undocumented) Missing documentation for "DynamicPluginManagerOptions".
-// src/manager/plugin-manager.d.ts:11:5 - (ae-undocumented) Missing documentation for "config".
-// src/manager/plugin-manager.d.ts:12:5 - (ae-undocumented) Missing documentation for "logger".
-// src/manager/plugin-manager.d.ts:13:5 - (ae-undocumented) Missing documentation for "preferAlpha".
-// src/manager/plugin-manager.d.ts:14:5 - (ae-undocumented) Missing documentation for "moduleLoader".
-// src/manager/plugin-manager.d.ts:19:1 - (ae-undocumented) Missing documentation for "DynamicPluginManager".
-// src/manager/plugin-manager.d.ts:23:5 - (ae-undocumented) Missing documentation for "create".
-// src/manager/plugin-manager.d.ts:27:5 - (ae-undocumented) Missing documentation for "availablePackages".
-// src/manager/plugin-manager.d.ts:28:5 - (ae-undocumented) Missing documentation for "addBackendPlugin".
-// src/manager/plugin-manager.d.ts:31:5 - (ae-undocumented) Missing documentation for "backendPlugins".
-// src/manager/plugin-manager.d.ts:34:5 - (ae-undocumented) Missing documentation for "frontendPlugins".
-// src/manager/plugin-manager.d.ts:37:5 - (ae-undocumented) Missing documentation for "plugins".
-// src/manager/plugin-manager.d.ts:40:5 - (ae-undocumented) Missing documentation for "getScannedPackage".
-// src/manager/plugin-manager.d.ts:45:22 - (ae-undocumented) Missing documentation for "dynamicPluginsServiceRef".
-// src/manager/plugin-manager.d.ts:49:1 - (ae-undocumented) Missing documentation for "DynamicPluginsFactoryOptions".
-// src/manager/plugin-manager.d.ts:50:5 - (ae-undocumented) Missing documentation for "moduleLoader".
-// src/manager/plugin-manager.d.ts:56:22 - (ae-undocumented) Missing documentation for "dynamicPluginsServiceFactoryWithOptions".
-// src/manager/plugin-manager.d.ts:61:22 - (ae-undocumented) Missing documentation for "dynamicPluginsServiceFactory".
-// src/manager/plugin-manager.d.ts:66:22 - (ae-undocumented) Missing documentation for "dynamicPluginsFeatureDiscoveryServiceFactory".
-// src/manager/plugin-manager.d.ts:71:22 - (ae-undocumented) Missing documentation for "dynamicPluginsFeatureDiscoveryLoader".
-// src/manager/types.d.ts:28:1 - (ae-undocumented) Missing documentation for "LegacyPluginEnvironment".
-// src/manager/types.d.ts:46:1 - (ae-undocumented) Missing documentation for "DynamicPluginProvider".
-// src/manager/types.d.ts:47:5 - (ae-undocumented) Missing documentation for "plugins".
-// src/manager/types.d.ts:50:5 - (ae-undocumented) Missing documentation for "getScannedPackage".
-// src/manager/types.d.ts:55:1 - (ae-undocumented) Missing documentation for "BackendPluginProvider".
-// src/manager/types.d.ts:56:5 - (ae-undocumented) Missing documentation for "backendPlugins".
-// src/manager/types.d.ts:63:1 - (ae-undocumented) Missing documentation for "FrontendPluginProvider".
-// src/manager/types.d.ts:64:5 - (ae-undocumented) Missing documentation for "frontendPlugins".
-// src/manager/types.d.ts:71:1 - (ae-undocumented) Missing documentation for "BaseDynamicPlugin".
-// src/manager/types.d.ts:72:5 - (ae-undocumented) Missing documentation for "name".
-// src/manager/types.d.ts:73:5 - (ae-undocumented) Missing documentation for "version".
-// src/manager/types.d.ts:74:5 - (ae-undocumented) Missing documentation for "role".
-// src/manager/types.d.ts:75:5 - (ae-undocumented) Missing documentation for "platform".
-// src/manager/types.d.ts:76:5 - (ae-undocumented) Missing documentation for "failure".
-// src/manager/types.d.ts:81:1 - (ae-undocumented) Missing documentation for "DynamicPlugin".
-// src/manager/types.d.ts:85:1 - (ae-undocumented) Missing documentation for "FrontendDynamicPlugin".
-// src/manager/types.d.ts:86:5 - (ae-undocumented) Missing documentation for "platform".
-// src/manager/types.d.ts:91:1 - (ae-undocumented) Missing documentation for "BackendDynamicPlugin".
-// src/manager/types.d.ts:92:5 - (ae-undocumented) Missing documentation for "platform".
-// src/manager/types.d.ts:93:5 - (ae-undocumented) Missing documentation for "installer".
-// src/manager/types.d.ts:98:1 - (ae-undocumented) Missing documentation for "BackendDynamicPluginInstaller".
-// src/manager/types.d.ts:102:1 - (ae-undocumented) Missing documentation for "NewBackendPluginInstaller".
-// src/manager/types.d.ts:103:5 - (ae-undocumented) Missing documentation for "kind".
-// src/manager/types.d.ts:104:5 - (ae-undocumented) Missing documentation for "install".
-// src/manager/types.d.ts:117:1 - (ae-undocumented) Missing documentation for "LegacyBackendPluginInstaller".
-// src/manager/types.d.ts:118:5 - (ae-undocumented) Missing documentation for "kind".
-// src/manager/types.d.ts:119:5 - (ae-undocumented) Missing documentation for "router".
-// src/manager/types.d.ts:123:5 - (ae-undocumented) Missing documentation for "catalog".
-// src/manager/types.d.ts:124:5 - (ae-undocumented) Missing documentation for "scaffolder".
-// src/manager/types.d.ts:125:5 - (ae-undocumented) Missing documentation for "search".
-// src/manager/types.d.ts:126:5 - (ae-undocumented) Missing documentation for "events".
-// src/manager/types.d.ts:127:5 - (ae-undocumented) Missing documentation for "permissions".
-// src/manager/types.d.ts:134:1 - (ae-undocumented) Missing documentation for "isBackendDynamicPluginInstaller".
-// src/scanner/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "ScannedPluginPackage".
-// src/scanner/types.d.ts:6:5 - (ae-undocumented) Missing documentation for "location".
-// src/scanner/types.d.ts:7:5 - (ae-undocumented) Missing documentation for "manifest".
-// src/scanner/types.d.ts:12:1 - (ae-undocumented) Missing documentation for "ScannedPluginManifest".
-// src/schemas/frontend.d.ts:5:22 - (ae-undocumented) Missing documentation for "dynamicPluginsFrontendSchemas".
-// src/schemas/rootLogger.d.ts:5:1 - (ae-undocumented) Missing documentation for "DynamicPluginsRootLoggerFactoryOptions".
-// src/schemas/rootLogger.d.ts:10:22 - (ae-undocumented) Missing documentation for "dynamicPluginsRootLoggerServiceFactory".
-// src/schemas/schemas.d.ts:7:1 - (ae-undocumented) Missing documentation for "DynamicPluginsSchemasService".
-// src/schemas/schemas.d.ts:8:5 - (ae-undocumented) Missing documentation for "addDynamicPluginsSchemas".
-// src/schemas/schemas.d.ts:21:1 - (ae-undocumented) Missing documentation for "DynamicPluginsSchemasOptions".
-// src/schemas/schemas.d.ts:37:22 - (ae-undocumented) Missing documentation for "dynamicPluginsSchemasServiceFactory".
 
 // (No @packageDocumentation comment for this package)
 ```
