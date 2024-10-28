@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { V1ObjectMeta } from '@kubernetes/client-node/dist/gen/model/v1ObjectMeta';
 import {
+  V1ObjectMeta,
   V2HorizontalPodAutoscaler,
   V1Pod,
   V1ReplicaSet,
