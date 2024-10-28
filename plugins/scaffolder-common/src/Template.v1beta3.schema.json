@@ -174,16 +174,19 @@
               }
             },
             "EXPERIMENTAL_formDecorators": {
-              "type": "object",
+              "type": "array",
               "description": "A list of decorators and their inputs that the form should trigger before submitting the job",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "The form hook ID"
-                },
-                "input": {
-                  "type": "object",
-                  "description": "A object describing the inputs to the form hook."
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The form hook ID"
+                  },
+                  "input": {
+                    "type": "object",
+                    "description": "A object describing the inputs to the form hook."
+                  }
                 }
               }
             },

@@ -52,7 +52,6 @@ describe('useFormDecorators', () => {
             [
               formDecoratorsApiRef,
               DefaultScaffolderFormDecoratorsApi.create({
-                // @ts-expect-error - todo
                 decorators: [mockDecorator],
               }),
             ],
@@ -90,7 +89,6 @@ describe('useFormDecorators', () => {
             [
               formDecoratorsApiRef,
               DefaultScaffolderFormDecoratorsApi.create({
-                // @ts-expect-error - todo
                 decorators: [mockDecorator],
               }),
             ],

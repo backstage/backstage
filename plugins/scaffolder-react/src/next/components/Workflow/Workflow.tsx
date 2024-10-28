@@ -95,11 +95,11 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     async (originalFormState: Record<string, JsonValue>) => {
       let formState: Record<string, JsonValue> = { ...originalFormState };
 
-      if (manifest?.EXPERIMENTAL_formDecorators && formDecorators?.size) {
+      if (manifest?.EXPERIMENTAL_formDecorators) {
         // for each of the form decorators, go and call the decorator with the context
         await Promise.all(
           manifest.EXPERIMENTAL_formDecorators.map(async decorator => {
-            const formDecorator = formDecorators.get(decorator.id);
+            const formDecorator = formDecorators?.get(decorator.id);
             if (!formDecorator) {
               // eslint-disable-next-line no-console
               console.error('Failed to find form decorator', decorator.id);

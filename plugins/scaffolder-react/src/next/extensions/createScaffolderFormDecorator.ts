@@ -52,6 +52,12 @@ export type ScaffolderFormDecorator<
   ) => Promise<void>;
 };
 
+/** @alpha */
+export type AnyScaffolderFormDecorator = ScaffolderFormDecorator<
+  { [key in string]: (zImpl: typeof z) => z.ZodType },
+  { [key in string]: AnyApiRef },
+  any
+>;
 /**
  * Method for creating decorators which can be used to collect
  * secrets from the user before submitting to the backend.

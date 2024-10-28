@@ -16,7 +16,7 @@
 
 import {
   FormFieldExtensionData,
-  ScaffolderFormDecorator,
+  AnyScaffolderFormDecorator,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
 export interface ScaffolderFormFieldsApi {
@@ -24,5 +24,5 @@ export interface ScaffolderFormFieldsApi {
 }
 
 export interface ScaffolderFormDecoratorsApi {
-  getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
+  getFormDecorators(): Promise<AnyScaffolderFormDecorator[]>;
 }
