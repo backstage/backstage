@@ -284,6 +284,12 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
 export const GroupedResponsesContext: React_2.Context<GroupedResponses>;
 
 // @public (undocumented)
+export class HeadlampClusterLinksFormatter implements ClusterLinksFormatter {
+  // (undocumented)
+  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
+}
+
+// @public (undocumented)
 export const HorizontalPodAutoscalerDrawer: (props: {
   hpa: V2HorizontalPodAutoscaler;
   expanded?: boolean;
