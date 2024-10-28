@@ -1,5 +1,19 @@
 # @backstage/repo-tools
 
+## 0.11.0-next.1
+
+### Patch Changes
+
+- dde85ee: Added a new `generate-patch` command that can be used to generate patches for current changes in a source workspace to be installed it a target workspace.
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-node@0.2.10-next.0
+  - @backstage/config-loader@1.9.2-next.0
+  - @backstage/errors@1.2.4
+
 ## 0.11.0-next.0
 
 ### Minor Changes

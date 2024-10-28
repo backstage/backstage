@@ -1,6 +1,6 @@
 {
   "name": "@backstage/codemods",
-  "version": "0.1.51",
+  "version": "0.1.52-next.0",
   "description": "A collection of codemods for Backstage projects",
   "backstage": {
     "role": "cli"
