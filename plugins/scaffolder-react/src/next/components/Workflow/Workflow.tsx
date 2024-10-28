@@ -83,18 +83,24 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const errorApi = useApi(errorApiRef);
 
-  const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
+  const [formState, setFormState] = React.useState<Record<string, JsonValue>>(
+    {},
+  );
+
+  const { loading, manifest, error } = useTemplateParameterSchema(
+    templateRef,
+    formState,
+  );
 
   const sortedManifest = useFilteredSchemaProperties(manifest);
 
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
 
   const workflowOnCreate = useCallback(
-    async (formState: Record<string, JsonValue>) => {
-      onCreate(formState);
+    async (state: Record<string, JsonValue>) => {
+      onCreate(state);
 
-      const name =
-        typeof formState.name === 'string' ? formState.name : undefined;
+      const name = typeof state.name === 'string' ? state.name : undefined;
       analytics.captureEvent('create', name ?? templateName ?? 'unknown', {
         value: minutesSaved,
       });
@@ -132,6 +138,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           <Stepper
             manifest={sortedManifest}
             onCreate={workflowOnCreate}
+            onFormStateChange={setFormState}
             {...props}
           />
         </InfoCard>

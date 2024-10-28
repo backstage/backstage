@@ -105,6 +105,9 @@ import {
   AutocompleteHandler,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { SecureTemplater } from '../lib/templating/SecureTemplater';
+import { createDefaultFilters } from '../lib/templating/filters';
+import { renderTemplateString } from '../lib/templating/helpers';
 
 /**
  *
@@ -442,6 +445,9 @@ export async function createRouter(
   router.use(permissionIntegrationRouter);
 
   router
+    /**
+     * @deprecated
+     */
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
@@ -468,6 +474,63 @@ export async function createRouter(
           description: template.metadata.description,
           'ui:options': template.metadata['ui:options'],
           steps: parameters.map(schema => ({
+            title: schema.title ?? 'Please enter the following information',
+            description: schema.description,
+            schema,
+          })),
+        });
+      },
+    )
+    .post(
+      '/v2/templates/:namespace/:kind/:name/parameter-schema',
+      async (req, res) => {
+        const { formData } = req.body;
+
+        if (!formData) {
+          throw new InputError('Missing formData in request body');
+        }
+
+        const credentials = await httpAuth.credentials(req);
+
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
+
+        const template = await authorizeTemplate(
+          req.params,
+          token,
+          credentials,
+        );
+        const parameters = [template.spec.parameters ?? []].flat();
+
+        const secureTemplater = await SecureTemplater.loadRenderer({
+          templateFilters: {
+            ...createDefaultFilters({ integrations }),
+            ...additionalTemplateFilters,
+          },
+          templateGlobals: additionalTemplateGlobals,
+        });
+
+        const templatedParameters = parameters.map(parameter =>
+          renderTemplateString(
+            parameter,
+            {
+              parameters: req.query.formData,
+            },
+            secureTemplater,
+            logger,
+          ),
+        );
+
+        const presentation = template.spec.presentation;
+
+        res.json({
+          title: template.metadata.title ?? template.metadata.name,
+          ...(presentation ? { presentation } : {}),
+          description: template.metadata.description,
+          'ui:options': template.metadata['ui:options'],
+          steps: templatedParameters.map(schema => ({
             title: schema.title ?? 'Please enter the following information',
             description: schema.description,
             schema,

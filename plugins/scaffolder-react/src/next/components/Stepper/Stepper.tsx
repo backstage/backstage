@@ -28,6 +28,7 @@ import React, {
   useState,
   type ReactNode,
   ComponentType,
+  useEffect,
 } from 'react';
 import {
   createAsyncValidators,
@@ -104,6 +105,7 @@ export type StepperProps = {
     reviewButtonText?: ReactNode;
   };
   layouts?: LayoutOptions[];
+  onFormStateChange?: (state: Record<string, JsonValue>) => void;
 };
 
 /**
@@ -111,7 +113,12 @@ export type StepperProps = {
  * @alpha
  */
 export const Stepper = (stepperProps: StepperProps) => {
-  const { layouts = [], components = {}, ...props } = stepperProps;
+  const {
+    layouts = [],
+    components = {},
+    onFormStateChange,
+    ...props
+  } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     ReviewStepComponent,
@@ -182,6 +189,11 @@ export const Stepper = (stepperProps: StepperProps) => {
       });
     },
     [setStepsState],
+  );
+
+  useEffect(
+    () => onFormStateChange?.(stepsState),
+    [onFormStateChange, stepsState],
   );
 
   const handleNext = useCallback(

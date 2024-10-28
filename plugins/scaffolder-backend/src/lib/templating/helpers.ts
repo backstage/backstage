@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import nunjucks from 'nunjucks';
+import { SecureTemplateRenderer } from './SecureTemplater';
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 export function isNoNodeSnapshotOptionProvided(): boolean {
   return (
     process.env.NODE_OPTIONS?.includes('--no-node-snapshot') ||
@@ -34,4 +38,84 @@ export function isNoNodeSnapshotOptionProvided(): boolean {
 export function getMajorNodeVersion(): number {
   const version = process.versions.node;
   return parseInt(version.split('.')[0], 10);
+}
+
+export function isSingleTemplateString(input: string) {
+  const { parser, nodes } = nunjucks as unknown as {
+    parser: {
+      parse(
+        template: string,
+        ctx: object,
+        options: nunjucks.ConfigureOptions,
+      ): { children: { children?: unknown[] }[] };
+    };
+    nodes: { TemplateData: Function };
+  };
+
+  const parsed = parser.parse(
+    input,
+    {},
+    {
+      autoescape: false,
+      tags: {
+        variableStart: '${{',
+        variableEnd: '}}',
+      },
+    },
+  );
+
+  return (
+    parsed.children.length === 1 &&
+    !(parsed.children[0]?.children?.[0] instanceof nodes.TemplateData)
+  );
+}
+
+export function renderTemplateString<T, TContext>(
+  input: T,
+  context: TContext,
+  renderTemplate: SecureTemplateRenderer,
+  logger: LoggerService,
+): T {
+  return JSON.parse(JSON.stringify(input), (_key, value) => {
+    try {
+      if (typeof value === 'string') {
+        try {
+          if (isSingleTemplateString(value)) {
+            // Lets convert ${{ parameters.bob }} to ${{ (parameters.bob) | dump }} so we can keep the input type
+            const wrappedDumped = value.replace(
+              /\${{(.+)}}/g,
+              '${{ ( $1 ) | dump }}',
+            );
+
+            // Run the templating
+            const templated = renderTemplate(wrappedDumped, context);
+
+            // If there's an empty string returned, then it's undefined
+            if (templated === '') {
+              return undefined;
+            }
+
+            // Reparse the dumped string
+            return JSON.parse(templated);
+          }
+        } catch (ex) {
+          logger.error(
+            `Failed to parse template string: ${value} with error ${ex.message}`,
+          );
+        }
+
+        // Fallback to default behaviour
+        const templated = renderTemplate(value, context);
+
+        if (templated === '') {
+          return undefined;
+        }
+
+        return templated;
+      }
+    } catch {
+      return value;
+    }
+    return value;
+  });
 }

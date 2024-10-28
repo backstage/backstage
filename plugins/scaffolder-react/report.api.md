@@ -229,6 +229,7 @@ export interface ScaffolderApi {
   // (undocumented)
   getTemplateParameterSchema(
     templateRef: string,
+    formData?: JsonObject,
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)

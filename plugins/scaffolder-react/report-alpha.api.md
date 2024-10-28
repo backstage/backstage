@@ -239,6 +239,7 @@ export type StepperProps = {
     reviewButtonText?: ReactNode;
   };
   layouts?: LayoutOptions[];
+  onFormStateChange?: (state: Record<string, JsonValue>) => void;
 };
 
 // @alpha
@@ -345,7 +346,10 @@ export const useFormDataFromQuery: (
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
 
 // @alpha (undocumented)
-export const useTemplateParameterSchema: (templateRef: string) => {
+export const useTemplateParameterSchema: (
+  templateRef: string,
+  formData?: JsonObject,
+) => {
   manifest: TemplateParameterSchema | undefined;
   loading: boolean;
   error: Error | undefined;

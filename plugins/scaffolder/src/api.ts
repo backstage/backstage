@@ -22,7 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { Observable } from '@backstage/types';
+import { JsonObject, Observable } from '@backstage/types';
 import qs from 'qs';
 import queryString from 'qs';
 import ObservableImpl from 'zen-observable';
@@ -128,6 +128,7 @@ export class ScaffolderClient implements ScaffolderApi {
 
   async getTemplateParameterSchema(
     templateRef: string,
+    formData?: JsonObject,
   ): Promise<TemplateParameterSchema> {
     const { namespace, kind, name } = parseEntityRef(templateRef, {
       defaultKind: 'template',
@@ -140,7 +141,14 @@ export class ScaffolderClient implements ScaffolderApi {
 
     const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
 
-    const response = await this.fetchApi.fetch(url);
+    const response = await this.fetchApi.fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ formData }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }

@@ -18,15 +18,19 @@ import useAsync from 'react-use/esm/useAsync';
 import { scaffolderApiRef } from '../../api/ref';
 import { useApi } from '@backstage/core-plugin-api';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { JsonObject } from '@backstage/types';
 
 /**
  * @alpha
  */
-export const useTemplateParameterSchema = (templateRef: string) => {
+export const useTemplateParameterSchema = (
+  templateRef: string,
+  formData?: JsonObject,
+) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { value, loading, error } = useAsync(
-    () => scaffolderApi.getTemplateParameterSchema(templateRef),
-    [scaffolderApi, templateRef],
+    () => scaffolderApi.getTemplateParameterSchema(templateRef, formData),
+    [scaffolderApi, templateRef, formData],
   );
 
   return {

@@ -193,6 +193,7 @@ export interface ScaffolderDryRunResponse {
 export interface ScaffolderApi {
   getTemplateParameterSchema(
     templateRef: string,
+    formData?: JsonObject,
   ): Promise<TemplateParameterSchema>;
 
   /**

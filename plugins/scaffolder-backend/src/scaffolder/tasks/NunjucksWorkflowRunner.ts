@@ -19,7 +19,6 @@ import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
-import nunjucks from 'nunjucks';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
 import { PassThrough } from 'stream';
@@ -27,10 +26,7 @@ import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { TemplateActionRegistry } from '../actions';
 import { metrics } from '@opentelemetry/api';
-import {
-  SecureTemplater,
-  SecureTemplateRenderer,
-} from '../../lib/templating/SecureTemplater';
+import { SecureTemplater } from '../../lib/templating/SecureTemplater';
 import {
   TaskRecovery,
   TaskSpec,
@@ -57,6 +53,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { renderTemplateString } from '../../lib/templating/helpers';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -149,85 +146,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
   private readonly tracker = scaffoldingTracker();
 
-  private isSingleTemplateString(input: string) {
-    const { parser, nodes } = nunjucks as unknown as {
-      parser: {
-        parse(
-          template: string,
-          ctx: object,
-          options: nunjucks.ConfigureOptions,
-        ): { children: { children?: unknown[] }[] };
-      };
-      nodes: { TemplateData: Function };
-    };
-
-    const parsed = parser.parse(
-      input,
-      {},
-      {
-        autoescape: false,
-        tags: {
-          variableStart: '${{',
-          variableEnd: '}}',
-        },
-      },
-    );
-
-    return (
-      parsed.children.length === 1 &&
-      !(parsed.children[0]?.children?.[0] instanceof nodes.TemplateData)
-    );
-  }
-
-  private render<T>(
-    input: T,
-    context: TemplateContext,
-    renderTemplate: SecureTemplateRenderer,
-  ): T {
-    return JSON.parse(JSON.stringify(input), (_key, value) => {
-      try {
-        if (typeof value === 'string') {
-          try {
-            if (this.isSingleTemplateString(value)) {
-              // Lets convert ${{ parameters.bob }} to ${{ (parameters.bob) | dump }} so we can keep the input type
-              const wrappedDumped = value.replace(
-                /\${{(.+)}}/g,
-                '${{ ( $1 ) | dump }}',
-              );
-
-              // Run the templating
-              const templated = renderTemplate(wrappedDumped, context);
-
-              // If there's an empty string returned, then it's undefined
-              if (templated === '') {
-                return undefined;
-              }
-
-              // Reparse the dumped string
-              return JSON.parse(templated);
-            }
-          } catch (ex) {
-            this.options.logger.error(
-              `Failed to parse template string: ${value} with error ${ex.message}`,
-            );
-          }
-
-          // Fallback to default behaviour
-          const templated = renderTemplate(value, context);
-
-          if (templated === '') {
-            return undefined;
-          }
-
-          return templated;
-        }
-      } catch {
-        return value;
-      }
-      return value;
-    });
-  }
-
   async executeStep(
     task: TaskContext,
     step: TaskStep,
@@ -247,7 +165,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       if (
         step.if === false ||
         (typeof step.if === 'string' &&
-          !isTruthy(this.render(step.if, context, renderTemplate)))
+          !isTruthy(
+            renderTemplateString(
+              step.if,
+              context,
+              renderTemplate,
+              this.options.logger,
+            ),
+          ))
       ) {
         await stepTrack.skipFalsy();
         return;
@@ -266,13 +191,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
         const debugInput =
           (step.input &&
-            this.render(
+            renderTemplateString(
               step.input,
               {
                 ...context,
                 secrets: redactedSecrets,
               },
               renderTemplate,
+              this.options.logger,
             )) ??
           {};
         taskLogger.info(
@@ -301,20 +227,26 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const iterations = (
         step.each
-          ? Object.entries(this.render(step.each, context, renderTemplate)).map(
-              ([key, value]) => ({
-                each: { key, value },
-              }),
-            )
+          ? Object.entries(
+              renderTemplateString(
+                step.each,
+                context,
+                renderTemplate,
+                this.options.logger,
+              ),
+            ).map(([key, value]) => ({
+              each: { key, value },
+            }))
           : [{}]
       ).map(i => ({
         ...i,
         // Secrets are only passed when templating the input to actions for security reasons
         input: step.input
-          ? this.render(
+          ? renderTemplateString(
               step.input,
               { ...context, secrets: task.secrets ?? {}, ...i },
               renderTemplate,
+              this.options.logger,
             )
           : {},
       }));
@@ -507,7 +439,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
       }
 
-      const output = this.render(task.spec.output, context, renderTemplate);
+      const output = renderTemplateString(
+        task.spec.output,
+        context,
+        renderTemplate,
+        this.options.logger,
+      );
       await taskTrack.markSuccessful();
       await task.cleanWorkspace?.();
 

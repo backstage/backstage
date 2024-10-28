@@ -23,6 +23,7 @@ import { FieldSchema as FieldSchema_2 } from '@backstage/plugin-scaffolder-react
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
@@ -548,6 +549,7 @@ export class ScaffolderClient implements ScaffolderApi_2 {
   // (undocumented)
   getTemplateParameterSchema(
     templateRef: string,
+    formData?: JsonObject,
   ): Promise<TemplateParameterSchema_2>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse_2>;
