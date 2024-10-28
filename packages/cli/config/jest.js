@@ -326,7 +326,7 @@ async function getRootConfig() {
     ),
   ).then(_ => _.flat());
 
-  let configs = await Promise.all(
+  let projects = await Promise.all(
     projectPaths.flat().map(async projectPath => {
       const packagePath = path.resolve(projectPath, 'package.json');
       if (!(await fs.pathExists(packagePath))) {
@@ -357,12 +357,16 @@ async function getRootConfig() {
 
   const cache = global.__backstageCli_jestSuccessCache;
   if (cache) {
-    configs = await cache.filterConfigs(configs, globalRootConfig);
+    projects = await cache.filterConfigs(projects, globalRootConfig);
+  }
+  const watchProjectFilter = global.__backstageCli_watchProjectFilter;
+  if (watchProjectFilter) {
+    projects = await watchProjectFilter.filter(projects);
   }
 
   return {
     rootDir: paths.targetRoot,
-    projects: configs,
+    projects,
     testResultsProcessor: cache
       ? require.resolve('./jestCacheResultProcessor.cjs')
       : undefined,

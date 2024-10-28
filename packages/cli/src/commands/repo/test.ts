@@ -17,6 +17,7 @@
 import os from 'os';
 import crypto from 'node:crypto';
 import yargs from 'yargs';
+import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
@@ -27,9 +28,10 @@ import { SuccessCache } from '../../lib/cache/SuccessCache';
 
 type JestProject = {
   displayName: string;
+  rootDir: string;
 };
 
-interface GlobalWithCache extends Global {
+interface TestGlobal extends Global {
   __backstageCli_jestSuccessCache?: {
     filterConfigs(
       projectConfigs: JestProject[],
@@ -47,6 +49,9 @@ interface GlobalWithCache extends Global {
         failureMessage: string;
       }>;
     }): Promise<void>;
+  };
+  __backstageCli_watchProjectFilter?: {
+    filter(projectConfigs: JestProject[]): Promise<JestProject[]>;
   };
 }
 
@@ -138,6 +143,8 @@ function removeOptionArg(args: string[], option: string, size: number = 2) {
 }
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
+  const testGlobal = global as TestGlobal;
+
   // all args are forwarded to jest
   let parent = cmd;
   while (parent.parent) {
@@ -147,6 +154,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const args = allArgs.slice(allArgs.indexOf('test') + 1);
 
   const hasFlags = createFlagFinder(args);
+
+  // Parse the args to ensure that no file filters are provided, in which case we refuse to run
+  const { _: parsedArgs } = await yargs(args).options(jestYargsOptions).argv;
 
   // Only include our config if caller isn't passing their own config
   if (!hasFlags('-c', '--config')) {
@@ -158,6 +168,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   // Run in watch mode unless in CI, coverage mode, or running all tests
+  let isSingleWatchMode = args.includes('--watch');
   if (
     !opts.since &&
     !process.env.CI &&
@@ -168,10 +179,45 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
+      isSingleWatchMode = true;
       args.push('--watch');
     } else {
       args.push('--watchAll');
     }
+  }
+
+  // Due to our monorepo Jest project setup watch mode can be quite slow as it
+  // will always scan all projects for matches. This is an optimization where if
+  // the only provides filter paths from the repo root as args, we filter the
+  // projects to only run tests for those.
+  //
+  // This does mean you're not able to edit the watch filters during the watch
+  // session to point outside of the selected packages, but we consider that a
+  // worthwhile tradeoff, and you can always avoid providing paths upfront.
+  if (isSingleWatchMode && parsedArgs.length > 0) {
+    testGlobal.__backstageCli_watchProjectFilter = {
+      async filter(projectConfigs) {
+        const selectedProjects = [];
+        const usedArgs = new Set();
+
+        for (const project of projectConfigs) {
+          for (const arg of parsedArgs) {
+            if (isChildPath(project.rootDir, String(arg))) {
+              selectedProjects.push(project);
+              usedArgs.add(arg);
+            }
+          }
+        }
+
+        // If we didn't end up using all args in the filtering we need to bail
+        // and let Jest do the full filtering instead.
+        if (usedArgs.size !== parsedArgs.length) {
+          return projectConfigs;
+        }
+
+        return selectedProjects;
+      },
+    };
   }
 
   // When running tests from the repo root in large repos you can easily hit the heap limit.
@@ -250,17 +296,13 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     (process.stdout as any)._handle.setBlocking(true);
   }
 
-  const jestCli = require('jest-cli');
-
   // This code path is enabled by the --successCache flag, which is specific to
   // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
     removeOptionArg(args, '--successCache', 1);
     removeOptionArg(args, '--successCacheDir');
 
-    // Parse the args to ensure that no file filters are provided, in which case we refuse to run
-    const { _: parsedArgs } = await yargs(args).options(jestCli.yargsOptions)
-      .argv;
+    // Refuse to run if file filters are provided
     if (parsedArgs.length > 0) {
       throw new Error(
         `The --successCache flag can not be combined with the following arguments: ${parsedArgs.join(
@@ -284,8 +326,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
     // are picked up by the config script itself, as well as the custom result processor.
-    const globalWithCache = global as GlobalWithCache;
-    globalWithCache.__backstageCli_jestSuccessCache = {
+    testGlobal.__backstageCli_jestSuccessCache = {
       // This is called by `config/jest.js` after the project configs have been gathered
       async filterConfigs(projectConfigs, globalRootConfig) {
         const cacheEntries = await cache.read();
@@ -381,5 +422,5 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     };
   }
 
-  await jestCli.run(args);
+  await runJest(args);
 }
