@@ -15,6 +15,8 @@
  */
 import { createCliPlugin } from '../../wiring/factory';
 import yargs from 'yargs';
+import { Command } from 'commander';
+import { lazy } from '../../lib/lazy';
 
 export default createCliPlugin({
   pluginId: 'config',
@@ -23,21 +25,17 @@ export default createCliPlugin({
       path: ['config:docs'],
       description: 'Browse the configuration reference documentation',
       execute: async ({ args }) => {
-        await yargs
-          .options({
-            package: { type: 'string' },
-          })
-          .command(
-            '$0',
-            '',
-            async () => {},
-            async argv => {
-              const m = await import('./commands/docs');
-              await m.default(argv);
-            },
+        console.log(args);
+        const command = new Command();
+        const defaultCommand = command
+          .option(
+            '--package <name>',
+            'Only include the schema that applies to the given package',
           )
-          .help()
-          .parse(args);
+          .description('Browse the configuration reference documentation')
+          .action(lazy(() => import('./commands/docs').then(m => m.default)));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
     reg.addCommand({

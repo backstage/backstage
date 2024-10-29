@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
 import { CommandGraph } from './CommandGraph';
 import { CliFeature, InternalCliFeature, InternalCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
+import { program } from 'commander';
+import { version } from '../lib/version';
+import chalk from 'chalk';
 
 type UninitializedFeature = CliFeature | Promise<CliFeature>;
-
-function checkCommands(
-  nestedYargs: yargs.Argv,
-  argv: Awaited<yargs.Argv['argv']>,
-  numRequired: number,
-) {
-  if (argv._.length < numRequired) {
-    nestedYargs.showHelp();
-  } else {
-    // check for unknown command
-  }
-}
 
 export class CliInitializer {
   private graph = new CommandGraph();
@@ -62,61 +52,52 @@ export class CliInitializer {
    */
   async run() {
     await this.#doInit();
-
-    const root = yargs.usage('usage: $0 <command>').wrap(null).help('help');
-    const rootArgv = process.argv.slice(2);
+    program
+      .name('backstage-cli')
+      .version(version)
+      .allowUnknownOption(true)
+      .allowExcessArguments(true);
 
     const queue = this.graph.atDepth(0).map(node => ({
       node,
-      argParser: root,
-      depth: 0,
+      argParser: program,
     }));
     while (queue.length) {
-      const { node, argParser, depth } = queue.shift()!;
+      const { node, argParser } = queue.shift()!;
       if (node.$$type === '@tree/root') {
-        let commandYargs = undefined;
-        argParser
-          .recommendCommands()
-          .demandCommand()
-          .command(node.name, node.name, async nestedYargs => {
-            commandYargs = nestedYargs;
-            nestedYargs.usage(`usage: $0 ${node.name}`).wrap(null).help('help');
-            checkCommands(
-              nestedYargs,
-              await nestedYargs.argv,
-              node.children.length,
-            );
-          });
+        const treeParser = argParser
+          .command(`${node.name} [command]`)
+          .description(node.name);
 
         queue.push(
           ...node.children.map(child => ({
             node: child,
-            argParser,
-            depth: depth + 1,
+            argParser: treeParser,
           })),
         );
       } else {
-        argParser.command(
-          node.name,
-          node.command.description,
-          async nestedYargs => {
-            nestedYargs.help(false);
-          },
-          async argv => {
+        argParser
+          .command(node.name)
+          .description(node.command.description)
+          .helpOption(false)
+          .allowUnknownOption(true)
+          .allowExcessArguments(true)
+          .action(async () => {
             await node.command.execute({
-              args: process.argv.slice(2 + depth + 1),
+              args: program.parseOptions(process.argv).unknown,
             });
-            checkCommands(argParser, argv, 1);
-          },
-        );
+          });
       }
     }
-    const argv = await root
-      .demandCommand()
-      .recommendCommands()
-      .strictCommands()
-      .parse(rootArgv);
-    checkCommands(root, argv, 1);
+    program.on('command:*', () => {
+      console.log();
+      console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
+      console.log();
+      program.outputHelp();
+      process.exit(1);
+    });
+
+    program.parse(process.argv);
   }
 }
 
