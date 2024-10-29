@@ -139,8 +139,9 @@ export const dynamicPluginsFeatureLoader: ((
 
 // @public (undocumented)
 export type DynamicPluginsFeatureLoaderOptions = DynamicPluginsFactoryOptions &
-  DynamicPluginsSchemasOptions &
-  DynamicPluginsRootLoggerFactoryOptions;
+  DynamicPluginsSchemasOptions & {
+    logger?: (config?: Config) => DynamicPluginsRootLoggerFactoryOptions;
+  };
 
 // @public @deprecated (undocumented)
 export const dynamicPluginsFrontendSchemas: BackendFeature;

@@ -18,26 +18,28 @@ import {
   coreServices,
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
-import {
-  DynamicPluginsSchemasOptions,
-  dynamicPluginsFrontendSchemas,
-  dynamicPluginsRootLoggerServiceFactory,
-  dynamicPluginsSchemasServiceFactory,
-} from '../schemas';
+import type { Config } from '@backstage/config';
 import {
   DynamicPluginsFactoryOptions,
   dynamicPluginsFeatureDiscoveryLoader,
   dynamicPluginsServiceFactory,
 } from '../manager';
-import { DynamicPluginsRootLoggerFactoryOptions } from '../schemas';
 import { configKey } from '../scanner/plugin-scanner';
+import {
+  DynamicPluginsRootLoggerFactoryOptions,
+  DynamicPluginsSchemasOptions,
+  dynamicPluginsFrontendSchemas,
+  dynamicPluginsRootLoggerServiceFactory,
+  dynamicPluginsSchemasServiceFactory,
+} from '../schemas';
 
 /**
  * @public
  */
 export type DynamicPluginsFeatureLoaderOptions = DynamicPluginsFactoryOptions &
-  DynamicPluginsSchemasOptions &
-  DynamicPluginsRootLoggerFactoryOptions;
+  DynamicPluginsSchemasOptions & {
+    logger?: (config?: Config) => DynamicPluginsRootLoggerFactoryOptions;
+  };
 
 const dynamicPluginsFeatureLoaderWithOptions = (
   options?: DynamicPluginsFeatureLoaderOptions,
@@ -49,13 +51,18 @@ const dynamicPluginsFeatureLoaderWithOptions = (
     *loader({ config }) {
       const dynamicPluginsEnabled = config.has(configKey);
 
+      let rootLoggerOptions: DynamicPluginsRootLoggerFactoryOptions = {};
+      if (options?.logger) {
+        rootLoggerOptions = options.logger(config);
+      }
+
       yield* [
         dynamicPluginsSchemasServiceFactory(options),
         dynamicPluginsServiceFactory(options),
       ];
       if (dynamicPluginsEnabled) {
         yield* [
-          dynamicPluginsRootLoggerServiceFactory(options),
+          dynamicPluginsRootLoggerServiceFactory(rootLoggerOptions),
           dynamicPluginsFrontendSchemas,
           dynamicPluginsFeatureDiscoveryLoader,
         ];
@@ -94,12 +101,13 @@ const dynamicPluginsFeatureLoaderWithOptions = (
  * import { dynamicPluginsFeatureLoader } from '@backstage/backend-dynamic-feature-service';
  * import { myCustomModuleLoader } from './myCustomModuleLoader';
  * import { myCustomSchemaLocator } from './myCustomSchemaLocator';
+ * import { myConfiguredLoggerOptions } from './myConfiguredLoggerOptions';
  *
  * const backend = createBackend();
  * backend.add(dynamicPluginsFeatureLoader({
  *   moduleLoader: myCustomModuleLoader,
  *   schemaLocator: myCustomSchemaLocator,
- *
+ *   logger: (config) => myConfiguredLoggerOptions(config),
  * }));
  * //...
  * backend.start();

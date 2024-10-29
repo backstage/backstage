@@ -119,8 +119,10 @@ describe('dynamicPluginsFeatureLoader', () => {
         dynamicPluginsFeatureLoader({
           moduleLoader: logger =>
             jestFreeTypescriptAwareModuleLoader(logger, true),
-          transports: [mockedTransport],
-          format: winston.format.simple(),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
         }),
         dynamicPLuginsLister.feature(),
       ],
@@ -180,6 +182,42 @@ describe('dynamicPluginsFeatureLoader', () => {
     ]);
   });
 
+  it('should allow overriding logger options based on config', async () => {
+    const mockedTransport = new MockedTransport();
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootDirectory,
+            },
+            customLogLabel: 'a very nice label',
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger => jestFreeTypescriptAwareModuleLoader(logger),
+          logger: config => {
+            const label = config?.getString('customLogLabel') ?? 'no-label';
+            return {
+              transports: [mockedTransport],
+              format: winston.format.combine(
+                winston.format.label({
+                  label,
+                  message: true,
+                }),
+                winston.format.simple(),
+              ),
+            };
+          },
+        }),
+      ],
+    });
+
+    expect(mockedTransport.logs).toContainEqual(
+      'info: [a very nice label] Found 0 new secrets in config that will be redacted {"service":"backstage"}',
+    );
+  });
+
   it('should redact the secret config values of dynamic plugin config schemas in logs', async () => {
     const mockedTransport = new MockedTransport();
     await startTestBackend({
@@ -196,8 +234,10 @@ describe('dynamicPluginsFeatureLoader', () => {
         }),
         dynamicPluginsFeatureLoader({
           moduleLoader: jestFreeTypescriptAwareModuleLoader,
-          transports: [mockedTransport],
-          format: winston.format.simple(),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
         }),
       ],
     });
@@ -333,8 +373,10 @@ describe('dynamicPluginsFeatureLoader', () => {
         }),
         dynamicPluginsFeatureLoader({
           moduleLoader: jestFreeTypescriptAwareModuleLoader,
-          transports: [mockedTransport],
-          format: winston.format.simple(),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
         }),
         dynamicPLuginsLister.feature(),
       ],
