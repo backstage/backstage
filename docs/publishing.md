@@ -33,6 +33,8 @@ PR is merged. This is typically done every Tuesday around noon CET.
 
 Merging the `Version Packages (next)` Pull Request will trigger the deployment workflows. Follow along the [deployment workflow](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml). If you notice flakiness (e.g. if the build is flaky or if the release step runs into an error with releasing to npm) just restart the workflow.
 
+When the release is ready to be published, maintainers will be notified in the private `#maintainers` channel on the Backstage Discord Server. They will then start the publishing workflow on the publishing workflows page linked in the notification message. On the publishing workflows page there is a dropdown menu called "Run workflow", this opens a form where the person responsible for the release should paste the SHA received in the Discord notification and click to run the workflow.
+
 Congratulations on the release! There should be now a post in the [`#announcements` channel](https://discord.com/channels/687207715902193673/705123584468582400) in Discord linking to the release tag - check if links & tag look as expected. Once the notification has gone out on Discord you can unlock the main branch & the release is complete.
 
 ## Main Line Release Process
