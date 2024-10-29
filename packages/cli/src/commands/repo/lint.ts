@@ -230,15 +230,15 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     if (runFailed) {
       console.log(chalk.red(`Lint failed in ${relativeDir}`));
       failed = true;
+    } else if (sha) {
+      outputSuccessCache.push(sha);
+    }
 
-      // When doing repo lint, only list the results if the lint failed to avoid a log
-      // dump of all warnings that might be irrelevant
+    if (failed || !opts.quiet) {
       if (resultText) {
         console.log();
         console.log(resultText.trimStart());
       }
-    } else if (sha) {
-      outputSuccessCache.push(sha);
     }
   }
 
