@@ -453,6 +453,7 @@ Options:
   --successCache
   --successCacheDir <path>
   --max-warnings <number>
+  --quiet
   --fix
   -h, --help
 ```
