@@ -1,5 +1,5 @@
 ---
-'@backstage/cli': patch
+'@backstage/cli': minor
 ---
 
-Updates ESLint config to ignore all generated source code under `src/**/generated/**/*.ts`.
+**BREAKING**: Updates ESLint config to ignore all generated source code under `src/**/generated/**/*.ts`.
