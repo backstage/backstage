@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ZodRawShape } from 'zod';
 import { CommandGraph } from './CommandGraph';
 import { BackstageCommand } from './types';
 
@@ -24,7 +22,7 @@ export class CommandRegistry {
     this.graph = graph;
   }
 
-  addCommand<T extends ZodRawShape>(command: BackstageCommand<T>) {
+  addCommand(command: BackstageCommand) {
     this.graph.add(command);
   }
 }

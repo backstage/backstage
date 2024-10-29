@@ -15,8 +15,14 @@
  */
 
 import { CliInitializer } from './wiring/CliInitializer';
+import chalk from 'chalk';
 
 (async () => {
+  console.warn(
+    chalk.yellow(
+      'THIS ENTRYPOINT IS IN ALPHA AND MAY CHANGE IN THE FUTURE - DO NOT USE THIS FOR NORMAL DEVELOPMENT',
+    ),
+  );
   const initializer = new CliInitializer();
   initializer.add(import('./modules/config/alpha').then(m => m.default));
   await initializer.run();

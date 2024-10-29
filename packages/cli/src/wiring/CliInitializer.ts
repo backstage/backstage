@@ -18,9 +18,20 @@ import yargs from 'yargs';
 import { CommandGraph } from './CommandGraph';
 import { CliFeature, InternalCliFeature, InternalCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
-import chalk from 'chalk';
 
 type UninitializedFeature = CliFeature | Promise<CliFeature>;
+
+function checkCommands(
+  nestedYargs: yargs.Argv,
+  argv: Awaited<yargs.Argv['argv']>,
+  numRequired: number,
+) {
+  if (argv._.length < numRequired) {
+    nestedYargs.showHelp();
+  } else {
+    // check for unknown command
+  }
+}
 
 export class CliInitializer {
   private graph = new CommandGraph();
@@ -52,31 +63,60 @@ export class CliInitializer {
   async run() {
     await this.#doInit();
 
-    const {
-      _: commandName,
-      $0: binaryName,
-      ...options
-    } = await yargs(process.argv.slice(2)).parse();
-    const command = this.graph.find(commandName.map(String));
-    if (!command) {
-      console.error(chalk.red(`Command not found: "${commandName.join(' ')}"`));
-      const possibleCommands = this.graph.atDepth(commandName.length - 1);
-      if (possibleCommands.length > 0) {
-        console.log('Available commands:');
-        for (const node of possibleCommands) {
-          let text = `\t${node.name}`;
-          if (node.$$type === '@tree/root') {
-            text += ' [command]';
-          } else {
-            text += ` [options]\t\t${node.command.description}`;
-          }
-          console.log(text);
-        }
+    const root = yargs.usage('usage: $0 <command>').wrap(null).help('help');
+    const rootArgv = process.argv.slice(2);
+
+    const queue = this.graph.atDepth(0).map(node => ({
+      node,
+      argParser: root,
+      depth: 0,
+    }));
+    while (queue.length) {
+      const { node, argParser, depth } = queue.shift()!;
+      if (node.$$type === '@tree/root') {
+        let commandYargs = undefined;
+        argParser
+          .recommendCommands()
+          .demandCommand()
+          .command(node.name, node.name, async nestedYargs => {
+            commandYargs = nestedYargs;
+            nestedYargs.usage(`usage: $0 ${node.name}`).wrap(null).help('help');
+            checkCommands(
+              nestedYargs,
+              await nestedYargs.argv,
+              node.children.length,
+            );
+          });
+
+        queue.push(
+          ...node.children.map(child => ({
+            node: child,
+            argParser,
+            depth: depth + 1,
+          })),
+        );
+      } else {
+        argParser.command(
+          node.name,
+          node.command.description,
+          async nestedYargs => {
+            nestedYargs.help(false);
+          },
+          async argv => {
+            await node.command.execute({
+              args: process.argv.slice(2 + depth + 1),
+            });
+            checkCommands(argParser, argv, 1);
+          },
+        );
       }
-      process.exit(1);
     }
-    const parsedOptions = command.schema.parse(options);
-    await command?.execute(parsedOptions);
+    const argv = await root
+      .demandCommand()
+      .recommendCommands()
+      .strictCommands()
+      .parse(rootArgv);
+    checkCommands(root, argv, 1);
   }
 }
 

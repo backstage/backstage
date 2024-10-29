@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { z } from 'zod';
 import { createCliPlugin } from '../../wiring/factory';
+import yargs from 'yargs';
 
 export default createCliPlugin({
   pluginId: 'config',
@@ -23,45 +22,96 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['config:docs'],
       description: 'Browse the configuration reference documentation',
-      schema: z.object({
-        package: z.string().optional(),
-      }),
-      execute: async options => {
-        const m = await import('./commands/docs');
-        await m.default(options);
+      execute: async ({ args }) => {
+        await yargs
+          .options({
+            package: { type: 'string' },
+          })
+          .command(
+            '$0',
+            '',
+            async () => {},
+            async argv => {
+              const m = await import('./commands/docs');
+              await m.default(argv);
+            },
+          )
+          .help()
+          .parse(args);
+      },
+    });
+    reg.addCommand({
+      path: ['config', 'docs'],
+      description: 'Browse the configuration reference documentation',
+      execute: async ({ args }) => {
+        await yargs
+          .options({
+            package: { type: 'string' },
+          })
+          .command(
+            '$0',
+            '',
+            async () => {},
+            async argv => {
+              const m = await import('./commands/docs');
+              await m.default(argv);
+            },
+          )
+          .help()
+          .parse(args);
       },
     });
     reg.addCommand({
       path: ['config:print'],
       description: 'Print the app configuration for the current package',
-      schema: z.object({
-        package: z.string().optional(),
-        lax: z.boolean().optional(),
-        frontend: z.boolean().optional(),
-        'with-secrets': z.boolean().optional(),
-        format: z.enum(['json', 'yaml']).optional(),
-        config: z.array(z.string()).optional(),
-      }),
-      execute: async options => {
-        const m = await import('./commands/print');
-        await m.default(options);
+      execute: async ({ args }) => {
+        await yargs
+          .options({
+            package: { type: 'string' },
+            lax: { type: 'boolean' },
+            frontend: { type: 'boolean' },
+            'with-secrets': { type: 'boolean' },
+            format: { type: 'string' },
+            config: { type: 'string', array: true },
+          })
+          .command(
+            '$0',
+            '',
+            async () => {},
+            async argv => {
+              const m = await import('./commands/print');
+              await m.default(argv);
+            },
+          )
+          .help()
+          .parse(args);
       },
     });
     reg.addCommand({
       path: ['config:check'],
       description:
         'Validate that the given configuration loads and matches schema',
-      schema: z.object({
-        package: z.string().optional(),
-        lax: z.boolean().optional(),
-        frontend: z.boolean().optional(),
-        deprecated: z.boolean().optional(),
-        strict: z.boolean().optional(),
-        config: z.array(z.string()).optional(),
-      }),
-      execute: async options => {
-        const m = await import('./commands/validate');
-        await m.default(options);
+      execute: async ({ args }) => {
+        await yargs
+          .options({
+            package: { type: 'string' },
+            lax: { type: 'boolean' },
+            frontend: { type: 'boolean' },
+            deprecated: { type: 'boolean' },
+            strict: { type: 'boolean' },
+            config: { type: 'string', array: true },
+          })
+          .command(
+            '$0',
+            '',
+            async () => {},
+            async argv => {
+              const m = await import('./commands/validate');
+              await m.default(argv);
+            },
+          )
+          .help()
+          .parse(args);
       },
     });
   },

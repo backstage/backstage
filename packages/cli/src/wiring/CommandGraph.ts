@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ZodRawShape } from 'zod';
 import { BackstageCommand } from './types';
 
-type Node<T extends ZodRawShape = ZodRawShape> = TreeNode | LeafNode<T>;
+type Node = TreeNode | LeafNode;
 
 interface TreeNode {
   $$type: '@tree/root';
@@ -24,10 +23,10 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-interface LeafNode<T extends ZodRawShape> {
+interface LeafNode {
   $$type: '@tree/leaf';
   name: string;
-  command: BackstageCommand<T>;
+  command: BackstageCommand;
 }
 
 /**
@@ -40,7 +39,7 @@ export class CommandGraph {
    * Adds a command to the graph. The graph is sparse, so we use the path to determine the nodes
    *    to traverse. Only leaf nodes should have a command/action.
    */
-  add<T extends ZodRawShape>(command: BackstageCommand<T>) {
+  add(command: BackstageCommand) {
     const path = command.path;
     let current = this.graph;
     for (let i = 0; i < path.length - 1; i++) {
@@ -56,7 +55,7 @@ export class CommandGraph {
       }
       current = next.children;
     }
-    const last = current.find(n => n.name === path[path.length - 1]) as Node<T>;
+    const last = current.find(n => n.name === path[path.length - 1]);
     if (last && last.$$type === '@tree/leaf') {
       throw new Error(
         `Command already exists at path: "${path.slice(0, -1).join(' ')}"`,
@@ -66,14 +65,14 @@ export class CommandGraph {
         $$type: '@tree/leaf',
         name: path[path.length - 1],
         command,
-      } as Node<any>);
+      });
     }
   }
 
   /**
    * Given a path, try to find a command that matches it.
    */
-  find<T extends ZodRawShape>(path: string[]): BackstageCommand<T> | undefined {
+  find(path: string[]): BackstageCommand | undefined {
     let current = this.graph;
     for (let i = 0; i < path.length - 1; i++) {
       const name = path[i];
@@ -85,20 +84,20 @@ export class CommandGraph {
       }
       current = next.children;
     }
-    const last = current.find(n => n.name === path[path.length - 1]) as Node<T>;
+    const last = current.find(n => n.name === path[path.length - 1]);
     if (!last || last.$$type === '@tree/root') {
       return undefined;
     }
     return last?.command;
   }
 
-  atDepth<T extends ZodRawShape>(depth: number): Node<T>[] {
+  atDepth(depth: number): Node[] {
     let current = this.graph;
     for (let i = 0; i < depth; i++) {
       current = current.flatMap(n =>
         n.$$type === '@tree/root' ? n.children : [],
       );
     }
-    return current as Node<T>[];
+    return current;
   }
 }

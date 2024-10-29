@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ZodObject, ZodRawShape } from 'zod';
 import { CommandRegistry } from './CommandRegistry';
 
-export interface BackstageCommand<T extends ZodRawShape = ZodRawShape> {
+export interface BackstageCommand {
   path: string[];
   description: string;
-  schema: ZodObject<T>;
-  execute: (options: T) => Promise<void>;
+  execute: (options: { args: string[] }) => Promise<void>;
 }
 
 export interface CliFeature {
