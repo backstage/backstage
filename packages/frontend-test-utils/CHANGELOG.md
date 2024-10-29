@@ -1,5 +1,18 @@
 # @backstage/frontend-test-utils
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/frontend-app-api@0.10.1-next.1
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/test-utils@1.7.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.2-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-node",
-  "version": "0.1.21-next.0",
+  "version": "0.2.0-next.1",
   "description": "Node.js library for the kubernetes plugin",
   "backstage": {
     "role": "node-library",

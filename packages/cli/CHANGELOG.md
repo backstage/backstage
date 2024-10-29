@@ -1,5 +1,34 @@
 # @backstage/cli
 
+## 0.29.0-next.1
+
+### Minor Changes
+
+- 6819f8c: Added a new optimization to the `repo test` command that will filter out unused packages in watch mode if all provide filters are paths that point from the repo root. This significantly speeds up running individual tests from the repo root in a large workspace, for example:
+
+  ```sh
+  yarn test packages/app/src/App.test.tsx
+  ```
+
+### Patch Changes
+
+- 4046d53: Fixed an issue where the `--successCache` option for the `repo test` and `repo lint` commands would be include the workspace path in generated cache keys. This previously broke caching in environments where the workspace path varies across builds.
+- 6b2888c: Fixed an issue with the `--successCache` flag for `repo test` where the tree hash for the wrong package directory would sometimes be used to generate the cache key.
+- 6266ed3: Updated dependency `del` to `^8.0.0`.
+- 4046d53: Fixed an issue with the `repo lint` command where the cache key for the `--successCache` option would not properly ignore files that should be ignored according to `.eslintignore`s.
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-node@0.2.10-next.0
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.2-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.15.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.29.0-next.0
 
 ### Minor Changes

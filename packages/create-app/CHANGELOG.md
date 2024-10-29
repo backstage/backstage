@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.5.22-next.1
+
+### Patch Changes
+
+- 702f41d: Updated engines to support Node 20 or 22
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+
 ## 0.5.22-next.0
 
 ### Patch Changes
