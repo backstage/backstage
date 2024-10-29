@@ -74,7 +74,6 @@ import {
   getOrganizationsFromUser,
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
-  QuerySettings,
   QueryOptions,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
