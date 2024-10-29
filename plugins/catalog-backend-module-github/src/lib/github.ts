@@ -52,6 +52,19 @@ export type UserResponse = {
   organizations?: Connection<GithubOrg>;
 };
 
+/**
+ * Query Options
+ *
+ * @public
+ *
+ * pageSize - The number of items to fetch per page
+ * requestDelayMs - The delay between requests in milliseconds
+ */
+export type QueryOptions = {
+  pageSize: number;
+  requestDelayMs: number;
+};
+
 export type PageInfo = {
   hasNextPage: boolean;
   endCursor?: string;
@@ -134,17 +147,19 @@ export type Connection<T> = {
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param options - Configurable query options
  */
 export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
+  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{ users: Entity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
       organization(login: $org) {
-        membersWithRole(first: 100, after: $cursor) {
+        membersWithRole(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             avatarUrl,
@@ -170,7 +185,9 @@ export async function getOrganizationUsers(
     {
       org,
       email: tokenType === 'token',
+      pageSize: options.pageSize,
     },
+    options.requestDelayMs,
   );
 
   return { users };
@@ -188,13 +205,14 @@ export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  options: QueryOptions = { pageSize: 50, requestDelayMs: 1000 },
 ): Promise<{
   teams: Entity[];
 }> {
   const query = `
     query teams($org: String!, $cursor: String) {
       organization(login: $org) {
-        teams(first: 50, after: $cursor) {
+        teams(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             slug
@@ -254,7 +272,11 @@ export async function getOrganizationTeams(
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    { org },
+    {
+      org,
+      pageSize: options.pageSize,
+    },
+    options.requestDelayMs,
   );
 
   return { teams };
@@ -265,13 +287,14 @@ export async function getOrganizationTeamsFromUsers(
   org: string,
   userLogins: string[],
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{
   teams: Entity[];
 }> {
   const query = `
    query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
   organization(login: $org) {
-    teams(first: 100, after: $cursor, userLogins: $userLogins) {
+    teams(first: $pageSize, after: $cursor, userLogins: $userLogins) {
       pageInfo {
         hasNextPage
         endCursor
@@ -338,7 +361,12 @@ export async function getOrganizationTeamsFromUsers(
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    { org, userLogins },
+    {
+      org,
+      userLogins,
+      pageSize: options.pageSize,
+    },
+    options.requestDelayMs,
   );
 
   return { teams };
@@ -347,13 +375,14 @@ export async function getOrganizationTeamsFromUsers(
 export async function getOrganizationsFromUser(
   client: typeof graphql,
   user: string,
+  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{
   orgs: string[];
 }> {
   const query = `
   query orgs($user: String!) {
     user(login: $user) {
-      organizations(first: 100) {
+      organizations(first: $pageSize) {
         nodes { login }
         pageInfo { hasNextPage, endCursor }
       }
@@ -366,7 +395,11 @@ export async function getOrganizationsFromUser(
     '',
     r => r.user?.organizations,
     async o => o.login,
-    { user },
+    {
+      user,
+      pageSize: options.pageSize,
+    },
+    options.requestDelayMs,
   );
 
   return { orgs };
@@ -450,6 +483,7 @@ export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
   catalogPath: string,
+  options: QueryOptions = { pageSize: 50, requestDelayMs: 1000 },
 ): Promise<{ repositories: RepositoryResponse[] }> {
   let relativeCatalogPathRef: string;
   // We must strip the leading slash or the query for objects does not work
@@ -463,7 +497,7 @@ export async function getOrganizationRepositories(
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
         login
-        repositories(first: 50, after: $cursor) {
+        repositories(first: $pageSize, after: $cursor) {
           nodes {
             name
             catalogInfoFile: object(expression: $catalogPathRef) {
@@ -504,7 +538,12 @@ export async function getOrganizationRepositories(
     org,
     r => r.repositoryOwner?.repositories,
     async x => x,
-    { org, catalogPathRef },
+    {
+      org,
+      catalogPathRef,
+      pageSize: options.pageSize,
+    },
+    options.requestDelayMs,
   );
 
   return { repositories };
@@ -578,12 +617,13 @@ export async function getTeamMembers(
   client: typeof graphql,
   org: string,
   teamSlug: string,
+  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{ members: GithubUser[] }> {
   const query = `
     query members($org: String!, $teamSlug: String!, $cursor: String) {
       organization(login: $org) {
         team(slug: $teamSlug) {
-          members(first: 100, after: $cursor, membership: IMMEDIATE) {
+          members(first: $pageSize, after: $cursor, membership: IMMEDIATE) {
             pageInfo { hasNextPage, endCursor }
             nodes { login }
           }
@@ -597,7 +637,12 @@ export async function getTeamMembers(
     org,
     r => r.organization?.team?.members,
     async user => user,
-    { org, teamSlug },
+    {
+      org,
+      teamSlug,
+      pageSize: options.pageSize,
+    },
+    options.requestDelayMs,
   );
 
   return { members };
@@ -620,6 +665,7 @@ export async function getTeamMembers(
  * @param transformer - A function that, given one of the nodes in the Connection,
  *               returns the model mapped form of it
  * @param variables - The variable values that the query needs, minus the cursor
+ * @param requestDelayMs - The delay between requests in milliseconds (default 1000)
  */
 export async function queryWithPaging<
   GraphqlType,
@@ -636,6 +682,7 @@ export async function queryWithPaging<
     ctx: TransformerContext,
   ) => Promise<OutputType | undefined>,
   variables: Variables,
+  requestDelayMs: number = 1000,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -667,7 +714,7 @@ export async function queryWithPaging<
     if (!conn.pageInfo.hasNextPage) {
       break;
     } else {
-      await sleep(1000);
+      await sleep(requestDelayMs);
       cursor = conn.pageInfo.endCursor;
     }
   }
