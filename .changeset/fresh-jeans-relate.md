@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Add new OpenAPI generated code paths to the ESLint ignored list.
+Updates ESLint config to ignore all generated source code under `src/**/generated/**/*.ts`.
