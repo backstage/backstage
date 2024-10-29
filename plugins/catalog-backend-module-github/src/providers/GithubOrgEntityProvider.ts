@@ -55,6 +55,7 @@ import {
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
   GithubTeam,
+  QueryOptions,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
@@ -142,7 +143,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
   static fromConfig(config: Config, options: GithubOrgEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
-
+    const querySettings = config.get<Record<string, QueryOptions>>(
+      'catalog.providers.githubOrg.querySettings',
+    );
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub Org provider that matches ${options.orgUrl}. Please add a configuration for an integration.`,
@@ -164,6 +167,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      querySettings,
     });
 
     provider.schedule(options.schedule);
@@ -181,6 +185,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      querySettings?: Record<string, QueryOptions>;
     },
   ) {
     this.credentialsProvider =
@@ -231,11 +236,14 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.querySettings?.orgUsers,
     );
+
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
+      this.options.querySettings?.orgTeams,
     );
 
     if (areGroupEntities(teams)) {

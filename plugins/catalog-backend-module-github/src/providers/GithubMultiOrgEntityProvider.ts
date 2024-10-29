@@ -74,6 +74,7 @@ import {
   getOrganizationsFromUser,
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
+  QueryOptions,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
@@ -186,6 +187,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.githubUrl)?.config;
+    const querySettings = config.get<Record<string, QueryOptions>>(
+      'catalog.providers.githubOrg.querySettings',
+    );
 
     if (!gitHubConfig) {
       throw new Error(
@@ -210,6 +214,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
+      querySettings,
     });
 
     provider.schedule(options.schedule);
@@ -229,6 +234,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
+      querySettings?: Record<string, QueryOptions>;
     },
   ) {}
 
@@ -284,12 +290,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         org,
         tokenType,
         this.options.userTransformer,
+        this.options.querySettings?.users,
       );
 
       const { teams } = await getOrganizationTeams(
         client,
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
+        this.options.querySettings?.teams,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our
