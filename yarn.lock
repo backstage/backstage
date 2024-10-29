@@ -4030,7 +4030,7 @@ __metadata:
     vite: ^5.0.0
     vite-plugin-html: ^3.2.2
     vite-plugin-node-polyfills: ^0.22.0
-    webpack: ^5.70.0
+    webpack: ^5.94.0
     webpack-dev-server: ^5.0.0
     webpack-node-externals: ^3.0.0
     yaml: ^2.0.0
@@ -44617,9 +44617,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5, webpack@npm:^5.70.0":
-  version: 5.94.0
-  resolution: "webpack@npm:5.94.0"
+"webpack@npm:^5, webpack@npm:^5.94.0":
+  version: 5.95.0
+  resolution: "webpack@npm:5.95.0"
   dependencies:
     "@types/estree": ^1.0.5
     "@webassemblyjs/ast": ^1.12.1
@@ -44649,7 +44649,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 6a3d667be304a69cd6dcb8d676bc29f47642c0d389af514cfcd646eaaa809961bc6989fc4b2621a717dfc461130f29c6e20006d62a32e012dafaa9517813a4e6
+  checksum: 0c3dfe288de4d62f8f3dc25478a618894883cab739121330763b7847e43304630ea2815ae2351a5f8ff6ab7c9642caf530d503d89bda261fe2cd220e524dd5d1
   languageName: node
   linkType: hard
 
