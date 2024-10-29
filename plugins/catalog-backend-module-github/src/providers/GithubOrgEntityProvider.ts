@@ -55,7 +55,6 @@ import {
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
   GithubTeam,
-  QueryOptions,
   QuerySettings,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
@@ -188,7 +187,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
-      querySettings?: Record<string, QueryOptions>;
+      querySettings?: QuerySettings;
     },
   ) {
     this.credentialsProvider =
@@ -239,14 +238,14 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
-      this.options.querySettings?.orgUsers,
+      this.options.querySettings?.users,
     );
 
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
-      this.options.querySettings?.orgTeams,
+      this.options.querySettings?.teams,
     );
 
     if (areGroupEntities(teams)) {

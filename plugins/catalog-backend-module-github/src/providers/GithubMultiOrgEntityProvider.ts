@@ -74,7 +74,6 @@ import {
   getOrganizationsFromUser,
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
-  QueryOptions,
   QuerySettings,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
@@ -237,7 +236,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
-      querySettings?: Record<string, QueryOptions>;
+      querySettings?: QuerySettings;
     },
   ) {}
 
