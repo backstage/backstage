@@ -75,6 +75,7 @@ import {
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
   QuerySettings,
+  QueryOptions,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
@@ -167,9 +168,14 @@ export interface GithubMultiOrgEntityProviderOptions {
   teamTransformer?: TeamTransformer;
 
   /**
-   * (optional) options for modifying the rate and size of github graphql requests
+   * (optional) options for modifying the rate and size of github user queries
    */
-  querySettings: QuerySettings;
+  userQueryOptions?: QueryOptions;
+
+  /**
+   * (optional) options for modifying the rate and size of github team queries
+   */
+  teamQueryOptions?: QueryOptions;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -216,7 +222,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
-      querySettings: options.querySettings,
+      userQueryOptions: options.userQueryOptions,
+      teamQueryOptions: options.teamQueryOptions,
     });
 
     provider.schedule(options.schedule);
@@ -236,7 +243,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
-      querySettings?: QuerySettings;
+      userQueryOptions?: QueryOptions;
+      teamQueryOptions?: QueryOptions;
     },
   ) {}
 
@@ -292,14 +300,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         org,
         tokenType,
         this.options.userTransformer,
-        this.options.querySettings?.users,
+        this.options.userQueryOptions,
       );
 
       const { teams } = await getOrganizationTeams(
         client,
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
-        this.options.querySettings?.teams,
+        this.options.teamQueryOptions,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our

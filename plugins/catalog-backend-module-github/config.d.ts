@@ -15,7 +15,7 @@
  */
 
 import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
-import { QuerySettings } from './src/lib/github';
+import { QuerySettings, QueryOptions } from './src/lib/github';
 
 export interface Config {
   catalog?: {
@@ -219,9 +219,14 @@ export interface Config {
             orgs?: string[];
 
             /**
-             * (optional) options for modifying the rate and size of github graphql requests
+             * (optional) options for modifying the rate and size of github user queries
              */
-            querySettings?: QuerySettings;
+            userQueryOptions?: QueryOptions;
+
+            /**
+             * (optional) options for modifying the rate and size of github team queries
+             */
+            teamQueryOptions?: QueryOptions;
 
             /**
              * The refresh schedule to use.

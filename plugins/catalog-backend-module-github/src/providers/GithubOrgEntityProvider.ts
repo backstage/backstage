@@ -55,7 +55,7 @@ import {
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
   GithubTeam,
-  QuerySettings,
+  QueryOptions,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
@@ -130,9 +130,14 @@ export interface GithubOrgEntityProviderOptions {
   teamTransformer?: TeamTransformer;
 
   /**
-   * (optional) options for modifying the rate and size of github graphql requests
+   * (optional) options for modifying the rate and size of github user queries
    */
-  querySettings: QuerySettings;
+  userQueryOptions?: QueryOptions;
+
+  /**
+   * (optional) options for modifying the rate and size of github team queries
+   */
+  teamQueryOptions?: QueryOptions;
 }
 
 /**
@@ -169,7 +174,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
-      querySettings: options.querySettings,
+      userQueryOptions: options.userQueryOptions,
+      teamQueryOptions: options.teamQueryOptions,
     });
 
     provider.schedule(options.schedule);
@@ -187,7 +193,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
-      querySettings?: QuerySettings;
+      userQueryOptions?: QueryOptions;
+      teamQueryOptions?: QueryOptions;
     },
   ) {
     this.credentialsProvider =
@@ -238,14 +245,14 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
-      this.options.querySettings?.users,
+      this.options.userQueryOptions,
     );
 
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
-      this.options.querySettings?.teams,
+      this.options.teamQueryOptions,
     );
 
     if (areGroupEntities(teams)) {
