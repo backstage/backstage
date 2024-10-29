@@ -65,6 +65,11 @@ export type QueryOptions = {
   requestDelayMs: number;
 };
 
+export type QuerySettings = {
+  users?: QueryOptions;
+  teams?: QueryOptions;
+};
+
 export type PageInfo = {
   hasNextPage: boolean;
   endCursor?: string;

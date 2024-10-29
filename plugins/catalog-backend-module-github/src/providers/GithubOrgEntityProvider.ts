@@ -56,6 +56,7 @@ import {
   getOrganizationUsers,
   GithubTeam,
   QueryOptions,
+  QuerySettings,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
@@ -128,6 +129,11 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * (optional) options for modifying the rate and size of github graphql requests
+   */
+  querySettings: QuerySettings;
 }
 
 /**
@@ -143,9 +149,6 @@ export class GithubOrgEntityProvider implements EntityProvider {
   static fromConfig(config: Config, options: GithubOrgEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
-    const querySettings = config.get<Record<string, QueryOptions>>(
-      'catalog.providers.githubOrg.querySettings',
-    );
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub Org provider that matches ${options.orgUrl}. Please add a configuration for an integration.`,
@@ -167,7 +170,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
-      querySettings,
+      querySettings: options.querySettings,
     });
 
     provider.schedule(options.schedule);

@@ -75,6 +75,7 @@ import {
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
   QueryOptions,
+  QuerySettings,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
@@ -165,6 +166,11 @@ export interface GithubMultiOrgEntityProviderOptions {
    * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * (optional) options for modifying the rate and size of github graphql requests
+   */
+  querySettings: QuerySettings;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -187,9 +193,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.githubUrl)?.config;
-    const querySettings = config.get<Record<string, QueryOptions>>(
-      'catalog.providers.githubOrg.querySettings',
-    );
 
     if (!gitHubConfig) {
       throw new Error(
@@ -214,7 +217,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
-      querySettings,
+      querySettings: options.querySettings,
     });
 
     provider.schedule(options.schedule);
