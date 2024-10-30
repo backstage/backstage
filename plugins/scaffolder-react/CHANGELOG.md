@@ -1,5 +1,90 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.13.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.14.1-next.1
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.13.2-next.0
+
+### Patch Changes
+
+- 8b5ff7e: Fix issue with form state not refreshing when updating
+- ade301c: Fix issue with `Stepper` and trying to trim additional properties. This is now all behind `liveOmit` and `omitExtraData` instead.
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/theme@0.6.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.13.0
+
+### Minor Changes
+
+- bf6eaf3: Added support for `FormFieldBlueprint` to create field extensions in the Scaffolder plugin
+- d851b5b: Renamed Template Editor to Manage Templates.
+
+### Patch Changes
+
+- 341e5db: Add `overridableComponent` `BackstageTemplateStepperClassKey` to template stepper to enable custom styling
+- 4b60e0c: Small tweaks to API reports to make them valid
+- e969dc7: Move `@types/react` to a peer dependency.
+- 785d68f: Add support for pagination in scaffolder tasks list
+- b1de959: Scaffolder task routes require read permission to access. The tasks list option in the scaffolder page context menu only shows with permission.
+- e698470: Updated dependency `@rjsf/utils` to `5.21.2`.
+  Updated dependency `@rjsf/core` to `5.21.2`.
+  Updated dependency `@rjsf/material-ui` to `5.21.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.2`.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/theme@0.6.0
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.13.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.13.0-next.1
 
 ### Minor Changes

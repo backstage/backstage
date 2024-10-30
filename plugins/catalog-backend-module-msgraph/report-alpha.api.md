@@ -4,38 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { GroupTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
-import { OrganizationTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
-import { ProviderConfigTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
-import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 
-// @alpha
-const catalogModuleMicrosoftGraphOrgEntityProvider: BackendFeature;
-export default catalogModuleMicrosoftGraphOrgEntityProvider;
-
-// @alpha
-export const microsoftGraphOrgEntityProviderTransformExtensionPoint: ExtensionPoint<MicrosoftGraphOrgEntityProviderTransformsExtensionPoint>;
-
-// @alpha
-export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
-  setGroupTransformer(
-    transformer: GroupTransformer | Record<string, GroupTransformer>,
-  ): void;
-  setOrganizationTransformer(
-    transformer:
-      | OrganizationTransformer
-      | Record<string, OrganizationTransformer>,
-  ): void;
-  setProviderConfigTransformer(
-    transformer:
-      | ProviderConfigTransformer
-      | Record<string, ProviderConfigTransformer>,
-  ): void;
-  setUserTransformer(
-    transformer: UserTransformer | Record<string, UserTransformer>,
-  ): void;
-}
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

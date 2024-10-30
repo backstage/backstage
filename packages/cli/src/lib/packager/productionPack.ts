@@ -19,10 +19,7 @@ import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
-import {
-  createTypeDistProject,
-  getEntryPointDefaultFeatureType,
-} from '../typeDistProject';
+import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
 
 const PKG_PATH = 'package.json';
@@ -35,9 +32,9 @@ interface ProductionPackOptions {
   packageDir: string;
   targetDir?: string;
   /**
-   * A ts-morph project to share across packages
+   * Enables package feature detection using this TS-morph project.
    */
-  project?: Project;
+  featureDetectionProject?: Project;
 }
 
 export async function productionPack(options: ProductionPackOptions) {
@@ -55,7 +52,7 @@ export async function productionPack(options: ProductionPackOptions) {
   const writeCompatibilityEntryPoints = await prepareExportsEntryPoints(
     pkg,
     packageDir,
-    options.project,
+    options.featureDetectionProject,
   );
 
   // TODO(Rugvip): Once exports are rolled out more broadly we should deprecate and remove this behavior
@@ -144,7 +141,7 @@ const EXPORT_MAP = {
 async function prepareExportsEntryPoints(
   pkg: BackstagePackageJson,
   packageDir: string,
-  commonProject?: Project,
+  featureDetectionProject?: Project,
 ) {
   const distPath = resolvePath(packageDir, 'dist');
   if (!(await fs.pathExists(distPath))) {
@@ -158,7 +155,6 @@ async function prepareExportsEntryPoints(
   >();
 
   const entryPoints = readEntryPoints(pkg);
-  const project = commonProject || (await createTypeDistProject());
 
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
@@ -177,14 +173,14 @@ async function prepareExportsEntryPoints(
 
     exp.default = exp.require ?? exp.import;
 
-    // Find the default export type for the entry point
-    if (exp.types) {
+    // Find the default export type for the entry point, if feature detection is active
+    if (exp.types && featureDetectionProject) {
       const defaultFeatureType =
         pkg.backstage?.role &&
         getEntryPointDefaultFeatureType(
           pkg.backstage?.role,
           packageDir,
-          project,
+          featureDetectionProject,
           exp.types,
         );
 

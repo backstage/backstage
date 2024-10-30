@@ -43,8 +43,4 @@ export type FrontendFeature =
   | {
       $$type: '@backstage/BackstagePlugin';
     };
-
-// Warnings were encountered during analysis:
-//
-// src/wiring/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "FrontendFeature".
 ```

@@ -19,7 +19,7 @@ import {
   SignInPageProps,
   useApi,
 } from '@backstage/core-plugin-api';
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
@@ -44,6 +44,12 @@ export type ProxiedSignInPageProps = SignInPageProps & {
    * underlying provider
    */
   headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
+
+  /**
+   * Error component to be rendered instead of the default error panel in case
+   * sign in fails.
+   */
+  ErrorComponent?: ComponentType<{ error?: Error }>;
 };
 
 /**
@@ -82,7 +88,11 @@ export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
   if (status === 'loading') {
     return <Progress />;
   } else if (error) {
-    return <ErrorPanel title={t('proxiedSignInPage.title')} error={error} />;
+    return props.ErrorComponent ? (
+      <props.ErrorComponent error={error} />
+    ) : (
+      <ErrorPanel title={t('proxiedSignInPage.title')} error={error} />
+    );
   }
 
   return null;

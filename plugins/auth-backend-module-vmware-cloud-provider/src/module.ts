@@ -21,7 +21,6 @@ import {
 } from '@backstage/plugin-auth-node';
 
 import { vmwareCloudAuthenticator } from './authenticator';
-import { vmwareCloudSignInResolvers } from './resolvers';
 
 /**
  * VMware Cloud Provider backend module for the auth plugin
@@ -40,7 +39,6 @@ export const authModuleVmwareCloudProvider = createBackendModule({
           factory: createOAuthProviderFactory({
             authenticator: vmwareCloudAuthenticator,
             signInResolverFactories: {
-              ...vmwareCloudSignInResolvers,
               ...commonSignInResolvers,
             },
           }),

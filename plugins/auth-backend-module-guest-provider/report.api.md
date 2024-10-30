@@ -8,8 +8,4 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 // @public (undocumented)
 const authModuleGuestProvider: BackendFeature;
 export default authModuleGuestProvider;
-
-// Warnings were encountered during analysis:
-//
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleGuestProvider".
 ```

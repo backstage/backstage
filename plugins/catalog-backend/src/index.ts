@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export { catalogPlugin as default } from './service/CatalogPlugin';
 export * from './processors';
 export * from './processing';
 export * from './search';

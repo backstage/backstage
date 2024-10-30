@@ -52,11 +52,11 @@ Team: @backstage/search-maintainers
 
 Scope: The Backstage Search plugin
 
-| Name                     | Organization | Team           | GitHub                                        | Discord           |
-| ------------------------ | ------------ | -------------- | --------------------------------------------- | ----------------- |
-| Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal)      | emmaindal#7503    |
-| Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)          | raghunandanb#1114 |
-| Alex Lorenzi             | Spotify      | ProTean        | [AlexLorenzi](https://github.com/AlexLorenzi) | alexlorenzi       |
+| Name            | Organization | Team    | GitHub                                            | Discord          |
+| --------------- | ------------ | ------- | ------------------------------------------------- | ---------------- |
+| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | alexlorenzi      |
+| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | john_philip#2399 |
+| Morgan Da Costa | Spotify      | ProTean | [morgandc](https://github.com/morgandc)           | -                |
 
 ### Helm Charts
 
@@ -102,17 +102,13 @@ Team: @backstage/techdocs-maintainers
 
 Scope: The TechDocs plugin and related tooling
 
-| Name                     | Organization | Team    | GitHub                                            | Discord             |
-| ------------------------ | ------------ | ------- | ------------------------------------------------- | ------------------- |
-| Alex Lorenzi             | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`       |
-| Bond Yan                 | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`           |
-| Daniel Lochrie           | Spotify      | ProTean | [dlochrie](https://github.com/dlochrie)           | -                   |
-| Jackson Chen             | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`     |
-| John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399`  |
-| Morgan Bentell           | Spotify      | ProTean | [agentbellnorm](http://github.com/agentbellnorm)  | `morganbentell`     |
-| Raghunandan Balachandran | Spotify      | BUX     | [soapraj](http://github.com/soapraj)              | `raghunandanb#1114` |
-| Sydney Achinger          | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
-| Vojta Burian             | Spotify      | ProTean | [sankaritan](https://github.com/sankaritan)       | `vojtabu`           |
+| Name            | Organization | Team    | GitHub                                            | Discord            |
+| --------------- | ------------ | ------- | ------------------------------------------------- | ------------------ |
+| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`      |
+| Bond Yan        | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`          |
+| Jackson Chen    | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`    |
+| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399` |
+| Sydney Achinger | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                  |
 
 ## Incubating Project Areas
 
@@ -208,6 +204,7 @@ Scope: The Backstage Documentation
 | Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |
 | Jorge Lainfiesta               | Roadie.io                 | [jorgelainfiesta](https://github.com/jorgelainfiesta) | `jorgel#8733`                  |
 | Jussi Hallila                  | Roadie.io                 | [Xantier](https://github.com/Xantier)                 | `Xantier#0086`                 |
+| Kashish Mittal                 | Red Hat                   | [04kash](https://github.com/04kash)                   | `kashh._.`                     |
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
 | Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |

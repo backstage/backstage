@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
-import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { searchApiRef } from '../../api';
@@ -27,17 +28,19 @@ jest.useFakeTimers();
 
 describe('SearchFilter.hooks', () => {
   describe('useDefaultFilterValue', () => {
-    const configApiMock = new MockConfigApi({
-      search: {
-        query: {
-          pageLimit: 100,
+    const configApiMock = mockApis.config({
+      data: {
+        search: {
+          query: {
+            pageLimit: 100,
+          },
         },
       },
     });
     const searchApiMock = {
       query: jest.fn().mockResolvedValue({ results: [] }),
     };
-    const mockApis = TestApiRegistry.from(
+    const apis = TestApiRegistry.from(
       [searchApiRef, searchApiMock],
       [configApiRef, configApiMock],
     );
@@ -54,7 +57,7 @@ describe('SearchFilter.hooks', () => {
         filters: {},
       };
       return (
-        <ApiProvider apis={mockApis}>
+        <ApiProvider apis={apis}>
           <SearchContextProvider
             initialState={{ ...emptySearchContext, ...overrides }}
           >

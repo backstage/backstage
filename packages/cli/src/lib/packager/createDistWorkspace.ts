@@ -103,7 +103,13 @@ type Options = {
    * workspace. This ensures correct workspace output at significant cost to
    * command performance.
    */
-  alwaysYarnPack?: boolean;
+  alwaysPack?: boolean;
+
+  /**
+   * If set to true, the TypeScript feature detection will be enabled, which
+   * annotates the package exports field with the `backstage` export type.
+   */
+  enableFeatureDetection?: boolean;
 
   /**
    * If set to true, the generated code will be minified.
@@ -236,7 +242,8 @@ export async function createDistWorkspace(
   await moveToDistWorkspace(
     targetDir,
     targets,
-    Boolean(options.alwaysYarnPack),
+    Boolean(options.alwaysPack),
+    Boolean(options.enableFeatureDetection),
   );
 
   const files: FileEntry[] = options.files ?? ['yarn.lock', 'package.json'];
@@ -279,17 +286,20 @@ const FAST_PACK_SCRIPTS = [
 async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: PackageGraphNode[],
-  alwaysYarnPack: boolean,
+  alwaysPack: boolean,
+  enableFeatureDetection: boolean,
 ): Promise<void> {
   const [fastPackPackages, slowPackPackages] = partition(
     localPackages,
     pkg =>
-      !alwaysYarnPack &&
+      !alwaysPack &&
       FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
   );
 
-  const tsMorphProject =
-    fastPackPackages.length > 0 ? await createTypeDistProject() : undefined;
+  const featureDetectionProject =
+    fastPackPackages.length > 0 && enableFeatureDetection
+      ? await createTypeDistProject()
+      : undefined;
 
   // New an improved flow where we avoid calling `yarn pack`
   await Promise.all(
@@ -301,7 +311,7 @@ async function moveToDistWorkspace(
       await productionPack({
         packageDir: target.dir,
         targetDir: absoluteOutputPath,
-        project: tsMorphProject,
+        featureDetectionProject,
       });
     }),
   );

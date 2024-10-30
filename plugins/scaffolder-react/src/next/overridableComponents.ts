@@ -17,10 +17,12 @@
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { ScaffolderReactTemplateCategoryPickerClassKey } from './components/TemplateCategoryPicker/TemplateCategoryPicker';
+import { BackstageTemplateStepperClassKey } from './components/Stepper/Stepper';
 
 /** @alpha */
 export type ScaffolderReactComponentsNameToClassKey = {
   ScaffolderReactTemplateCategoryPicker: ScaffolderReactTemplateCategoryPickerClassKey;
+  BackstageTemplateStepper: BackstageTemplateStepperClassKey;
 };
 
 /** @alpha */

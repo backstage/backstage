@@ -15,18 +15,18 @@
  */
 
 import { StorageApi } from '@backstage/core-plugin-api';
-import { MockStorageApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import { performMigrationToTheNewBucket } from './migration';
 
 describe('performMigrationToTheNewBucket', () => {
   let mockStorage: StorageApi;
 
   beforeEach(() => {
-    mockStorage = MockStorageApi.create();
+    mockStorage = mockApis.storage();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should migrate', async () => {

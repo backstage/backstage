@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { assertError } from '@backstage/errors';
 import { exitWithError } from '../lib/errors';
 
@@ -106,6 +106,14 @@ export function registerRepoCommand(program: Command) {
       'Only test packages that changed since the specified ref',
     )
     .option(
+      '--successCache',
+      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    )
+    .option(
+      '--successCacheDir <path>',
+      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+    )
+    .option(
       '--jest-help',
       'Show help for Jest CLI options, which are passed through',
     )
@@ -130,6 +138,7 @@ export function registerScriptCommand(program: Command) {
       'Enable debugger in Node.js environments, breaking before code starts',
     )
     .option('--require <path>', 'Add a --require argument to the node process')
+    .option('--link <path>', 'Link an external workspace for module resolution')
     .action(lazy(() => import('./start').then(m => m.command)));
 
   command
@@ -367,8 +376,16 @@ export function registerCommands(program: Command) {
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
+    .addOption(
+      new Option(
+        '--alwaysYarnPack',
+        'Alias for --alwaysPack for backwards compatibility.',
+      )
+        .implies({ alwaysPack: true })
+        .hideHelp(true),
+    )
     .option(
-      '--alwaysYarnPack',
+      '--alwaysPack',
       'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
     )
     .description('Builds a temporary dist workspace from the provided packages')

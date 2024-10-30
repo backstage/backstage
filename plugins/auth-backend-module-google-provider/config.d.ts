@@ -18,6 +18,7 @@ export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
     providers?: {
+      /** @visibility frontend */
       google?: {
         [authEnv: string]: {
           clientId: string;
@@ -30,7 +31,10 @@ export interface Config {
           signIn?: {
             resolvers: Array<
               | { resolver: 'emailMatchingUserEntityAnnotation' }
-              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | {
+                  resolver: 'emailLocalPartMatchingUserEntityName';
+                  allowedDomains?: string[];
+                }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };

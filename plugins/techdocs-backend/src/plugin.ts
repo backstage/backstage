@@ -38,13 +38,13 @@ import {
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
-import { createRouter } from '@backstage/plugin-techdocs-backend';
+import { createRouter } from './service';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import * as winston from 'winston';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
- * @alpha
+ * @public
  */
 export const techdocsPlugin = createBackendPlugin({
   pluginId: 'techdocs',

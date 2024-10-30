@@ -210,24 +210,4 @@ export type TestPipelineResult = {
   error: unknown;
   documents: IndexableDocument[];
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:52:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:64:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/engines/LunrSearchEngine.d.ts:25:5 - (ae-undocumented) Missing documentation for "lunrIndices".
-// src/engines/LunrSearchEngine.d.ts:26:5 - (ae-undocumented) Missing documentation for "docStore".
-// src/engines/LunrSearchEngine.d.ts:27:5 - (ae-undocumented) Missing documentation for "logger".
-// src/engines/LunrSearchEngine.d.ts:28:5 - (ae-undocumented) Missing documentation for "highlightPreTag".
-// src/engines/LunrSearchEngine.d.ts:29:5 - (ae-undocumented) Missing documentation for "highlightPostTag".
-// src/engines/LunrSearchEngine.d.ts:33:5 - (ae-undocumented) Missing documentation for "translator".
-// src/engines/LunrSearchEngine.d.ts:34:5 - (ae-undocumented) Missing documentation for "setTranslator".
-// src/engines/LunrSearchEngine.d.ts:35:5 - (ae-undocumented) Missing documentation for "getIndexer".
-// src/engines/LunrSearchEngine.d.ts:36:5 - (ae-undocumented) Missing documentation for "query".
-// src/engines/LunrSearchEngineIndexer.d.ts:13:5 - (ae-undocumented) Missing documentation for "initialize".
-// src/engines/LunrSearchEngineIndexer.d.ts:14:5 - (ae-undocumented) Missing documentation for "finalize".
-// src/engines/LunrSearchEngineIndexer.d.ts:15:5 - (ae-undocumented) Missing documentation for "index".
-// src/engines/LunrSearchEngineIndexer.d.ts:16:5 - (ae-undocumented) Missing documentation for "buildIndex".
-// src/engines/LunrSearchEngineIndexer.d.ts:17:5 - (ae-undocumented) Missing documentation for "getDocumentStore".
 ```

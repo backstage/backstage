@@ -1,6 +1,6 @@
 {
   "name": "e2e-test",
-  "version": "0.2.21-next.1",
+  "version": "0.2.22-next.1",
   "description": "E2E test for verifying Backstage packages",
   "backstage": {
     "role": "cli"
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
-    "@types/node": "^18.17.8",
+    "@types/node": "^20.16.0",
     "nodemon": "^3.0.1"
   }
 }

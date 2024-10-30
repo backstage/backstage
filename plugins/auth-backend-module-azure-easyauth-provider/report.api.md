@@ -36,13 +36,5 @@ export namespace azureEasyAuthSignInResolvers {
     >;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:5:22 - (ae-undocumented) Missing documentation for "azureEasyAuthAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleAzureEasyAuthProvider".
-// src/resolvers.d.ts:3:1 - (ae-undocumented) Missing documentation for "azureEasyAuthSignInResolvers".
-// src/resolvers.d.ts:4:11 - (ae-undocumented) Missing documentation for "idMatchingUserEntityAnnotation".
-// src/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "AzureEasyAuthResult".
-
 // (No @packageDocumentation comment for this package)
 ```

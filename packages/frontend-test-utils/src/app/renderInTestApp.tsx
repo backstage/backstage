@@ -96,6 +96,9 @@ const NavItem = (props: {
 
 const appPluginOverride = appPlugin.withOverrides({
   extensions: [
+    appPlugin.getExtension('sign-in-page:app').override({
+      disabled: true,
+    }),
     appPlugin.getExtension('app/nav').override({
       output: [coreExtensionData.reactElement],
       factory(_originalFactory, { inputs }) {

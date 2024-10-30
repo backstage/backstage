@@ -1,14 +1,28 @@
 # {{id}}
 
-Welcome to the {{id}} backend plugin!
+This plugin backend was templated using the Backstage CLI. You should replace this text with a description of your plugin backend.
 
-_This plugin was created through the Backstage CLI_
+## Installation
 
-## Getting started
+This plugin is installed via the `{{name}}` package. To install it to your backend package, run the following command:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/{{id}}/health](http://localhost:7007/api/{{id}}/health).
+```bash
+# From your root directory
+yarn --cwd packages/backend add {{name}}
+```
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+Then add the plugin to your backend in `packages/backend/src/index.ts`:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('{{name}}'));
+```
+
+## Development
+
+This plugin backend can be started in a standalone mode from directly in this
+package with `yarn start`. It is a limited setup that is most convenient when
+developing the plugin backend itself.
+
+If you want to run the entire project, including the frontend, run `yarn dev` from the root directory.

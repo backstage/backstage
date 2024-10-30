@@ -30,7 +30,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { Config } from '@kubernetes/client-node';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -651,6 +650,7 @@ describe('KubernetesFetcher', () => {
     });
     describe('when server uses TLS', () => {
       let httpsRequest: jest.SpyInstance;
+      const initialCAPath = process.env.KUBERNETES_CA_FILE_PATH;
       beforeAll(() => {
         httpsRequest = jest.spyOn(
           // this is pretty egregious reverse engineering of msw.
@@ -662,7 +662,13 @@ describe('KubernetesFetcher', () => {
       });
       beforeEach(() => {
         httpsRequest.mockClear();
+        process.env.KUBERNETES_CA_FILE_PATH = mockCertDir.resolve('ca.crt');
       });
+
+      afterEach(() => {
+        process.env.KUBERNETES_CA_FILE_PATH = initialCAPath;
+      });
+
       it('should trust specified caData', async () => {
         worker.use(
           rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
@@ -755,7 +761,7 @@ describe('KubernetesFetcher', () => {
               name: 'cluster1',
               url: 'https://localhost:9999',
               authMetadata: {},
-              caFile: mockCertDir.resolve('ca.crt'),
+              caFile: process.env.KUBERNETES_CA_FILE_PATH,
             },
             credential: { type: 'bearer token', token: 'token' },
             objectTypesToFetch: new Set<ObjectToFetch>([
@@ -1009,7 +1015,7 @@ describe('KubernetesFetcher', () => {
           serviceId: 'some-service',
           clusterDetails: {
             name: 'unauthenticated-cluster',
-            url: 'http://ignored',
+            url: 'https://10.10.10.10',
             authMetadata: {},
           },
           credential: { type: 'anonymous' },
@@ -1025,18 +1031,21 @@ describe('KubernetesFetcher', () => {
     describe('Backstage running on k8s', () => {
       const initialHost = process.env.KUBERNETES_SERVICE_HOST;
       const initialPort = process.env.KUBERNETES_SERVICE_PORT;
-      const initialCaPath = Config.SERVICEACCOUNT_CA_PATH;
+      const initialCAPath = process.env.KUBERNETES_CA_FILE_PATH;
+
+      beforeEach(() => {
+        process.env.KUBERNETES_CA_FILE_PATH = mockCertDir.resolve('ca.crt');
+      });
 
       afterEach(() => {
         process.env.KUBERNETES_SERVICE_HOST = initialHost;
         process.env.KUBERNETES_SERVICE_PORT = initialPort;
-        Config.SERVICEACCOUNT_CA_PATH = initialCaPath;
+        process.env.KUBERNETES_CA_FILE_PATH = initialCAPath;
       });
 
       it('makes in-cluster requests when cluster details has no token', async () => {
         process.env.KUBERNETES_SERVICE_HOST = '10.10.10.10';
         process.env.KUBERNETES_SERVICE_PORT = '443';
-        Config.SERVICEACCOUNT_CA_PATH = mockCertDir.resolve('ca.crt');
         worker.use(
           rest.get('https://10.10.10.10/api/v1/pods', (req, res, ctx) =>
             res(
@@ -1052,7 +1061,7 @@ describe('KubernetesFetcher', () => {
           serviceId: 'some-service',
           clusterDetails: {
             name: 'overridden-to-in-cluster',
-            url: 'http://ignored',
+            url: 'https://10.10.10.10',
             authMetadata: {
               [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
             },

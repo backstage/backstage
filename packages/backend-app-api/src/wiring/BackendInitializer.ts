@@ -407,6 +407,25 @@ export class BackendInitializer {
       // The startup failed, but we may still want to do cleanup so we continue silently
     }
 
+    // Get all plugins.
+    const allPlugins = new Set<string>();
+    for (const feature of this.#registrations) {
+      for (const r of feature.getRegistrations()) {
+        if (r.type === 'plugin') {
+          allPlugins.add(r.pluginId);
+        }
+      }
+    }
+
+    // Iterate through all plugins and run their shutdown hooks.
+    await Promise.allSettled(
+      [...allPlugins].map(async pluginId => {
+        const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
+        await lifecycleService.shutdown();
+      }),
+    );
+
+    // Once all plugin shutdown hooks are done, run root shutdown hooks.
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.shutdown();
   }
@@ -437,14 +456,20 @@ export class BackendInitializer {
 
   async #getPluginLifecycleImpl(
     pluginId: string,
-  ): Promise<LifecycleService & { startup(): Promise<void> }> {
+  ): Promise<
+    LifecycleService & { startup(): Promise<void>; shutdown(): Promise<void> }
+  > {
     const lifecycleService = await this.#serviceRegistry.get(
       coreServices.lifecycle,
       pluginId,
     );
 
     const service = lifecycleService as any;
-    if (service && typeof service.startup === 'function') {
+    if (
+      service &&
+      typeof service.startup === 'function' &&
+      typeof service.shutdown === 'function'
+    ) {
       return service;
     }
 

@@ -71,9 +71,5 @@ const visualizerPlugin: FrontendPlugin<
 >;
 export default visualizerPlugin;
 
-// Warnings were encountered during analysis:
-//
-// src/plugin.d.ts:20:22 - (ae-undocumented) Missing documentation for "visualizerPlugin".
-
 // (No @packageDocumentation comment for this package)
 ```

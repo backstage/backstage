@@ -19,7 +19,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CookieAuthRefreshProvider } from './CookieAuthRefreshProvider';
 import {
-  MockStorageApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -30,12 +30,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 describe('CookieAuthRefreshProvider', () => {
-  const storageApiMock = MockStorageApi.create();
-  const discoveryApiMock = {
-    getBaseUrl: jest
-      .fn()
-      .mockResolvedValue('http://localhost:7000/api/techdocs'),
-  };
+  const discoveryApiMock = mockApis.discovery();
 
   function getExpiresAtInFuture() {
     const tenMinutesInMilliseconds = 10 * 60 * 1000;
@@ -51,7 +46,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -76,7 +71,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -107,7 +102,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -119,7 +114,7 @@ describe('CookieAuthRefreshProvider', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7000/api/techdocs/.backstage/auth/v1/cookie',
+        'http://example.com/api/techdocs/.backstage/auth/v1/cookie',
         { credentials: 'include' },
       ),
     );
@@ -153,7 +148,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >

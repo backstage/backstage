@@ -58,14 +58,4 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
 export type StackOverflowQuestionsRequestParams = {
   [key: string]: string | string[] | number;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:12:5 - (ae-undocumented) Missing documentation for "answers".
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:13:5 - (ae-undocumented) Missing documentation for "tags".
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:43:5 - (ae-undocumented) Missing documentation for "requestParams".
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:50:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:52:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:53:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/collators/StackOverflowQuestionsCollatorFactory.d.ts:54:5 - (ae-undocumented) Missing documentation for "execute".
 ```

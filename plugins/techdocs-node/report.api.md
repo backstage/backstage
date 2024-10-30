@@ -378,18 +378,4 @@ export class UrlPreparer implements PreparerBase {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
   shouldCleanPreparedDirectory(): boolean;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:11:5 - (ae-undocumented) Missing documentation for "setBuildStrategy".
-// src/extensions.d.ts:12:5 - (ae-undocumented) Missing documentation for "setBuildLogTransport".
-// src/extensions.d.ts:26:5 - (ae-undocumented) Missing documentation for "setTechdocsGenerator".
-// src/extensions.d.ts:40:5 - (ae-undocumented) Missing documentation for "registerPreparer".
-// src/extensions.d.ts:54:5 - (ae-undocumented) Missing documentation for "registerPublisher".
-// src/extensions.d.ts:55:5 - (ae-undocumented) Missing documentation for "registerPublisherSettings".
-// src/stages/generate/index.d.ts:10:22 - (ae-undocumented) Missing documentation for "getMkDocsYml".
-// src/stages/publish/publish.d.ts:10:5 - (ae-undocumented) Missing documentation for "register".
-// src/stages/publish/publish.d.ts:11:5 - (ae-undocumented) Missing documentation for "get".
-// src/stages/publish/types.d.ts:21:5 - (ae-undocumented) Missing documentation for "googleGcs".
-// src/techdocsTypes.d.ts:39:5 - (ae-undocumented) Missing documentation for "shouldBuild".
 ```

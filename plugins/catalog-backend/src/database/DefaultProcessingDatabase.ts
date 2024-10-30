@@ -41,7 +41,7 @@ import {
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
-import { generateStableHash } from './util';
+import { generateStableHash, generateTargetKey } from './util';
 import {
   EventBroker,
   EventParams,
@@ -158,7 +158,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       'refresh_keys',
       refreshKeys.map(k => ({
         entity_id: id,
-        key: k.key,
+        key: generateTargetKey(k.key),
       })),
       BATCH_SIZE,
     );

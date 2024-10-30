@@ -15,8 +15,6 @@ Below is a cleaned up output of `yarn backstage-cli --help`:
 ```text
 new [options]                                  Open up an interactive guide to creating new things in
                                                 your app
-test                                           Run tests, forwarding args to Jest, defaulting to watch
-                                                mode [DEPRECATED]
 config:docs [options]                          Browse the configuration reference documentation
 config:print [options]                         Print the app configuration for the current package
 config:check [options]                         Validate that the given configuration loads and matches
@@ -97,6 +95,47 @@ Options:
   --format <format>  Lint report output format (default: "eslint-formatter-friendly")
   --since <ref>      Only lint packages that changed since the specified ref
   --fix              Attempt to automatically fix violations
+```
+
+## repo test
+
+Test packages in the project. It is recommended to have this command be used as the `test` script in the root `package.json` in your project:
+
+```json title="package.json in the root of your project"
+{
+  ...
+  "scripts": {
+    ...
+    "test": "backstage-cli repo test"
+  }
+}
+```
+
+If run without any arguments it will default to running changed tests in watch mode, unless the `CI` environment flag is set, in which case it will run all tests without watching:
+
+```sh title="Run changes tests from repo root"
+yarn test
+```
+
+If arguments are provided, they will be forwarded to Jest and used to filter test to execute. If full paths to tests are provided, only those tests will be included, for example:
+
+```sh title="Run specific tests from repo root"
+yarn test packages/app/src/App.test.tsx
+```
+
+If you want to avoid re-running tests that have not changed since the last successful run in CI, you can use the `--successCache` flag. By default this cache is stored in `node_modules/.cache/backstage-cli`, but you can choose a different directory with the `--successCacheDir <path>`.
+
+```text
+Usage: backstage-cli repo test [options]
+
+Run tests, forwarding args to Jest, defaulting to watch mode
+
+Options:
+  --since <ref>             Only test packages that changed since the specified ref
+  --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
+  --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
+  --jest-help               Show help for Jest CLI options, which are passed through
+  -h, --help                display help for command
 ```
 
 ## package start

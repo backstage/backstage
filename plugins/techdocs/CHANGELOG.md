@@ -1,5 +1,117 @@
 # @backstage/plugin-techdocs
 
+## 1.11.1-next.1
+
+### Patch Changes
+
+- 90246a9: Fix techdocs config schema for custom elements sanitizer
+- Updated dependencies
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/plugin-auth-react@0.1.8-next.1
+  - @backstage/plugin-catalog-react@1.14.1-next.1
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-search-react@1.8.2-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.10-next.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- 605bdc0: Avoid page re-rendering when clicking on anchor links in the same documentation page.
+- 4f0cb89: Added DomPurify sanitizer configuration for custom elements implementing RFC https://github.com/backstage/backstage/issues/26988.
+  See https://backstage.io/docs/features/techdocs/how-to-guides#how-to-enable-custom-elements-in-techdocs for how to enable it in the configuration.
+- f246178: Removed `canvas` dev dependency.
+- 4a2f73a: Fix an issue that caused the current documentation page to be re-rendered when navigating to
+  another one.
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/plugin-techdocs-react@1.2.10-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/theme@0.6.0
+  - @backstage/plugin-auth-react@0.1.8-next.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-search-react@1.8.2-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.0
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- a77cb40: Make `emptyState` input optional on `entity-content:techdocs` extension so that
+  the default empty state extension works correctly.
+- e918061: Add support for mkdocs material palette conditional hashes.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- e8b4966: Use more of the available space for the navigation sidebar.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-techdocs-react@1.2.9
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/plugin-search-react@1.8.1
+  - @backstage/plugin-auth-react@0.1.7
+  - @backstage/theme@0.6.0
+  - @backstage/integration@1.15.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.0-next.2
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
+### Patch Changes
+
+- e918061: Add support for mkdocs material palette conditional hashes.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- e8b4966: Use more of the available space for the navigation sidebar.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/plugin-auth-react@0.1.7-next.2
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-search-react@1.8.1-next.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.9-next.2
+
 ## 1.10.11-next.1
 
 ### Patch Changes

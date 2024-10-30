@@ -24,7 +24,7 @@ import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { ReactNode, useState } from 'react';
+import React, { ComponentType, ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -37,15 +37,24 @@ import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSearchParams } from 'react-router-dom';
 
-type MultiSignInPageProps = SignInPageProps & {
+type CommonSignInPageProps = SignInPageProps & {
+  /**
+   * Error component to be rendered instead of the default error panel in case
+   * sign in fails.
+   */
+  ErrorComponent?: ComponentType<{ error?: Error }>;
+};
+
+type MultiSignInPageProps = CommonSignInPageProps & {
   providers: IdentityProviders;
   title?: string;
   titleComponent?: ReactNode;
   align?: 'center' | 'left';
 };
 
-type SingleSignInPageProps = SignInPageProps & {
+type SingleSignInPageProps = CommonSignInPageProps & {
   provider: SignInProviderConfig;
   auto?: boolean;
 };
@@ -101,6 +110,7 @@ export const SingleSignInPage = ({
   provider,
   auto,
   onSignInSuccess,
+  ErrorComponent,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
@@ -114,6 +124,10 @@ export const SingleSignInPage = ({
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
+  // User was redirected back to sign in page with error from auth redirect flow
+  const [searchParams, _setSearchParams] = useSearchParams();
+  const errorParam = searchParams.get('error');
+
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
     try {
@@ -126,7 +140,7 @@ export const SingleSignInPage = ({
       }
 
       // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto)) {
+      if (!identityResponse && (showPopup || auto) && !errorParam) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
@@ -160,7 +174,12 @@ export const SingleSignInPage = ({
     }
   };
 
-  useMountEffect(() => login({ checkExisting: true }));
+  useMountEffect(() => {
+    if (errorParam) {
+      setError(new Error(errorParam));
+    }
+    login({ checkExisting: true });
+  });
 
   return showLoginPage ? (
     <Page themeId="home">
@@ -190,11 +209,15 @@ export const SingleSignInPage = ({
               }
             >
               <Typography variant="body1">{provider.message}</Typography>
-              {error && error.name !== 'PopupRejectedError' && (
-                <Typography variant="body1" color="error">
-                  {error.message}
-                </Typography>
-              )}
+              {error &&
+                error.name !== 'PopupRejectedError' &&
+                (ErrorComponent ? (
+                  <ErrorComponent error={error} />
+                ) : (
+                  <Typography variant="body1" color="error">
+                    {error.message}
+                  </Typography>
+                ))}
             </InfoCard>
           </GridItem>
         </Grid>

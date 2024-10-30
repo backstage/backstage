@@ -801,34 +801,33 @@ The `projectSlug` filter generates a project slug from a repository URL
 - **Input**: `github.com?repo=backstage&org=backstage`
 - **Output**: `backstage/backstage`
 
-## Custom Filters
+## Custom Filters and Globals
 
-Whenever it is needed to extend the built-in filters with yours `${{ parameters.name | my-filter1 | my-filter2 | etc }}`, then you can add them
-using the property `additionalTemplateFilters`.
+You may wish to extend the filters and globals with your own custom ones. For example `${{ myGlobal | myFilter | myOtherFilter }}` or `${{ myFunctionGlobal(1,2) | myFilter }}`.
+This can be achieved using the `additionalTemplateFilters` and `additionalTemplateGlobals` properties respectively.
 
-The `additionalTemplateFilters` property accepts as type a `Record`
+These properties accept a `Record`
 
-```ts title="plugins/scaffolder-backend/src/service/Router.ts"
+```ts title="plugins/scaffolder-backend/src/service/router.ts"
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 ```
 
-where the first parameter is the name of the filter and the second receives a list of `JSON value` arguments. The `templateFilter()` function must return a JsonValue which is either a Json array, object or primitive.
+where the first parameter is the identifier of the filter or global and the second is a `TemplateFilter` or a `TemplateGlobal` respectively.
+A `TemplateFilter` is a function which will be called using the previous `JsonValue` objects and may return a `JsonValue` object.
+A `TemplateGlobal` can either be a function which will be called using the passed `JsonValue` objects and may return a `JsonValue` object or it can be a `JsonValue` object itself.
 
 ```ts title="plugins/scaffolder-node/src/types.ts"
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;
 ```
 
-From a practical coding point of view, you will translate that into the following snippet code handling 2 filters:
+**Usage Example**
 
-```ts"
-...
-additionalTemplateFilters: {
-  base64: (...args: JsonValue[]) => btoa(args.join("")),
-  betterFilter: (...args: JsonValue[]) => { return `This is a much better string than "${args}", don't you think?` }
-}
-```
-
-And within your template, you will be able to use the filters using a parameter and the filter passed using the pipe symbol
+Given you want to have the following filters and globals available in you template:
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -840,22 +839,21 @@ spec:
   owner: user:guest
   type: service
 
-  parameters:
-    - title: Test custom filters
-      properties:
-        userName:
-          title: Name of the user
-          type: string
-
   steps:
-    - id: debug
-      name: debug
+    - id: debug1
+      name: debug1
       action: debug:log
       input:
-        message: ${{ parameters.userName | betterFilter | base64 }}
+        message: ${{ myGlobal | myFilter | myOtherFilter }}
+
+    - id: debug2
+      name: debug2
+      action: debug:log
+      input:
+        message: ${{ myFunctionGlobal(1,2) | myFilter }}
 ```
 
-Next, you will have to register the property `addTemplateFilters` using the `scaffolderTemplatingExtensionPoint` of a new `BackendModule` [created](../../backend-system/architecture/06-modules.md).
+You will have to create a new [`BackendModule`](../../backend-system/architecture/06-modules.md) using the `scaffolderTemplatingExtensionPoint`.
 
 Here is a very simplified example of how to do that:
 
@@ -876,11 +874,13 @@ const scaffolderModuleCustomFilters = createBackendModule({
         // ... and other dependencies as needed
       },
       async init({ scaffolder /* ..., other dependencies */ }) {
+        scaffolder.addTemplateGlobals({
+          myGlobal: () => 'myGlobal',
+          myFunctionGlobal: (...args: JsonValue[]) => args[0] + args[1],
+        });
         scaffolder.addTemplateFilters({
-          base64: (...args: JsonValue[]) => btoa(args.join('')),
-          betterFilter: (...args: JsonValue[]) => {
-            return `This is a much better string than "${args}", don't you think?`;
-          },
+          myFilter: () => 'the value is this now',
+          myOtherFilter: (...args: JsonValue[]) => args.join(''),
         });
       },
     });
@@ -889,7 +889,7 @@ const scaffolderModuleCustomFilters = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomFilters);
 ```
@@ -908,9 +908,15 @@ export default async function createPlugin({
 
     additionalTemplateFilters: {
         <YOUR_FILTERS>
-    }
+    },
+    additionalTemplateGlobals: {
+        <YOUR_GLOBALS>
+    },
   });
+}
 ```
+
+Note that additional template global functions are currently not supported in `fetch:template` (see #25445).
 
 ## Template Editor
 

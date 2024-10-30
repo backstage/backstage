@@ -19,4 +19,6 @@
  * A module for the search backend that exports Catalog modules.
  */
 
+export * from './module';
+export { default } from './module';
 export * from './collators';

@@ -364,22 +364,19 @@ load performance.
 
 ### Backend Development
 
-The backend development bundling is also based on Webpack, but rather than
-starting up a web server, the backend is started up using the
-[`RunScriptWebpackPlugin`](https://www.npmjs.com/package/run-script-webpack-plugin).
-The reason for using Webpack for development of the backend is both that it is a
-convenient way to handle transpilation of a large set of packages, as well us
-allowing us to use hot module replacement and maintaining state while reloading
-individual backend modules. This is particularly useful when running the backend
-with in-memory SQLite as the database choice.
+The backend development setup does not use any bundling process. It runs a
+Node.js process directly, with on-the-fly transpilation from TypeScript to
+JavaScript. The transpilation is done with a custom transform based on
+[SWC](https://swc.rs/).
 
-Except for executing in Node.js rather than a web server, the backend
-development bundling configuration is quite similar to the frontend one. It
-shares most of the Webpack configuration, including the transpilation setup.
-Some differences are that it does not inject any environment variables or node
-module fallbacks, and it uses
-[`webpack-node-externals`](https://www.npmjs.com/package/webpack-node-externals)
-to avoid bundling in dependency modules.
+During development the backend Node.js process will restart whenever there is a
+change to the source code. This means that any in-memory data will be lost. In
+order to store data between restarts, the backend process has an IPC channel
+available to store and restore data from the parent CLI process. The primary
+purpose of this, which is already built-in, is to restore the contents of
+databases when using SQLite for development. You can also use it for your own
+purposes, with the `DevDataStore` utility exported from the
+`@backstage/backend-dev-utils` package.
 
 If you want to inspect the running Node.js process, the `--inspect` and
 `--inspect-brk` flags can be used, as they will be passed through as options to
@@ -559,11 +556,28 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
+### Additional Configuration Options
+
+When using the built-in `@backstage/cli/config/jest` configuration the following options are available in addition to the standard Jest options.
+
+#### `rejectFrontendNetworkRequests` **[boolean]**
+
+Default: `false`
+
+If set to `true`, any attempt to make a network request in frontend package tests will result in an error. This option can only be set in the root `package.json` and will apply to all frontend packages in the monorepo.
+
+```json title="Example - in your root package.json"
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
+```
+
 ## Caching
 
 Caching is used sparingly throughout the Backstage build system. It is always used as a way to squeeze out a little bit of extra performance, rather than requirement to keep things fast. The following is a list of places where optional caching is available:
 
 - **TypeScript** - The default `tsconfig.json` used by Backstage projects has `incremental` set to `true`, which enables local caching of type checking results. It is however generally not recommended in CI, where `yarn tsc:full` is preferred, which sets `--incremental false`.
+- **Testing** - The `backstage-cli repo test` command has a `--successCache` flag that enables caching of successful test results. This is done at the package level, meaning that if a package has not been changed since the last test run and it was successful, the testing will be skipped. This is recommended to be used in CI, but not during local development.
 - **Linting** - The `backstage-cli repo lint` command has a `--successCache` flag that enables caching of successful linting results. This is done at the package level, meaning that if a package has not been changed since the last lint run and it was successful, the linting will be skipped. This is recommended to be used in CI, but not during local development.
 - **Webpack** - It is possible to enable experimental caching of frontend package builds using the `BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE` environment variable. This will enable the Webpack filesystem cache.
 

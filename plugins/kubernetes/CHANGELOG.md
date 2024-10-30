@@ -1,5 +1,69 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.0-next.1
+
+### Minor Changes
+
+- 71b8704: Bumping @kubernetes/client-node to 1.0.0-rc7 to mitigate CVEs related to the request and tough-cookie packages
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.0-next.0
+  - @backstage/plugin-kubernetes-react@0.5.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/plugin-catalog-react@1.14.1-next.1
+
+## 0.11.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+  - @backstage/plugin-kubernetes-react@0.4.5-next.0
+
+## 0.11.16
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 605e0bb: Updated dependency `@kubernetes-models/base` to `^5.0.0`.
+- 276cd3d: Updated dependency `@kubernetes-models/apimachinery` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-kubernetes-react@0.4.4
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+
+## 0.11.16-next.2
+
+### Patch Changes
+
+- 276cd3d: Updated dependency `@kubernetes-models/apimachinery` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/plugin-kubernetes-react@0.4.4-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/plugin-kubernetes-common@0.8.3
+
 ## 0.11.16-next.1
 
 ### Patch Changes

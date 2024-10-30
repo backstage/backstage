@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.31-next.1",
+  "version": "0.0.32-next.1",
   "backstage": {
     "role": "backend"
   },
@@ -54,6 +54,7 @@
     "@backstage/plugin-proxy-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
@@ -61,7 +62,7 @@
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@opentelemetry/auto-instrumentations-node": "^0.50.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.51.0",
     "@opentelemetry/exporter-prometheus": "^0.53.0",
     "@opentelemetry/sdk-node": "^0.53.0",
     "example-app": "link:../app"

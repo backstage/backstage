@@ -26,10 +26,4 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/processor/ScaffolderEntitiesProcessor.d.ts:10:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processor/ScaffolderEntitiesProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "validateEntityKind".
-// src/processor/ScaffolderEntitiesProcessor.d.ts:13:5 - (ae-undocumented) Missing documentation for "postProcessEntity".
 ```

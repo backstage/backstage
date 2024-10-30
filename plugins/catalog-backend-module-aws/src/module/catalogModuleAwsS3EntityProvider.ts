@@ -24,7 +24,7 @@ import { AwsS3EntityProvider } from '../providers';
 /**
  * Registers the AwsS3EntityProvider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModuleAwsS3EntityProvider = createBackendModule({
   pluginId: 'catalog',

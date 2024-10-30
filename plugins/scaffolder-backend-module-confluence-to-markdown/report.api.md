@@ -26,8 +26,4 @@ export const createConfluenceToMarkdownAction: (options: {
   },
   JsonObject
 >;
-
-// Warnings were encountered during analysis:
-//
-// src/actions/confluence/confluenceToMarkdown.d.ts:7:22 - (ae-undocumented) Missing documentation for "createConfluenceToMarkdownAction".
 ```

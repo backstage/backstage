@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { createDistWorkspace } from '../lib/packager';
 
 type Options = {
-  alwaysYarnPack?: boolean;
+  alwaysPack?: boolean;
 };
 
 export default async (dir: string, packages: string[], options: Options) => {
@@ -28,6 +28,7 @@ export default async (dir: string, packages: string[], options: Options) => {
 
   await createDistWorkspace(packages, {
     targetDir: dir,
-    alwaysYarnPack: options.alwaysYarnPack,
+    alwaysPack: options.alwaysPack,
+    enableFeatureDetection: true,
   });
 };

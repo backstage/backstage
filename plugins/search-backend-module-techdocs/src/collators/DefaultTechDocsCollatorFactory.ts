@@ -34,24 +34,22 @@ import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/al
 import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
-import unescape from 'lodash/unescape';
 import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+import {
+  MkSearchIndexDoc,
+  TechDocsCollatorDocumentTransformer,
+} from './TechDocsCollatorDocumentTransformer';
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
+import { defaultTechDocsCollatorDocumentTransformer } from './defaultTechDocsCollatorDocumentTransformer';
 import {
   AuthService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-
-interface MkSearchIndexDoc {
-  title: string;
-  text: string;
-  location: string;
-}
 
 /**
  * Options to configure the TechDocs collator factory
@@ -70,6 +68,7 @@ export type TechDocsCollatorFactoryOptions = {
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
+  documentTransformer?: TechDocsCollatorDocumentTransformer;
 };
 
 type EntityInfo = {
@@ -98,6 +97,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
   private entityTransformer: TechDocsCollatorEntityTransformer;
+  private documentTransformer: TechDocsCollatorDocumentTransformer;
 
   private constructor(options: TechDocsCollatorFactoryOptions) {
     this.discovery = options.discovery;
@@ -109,8 +109,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       new CatalogClient({ discoveryApi: options.discovery });
     this.parallelismLimit = options.parallelismLimit ?? 10;
     this.legacyPathCasing = options.legacyPathCasing ?? false;
-    this.entityTransformer =
-      options.entityTransformer ?? defaultTechDocsCollatorEntityTransformer;
+    this.entityTransformer = options.entityTransformer ?? (() => ({}));
+    this.documentTransformer = options.documentTransformer ?? (() => ({}));
 
     this.auth = createLegacyAuthAdapters({
       auth: options.auth,
@@ -224,9 +224,10 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               ]);
 
               return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+                ...defaultTechDocsCollatorEntityTransformer(entity),
+                ...defaultTechDocsCollatorDocumentTransformer(doc),
                 ...this.entityTransformer(entity),
-                title: unescape(doc.title),
-                text: unescape(doc.text || ''),
+                ...this.documentTransformer(doc),
                 location: this.applyArgsToFormat(
                   this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
                   {
@@ -234,7 +235,6 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
                     path: doc.location,
                   },
                 ),
-                path: doc.location,
                 ...entityInfo,
                 entityTitle: entity.metadata.title,
                 componentType: entity.spec?.type?.toString() || 'other',

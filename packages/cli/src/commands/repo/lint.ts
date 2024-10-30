@@ -16,9 +16,8 @@
 
 import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
-import fs from 'fs-extra';
 import { createHash } from 'crypto';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath } from 'path';
 import {
   PackageGraph,
   BackstagePackageJson,
@@ -27,6 +26,7 @@ import {
 import { paths } from '../../lib/paths';
 import { runWorkerQueueThreads } from '../../lib/parallel';
 import { createScriptOptionsParser } from './optionsParser';
+import { SuccessCache } from '../../lib/cache/SuccessCache';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -36,39 +36,13 @@ function depCount(pkg: BackstagePackageJson) {
   return deps + devDeps;
 }
 
-const CACHE_FILE_NAME = 'lint-cache.json';
-
-type Cache = string[];
-
-async function readCache(dir: string): Promise<Cache | undefined> {
-  try {
-    const data = await fs.readJson(resolvePath(dir, CACHE_FILE_NAME));
-    if (!Array.isArray(data)) {
-      return undefined;
-    }
-    if (data.some(x => typeof x !== 'string')) {
-      return undefined;
-    }
-    return data as Cache;
-  } catch {
-    return undefined;
-  }
-}
-
-async function writeCache(dir: string, cache: Cache) {
-  await fs.mkdirp(dir);
-  await fs.writeJson(resolvePath(dir, CACHE_FILE_NAME), cache, { spaces: 2 });
-}
-
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  const cacheDir = resolvePath(
-    opts.successCacheDir ?? 'node_modules/.cache/backstage-cli',
-  );
+  const cache = new SuccessCache('lint', opts.successCacheDir);
   const cacheContext = opts.successCache
     ? {
-        cache: await readCache(cacheDir),
+        entries: await cache.read(),
         lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
       }
     : undefined;
@@ -117,7 +91,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         cacheContext.lockfile.getDependencyTreeHash(pkg.packageJson.name),
       );
       hash.update('\0');
-      hash.update(JSON.stringify(lintOptions));
+      hash.update(JSON.stringify(lintOptions ?? {}));
       hash.update('\0');
       hash.update(process.version); // Node.js version
       hash.update('\0');
@@ -131,22 +105,27 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   );
 
   const resultsList = await runWorkerQueueThreads({
-    items,
+    items: items.filter(item => item.lintOptions), // Filter out packages without lint script
     workerData: {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
-      successCache: cacheContext?.cache,
+      successCache: cacheContext?.entries,
+      rootDir: paths.targetRoot,
     },
-    workerFactory: async ({ fix, format, shouldCache, successCache }) => {
+    workerFactory: async ({
+      fix,
+      format,
+      shouldCache,
+      successCache,
+      rootDir,
+    }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
       const crypto = require('crypto') as typeof import('crypto');
-      const recursiveReadDir =
-        require('recursive-readdir') as typeof import('recursive-readdir');
+      const globby = require('globby') as typeof import('globby');
       const { readFile } =
         require('fs/promises') as typeof import('fs/promises');
-      const { relative: workerRelativePath } =
-        require('path') as typeof import('path');
+      const workerPath = require('path') as typeof import('path');
 
       return async ({
         fullDir,
@@ -172,27 +151,36 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
         let sha: string | undefined = undefined;
         if (shouldCache) {
-          const result = await recursiveReadDir(fullDir);
+          const result = await globby(relativeDir, {
+            gitignore: true,
+            onlyFiles: true,
+            cwd: rootDir,
+          });
 
           const hash = crypto.createHash('sha1');
           hash.update(parentHash!);
           hash.update('\0');
 
           for (const path of result.sort()) {
-            if (await eslint.isPathIgnored(path)) {
+            const absPath = workerPath.resolve(rootDir, path);
+            const pathInPackage = workerPath.relative(fullDir, absPath);
+
+            if (await eslint.isPathIgnored(pathInPackage)) {
               continue;
             }
-            hash.update(workerRelativePath(fullDir, path));
+            hash.update(pathInPackage);
             hash.update('\0');
-            hash.update(await readFile(path));
+            hash.update(await readFile(absPath));
             hash.update('\0');
             hash.update(
-              JSON.stringify(await eslint.calculateConfigForFile(path)),
+              JSON.stringify(
+                await eslint.calculateConfigForFile(pathInPackage),
+              ).replaceAll(rootDir, ''),
             );
             hash.update('\0');
           }
           sha = await hash.digest('hex');
-          if (successCache?.includes(sha)) {
+          if (successCache?.has(sha)) {
             console.log(`Skipped ${relativeDir} due to cache hit`);
             return { relativeDir, sha, failed: false };
           }
@@ -252,7 +240,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   if (cacheContext) {
-    await writeCache(cacheDir, outputSuccessCache);
+    await cache.write(outputSuccessCache);
   }
 
   if (failed) {

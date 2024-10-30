@@ -18,6 +18,7 @@ import { Content } from './Content';
 import React from 'react';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const docsEntities = [
   {
@@ -34,20 +35,14 @@ const docsEntities = [
 ];
 
 describe('<FeaturedDocsCard />', () => {
-  const mockCatalogApi = {
-    getEntities: jest
-      .fn()
-      .mockImplementation(async () => ({ items: docsEntities })),
-  };
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    <TestApiProvider
+      apis={[[catalogApiRef, catalogApiMock({ entities: docsEntities })]]}
+    >
+      {children}
+    </TestApiProvider>
+  );
 
-  beforeAll(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
-        {children}
-      </TestApiProvider>
-    );
-  });
   it('should show expected featured doc and title', async () => {
     const { getByTestId, getByText } = await renderInTestApp(
       <Wrapper>

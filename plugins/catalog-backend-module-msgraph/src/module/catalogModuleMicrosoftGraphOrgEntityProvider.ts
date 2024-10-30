@@ -31,7 +31,7 @@ import { MicrosoftGraphOrgEntityProvider } from '../processors';
 /**
  * Interface for {@link microsoftGraphOrgEntityProviderTransformExtensionPoint}.
  *
- * @alpha
+ * @public
  */
 export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
   /**
@@ -76,7 +76,7 @@ export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
 /**
  * Extension point used to customize the transforms used by the module.
  *
- * @alpha
+ * @public
  */
 export const microsoftGraphOrgEntityProviderTransformExtensionPoint =
   createExtensionPoint<MicrosoftGraphOrgEntityProviderTransformsExtensionPoint>(
@@ -88,7 +88,7 @@ export const microsoftGraphOrgEntityProviderTransformExtensionPoint =
 /**
  * Registers the MicrosoftGraphOrgEntityProvider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModuleMicrosoftGraphOrgEntityProvider = createBackendModule(
   {

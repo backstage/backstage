@@ -32,14 +32,5 @@ export const useSignal: <TMessage extends JsonObject = JsonObject>(
   isSignalsAvailable: boolean;
 };
 
-// Warnings were encountered during analysis:
-//
-// src/api/SignalApi.d.ts:3:22 - (ae-undocumented) Missing documentation for "signalApiRef".
-// src/api/SignalApi.d.ts:5:1 - (ae-undocumented) Missing documentation for "SignalSubscriber".
-// src/api/SignalApi.d.ts:6:5 - (ae-undocumented) Missing documentation for "unsubscribe".
-// src/api/SignalApi.d.ts:9:1 - (ae-undocumented) Missing documentation for "SignalApi".
-// src/api/SignalApi.d.ts:10:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/hooks/useSignal.d.ts:3:22 - (ae-undocumented) Missing documentation for "useSignal".
-
 // (No @packageDocumentation comment for this package)
 ```

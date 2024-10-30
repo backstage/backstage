@@ -20,25 +20,58 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Types } from '@gitbeaker/core';
+import { Gitlab, Types } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import { createGitlabApi } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
+import { createHash } from 'crypto';
 
-function getFileAction(
-  fileInfo: { file: SerializedFile; targetPath: string | undefined },
+function computeSha256(file: SerializedFile): string {
+  const hash = createHash('sha256');
+  hash.update(file.content);
+  return hash.digest('hex');
+}
+
+async function getFileAction(
+  fileInfo: { file: SerializedFile; targetPath?: string },
+  target: { repoID: string; branch: string },
+  api: Gitlab,
+  logger: LoggerService,
   remoteFiles: Types.RepositoryTreeSchema[],
-  defaultCommitAction: 'create' | 'delete' | 'update' | 'auto' | undefined,
-): 'create' | 'delete' | 'update' {
-  if (!defaultCommitAction || defaultCommitAction === 'auto') {
+  defaultCommitAction:
+    | 'create'
+    | 'delete'
+    | 'update'
+    | 'skip'
+    | 'auto' = 'auto',
+): Promise<'create' | 'delete' | 'update' | 'skip'> {
+  if (defaultCommitAction === 'auto') {
     const filePath = path.join(fileInfo.targetPath ?? '', fileInfo.file.path);
-    return remoteFiles &&
-      remoteFiles.some(remoteFile => remoteFile.path === filePath)
-      ? 'update'
-      : 'create';
+
+    if (remoteFiles?.some(remoteFile => remoteFile.path === filePath)) {
+      try {
+        const targetFile = await api.RepositoryFiles.show(
+          target.repoID,
+          filePath,
+          target.branch,
+        );
+        if (computeSha256(fileInfo.file) === targetFile.content_sha256) {
+          return 'skip';
+        }
+      } catch (error) {
+        logger.warn(
+          `Unable to retrieve detailed information for remote file ${filePath}`,
+        );
+      }
+      return 'update';
+    }
+    return 'create';
   }
   return defaultCommitAction;
 }
@@ -62,7 +95,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     sourcePath?: string;
     targetPath?: string;
     token?: string;
-    commitAction?: 'create' | 'delete' | 'update' | 'auto';
+    commitAction?: 'create' | 'delete' | 'update' | 'skip' | 'auto';
     /** @deprecated projectID passed as query parameters in the repoUrl */
     projectid?: string;
     removeSourceBranch?: boolean;
@@ -78,7 +111,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
           repoUrl: {
             type: 'string',
             title: 'Repository Location',
-            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+            description: `\
+Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where \
+'project_name' is the repository name and 'group_name' is a group or username`,
           },
           /** @deprecated projectID is passed as query parameters in the repoUrl */
           projectid: {
@@ -109,8 +144,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
           sourcePath: {
             type: 'string',
             title: 'Working Subdirectory',
-            description:
-              'Subdirectory of working directory to copy changes from',
+            description: `\
+Subdirectory of working directory to copy changes from. \
+For reasons of backward compatibility, any specified 'targetPath' input will \
+be applied in place of an absent/falsy value for this input. \
+Circumvent this behavior using '.'`,
           },
           targetPath: {
             type: 'string',
@@ -126,8 +164,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Commit action',
             type: 'string',
             enum: ['create', 'update', 'delete', 'auto'],
-            description:
-              'The action to be used for git commit. Defaults to auto. "auto" is custom action provide by backstage, (automatic assign create or update action) /!\\ Use more api calls /!\\ *',
+            description: `\
+The action to be used for git commit. Defaults to the custom 'auto' action provided by backstage,
+which uses additional API calls in order to detect whether to 'create', 'update' or 'skip' each source file.`,
           },
           removeSourceBranch: {
             title: 'Delete source branch',
@@ -224,7 +263,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
       }
 
       let remoteFiles: Types.RepositoryTreeSchema[] = [];
-      if (!ctx.input.commitAction || ctx.input.commitAction === 'auto') {
+      if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.tree(repoID, {
             ref: targetBranch,
@@ -237,37 +276,70 @@ export const createPublishGitlabMergeRequestAction = (options: {
           );
         }
       }
+      const actions: Types.CommitAction[] =
+        ctx.input.commitAction === 'skip'
+          ? []
+          : (
+              (
+                await Promise.all(
+                  fileContents.map(async file => {
+                    const action = await getFileAction(
+                      { file, targetPath },
+                      { repoID, branch: targetBranch! },
+                      api,
+                      ctx.logger,
+                      remoteFiles,
+                      ctx.input.commitAction,
+                    );
+                    return { file, action };
+                  }),
+                )
+              ).filter(o => o.action !== 'skip') as {
+                file: SerializedFile;
+                action: Types.CommitAction['action'];
+              }[]
+            ).map(({ file, action }) => ({
+              action,
+              filePath: targetPath
+                ? path.posix.join(targetPath, file.path)
+                : file.path,
+              encoding: 'base64',
+              content: file.content.toString('base64'),
+              execute_filemode: file.executable,
+            }));
 
-      const actions: Types.CommitAction[] = fileContents.map(file => ({
-        action: getFileAction(
-          { file, targetPath },
-          remoteFiles,
-          ctx.input.commitAction,
-        ),
-        filePath: targetPath
-          ? path.posix.join(targetPath, file.path)
-          : file.path,
-        encoding: 'base64',
-        content: file.content.toString('base64'),
-        execute_filemode: file.executable,
-      }));
-
-      try {
-        await api.Branches.create(repoID, branchName, String(targetBranch));
-      } catch (e) {
-        throw new InputError(
-          `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${e}`,
-        );
+      let createBranch: boolean;
+      if (actions.length) {
+        createBranch = true;
+      } else {
+        try {
+          await api.Branches.show(repoID, branchName);
+          createBranch = false;
+          ctx.logger.info(
+            `Using existing branch ${branchName} without modification.`,
+          );
+        } catch (e) {
+          createBranch = true;
+        }
       }
-
-      try {
-        await api.Commits.create(repoID, branchName, ctx.input.title, actions);
-      } catch (e) {
-        throw new InputError(
-          `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${e}`,
-        );
+      if (createBranch) {
+        try {
+          await api.Branches.create(repoID, branchName, String(targetBranch));
+        } catch (e) {
+          throw new InputError(
+            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${e}`,
+          );
+        }
       }
-
+      if (actions.length) {
+        try {
+          await api.Commits.create(repoID, branchName, title, actions);
+        } catch (e) {
+          throw new InputError(
+            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${e}`,
+          );
+        }
+      }
       try {
         const mergeRequestUrl = await api.MergeRequests.create(
           repoID,

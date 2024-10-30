@@ -156,11 +156,14 @@ export interface Config {
       | {
           /** Defer stitching to be performed asynchronously */
           mode: 'deferred';
+          /** Polling interval for tasks in seconds */
+          pollingInterval?: HumanDuration;
+          /** How long to wait for a stitch to complete before giving up in seconds */
+          stitchTimeout?: HumanDuration;
         };
 
     /**
      * The interval at which the catalog should process its entities.
-     *
      * @remarks
      *
      * Example:
@@ -168,6 +171,13 @@ export interface Config {
      * ```yaml
      * catalog:
      *   processingInterval: { minutes: 30 }
+     * ```
+     *
+     * or to disabled processing:
+     *
+     * ```yaml
+     * catalog:
+     *  processingInterval: false
      * ```
      *
      * Note that this is only a suggested minimum, and the actual interval may
@@ -181,6 +191,6 @@ export interface Config {
      * systems that are queried by processors, such as version control systems
      * housing catalog-info files.
      */
-    processingInterval?: HumanDuration;
+    processingInterval?: HumanDuration | false;
   };
 }

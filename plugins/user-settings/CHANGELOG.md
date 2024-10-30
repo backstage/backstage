@@ -1,5 +1,80 @@
 # @backstage/plugin-user-settings
 
+## 0.8.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-react@1.14.1-next.1
+  - @backstage/plugin-signals-react@0.0.6
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/theme@0.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-signals-react@0.0.6
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.14
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 0040632: `useUserProfile` will now use the user's picture stored in the catalog as a fallback if the identity provider doesn't return a picture.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/plugin-signals-react@0.0.6
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/theme@0.6.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.14-next.2
+
+### Patch Changes
+
+- 0040632: `useUserProfile` will now use the user's picture stored in the catalog as a fallback if the identity provider doesn't return a picture.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-app-api@1.15.1-next.1
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.6-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.14-next.1
 
 ### Patch Changes

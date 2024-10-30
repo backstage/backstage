@@ -59,6 +59,8 @@ import {
   TemplateEditorPage,
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * The Props for the Scaffolder Router
@@ -162,9 +164,11 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={scaffolderTaskRouteRef.path}
         element={
-          <TaskPageComponent
-            TemplateOutputsComponent={TemplateOutputsComponent}
-          />
+          <RequirePermission permission={taskReadPermission}>
+            <TaskPageComponent
+              TemplateOutputsComponent={TemplateOutputsComponent}
+            />
+          </RequirePermission>
         }
       />
       <Route
@@ -199,7 +203,11 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
         path={scaffolderListTaskRouteRef.path}
-        element={<ListTasksPage />}
+        element={
+          <RequirePermission permission={taskReadPermission}>
+            <ListTasksPage />
+          </RequirePermission>
+        }
       />
       <Route
         path={editorRouteRef.path}

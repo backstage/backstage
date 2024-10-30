@@ -20,7 +20,7 @@ The plugin is already added to a default Backstage project.
 To add it to a project, add the following line in `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend'));
 ```
 
 ### Old Backend
@@ -28,7 +28,7 @@ backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 In `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend'));
 ```
 
 ## Configuration

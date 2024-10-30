@@ -210,6 +210,25 @@ argument of `createBackend`.
 
 :::
 
+## Removing `@backstage/backend-common`
+
+The `@backstage/backend-common` package has been deprecated as part of moving to the new backend system, an you will need to replace existing usage of it. All exports from the package have been marked as deprecated in the last few releases of the package, and each export has its own deprecation message that explains how to replace that particular export.
+
+These are the deprecation messages for the most common replacements:
+
+- `createLegacyAuthAdapters` - Migrate to use the new backend system and auth services instead.
+- `errorHandler` - Use `MiddlewareFactory.create.error` from `@backstage/backend-defaults/rootHttpRouter` instead.
+- `getRootLogger` - This function will be removed in the future. If you need to get the root logger in the new system, please check out this documentation: https://backstage.io/docs/backend-system/core-services/logger
+- `getVoidLogger` - This function will be removed in the future. If you need to mock the root logger in the new system, please use `mockServices.logger.mock()` from `@backstage/backend-test-utils` instead.
+- `legacyPlugin` - Fully use the new backend system instead.
+- `loadBackendConfig` - Please migrate to the new backend system and use `coreServices.rootConfig` instead, or the [@backstage/config-loader#ConfigSources](https://backstage.io/docs/reference/config-loader.configsources) facilities if required.
+- `loggerToWinstonLogger` - Migrate to use the new `LoggerService` instead.
+- `resolveSafeChildPath` - This function is deprecated and will be removed in a future release, see [#24493](https://github.com/backstage/backstage/issues/24493). Please use the `resolveSafeChildPath` function from the `@backstage/backend-plugin-api` package instead.
+- `ServerTokenManager` - Please [migrate](https://backstage.io/docs/tutorials/auth-service-migration) to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+- `useHotMemoize` - Hot module reloading is no longer supported for backends.
+
+If you want to browse all of the deprecations in one place you can look at the `dist/index.d.ts` file in the package, either in `node_modules/@backstage/backend-common/dist/index.d.ts` in your own project, or it can found in the [code tab on npmjs.com](https://www.npmjs.com/package/@backstage/backend-common?activeTab=code).
+
 ## Cleaning Up the Plugins Folder
 
 For plugins that are private and your own, you can follow a [dedicated migration guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a
@@ -237,7 +256,7 @@ be used in its new form.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-app-backend'));
 ```
 
 If you need to override the app package name, which otherwise defaults to `"app"`,
@@ -252,7 +271,7 @@ A basic installation of the catalog plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -277,9 +296,9 @@ For `AwsS3DiscoveryProcessor`, first migrate to `AwsS3EntityProvider`.
 To migrate `AwsS3EntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-aws` module.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-aws/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-aws'));
 /* highlight-add-end */
 ```
 
@@ -306,9 +325,9 @@ For `AzureDevOpsDiscoveryProcessor`, first migrate to `AzureDevOpsEntityProvider
 To migrate `AzureDevOpsEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-azure` module.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-azure'));
 /* highlight-add-end */
 ```
 
@@ -340,11 +359,9 @@ For `BitbucketDiscoveryProcessor`, migrate to `BitbucketCloudEntityProvider` or 
 To migrate `BitbucketCloudEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-bitbucket-cloud` module.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(
-  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
-);
+backend.add(import('@backstage/plugin-catalog-backend-module-bitbucket-cloud'));
 /* highlight-add-end */
 ```
 
@@ -367,10 +384,10 @@ catalog:
 To migrate `BitbucketServerEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-bitbucket-server`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(
-  import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
+  import('@backstage/plugin-catalog-backend-module-bitbucket-server'),
 );
 /* highlight-add-end */
 ```
@@ -396,7 +413,7 @@ catalog:
 To migrate `GkeEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gcp`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-gcp'));
 /* highlight-add-end */
@@ -409,9 +426,9 @@ Configuration in app-config.yaml remains the same.
 To migrate `GerritEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gerrit`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-gerrit'));
 /* highlight-add-end */
 ```
 
@@ -438,9 +455,9 @@ For `GithubDiscoveryProcessor`, `GithubMultiOrgReaderProcessor` and `GithubOrgRe
 To migrate `GithubEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-github'));
 /* highlight-add-end */
 ```
 
@@ -463,7 +480,7 @@ catalog:
 To migrate `GithubMultiOrgEntityProvider` or `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 /* highlight-add-end */
@@ -581,9 +598,9 @@ For `MicrosoftGraphOrgReaderProcessor`, first migrate to `MicrosoftGraphOrgEntit
 To migrate `MicrosoftGraphOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-msgraph`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 /* highlight-add-end */
 ```
 
@@ -670,7 +687,7 @@ const catalogModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -699,7 +716,7 @@ A basic installation of the events plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-events-backend/alpha'));
+backend.add(import('@backstage/plugin-events-backend'));
 ```
 
 If you have other customizations made to `plugins/events.ts`, such as adding
@@ -760,7 +777,7 @@ const otherPluginModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-events-backend/alpha'));
+backend.add(import('@backstage/plugin-events-backend'));
 /* highlight-add-next-line */
 backend.add(eventsModuleCustomExtensions);
 /* highlight-add-next-line */
@@ -780,7 +797,7 @@ A basic installation of the scaffolder plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 ```
 
 With the new Backend System version of the Scaffolder plugin, any provider specific actions will need to be installed separately.
@@ -788,7 +805,7 @@ For example - GitHub actions are now collected under the `@backstage/plugin-scaf
 
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 
 /* highlight-add-next-line */
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
@@ -839,7 +856,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomExtensions);
 ```
@@ -884,8 +901,6 @@ auth:
         signIn:
           resolvers:
             - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: emailMatchingUserEntityAnnotation
 ```
 
 :::note Note
@@ -1145,7 +1160,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 /* highlight-add-end */
 ```
 
@@ -1169,8 +1184,8 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-pg/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-pg'));
 /* highlight-add-end */
 ```
 
@@ -1184,10 +1199,8 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend/alpha'));
-backend.add(
-  import('@backstage/plugin-search-backend-module-elasticsearch/alpha'),
-);
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-elasticsearch'));
 /* highlight-add-end */
 ```
 
@@ -1205,8 +1218,8 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 /* highlight-add-end */
 ```
 
@@ -1220,8 +1233,8 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 /* highlight-add-end */
 ```
 
@@ -1235,7 +1248,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(import('@backstage/plugin-permission-backend'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
@@ -1296,7 +1309,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(import('@backstage/plugin-permission-backend'));
 backend.add(customPermissionBackendModule);
 /* highlight-add-end */
 ```
@@ -1311,7 +1324,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend'));
 /* highlight-add-end */
 ```
 
@@ -1325,7 +1338,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-kubernetes-backend'));
 /* highlight-add-end */
 ```
 

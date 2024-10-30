@@ -19,7 +19,7 @@ import React from 'react';
 import {
   renderInTestApp,
   TestApiProvider,
-  MockPermissionApi,
+  mockApis,
 } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor, within } from '@testing-library/react';
@@ -70,7 +70,7 @@ describe('OngoingTask', () => {
         <TestApiProvider
           apis={[
             [scaffolderApiRef, mockScaffolderApi],
-            [permissionApiRef, permissionApi || new MockPermissionApi()],
+            [permissionApiRef, permissionApi || mockApis.permission()],
           ]}
         >
           <OngoingTask />
@@ -146,10 +146,9 @@ describe('OngoingTask', () => {
   });
 
   it('should have cancel and start over buttons be disabled without the proper permissions', async () => {
-    const mockAuthorize = jest
-      .fn()
-      .mockImplementation(async () => ({ result: AuthorizeResult.DENY }));
-    const permissionApi: PermissionApi = { authorize: mockAuthorize };
+    const permissionApi = mockApis.permission({
+      authorize: AuthorizeResult.DENY,
+    });
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;

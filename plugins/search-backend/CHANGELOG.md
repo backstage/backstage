@@ -1,5 +1,76 @@
 # @backstage/plugin-search-backend
 
+## 1.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.3-next.1
+  - @backstage/backend-openapi-utils@0.2.1-next.1
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.1
+  - @backstage/plugin-search-backend-node@1.3.5-next.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.3-next.0
+  - @backstage/backend-openapi-utils@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.0
+  - @backstage/plugin-search-backend-node@1.3.5-next.0
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.6.0
+
+### Minor Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+
+### Patch Changes
+
+- 66af016: Fix to schema to allow arbitrary query parameters.
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/plugin-search-backend-node@1.3.3
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/backend-openapi-utils@0.2.0
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.5.18-next.2
+
+### Patch Changes
+
+- 66af016: Fix to schema to allow arbitrary query parameters.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.2
+  - @backstage/backend-openapi-utils@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.4-next.1
+  - @backstage/plugin-search-backend-node@1.3.3-next.2
+  - @backstage/plugin-search-common@1.2.14
+
 ## 1.5.18-next.1
 
 ### Patch Changes

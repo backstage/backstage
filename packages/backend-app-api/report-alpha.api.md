@@ -13,9 +13,5 @@ export const featureDiscoveryServiceFactory: ServiceFactory<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/featureDiscoveryServiceFactory.d.ts:5:22 - (ae-undocumented) Missing documentation for "featureDiscoveryServiceFactory".
-
 // (No @packageDocumentation comment for this package)
 ```

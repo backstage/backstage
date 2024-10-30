@@ -59,7 +59,7 @@ const backend = createBackend();
 
 backend.add(
   rootHttpRouterServiceFactory({
-    configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
+    configure: ({ app, middleware, routes, config, logger, healthRouter }) => {
       // Refer to https://expressjs.com/en/guide/writing-middleware.html on how to write express middleware
       const customMiddleware = {
         logging(): RequestHandler {
@@ -88,10 +88,17 @@ backend.add(
         },
       };
 
+      // The default implementation pretty-prints JSON responses in development
+      if (process.env.NODE_ENV === 'development') {
+        app.set('json spaces', 2);
+      }
+
       // the built in middleware is provided through an option in the configure function
       app.use(middleware.helmet());
       app.use(middleware.cors());
       app.use(middleware.compression());
+
+      app.use(healthRouter);
 
       // you can add you your own middleware in here
       app.use(customMiddleware.logging());

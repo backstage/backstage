@@ -70,6 +70,14 @@ always be full entity references, as opposed to shorthands like just `jane` or
 
 ## Sign-in Resolvers
 
+:::warning
+Be careful when configuring Sign-in resolvers, as they are part of determining who
+has access to your Backstage instance, and with what identity. Always only configure
+**a single sign-in resolver for one of your auth providers**. The only reason to have
+more sign-in resolvers is if you want to allow your users to sign in to Backstage in
+multiple ways, but it increases the risk of account hijacking.
+:::
+
 Signing in a user into Backstage requires a mapping of the user identity from the
 third-party auth provider to a Backstage user identity. This mapping can vary quite
 a lot between different organizations and auth providers, and because of that there's
@@ -112,19 +120,38 @@ auth:
         signIn:
           resolvers:
             - resolver: usernameMatchingUserEntityName
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
 ```
-
-Note that in this instance it lists several resolvers, which means that the
-framework will try them one by one until one succeeds. If none of them do, the
-sign in attempt is rejected.
 
 The list of available resolvers is different for each provider, since they often
 depend on the information model returned from the upstream provider service.
 Consult the documentation of the respective provider to find the list.
 
-In the example above `emailMatchingUserEntityProfileEmail` and `emailLocalPartMatchingUserEntityName` are common to all auth providers and `usernameMatchingUserEntityName` is specific to GitHub.
+In the example above, the `usernameMatchingUserEntityName` is specific to the
+GitHub provider, but you could also choose to use the
+`emailMatchingUserEntityProfileEmail` or `emailLocalPartMatchingUserEntityName`
+resolvers, which are common to all auth providers.
+
+:::warning
+When using the `emailLocalPartMatchingUserEntityName` resolver it is strongly
+recommended to set the `allowedDomains` option to ensure that only authorized users
+are able to sign-in.
+:::
+
+If you are using the `emailLocalPartMatchingUserEntityName` resolver, it is
+recommended to also set the `allowedDomains` option, for example:
+
+```yaml title="Within the provider configuration"
+auth:
+  providers:
+    github:
+      development:
+        ...
+        signIn:
+          resolvers:
+            - resolver: emailLocalPartMatchingUserEntityName
+              allowedDomains:
+                - acme.org
+```
 
 ### Building Custom Resolvers
 
@@ -160,8 +187,6 @@ auth:
         signIn:
           resolvers:
             - resolver: usernameMatchingUserEntityName
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
 /* highlight-remove-end */
 ```
 
@@ -317,6 +342,12 @@ async signInResolver({ profile: { email} }, ctx) {
 ```
 
 ### Sign-In without Users in the Catalog
+
+:::warning
+Signing in users without verifying that they exist in the catalog can be
+dangerous. Take care to ensure that your custom resolvers only allow expected
+users to sign in, for example by checking email domains.
+:::
 
 While populating the catalog with organizational data unlocks more powerful ways
 to browse your software ecosystem, it might not always be a viable or prioritized

@@ -1,0 +1,20 @@
+{
+  "name": "plugin-test-dynamic",
+  "version": "0.0.0",
+  "description": "A test dynamic, module-federation-based, Backstage frontend plugin that does nothing",
+  "backstage": {
+    "role": "frontend-dynamic-container",
+    "pluginId": "test",
+    "pluginPackages": [
+      "plugin-test"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "dynamic"
+  ],
+  "main": "remote-entry.js"
+}

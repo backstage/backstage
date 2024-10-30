@@ -1,5 +1,73 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 6cf91c5: Use `HumanDuration` for all duration needs in the public API, instead of `luxon` types. These are generally compatible, with a few caveats:
+
+  - If you scheduled things to run quarterly (`quarter` or `quarters`), you can use `{ months: 3 }` instead.
+  - If you used the singular nouns such as `year: 1`, use plurals instead (e.g. `years: 1`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend@1.27.2-next.1
+  - @backstage/plugin-catalog-node@1.14.0-next.1
+  - @backstage/plugin-events-node@0.4.4-next.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/plugin-catalog-node@1.14.0-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-backend@1.27.2-next.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.5.5
+
+### Patch Changes
+
+- 4b60e0c: Remove extension points from `/alpha` export, they're available from the main package already
+- 094eaa3: Remove references to in-repo backend-common
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- 2107965: Turn down the logging level on most "all is well" type log messages
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.27.0
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/plugin-catalog-backend@1.26.2-next.2
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.4.1-next.1
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.5.5-next.1
 
 ### Patch Changes

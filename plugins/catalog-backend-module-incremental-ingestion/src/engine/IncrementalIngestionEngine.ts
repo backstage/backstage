@@ -18,16 +18,17 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'perf_hooks';
-import { Duration, DurationObjectUnits } from 'luxon';
+import { Duration } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { HumanDuration } from '@backstage/types';
 
 export class IncrementalIngestionEngine
   implements IterationEngine, EventSubscriber
 {
   private readonly restLength: Duration;
-  private readonly backoff: DurationObjectUnits[];
+  private readonly backoff: HumanDuration[];
 
   private manager: IncrementalIngestionDatabaseManager;
 
@@ -67,13 +68,13 @@ export class IncrementalIngestionEngine
             await this.manager.clearFinishedIngestions(
               this.options.provider.getProviderName(),
             );
-            this.options.logger.info(
+            this.options.logger.debug(
               `incremental-engine: Ingestion ${ingestionId} rest period complete. Ingestion will start again`,
             );
 
             await this.manager.setProviderComplete(ingestionId);
           } else {
-            this.options.logger.info(
+            this.options.logger.debug(
               `incremental-engine: Ingestion '${ingestionId}' rest period continuing`,
             );
           }
@@ -92,7 +93,7 @@ export class IncrementalIngestionEngine
               );
             } else {
               await this.manager.setProviderInterstitial(ingestionId);
-              this.options.logger.info(
+              this.options.logger.debug(
                 `incremental-engine: Ingestion '${ingestionId}' continuing`,
               );
             }
@@ -140,7 +141,7 @@ export class IncrementalIngestionEngine
             );
             await this.manager.setProviderIngesting(ingestionId);
           } else {
-            this.options.logger.info(
+            this.options.logger.debug(
               `incremental-engine: Ingestion '${ingestionId}' backoff continuing`,
             );
           }
@@ -167,7 +168,7 @@ export class IncrementalIngestionEngine
     const providerName = this.options.provider.getProviderName();
     const record = await this.manager.getCurrentIngestionRecord(providerName);
     if (record) {
-      this.options.logger.info(
+      this.options.logger.debug(
         `incremental-engine: Ingestion record found: '${record.id}'`,
       );
       return {

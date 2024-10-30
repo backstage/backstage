@@ -107,12 +107,17 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     },
   });
 
+  const rspack = process.env.EXPERIMENTAL_RSPACK
+    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
+    : undefined;
+
   const commonConfigOptions = {
     ...options,
     checksEnabled: options.checksEnabled,
     isDev: true,
     baseUrl: url,
     frontendConfig,
+    rspack,
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
@@ -125,24 +130,65 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
-    const vite = require('vite');
-    const { default: viteReact } = require('@vitejs/plugin-react');
-    const {
-      nodePolyfills: viteNodePolyfills,
-    } = require('vite-plugin-node-polyfills');
-    const { createHtmlPlugin: viteHtml } = require('vite-plugin-html');
+    const vite = require('vite') as typeof import('vite');
+    const { default: viteReact } =
+      require('@vitejs/plugin-react') as typeof import('@vitejs/plugin-react');
+    const { default: viteYaml } =
+      require('@modyfi/vite-plugin-yaml') as typeof import('@modyfi/vite-plugin-yaml');
+    const { nodePolyfills: viteNodePolyfills } =
+      require('vite-plugin-node-polyfills') as typeof import('vite-plugin-node-polyfills');
+    const { createHtmlPlugin: viteHtml } =
+      require('vite-plugin-html') as typeof import('vite-plugin-html');
+
     viteServer = await vite.createServer({
       define: {
-        global: 'window',
         'process.argv': JSON.stringify(process.argv),
         'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
         // This allows for conditional imports of react-dom/client, since there's no way
         // to check for presence of it in source code without module resolution errors.
         'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
       },
+      optimizeDeps: {
+        esbuildOptions: {
+          plugins: [
+            {
+              name: 'custom-define',
+              setup(build) {
+                const define = (build.initialOptions.define ||= {});
+                define['process.env.HAS_REACT_DOM_CLIENT'] = JSON.stringify(
+                  hasReactDomClient(),
+                );
+                define['process.env.NODE_ENV'] = JSON.stringify('development');
+              },
+            },
+          ],
+        },
+      },
       plugins: [
         viteReact(),
-        viteNodePolyfills(),
+        viteNodePolyfills({
+          include: [
+            'buffer',
+            'events',
+            'fs',
+            'http',
+            'https',
+            'os',
+            'path',
+            'process',
+            'querystring',
+            'stream',
+            'url',
+            'util',
+            'zlib',
+          ],
+          globals: {
+            global: true,
+            Buffer: true,
+            process: true,
+          },
+        }),
+        viteYaml(),
         viteHtml({
           entry: paths.targetEntry,
           // todo(blam): we should look at contributing to thPe plugin here
@@ -164,6 +210,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       root: paths.targetPath,
     });
   } else {
+    const bundler = (rspack ?? webpack) as typeof webpack;
+    const DevServer: typeof WebpackDevServer = rspack
+      ? require('@rspack/dev-server').RspackDevServer
+      : WebpackDevServer;
+
     const publicPaths = await resolveOptionalBundlingPaths({
       entry: 'src/index-public-experimental',
       dist: 'dist/public',
@@ -176,10 +227,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       );
     }
     const compiler = publicPaths
-      ? webpack([config, await createConfig(publicPaths, commonConfigOptions)])
-      : webpack(config);
+      ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
+      : bundler(config);
 
-    webpackServer = new WebpackDevServer(
+    webpackServer = new DevServer(
       {
         hot: !process.env.CI,
         devMiddleware: {

@@ -60,7 +60,7 @@ catalog:
 Finally, update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 ```
@@ -167,7 +167,7 @@ const backend = createBackend();
 
 // Other items
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 
 backend.add(githubOrgModule);
 

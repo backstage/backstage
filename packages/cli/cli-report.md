@@ -34,7 +34,7 @@ Commands:
 Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
 
 Options:
-  --alwaysYarnPack
+  --alwaysPack
   -h, --help
 ```
 
@@ -271,6 +271,7 @@ Options:
   --inspect [host]
   --inspect-brk [host]
   --require <path>
+  --link <path>
   -h, --help
 ```
 
@@ -469,6 +470,8 @@ Usage: backstage-cli repo test [options]
 
 Options:
   --since <ref>
+  --successCache
+  --successCacheDir <path>
   --jest-help
   -h, --help
 ```

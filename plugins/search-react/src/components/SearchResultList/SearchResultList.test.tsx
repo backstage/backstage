@@ -20,7 +20,7 @@ import { screen, waitFor } from '@testing-library/react';
 import {
   TestApiProvider,
   renderInTestApp,
-  MockAnalyticsApi,
+  mockApis,
 } from '@backstage/test-utils';
 import { analyticsApiRef, createPlugin } from '@backstage/core-plugin-api';
 
@@ -31,7 +31,7 @@ import { SearchResultList } from './SearchResultList';
 
 const query = jest.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
-const analyticsApiMock = new MockAnalyticsApi();
+const analyticsApiMock = mockApis.analytics();
 
 describe('SearchResultList', () => {
   const results = [

@@ -36,7 +36,10 @@ export type BundlingOptions = {
   publicSubPath?: string;
   // Mode that the app is running in, 'protected' or 'public', default is 'public'
   appMode?: string;
+  // An external linked workspace to include in the bundling
+  linkedWorkspace?: string;
   moduleFederation?: ModuleFederationOptions;
+  rspack?: typeof import('@rspack/core').rspack;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -45,6 +48,8 @@ export type ServeOptions = BundlingPathsOptions & {
   verifyVersions?: boolean;
   skipOpenBrowser?: boolean;
   moduleFederation?: ModuleFederationOptions;
+  // An external linked workspace to include in the bundling
+  linkedWorkspace?: string;
 };
 
 export type BuildOptions = BundlingPathsOptions & {
@@ -57,6 +62,7 @@ export type BuildOptions = BundlingPathsOptions & {
   frontendAppConfigs: AppConfig[];
   fullConfig: Config;
   moduleFederation?: ModuleFederationOptions;
+  rspack?: typeof import('@rspack/core').rspack;
 };
 
 export type BackendBundlingOptions = {
@@ -66,11 +72,5 @@ export type BackendBundlingOptions = {
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
   require?: string;
-};
-
-export type BackendServeOptions = BundlingPathsOptions & {
-  checksEnabled: boolean;
-  inspectEnabled: boolean;
-  inspectBrkEnabled: boolean;
-  require?: string;
+  rspack?: typeof import('@rspack/core').rspack;
 };

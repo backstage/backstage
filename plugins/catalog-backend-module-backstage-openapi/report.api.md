@@ -18,11 +18,5 @@ export type MetaApiDocsPluginOptions = {
 // @public (undocumented)
 export const metaOpenApiDocsPluginId = 'meta-api-docs';
 
-// Warnings were encountered during analysis:
-//
-// src/index.d.ts:4:1 - (ae-undocumented) Missing documentation for "MetaApiDocsPluginOptions".
-// src/index.d.ts:10:22 - (ae-undocumented) Missing documentation for "metaOpenApiDocsPluginId".
-// src/index.d.ts:14:22 - (ae-undocumented) Missing documentation for "catalogModuleInternalOpenApiSpec".
-
 // (No @packageDocumentation comment for this package)
 ```

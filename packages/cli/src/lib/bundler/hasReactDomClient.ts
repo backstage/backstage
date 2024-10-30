@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { paths } from '../paths';
+
 export function hasReactDomClient() {
   try {
-    require.resolve('react-dom/client');
+    require.resolve('react-dom/client', {
+      paths: [paths.targetDir],
+    });
     return true;
   } catch {
     return false;

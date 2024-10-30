@@ -108,7 +108,9 @@ export default ({ theme }: RuleOptions) => `
 :host > * {
   /* CODE */
   --md-code-fg-color: ${theme.palette.text.primary};
-  --md-code-bg-color: ${theme.palette.background.paper};
+  --md-code-bg-color: ${
+    theme.palette.code?.background ?? theme.palette.background.paper
+  };
   --md-code-hl-color: ${alpha(theme.palette.warning.main, 0.5)};
   --md-code-hl-color--light: var(--md-code-hl-color);
   --md-code-hl-keyword-color: ${

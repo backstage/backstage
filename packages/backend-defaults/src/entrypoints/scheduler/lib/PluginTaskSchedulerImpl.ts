@@ -16,6 +16,7 @@
 
 import {
   LoggerService,
+  RootLifecycleService,
   SchedulerService,
   SchedulerServiceTaskDescriptor,
   SchedulerServiceTaskFunction,
@@ -29,7 +30,7 @@ import { Duration } from 'luxon';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
-import { TRACER_ID, validateId } from './util';
+import { delegateAbortController, TRACER_ID, validateId } from './util';
 
 const tracer = trace.getTracer(TRACER_ID);
 
@@ -39,6 +40,7 @@ const tracer = trace.getTracer(TRACER_ID);
 export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly localTasksById = new Map<string, LocalTaskWorker>();
   private readonly allScheduledTasks: SchedulerServiceTaskDescriptor[] = [];
+  private readonly shutdownInitiated: Promise<boolean>;
 
   private readonly counter: Counter;
   private readonly duration: Histogram;
@@ -46,6 +48,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: LoggerService,
+    rootLifecycle?: RootLifecycleService,
   ) {
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {
@@ -54,6 +57,9 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     this.duration = meter.createHistogram('backend_tasks.task.runs.duration', {
       description: 'Histogram of task run durations',
       unit: 'seconds',
+    });
+    this.shutdownInitiated = new Promise(shutdownInitiated => {
+      rootLifecycle?.addShutdownHook(() => shutdownInitiated(true));
     });
   }
 
@@ -83,6 +89,11 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       timeoutAfterDuration: parseDuration(task.timeout),
     };
 
+    // Delegated abort controller that will abort either when the provided
+    // controller aborts, or when a root lifecycle shutdown happens
+    const abortController = delegateAbortController(task.signal);
+    this.shutdownInitiated.then(() => abortController.abort());
+
     if (scope === 'global') {
       const knex = await this.databaseFactory();
       const worker = new TaskWorker(
@@ -91,14 +102,14 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         knex,
         this.logger.child({ task: task.id }),
       );
-      await worker.start(settings, { signal: task.signal });
+      await worker.start(settings, { signal: abortController.signal });
     } else {
       const worker = new LocalTaskWorker(
         task.id,
         this.instrumentedFunction(task, scope),
         this.logger.child({ task: task.id }),
       );
-      worker.start(settings, { signal: task.signal });
+      worker.start(settings, { signal: abortController.signal });
       this.localTasksById.set(task.id, worker);
     }
 

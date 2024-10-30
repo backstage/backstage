@@ -208,30 +208,32 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    await expect(collectConfigSchemas(['a', 'b', 'c'], [])).resolves.toEqual([
-      {
-        path: path.join('node_modules', 'a', 'package.json'),
-        value: { ...mockSchema, title: 'inline' },
-      },
-      {
-        path: path.join('node_modules', 'b', 'schema.json'),
-        value: { ...mockSchema, title: 'external' },
-      },
-      {
-        path: path.join('node_modules', 'c', 'schema.d.ts'),
-        value: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          type: 'object',
-          properties: {
-            tsKey: {
-              type: 'string',
-              visibility: 'secret',
-            },
-          },
-          required: ['tsKey'],
+    await expect(collectConfigSchemas(['a', 'b', 'c'], [])).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          path: path.join('node_modules', 'a', 'package.json'),
+          value: { ...mockSchema, title: 'inline' },
         },
-      },
-    ]);
+        {
+          path: path.join('node_modules', 'b', 'schema.json'),
+          value: { ...mockSchema, title: 'external' },
+        },
+        {
+          path: path.join('node_modules', 'c', 'schema.d.ts'),
+          value: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            type: 'object',
+            properties: {
+              tsKey: {
+                type: 'string',
+                visibility: 'secret',
+              },
+            },
+            required: ['tsKey'],
+          },
+        },
+      ]),
+    );
   });
 
   it('should load schema from different package versions', async () => {

@@ -15,6 +15,7 @@
  */
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
+import crypto from 'crypto';
 import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
@@ -62,10 +63,17 @@ export class SignalManager {
   }
 
   private constructor(options: SignalManagerOptions) {
-    ({ events: this.events, logger: this.logger } = options);
+    this.events = options.events;
+
+    // Use a unique subscriber ID for each signals instance, in order to fan-out
+    // all events to each signals instance. This ensures that events always
+    // reach users in a scaled deployment.
+    const id = `signals-${crypto.randomBytes(8).toString('hex')}`;
+    this.logger = options.logger.child({ subscriberId: id });
+    this.logger.info(`Signals manager is subscribing to signals events`);
 
     this.events.subscribe({
-      id: 'signals',
+      id,
       topics: ['signals'],
       onEvent: (params: EventParams) =>
         this.onEventBrokerEvent(params.eventPayload as SignalPayload),

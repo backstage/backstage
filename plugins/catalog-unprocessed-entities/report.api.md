@@ -73,9 +73,5 @@ export type UnprocessedEntityError = {
   };
 };
 
-// Warnings were encountered during analysis:
-//
-// src/components/UnprocessedEntities.d.ts:3:22 - (ae-undocumented) Missing documentation for "UnprocessedEntitiesContent".
-
 // (No @packageDocumentation comment for this package)
 ```

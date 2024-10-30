@@ -17,7 +17,6 @@
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -30,6 +29,7 @@ import { MultiEntityPicker } from './MultiEntityPicker';
 import { MultiEntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -38,7 +38,10 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
 });
 
 describe('<MultiEntityPicker />', () => {
-  let entities: Entity[];
+  const entities: Entity[] = [
+    makeEntity('Group', 'default', 'team-a'),
+    makeEntity('Group', 'default', 'squad-b'),
+  ];
   const onChange = jest.fn();
   const schema = {};
   const required = false;
@@ -48,22 +51,12 @@ describe('<MultiEntityPicker />', () => {
 
   let props: FieldProps<string[]>;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  });
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    entities = [
-      makeEntity('Group', 'default', 'team-a'),
-      makeEntity('Group', 'default', 'squad-b'),
-    ];
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -92,8 +85,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('searches for all entities', async () => {

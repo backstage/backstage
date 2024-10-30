@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-test-utils",
-  "version": "0.2.1-next.1",
+  "version": "0.2.2-next.1",
   "backstage": {
     "role": "web-library"
   },
@@ -50,7 +50,6 @@
   },
   "peerDependencies": {
     "@testing-library/react": "^16.0.0",
-    "@types/jest": "*",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",

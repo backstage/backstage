@@ -1,5 +1,23 @@
 # @backstage/core-plugin-api
 
+## 1.10.0
+
+### Minor Changes
+
+- bfd4bec: **BREAKING PRODUCERS**: The `IconComponent` no longer accepts `fontSize="default"`. This has effectively been removed from Material-UI since its last two major versions, and has not worked properly for them in a long time.
+
+  This change should not have an effect on neither users of MUI4 nor MUI5/6, since the updated interface should still let you send the respective `SvgIcon` types into interfaces where relevant (e.g. as app icons).
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 39001f4: Fixing issue with types for `ParamKeys` leading to type mismatches across versions
+- Updated dependencies
+  - @backstage/version-bridge@1.0.10
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.10.0-next.1
 
 ### Patch Changes

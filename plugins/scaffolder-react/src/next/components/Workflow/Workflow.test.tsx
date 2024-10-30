@@ -16,7 +16,7 @@
 
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -42,7 +42,7 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
 
 const catalogApi = catalogApiMock.mock();
 
-const analyticsMock = new MockAnalyticsApi();
+const analyticsMock = mockApis.analytics();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [catalogApiRef, catalogApi],

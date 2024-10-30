@@ -44,15 +44,4 @@ export class StaticSchemaLoader implements ConfigSchemaApi {
   // (undocumented)
   schema$(): Observable<ConfigSchemaResult>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/api/StaticSchemaLoader.d.ts:13:5 - (ae-undocumented) Missing documentation for "schema$".
-// src/api/types.d.ts:4:1 - (ae-undocumented) Missing documentation for "ConfigSchemaResult".
-// src/api/types.d.ts:5:5 - (ae-undocumented) Missing documentation for "schema".
-// src/api/types.d.ts:8:1 - (ae-undocumented) Missing documentation for "ConfigSchemaApi".
-// src/api/types.d.ts:9:5 - (ae-undocumented) Missing documentation for "schema$".
-// src/api/types.d.ts:12:22 - (ae-undocumented) Missing documentation for "configSchemaApiRef".
-// src/plugin.d.ts:3:22 - (ae-undocumented) Missing documentation for "configSchemaPlugin".
-// src/plugin.d.ts:7:22 - (ae-undocumented) Missing documentation for "ConfigSchemaPage".
 ```

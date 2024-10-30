@@ -1,5 +1,77 @@
 # @backstage/core-components
 
+## 0.16.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/version-bridge@1.0.10
+
+## 0.16.0-next.0
+
+### Minor Changes
+
+- dc409c5: The SupportButton component will now be hidden if no support config is specified in app-config
+
+### Patch Changes
+
+- af9097e: Adds the ability to mock a media query per break point and to change the active break point during a test. Usage example:
+
+  ```ts
+  const { set } = mockBreakpoint({
+    initialBreakpoint: 'md',
+    queryBreakpointMap: {
+      '(min-width:1500px)': 'xl',
+      '(min-width:1000px)': 'lg',
+      '(min-width:700px)': 'md',
+      '(min-width:400px)': 'sm',
+      '(min-width:0px)': 'xs',
+    },
+  });
+  // assertions for when the active break point is "md"
+  set('lg');
+  // assertions for when the active break point is "lg"
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.6.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.15.1
+
+### Patch Changes
+
+- 3f76d0e: Correct size of FavoriteToggle and inherit non-starred color from parent
+- e969dc7: Move `@types/react` to a peer dependency.
+- 1ff1dbd: It is possible to define a custom error element to be shown when sign in fails
+- 83e2887: Fixed a bug in the `SidebarSubmenu` core component that caused the nested menu to overlap with the sidebar when the user hovers over the pinned sidebar.
+- 46b5a20: `Link` component now accepts `externalLinkIcon` prop
+- e4ad29a: Fix authentication error handling using redirect flow via `enableExperimentalRedirectFlow` config. If an error is caught during authentication, the user is redirected back to app origin with `error` query parameter containing the error message.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/theme@0.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.15.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/version-bridge@1.0.10-next.0
+
 ## 0.15.1-next.1
 
 ### Patch Changes

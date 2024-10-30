@@ -218,28 +218,28 @@ export async function performStitching(options: {
     .onConflict('entity_id')
     .merge(['final_entity', 'hash', 'last_updated_at']);
 
-  if (options.strategy.mode === 'deferred') {
+  const markDeferred = async () => {
+    if (options.strategy.mode !== 'deferred') {
+      return;
+    }
     await markDeferredStitchCompleted({
       knex: knex,
       entityRef,
       stitchTicket,
     });
-  }
+  };
 
   if (amountOfRowsChanged === 0) {
     logger.debug(`Entity ${entityRef} is already stitched, skipping write.`);
+    await markDeferred();
     return 'abandoned';
   }
 
-  // TODO(freben): Search will probably need a similar safeguard against
-  // race conditions like the final_entities ticket handling above.
-  // Otherwise, it can be the case that:
-  // A writes the entity ->
-  // B writes the entity ->
-  // B writes search ->
-  // A writes search
-  await knex<DbSearchRow>('search').where({ entity_id: entityId }).delete();
-  await knex.batchInsert('search', searchEntries, BATCH_SIZE);
+  await knex.transaction(async trx => {
+    await trx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
+    await trx.batchInsert('search', searchEntries, BATCH_SIZE);
+  });
 
+  await markDeferred();
   return 'changed';
 }

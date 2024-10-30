@@ -26,6 +26,7 @@ import {
   TechDocsDocument as _TechDocsDocument,
 } from '@backstage/plugin-techdocs-node';
 
+export { techdocsPlugin as default } from './plugin';
 export { createRouter } from './service';
 export type {
   RouterOptions,

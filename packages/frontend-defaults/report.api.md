@@ -40,10 +40,4 @@ export interface CreateAppOptions {
 export function createPublicSignInApp(options?: CreateAppOptions): {
   createRoot(): React_2.JSX.Element;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/createApp.d.ts:29:5 - (ae-undocumented) Missing documentation for "features".
-// src/createApp.d.ts:30:5 - (ae-undocumented) Missing documentation for "configLoader".
-// src/createApp.d.ts:33:5 - (ae-undocumented) Missing documentation for "bindRoutes".
 ```

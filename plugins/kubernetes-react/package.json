@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-react",
-  "version": "0.4.4-next.1",
+  "version": "0.5.0-next.1",
   "description": "Web library for the kubernetes-react plugin",
   "backstage": {
     "role": "web-library",
@@ -47,9 +47,9 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@kubernetes-models/apimachinery": "^1.1.0",
+    "@kubernetes-models/apimachinery": "^2.0.0",
     "@kubernetes-models/base": "^5.0.0",
-    "@kubernetes/client-node": "^0.20.0",
+    "@kubernetes/client-node": "1.0.0-rc7",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",

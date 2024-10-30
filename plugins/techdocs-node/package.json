@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-node",
-  "version": "1.12.12-next.1",
+  "version": "1.12.13-next.1",
   "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
   "backstage": {
     "role": "node-library",
@@ -68,7 +68,7 @@
     "dockerode": "^4.0.0",
     "express": "^4.17.1",
     "fs-extra": "^11.2.0",
-    "git-url-parse": "^14.0.0",
+    "git-url-parse": "^15.0.0",
     "hpagent": "^1.2.0",
     "js-yaml": "^4.0.0",
     "json5": "^2.1.3",

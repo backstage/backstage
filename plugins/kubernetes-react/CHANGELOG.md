@@ -1,5 +1,61 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 71b8704: Bumping @kubernetes/client-node to 1.0.0-rc7 to mitigate CVEs related to the request and tough-cookie packages
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.3
+
+## 0.4.4
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 605e0bb: Updated dependency `@kubernetes-models/base` to `^5.0.0`.
+- 276cd3d: Updated dependency `@kubernetes-models/apimachinery` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.3
+
+## 0.4.4-next.2
+
+### Patch Changes
+
+- 276cd3d: Updated dependency `@kubernetes-models/apimachinery` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.3
+
 ## 0.4.4-next.1
 
 ### Patch Changes

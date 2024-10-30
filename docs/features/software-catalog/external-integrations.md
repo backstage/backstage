@@ -326,7 +326,7 @@ export const catalogModuleFrobsProvider = createBackendModule({
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(catalogModuleFrobsProvider);
 
 // Other plugins ...
@@ -764,7 +764,7 @@ export const catalogModuleSystemXReaderProcessor = createBackendModule({
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(catalogModuleSystemXReaderProcessor);
 
 // Other plugins ...
@@ -1025,7 +1025,7 @@ export const catalogModuleCustomDataParser = createBackendModule({
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(catalogModuleCustomDataParser);
 
 // Other plugins ...

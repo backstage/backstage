@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { techdocsPlugin as default } from './plugin';
+import { techdocsPlugin } from './plugin';
+
+/** @alpha */
+const _feature = techdocsPlugin;
+export default _feature;

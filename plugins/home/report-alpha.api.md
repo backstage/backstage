@@ -78,10 +78,5 @@ export const titleExtensionDataRef: ConfigurableExtensionDataRef<
   {}
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:5:22 - (ae-undocumented) Missing documentation for "titleExtensionDataRef".
-// src/alpha.d.ts:9:15 - (ae-undocumented) Missing documentation for "_default".
-
 // (No @packageDocumentation comment for this package)
 ```

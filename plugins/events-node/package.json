@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-node",
-  "version": "0.4.1-next.0",
+  "version": "0.4.4-next.1",
   "description": "The plugin-events-node module for @backstage/plugin-events-backend",
   "backstage": {
     "role": "node-library",
@@ -39,7 +39,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -60,6 +61,8 @@
   "devDependencies": {
     "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^"
-  }
+    "@backstage/cli": "workspace:^",
+    "msw": "^1.0.0"
+  },
+  "configSchema": "config.d.ts"
 }

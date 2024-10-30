@@ -16,10 +16,7 @@
 
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
-import {
-  HostDiscovery,
-  discoveryServiceFactory,
-} from '@backstage/backend-defaults/discovery';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
@@ -128,7 +125,46 @@ function simpleMock<TService>(
 }
 
 /**
+ * Mock implementations of the core services, to be used in tests.
+ *
  * @public
+ * @remarks
+ *
+ * There are some variations among the services depending on what needs tests
+ * might have, but overall there are three main usage patterns:
+ *
+ * 1. Creating an actual fake service instance, often with a simplified version
+ * of functionality, by calling the mock service itself as a function.
+ *
+ * ```ts
+ * // The function often accepts parameters that control its behavior
+ * const foo = mockServices.foo();
+ * ```
+ *
+ * 2. Creating a mock service, where all methods are replaced with jest mocks, by
+ * calling the service's `mock` function.
+ *
+ * ```ts
+ * // You can optionally supply a subset of its methods to implement
+ * const foo = mockServices.foo.mock({
+ *   someMethod: () => 'mocked result',
+ * });
+ * // After exercising your test, you can make assertions on the mock:
+ * expect(foo.someMethod).toHaveBeenCalledTimes(2);
+ * expect(foo.otherMethod).toHaveBeenCalledWith(testData);
+ * ```
+ *
+ * 3. Creating a service factory that behaves similarly to the mock as per above.
+ *
+ * ```ts
+ * await startTestBackend({
+ *   features: [
+ *     mockServices.foo.factory({
+ *       someMethod: () => 'mocked result',
+ *     })
+ *   ],
+ * });
+ * ```
  */
 export namespace mockServices {
   export function rootConfig(options?: rootConfig.Options): RootConfigService {
@@ -234,7 +270,12 @@ export namespace mockServices {
     );
   }
   export namespace discovery {
-    export const factory = () => discoveryServiceFactory;
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.discovery,
+        deps: {},
+        factory: () => discovery(),
+      });
     export const mock = simpleMock(coreServices.discovery, () => ({
       getBaseUrl: jest.fn(),
       getExternalBaseUrl: jest.fn(),

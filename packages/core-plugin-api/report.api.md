@@ -613,9 +613,13 @@ export type OptionalParams<
 > = Params[keyof Params] extends never ? undefined : Params;
 
 // @public @deprecated
-export type ParamKeys<Params extends AnyParams> = keyof Params extends never
+export type ParamKeys<Params extends AnyParams> = [AnyRouteRefParams] extends [
+  Params,
+]
+  ? string[]
+  : keyof Params extends never
   ? []
-  : (keyof Params)[];
+  : Array<keyof Params>;
 
 // @public @deprecated
 export type ParamNames<S extends string> =
@@ -792,8 +796,4 @@ export function withApis<T extends {}>(
   ): React_2.JSX.Element;
   displayName: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/routing/types.d.ts:13:1 - (ae-undocumented) Missing documentation for "AnyParams".
 ```

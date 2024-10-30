@@ -5,6 +5,7 @@
 ```ts
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -14,6 +15,7 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
+    rootLifecycle?: RootLifecycleService;
   }): SchedulerService;
 }
 
@@ -23,10 +25,6 @@ export const schedulerServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
-
-// Warnings were encountered during analysis:
-//
-// src/entrypoints/scheduler/lib/DefaultSchedulerService.d.ts:8:5 - (ae-undocumented) Missing documentation for "create".
 
 // (No @packageDocumentation comment for this package)
 ```

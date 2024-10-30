@@ -48,13 +48,22 @@ function buildEntitySearch(entity: Entity) {
   const rows = traverse(entity);
 
   if (entity.metadata?.name) {
-    rows.push({ key: 'metadata.name', value: entity.metadata.name });
+    rows.push({
+      key: 'metadata.name',
+      value: entity.metadata.name.toLocaleLowerCase('en-US'),
+    });
   }
   if (entity.metadata?.namespace) {
-    rows.push({ key: 'metadata.namespace', value: entity.metadata.namespace });
+    rows.push({
+      key: 'metadata.namespace',
+      value: entity.metadata.namespace.toLocaleLowerCase('en-US'),
+    });
   }
   if (entity.metadata?.uid) {
-    rows.push({ key: 'metadata.uid', value: entity.metadata.uid });
+    rows.push({
+      key: 'metadata.uid',
+      value: entity.metadata.uid.toLocaleLowerCase('en-US'),
+    });
   }
 
   if (!entity.metadata.namespace) {
@@ -64,8 +73,8 @@ function buildEntitySearch(entity: Entity) {
   // Visit relations
   for (const relation of entity.relations ?? []) {
     rows.push({
-      key: `relations.${relation.type}`,
-      value: relation.targetRef,
+      key: `relations.${relation.type.toLocaleLowerCase('en-US')}`,
+      value: relation.targetRef.toLocaleLowerCase('en-US'),
     });
   }
 

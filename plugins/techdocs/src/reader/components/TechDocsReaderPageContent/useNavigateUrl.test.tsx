@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import {
-  MockConfigApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -55,16 +56,7 @@ describe('useNavigateUrl', () => {
     const baseUrl = 'http://localhost:3000';
     await renderInTestApp(
       <TestApiProvider
-        apis={[
-          [
-            configApiRef,
-            new MockConfigApi({
-              app: {
-                baseUrl,
-              },
-            }),
-          ],
-        ]}
+        apis={[[configApiRef, mockApis.config({ data: { app: { baseUrl } } })]]}
       >
         <Component to={`${baseUrl}/test`} />
       </TestApiProvider>,
@@ -75,16 +67,7 @@ describe('useNavigateUrl', () => {
     const baseUrl = 'http://localhost:3000/instance';
     await renderInTestApp(
       <TestApiProvider
-        apis={[
-          [
-            configApiRef,
-            new MockConfigApi({
-              app: {
-                baseUrl,
-              },
-            }),
-          ],
-        ]}
+        apis={[[configApiRef, mockApis.config({ data: { app: { baseUrl } } })]]}
       >
         <Component to={`${baseUrl}/test`} />
       </TestApiProvider>,
@@ -95,16 +78,7 @@ describe('useNavigateUrl', () => {
     const baseUrl = 'http://localhost:3000';
     await renderInTestApp(
       <TestApiProvider
-        apis={[
-          [
-            configApiRef,
-            new MockConfigApi({
-              app: {
-                baseUrl,
-              },
-            }),
-          ],
-        ]}
+        apis={[[configApiRef, mockApis.config({ data: { app: { baseUrl } } })]]}
       >
         <Component to="/test" />
       </TestApiProvider>,

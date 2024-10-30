@@ -208,7 +208,18 @@ export const useTechDocsReaderDom = (
               if (modifierActive) {
                 window.open(url, '_blank');
               } else {
-                navigate(url);
+                // If it's in a different page, we navigate to it
+                if (window.location.pathname !== parsedUrl.pathname) {
+                  navigate(url);
+                } else {
+                  // If it's in the same page we avoid using navigate that causes
+                  // the page to rerender.
+                  window.history.pushState(
+                    null,
+                    document.title,
+                    parsedUrl.hash,
+                  );
+                }
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
@@ -265,6 +276,12 @@ export const useTechDocsReaderDom = (
         return;
       }
 
+      // Skip this update if the location's path has changed but the state
+      // contains a page for another page that isn't loaded yet.
+      if (!window.location.pathname.endsWith(path)) {
+        return;
+      }
+
       // Scroll to top after render
       window.scroll({ top: 0 });
 
@@ -272,6 +289,7 @@ export const useTechDocsReaderDom = (
       const postTransformedDomElement = await postRender(
         preTransformedDomElement,
       );
+
       setDom(postTransformedDomElement as HTMLElement);
     });
 

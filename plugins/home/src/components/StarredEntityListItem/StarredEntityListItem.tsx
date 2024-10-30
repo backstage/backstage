@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { entityRouteParams } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
+import {
+  EntityDisplayName,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -23,21 +26,59 @@ import { Link } from 'react-router-dom';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { FavoriteToggle } from '@backstage/core-components';
+import { makeStyles } from '@material-ui/core/styles';
 
 type EntityListItemProps = {
   entity: Entity;
   onToggleStarredEntity: (entity: Entity) => void;
+  showKind?: boolean;
 };
+
+const useStyles = makeStyles(theme => ({
+  listItem: {
+    paddingBottom: theme.spacing(0),
+    paddingTop: theme.spacing(0),
+  },
+  secondary: {
+    textTransform: 'uppercase',
+  },
+}));
 
 export const StarredEntityListItem = ({
   entity,
   onToggleStarredEntity,
+  showKind,
 }: EntityListItemProps) => {
+  const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
 
+  let secondaryText = '';
+  if (showKind) {
+    secondaryText += entity.kind.toLocaleLowerCase('en-US');
+  }
+  if (entity.spec && 'type' in entity.spec) {
+    if (showKind) {
+      secondaryText += ' — ';
+    }
+    secondaryText += (entity.spec as { type: string }).type.toLocaleLowerCase(
+      'en-US',
+    );
+  }
+
   return (
-    <ListItem key={stringifyEntityRef(entity)}>
-      <ListItemIcon>
+    <ListItem
+      dense
+      className={classes.listItem}
+      component={Link}
+      button
+      to={catalogEntityRoute(entityRouteParams(entity))}
+    >
+      <ListItemIcon
+        // Prevent following the link when clicking on the icon
+        onClick={e => {
+          e.preventDefault();
+        }}
+      >
         <FavoriteToggle
           id={`remove-favorite-${entity.metadata.uid}`}
           title="Remove entity from favorites"
@@ -45,9 +86,10 @@ export const StarredEntityListItem = ({
           onToggle={() => onToggleStarredEntity(entity)}
         />
       </ListItemIcon>
-      <Link to={catalogEntityRoute(entityRouteParams(entity))}>
-        <ListItemText primary={entity.metadata.title ?? entity.metadata.name} />
-      </Link>
+      <ListItemText
+        primary={<EntityDisplayName hideIcon entityRef={entity} />}
+        secondary={secondaryText}
+      />
     </ListItem>
   );
 };

@@ -72,6 +72,13 @@ export const useSanitizerTransformer = (): Transformer => {
         }
       });
 
+      const tagNameCheck = config?.getOptionalString(
+        'allowedCustomElementTagNameRegExp',
+      );
+      const attributeNameCheck = config?.getOptionalString(
+        'allowedCustomElementAttributeNameRegExp',
+      );
+
       // using outerHTML as we want to preserve the html tag attributes (lang)
       return DOMPurify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
@@ -79,6 +86,12 @@ export const useSanitizerTransformer = (): Transformer => {
         ADD_ATTR: ['http-equiv', 'content'],
         WHOLE_DOCUMENT: true,
         RETURN_DOM: true,
+        CUSTOM_ELEMENT_HANDLING: {
+          tagNameCheck: tagNameCheck ? new RegExp(tagNameCheck) : undefined,
+          attributeNameCheck: attributeNameCheck
+            ? new RegExp(attributeNameCheck)
+            : undefined,
+        },
       });
     },
     [config],

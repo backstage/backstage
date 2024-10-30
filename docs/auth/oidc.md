@@ -156,8 +156,6 @@ auth:
         # ...
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailLocalPartMatchingUserEntityName
             - resolver: emailMatchingUserEntityProfileEmail
 ```
 

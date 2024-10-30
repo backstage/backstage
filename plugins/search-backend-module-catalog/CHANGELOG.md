@@ -1,5 +1,74 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.14.0-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-backend-node@1.3.5-next.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- 0b8f344: Fixed a bug where the `filter` setting of the collator was not permitted to be an array.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.14.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-backend-node@1.3.5-next.0
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.2.3
+
+### Patch Changes
+
+- 4b60e0c: Remove extension points from `/alpha` export, they're available from the main package already
+- 094eaa3: Remove references to in-repo backend-common
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- 2f88f88: Updated backend installation instructions.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.3
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-backend-node@1.3.3-next.2
+  - @backstage/plugin-search-common@1.2.14
+
 ## 0.2.3-next.1
 
 ### Patch Changes

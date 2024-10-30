@@ -28,7 +28,7 @@ import { ConfigSchema } from '@backstage/config-loader';
 
 /**
  * The App plugin is responsible for serving the frontend app bundle and static assets.
- * @alpha
+ * @public
  */
 export const appPlugin = createBackendPlugin({
   pluginId: 'app',

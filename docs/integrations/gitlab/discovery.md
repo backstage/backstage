@@ -30,14 +30,14 @@ Then add the following to your backend initialization:
 
 ```ts title="packages/backend/src/index.ts
 // optional if you want HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend/alpha'));
+// backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
 // optional - event router for gitlab. See.: https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md
 // backend.add(eventsModuleGitlabEventRouter);
 // optional - token validator for the gitlab topic
 // backend.add(eventsModuleGitlabWebhook);
-backend.add(import('@backstage/plugin-catalog-backend-module-gitlab/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-gitlab'));
 ```
 
 You need to decide how you want to receive events from external sources like

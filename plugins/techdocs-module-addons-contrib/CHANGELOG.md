@@ -1,5 +1,54 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/plugin-techdocs-react@1.2.10-next.1
+
+## 1.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/plugin-techdocs-react@1.2.10-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+
+## 1.1.16
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- e8b4966: Use more of the available space for the navigation sidebar.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-techdocs-react@1.2.9
+  - @backstage/integration@1.15.1
+
+## 1.1.16-next.2
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- e8b4966: Use more of the available space for the navigation sidebar.
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/plugin-techdocs-react@1.2.9-next.2
+
 ## 1.1.16-next.1
 
 ### Patch Changes

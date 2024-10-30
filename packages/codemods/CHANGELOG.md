@@ -1,5 +1,21 @@
 # @backstage/codemods
 
+## 0.1.52-next.0
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+
+## 0.1.51
+
+### Patch Changes
+
+- c06b7f1: Updated dependency `@types/jscodeshift` to `^0.12.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.1.50
 
 ### Patch Changes

@@ -19,7 +19,7 @@ import {
   LayoutTemplate,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
   const mid = Math.ceil(properties.length / 2);

@@ -1,6 +1,6 @@
 {
   "name": "@internal/frontend",
-  "version": "0.0.2-next.1",
+  "version": "0.0.3-next.1",
   "backstage": {
     "role": "web-library",
     "inline": true

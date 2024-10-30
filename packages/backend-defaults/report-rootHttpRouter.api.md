@@ -154,28 +154,5 @@ export const rootHttpRouterServiceFactory: ((
 ) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
   ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
 
-// Warnings were encountered during analysis:
-//
-// src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.d.ts:23:5 - (ae-undocumented) Missing documentation for "create".
-// src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.d.ts:25:5 - (ae-undocumented) Missing documentation for "use".
-// src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.d.ts:26:5 - (ae-undocumented) Missing documentation for "handler".
-// src/entrypoints/rootHttpRouter/createHealthRouter.d.ts:6:1 - (ae-undocumented) Missing documentation for "createHealthRouter".
-// src/entrypoints/rootHttpRouter/http/MiddlewareFactory.d.ts:9:5 - (ae-undocumented) Missing documentation for "config".
-// src/entrypoints/rootHttpRouter/http/MiddlewareFactory.d.ts:10:5 - (ae-undocumented) Missing documentation for "logger".
-// src/entrypoints/rootHttpRouter/http/types.d.ts:9:5 - (ae-undocumented) Missing documentation for "start".
-// src/entrypoints/rootHttpRouter/http/types.d.ts:10:5 - (ae-undocumented) Missing documentation for "stop".
-// src/entrypoints/rootHttpRouter/http/types.d.ts:11:5 - (ae-undocumented) Missing documentation for "port".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:9:1 - (ae-undocumented) Missing documentation for "RootHttpRouterConfigureContext".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:10:5 - (ae-undocumented) Missing documentation for "app".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:11:5 - (ae-undocumented) Missing documentation for "server".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:12:5 - (ae-undocumented) Missing documentation for "middleware".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:13:5 - (ae-undocumented) Missing documentation for "routes".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:14:5 - (ae-undocumented) Missing documentation for "config".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:15:5 - (ae-undocumented) Missing documentation for "logger".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:16:5 - (ae-undocumented) Missing documentation for "lifecycle".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:17:5 - (ae-undocumented) Missing documentation for "healthRouter".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:18:5 - (ae-undocumented) Missing documentation for "applyDefaults".
-// src/entrypoints/rootHttpRouter/rootHttpRouterServiceFactory.d.ts:38:22 - (ae-undocumented) Missing documentation for "rootHttpRouterServiceFactory".
-
 // (No @packageDocumentation comment for this package)
 ```

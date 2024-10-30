@@ -23,7 +23,7 @@ import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
-import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
+import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
 
 const nameExtensionDataRef = createExtensionDataRef<string>().with({
@@ -128,7 +128,7 @@ function createTestAppRoot({
 }) {
   return createApp({
     features: [...features],
-    configLoader: async () => ({ config: new MockConfigApi(config) }),
+    configLoader: async () => ({ config: mockApis.config({ data: config }) }),
   }).createRoot();
 }
 

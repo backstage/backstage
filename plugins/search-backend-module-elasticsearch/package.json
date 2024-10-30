@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-elasticsearch",
-  "version": "1.5.7-next.1",
+  "version": "1.6.2-next.1",
   "description": "A module for the search backend that implements search using ElasticSearch",
   "backstage": {
     "role": "backend-plugin-module",
@@ -64,7 +64,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@elastic/elasticsearch-mock": "^1.0.0",
-    "@short.io/opensearch-mock": "^0.3.1"
+    "@short.io/opensearch-mock": "^0.4.0"
   },
   "configSchema": "config.d.ts"
 }

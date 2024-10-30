@@ -21,3 +21,8 @@ export type { TechDocsCollatorFactoryOptions } from './DefaultTechDocsCollatorFa
 export { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 
 export type { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+
+export type {
+  TechDocsCollatorDocumentTransformer,
+  MkSearchIndexDoc,
+} from './TechDocsCollatorDocumentTransformer';

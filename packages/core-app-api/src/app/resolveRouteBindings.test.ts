@@ -20,7 +20,7 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 import { collectRouteIds, resolveRouteBindings } from './resolveRouteBindings';
-import { MockConfigApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 
 describe('resolveRouteBindings', () => {
   it('runs happy path', () => {
@@ -30,7 +30,7 @@ describe('resolveRouteBindings', () => {
       ({ bind }) => {
         bind(external, { myRoute: ref });
       },
-      new MockConfigApi({}),
+      mockApis.config(),
       [],
     );
 
@@ -45,7 +45,7 @@ describe('resolveRouteBindings', () => {
         ({ bind }) => {
           bind(external, { someOtherRoute: ref } as any);
         },
-        new MockConfigApi({}),
+        mockApis.config(),
         [],
       ),
     ).toThrow('Key someOtherRoute is not an existing external route');
@@ -56,8 +56,10 @@ describe('resolveRouteBindings', () => {
     const myTarget = createRouteRef({ id: 'test' });
     const result = resolveRouteBindings(
       () => {},
-      new MockConfigApi({
-        app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+      mockApis.config({
+        data: {
+          app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+        },
       }),
       [
         createPlugin({
@@ -84,8 +86,10 @@ describe('resolveRouteBindings', () => {
         ({ bind }) => {
           bind({ mySource }, { mySource: false });
         },
-        new MockConfigApi({
-          app: { routes: { bindings: { 'test.mySource': 'myTarget' } } },
+        mockApis.config({
+          data: {
+            app: { routes: { bindings: { 'test.mySource': 'myTarget' } } },
+          },
         }),
         [
           createPlugin({
@@ -106,8 +110,8 @@ describe('resolveRouteBindings', () => {
         ({ bind }) => {
           bind({ mySource }, { mySource: myTarget });
         },
-        new MockConfigApi({
-          app: { routes: { bindings: { 'test.mySource': false } } },
+        mockApis.config({
+          data: { app: { routes: { bindings: { 'test.mySource': false } } } },
         }),
         [
           createPlugin({
@@ -128,7 +132,7 @@ describe('resolveRouteBindings', () => {
     expect(() =>
       resolveRouteBindings(
         () => {},
-        new MockConfigApi({ app: { routes: { bindings: 'derp' } } }),
+        mockApis.config({ data: { app: { routes: { bindings: 'derp' } } } }),
         [],
       ),
     ).toThrow(
@@ -138,8 +142,8 @@ describe('resolveRouteBindings', () => {
     expect(() =>
       resolveRouteBindings(
         () => {},
-        new MockConfigApi({
-          app: { routes: { bindings: { 'test.mySource': true } } },
+        mockApis.config({
+          data: { app: { routes: { bindings: { 'test.mySource': true } } } },
         }),
         [],
       ),
@@ -150,8 +154,10 @@ describe('resolveRouteBindings', () => {
     expect(() =>
       resolveRouteBindings(
         () => {},
-        new MockConfigApi({
-          app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+        mockApis.config({
+          data: {
+            app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+          },
         }),
         [],
       ),
@@ -162,8 +168,10 @@ describe('resolveRouteBindings', () => {
     expect(() =>
       resolveRouteBindings(
         () => {},
-        new MockConfigApi({
-          app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+        mockApis.config({
+          data: {
+            app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+          },
         }),
         [
           createPlugin({
@@ -198,17 +206,17 @@ describe('resolveRouteBindings', () => {
     });
 
     // defaultTarget wins only if no bind or config matches
-    let result = resolveRouteBindings(() => {}, new MockConfigApi({}), [
-      plugin,
-    ]);
+    let result = resolveRouteBindings(() => {}, mockApis.config(), [plugin]);
 
     expect(result.get(source)).toBe(target1);
 
     // config wins over defaultTarget
     result = resolveRouteBindings(
       () => {},
-      new MockConfigApi({
-        app: { routes: { bindings: { 'test.source': 'test.target2' } } },
+      mockApis.config({
+        data: {
+          app: { routes: { bindings: { 'test.source': 'test.target2' } } },
+        },
       }),
       [plugin],
     );
@@ -220,7 +228,7 @@ describe('resolveRouteBindings', () => {
       ({ bind }) => {
         bind(plugin.externalRoutes, { source: plugin.routes.target2 });
       },
-      new MockConfigApi({}),
+      mockApis.config(),
       [plugin],
     );
 
@@ -257,17 +265,15 @@ describe('collectRouteIds', () => {
     });
 
     // resolves normally with no config
-    let result = resolveRouteBindings(() => {}, new MockConfigApi({}), [
-      plugin,
-    ]);
+    let result = resolveRouteBindings(() => {}, mockApis.config(), [plugin]);
 
     expect(result.get(source)).toBe(target1);
 
     // can be disabled
     result = resolveRouteBindings(
       () => {},
-      new MockConfigApi({
-        app: { routes: { bindings: { 'test.source': false } } },
+      mockApis.config({
+        data: { app: { routes: { bindings: { 'test.source': false } } } },
       }),
       [plugin],
     );

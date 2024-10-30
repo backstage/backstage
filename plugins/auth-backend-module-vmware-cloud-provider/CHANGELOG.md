@@ -1,5 +1,51 @@
 # @backstage/plugin-auth-backend-module-vmware-cloud-provider
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-auth-node@0.5.4-next.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.4-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+
+## 0.4.0
+
+### Minor Changes
+
+- d0edfec: **BREAKING**: The `profileEmailMatchingUserEntityEmail` sign-in resolver has been removed as it was using an insecure fallback for resolving user identities. See https://backstage.io/docs/auth/identity-resolver#sign-in-without-users-in-the-catalog for how to create a custom sign-in resolver if needed as a replacement.
+
+### Patch Changes
+
+- 217458a: Updated configuration schema to include the new `allowedDomains` option for the `emailLocalPartMatchingUserEntityName` sign-in resolver.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- d0edfec: **BREAKING**: The `profileEmailMatchingUserEntityEmail` sign-in resolver has been removed as it was using an insecure fallback for resolving user identities. See https://backstage.io/docs/auth/identity-resolver#sign-in-without-users-in-the-catalog for how to create a custom sign-in resolver if needed as a replacement.
+
+### Patch Changes
+
+- 217458a: Updated configuration schema to include the new `allowedDomains` option for the `emailLocalPartMatchingUserEntityName` sign-in resolver.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+
 ## 0.3.1-next.0
 
 ### Patch Changes

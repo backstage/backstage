@@ -150,7 +150,7 @@ export function mockErrorHandler(): ErrorRequestHandler<
   Record<string, any>
 >;
 
-// @public (undocumented)
+// @public
 export namespace mockServices {
   // (undocumented)
   export function auth(options?: {
@@ -474,85 +474,4 @@ export class TestDatabases {
   // (undocumented)
   supports(id: TestDatabaseId): boolean;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/cache/TestCaches.d.ts:27:5 - (ae-undocumented) Missing documentation for "setDefaults".
-// src/cache/TestCaches.d.ts:31:5 - (ae-undocumented) Missing documentation for "supports".
-// src/cache/TestCaches.d.ts:32:5 - (ae-undocumented) Missing documentation for "eachSupportedId".
-// src/database/TestDatabases.d.ts:29:5 - (ae-undocumented) Missing documentation for "setDefaults".
-// src/database/TestDatabases.d.ts:33:5 - (ae-undocumented) Missing documentation for "supports".
-// src/database/TestDatabases.d.ts:34:5 - (ae-undocumented) Missing documentation for "eachSupportedId".
-// src/next/services/mockCredentials.d.ts:17:1 - (ae-undocumented) Missing documentation for "mockCredentials".
-// src/next/services/mockCredentials.d.ts:58:9 - (ae-undocumented) Missing documentation for "invalidToken".
-// src/next/services/mockCredentials.d.ts:59:9 - (ae-undocumented) Missing documentation for "invalidHeader".
-// src/next/services/mockCredentials.d.ts:84:9 - (ae-undocumented) Missing documentation for "invalidToken".
-// src/next/services/mockCredentials.d.ts:85:9 - (ae-undocumented) Missing documentation for "invalidCookie".
-// src/next/services/mockCredentials.d.ts:116:9 - (ae-undocumented) Missing documentation for "invalidToken".
-// src/next/services/mockCredentials.d.ts:117:9 - (ae-undocumented) Missing documentation for "invalidHeader".
-// src/next/services/mockServices.d.ts:5:1 - (ae-undocumented) Missing documentation for "ServiceMock".
-// src/next/services/mockServices.d.ts:13:1 - (ae-undocumented) Missing documentation for "mockServices".
-// src/next/services/mockServices.d.ts:14:5 - (ae-undocumented) Missing documentation for "rootConfig".
-// src/next/services/mockServices.d.ts:15:5 - (ae-undocumented) Missing documentation for "rootConfig".
-// src/next/services/mockServices.d.ts:16:9 - (ae-undocumented) Missing documentation for "Options".
-// src/next/services/mockServices.d.ts:19:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:20:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:22:5 - (ae-undocumented) Missing documentation for "rootLogger".
-// src/next/services/mockServices.d.ts:23:5 - (ae-undocumented) Missing documentation for "rootLogger".
-// src/next/services/mockServices.d.ts:24:9 - (ae-undocumented) Missing documentation for "Options".
-// src/next/services/mockServices.d.ts:27:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:28:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:30:5 - (ae-undocumented) Missing documentation for "auth".
-// src/next/services/mockServices.d.ts:34:5 - (ae-undocumented) Missing documentation for "auth".
-// src/next/services/mockServices.d.ts:35:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:36:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:38:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/next/services/mockServices.d.ts:39:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/next/services/mockServices.d.ts:40:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:41:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:61:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/next/services/mockServices.d.ts:72:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:82:5 - (ae-undocumented) Missing documentation for "userInfo".
-// src/next/services/mockServices.d.ts:90:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:92:5 - (ae-undocumented) Missing documentation for "cache".
-// src/next/services/mockServices.d.ts:93:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:94:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:96:5 - (ae-undocumented) Missing documentation for "database".
-// src/next/services/mockServices.d.ts:97:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:98:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:100:5 - (ae-undocumented) Missing documentation for "rootHealth".
-// src/next/services/mockServices.d.ts:101:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:102:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:104:5 - (ae-undocumented) Missing documentation for "httpRouter".
-// src/next/services/mockServices.d.ts:105:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:106:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:108:5 - (ae-undocumented) Missing documentation for "rootHttpRouter".
-// src/next/services/mockServices.d.ts:109:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:110:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:112:5 - (ae-undocumented) Missing documentation for "lifecycle".
-// src/next/services/mockServices.d.ts:113:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:114:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:116:5 - (ae-undocumented) Missing documentation for "logger".
-// src/next/services/mockServices.d.ts:117:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:118:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:120:5 - (ae-undocumented) Missing documentation for "permissions".
-// src/next/services/mockServices.d.ts:121:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:122:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:124:5 - (ae-undocumented) Missing documentation for "rootLifecycle".
-// src/next/services/mockServices.d.ts:125:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:126:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:128:5 - (ae-undocumented) Missing documentation for "scheduler".
-// src/next/services/mockServices.d.ts:129:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:130:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:132:5 - (ae-undocumented) Missing documentation for "urlReader".
-// src/next/services/mockServices.d.ts:133:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:134:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/services/mockServices.d.ts:136:5 - (ae-undocumented) Missing documentation for "events".
-// src/next/services/mockServices.d.ts:137:15 - (ae-undocumented) Missing documentation for "factory".
-// src/next/services/mockServices.d.ts:138:15 - (ae-undocumented) Missing documentation for "mock".
-// src/next/wiring/TestBackend.d.ts:5:1 - (ae-undocumented) Missing documentation for "TestBackendOptions".
-// src/next/wiring/TestBackend.d.ts:6:5 - (ae-undocumented) Missing documentation for "extensionPoints".
-// src/next/wiring/TestBackend.d.ts:14:5 - (ae-undocumented) Missing documentation for "features".
-// src/next/wiring/TestBackend.d.ts:19:1 - (ae-undocumented) Missing documentation for "TestBackend".
-// src/next/wiring/TestBackend.d.ts:30:1 - (ae-undocumented) Missing documentation for "startTestBackend".
 ```

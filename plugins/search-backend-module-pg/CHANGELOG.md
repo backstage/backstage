@@ -1,5 +1,47 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.38-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.3.5-next.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.5.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.3.5-next.0
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.5.36
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.3
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.14
+
+## 0.5.36-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.3.3-next.2
+  - @backstage/plugin-search-common@1.2.14
+
 ## 0.5.36-next.1
 
 ### Patch Changes

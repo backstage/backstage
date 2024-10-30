@@ -1,5 +1,56 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.1
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- bc71718: Updated installation instructions in README to not include `/alpha`.
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/integration@1.15.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.5.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/plugin-scaffolder-node@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.5.1-next.1
 
 ### Patch Changes

@@ -18,6 +18,7 @@ import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
 import {
   Notification,
+  NotificationSettings,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 
@@ -150,6 +151,23 @@ const otherUserNotification: Notification = {
     link: '/catalog',
     severity: 'normal',
   },
+};
+const notificationSettings: NotificationSettings = {
+  channels: [
+    {
+      id: 'Web',
+      origins: [
+        {
+          id: 'plugin-test',
+          enabled: true,
+        },
+        {
+          id: 'plugin-test2',
+          enabled: false,
+        },
+      ],
+    },
+  ],
 };
 
 describe.each(databases.eachSupportedId())(
@@ -710,6 +728,19 @@ describe.each(databases.eachSupportedId())(
         await storage.markUnsaved({ ids: [id1], user });
         const notification = await storage.getNotification({ id: id1 });
         expect(notification?.saved).toBeNull();
+      });
+    });
+
+    describe('settings', () => {
+      it('should save and load notification settings', async () => {
+        await storage.saveNotificationSettings({
+          user: 'user:default/test',
+          settings: notificationSettings,
+        });
+        const settings = await storage.getNotificationSettings({
+          user: 'user:default/test',
+        });
+        expect(settings).toEqual(notificationSettings);
       });
     });
   },

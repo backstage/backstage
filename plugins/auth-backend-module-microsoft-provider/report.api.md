@@ -37,10 +37,4 @@ export namespace microsoftSignInResolvers {
     unknown
   >;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:3:22 - (ae-undocumented) Missing documentation for "microsoftAuthenticator".
-// src/deprecated.d.ts:5:22 - (ae-undocumented) Missing documentation for "authModuleMicrosoftProvider".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleMicrosoftProvider".
 ```

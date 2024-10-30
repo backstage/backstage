@@ -17,7 +17,7 @@
 import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -56,12 +56,12 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
 };
 
 const catalogApi = catalogApiMock.mock();
+const analyticsApi = mockApis.analytics();
 
-const analyticsMock = new MockAnalyticsApi();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [catalogApiRef, catalogApi],
-  [analyticsApiRef, analyticsMock],
+  [analyticsApiRef, analyticsApi],
   [catalogApiRef, catalogApi],
 );
 
@@ -81,6 +81,7 @@ const entityRefResponse = {
     },
   },
 };
+
 describe('TemplateWizardPage', () => {
   it('captures expected analytics events', async () => {
     scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
@@ -130,20 +131,29 @@ describe('TemplateWizardPage', () => {
     });
 
     // The "Next Step" button should have fired an event
-    expect(analyticsMock.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'Next Step (1)',
-      context: { entityRef: 'template:default/test' },
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'Next Step (1)',
+        context: expect.objectContaining({
+          entityRef: 'template:default/test',
+        }),
+      }),
+    );
 
     // And the "Create" button should have fired an event
-    expect(analyticsMock.getEvents()[1]).toMatchObject({
-      action: 'create',
-      subject: 'expected-name',
-      context: { entityRef: 'template:default/test' },
-      value: 120,
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'create',
+        subject: 'expected-name',
+        context: expect.objectContaining({
+          entityRef: 'template:default/test',
+        }),
+        value: 120,
+      }),
+    );
   });
+
   describe('scaffolder page context menu', () => {
     it('should render if editUrl is set to url', async () => {
       catalogApi.getEntityByRef.mockResolvedValue({
@@ -175,6 +185,7 @@ describe('TemplateWizardPage', () => {
       );
       expect(queryByTestId('menu-button')).toBeInTheDocument();
     });
+
     it('should not render if editUrl is undefined', async () => {
       catalogApi.getEntityByRef.mockResolvedValue({
         apiVersion: 'v1',

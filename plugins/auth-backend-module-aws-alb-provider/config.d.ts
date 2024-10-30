@@ -41,7 +41,10 @@ export interface Config {
         region: string;
         signIn?: {
           resolvers: Array<
-            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | {
+                resolver: 'emailLocalPartMatchingUserEntityName';
+                allowedDomains?: string[];
+              }
             | { resolver: 'emailMatchingUserEntityProfileEmail' }
           >;
         };

@@ -86,8 +86,16 @@ const techDocsEntityTransformer: TechDocsCollatorEntityTransformer = (
 ) => {
   return {
     // add more fields to the index
-    ...defaultTechDocsCollatorEntityTransformer(entity),
     tags: entity.metadata.tags,
+  };
+};
+
+const techDocsDocumentTransformer: TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => {
+  return {
+    // add more fields to the index
+    bost: doc.boost,
   };
 };
 
@@ -97,6 +105,8 @@ indexBuilder.addCollator({
     tokenManager: env.tokenManager,
     /* highlight-add-next-line */
     entityTransformer: techDocsEntityTransformer,
+    /* highlight-add-next-line */
+    documentTransformer: techDocsDocumentTransformer,
   }),
 });
 ```

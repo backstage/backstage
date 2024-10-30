@@ -16,7 +16,7 @@
 
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TestApiProvider, MockConfigApi } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import TextField from '@material-ui/core/TextField';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -27,6 +27,7 @@ import {
   generateEntities,
   StepPrepareCreatePullRequest,
 } from './StepPrepareCreatePullRequest';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<StepPrepareCreatePullRequest />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -35,26 +36,14 @@ describe('<StepPrepareCreatePullRequest />', () => {
     preparePullRequest: jest.fn(),
   };
 
-  const catalogApi = {
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getLocationByRef: jest.fn(),
-    getLocationById: jest.fn(),
-    removeLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
     error$: jest.fn(),
     post: jest.fn(),
   };
 
-  const configApi = new MockConfigApi({});
+  const configApi = mockApis.config();
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <TestApiProvider

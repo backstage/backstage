@@ -170,7 +170,7 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
 /**
  * Catalog plugin
- * @alpha
+ * @public
  */
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',
@@ -301,10 +301,13 @@ export const catalogPlugin = createBackendPlugin({
 
         const { processingEngine, router } = await builder.build();
 
-        lifecycle.addStartupHook(async () => {
-          await processingEngine.start();
-        });
-        lifecycle.addShutdownHook(() => processingEngine.stop());
+        if (config.getOptional('catalog.processingInterval') ?? true) {
+          lifecycle.addStartupHook(async () => {
+            await processingEngine.start();
+          });
+          lifecycle.addShutdownHook(() => processingEngine.stop());
+        }
+
         httpRouter.use(router);
       },
     });

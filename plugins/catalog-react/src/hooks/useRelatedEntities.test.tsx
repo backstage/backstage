@@ -20,6 +20,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { catalogApiRef } from '../api';
 import { useRelatedEntities } from './useRelatedEntities';
+import { catalogApiMock } from '../testUtils';
 
 describe('useRelatedEntities', () => {
   afterEach(() => {
@@ -46,9 +47,7 @@ describe('useRelatedEntities', () => {
     ],
   };
 
-  const catalogApi = {
-    getEntitiesByRefs: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
 
   const wrapper: ComponentType<PropsWithChildren<{}>> = ({ children }) => {
     return (
@@ -60,7 +59,7 @@ describe('useRelatedEntities', () => {
 
   it('filters and requests entities', async () => {
     catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
-      items: [entity, null], // one of them doesn't exist
+      items: [entity, undefined], // one of them doesn't exist
     });
 
     const rendered = renderHook(

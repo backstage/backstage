@@ -22,7 +22,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 
 import { SearchContextProvider } from '../../context';
 import { SearchFilter } from './SearchFilter';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { searchApiRef } from '../../api';
 
 describe('SearchFilter', () => {
@@ -37,10 +37,12 @@ describe('SearchFilter', () => {
   const values = ['value1', 'value2'];
   const filters = { unrelated: 'unrelated' };
 
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pagelimit: 10,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pagelimit: 10,
+        },
       },
     },
   });

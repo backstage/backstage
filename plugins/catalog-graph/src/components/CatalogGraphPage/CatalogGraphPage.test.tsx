@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -112,24 +117,11 @@ describe.skip('<CatalogGraphPage/>', () => {
       },
     ],
   };
-  const allEntities: Record<string, object> = {
+  const allEntities: Record<string, Entity> = {
     'b:d/c': entityC,
     'b:d/e': entityE,
   };
-  const catalog = {
-    getEntities: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntitiesByRefs: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    getLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalog = catalogApiMock.mock();
 
   beforeEach(() => {
     wrapper = (
@@ -235,9 +227,9 @@ describe.skip('<CatalogGraphPage/>', () => {
       }),
     );
 
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
         {wrapper}
       </TestApiProvider>,
       {
@@ -251,10 +243,12 @@ describe.skip('<CatalogGraphPage/>', () => {
 
     await userEvent.click(screen.getByText('b:d/e'));
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'b:d/e',
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'b:d/e',
+      }),
+    );
   });
 
   test('should capture analytics event when navigating to entity', async () => {
@@ -264,9 +258,9 @@ describe.skip('<CatalogGraphPage/>', () => {
       }),
     );
 
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
         {wrapper}
       </TestApiProvider>,
       {
@@ -282,12 +276,14 @@ describe.skip('<CatalogGraphPage/>', () => {
     await user.keyboard('{Shift>}');
     await user.click(screen.getByText('b:d/e'));
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'b:d/e',
-      attributes: {
-        to: '/entity/b/d/e',
-      },
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'b:d/e',
+        attributes: {
+          to: '/entity/b/d/e',
+        },
+      }),
+    );
   });
 });

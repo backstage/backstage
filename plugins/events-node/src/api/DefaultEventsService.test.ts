@@ -16,12 +16,16 @@
 
 import { DefaultEventsService } from './DefaultEventsService';
 import { EventParams } from './EventParams';
-import { mockServices } from '@backstage/backend-test-utils';
-
-const logger = mockServices.logger.mock();
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 
 describe('DefaultEventsService', () => {
   it('passes events to interested subscribers', async () => {
+    const logger = mockServices.logger.mock();
     const events = DefaultEventsService.create({ logger });
     const eventsSubscriber1: EventParams[] = [];
     const eventsSubscriber2: EventParams[] = [];
@@ -70,6 +74,7 @@ describe('DefaultEventsService', () => {
   it('logs errors from subscribers', async () => {
     const topic = 'testTopic';
 
+    const logger = mockServices.logger.mock();
     const warnSpy = jest.spyOn(logger, 'warn');
     const events = DefaultEventsService.create({ logger });
 
@@ -107,5 +112,166 @@ describe('DefaultEventsService', () => {
       'Subscriber "subscriber2" failed to process event for topic "testTopic"',
       new Error('NOPE 2'),
     );
+  });
+
+  describe('with event bus', () => {
+    const mswServer = setupServer();
+    registerMswTestHooks(mswServer);
+
+    it('should read events from events bus API', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultEventsService.create({ logger }).forPlugin('a', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      mswServer.use(
+        rest.put(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester',
+          (_req, res, ctx) => res(ctx.status(200)),
+        ),
+        rest.get(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester/events',
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                events: [{ topic: 'test', payload: { foo: 'bar' } }],
+              }),
+            ),
+        ),
+      );
+
+      const event = await new Promise(resolve => {
+        service.subscribe({
+          id: 'tester',
+          topics: ['test'],
+          async onEvent(newEvent) {
+            resolve(newEvent);
+          },
+        });
+      });
+
+      expect(event).toEqual({ topic: 'test', eventPayload: { foo: 'bar' } });
+
+      // Internal call to clean up subscriptions
+      await (service as any).shutdown();
+    });
+
+    it('should not read events from bus if disabled', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultEventsService.create({
+        logger,
+        useEventBus: 'never',
+      }).forPlugin('a', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      let calledApi = false;
+      mswServer.use(
+        rest.put(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester',
+          (_req, res, ctx) => {
+            calledApi = true;
+            res(ctx.status(200));
+          },
+        ),
+      );
+
+      await service.subscribe({
+        id: 'tester',
+        topics: ['test'],
+        async onEvent() {
+          expect('not').toBe('reached');
+        },
+      });
+
+      // Internal call to clean up subscriptions, and wait for the API call
+      await (service as any).shutdown();
+
+      expect(calledApi).toBe(false);
+    });
+
+    it('should deactivate event bus on 404', async () => {
+      expect.assertions(1);
+
+      const logger = mockServices.logger.mock();
+      const service = DefaultEventsService.create({ logger }).forPlugin('a', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      mswServer.use(
+        rest.put(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester',
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+
+      service.subscribe({
+        id: 'tester',
+        topics: ['test'],
+        async onEvent() {
+          expect('not').toBe('reached');
+        },
+      });
+
+      const msg = await new Promise(resolve => {
+        logger.warn.mockImplementationOnce(resolve);
+      });
+
+      expect(msg).toMatch(/Event subscribe request failed with status 404/);
+
+      // Internal call to clean up subscriptions
+      await (service as any).shutdown();
+    });
+
+    it('should not deactivate event bus if configured to always be used', async () => {
+      expect.assertions(1);
+
+      const logger = mockServices.logger.mock();
+      const service = DefaultEventsService.create({
+        logger,
+        useEventBus: 'always',
+      }).forPlugin('a', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      mswServer.use(
+        rest.put(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester',
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+
+      service.subscribe({
+        id: 'tester',
+        topics: ['test'],
+        async onEvent() {
+          expect('not').toBe('reached');
+        },
+      });
+
+      const msg = await new Promise(resolve => {
+        logger.warn.mockImplementationOnce(resolve);
+      });
+
+      expect(msg).toMatch(
+        'Poll failed for subscription "a.tester", retrying in 1000ms',
+      );
+
+      // Internal call to clean up subscriptions
+      await (service as any).shutdown();
+    });
   });
 });

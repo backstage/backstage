@@ -7,13 +7,18 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public
 export class DefaultEventsService implements EventsService {
   // (undocumented)
-  static create(options: { logger: LoggerService }): DefaultEventsService;
+  static create(options: {
+    logger: LoggerService;
+    config?: RootConfigService;
+    useEventBus?: EventBusMode;
+  }): DefaultEventsService;
   forPlugin(
     pluginId: string,
     options?: {
@@ -36,6 +41,9 @@ export interface EventBroker {
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void;
 }
+
+// @public (undocumented)
+export type EventBusMode = 'never' | 'always' | 'auto';
 
 // @public (undocumented)
 export interface EventParams<TPayload = unknown> {
@@ -139,26 +147,4 @@ export abstract class SubTopicEventRouter extends EventRouter {
   // (undocumented)
   protected abstract determineSubTopic(params: EventParams): string | undefined;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/api/DefaultEventsService.d.ts:16:5 - (ae-undocumented) Missing documentation for "create".
-// src/api/DefaultEventsService.d.ts:31:5 - (ae-undocumented) Missing documentation for "publish".
-// src/api/DefaultEventsService.d.ts:32:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/api/EventParams.d.ts:4:1 - (ae-undocumented) Missing documentation for "EventParams".
-// src/api/EventPublisher.d.ts:15:5 - (ae-undocumented) Missing documentation for "setEventBroker".
-// src/api/EventRouter.d.ts:18:5 - (ae-undocumented) Missing documentation for "getSubscriberId".
-// src/api/EventRouter.d.ts:19:5 - (ae-undocumented) Missing documentation for "determineDestinationTopic".
-// src/api/EventRouter.d.ts:26:5 - (ae-undocumented) Missing documentation for "onEvent".
-// src/api/EventsService.d.ts:26:1 - (ae-undocumented) Missing documentation for "EventsServiceSubscribeOptions".
-// src/api/EventsService.d.ts:37:1 - (ae-undocumented) Missing documentation for "EventsServiceEventHandler".
-// src/api/SubTopicEventRouter.d.ts:18:5 - (ae-undocumented) Missing documentation for "determineSubTopic".
-// src/api/SubTopicEventRouter.d.ts:19:5 - (ae-undocumented) Missing documentation for "determineDestinationTopic".
-// src/api/http/HttpPostIngressOptions.d.ts:5:1 - (ae-undocumented) Missing documentation for "HttpPostIngressOptions".
-// src/api/http/HttpPostIngressOptions.d.ts:6:5 - (ae-undocumented) Missing documentation for "topic".
-// src/api/http/HttpPostIngressOptions.d.ts:7:5 - (ae-undocumented) Missing documentation for "validator".
-// src/api/http/validation/RequestDetails.d.ts:4:1 - (ae-undocumented) Missing documentation for "RequestDetails".
-// src/api/http/validation/RequestRejectionDetails.d.ts:8:5 - (ae-undocumented) Missing documentation for "status".
-// src/api/http/validation/RequestRejectionDetails.d.ts:9:5 - (ae-undocumented) Missing documentation for "payload".
-// src/service.d.ts:10:22 - (ae-undocumented) Missing documentation for "eventsServiceFactory".
 ```

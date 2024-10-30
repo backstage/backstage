@@ -63,7 +63,7 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
 /**
  * Events plugin
  *
- * @alpha
+ * @public
  */
 export const eventsPlugin = createBackendPlugin({
   pluginId: 'events',
