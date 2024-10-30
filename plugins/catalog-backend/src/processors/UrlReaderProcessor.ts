@@ -18,7 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import limiterFactory, { Limit } from 'p-limit';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import parseGitUrl from 'git-url-parse';
 import {
   CatalogProcessor,
   CatalogProcessorCache,
@@ -80,6 +79,15 @@ export class UrlReaderProcessor implements CatalogProcessor {
         cacheItem?.etag,
       );
 
+      if (response.length === 0 && !optional) {
+        emit(
+          processingResult.notFoundError(
+            location,
+            `Unable to read ${location.type}, no matching files found for ${location.target}`,
+          ),
+        );
+      }
+
       const parseResults: CatalogProcessorResult[] = [];
       for (const item of response) {
         for await (const parseResult of parser({
@@ -112,10 +120,6 @@ export class UrlReaderProcessor implements CatalogProcessor {
         }
         emit(processingResult.refresh(`${location.type}:${location.target}`));
         await cache.set(CACHE_KEY, cacheItem);
-      } else if (error.name === 'NotFoundError') {
-        if (!optional) {
-          emit(processingResult.notFoundError(location, message));
-        }
       } else {
         emit(processingResult.generalError(location, message));
       }
@@ -128,23 +132,13 @@ export class UrlReaderProcessor implements CatalogProcessor {
     location: string,
     etag?: string,
   ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
-    // Does it contain globs? I.e. does it contain asterisks or question marks
-    // (no curly braces for now)
+    const response = await this.options.reader.search(location, { etag });
 
-    const { filepath } = parseGitUrl(location);
-    if (filepath?.match(/[*?]/)) {
-      const response = await this.options.reader.search(location, { etag });
-      const output = response.files.map(async file => ({
-        url: file.url,
-        data: await this.#limiter(file.content),
-      }));
-      return { response: await Promise.all(output), etag: response.etag };
-    }
+    const output = response.files.map(async file => ({
+      url: file.url,
+      data: await this.#limiter(file.content),
+    }));
 
-    const data = await this.options.reader.readUrl(location, { etag });
-    return {
-      response: [{ url: location, data: await data.buffer() }],
-      etag: data.etag,
-    };
+    return { response: await Promise.all(output), etag: response.etag };
   }
 }
