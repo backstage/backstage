@@ -23,7 +23,11 @@ import {
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import {
   GitLabIntegration,
   ScmIntegrations,
@@ -232,6 +236,34 @@ export class GitlabUrlReader implements UrlReaderService {
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
     const { filepath } = parseGitUrl(url);
+
+    // If it's a direct URL we use readUrl instead
+    if (!filepath?.match(/[*?]/)) {
+      try {
+        const data = await this.readUrl(url, options);
+
+        return {
+          files: [
+            {
+              url: url,
+              content: data.buffer,
+              lastModifiedAt: data.lastModifiedAt,
+            },
+          ],
+          etag: data.etag ?? '',
+        };
+      } catch (error) {
+        assertError(error);
+        if (error.name === 'NotFoundError') {
+          return {
+            files: [],
+            etag: '',
+          };
+        }
+        throw error;
+      }
+    }
+
     const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);
     const treeUrl = trimEnd(url.replace(filepath, staticPart), `/`);

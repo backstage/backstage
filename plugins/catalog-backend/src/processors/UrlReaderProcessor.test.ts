@@ -181,12 +181,11 @@ describe('UrlReaderProcessor', () => {
         mockCache,
       ),
     )) as CatalogProcessorErrorResult;
-
     expect(generated.type).toBe('error');
     expect(generated.location).toBe(spec);
     expect(generated.error.name).toBe('NotFoundError');
     expect(generated.error.message).toBe(
-      `Unable to read url, NotFoundError: could not read ${mockApiOrigin}/component-notfound.yaml, 404 Not Found`,
+      `Unable to read url, no matching files found for ${mockApiOrigin}/component-notfound.yaml`,
     );
   });
 
