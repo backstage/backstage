@@ -451,5 +451,31 @@ describe('BitbucketCloudUrlReader', () => {
         ),
       ).rejects.toThrow(NotModifiedError);
     });
+
+    it('should work for exact URLs', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBeNull();
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'etag-value'),
+            );
+          },
+        ),
+      );
+
+      const result = await reader.search(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+      );
+      expect(result.etag).toBe('etag-value');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+      );
+      expect((await result.files[0].content()).toString()).toEqual('foo');
+    });
   });
 });

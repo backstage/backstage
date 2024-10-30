@@ -21,6 +21,7 @@ import {
   UrlReaderServiceReadUrlResponse,
   UrlReaderServiceSearchResponse,
   UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceSearchOptions,
 } from '@backstage/backend-plugin-api';
 import {
   getHarnessRequestOptions,
@@ -35,6 +36,7 @@ import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
+  assertError,
   AuthenticationError,
   NotFoundError,
   NotModifiedError,
@@ -154,8 +156,33 @@ export class HarnessUrlReader implements UrlReaderService {
     });
   }
 
-  search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('HarnessUrlReader search not implemented.');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {
