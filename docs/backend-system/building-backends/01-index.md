@@ -110,7 +110,12 @@ A more advanced way to deploy Backstage is to split the backend plugins into mul
 To create a separate backend we need to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
 
 ```text
+app-config.backend-a.yaml   <- your main app-config.yaml
+app-config.backend-b.yaml      
 packages/
+  app/
+    src/
+      apis.ts    <-  DiscoveryApi and FetchApi custom implementations
   backend-a/
     src/
       index.ts
@@ -121,7 +126,7 @@ packages/
     package.json <- "name": "backend-b"
 ```
 
-You can now trim down the `src/index.ts` files to only include the plugins and modules that you want to be part of that backend. For example, if you want to split out the scaffolder plugin, you might end up with something like this:
+In `backend-a` you can now trim down the `src/index.ts` imports to only include the plugins and modules that you want to be part of that backend. For example, if you want to split out the scaffolder plugin, you might end up with something like this:
 
 ```ts
 const backend = createBackend();
@@ -131,19 +136,94 @@ backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
+// In our example following backend plugin should be moved to backend-b
+// backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.start();
 ```
 
-And `backend-b`, don't forget to clean up dependencies in `package.json` as well:
+Then in `backend-b` include in the `src/index.ts` only the scaffolder backend plugin:
 
 ```ts
 const backend = createBackend();
 
+backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.start();
 ```
 
-We've now split the backend into two separate deployments, but we still need to make sure that they can communicate with each other. This is the hard and somewhat tedious part, as Backstage currently doesn't provide an out of the box solution that solves this. You'll need to manually configure the two backends with custom implementations of the `DiscoveryService` and have them return the correct URLs for each other. Likewise, you'll also need to provide a custom implementation of the `DiscoveryApi` in the frontend, unless you surface the two backends via a proxy that handles the routing instead.
+And in `backend-b`, don't forget to clean up dependencies in `package.json` as well.
+
+We've now split the backend into two separate deployments, but we still need to make sure that they can communicate with each other. This is the hard and somewhat tedious part, as Backstage currently doesn't provide an out of the box solution that solves this. 
+
+You'll need to manually configure the two backends with custom implementations of the `DiscoveryService` and have them return the correct URLs for each other. Likewise, you'll also need to provide a custom implementation of the `DiscoveryApi` in the frontend (in `app/src/apis.ts`), unless you surface the two backends via a proxy that handles the routing instead.
+
+In addition, if you use authentication (and you should), you will need a custom implementation of `FetchApi` in the frontend (in `app/src/apis.ts`) to inject a Backstage token header when sending authenticated requests to `backend-b`.
+
+Regarding all additional necessary changes, you might end up with something like this:
+
+`app/src/apis.ts`:
+
+```ts
+export const apis: AnyApiFactory[] = [
+  // ...
+  createApiFactory({
+    api: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => FrontendHostDiscovery.fromConfig(configApi),
+  }),
+  createApiFactory({
+    api: fetchApiRef,
+    deps: {
+      configApi: configApiRef,
+      identityApi: identityApiRef,
+      discoveryApi: discoveryApiRef,
+    },
+    factory: ({ configApi, identityApi, discoveryApi }) => {
+      return createFetchApi({
+        middleware: [
+          FetchMiddlewares.resolvePluginProtocol({
+            discoveryApi,
+          }),
+          FetchMiddlewares.injectIdentityAuth({
+            identityApi,
+            config: configApi,
+            urlPrefixAllowlist: [
+              'http://localhost:7007',
+              'http://localhost:7008',
+            ],
+          }),
+        ],
+      });
+    },
+  }),
+];
+```
+
+app-config.backend-a.yaml (main app-config.yaml):
+
+```yaml
+backend:
+  listen: ':7007'
+
+discovery:
+  endpoints:
+    - target: http://localhost:7008/api/scaffolder
+      plugins: [scaffolder]
+```
+
+app-config.backend-b.yaml:
+
+```yaml
+backend:
+  listen: ':7008'
+
+discovery:
+  endpoints:
+    - target: http://localhost:7007/api/auth
+      plugins: [auth]
+    - target: http://localhost:7007/api/catalog
+      plugins: [catalog]
+```
 
 ### Split backend deployments architecture example
 
