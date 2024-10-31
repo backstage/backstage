@@ -207,28 +207,14 @@ class PluginEventsService implements EventsService {
             { token },
           );
 
-          if (!res.ok) {
-            if (res.status === 404) {
-              this.logger.info(
-                `Polling event subscription resulted in a 404, recreating subscription`,
-              );
-              hasSubscription = false;
-            } else {
-              throw await ResponseError.fromResponse(res);
-            }
-          }
-
-          // Successful response, reset backoff
-          backoffMs = POLL_BACKOFF_START_MS;
-
-          // 202 means there were no immediately available events, but the
-          // response will block until either new events are available or the
-          // request times out. In both cases we should should try to read events
-          // immediately again
           if (res.status === 202) {
+            // 202 means there were no immediately available events, but the
+            // response will block until either new events are available or the
+            // request times out. In both cases we should should try to read events
+            // immediately again
+
             lock.release();
             await res.body?.getReader()?.closed;
-            process.nextTick(poll);
           } else if (res.status === 200) {
             const data = await res.json();
             if (data) {
@@ -245,10 +231,15 @@ class PluginEventsService implements EventsService {
                   );
                 }
               }
-            } else {
-              this.logger.warn(
-                `Unexpected response status ${res.status} from events backend for subscription "${subscriptionId}"`,
+            }
+          } else {
+            if (res.status === 404) {
+              this.logger.info(
+                `Polling event subscription resulted in a 404, recreating subscription`,
               );
+              hasSubscription = false;
+            } else {
+              throw await ResponseError.fromResponse(res);
             }
           }
         }
@@ -275,6 +266,9 @@ class PluginEventsService implements EventsService {
             throw await ResponseError.fromResponse(res);
           }
         }
+
+        // No errors, reset backoff
+        backoffMs = POLL_BACKOFF_START_MS;
 
         process.nextTick(poll);
       } catch (error) {
