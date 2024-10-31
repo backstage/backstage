@@ -166,10 +166,7 @@ following schedule for determining the [Node.js releases](https://nodejs.org/en/
 
 - At any given point in time we support exactly two adjacent even-numbered
   releases of Node.js, for example v12 and v14.
-- Once a new Node.js release becomes _Active LTS_ we switch to support that
-  release and the previous one. The switch is not immediate but done as soon
-  as possible. You can find the Node.js version supported by each release
-  in the `engines` field in the root `package.json` of a new app.
+- Once a new Node.js release becomes _Active LTS_ we switch to support that release and the previous one. The switch is not immediate but done as soon as possible. This support will come in the first Backstage main release line release after a Node.js release becomes _Active LTS_. You can find the Node.js version supported by each release in the `engines` field in the root `package.json` of a new app.
 
 When we say _Supporting_ a Node.js release, that means the following:
 
