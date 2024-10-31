@@ -10,6 +10,8 @@ const url = require('url');
 
 const privateDep = require('private-dep-with-frontend-plugin-index-path');
 
+const someResource = backendPluginApi.resolvePackagePath('plugin-test-backend', 'someResource.txt');
+
 const testPlugin = backendPluginApi.createBackendPlugin({
   pluginId: "test",
   register(env) {

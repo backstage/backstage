@@ -69,6 +69,32 @@ export interface BaseDynamicPlugin {
 }
 
 // @public (undocumented)
+export class CommonJSModuleLoader implements ModuleLoader {
+  constructor(options: CommonJSModuleLoaderOptions);
+  // (undocumented)
+  bootstrap(
+    backstageRoot: string,
+    dynamicPluginsPaths: string[],
+    scannedPluginManifests: Map<string, ScannedPluginManifest>,
+  ): Promise<void>;
+  // (undocumented)
+  load(packagePath: string): Promise<any>;
+  // (undocumented)
+  readonly options: CommonJSModuleLoaderOptions;
+}
+
+// @public (undocumented)
+export type CommonJSModuleLoaderOptions = {
+  logger: LoggerService;
+  dynamicPluginPackageNameSuffixes?: String[];
+  customResolveDynamicPackage?: (
+    logger: LoggerService,
+    searchedPackageName: string,
+    scannedPluginManifests: Map<string, ScannedPluginManifest>,
+  ) => string | undefined;
+};
+
+// @public (undocumented)
 export type DynamicPlugin = FrontendDynamicPlugin | BackendDynamicPlugin;
 
 // @public (undocumented)
@@ -264,7 +290,11 @@ export type LegacyPluginEnvironment = {
 // @public (undocumented)
 export interface ModuleLoader {
   // (undocumented)
-  bootstrap(backstageRoot: string, dynamicPluginPaths: string[]): Promise<void>;
+  bootstrap(
+    backstageRoot: string,
+    dynamicPluginPaths: string[],
+    scannedPluginManifests?: Map<string, ScannedPluginManifest>,
+  ): Promise<void>;
   // (undocumented)
   load(id: string): Promise<any>;
 }
