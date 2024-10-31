@@ -9,41 +9,6 @@ latest releases. Backstage is more of a library than an application or service;
 similar to `create-react-app`, the `@backstage/create-app` tool gives you a
 starting point that's meant to be evolved.
 
-## Managing package versions with the Backstage yarn plugin
-
-The Backstage yarn plugin makes it easier to manage Backstage package versions,
-by determining the appropriate version for each package based on the overall
-Backstage version in backstage.json. This avoids the need to update every
-package.json across your Backstage monorepo, and means that when adding new
-`@backstage` dependencies, you don't need to worry about figuring out the right
-version to use to match the currently-installed release of Backstage.
-
-### Requirements
-
-In order to use the yarn plugin, you'll need to be using yarn 4.1.1 or greater.
-
-### Installation
-
-To install the yarn plugin, run the following command in your Backstage
-monorepo:
-
-```bash
-yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin
-```
-
-The resulting changes in the file system should be committed to your repo.
-
-### Usage
-
-When the yarn plugin is installed, versions for currently-released `@backstage`
-packages can be replaced in package.json with the string `"backstage:^"`. This
-instructs yarn to resolve the version based on the overall Backstage version in
-backstage.json.
-
-The `backstage-cli versions:bump` command documented below will detect the
-installation of the yarn plugin, and when it's installed, will automatically
-migrate dependencies across the monorepo to use it.
-
 ## Updating Backstage versions with backstage-cli
 
 The Backstage CLI has a command to bump all `@backstage` packages and
@@ -86,6 +51,53 @@ for any applicable updates when upgrading packages. As an alternative, the
 [Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/) provides
 a consolidated view of all the changes between two versions of Backstage. You
 can find the current version of your Backstage installation in `backstage.json`.
+
+## Managing package versions with the Backstage yarn plugin
+
+The Backstage yarn plugin makes it easier to manage Backstage package versions,
+by determining the appropriate version for each package based on the overall
+Backstage version in backstage.json. This avoids the need to update every
+package.json across your Backstage monorepo, and means that when adding new
+`@backstage` dependencies, you don't need to worry about figuring out the right
+version to use to match the currently-installed release of Backstage.
+
+### Requirements
+
+In order to use the yarn plugin, you'll need to be using yarn 4.1.1 or greater.
+
+### Installation
+
+To install the yarn plugin, run the following command in your Backstage
+monorepo:
+
+```bash
+yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin
+```
+
+The resulting changes in the file system should be committed to your repo.
+
+:::tip
+
+For best results it's ideal to add the Backstage Yarn plugin when you are about to do a Backstage upgrade as it will make it easier to confirm everything is working.
+
+:::
+
+### Usage
+
+When the yarn plugin is installed, versions for currently-released `@backstage`
+packages can be replaced in package.json with the string `"backstage:^"`. This
+instructs yarn to resolve the version based on the overall Backstage version in
+`backstage.json`.
+
+:::tip
+
+The `backstage.json` is key for the plugin to work, make sure this file is included in your CI/CD pipelines and/or any Container builds.
+
+:::
+
+The `backstage-cli versions:bump` command documented above will detect the
+installation of the yarn plugin, and when it's installed, will automatically
+migrate dependencies across the monorepo to use it.
 
 ## More information on dependency mismatches
 
