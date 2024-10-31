@@ -1,5 +1,11 @@
 # @backstage/plugin-events-node
 
+## 0.4.4
+
+### Patch Changes
+
+- f7ca00b: Fixed an issue where the event bus polling would duplicate and increase exponentially over time.
+
 ## 0.4.3
 
 ### Patch Changes
