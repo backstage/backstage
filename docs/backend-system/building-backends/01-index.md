@@ -111,7 +111,7 @@ To create a separate backend we need to create an additional backend package. Th
 
 ```text
 app-config.backend-a.yaml   <- your main app-config.yaml
-app-config.backend-b.yaml      
+app-config.backend-b.yaml
 packages/
   app/
     src/
@@ -153,7 +153,7 @@ backend.start();
 
 And in `backend-b`, don't forget to clean up dependencies in `package.json` as well.
 
-We've now split the backend into two separate deployments, but we still need to make sure that they can communicate with each other. This is the hard and somewhat tedious part, as Backstage currently doesn't provide an out of the box solution that solves this. 
+We've now split the backend into two separate deployments, but we still need to make sure that they can communicate with each other. This is the hard and somewhat tedious part, as Backstage currently doesn't provide an out of the box solution that solves this.
 
 You'll need to manually configure the two backends with custom implementations of the `DiscoveryService` and have them return the correct URLs for each other. Likewise, you'll also need to provide a custom implementation of the `DiscoveryApi` in the frontend (in `app/src/apis.ts`), unless you surface the two backends via a proxy that handles the routing instead.
 
