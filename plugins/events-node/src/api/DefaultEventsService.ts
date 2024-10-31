@@ -214,7 +214,10 @@ class PluginEventsService implements EventsService {
             // immediately again
 
             lock.release();
-            await res.body?.getReader()?.closed;
+            // We don't actually expect any response body here, but waiting for
+            // an empty body to be returned has been more reliable that waiting
+            // for the response body stream to close.
+            await res.text();
           } else if (res.status === 200) {
             const data = await res.json();
             if (data) {
