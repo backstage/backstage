@@ -35,11 +35,12 @@ This guide assumes a basic understanding of working on a Linux based operating s
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
     - [Install and change Node version with nvm](https://nodejs.org/en/download/package-manager/#nvm)
+    - Node 20 is a good starting point, this can be installed using `nvm install lts/iron`
   - [Binary Download](https://nodejs.org/en/download/)
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
-- `yarn` [Installation](https://classic.yarnpkg.com/en/docs/install)
-  - You will need to use Yarn classic to create a new project, but it can then be [migrated to Yarn 3](../tutorials/yarn-migration.md)
+- `yarn` [Installation](https://yarnpkg.com/getting-started/install)
+  - Backstage currently uses Yarn 4.4.1, once you've ran `corepack enable` you'll want to then run `yarn set version 4.4.1`
 - `docker` [installation](https://docs.docker.com/engine/install/)
 - `git` [installation](https://github.com/git-guides/install-git)
 - If the system is not directly accessible over your network the following ports
