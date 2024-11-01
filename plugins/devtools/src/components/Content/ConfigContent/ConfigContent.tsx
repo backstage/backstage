@@ -15,16 +15,13 @@
  */
 
 import { Progress, WarningPanel } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { Theme, useTheme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert';
 import React from 'react';
 import ReactJson from 'react-json-view';
 import { useConfig } from '../../../hooks';
@@ -87,7 +84,7 @@ export const ConfigContent = () => {
           src={configInfo.config as object}
           name="config"
           enableClipboard={false}
-          theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
+          theme={theme.palette.mode === 'dark' ? 'chalk' : 'rjv-default'}
         />
       </Paper>
     </Box>
