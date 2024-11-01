@@ -33,6 +33,12 @@ import React from 'react';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import type { FieldValidation } from '@rjsf/utils';
 import FormControl from '@material-ui/core/FormControl';
+import {
+  FormControl,
+  FormHelperText,
+  Input,
+  InputLabel,
+} from '@material-ui/core';
 /*
  This is the actual component that will get rendered in the form
 */
