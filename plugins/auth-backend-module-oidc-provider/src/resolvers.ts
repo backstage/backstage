@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { commonSignInResolvers } from '@backstage/plugin-auth-node';
+import {
+  AuthResolverContext,
+  OAuthAuthenticatorResult,
+  SignInInfo,
+  createSignInResolverFactory,
+} from '@backstage/plugin-auth-node';
+import { OidcAuthResult } from './authenticator';
 
 /**
  * Available sign-in resolvers for the Oidc auth provider.
@@ -23,16 +29,22 @@ import { commonSignInResolvers } from '@backstage/plugin-auth-node';
  */
 export namespace oidcSignInResolvers {
   /**
-   * A oidc resolver that looks up the user using the local part of
-   * their email address as the entity name.
+   * Looks up the user using their preferred username as the entity name
    */
-  export const emailLocalPartMatchingUserEntityName =
-    commonSignInResolvers.emailLocalPartMatchingUserEntityName;
+  export const preferredUsernameMatchingUserEntityName =
+    createSignInResolverFactory({
+      create() {
+        return async (
+          info: SignInInfo<OAuthAuthenticatorResult<OidcAuthResult>>,
+          ctx: AuthResolverContext,
+        ) => {
+          const userId = info.result.fullProfile.userinfo.preferred_username;
 
-  /**
-   * A oidc resolver that looks up the user using their email address
-   * as email of the entity.
-   */
-  export const emailMatchingUserEntityProfileEmail =
-    commonSignInResolvers.emailMatchingUserEntityProfileEmail;
+          if (!userId) {
+            throw new Error(`OIDC user profile does not contain a username`);
+          }
+          return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
+        };
+      },
+    });
 }

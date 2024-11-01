@@ -33,6 +33,7 @@ export interface Config {
           prompt?: string;
           signIn?: {
             resolvers: Array<
+              | { resolver: 'preferredUsernameMatchingUserEntityName' }
               | {
                   resolver: 'emailLocalPartMatchingUserEntityName';
                   allowedDomains?: string[];
