@@ -17927,11 +17927,11 @@ __metadata:
   linkType: hard
 
 "@types/commander@npm:^2.12.2":
-  version: 2.12.2
-  resolution: "@types/commander@npm:2.12.2"
+  version: 2.12.5
+  resolution: "@types/commander@npm:2.12.5"
   dependencies:
     commander: "*"
-  checksum: 8cfc1797b3a6cbff7d723590480c36f5569dc1a9f2810770178ce10de1ed65655ae2ef954c9051fa176760dcf87b1e5330be65ef2e77e58c904be0e299b8b08e
+  checksum: 5b70bf09366f778f54cd0b831417aa1f749cdd9e95e81016d0537b801ad14275973b04c34ff4dfaa344986aa93b4518c2df12647ecf8b499b636585335ae3edc
   languageName: node
   linkType: hard
 
