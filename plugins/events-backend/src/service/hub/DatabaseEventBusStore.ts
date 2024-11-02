@@ -602,7 +602,9 @@ export class DatabaseEventBusStore implements EventBusStore {
       if (minId === null) {
         // No events left, remove all subscribers. This can happen if no events
         // are published within the max age window.
-        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS).delete();
+        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
+          .where('updated_at', '<', new Date(Date.now() - this.#windowMaxAge))
+          .delete();
       } else {
         subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
           .delete()
