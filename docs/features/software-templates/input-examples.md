@@ -204,7 +204,7 @@ parameters:
 parameters:
   - title: Fill in some steps
     properties:
-      markdown:        
+      markdown:
         type: 'null'  # Needs to be quoted
         description: |
           ## Markdown Text Block
@@ -285,7 +285,7 @@ parameters:
       includeAddress:
         title: Include Address?
         type: boolean
-        default: true     
+        default: true
     dependencies:
       includeName:
         allOf:
