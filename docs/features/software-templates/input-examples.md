@@ -205,12 +205,12 @@ parameters:
   - title: Fill in some steps
     properties:
       markdown:
-        type: 'null'  # Needs to be quoted
+        type: 'null' # Needs to be quoted
         description: |
           ## Markdown Text Block
-          
+
           Standard markdown formatting is supported including *italics*, **bold** and [links](https://example.com)
-          
+
           * bullet 1
           * bullet 2
 ```
