@@ -208,9 +208,9 @@ parameters:
         type: 'null'  # Needs to be quoted
         description: |
           ## Markdown Text Block
-
+          
           Standard markdown formatting is supported including *italics*, **bold** and [links](https://example.com)
-
+          
           * bullet 1
           * bullet 2
 ```
@@ -312,7 +312,7 @@ parameters:
                   title: Address
                   type: string
               required:
-                - address  
+                - address
 ```
 
 ## Conditionally set parameters
