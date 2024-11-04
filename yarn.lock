@@ -3398,14 +3398,14 @@ __metadata:
   linkType: hard
 
 "@backstage-community/plugin-puppetdb@npm:^0.1.18":
-  version: 0.1.21
-  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.21"
+  version: 0.1.22
+  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.22"
   dependencies:
     "@backstage/catalog-model": ^1.7.0
-    "@backstage/core-components": ^0.15.0
-    "@backstage/core-plugin-api": ^1.9.4
+    "@backstage/core-components": ^0.15.1
+    "@backstage/core-plugin-api": ^1.10.0
     "@backstage/errors": ^1.2.4
-    "@backstage/plugin-catalog-react": ^1.13.1
+    "@backstage/plugin-catalog-react": ^1.14.0
     "@material-ui/core": ^4.12.2
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
@@ -3413,7 +3413,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 35ba13300ef26f705ebd7844bfb8e6dc9bda4db5a4d92d09a9d1dbff52c73a5c4175081fd6b3ef4612cb6018250eedd4e7e1db63b9f1339f723866813dae1595
+  checksum: 256a5fb944099d0a2b0c09fc25250e9c9107a0a775d7fc9fb503758b089aa72e623b8eb3ef42761ac24fe1f71abbbbede61454ed131821e003ee7532546c7961
   languageName: node
   linkType: hard
 
@@ -6216,7 +6216,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.13.1, @backstage/plugin-catalog-react@npm:^1.9.3":
+"@backstage/plugin-catalog-react@npm:^1.14.0, @backstage/plugin-catalog-react@npm:^1.9.3":
   version: 1.14.0
   resolution: "@backstage/plugin-catalog-react@npm:1.14.0"
   dependencies:
