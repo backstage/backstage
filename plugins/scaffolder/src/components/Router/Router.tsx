@@ -97,6 +97,7 @@ export type RouterProps = {
     /** Whether to show a link to the tasks page */
     tasks?: boolean;
   };
+  overrideFilters?: React.ReactNode;
 };
 
 /**
@@ -144,6 +145,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
             groups={props.groups}
             templateFilter={props.templateFilter}
             headerOptions={props.headerOptions}
+            overrideFilters={props.overrideFilters}
           />
         }
       />

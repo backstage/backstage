@@ -78,6 +78,7 @@ export type TemplateListPageProps = {
     title?: string;
     subtitle?: string;
   };
+  overrideFilters?: React.ReactNode;
 };
 
 const createGroupsWithOther = (
@@ -191,15 +192,21 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <EntitySearchBar />
-              <EntityKindPicker initialFilter="template" hidden />
-              <UserListPicker
-                initialFilter="all"
-                availableFilters={['all', 'starred']}
-              />
-              <TemplateCategoryPicker />
-              <EntityTagPicker />
-              <EntityOwnerPicker />
+              {props.overrideFilters ? (
+                props.overrideFilters
+              ) : (
+                <>
+                  <EntitySearchBar />
+                  <EntityKindPicker initialFilter="template" hidden />
+                  <UserListPicker
+                    initialFilter="all"
+                    availableFilters={['all', 'starred']}
+                  />
+                  <TemplateCategoryPicker />
+                  <EntityTagPicker />
+                  <EntityOwnerPicker />
+                </>
+              )}
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
