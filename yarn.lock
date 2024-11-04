@@ -5508,7 +5508,7 @@ __metadata:
     "@types/passport-strategy": ^0.2.35
     "@types/xml2js": ^0.4.7
     compression: ^1.7.4
-    connect-session-knex: ^4.0.0
+    connect-session-knex: ^5.0.0
     cookie-parser: ^1.4.5
     cors: ^2.8.5
     express: ^4.17.1
@@ -24069,13 +24069,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect-session-knex@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "connect-session-knex@npm:4.0.0"
+"connect-session-knex@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "connect-session-knex@npm:5.0.0"
   dependencies:
-    bluebird: ^3.7.2
     knex: 3
-  checksum: 88454b9b0b78e89cf27fe95a443f8051e43603b68c1c671acfa5a91e1a0abac1e8afd6888e1f3ea53b4b862305e47f6be46c8c4cd238f2f469cba676a25c776e
+  checksum: de622cf8cde2b99cadfb65f45c8e146733e2104f96e05e1466502c3c7fe19fcdc8046c052e05fd7cde40295f4b62df27ba477d1b2b05940baf6eb6fd1286d1d2
   languageName: node
   linkType: hard
 
