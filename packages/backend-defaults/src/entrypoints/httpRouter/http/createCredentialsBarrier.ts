@@ -36,6 +36,9 @@ export function createPathPolicyPredicate(policyPath: string) {
   };
 }
 
+/**
+ * @public
+ */
 export function createCredentialsBarrier(options: {
   httpAuth: HttpAuthService;
   config: RootConfigService;
