@@ -294,7 +294,7 @@ export async function getOrganizationTeamsFromUsers(
   const query = `
    query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
   organization(login: $org) {
-    teams(first: $pageSize, after: $cursor, userLogins: $userLogins) {
+    teams(first: 100, after: $cursor, userLogins: $userLogins) {
       pageInfo {
         hasNextPage
         endCursor
@@ -361,10 +361,7 @@ export async function getOrganizationTeamsFromUsers(
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    {
-      org,
-      userLogins,
-    },
+    { org, userLogins },
   );
 
   return { teams };
@@ -379,7 +376,7 @@ export async function getOrganizationsFromUser(
   const query = `
   query orgs($user: String!) {
     user(login: $user) {
-      organizations(first: $pageSize) {
+      organizations(first: 100) {
         nodes { login }
         pageInfo { hasNextPage, endCursor }
       }
@@ -392,9 +389,7 @@ export async function getOrganizationsFromUser(
     '',
     r => r.user?.organizations,
     async o => o.login,
-    {
-      user,
-    },
+    { user },
   );
 
   return { orgs };
@@ -491,7 +486,7 @@ export async function getOrganizationRepositories(
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
         login
-        repositories(first: $pageSize, after: $cursor) {
+        repositories(first: 50, after: $cursor) {
           nodes {
             name
             catalogInfoFile: object(expression: $catalogPathRef) {
@@ -532,10 +527,7 @@ export async function getOrganizationRepositories(
     org,
     r => r.repositoryOwner?.repositories,
     async x => x,
-    {
-      org,
-      catalogPathRef,
-    },
+    { org, catalogPathRef },
   );
 
   return { repositories };
@@ -614,7 +606,7 @@ export async function getTeamMembers(
     query members($org: String!, $teamSlug: String!, $cursor: String) {
       organization(login: $org) {
         team(slug: $teamSlug) {
-          members(first: $pageSize, after: $cursor, membership: IMMEDIATE) {
+          members(first: 100, after: $cursor, membership: IMMEDIATE) {
             pageInfo { hasNextPage, endCursor }
             nodes { login }
           }
@@ -628,10 +620,7 @@ export async function getTeamMembers(
     org,
     r => r.organization?.team?.members,
     async user => user,
-    {
-      org,
-      teamSlug,
-    },
+    { org, teamSlug },
   );
 
   return { members };
