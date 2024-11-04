@@ -310,8 +310,8 @@ __metadata:
   linkType: hard
 
 "@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "@asyncapi/parser@npm:3.3.0"
+  version: 3.4.0
+  resolution: "@asyncapi/parser@npm:3.4.0"
   dependencies:
     "@asyncapi/specs": ^6.8.0
     "@openapi-contrib/openapi-schema-to-json-schema": ~3.2.0
@@ -330,9 +330,9 @@ __metadata:
     ajv-formats: ^2.1.1
     avsc: ^5.7.5
     js-yaml: ^4.1.0
-    jsonpath-plus: ^7.2.0
+    jsonpath-plus: ^10.0.0
     node-fetch: 2.6.7
-  checksum: c3ecf9986e22d007708843a85c69ab4b197f2c86df8610065e4498feed109be0e0067f1d513b5a2dd7bb26eb443f865128d11965fcfa42251f73895d4cc92619
+  checksum: 158eab3b910258ad3c66ebbf94a86bbab4c78d6b4fb0d62980a3bef0e33358f914790e8044c59ef34f6cd25e963d2e5d37e940fc340056c8e9fe14343c8f2ee8
   languageName: node
   linkType: hard
 
