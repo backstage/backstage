@@ -7861,7 +7861,7 @@ __metadata:
     classnames: ^2.2.6
     git-url-parse: ^15.0.0
     humanize-duration: ^3.25.1
-    idb-keyval: 5.0.2
+    idb-keyval: 5.1.5
     json-schema: ^0.4.0
     json-schema-library: ^9.0.0
     jszip: ^3.10.1
@@ -30120,10 +30120,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"idb-keyval@npm:5.0.2":
-  version: 5.0.2
-  resolution: "idb-keyval@npm:5.0.2"
-  checksum: 64ce4049fcfa9ffc8ddd23897a59278bd60420bcaff88ca653c63b725f8d6228a956bd7f474cea21befedd5abdb1bc8058ca1db5a12c4145605291dadadedbf1
+"idb-keyval@npm:5.1.5":
+  version: 5.1.5
+  resolution: "idb-keyval@npm:5.1.5"
+  dependencies:
+    safari-14-idb-fix: ^1.0.6
+  checksum: 6d71d975c5392ddce934a3617b169c25d3b3204f5203d2ffa182c253515922c787292d61eb738aa25ab80fa390e541a416376a6d62a0a2fe7cf112a758f2d8d9
   languageName: node
   linkType: hard
 
@@ -40737,6 +40739,13 @@ __metadata:
   dependencies:
     mri: ^1.1.0
   checksum: 0756e5b04c51ccdc8221ebffd1548d0ce5a783a44a0fa9017a026659b97d632913e78f7dca59f2496aa996a0be0b0c322afd87ca72ccd909406f49dbffa0f45d
+  languageName: node
+  linkType: hard
+
+"safari-14-idb-fix@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "safari-14-idb-fix@npm:1.0.6"
+  checksum: 588cd632606ff0e47d64d0b71d88f9626f6187177a3187cb063a272ecb0412f7453f4e9321a9e731a1439b7830aa24f907e2338b402e1ef24e8d6a42f7ce8532
   languageName: node
   linkType: hard
 
