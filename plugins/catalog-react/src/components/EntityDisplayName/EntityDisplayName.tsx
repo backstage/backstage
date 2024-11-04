@@ -77,7 +77,16 @@ export const EntityDisplayName = (
   );
 
   // The innermost "body" content
-  let content = <>{primaryTitle}</>;
+  let content = (
+    <div
+      style={{
+        overflow: 'hidden',
+        wordBreak: 'break-word',
+      }}
+    >
+      {primaryTitle}
+    </div>
+  );
 
   // Optionally an icon, and wrapper around them both
   content = (
