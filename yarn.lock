@@ -5788,7 +5788,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
+"@backstage/plugin-catalog-backend-module-github-org@workspace:^, @backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
   dependencies:
@@ -27423,6 +27423,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github-org": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"

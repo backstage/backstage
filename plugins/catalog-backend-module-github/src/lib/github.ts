@@ -157,7 +157,7 @@ export async function getOrganizationUsers(
   options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{ users: Entity[] }> {
   const query = `
-    query users($org: String!, $email: Boolean!, $cursor: String) {
+    query users($org: String!, $email: Boolean!, $pageSize: Int!, $cursor: String) {
       organization(login: $org) {
         membersWithRole(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
@@ -211,7 +211,7 @@ export async function getOrganizationTeams(
   teams: Entity[];
 }> {
   const query = `
-    query teams($org: String!, $cursor: String) {
+    query teams($org: String!, $pageSize: Int!, $cursor: String) {
       organization(login: $org) {
         teams(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }

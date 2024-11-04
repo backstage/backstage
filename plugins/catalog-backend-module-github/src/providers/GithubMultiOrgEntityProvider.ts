@@ -207,7 +207,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const logger = options.logger.child({
       target: options.githubUrl,
     });
-
+    logger.info('initializing GitHub multi-org entity provider');
     const provider = new GithubMultiOrgEntityProvider({
       id: options.id,
       gitHubConfig,
@@ -274,7 +274,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
-
+    logger.info('Reading GitHub users and groups');
     const allUsersMap = new Map();
     const allTeams: Entity[] = [];
 
