@@ -362,6 +362,7 @@ export type TemplateListPageProps = {
     title?: string;
     subtitle?: string;
   };
+  overrideFilters?: React_2.ReactNode;
 };
 
 // @alpha (undocumented)

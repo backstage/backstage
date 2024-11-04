@@ -500,6 +500,7 @@ export type RouterProps = {
     actions?: boolean;
     tasks?: boolean;
   };
+  overrideFilters?: React_2.ReactNode;
 };
 
 // @public @deprecated (undocumented)
