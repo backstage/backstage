@@ -8,7 +8,7 @@ By default, the scaffolder page provides a set of filters that you can use to fi
 
 ## Writing a Custom Filter
 
-Writing a custom filter for the scaffolder is almost identical to [writing custom filters for the catalog](https://github.com/backstage/backstage/blob/master/docs/features/software-catalog/catalog-customization.md/#customize-filters).
+Writing a custom filter for the scaffolder is almost identical to [writing custom filters for the catalog](docs/features/software-catalog/catalog-customization.md/#customize-filters).
 
 The following example will show you how to write a custom filter to split the default tag filter into multiple customized categories. Instead of having a single tag filter, we can have one filter for Languages, another for AWS Services and a third for Status.
 
