@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Fix .webp import support by adding it to webpack loader config.
+Added support for `.webp` files in the frontend tooling.
