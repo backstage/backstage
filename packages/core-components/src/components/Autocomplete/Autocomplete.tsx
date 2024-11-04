@@ -27,8 +27,11 @@ import {
   withStyles,
 } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Autocomplete, { AutocompleteProps } from '@material-ui/lab/Autocomplete';
-import React, { ReactNode } from 'react';
+import Autocomplete, {
+  AutocompleteProps,
+  AutocompleteRenderInputParams,
+} from '@material-ui/lab/Autocomplete';
+import React, { ReactNode, useCallback } from 'react';
 
 const useStyles = makeStyles(
   theme => ({
@@ -64,7 +67,8 @@ const BootstrapAutocomplete = withStyles(
         marginTop: 24,
         backgroundColor: theme.palette.background.paper,
         '$root$hasClearIcon$hasPopupIcon &': {
-          padding: `${theme.spacing(0.75, 7, 0.75, 1.5)}`,
+          paddingBlock: theme.spacing(1.5625),
+          paddingInlineStart: theme.spacing(1.5),
         },
         '$root$focused &': {
           outline: 'none',
@@ -80,7 +84,7 @@ const BootstrapAutocomplete = withStyles(
       popupIndicator: {
         padding: 0,
         margin: 0,
-        color: theme.palette.text.primary,
+        color: '#616161',
         '& [class*="MuiTouchRipple-root"]': {
           display: 'none',
         },
@@ -92,7 +96,6 @@ const BootstrapAutocomplete = withStyles(
       },
       input: {
         '$root$hasClearIcon$hasPopupIcon &': {
-          height: 32,
           fontSize: theme.typography.body1.fontSize,
           padding: 0,
         },
@@ -124,9 +127,15 @@ export type AutocompleteComponentProps<
   name: string;
   label?: string;
   inputProps?: Omit<OutlinedTextFieldProps, 'variant'>;
+  renderInput?: AutocompleteProps<
+    T,
+    Multiple,
+    DisableClearable,
+    FreeSolo
+  >['renderInput'];
 } & Omit<
   AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-  'PopperComponent' | 'PaperComponent' | 'renderInput' | 'size' | 'popupIcon'
+  'PopperComponent' | 'PaperComponent' | 'popupIcon'
 >;
 
 /** @public */
@@ -138,21 +147,25 @@ export function AutocompleteComponent<
 >(props: AutocompleteComponentProps<T, Multiple, DisableClearable, FreeSolo>) {
   const { label, name, inputProps, ...rest } = props;
   const classes = useStyles();
+  const renderInput = useCallback(
+    (params: AutocompleteRenderInputParams) => (
+      <TextField
+        {...inputProps}
+        {...params}
+        className={classes.input}
+        variant="outlined"
+      />
+    ),
+    [],
+  );
   const autocomplete = (
     <BootstrapAutocomplete
-      {...rest}
       size="small"
+      {...rest}
+      renderInput={rest.renderInput ?? renderInput}
       popupIcon={<ExpandMoreIcon data-testid={`${name}-expand`} />}
       PaperComponent={PaperComponent}
       PopperComponent={PopperComponent}
-      renderInput={params => (
-        <TextField
-          {...inputProps}
-          {...params}
-          className={classes.input}
-          variant="outlined"
-        />
-      )}
     />
   );
 
