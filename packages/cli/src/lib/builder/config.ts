@@ -167,6 +167,7 @@ export async function makeRollupConfigs(
             /\.gif$/,
             /\.jpg$/,
             /\.jpeg$/,
+            /\.webp$/,
             /\.eot$/,
             /\.woff$/,
             /\.woff2$/,
