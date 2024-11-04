@@ -62,7 +62,7 @@ export type UserResponse = {
  */
 export type QueryOptions = {
   pageSize: number;
-  requestDelayMs: number;
+  requestDelayMs?: number;
 };
 
 export type PageInfo = {
@@ -200,6 +200,7 @@ export async function getOrganizationUsers(
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param options - Configurable query options
  */
 export async function getOrganizationTeams(
   client: typeof graphql,
@@ -287,7 +288,6 @@ export async function getOrganizationTeamsFromUsers(
   org: string,
   userLogins: string[],
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
-  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{
   teams: Entity[];
 }> {
@@ -364,9 +364,7 @@ export async function getOrganizationTeamsFromUsers(
     {
       org,
       userLogins,
-      pageSize: options.pageSize,
     },
-    options.requestDelayMs,
   );
 
   return { teams };
@@ -375,7 +373,6 @@ export async function getOrganizationTeamsFromUsers(
 export async function getOrganizationsFromUser(
   client: typeof graphql,
   user: string,
-  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{
   orgs: string[];
 }> {
@@ -397,9 +394,7 @@ export async function getOrganizationsFromUser(
     async o => o.login,
     {
       user,
-      pageSize: options.pageSize,
     },
-    options.requestDelayMs,
   );
 
   return { orgs };
@@ -483,7 +478,6 @@ export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
   catalogPath: string,
-  options: QueryOptions = { pageSize: 50, requestDelayMs: 1000 },
 ): Promise<{ repositories: RepositoryResponse[] }> {
   let relativeCatalogPathRef: string;
   // We must strip the leading slash or the query for objects does not work
@@ -541,9 +535,7 @@ export async function getOrganizationRepositories(
     {
       org,
       catalogPathRef,
-      pageSize: options.pageSize,
     },
-    options.requestDelayMs,
   );
 
   return { repositories };
@@ -617,7 +609,6 @@ export async function getTeamMembers(
   client: typeof graphql,
   org: string,
   teamSlug: string,
-  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
 ): Promise<{ members: GithubUser[] }> {
   const query = `
     query members($org: String!, $teamSlug: String!, $cursor: String) {
@@ -640,9 +631,7 @@ export async function getTeamMembers(
     {
       org,
       teamSlug,
-      pageSize: options.pageSize,
     },
-    options.requestDelayMs,
   );
 
   return { members };
@@ -714,7 +703,7 @@ export async function queryWithPaging<
     if (!conn.pageInfo.hasNextPage) {
       break;
     } else {
-      await sleep(requestDelayMs);
+      await sleep(requestDelayMs ?? 1000);
       cursor = conn.pageInfo.endCursor;
     }
   }
