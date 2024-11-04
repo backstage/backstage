@@ -72,25 +72,27 @@ export const CustomEntityTagPicker = (props: EntityTagPickerProps) => {
   );
 
   return (
-    <FormControl component="fieldset">
-      <Typography variant="button">{props.label}</Typography>
-      <FormGroup>
-        {allowedTags.map(tier => (
-          <FormControlLabel
-            key={tier}
-            control={
-              <Checkbox
-                checked={customTags?.values.includes(tier)}
-                onChange={() => onChange(tier)}
-              />
-            }
-            label={`${tier.charAt(0).toLocaleUpperCase('en-US')}${tier.slice(
-              1,
-            )}`}
-          />
-        ))}
-      </FormGroup>
-    </FormControl>
+    <Box display="flex" flexDirection="column">
+      <FormControl component="fieldset">
+        <Typography variant="button">{props.label}</Typography>
+        <FormGroup>
+          {allowedTags.map(tier => (
+            <FormControlLabel
+              key={tier}
+              control={
+                <Checkbox
+                  checked={customTags?.values.includes(tier)}
+                  onChange={() => onChange(tier)}
+                />
+              }
+              label={`${tier.charAt(0).toLocaleUpperCase('en-US')}${tier.slice(
+                1,
+              )}`}
+            />
+          ))}
+        </FormGroup>
+      </FormControl>
+    </Box>
   );
 };
 ```
