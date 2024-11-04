@@ -258,6 +258,16 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (optional) options for modifying the rate and size of github user queries
+             */
+            userQueryOptions?: QueryOptions;
+
+            /**
+             * (optional) options for modifying the rate and size of github team queries
+             */
+            teamQueryOptions?: QueryOptions;
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;

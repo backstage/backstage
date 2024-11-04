@@ -249,7 +249,7 @@ describe('github', () => {
       const start = Date.now();
       let calls = 0;
       server.use(
-        graphqlMsw.query('users', (req, res, ctx) => {
+        graphqlMsw.query('users', (_req, res, ctx) => {
           if (calls === 0) {
             calls += 1;
             return res(ctx.data(pageOne));
@@ -634,7 +634,7 @@ describe('github', () => {
       const start = Date.now();
       let calls = 0;
       server.use(
-        graphqlMsw.query('teams', (req, res, ctx) => {
+        graphqlMsw.query('teams', (_req, res, ctx) => {
           if (calls === 0) {
             calls += 1;
             return res(ctx.data(pageOne));
