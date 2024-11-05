@@ -69,7 +69,7 @@ describe('Autocomplete', () => {
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
-        inputProps={{ required: true }}
+        TextFieldProps={{ required: true }}
       />,
     );
 
@@ -83,7 +83,7 @@ describe('Autocomplete', () => {
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
-        inputProps={{ helperText: 'Helper text' }}
+        TextFieldProps={{ helperText: 'Helper text' }}
       />,
     );
 

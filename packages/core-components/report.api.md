@@ -78,8 +78,6 @@ export type AppIconProps = IconComponentProps & {
   Fallback?: IconComponent;
 };
 
-// Warning: (ae-forgotten-export) The symbol "AutocompleteComponentProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function Autocomplete<
   T,
@@ -89,6 +87,27 @@ export function Autocomplete<
 >(
   props: AutocompleteComponentProps<T, Multiple, DisableClearable, FreeSolo>,
 ): React_2.JSX.Element;
+
+// @public (undocumented)
+export type AutocompleteComponentProps<
+  T,
+  Multiple extends boolean | undefined = undefined,
+  DisableClearable extends boolean | undefined = undefined,
+  FreeSolo extends boolean | undefined = undefined,
+> = Omit<
+  AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
+  'PopperComponent' | 'PaperComponent' | 'popupIcon' | 'renderInput'
+> & {
+  name: string;
+  label?: string;
+  TextFieldProps?: Omit<OutlinedTextFieldProps, 'variant'>;
+  renderInput?: AutocompleteProps<
+    T,
+    Multiple,
+    DisableClearable,
+    FreeSolo
+  >['renderInput'];
+};
 
 // @public
 export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
