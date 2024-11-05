@@ -347,6 +347,9 @@ export interface KubernetesRequestBody {
   entity: Entity;
 }
 
+// @public
+export const kubernetesResourcePermission: BasicPermission;
+
 // @public (undocumented)
 export interface LimitRangeFetchResponse {
   // (undocumented)
