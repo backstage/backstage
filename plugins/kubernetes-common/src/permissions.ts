@@ -24,8 +24,19 @@ export const kubernetesProxyPermission = createPermission({
   attributes: {},
 });
 
+/** This permission is used to check access to the resources endpoints
+ * @public
+ */
+export const kubernetesResourcePermission = createPermission({
+  name: 'kubernetes.resource',
+  attributes: {},
+});
+
 /**
  * List of all Kubernetes permissions.
  * @public
  */
-export const kubernetesPermissions = [kubernetesProxyPermission];
+export const kubernetesPermissions = [
+  kubernetesProxyPermission,
+  kubernetesResourcePermission,
+];
