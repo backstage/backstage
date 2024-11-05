@@ -69,6 +69,7 @@ export async function performStitching(options: {
     .insert({
       entity_id: entityResult[0].entity_id,
       hash: '',
+      entity_ref: entityRef,
       stitch_ticket: stitchTicket,
     })
     .onConflict('entity_id')
