@@ -1,0 +1,18 @@
+---
+title: Daytona
+author: Daytona
+authorUrl: https://www.daytona.io/
+category: Development
+description: Open Source Development Environment Manager
+documentation: https://github.com/daytonaio/backstage-plugins/tree/main/plugins/daytona
+iconUrl: /img/daytona.svg
+npmPackageName: '@daytonaio/backstage-plugin-daytona'
+tags:
+  - developer-tools
+  - development-environment
+  - dev-env
+  - dev-environment-setup
+  - development-environment-manager
+  - cloud-development-environment
+  - CDE
+addedDate: '2024-11-02'
