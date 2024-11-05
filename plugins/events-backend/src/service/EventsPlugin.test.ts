@@ -144,9 +144,7 @@ describe('eventsPlugin', () => {
 
     async function mockKnexFactory(databaseId: TestDatabaseId) {
       const knex = await databases.init(databaseId);
-      return mockServices.database.mock({
-        getClient: async () => knex,
-      }).factory;
+      return mockServices.database.factory({ knex });
     }
 
     let backend: TestBackend | undefined = undefined;

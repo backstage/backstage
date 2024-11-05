@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import {
   DatabaseUserSettingsStore,
@@ -29,12 +33,7 @@ const databases = TestDatabases.create({
 
 async function createStore(databaseId: TestDatabaseId) {
   const knex = await databases.init(databaseId);
-  const databaseManager = {
-    getClient: async () => knex,
-    migrations: {
-      skip: false,
-    },
-  };
+  const databaseManager = mockServices.database({ knex });
 
   return {
     knex,
