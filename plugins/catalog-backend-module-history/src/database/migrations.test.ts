@@ -62,8 +62,6 @@ describe('migrations', () => {
   it.each(databases.eachSupportedId())(
     '20241030163401_init.js, %p',
     async databaseId => {
-      expect(databaseId).toEqual(expect.stringContaining('POSTGRES'));
-
       const knex = await databases.init(databaseId);
       const mockProvider = createMockEntityProvider();
 
