@@ -112,6 +112,65 @@ exports.up = async function up(knex) {
       FOR EACH ROW EXECUTE PROCEDURE final_entities_change_history();
       `,
     );
+  } else if (knex.client.config.client.includes('sqlite')) {
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER final_entities_change_history_inserted
+      AFTER INSERT ON final_entities
+      FOR EACH ROW
+      WHEN (NEW.final_entity IS NOT NULL)
+      BEGIN
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+          CURRENT_TIMESTAMP,
+          'entity_inserted',
+          lower(
+            (NEW.final_entity->>'kind') || ':' ||
+            (NEW.final_entity->'metadata'->>'namespace') || '/' ||
+            (NEW.final_entity->'metadata'->>'name')
+          ),
+          NEW.final_entity
+        );
+      END;
+      `,
+    );
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER final_entities_change_history_updated
+      AFTER UPDATE OF final_entity ON final_entities
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+          CURRENT_TIMESTAMP,
+          CASE WHEN (OLD.final_entity IS NULL) THEN 'entity_inserted' ELSE 'entity_updated' END,
+          lower(
+            (NEW.final_entity->>'kind') || ':' ||
+            (NEW.final_entity->'metadata'->>'namespace') || '/' ||
+            (NEW.final_entity->'metadata'->>'name')
+          ),
+          NEW.final_entity
+        );
+      END;
+      `,
+    );
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER final_entities_change_history_deleted
+      AFTER DELETE ON final_entities
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+          CURRENT_TIMESTAMP,
+          'entity_deleted',
+          lower(
+            (OLD.final_entity->>'kind') || ':' ||
+            (OLD.final_entity->'metadata'->>'namespace') || '/' ||
+            (OLD.final_entity->'metadata'->>'name')
+          ),
+          OLD.final_entity
+        );
+      END;
+      `,
+    );
   }
 };
 
@@ -120,12 +179,24 @@ exports.up = async function up(knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function down(knex) {
-  await knex.schema.raw(
-    `
+  if (knex.client.config.client.includes('pg')) {
+    await knex.schema.raw(
+      `
     DROP TRIGGER final_entities_change_history ON final_entities;
     DROP FUNCTION final_entities_change_history();
     `,
-  );
+    );
+  } else if (knex.client.config.client.includes('sqlite')) {
+    await knex.schema.raw(
+      `DROP TRIGGER final_entities_change_history_inserted;`,
+    );
+    await knex.schema.raw(
+      `DROP TRIGGER final_entities_change_history_updated;`,
+    );
+    await knex.schema.raw(
+      `DROP TRIGGER final_entities_change_history_deleted;`,
+    );
+  }
   await knex.schema.dropTable('module_history__subscriptions');
   await knex.schema.dropTable('module_history__events');
 };
