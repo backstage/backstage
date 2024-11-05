@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings
 
+## 0.8.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.1-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.6
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.15-next.1
 
 ### Patch Changes

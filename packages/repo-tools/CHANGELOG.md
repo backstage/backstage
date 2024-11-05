@@ -1,5 +1,21 @@
 # @backstage/repo-tools
 
+## 0.11.0-next.2
+
+### Minor Changes
+
+- 1440232: `backstage-repo-tools package schema openapi generate --server` now generates complete TS interfaces for all request/response objects in your OpenAPI schema. This fixes an edge case around recursive schemas and standardizes both the generated client and server to have similar generated types.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.15-next.0
+  - @backstage/cli-node@0.2.10-next.0
+  - @backstage/config-loader@1.9.2-next.0
+  - @backstage/errors@1.2.4
+
 ## 0.11.0-next.1
 
 ### Patch Changes
