@@ -200,7 +200,10 @@ const routes = (
       </ScaffolderLayouts>
     </Route>
 
-    <Route path="/api-docs" element={<ApiExplorerPage pagination={{ mode: 'offset', limit: 20 }} />} />
+    <Route
+      path="/api-docs"
+      element={<ApiExplorerPage pagination={{ mode: 'offset', limit: 20 }} />}
+    />
     <Route path="/search" element={<SearchPage />}>
       {searchPage}
     </Route>

@@ -76,7 +76,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
     columns,
     actions,
     ownerPickerMode,
-    pagination
+    pagination,
   } = props;
 
   const configApi = useApi(configApiRef);
