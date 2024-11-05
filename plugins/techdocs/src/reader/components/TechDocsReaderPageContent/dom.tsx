@@ -187,7 +187,7 @@ export const useTechDocsReaderDom = (
   const postRender = useCallback(
     async (transformedElement: Element) =>
       transformer(transformedElement, [
-        handleMetaRedirects(navigate, entityRef.name),
+        handleMetaRedirects(entityRef.name),
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
