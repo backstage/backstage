@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
 import {
@@ -28,15 +32,10 @@ const databases = TestDatabases.create();
 
 async function createStore(databaseId: TestDatabaseId) {
   const knex = await databases.init(databaseId);
-  const mgr = {
-    getClient: async () => knex,
-    migrations: {
-      skip: false,
-    },
-  };
+  const database = mockServices.database({ knex, migrations: { skip: false } });
   return {
     knex,
-    storage: await DatabaseNotificationsStore.create({ database: mgr }),
+    storage: await DatabaseNotificationsStore.create({ database }),
   };
 }
 

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
-import { startTestBackend, TestDatabases } from '@backstage/backend-test-utils';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  TestDatabases,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
+import { CatalogClient } from '@backstage/catalog-client';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEntitiesProcessor,
   SyntheticLoadEntitiesProvider,
   SyntheticLoadOptions,
 } from './lib/catalogModuleSyntheticLoadEntities';
-import { CatalogClient } from '@backstage/catalog-client';
-import {
-  coreServices,
-  createBackendModule,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { Knex } from 'knex';
+import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 
 jest.setTimeout(600_000);
 
@@ -85,11 +85,7 @@ describePerformanceTest('getEntitiesPerformanceTest', () => {
       const backend = await startTestBackend({
         features: [
           import('@backstage/plugin-catalog-backend/alpha'),
-          createServiceFactory({
-            service: coreServices.database,
-            deps: {},
-            factory: () => ({ getClient: async () => knex }),
-          }),
+          mockServices.database.factory({ knex }),
           createBackendModule({
             pluginId: 'catalog',
             moduleId: 'synthetic-load-entities',
