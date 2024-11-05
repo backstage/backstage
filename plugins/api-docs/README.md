@@ -371,7 +371,7 @@ export const apis: AnyApiFactory[] = [
 ]
 ```
 
-### Pagination 
+### Pagination
 
 You can add pagination support to `ApiExplorerPage` extension.
 
@@ -382,7 +382,10 @@ This is an example:
 
 import { ApiExplorerPage } from '@backstage/plugin-api-docs';
 
-<Route path="/api-docs" element={<ApiExplorerPage pagination={{ mode: 'offset', limit: 20 }} />} />;
+<Route
+  path="/api-docs"
+  element={<ApiExplorerPage pagination={{ mode: 'offset', limit: 20 }} />}
+/>;
 ```
 
 ## Links
