@@ -46,7 +46,7 @@ describe('Autocomplete', () => {
     expect(expandIcon).toBeInTheDocument();
   });
 
-  it('displays options when clicked', () => {
+  it('displays options when clicked', async () => {
     render(
       <Autocomplete
         name="test-autocomplete"
@@ -56,7 +56,7 @@ describe('Autocomplete', () => {
     );
 
     const input = screen.getByRole('textbox');
-    user.click(input);
+    await user.click(input);
 
     mockOptions.forEach(option => {
       expect(screen.getByText(option)).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('Autocomplete', () => {
     expect(input).toBeInTheDocument();
   });
 
-  it('displays correct option on selection', () => {
+  it('displays correct option on selection', async () => {
     render(
       <Autocomplete
         name="test-autocomplete"
@@ -107,10 +107,10 @@ describe('Autocomplete', () => {
     );
 
     const input = screen.getByRole('textbox');
-    user.click(input);
+    await user.click(input);
 
     const optionToSelect = screen.getByText('Option 1');
-    user.click(optionToSelect);
+    await user.click(optionToSelect);
 
     expect(input).toHaveValue('Option 1');
   });
