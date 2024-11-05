@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 1b5fdd9: Extended the configuration with the `includeArchivedRepos` property, which allows including repositories when the project is archived.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.3-next.2
+  - @backstage/plugin-events-node@0.4.5-next.2
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-catalog-common@1.1.0
+
 ## 0.4.5-next.1
 
 ### Patch Changes

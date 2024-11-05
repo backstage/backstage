@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend
 
+## 1.28.0-next.2
+
+### Minor Changes
+
+- 39fd704: Internal update to use the new generated server types from `backstage-cli package schema openapi generate --server`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/plugin-events-node@0.4.5-next.2
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+
 ## 1.27.2-next.1
 
 ### Patch Changes
