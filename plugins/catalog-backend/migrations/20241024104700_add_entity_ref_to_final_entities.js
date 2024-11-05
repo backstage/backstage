@@ -23,11 +23,9 @@
 exports.up = async function up(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table
-      .text('entity_ref')
+      .string('entity_ref')
       .nullable()
-      .comment(
-        'The entity reference of the entity that was created from the catalog processing',
-      );
+      .comment('The entity reference of the entity');
 
     table.index('entity_ref', 'entity_ref_idx');
   });
@@ -44,7 +42,7 @@ exports.up = async function up(knex) {
   // SQLite does not support ALTER COLUMN.
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('final_entities', table => {
-      table.text('entity_ref').notNullable().alter({ alterNullable: true });
+      table.string('entity_ref').notNullable().alter({ alterNullable: true });
     });
   }
 };
@@ -55,7 +53,7 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('final_entities', table => {
-    table.dropIndex('entity_ref_idx');
+    table.dropIndex([], 'entity_ref_idx');
     table.dropColumn('entity_ref');
   });
 };

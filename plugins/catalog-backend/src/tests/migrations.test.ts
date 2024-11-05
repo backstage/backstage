@@ -93,6 +93,7 @@ describe('migrations', () => {
           hash: 'h',
           stitch_ticket: '',
           final_entity: '{}',
+          entity_ref: 'k:ns/n1',
         })
         .into('final_entities');
 
@@ -418,7 +419,7 @@ describe('migrations', () => {
         })
         .into('refresh_state');
 
-      // Insert a simple URL before the migration
+      // Insert a simple entity before the migration
       await knex
         .insert({
           entity_id: '8222246a-b572-49cf-a702-1a0fcfaae901',
@@ -428,11 +429,15 @@ describe('migrations', () => {
         })
         .into('final_entities');
 
+      // verify that the entity_ref column is not present
+      const preColumnInfo = await knex('final_entities').columnInfo();
+      expect(preColumnInfo.entity_ref).toBeUndefined();
+
       await migrateUpOnce(knex);
 
       // verify that the entity_ref column has been added
-      const columnInfo = await knex('final_entities').columnInfo();
-      expect(columnInfo.entity_ref).not.toBeUndefined();
+      const afterColumnInfo = await knex('final_entities').columnInfo();
+      expect(afterColumnInfo.entity_ref).not.toBeUndefined();
 
       // verify that the contents of the entity_ref column are correct
       await expect(knex('final_entities')).resolves.toEqual(
