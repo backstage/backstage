@@ -38,7 +38,7 @@ describe('handleMetaRedirects', () => {
     });
     return await createTestShadowDom(html, {
       preTransformers: [],
-      postTransformers: [handleMetaRedirects(navigate, entityName)],
+      postTransformers: [handleMetaRedirects(entityName)],
     });
   };
   beforeEach(() => {
