@@ -371,6 +371,20 @@ export const apis: AnyApiFactory[] = [
 ]
 ```
 
+### Pagination 
+
+You can add pagination support to `ApiExplorerPage` extension.
+
+This is an example:
+
+```tsx
+// In packages/app/src/App.tsx
+
+import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+
+<Route path="/api-docs" element={<ApiExplorerPage pagination={{ mode: 'offset', limit: 20 }} />} />;
+```
+
 ## Links
 
 - [The Backstage homepage](https://backstage.io)
