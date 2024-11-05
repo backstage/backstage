@@ -15,7 +15,7 @@
  */
 
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 import Popper, { PopperProps } from '@material-ui/core/Popper';
 import TextField, { OutlinedTextFieldProps } from '@material-ui/core/TextField';
@@ -33,6 +33,7 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete';
 import React, { ReactNode, useCallback } from 'react';
 import { merge } from 'lodash';
+import classNames from 'classnames';
 
 const useStyles = makeStyles(
   theme => ({
@@ -135,6 +136,7 @@ export type AutocompleteComponentProps<
 > & {
   name: string;
   label?: string;
+  LabelProps?: TypographyProps<'label'>;
   TextFieldProps?: Omit<OutlinedTextFieldProps, 'variant'>;
   renderInput?: AutocompleteProps<
     T,
@@ -151,7 +153,7 @@ export function AutocompleteComponent<
   DisableClearable extends boolean | undefined = undefined,
   FreeSolo extends boolean | undefined = undefined,
 >(props: AutocompleteComponentProps<T, Multiple, DisableClearable, FreeSolo>) {
-  const { label, name, TextFieldProps, ...rest } = props;
+  const { label, name, LabelProps, TextFieldProps, ...rest } = props;
   const classes = useStyles();
   const renderInput = useCallback(
     (params: AutocompleteRenderInputParams) => (
@@ -173,7 +175,11 @@ export function AutocompleteComponent<
   return (
     <Box className={classes.root}>
       {label ? (
-        <Typography className={classes.label} component="label">
+        <Typography
+          {...LabelProps}
+          className={classNames(classes.label, LabelProps?.className)}
+          component="label"
+        >
           <Box component="span">{label}</Box>
           {autocomplete}
         </Typography>

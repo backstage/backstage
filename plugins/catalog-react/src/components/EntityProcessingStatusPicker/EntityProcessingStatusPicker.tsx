@@ -33,6 +33,8 @@ export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 const useStyles = makeStyles(
   {
     root: {},
+    input: {},
+    label: {},
   },
   { name: 'CatalogReactEntityProcessingStatusPickerPicker' },
 );
@@ -91,6 +93,8 @@ export const EntityProcessingStatusPicker = () => {
           />
         )}
         name="processing-status-picker"
+        LabelProps={{ className: classes.label }}
+        TextFieldProps={{ className: classes.input }}
       />
     </Box>
   );

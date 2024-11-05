@@ -53,6 +53,7 @@ import { StyleRules as StyleRules_2 } from '@material-ui/core/styles/withStyles'
 import { TabProps } from '@material-ui/core/Tab';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
+import { TypographyProps } from '@material-ui/core/Typography';
 import { WithStyles } from '@material-ui/core/styles';
 
 // @public
@@ -100,6 +101,7 @@ export type AutocompleteComponentProps<
 > & {
   name: string;
   label?: string;
+  LabelProps?: TypographyProps<'label'>;
   TextFieldProps?: Omit<OutlinedTextFieldProps, 'variant'>;
   renderInput?: AutocompleteProps<
     T,

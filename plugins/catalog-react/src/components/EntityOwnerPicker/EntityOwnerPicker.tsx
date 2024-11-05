@@ -47,6 +47,8 @@ export type CatalogReactEntityOwnerPickerClassKey = 'input';
 const useStyles = makeStyles(
   {
     root: {},
+    label: {},
+    input: {},
     fullWidth: { width: '100%' },
     boxLabel: {
       width: '100%',
@@ -235,6 +237,8 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           },
           'data-testid': 'owner-picker-listbox',
         }}
+        LabelProps={{ className: classes.label }}
+        TextFieldProps={{ className: classes.input }}
       />
     </Box>
   );
