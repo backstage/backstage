@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
-export * from './useIsPodDeleteEnabled';
-export * from './useIsPodExecTerminalEnabled';
-export * from './useIsPodExecTerminalSupported';
-export * from './useKubernetesObjects';
-export * from './useCustomResources';
-export * from './PodNamesWithErrors';
-export * from './PodNamesWithMetrics';
-export * from './GroupedResponses';
-export * from './Cluster';
-export * from './usePodMetrics';
-export * from './useMatchingErrors';
+/**
+ * Check if conditions for a pod delete call through the proxy endpoint are met
+ *
+ * @internal
+ */
+export const useIsPodDeleteEnabled = (): boolean | undefined => {
+  const configApi = useApi(configApiRef);
+
+  return configApi
+    .getOptionalConfig('kubernetes.frontend')
+    ?.getOptionalBoolean('podDelete.enabled');
+};
