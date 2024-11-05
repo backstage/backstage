@@ -143,7 +143,9 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
 
   return (
     <Box>
-      <Typography variant="overline">{name}</Typography>
+      <Typography variant="body2" component="h3">
+        {name}
+      </Typography>
       <Accordion
         className={classes.accordion}
         expanded={expanded}

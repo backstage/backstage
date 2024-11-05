@@ -73,7 +73,7 @@ const SearchPage = () => {
           {!isMobile && (
             <Grid item xs={3}>
               <SearchType.Accordion
-                name="Result Type"
+                name="Result type"
                 defaultValue="software-catalog"
                 showCounts
                 types={[
