@@ -61,7 +61,7 @@ export type UserResponse = {
  * requestDelayMs - The delay between requests in milliseconds
  */
 export type QueryOptions = {
-  pageSize: number;
+  pageSize?: number;
   requestDelayMs?: number;
 };
 
@@ -154,7 +154,7 @@ export async function getOrganizationUsers(
   org: string,
   tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
-  options: QueryOptions = { pageSize: 100, requestDelayMs: 1000 },
+  options?: QueryOptions,
 ): Promise<{ users: Entity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $pageSize: Int!, $cursor: String) {
@@ -185,9 +185,9 @@ export async function getOrganizationUsers(
     {
       org,
       email: tokenType === 'token',
-      pageSize: options.pageSize,
+      pageSize: options?.pageSize ?? 100,
     },
-    options.requestDelayMs,
+    options?.requestDelayMs,
   );
 
   return { users };
@@ -206,7 +206,7 @@ export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
-  options: QueryOptions = { pageSize: 50, requestDelayMs: 1000 },
+  options?: QueryOptions,
 ): Promise<{
   teams: Entity[];
 }> {
@@ -266,7 +266,6 @@ export async function getOrganizationTeams(
 
     return await teamTransformer(team, ctx);
   };
-
   const teams = await queryWithPaging(
     client,
     query,
@@ -275,9 +274,9 @@ export async function getOrganizationTeams(
     materialisedTeams,
     {
       org,
-      pageSize: options.pageSize,
+      pageSize: options?.pageSize ?? 50,
     },
-    options.requestDelayMs,
+    options?.requestDelayMs,
   );
 
   return { teams };
@@ -660,7 +659,7 @@ export async function queryWithPaging<
     ctx: TransformerContext,
   ) => Promise<OutputType | undefined>,
   variables: Variables,
-  requestDelayMs: number = 1000,
+  requestDelayMs?: number,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));

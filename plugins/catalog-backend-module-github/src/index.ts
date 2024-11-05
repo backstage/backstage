@@ -35,6 +35,7 @@ export {
   type GithubMultiOrgConfig,
   type GithubTeam,
   type GithubUser,
+  type QueryOptions,
   type UserTransformer,
   defaultUserTransformer,
   type TeamTransformer,
