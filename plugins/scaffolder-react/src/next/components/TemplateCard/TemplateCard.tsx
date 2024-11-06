@@ -21,26 +21,29 @@ import {
   useAnalytics,
   useApp,
 } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
+import { usePermission } from '@backstage/plugin-permission-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import LanguageIcon from '@material-ui/icons/Language';
 import React, { useCallback } from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
-import { usePermission } from '@backstage/plugin-permission-react';
-import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles<Theme>(theme => ({
   box: {
@@ -98,6 +101,7 @@ export interface TemplateCardProps {
  * @alpha
  */
 export const TemplateCard = (props: TemplateCardProps) => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const { onSelected, template } = props;
   const styles = useStyles();
   const analytics = useAnalytics();
@@ -127,7 +131,10 @@ export const TemplateCard = (props: TemplateCardProps) => {
             <Box className={styles.box}>
               <MarkdownContent
                 className={styles.markdown}
-                content={template.metadata.description ?? 'No description'}
+                content={
+                  template.metadata.description ??
+                  t('templateCard.noDescription')
+                }
               />
             </Box>
           </Grid>
@@ -208,7 +215,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
               color="primary"
               onClick={handleChoose}
             >
-              Choose
+              {t('templateCard.chooseButtonText')}
             </Button>
           ) : null}
         </div>

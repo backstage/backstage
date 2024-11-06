@@ -15,3 +15,5 @@
  */
 
 export * from './next';
+
+export { scaffolderReactTranslationRef } from './translation';
