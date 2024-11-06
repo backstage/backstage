@@ -5,6 +5,7 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
+import { ReactNode } from 'react';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
@@ -86,10 +87,39 @@ export type TranslationApi = {
   >(
     translationRef: TranslationRef<string, TMessages>,
   ): Observable<TranslationSnapshot<TMessages>>;
+  getTranslationComponent<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    t: TranslationFunction<TMessages>,
+  ): TranslationComponent<TMessages>;
 };
 
 // @alpha (undocumented)
 export const translationApiRef: ApiRef<TranslationApi>;
+
+// @alpha (undocumented)
+export interface TranslationComponent<
+  TMessages extends {
+    [key in string]: string;
+  },
+> {
+  // Warning: (ae-forgotten-export) The symbol "BaseOptions" needs to be exported by the entry point alpha.d.ts
+  //
+  // (undocumented)
+  <TKey extends keyof CollapsedMessages<TMessages>>(
+    props: {
+      i18nKey: TKey;
+      children: ReactNode;
+    } & BaseOptions &
+      TranslationFunctionOptions<
+        NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+        PluralKeys<TMessages>,
+        CollapsedMessages<TMessages>
+      >[0],
+  ): ReactNode;
+}
 
 // @alpha (undocumented)
 export interface TranslationFunction<
@@ -237,6 +267,7 @@ export const useTranslationRef: <
   translationRef: TranslationRef<string, TMessages>,
 ) => {
   t: TranslationFunction<TMessages>;
+  Translation: TranslationComponent<TMessages>;
 };
 
 // (No @packageDocumentation comment for this package)

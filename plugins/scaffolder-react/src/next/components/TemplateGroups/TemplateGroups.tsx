@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback } from 'react';
-
+import { Link, Progress } from '@backstage/core-components';
+import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
   TemplateEntityV1beta3,
 } from '@backstage/plugin-scaffolder-common';
-import { Progress, Link } from '@backstage/core-components';
-import Typography from '@material-ui/core/Typography';
-import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import Typography from '@material-ui/core/Typography';
+import React, { useCallback } from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
 /**
@@ -47,6 +49,7 @@ export interface TemplateGroupsProps {
  * @alpha
  */
 export const TemplateGroups = (props: TemplateGroupsProps) => {
+  const { Translation } = useTranslationRef(scaffolderReactTranslationRef);
   const { loading, error, entities } = useEntityList();
   const { groups, templateFilter, TemplateCardComponent, onTemplateSelected } =
     props;
@@ -70,11 +73,13 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   if (!entities || !entities.length) {
     return (
       <Typography variant="body2">
-        No templates found that match your filter. Learn more about{' '}
-        <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
-          adding templates
-        </Link>
-        .
+        <Translation i18nKey="templateCard.noTemplatesFound">
+          No templates found that match your filter. Learn more about{' '}
+          <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
+            adding templates
+          </Link>
+          .
+        </Translation>
       </Typography>
     );
   }
