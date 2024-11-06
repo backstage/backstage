@@ -42,6 +42,10 @@ const useStyles = makeStyles(
         verticalAlign: 'middle',
       },
     },
+    breakTextOverflow: {
+      overflow: 'hidden',
+      wordBreak: 'break-word',
+    },
   }),
   { name: 'CatalogReactEntityDisplayName' },
 );
@@ -77,16 +81,7 @@ export const EntityDisplayName = (
   );
 
   // The innermost "body" content
-  let content = (
-    <div
-      style={{
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-      }}
-    >
-      {primaryTitle}
-    </div>
-  );
+  let content = <div className={classes.breakTextOverflow}>{primaryTitle}</div>;
 
   // Optionally an icon, and wrapper around them both
   content = (
