@@ -348,8 +348,8 @@ __metadata:
   linkType: hard
 
 "@asyncapi/react-component@npm:^2.3.3":
-  version: 2.3.3
-  resolution: "@asyncapi/react-component@npm:2.3.3"
+  version: 2.4.3
+  resolution: "@asyncapi/react-component@npm:2.4.3"
   dependencies:
     "@asyncapi/avro-schema-parser": ^3.0.24
     "@asyncapi/openapi-schema-parser": ^3.0.24
@@ -363,7 +363,7 @@ __metadata:
   peerDependencies:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: 1d7eef64e596e559834ffcb305794cb457e7d7a891558dd3d9f39421d901176f47387db51b8e580bc2fe8fe919944ce8a672b5529c01acbf4fb87e26b2b197a3
+  checksum: a302bb0afac4952d77da6558fede68aecedd55096a322ad5b8ca0653aa6e001d21fe681914abea2656c14fb79e1dc6ef8e18ecefce44f877677f0f15fbf6c3c4
   languageName: node
   linkType: hard
 
