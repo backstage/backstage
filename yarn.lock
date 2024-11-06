@@ -45805,12 +45805,12 @@ __metadata:
   linkType: soft
 
 "yauzl@npm:^3.0.0":
-  version: 3.1.3
-  resolution: "yauzl@npm:3.1.3"
+  version: 3.2.0
+  resolution: "yauzl@npm:3.2.0"
   dependencies:
     buffer-crc32: ~0.2.3
     pend: ~1.2.0
-  checksum: 5b782f6e99361a9c715e7a82e7aae3d983b6ddff6ebe3a66d2dd3f4ee601ec41c55fa88587bf6de0acbc013aac0b2cac84f9f0cd48372fd5329ee5e273f46f2c
+  checksum: d16440447bbc4973cf60c455290d6a394c47b82d449193098b10c69a6cc8f3eb003e361a512d1885ca67c96c95351aadb46bfcc47ee2c73a5134743d99275554
   languageName: node
   linkType: hard
 
