@@ -19,9 +19,6 @@ export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 export const scaffolderActionPermissions: ResourcePermission<'scaffolder-action'>[];
 
 // @alpha
-export const scaffolderManagementPermissions: BasicPermission[];
-
-// @alpha
 export const scaffolderPermissions: (
   | BasicPermission
   | ResourcePermission<'scaffolder-action'>
