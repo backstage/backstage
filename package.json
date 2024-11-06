@@ -126,7 +126,7 @@
     "lint-staged": "^15.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^10.0.0",
-    "prettier": "^2.2.1",
+    "prettier": "^3.0.0",
     "semver": "^7.5.3",
     "shx": "^0.3.2",
     "sloc": "^0.3.1",

@@ -84,14 +84,14 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/node": "^20.16.0",
-    "@types/prettier": "^2.0.0"
+    "@types/prettier": "^3.0.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
     "@useoptic/optic": "^1.0.0",
-    "prettier": "^2.8.1",
+    "prettier": "^3.0.0",
     "typescript": "> 3.0.0"
   },
   "peerDependenciesMeta": {

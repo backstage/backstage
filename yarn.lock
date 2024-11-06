@@ -8632,7 +8632,7 @@ __metadata:
     "@stoplight/types": ^14.0.0
     "@types/is-glob": ^4.0.2
     "@types/node": ^20.16.0
-    "@types/prettier": ^2.0.0
+    "@types/prettier": ^3.0.0
     "@useoptic/openapi-utilities": ^0.55.0
     chalk: ^4.0.0
     chokidar: ^3.5.3
@@ -8655,7 +8655,7 @@ __metadata:
     "@microsoft/tsdoc": "*"
     "@microsoft/tsdoc-config": "*"
     "@useoptic/optic": ^1.0.0
-    prettier: ^2.8.1
+    prettier: ^3.0.0
     typescript: "> 3.0.0"
   peerDependenciesMeta:
     prettier:
@@ -19247,10 +19247,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.0.0":
-  version: 2.7.3
-  resolution: "@types/prettier@npm:2.7.3"
-  checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
+"@types/prettier@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/prettier@npm:3.0.0"
+  dependencies:
+    prettier: "*"
+  checksum: a2a512d304e5bcf78f38089dc88ad19215e6ab871d435a17aef3ce538a63b07c0e359c18db23989dc1ed9fff96d99eee1f680416080184df5c7e0e3bf767e165
   languageName: node
   linkType: hard
 
@@ -38585,7 +38587,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.2.1, prettier@npm:^2.7.1":
+"prettier@npm:*, prettier@npm:^3.0.0":
+  version: 3.3.3
+  resolution: "prettier@npm:3.3.3"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: bc8604354805acfdde6106852d14b045bb20827ad76a5ffc2455b71a8257f94de93f17f14e463fe844808d2ccc87248364a5691488a3304f1031326e62d9276e
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
@@ -40963,7 +40974,7 @@ __metadata:
     lint-staged: ^15.0.0
     minimist: ^1.2.5
     node-gyp: ^10.0.0
-    prettier: ^2.2.1
+    prettier: ^3.0.0
     semver: ^7.5.3
     shx: ^0.3.2
     sloc: ^0.3.1

@@ -43,7 +43,7 @@
     "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.18.0",
     "js-yaml": "^4.1.0",
-    "prettier": "^2.6.2",
+    "prettier": "^3.0.0",
     "typescript": "~5.2.0",
     "yaml-loader": "^0.8.0"
   }
