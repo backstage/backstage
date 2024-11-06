@@ -25,7 +25,7 @@ export async function handleAutocompleteRequest({
   resource: string;
   token: string;
   context: Record<string, string>;
-}): Promise<{ results: { title: string; id?: string }[] }> {
+}): Promise<{ results: { title?: string; id: string }[] }> {
   const client = BitbucketCloudClient.fromConfig({
     host: 'bitbucket.org',
     apiBaseUrl: 'https://api.bitbucket.org/2.0',
@@ -92,12 +92,15 @@ export async function handleAutocompleteRequest({
           'Missing workspace and/or repository context parameter',
         );
 
-      const results: { title: string }[] = [];
+      const results: { title: string; id: string }[] = [];
 
       for await (const page of client
         .listBranchesByRepository(context.repository, context.workspace)
         .iteratePages()) {
-        const names = [...page.values!].map(p => ({ title: p.name! }));
+        const names = [...page.values!].map(p => ({
+          title: p.name!,
+          id: p.name!,
+        }));
         results.push(...names);
       }
 

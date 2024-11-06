@@ -214,8 +214,8 @@ export interface ScaffolderApi {
     context?: Record<string, string>;
   }): Promise<{
     results: {
-      title: string;
-      id?: string;
+      title?: string;
+      id: string;
     }[];
   }>;
   cancelTask(taskId: string): Promise<void>;

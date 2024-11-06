@@ -63,8 +63,8 @@ export const GitlabRepoPicker = (
         setAvailableGroups(
           results.map(r => {
             return {
-              title: r.title,
-              id: r.id!,
+              title: r.title!,
+              id: r.id,
             };
           }),
         );
@@ -96,7 +96,7 @@ export const GitlabRepoPicker = (
         provider: 'gitlab',
       })
       .then(({ results }) => {
-        onChange({ availableRepos: results.map(r => r.title) });
+        onChange({ availableRepos: results.map(r => r.title!) });
       })
       .catch(() => {
         onChange({ availableRepos: [] });

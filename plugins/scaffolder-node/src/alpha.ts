@@ -95,7 +95,7 @@ export type AutocompleteHandler = ({
   resource: string;
   token: string;
   context: Record<string, string>;
-}) => Promise<{ results: { title: string; id?: string }[] }>;
+}) => Promise<{ results: { title?: string; id: string }[] }>;
 
 /**
  * Extension point for adding autocomplete handler providers
