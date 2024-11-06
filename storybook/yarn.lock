@@ -221,16 +221,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:^1.9.0":
-  version: 1.9.0
-  resolution: "@chromatic-com/storybook@npm:1.9.0"
+"@chromatic-com/storybook@npm:^3.0.0":
+  version: 3.2.2
+  resolution: "@chromatic-com/storybook@npm:3.2.2"
   dependencies:
-    chromatic: ^11.4.0
+    chromatic: ^11.15.0
     filesize: ^10.0.12
     jsonfile: ^6.1.0
     react-confetti: ^6.1.0
     strip-ansi: ^7.1.0
-  checksum: 12ada9213a48e1145311e43cd2f972e312c77c978e3610eabbd698793011aeafe2a9256dd62c06492cbed7bc2b7c274f3a10887016c3333380b66180e40782cf
+  peerDependencies:
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+  checksum: 8f1d03b32e131d391d41913b346d3898e5f2661c54dbe057f05fb1bce2d9b94581942bc5f90efe599b819d1f05d92c50a9be1e0cba2962be797f9a9551b568da
   languageName: node
   linkType: hard
 
@@ -2043,7 +2045,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backstage-storybook@workspace:."
   dependencies:
-    "@chromatic-com/storybook": ^1.9.0
+    "@chromatic-com/storybook": ^3.0.0
     "@storybook/addon-essentials": ^8.3.5
     "@storybook/addon-interactions": ^8.3.5
     "@storybook/addon-links": ^8.3.5
@@ -2241,9 +2243,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:^11.4.0":
-  version: 11.12.6
-  resolution: "chromatic@npm:11.12.6"
+"chromatic@npm:^11.15.0":
+  version: 11.16.5
+  resolution: "chromatic@npm:11.16.5"
   peerDependencies:
     "@chromatic-com/cypress": ^0.*.* || ^1.0.0
     "@chromatic-com/playwright": ^0.*.* || ^1.0.0
@@ -2256,7 +2258,7 @@ __metadata:
     chroma: dist/bin.js
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
-  checksum: 020bf394c169719bffb59509388df3677384ec9c29219343778f202ac5f6ef3fc331c73efefdc3c70cda09f9e26e4d4f6e6567a18bff25b74eeea90b9b1e9dee
+  checksum: 9b131f3943cc67b03029f0b4201f2b5cdb0f14f95d14c8e205db67bf773622ac5a7a97c2281374f5270645d0dbeae6e3164e252747541351ebc9555287624b96
   languageName: node
   linkType: hard
 
