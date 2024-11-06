@@ -92,7 +92,7 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
       );
     });
   }
-  constructor(
+  private constructor(
     private readonly config: AzureBlobStorageConfig,
     private readonly integration: AzureBlobStorageIntergation,
     private readonly credentialsProvider: DefaultAzureCredentialsManager,
