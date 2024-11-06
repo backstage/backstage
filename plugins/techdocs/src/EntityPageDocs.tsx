@@ -25,6 +25,7 @@ import React from 'react';
 import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
+import { useEntityPageTechDocsRedirect } from './search/hooks/useTechDocsLocation';
 
 type EntityPageDocsProps = {
   entity: Entity;
@@ -40,6 +41,8 @@ export const EntityPageDocs = ({
 }: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
+  const redirectUrl = useEntityPageTechDocsRedirect(entityRef);
+
   if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
     try {
       entityRef = parseEntityRef(
@@ -53,7 +56,10 @@ export const EntityPageDocs = ({
   return (
     <TechDocsReaderPage entityRef={entityRef}>
       <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent withSearch={withSearch} redirectToEntityPage />
+      <TechDocsReaderPageContent
+        withSearch={withSearch}
+        redirectUrl={redirectUrl}
+      />
     </TechDocsReaderPage>
   );
 };
