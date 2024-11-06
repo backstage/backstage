@@ -35317,8 +35317,8 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.0.0":
-  version: 3.11.3
-  resolution: "mysql2@npm:3.11.3"
+  version: 3.11.4
+  resolution: "mysql2@npm:3.11.4"
   dependencies:
     aws-ssl-profiles: ^1.1.1
     denque: ^2.1.0
@@ -35329,7 +35329,7 @@ __metadata:
     named-placeholders: ^1.1.3
     seq-queue: ^0.0.5
     sqlstring: ^2.3.2
-  checksum: ae62b5b997da429a33f0762158db965d22daece0030e75ac8e822b0b342ad082fa5f1ead87d922d0ba93595e9d5491036916ef91457c762517f25f41afa6e2d9
+  checksum: b4415028fad374b5bd5303968c28fc95feee60c1c946ef47f3581e0303c0e5978a306f44d6f665e3fdada5d6a0dd6c55515427a195700b90943d188f6db2f7ed
   languageName: node
   linkType: hard
 
