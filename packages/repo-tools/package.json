@@ -75,7 +75,7 @@
     "p-limit": "^3.0.2",
     "portfinder": "^1.0.32",
     "tar": "^6.1.12",
-    "ts-morph": "^23.0.0",
+    "ts-morph": "^24.0.0",
     "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {
