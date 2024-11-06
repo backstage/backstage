@@ -22,8 +22,8 @@ export type AutocompleteHandler = ({
   context: Record<string, string>;
 }) => Promise<{
   results: {
-    title: string;
-    id?: string;
+    title?: string;
+    id: string;
   }[];
 }>;
 
