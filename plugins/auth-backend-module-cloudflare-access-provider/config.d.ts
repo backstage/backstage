@@ -35,8 +35,7 @@ export interface Config {
         authorizationCookieName?: string;
         signIn?: {
           resolvers: Array<
-            CloudflareAccessSignInResolver,
-            CommonSignInResolver
+            CloudflareAccessSignInResolver | CommonSignInResolver
           >;
         };
       };

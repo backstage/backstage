@@ -44,7 +44,7 @@ export interface Config {
          */
         region: string;
         signIn?: {
-          resolvers: Array<AWSAlbSignInResolver, CommonSignInResolver>;
+          resolvers: Array<AWSAlbSignInResolver | CommonSignInResolver>;
         };
       };
     };
