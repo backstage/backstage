@@ -15,6 +15,12 @@
  */
 
 export {
+  commonSignInResolvers,
+  type CommonSignInResolver,
+  type GetSignInResolver,
+  type GetSignInResolverOption,
+} from './commonSignInResolvers';
+export {
   createSignInResolverFactory,
   type SignInResolverFactory,
   type SignInResolverFactoryOptions,
@@ -23,4 +29,3 @@ export {
   readDeclarativeSignInResolver,
   type ReadDeclarativeSignInResolverOptions,
 } from './readDeclarativeSignInResolver';
-export { commonSignInResolvers } from './commonSignInResolvers';

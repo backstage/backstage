@@ -14,14 +14,44 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
-import { createSignInResolverFactory } from './createSignInResolverFactory';
 import { NotAllowedError } from '@backstage/errors';
+import { z } from 'zod';
+import {
+  createSignInResolverFactory,
+  SignInResolverFactory,
+} from './createSignInResolverFactory';
 
 // This splits an email "joe+work@acme.com" into ["joe", "+work", "@acme.com"]
 // so that we can remove the plus addressing. May output a shorter array:
 // ["joe", "@acme.com"], if no plus addressing was found.
 const reEmail = /^([^@+]+)(\+[^@]+)?(@.*)$/;
+
+/**
+ * @public
+ *
+ * Helper type for retrieving a sign-in resolver's options.
+ */
+export type GetSignInResolverOption<
+  T extends Record<string, SignInResolverFactory>,
+  K extends keyof T,
+> = Exclude<Parameters<T[K]>[0], undefined>;
+
+/**
+ * @public
+ *
+ * Helper type to obtain a union of possible sign-in resolvers.
+ */
+export type GetSignInResolver<T extends Record<string, SignInResolverFactory>> =
+  { [K in keyof T]: { resolver: K } & GetSignInResolverOption<T, K> }[keyof T];
+
+/**
+ * @public
+ *
+ * Includes a union of the available resolvers in `commonSignInResolvers`.
+ */
+export type CommonSignInResolver = GetSignInResolver<
+  typeof commonSignInResolvers
+>;
 
 /**
  * A collection of common sign-in resolvers that work with any auth provider.

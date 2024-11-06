@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import type { BitbucketSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -27,14 +31,7 @@ export interface Config {
           clientSecret: string;
           additionalScopes?: string | string[];
           signIn?: {
-            resolvers: Array<
-              | { resolver: 'userIdMatchingUserEntityAnnotation' }
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<BitbucketSignInResolver | CommonSignInResolver>;
           };
         };
       };

@@ -16,10 +16,15 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type AtlassianSignInResolver = GetSignInResolver<
+  typeof atlassianSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the Atlassian auth provider.

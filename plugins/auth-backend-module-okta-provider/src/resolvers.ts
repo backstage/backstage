@@ -16,10 +16,13 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type OktaSignInResolver = GetSignInResolver<typeof oktaSignInResolvers>;
 
 /**
  * Available sign-in resolvers for the Okta auth provider.

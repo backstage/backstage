@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import type { OktaSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -31,14 +35,7 @@ export interface Config {
           callbackUrl?: string;
           additionalScopes?: string | string[];
           signIn?: {
-            resolvers: Array<
-              | { resolver: 'emailMatchingUserEntityAnnotation' }
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<OktaSignInResolver | CommonSignInResolver>;
           };
         };
       };

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import type { AWSAlbSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -40,13 +44,7 @@ export interface Config {
          */
         region: string;
         signIn?: {
-          resolvers: Array<
-            | {
-                resolver: 'emailLocalPartMatchingUserEntityName';
-                allowedDomains?: string[];
-              }
-            | { resolver: 'emailMatchingUserEntityProfileEmail' }
-          >;
+          resolvers: Array<AWSAlbSignInResolver, CommonSignInResolver>;
         };
       };
     };

@@ -15,11 +15,16 @@
  */
 
 import {
-  OAuthAuthenticatorResult,
   createSignInResolverFactory,
+  GetSignInResolver,
+  OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type MicrosoftSignInResolver = GetSignInResolver<
+  typeof microsoftSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the Microsoft auth provider.

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import type { OneLoginSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -28,14 +32,7 @@ export interface Config {
           issuer: string;
           callbackUrl?: string;
           signIn?: {
-            resolvers: Array<
-              | { resolver: 'usernameMatchingUserEntityName' }
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<OneLoginSignInResolver | CommonSignInResolver>;
           };
         };
       };

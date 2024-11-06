@@ -141,6 +141,11 @@ export type ClientAuthResponse<TProviderInfo> = {
 };
 
 // @public
+export type CommonSignInResolver = GetSignInResolver<
+  typeof commonSignInResolvers
+>;
+
+// @public
 export namespace commonSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
@@ -242,6 +247,20 @@ export function encodeOAuthState(state: OAuthState): string;
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;
+
+// @public
+export type GetSignInResolver<T extends Record<string, SignInResolverFactory>> =
+  {
+    [K in keyof T]: {
+      resolver: K;
+    } & GetSignInResolverOption<T, K>;
+  }[keyof T];
+
+// @public
+export type GetSignInResolverOption<
+  T extends Record<string, SignInResolverFactory>,
+  K extends keyof T,
+> = Exclude<Parameters<T[K]>[0], undefined>;
 
 // @public
 export interface IdentityApi {

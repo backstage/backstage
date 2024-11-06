@@ -16,6 +16,10 @@
 
 import { HumanDuration } from '@backstage/types';
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import type { CloudflareAccessSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -31,11 +35,8 @@ export interface Config {
         authorizationCookieName?: string;
         signIn?: {
           resolvers: Array<
-            | {
-                resolver: 'emailLocalPartMatchingUserEntityName';
-                allowedDomains?: string[];
-              }
-            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            CloudflareAccessSignInResolver,
+            CommonSignInResolver
           >;
         };
       };

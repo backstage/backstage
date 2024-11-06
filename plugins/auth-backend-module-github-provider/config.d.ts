@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import { GithubSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -29,14 +33,7 @@ export interface Config {
           enterpriseInstanceUrl?: string;
           additionalScopes?: string | string[];
           signIn?: {
-            resolvers: Array<
-              | { resolver: 'usernameMatchingUserEntityName' }
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<GithubSignInResolver | CommonSignInResolver>;
           };
         };
       };

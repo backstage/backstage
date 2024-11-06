@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import { OAuth2SignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -33,14 +37,7 @@ export interface Config {
           disableRefresh?: boolean;
           includeBasicAuth?: boolean;
           signIn?: {
-            resolvers: Array<
-              | { resolver: 'usernameMatchingUserEntityName' }
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<OAuth2SignInResolver | CommonSignInResolver>;
           };
         };
       };

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -26,13 +28,7 @@ export interface Config {
           consoleEndpoint?: string;
           additionalScopes?: string | string[];
           signIn?: {
-            resolvers: Array<
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<CommonSignInResolver>;
           };
         };
       };

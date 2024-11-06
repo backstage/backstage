@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import { GoogleSignInResolver } from './src/resolvers';
+
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
@@ -29,14 +33,7 @@ export interface Config {
           callbackUrl?: string;
           additionalScopes?: string | string[];
           signIn?: {
-            resolvers: Array<
-              | { resolver: 'emailMatchingUserEntityAnnotation' }
-              | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
+            resolvers: Array<GoogleSignInResolver | CommonSignInResolver>;
           };
         };
       };

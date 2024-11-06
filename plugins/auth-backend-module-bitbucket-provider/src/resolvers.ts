@@ -16,10 +16,15 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type BitbucketSignInResolver = GetSignInResolver<
+  typeof bitbucketSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the Bitbucket auth provider.
