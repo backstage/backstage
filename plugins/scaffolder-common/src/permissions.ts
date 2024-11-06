@@ -149,12 +149,6 @@ export const scaffolderTaskPermissions = [
 ];
 
 /**
- * List of the scaffolder permissions that are associated with scaffolder management.
- * @alpha
- */
-export const scaffolderManagementPermissions = [templateManagementPermission];
-
-/**
  * List of all the scaffolder permissions
  * @alpha
  */
@@ -162,5 +156,5 @@ export const scaffolderPermissions = [
   ...scaffolderTemplatePermissions,
   ...scaffolderActionPermissions,
   ...scaffolderTaskPermissions,
-  ...scaffolderManagementPermissions,
+  templateManagementPermission,
 ];
