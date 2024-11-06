@@ -5866,7 +5866,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@gitbeaker/rest": ^40.0.3
     "@types/lodash": ^4.14.151
-    "@types/uuid": ^9.0.0
+    "@types/uuid": ^10.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -6066,7 +6066,7 @@ __metadata:
     "@types/glob": ^8.0.0
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
-    "@types/uuid": ^9.0.0
+    "@types/uuid": ^10.0.0
     better-sqlite3: ^11.0.0
     codeowners-utils: ^1.0.2
     core-js: ^3.6.5
@@ -7298,7 +7298,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^1.0.0
-    "@types/uuid": ^9.0.0
+    "@types/uuid": ^10.0.0
     "@types/yup": ^0.32.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -10647,7 +10647,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
-    "@types/uuid": ^9.0.0
+    "@types/uuid": ^10.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     supertest: ^7.0.0
@@ -19783,10 +19783,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^9.0.0":
-  version: 9.0.8
-  resolution: "@types/uuid@npm:9.0.8"
-  checksum: b8c60b7ba8250356b5088302583d1704a4e1a13558d143c549c408bf8920535602ffc12394ede77f8a8083511b023704bc66d1345792714002bfa261b17c5275
+"@types/uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "@types/uuid@npm:10.0.0"
+  checksum: e3958f8b0fe551c86c14431f5940c3470127293280830684154b91dc7eb3514aeb79fe3216968833cf79d4d1c67f580f054b5be2cd562bebf4f728913e73e944
   languageName: node
   linkType: hard
 

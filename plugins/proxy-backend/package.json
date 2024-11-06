@@ -76,7 +76,7 @@
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@types/http-proxy-middleware": "^1.0.0",
-    "@types/uuid": "^9.0.0",
+    "@types/uuid": "^10.0.0",
     "@types/yup": "^0.32.0",
     "msw": "^2.0.0",
     "node-fetch": "^2.7.0"
