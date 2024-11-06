@@ -20,7 +20,10 @@ import React from 'react';
 import { renderReactElement } from './renderReactElement';
 import { TechDocsRedirectNotification } from '../components/TechDocsRedirectNotification';
 
-export const handleMetaRedirects = (entityName: string): Transformer => {
+export const handleMetaRedirects = (
+  navigate: (to: string) => void,
+  entityName: string,
+): Transformer => {
   const redirectAfterMs = 3000;
 
   const determineRedirectURL = (metaUrl: string) => {
@@ -52,6 +55,7 @@ export const handleMetaRedirects = (entityName: string): Transformer => {
         if (!metaContentParameters || metaContentParameters.length < 2) {
           return dom;
         }
+
         const metaUrl = metaContentParameters[1];
         const redirectURL = determineRedirectURL(metaUrl);
 
@@ -65,9 +69,7 @@ export const handleMetaRedirects = (entityName: string): Transformer => {
         renderReactElement(
           <TechDocsRedirectNotification
             message="This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement."
-            handleButtonClick={() => {
-              window.location.href = redirectURL;
-            }}
+            handleButtonClick={() => navigate(redirectURL)}
             autoHideDuration={redirectAfterMs}
           />,
           container,
@@ -75,7 +77,7 @@ export const handleMetaRedirects = (entityName: string): Transformer => {
         document.body.appendChild(container);
 
         setTimeout(() => {
-          window.location.href = redirectURL;
+          navigate(redirectURL);
         }, redirectAfterMs);
 
         return dom;
