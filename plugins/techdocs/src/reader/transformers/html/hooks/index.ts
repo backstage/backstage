@@ -15,4 +15,4 @@
  */
 
 export { removeUnsafeLinks } from './links';
-export { removeUnsafeIframes } from './iframes';
+export { removeUnsafeIframes, isHost } from './iframes';

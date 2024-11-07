@@ -26,7 +26,19 @@ import { useSanitizerTransformer } from './transformer';
 const configApiMock: ConfigApi = new ConfigReader({
   techdocs: {
     sanitizer: {
-      allowedIframeHosts: ['docs.google.com'],
+      allowedIframeHosts: [
+        {
+          src: 'docs.google.com',
+        },
+        {
+          src: 'apple.com',
+          allowedAttributes: ['width'],
+        },
+        {
+          src: 'structurizr.com',
+          allowedAttributes: ['apikey'],
+        },
+      ],
     },
   },
 });
@@ -120,5 +132,34 @@ describe('Transformers > Html', () => {
     );
 
     expect(metaTags).toHaveLength(0);
+  });
+
+  it('should return a function that allows iframe attributes in a given iframe', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `
+        <body>
+          <iframe src="https://docs.google.com" width=99></iframe>
+          <iframe src="https://apple.com" width=100></iframe>
+          <iframe src="https://structurizr.com" apiKey="anexample"></iframe>
+        </body>
+      `;
+    const clearDom = await result.current(dirtyDom); // calling html transformer
+
+    const iframes = Array.from(
+      clearDom.querySelectorAll<HTMLIFrameElement>('body > iframe'),
+    );
+
+    expect(iframes).toHaveLength(3);
+    expect(iframes[0].src).toMatch('docs.google.com');
+    expect(iframes[0].getAttribute('width')).toBe('99');
+
+    expect(iframes[1].src).toMatch('apple.com');
+    expect(iframes[1].getAttribute('width')).toBe('100');
+
+    expect(iframes[2].src).toMatch('structurizr.com');
+    expect(iframes[2].getAttribute('width')).toBeNull();
+    expect(iframes[2].getAttribute('apikey')).toBe('anexample');
   });
 });

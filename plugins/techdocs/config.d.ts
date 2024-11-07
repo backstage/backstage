@@ -37,11 +37,16 @@ export interface Config {
       /**
        * Allows iframe tag only for listed hosts
        * Example:
-       *  allowedIframeHosts: ["example.com"]
-       *  this will allow all iframes with the host `example.com` in the src attribute
+       *  allowedIframeHosts:
+       *    - src: "example.com"
+       *      allowedAttributes: ['allowedfullscreen']
+       *  this will allow all iframes with the host `example.com` in the src attribute and it will keep the allowedfullscreen attribute from being removed
        * @visibility frontend
        */
-      allowedIframeHosts?: string[];
+      allowedIframeHosts?: Array<{
+        src: string;
+        allowedAttributes?: Array<string?>;
+      }>[];
       /**
        * Allows listed custom element tag name regex
        * Example:
