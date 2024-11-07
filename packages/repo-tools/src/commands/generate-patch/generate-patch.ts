@@ -413,6 +413,23 @@ async function generatePatchForArchives(
     cwd: patchDir,
     env: { ...process.env, ...GIT_ENV },
   });
+  // Commit the base archive contents, so that we can later add all files and diff against the index
+  await exec(
+    'git',
+    [
+      '-c',
+      'user.name="patcher"',
+      '-c',
+      'user.email="patcher@acme.org"',
+      'commit',
+      '-m',
+      'base',
+    ],
+    {
+      cwd: patchDir,
+      env: { ...process.env, ...GIT_ENV },
+    },
+  );
 
   // Remove all existing files
   for (const path of await fs.readdir(patchDir)) {
@@ -428,12 +445,18 @@ async function generatePatchForArchives(
   // Extract the target archive to use a target for the patch
   await tar.extract({ file: headPath, cwd: patchDir, strip: 1 });
 
+  // Add and diff against index, to make sure we include untracked files
+  await exec('git', ['add', '.'], {
+    cwd: patchDir,
+    env: { ...process.env, ...GIT_ENV },
+  });
   const { stdout: patch } = await exec(
     'git',
     [
       '-c',
       'core.safecrlf=false',
       'diff',
+      '--cached',
       '--src-prefix=a/',
       '--dst-prefix=b/',
       '--ignore-cr-at-eol',
