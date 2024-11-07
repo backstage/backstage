@@ -217,8 +217,12 @@ async function loadTrimmedRootPkg(ctx: PatchContext, query?: string) {
   }
 
   return async (patchEntry?: string) => {
-    for (const descriptor of descriptors) {
-      resolutionsObj[descriptor] = patchEntry;
+    if (descriptors.length > 0) {
+      for (const descriptor of descriptors) {
+        resolutionsObj[descriptor] = patchEntry;
+      }
+    } else {
+      resolutionsObj[ctx.packageName] = patchEntry;
     }
     // We use the same patch for all versions of the package, if they don't
     // apply it might require manual intervention using the --query option
