@@ -15,15 +15,13 @@
  */
 
 import React, { ReactElement, ChangeEvent } from 'react';
+import { capitalize } from 'lodash';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import InputLabel from '@material-ui/core/InputLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormLabel from '@material-ui/core/FormLabel';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { Select, SelectedItems } from '@backstage/core-components';
 
 import { useSearch } from '../../context';
 import {
@@ -161,7 +159,6 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     values: givenValues,
     valuesDebounceMs,
   } = props;
-  const classes = useStyles();
   useDefaultFilterValue(name, defaultValue);
   const asyncValues =
     typeof givenValues === 'function' ? givenValues : undefined;
@@ -175,16 +172,16 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
   );
   const { filters, setFilters } = useSearch();
 
-  const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
-    const {
-      target: { value },
-    } = e;
-
+  const handleChange = (value: SelectedItems) => {
     setFilters(prevFilters => {
       const { [name]: filter, ...others } = prevFilters;
       return value ? { ...others, [name]: value as string } : others;
     });
   };
+
+  const items = [{ value: '', label: 'All' }].concat(
+    values.map(value => ({ value, label: value })),
+  );
 
   return (
     <FormControl
@@ -194,27 +191,12 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
       fullWidth
       data-testid="search-selectfilter-next"
     >
-      {label ? (
-        <InputLabel className={classes.label} margin="dense">
-          {label}
-        </InputLabel>
-      ) : null}
       <Select
-        variant="outlined"
-        value={filters[name] || ''}
+        label={label ?? capitalize(name)}
+        selected={(filters[name] || '') as string}
         onChange={handleChange}
-      >
-        <MenuItem value="">
-          <em>All</em>
-        </MenuItem>
-        {values.map((value: string) => (
-          <MenuItem key={value} value={value}>
-            <Typography variant="inherit" noWrap>
-              {value}
-            </Typography>
-          </MenuItem>
-        ))}
-      </Select>
+        items={items}
+      />
     </FormControl>
   );
 };
