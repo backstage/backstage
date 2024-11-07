@@ -143,7 +143,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
 
   return (
     <Box>
-      <Typography variant="body2" component="h3">
+      <Typography variant="body2" component="h5">
         {name}
       </Typography>
       <Accordion
