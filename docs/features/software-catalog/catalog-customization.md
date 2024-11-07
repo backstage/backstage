@@ -67,44 +67,83 @@ The columns you see in the `CatalogIndexPage` were selected to be a good startin
 
 ### Adding a column to an existing Kind
 
-Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by creating a new column factory in `/plugins/catalog/src/components/CatalogTable/columns.tsx`:
+Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
 
-```tsx title="packages/catalog/src/components/CatalogTable/columns.tsx"
-export const columnFactories = Object.freeze({
-  createNameColumn(options?: {
-    defaultKind?: string;
-  }): TableColumn<CatalogTableRow> {
-    // ...
-    {/* highlight-add-start */}
-    createUserEmailColumn(): TableColumn<CatalogTableRow> {
-      return {
-        title: 'User Email',
-        field: 'entity.spec?.profile?.["email"]',
-        render: ({ entity }) => (
-          <OverflowTooltip
-            text={entity.spec?.profile?.['email'] || 'N/A'}
-            placement="bottom-start"
-          />
-        ),
-      };
-    },
-    {/* highlight-add-end */}
+```tsx title="packages/app/src/App.tsx"
+{
+  /* highlight-add-start */
+}
+const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
+  if (entityListContext.filters.kind?.value === 'user') {
+    return [
+      // Existing columns (Name, Description, Tags)
+      CatalogTable.columns.createNameColumn(),
+      CatalogTable.columns.createMetadataDescriptionColumn(),
+      CatalogTable.columns.createTagsColumn(),
+      // Add new columns here
+    ];
   }
-});
+
+  return CatalogTable.defaultColumnsFunc(entityListContext);
+};
+{
+  /* highlight-add-end */
+}
 ```
 
-Then, we can call this new column factory in `/plugins/catalog/src/components/CatalogTable/defaultCatalogTableColumnsFunc.tsx`:
+Some other possible values for the existing entity kinds are `user`, `domain`, `system`, `group`, `template` and `location`.
 
-```tsx title="packages/catalog/src/components/CatalogTable/defaultCatalogTableColumnsFunc.tsx"
-// ...
-    switch (filters.kind?.value) {
-      case 'user':
-        return [
-          ...descriptionTagColumns,
+Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
+
+```tsx title="packages/app/src/App.tsx"
+{/* highlight-add-start */}
+const createUserEmailColumn = (): TableColumn<CatalogTableRow> => ({
+  title: 'User Email',
+  field: 'entity.spec.profile.email',
+  render: ({ entity }) => (
+    <OverflowTooltip
+      text={entity.spec?.profile?.['email'] || 'N/A'}
+      placement="bottom-start"
+    />
+  ),
+});
+{/* highlight-add-end */}
+
+const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
+  if (entityListContext.filters.kind?.value === 'user') {
+    return [
+      // Existing columns (Name, Description, Tags)
+      CatalogTable.columns.createNameColumn(),
+      CatalogTable.columns.createMetadataDescriptionColumn(),
+      CatalogTable.columns.createTagsColumn(),
+      // Add new columns here
+      {/* highlight-add-next-line */}
+      createUserEmailColumn(),
+    ];
+  }
+
+  return CatalogTable.defaultColumnsFunc(entityListContext);
+};
+```
+
+Finally, we can pass the `myColumnsFunc` to the `CatalogIndexPage` component:
+
+```tsx title="packages/app/src/App.tsx"
+const routes = (
+  <FlatRoutes>
+    <Route
+      path="/catalog"
+      element={
+        <CatalogIndexPage
+          pagination={{ mode: 'offset', limit: 20 }}
           {/* highlight-add-next-line */}
-          columnFactories.createUserEmailColumn(),
-        ];
-// ...
+          columns={myColumnsFunc}
+        />
+      }
+    />
+    {/* Other routes */}
+  </FlatRoutes>
+)
 ```
 
 ### Adding columns to a custom or specific Kind
