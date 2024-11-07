@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent } from 'react';
+import React, { ReactElement, ChangeEvent, useRef } from 'react';
 import { capitalize } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -170,18 +171,20 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     defaultValues,
     valuesDebounceMs,
   );
+  const allOptionValue = useRef(uuid());
+  const allOption = { value: allOptionValue.current, label: 'All' };
   const { filters, setFilters } = useSearch();
 
   const handleChange = (value: SelectedItems) => {
     setFilters(prevFilters => {
       const { [name]: filter, ...others } = prevFilters;
-      return value ? { ...others, [name]: value as string } : others;
+      return value !== allOptionValue.current
+        ? { ...others, [name]: value as string }
+        : others;
     });
   };
 
-  const items = [{ value: '', label: 'All' }].concat(
-    values.map(value => ({ value, label: value })),
-  );
+  const items = [allOption, ...values.map(value => ({ value, label: value }))];
 
   return (
     <FormControl
@@ -193,7 +196,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     >
       <Select
         label={label ?? capitalize(name)}
-        selected={(filters[name] || '') as string}
+        selected={(filters[name] || allOptionValue.current) as string}
         onChange={handleChange}
         items={items}
       />
