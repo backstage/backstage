@@ -15871,10 +15871,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scarf/scarf@npm:=1.3.0":
-  version: 1.3.0
-  resolution: "@scarf/scarf@npm:1.3.0"
-  checksum: 652c1248c8e1b5a4ba64333c1b2e9847e314d4cd78beb4bab51b3825bcd2b45dc20d185d3b99b11b18753a9e64113475067852ac898910ad73aa0559e24f0d6d
+"@scarf/scarf@npm:=1.4.0":
+  version: 1.4.0
+  resolution: "@scarf/scarf@npm:1.4.0"
+  checksum: def62aa403f7e63165ccb219efd2c420fc0b7357b0ba43397f635e4aa813ace1cdf3855a93fc559b4619bcc0469ae4767b8cb72af30ea5c0522bf4a2ecb18198
   languageName: node
   linkType: hard
 
@@ -42919,12 +42919,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-client@npm:^3.30.1":
-  version: 3.30.1
-  resolution: "swagger-client@npm:3.30.1"
+"swagger-client@npm:^3.31.0":
+  version: 3.31.0
+  resolution: "swagger-client@npm:3.31.0"
   dependencies:
     "@babel/runtime-corejs3": ^7.22.15
-    "@scarf/scarf": =1.3.0
+    "@scarf/scarf": =1.4.0
     "@swagger-api/apidom-core": ">=1.0.0-alpha.9 <1.0.0-beta.0"
     "@swagger-api/apidom-error": ">=1.0.0-alpha.9 <1.0.0-beta.0"
     "@swagger-api/apidom-json-pointer": ">=1.0.0-alpha.9 <1.0.0-beta.0"
@@ -42941,17 +42941,17 @@ __metadata:
     openapi-server-url-templating: ^1.0.0
     ramda: ^0.30.1
     ramda-adjunct: ^5.0.0
-  checksum: b5c7b259855c1a7b9d7d8616bc667d489c05f602b4a6ab1570120fb5506f151e518c720d63601806f03baaa2c34495644ced4a29d5aac4f8a9231d0ca6dc98aa
+  checksum: 86b414dda317d5e9ca6efac8c04355016106e9e637b9b0bfb7a27c43f4b14e18a18c93ac108798ecc0e00c1937036f79fe103b98f551ef1e24fd54e0c3b756b0
   languageName: node
   linkType: hard
 
 "swagger-ui-react@npm:^5.0.0":
-  version: 5.18.1
-  resolution: "swagger-ui-react@npm:5.18.1"
+  version: 5.18.2
+  resolution: "swagger-ui-react@npm:5.18.2"
   dependencies:
     "@babel/runtime-corejs3": ^7.24.7
     "@braintree/sanitize-url": =7.0.4
-    "@scarf/scarf": =1.3.0
+    "@scarf/scarf": =1.4.0
     base64-js: ^1.5.1
     classnames: ^2.5.1
     css.escape: 1.5.1
@@ -42978,7 +42978,7 @@ __metadata:
     reselect: ^5.1.1
     serialize-error: ^8.1.0
     sha.js: ^2.4.11
-    swagger-client: ^3.30.1
+    swagger-client: ^3.31.0
     url-parse: ^1.5.10
     xml: =1.0.1
     xml-but-prettier: ^1.0.1
@@ -42986,7 +42986,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <19"
     react-dom: ">=16.8.0 <19"
-  checksum: 3ce49a81c72b70e947c0e8b2977ac03e9b5e19d961ae7ca672b5281a36ce293a3ec1cdaf971328bdefb7392f316e06e4f5ba5283f44cc54df783eb713302781c
+  checksum: 8ad40bda044c9ff5a940b4e76f88dd740dae183266dc2d48cd88b73877a0ad464f26ad41459de7d7562c5e1a0030ed5a15b99fe57d3f2919acc7ddb126c07447
   languageName: node
   linkType: hard
 
