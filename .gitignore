@@ -186,4 +186,4 @@ docs.json
 tsconfig.typedoc.tmp.json
 
 # Temporary test outputs
-*dry-run-output*
+**/dry-run-output/*
