@@ -372,7 +372,7 @@ export async function createConfig(
     ...(isDev
       ? {
           watchOptions: {
-            ignored: /node_modules/,
+            ignored: /node_modules\/(?!__backstage-autodetected-plugins__)/,
           },
         }
       : {}),
