@@ -4054,6 +4054,7 @@ __metadata:
     rollup-plugin-dts: ^6.1.0
     rollup-plugin-esbuild: ^6.1.1
     rollup-plugin-postcss: ^4.0.0
+    rollup-plugin-rename-node-modules: ^1.3.1
     rollup-pluginutils: ^2.8.2
     semver: ^7.5.3
     style-loader: ^3.3.1
@@ -40808,6 +40809,18 @@ __metadata:
   peerDependencies:
     postcss: 8.x
   checksum: 67875e024fa36ba4bd43604dc50d02eabba0c93626cc372588260ae42aae3f98015ea1b0c3a78bcbd345ebea465ef636e5cb0f60dbc8b2e94fbe2514384395f0
+  languageName: node
+  linkType: hard
+
+"rollup-plugin-rename-node-modules@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "rollup-plugin-rename-node-modules@npm:1.3.1"
+  dependencies:
+    estree-walker: ^2.0.1
+    magic-string: ^0.25.7
+  peerDependencies:
+    rollup: ^2.28.2
+  checksum: ef64fca4ae6e3b5f45d438315a34c368b259b7024f3f6a2f73c6fd819fdf98d7623327abdd0d641694ce030641312d4e91ce4cb171e195fc9f580a3a02f303ff
   languageName: node
   linkType: hard
 

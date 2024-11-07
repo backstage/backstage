@@ -25,6 +25,7 @@ import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import yaml from '@rollup/plugin-yaml';
+import renameNodeModules from 'rollup-plugin-rename-node-modules';
 import {
   RollupOptions,
   OutputOptions,
@@ -181,6 +182,7 @@ export async function makeRollupConfigs(
           include: /\.icon\.svg$/,
           template: svgrTemplate,
         }),
+        renameNodeModules('node_modules_dist'),
         esbuild({
           target: 'ES2022',
           minify: options.minify,
