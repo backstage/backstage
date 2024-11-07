@@ -175,5 +175,6 @@ knip.json
 .hypothesis/
 .cassettes/
 
-# Temporary test outputs
-*dry-run-output*
+# Test outputs
+**/dry-run-output/*
+**/test-results/*
