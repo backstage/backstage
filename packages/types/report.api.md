@@ -51,6 +51,11 @@ export type Observer<T> = {
 };
 
 // @public
+export type Prettify<T extends Record<PropertyKey, unknown>> = {
+  [K in keyof T]: T[K];
+} & {};
+
+// @public
 export type Subscription = {
   unsubscribe(): void;
   readonly closed: boolean;

@@ -14,6 +14,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import type { Prettify } from '@backstage/types';
 import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
@@ -251,9 +252,11 @@ export function getBearerTokenFromAuthorizationHeader(
 // @public
 export type GetSignInResolver<T extends Record<string, SignInResolverFactory>> =
   {
-    [K in keyof T]: {
-      resolver: K;
-    } & GetSignInResolverOption<T, K>;
+    [K in keyof T]: Prettify<
+      {
+        resolver: K;
+      } & GetSignInResolverOption<T, K>
+    >;
   }[keyof T];
 
 // @public

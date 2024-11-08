@@ -15,6 +15,7 @@
  */
 
 import { NotAllowedError } from '@backstage/errors';
+import type { Prettify } from '@backstage/types';
 import { z } from 'zod';
 import {
   createSignInResolverFactory,
@@ -42,7 +43,9 @@ export type GetSignInResolverOption<
  * Helper type to obtain a union of possible sign-in resolvers.
  */
 export type GetSignInResolver<T extends Record<string, SignInResolverFactory>> =
-  { [K in keyof T]: { resolver: K } & GetSignInResolverOption<T, K> }[keyof T];
+  {
+    [K in keyof T]: Prettify<{ resolver: K } & GetSignInResolverOption<T, K>>;
+  }[keyof T];
 
 /**
  * @public
