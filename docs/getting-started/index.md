@@ -143,16 +143,18 @@ Choose the correct next steps for your user role, if you're likely to be deployi
 
 ### Admin
 
-- Deploying a production server
+- Deploying to production
+
+  - [Setting up authentication](./config/authentication.md)
+  - [Configuring a database](./config/database.md)
   - [Deploying with Docker](../deployment/docker.md)
   - [Deploying with Kubernetes](../deployment/k8s.md)
-  - [Deploying with AWS Lightsail](../deployment/backstage-deploy/aws.md)
+
 - Configuring Backstage
-  - [Database](./config/database.md)
-  - [Authentication](./config/authentication.md)
-  - [Plugins](./configure-app-with-plugins.md)
-  - [Theme](./app-custom-theme.md)
-  - [Homepage](./homepage.md)
+
+  - [Adding plugins](./configure-app-with-plugins.md)
+  - [Customizing the theme](./app-custom-theme.md)
+  - [Populating the homepage](./homepage.md)
 
 ### Developer
 
