@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Allow CursorPaginatedCatalogTable and OffsetPaginatedCatalogTable to configure Table options, specifically `paginationPostition`
+Allow `OffsetPaginatedCatalogTable` to configure Table options and `CursorPaginatedCatalogTable` to configure `paginationPosition`.
