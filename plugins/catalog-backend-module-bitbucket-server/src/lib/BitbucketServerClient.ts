@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import { Request, Response } from 'node-fetch';
+import nodeFetch, { Request, Response } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
+import { ThrottleService } from '@backstage/integration-bitbucket-common';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
-import {
-  FetchService,
-  FetchFunction,
-} from '@backstage/integration-bitbucket-node';
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -33,7 +30,7 @@ import {
 export class BitbucketServerClient {
   private readonly config: BitbucketServerIntegrationConfig;
 
-  private readonly fetch: FetchFunction;
+  private readonly fetch: typeof nodeFetch;
 
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
@@ -43,7 +40,7 @@ export class BitbucketServerClient {
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
     this.config = options.config;
-    this.fetch = FetchService.get(this.config);
+    this.fetch = new ThrottleService().throttle(nodeFetch, this.config);
   }
 
   async listProjects(options: {

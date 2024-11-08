@@ -31,7 +31,8 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import { Response } from 'node-fetch';
+import { ThrottleService } from '@backstage/integration-bitbucket-common';
+import nodeFetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
@@ -39,10 +40,6 @@ import { Readable } from 'stream';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
-import {
-  FetchFunction,
-  FetchService,
-} from '@backstage/integration-bitbucket-node';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
@@ -61,13 +58,13 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     });
   };
 
-  private fetch: FetchFunction;
+  private fetch: typeof nodeFetch;
 
   constructor(
     private readonly integration: BitbucketServerIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    this.fetch = FetchService.get(integration.config);
+    this.fetch = new ThrottleService().throttle(nodeFetch, integration.config);
   }
 
   async read(url: string): Promise<Buffer> {

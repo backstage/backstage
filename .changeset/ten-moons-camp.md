@@ -1,9 +1,8 @@
 ---
-'@backstage/plugin-catalog-backend-module-bitbucket-server': minor
-'@backstage/integration-bitbucket-node': minor
-'@backstage/plugin-bitbucket-cloud-common': minor
-'@backstage/backend-defaults': minor
+'@backstage/plugin-catalog-backend-module-bitbucket-server': patch
+'@backstage/plugin-bitbucket-cloud-common': patch
+'@backstage/backend-defaults': patch
 '@backstage/integration': minor
 ---
 
-Adds throttling to Bitbucket Cloud and Bitbucket Server api calls
+Adds support for throttling to Bitbucket Cloud and Bitbucket Server api calls
