@@ -16,6 +16,6 @@
 '@backstage/plugin-auth-node': patch
 ---
 
-feat: add helper types for auth providers
+feat: add utility types for auth providers
 
-This update introduces a new type, `CommonSignInResolver`, along with two helper types, `GetSignInResolverOption` and `GetSignInResolver`. These additions aim to minimize the chances of omitting a type in `config.d.ts`.
+This update introduces a new type, `CommonSignInResolver`, along with two utility types, `GetSignInResolverOption` and `GetSignInResolver`. These additions aim to minimize the chances of omitting a type in `config.d.ts`.

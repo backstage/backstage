@@ -30,7 +30,7 @@ const reEmail = /^([^@+]+)(\+[^@]+)?(@.*)$/;
 /**
  * @public
  *
- * Helper type for retrieving a sign-in resolver's options.
+ * A utility type for retrieving a sign-in resolver's options.
  */
 export type GetSignInResolverOption<
   T extends Record<string, SignInResolverFactory>,
@@ -40,7 +40,7 @@ export type GetSignInResolverOption<
 /**
  * @public
  *
- * Helper type to obtain a union of possible sign-in resolvers.
+ * A utility type to obtain a union of possible sign-in resolvers.
  */
 export type GetSignInResolver<T extends Record<string, SignInResolverFactory>> =
   {
@@ -50,7 +50,7 @@ export type GetSignInResolver<T extends Record<string, SignInResolverFactory>> =
 /**
  * @public
  *
- * Includes a union of the available resolvers in `commonSignInResolvers`.
+ * A union of the available resolvers in `commonSignInResolvers`.
  */
 export type CommonSignInResolver = GetSignInResolver<
   typeof commonSignInResolvers
