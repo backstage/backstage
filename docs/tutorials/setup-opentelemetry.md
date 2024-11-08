@@ -66,7 +66,7 @@ You can now start your Backstage instance as usual, using `yarn dev`.
 
 ## Production Setup
 
-In your '.dockerignore', add this line:
+In your `.dockerignore`, add this line:
 
 ```
 !packages/backend/src/instrumentation.js
