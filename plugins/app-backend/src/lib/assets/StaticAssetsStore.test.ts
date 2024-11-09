@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-import { Knex as KnexType } from 'knex';
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { StaticAssetsStore } from './StaticAssetsStore';
-
-const logger = mockServices.logger.mock();
-
-function createDatabaseManager(
-  client: KnexType,
-  skipMigrations: boolean = false,
-) {
-  return {
-    getClient: async () => client,
-    migrations: {
-      skip: skipMigrations,
-    },
-  };
-}
 
 jest.setTimeout(60_000);
 
@@ -40,11 +25,11 @@ describe('StaticAssetsStore', () => {
   it.each(databases.eachSupportedId())(
     'should store and retrieve assets, %p',
     async databaseId => {
-      const client = await databases.init(databaseId);
-      const database = createDatabaseManager(client);
+      const knex = await databases.init(databaseId);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database,
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
 
       await store.storeAssets([
@@ -82,11 +67,11 @@ describe('StaticAssetsStore', () => {
   it.each(databases.eachSupportedId())(
     'should update assets timestamps, but not contents, %p',
     async databaseId => {
-      const client = await databases.init(databaseId);
-      const database = createDatabaseManager(client);
+      const knex = await databases.init(databaseId);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database,
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
 
       await store.storeAssets([
@@ -134,10 +119,10 @@ describe('StaticAssetsStore', () => {
     'should trim old assets, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      const database = createDatabaseManager(knex);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database,
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
 
       await store.storeAssets([
@@ -179,10 +164,10 @@ describe('StaticAssetsStore', () => {
     'should isolate assets in namespace, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      const database = createDatabaseManager(knex);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database,
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
       const otherStore = store.withNamespace('other');
 

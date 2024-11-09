@@ -25,6 +25,7 @@ import {
   AEDirVendor,
   ActiveDirectoryVendor,
   DefaultLdapVendor,
+  GoogleLdapVendor,
   FreeIpaVendor,
   LdapVendor,
 } from './vendors';
@@ -236,6 +237,7 @@ export class LdapClient {
     if (this.vendor) {
       return this.vendor;
     }
+    const clientHost = this.client?.host || '';
     this.vendor = this.getRootDSE()
       .then(root => {
         if (root && root.raw?.forestFunctionality) {
@@ -244,6 +246,8 @@ export class LdapClient {
           return FreeIpaVendor;
         } else if (root && 'aeRoot' in root.raw) {
           return AEDirVendor;
+        } else if (clientHost === 'ldap.google.com') {
+          return GoogleLdapVendor;
         }
         return DefaultLdapVendor;
       })

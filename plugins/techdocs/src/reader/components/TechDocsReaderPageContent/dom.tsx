@@ -47,6 +47,7 @@ import {
   handleMetaRedirects,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
+import { useParams } from 'react-router-dom';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -69,6 +70,7 @@ export const useTechDocsReaderDom = (
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
 
   const { state, path, content: rawPage } = useTechDocsReader();
+  const { '*': currPath = '' } = useParams();
 
   const [dom, setDom] = useState<HTMLElement | null>(null);
   const isStyleLoading = useShadowDomStylesLoading(dom);
@@ -277,8 +279,8 @@ export const useTechDocsReaderDom = (
       }
 
       // Skip this update if the location's path has changed but the state
-      // contains a page for another page that isn't loaded yet.
-      if (!window.location.pathname.endsWith(path)) {
+      // contains a page that isn't loaded yet.
+      if (currPath !== path) {
         return;
       }
 
@@ -297,7 +299,7 @@ export const useTechDocsReaderDom = (
     return () => {
       shouldReplaceContent = false;
     };
-  }, [rawPage, path, preRender, postRender]);
+  }, [rawPage, currPath, path, preRender, postRender]);
 
   return dom;
 };

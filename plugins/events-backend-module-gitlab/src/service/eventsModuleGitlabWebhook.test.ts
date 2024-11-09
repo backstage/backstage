@@ -25,11 +25,10 @@ import { eventsModuleGitlabWebhook } from './eventsModuleGitlabWebhook';
 describe('gitlabWebhookEventsModule', () => {
   const requestWithToken = (token?: string) => {
     return {
-      body: undefined,
       headers: {
         'x-gitlab-token': token,
       },
-    } as RequestDetails;
+    } as Partial<RequestDetails> as unknown as RequestDetails;
   };
 
   it('should be correctly wired and set up', async () => {

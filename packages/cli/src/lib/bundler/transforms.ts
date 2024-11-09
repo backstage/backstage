@@ -150,6 +150,7 @@ export const transforms = (options: TransformOptions): Transforms => {
         { and: [/\.svg$/, { not: [/\.icon\.svg$/] }] },
         /\.xml$/,
         /\.ico$/,
+        /\.webp$/,
       ],
       type: 'asset/resource',
       generator: {

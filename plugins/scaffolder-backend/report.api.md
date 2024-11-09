@@ -232,6 +232,26 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
 >;
 
 // @public
+export const createFilesystemReadDirAction: () => TemplateAction_2<
+  {
+    paths: string[];
+    recursive?: boolean | undefined;
+  },
+  {
+    files: {
+      name: string;
+      path: string;
+      fullPath: string;
+    }[];
+    folders: {
+      name: string;
+      path: string;
+      fullPath: string;
+    }[];
+  }
+>;
+
+// @public
 export const createFilesystemRenameAction: () => TemplateAction_2<
   {
     files: Array<{

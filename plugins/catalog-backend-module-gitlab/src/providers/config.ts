@@ -49,6 +49,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
 
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
+
+  const includeArchivedRepos: boolean =
+    config.getOptionalBoolean('includeArchivedRepos') ?? false;
   const excludeRepos: string[] =
     config.getOptionalStringArray('excludeRepos') ?? [];
 
@@ -78,6 +81,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     allowInherited,
     relations,
     skipForkedRepos,
+    includeArchivedRepos,
     excludeRepos,
     restrictUsersToGroup,
     includeUsersWithoutSeat,
