@@ -61,7 +61,7 @@ export function ScaffolderPageContextMenu(
   const { allowed: canReadTasks } = usePermission({
     permission: taskReadPermission,
   });
-  
+
   const { allowed: canManageTemplates } = usePermission({
     permission: templateManagementPermission,
   });
