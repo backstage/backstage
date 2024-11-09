@@ -23,6 +23,7 @@ import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Dependencies of the todo-list router
+ * @deprecated
  */
 export interface RouterOptions {
   logger: LoggerService;
@@ -33,6 +34,7 @@ export interface RouterOptions {
  * Creates an express.Router with some endpoints
  * for creating, editing and deleting todo items.
  *
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  * @param options - the dependencies of the router
  * @returns an express.Router
  *

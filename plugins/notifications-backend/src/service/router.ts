@@ -49,7 +49,10 @@ import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { getUsersForEntityRef } from './getUsersForEntityRef';
 import { Config } from '@backstage/config';
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated
+ * */
 export interface RouterOptions {
   logger: LoggerService;
   config: Config;
@@ -62,7 +65,10 @@ export interface RouterOptions {
   processors?: NotificationProcessor[];
 }
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

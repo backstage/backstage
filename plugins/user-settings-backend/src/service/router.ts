@@ -29,6 +29,7 @@ import {
 
 /**
  * @public
+ * @deprecated
  */
 export interface RouterOptions {
   database: DatabaseService;
@@ -40,6 +41,7 @@ export interface RouterOptions {
  * Create the user settings backend routes.
  *
  * @public
+ * @deprecated
  */
 export async function createRouter(
   options: RouterOptions,

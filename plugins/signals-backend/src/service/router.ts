@@ -31,6 +31,9 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
 import { Config } from '@backstage/config';
 
+/**
+ * @deprecated
+ */
 export interface RouterOptions {
   logger: LoggerService;
   events: EventsService;
@@ -41,6 +44,9 @@ export interface RouterOptions {
   auth: AuthService;
 }
 
+/**
+ * @deprecated
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
