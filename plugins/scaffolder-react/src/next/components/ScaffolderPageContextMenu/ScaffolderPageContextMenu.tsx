@@ -61,7 +61,12 @@ export function ScaffolderPageContextMenu(
     permission: taskReadPermission,
   });
 
-  if (!onEditorClicked && !onActionsClicked) {
+  if (
+    !onEditorClicked &&
+    !onActionsClicked &&
+    !onTasksClicked &&
+    !onCreateClicked
+  ) {
     return null;
   }
 

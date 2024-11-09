@@ -96,6 +96,8 @@ export type RouterProps = {
     actions?: boolean;
     /** Whether to show a link to the tasks page */
     tasks?: boolean;
+    /** Whether to show a link to the create page (on /create subroutes) */
+    create?: boolean;
   };
 };
 
@@ -200,12 +202,15 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         }
       />
 
-      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
+      <Route
+        path={actionsRouteRef.path}
+        element={<ActionsPage contextMenu={props.contextMenu} />}
+      />
       <Route
         path={scaffolderListTaskRouteRef.path}
         element={
           <RequirePermission permission={taskReadPermission}>
-            <ListTasksPage />
+            <ListTasksPage contextMenu={props.contextMenu} />
           </RequirePermission>
         }
       />
