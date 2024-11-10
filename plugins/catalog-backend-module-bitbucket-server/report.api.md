@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -15,7 +16,6 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
-import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export class BitbucketServerClient {
@@ -55,6 +55,8 @@ export class BitbucketServerClient {
   };
 }
 
+// Warning: (ae-missing-release-tag) "BitbucketServerDefaultBranch" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BitbucketServerDefaultBranch = {
   id: string;
@@ -78,7 +80,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
       catalogApi?: CatalogApi;
-      tokenManager?: TokenManager;
+      auth?: AuthService;
     },
   ): BitbucketServerEntityProvider[];
   getProviderName(): string;
@@ -86,6 +88,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "BitbucketServerEvents" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export namespace BitbucketServerEvents {
   // (undocumented)
@@ -156,11 +160,15 @@ export type BitbucketServerPagedResponse<T> = {
   nextPageStart: number;
 };
 
+// Warning: (ae-missing-release-tag) "BitbucketServerProject" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BitbucketServerProject = {
   key: string;
 };
 
+// Warning: (ae-missing-release-tag) "BitbucketServerRepository" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
 export type BitbucketServerRepository = {
   project: {
