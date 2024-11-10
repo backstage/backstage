@@ -25,7 +25,6 @@ export default createCliPlugin({
       path: ['config:docs'],
       description: 'Browse the configuration reference documentation',
       execute: async ({ args }) => {
-        console.log(args);
         const command = new Command();
         const defaultCommand = command
           .option(
@@ -42,28 +41,21 @@ export default createCliPlugin({
       path: ['config', 'docs'],
       description: 'Browse the configuration reference documentation',
       execute: async ({ args }) => {
-        await yargs
+        const argv = await yargs
           .options({
             package: { type: 'string' },
           })
-          .command(
-            '$0',
-            '',
-            async () => {},
-            async argv => {
-              const m = await import('./commands/docs');
-              await m.default(argv);
-            },
-          )
           .help()
           .parse(args);
+        const m = await import('./commands/docs');
+        await m.default(argv);
       },
     });
     reg.addCommand({
       path: ['config:print'],
       description: 'Print the app configuration for the current package',
       execute: async ({ args }) => {
-        await yargs
+        const argv = await yargs
           .options({
             package: { type: 'string' },
             lax: { type: 'boolean' },
@@ -72,17 +64,10 @@ export default createCliPlugin({
             format: { type: 'string' },
             config: { type: 'string', array: true },
           })
-          .command(
-            '$0',
-            '',
-            async () => {},
-            async argv => {
-              const m = await import('./commands/print');
-              await m.default(argv);
-            },
-          )
           .help()
           .parse(args);
+        const m = await import('./commands/print');
+        await m.default(argv);
       },
     });
     reg.addCommand({
@@ -90,26 +75,23 @@ export default createCliPlugin({
       description:
         'Validate that the given configuration loads and matches schema',
       execute: async ({ args }) => {
-        await yargs
+        const argv = await yargs
           .options({
             package: { type: 'string' },
             lax: { type: 'boolean' },
             frontend: { type: 'boolean' },
             deprecated: { type: 'boolean' },
-            strict: { type: 'boolean' },
-            config: { type: 'string', array: true },
-          })
-          .command(
-            '$0',
-            '',
-            async () => {},
-            async argv => {
-              const m = await import('./commands/validate');
-              await m.default(argv);
+            strict: { type: 'boolean', required: true },
+            config: {
+              type: 'string',
+              array: true,
+              default: [],
             },
-          )
+          })
           .help()
           .parse(args);
+        const m = await import('./commands/validate');
+        await m.default(argv);
       },
     });
   },

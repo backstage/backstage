@@ -20,6 +20,8 @@ import { CommandRegistry } from './CommandRegistry';
 import { program } from 'commander';
 import { version } from '../lib/version';
 import chalk from 'chalk';
+import { exitWithError } from '../lib/errors';
+import { assertError } from '@backstage/errors';
 
 type UninitializedFeature = CliFeature | Promise<CliFeature>;
 
@@ -83,9 +85,15 @@ export class CliInitializer {
           .allowUnknownOption(true)
           .allowExcessArguments(true)
           .action(async () => {
-            await node.command.execute({
-              args: program.parseOptions(process.argv).unknown,
-            });
+            try {
+              await node.command.execute({
+                args: program.parseOptions(process.argv).unknown,
+              });
+              process.exit(0);
+            } catch (error) {
+              assertError(error);
+              exitWithError(error);
+            }
           });
       }
     }
@@ -95,6 +103,14 @@ export class CliInitializer {
       console.log();
       program.outputHelp();
       process.exit(1);
+    });
+
+    process.on('unhandledRejection', rejection => {
+      if (rejection instanceof Error) {
+        exitWithError(rejection);
+      } else {
+        exitWithError(new Error(`Unknown rejection: '${rejection}'`));
+      }
     });
 
     program.parse(process.argv);
