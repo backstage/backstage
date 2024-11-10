@@ -15,11 +15,11 @@
  */
 
 import React, { useContext } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { V1Ingress } from '@kubernetes/client-node';
 import { IngressDrawer } from './IngressDrawer';
 import { GroupedResponsesContext } from '../../hooks';
@@ -48,7 +48,7 @@ const IngressSummary = ({ ingress }: IngressSummaryProps) => {
       justifyContent="flex-start"
       alignItems="center"
     >
-      <Grid xs={12} item>
+      <Grid xs={12}>
         <IngressDrawer ingress={ingress} />
       </Grid>
     </Grid>
@@ -71,7 +71,7 @@ const IngressCard = ({ ingress }: IngressCardProps) => {
 
 const IngressAccordion = ({ ingress }: IngressAccordionProps) => {
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <IngressSummary ingress={ingress} />
       </AccordionSummary>
@@ -97,7 +97,7 @@ export const IngressesAccordions = ({}: IngressesAccordionsProps) => {
       alignItems="flex-start"
     >
       {groupedResponses.ingresses.map((ingress, i) => (
-        <Grid item key={i} xs>
+        <Grid key={i} xs={12}>
           <IngressAccordion ingress={ingress} />
         </Grid>
       ))}

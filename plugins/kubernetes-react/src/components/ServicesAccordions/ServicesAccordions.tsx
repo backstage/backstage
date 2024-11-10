@@ -15,12 +15,12 @@
  */
 
 import React, { useContext } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { V1Service } from '@kubernetes/client-node';
 import { ServiceDrawer } from './ServiceDrawer';
 import { GroupedResponsesContext } from '../../hooks';
@@ -37,13 +37,14 @@ const ServiceSummary = ({ service }: ServiceSummaryProps) => {
       direction="row"
       justifyContent="space-between"
       alignItems="center"
-      spacing={0}
+      spacing={2}
+      xs={12}
     >
-      <Grid xs={8} item>
+      <Grid xs={8}>
         <ServiceDrawer service={service} />
       </Grid>
 
-      <Grid item>
+      <Grid>
         <Typography variant="subtitle2">
           Type: {service.spec?.type ?? '?'}
         </Typography>
@@ -94,7 +95,10 @@ type ServiceAccordionProps = {
 
 const ServiceAccordion = ({ service }: ServiceAccordionProps) => {
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
+    <Accordion
+      slotProps={{ transition: { unmountOnExit: true } }}
+      variant="outlined"
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <ServiceSummary service={service} />
       </AccordionSummary>
@@ -120,7 +124,7 @@ export const ServicesAccordions = ({}: ServicesAccordionsProps) => {
       alignItems="flex-start"
     >
       {groupedResponses.services.map((service, i) => (
-        <Grid item key={i} xs>
+        <Grid key={i} xs={12}>
           <ServiceAccordion service={service} />
         </Grid>
       ))}

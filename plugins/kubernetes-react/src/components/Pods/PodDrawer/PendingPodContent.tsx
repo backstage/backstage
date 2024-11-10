@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
 import { IPodCondition, Pod } from 'kubernetes-models/v1';
 import {
   StatusError,
@@ -92,7 +92,7 @@ export const PendingPodContent = ({ pod }: PendingPodContentProps) => {
   ].filter((c): c is IPodCondition => !!c); // filter out undefined
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
+      <Grid xs={12}>
         <Typography variant="h5">Pod is Pending. Conditions:</Typography>
         <List>
           {startupConditions.map(c => (

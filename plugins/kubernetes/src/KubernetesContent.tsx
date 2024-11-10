@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import { Entity } from '@backstage/catalog-model';
 import {
   ErrorPanel,
@@ -72,7 +72,7 @@ export const KubernetesContent = ({
           {/* errors retrieved from the kubernetes clusters */}
           {clustersWithErrors.length > 0 && (
             <Grid container spacing={3} direction="column">
-              <Grid item>
+              <Grid>
                 <ErrorPanel
                   entityName={entity.metadata.name}
                   clustersWithErrors={clustersWithErrors}
@@ -84,7 +84,7 @@ export const KubernetesContent = ({
           {/* other errors */}
           {error !== undefined && (
             <Grid container spacing={3} direction="column">
-              <Grid item>
+              <Grid>
                 <ErrorPanel
                   entityName={entity.metadata.name}
                   errorMessage={error}
@@ -95,16 +95,16 @@ export const KubernetesContent = ({
 
           {kubernetesObjects && (
             <Grid container spacing={3} direction="column">
-              <Grid item>
+              <Grid>
                 <ErrorReporting
                   detectedErrors={detectedErrors}
                   clusters={clusters}
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <Typography variant="h3">Your Clusters</Typography>
               </Grid>
-              <Grid item container>
+              <Grid container>
                 {kubernetesObjects?.items.length <= 0 && (
                   <Grid
                     container
@@ -113,7 +113,7 @@ export const KubernetesContent = ({
                     alignItems="center"
                     spacing={2}
                   >
-                    <Grid item xs={8}>
+                    <Grid xs={8}>
                       <EmptyState
                         missing="data"
                         title="No Kubernetes resources"
@@ -132,7 +132,7 @@ export const KubernetesContent = ({
                     );
 
                     return (
-                      <Grid item key={i} xs={12}>
+                      <Grid key={i} xs={12}>
                         <Cluster
                           clusterObjects={item}
                           podsWithErrors={podsWithErrors}

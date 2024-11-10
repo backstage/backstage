@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
-import Typography from '@material-ui/core/Typography';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import Typography from '@mui/material/Typography';
 import {
   ArgoRolloutCanaryStep,
   SetWeightStep,

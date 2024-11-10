@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
 
 const capitalize = (str: string) =>
   str.charAt(0).toLocaleUpperCase('en-US') + str.slice(1);
@@ -47,12 +47,12 @@ export const DefaultCustomResourceDrawer = ({
         alignItems="flex-start"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <Typography variant="body1">
             {customResource.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography color="textSecondary" variant="subtitle1">
             {capitalizedName}
           </Typography>

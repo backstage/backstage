@@ -18,9 +18,9 @@ import React from 'react';
 import { V1Deployment } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Chip from '@material-ui/core/Chip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
+import Chip from '@mui/material/Chip';
 
 export const DeploymentDrawer = ({
   deployment,
@@ -59,18 +59,18 @@ export const DeploymentDrawer = ({
         alignItems="flex-start"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <Typography variant="body1">
             {deployment.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography color="textSecondary" variant="subtitle1">
             Deployment
           </Typography>
         </Grid>
         {namespace && (
-          <Grid item>
+          <Grid>
             <Chip size="small" label={`namespace: ${namespace}`} />
           </Grid>
         )}

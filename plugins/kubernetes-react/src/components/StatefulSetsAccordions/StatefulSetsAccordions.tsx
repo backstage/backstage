@@ -15,12 +15,12 @@
  */
 
 import React, { useContext } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   V1Pod,
   V2HorizontalPodAutoscaler,
@@ -78,32 +78,31 @@ const StatefulSetSummary = ({
       alignItems="center"
       spacing={0}
     >
-      <Grid xs={6} item>
+      <Grid xs={6}>
         <StatefulSetDrawer statefulset={statefulset} />
       </Grid>
       {hpa && (
-        <Grid item xs={3}>
+        <Grid xs={3}>
           <HorizontalPodAutoscalerDrawer hpa={hpa}>
             <Grid
-              item
               container
               direction="column"
               justifyContent="flex-start"
               alignItems="flex-start"
               spacing={0}
             >
-              <Grid item>
+              <Grid>
                 <Typography variant="subtitle2">
                   min replicas {hpa.spec?.minReplicas ?? '?'} / max replicas{' '}
                   {hpa.spec?.maxReplicas ?? '?'}
                 </Typography>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Typography variant="subtitle2">
                   current CPU usage: {cpuUtil ?? '?'}%
                 </Typography>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Typography variant="subtitle2">
                   target CPU usage: {specCpuUtil ?? '?'}%
                 </Typography>
@@ -113,7 +112,6 @@ const StatefulSetSummary = ({
         </Grid>
       )}
       <Grid
-        item
         container
         xs={3}
         direction="column"
@@ -121,10 +119,10 @@ const StatefulSetSummary = ({
         alignItems="flex-start"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <StatusOK>{numberOfCurrentPods} pods</StatusOK>
         </Grid>
-        <Grid item>
+        <Grid>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
               {numberOfPodsWithErrors} pod
@@ -151,7 +149,10 @@ const StatefulSetAccordion = ({
   );
 
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
+    <Accordion
+      slotProps={{ transition: { unmountOnExit: true } }}
+      variant="outlined"
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <StatefulSetSummary
           statefulset={statefulset}
@@ -179,10 +180,11 @@ export const StatefulSetsAccordions = ({}: StatefulSetsAccordionsProps) => {
       direction="column"
       justifyContent="flex-start"
       alignItems="flex-start"
+      xs={12}
     >
       {groupedResponses.statefulsets.map((statefulset, i) => (
-        <Grid container item key={i} xs>
-          <Grid item xs>
+        <Grid container key={i} xs={12}>
+          <Grid xs={12}>
             <StatefulSetAccordion
               matchingHpa={getMatchingHpa(
                 {

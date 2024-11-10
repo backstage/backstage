@@ -16,20 +16,18 @@
 import React, { ChangeEvent, useState } from 'react';
 
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
-import Drawer from '@material-ui/core/Drawer';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  withStyles,
-} from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+import Drawer from '@mui/material/Drawer';
+import Grid from '@mui/material/Unstable_Grid2';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import CloseIcon from '@mui/icons-material/Close';
 import { ManifestYaml } from './ManifestYaml';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
@@ -77,13 +75,18 @@ const KubernetesDrawerContent = ({
   return (
     <>
       <div className={classes.header}>
-        <Grid container justifyContent="flex-start" alignItems="flex-start">
-          <Grid item xs={11}>
+        <Grid
+          container
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          xs={12}
+        >
+          <Grid xs={11}>
             <Typography variant="h5">
               {kubernetesObject.metadata?.name}
             </Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid xs={1}>
             <IconButton
               key="dismiss"
               title="Close the drawer"
@@ -93,10 +96,8 @@ const KubernetesDrawerContent = ({
               <CloseIcon className={classes.icon} />
             </IconButton>
           </Grid>
-          <Grid item xs={12}>
-            {header}
-          </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>{header}</Grid>
+          <Grid xs={12}>
             <FormControlLabel
               control={
                 <Switch

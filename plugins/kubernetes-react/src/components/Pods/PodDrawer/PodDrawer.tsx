@@ -17,9 +17,11 @@
 import React from 'react';
 
 import { ItemCardGrid } from '@backstage/core-components';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 import { Pod } from 'kubernetes-models/v1';
 
@@ -108,11 +110,11 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
           />
         )}
         {podMetrics && (
-          <Grid container item xs={12}>
-            <Grid item xs={12}>
+          <Grid container xs={12}>
+            <Grid xs={12}>
               <Typography variant="h5">Resource utilization</Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid xs={6}>
               <ResourceUtilization
                 title="CPU requests"
                 usage={podMetrics.cpu.currentUsage}
@@ -126,7 +128,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                 totalFormatted={formatMillicores(podMetrics.cpu.limitTotal)}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid xs={6}>
               <ResourceUtilization
                 title="Memory requests"
                 usage={podMetrics.memory.currentUsage}
@@ -147,10 +149,10 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
         )}
         {podAndErrors.pod.status?.containerStatuses?.length && (
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Typography variant="h5">Containers</Typography>
             </Grid>
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <ItemCardGrid>
                 {podAndErrors.pod.status?.containerStatuses?.map(
                   (containerStatus, i) => {
@@ -180,12 +182,12 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
               </ItemCardGrid>
             </Grid>
             {podAndErrors.errors.length > 0 && (
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <Typography variant="h5">Errors</Typography>
               </Grid>
             )}
             {podAndErrors.errors.length > 0 && (
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <ErrorList podAndErrors={[podAndErrors]} />
               </Grid>
             )}

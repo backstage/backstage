@@ -15,11 +15,11 @@
  */
 
 import React, { useContext } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { V1Pod, V1DaemonSet } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
 import { DaemonSetDrawer } from './DaemonSetsDrawer';
@@ -61,11 +61,10 @@ const DaemonSetSummary = ({
       alignItems="center"
       spacing={0}
     >
-      <Grid xs={4} item>
+      <Grid xs={4}>
         <DaemonSetDrawer daemonset={daemonset} />
       </Grid>
       <Grid
-        item
         container
         xs={4}
         direction="column"
@@ -73,10 +72,10 @@ const DaemonSetSummary = ({
         alignItems="flex-end"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <StatusOK>{numberOfCurrentPods} pods</StatusOK>
         </Grid>
-        <Grid item>
+        <Grid>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
               {numberOfPodsWithErrors} pod
@@ -102,7 +101,10 @@ const DaemonSetAccordion = ({
   );
 
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
+    <Accordion
+      slotProps={{ transition: { unmountOnExit: true } }}
+      variant="outlined"
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <DaemonSetSummary
           daemonset={daemonset}
@@ -131,8 +133,8 @@ export const DaemonSetsAccordions = ({}: DaemonSetsAccordionsProps) => {
       alignItems="flex-start"
     >
       {groupedResponses.daemonSets.map((daemonset, i) => (
-        <Grid container item key={i} xs>
-          <Grid item xs>
+        <Grid container key={i} xs={12}>
+          <Grid xs={12}>
             <DaemonSetAccordion
               ownedPods={getOwnedResources(daemonset, groupedResponses.pods)}
               daemonset={daemonset}

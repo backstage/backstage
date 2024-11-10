@@ -15,18 +15,20 @@
  */
 
 import React, { ChangeEvent, useContext, useState } from 'react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Drawer from '@material-ui/core/Drawer';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Close from '@material-ui/icons/Close';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Drawer from '@mui/material/Drawer';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Unstable_Grid2';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import Close from '@mui/icons-material/Close';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { V1ObjectMeta } from '@kubernetes/client-node';
-import { withStyles } from '@material-ui/core/styles';
 import {
   LinkButton as BackstageButton,
   StructuredMetadataTable,
@@ -172,13 +174,18 @@ const KubernetesStructuredMetadataTableDrawerContent = <
   return (
     <>
       <div className={classes.header}>
-        <Grid container justifyContent="flex-start" alignItems="flex-start">
-          <Grid item xs={11}>
+        <Grid
+          container
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          xs={12}
+        >
+          <Grid xs={11}>
             <Typography variant="h5">
               {object.metadata?.name ?? 'unknown name'}
             </Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid xs={1}>
             <IconButton
               key="dismiss"
               title="Close the drawer"
@@ -188,12 +195,12 @@ const KubernetesStructuredMetadataTableDrawerContent = <
               <Close className={classes.icon} />
             </IconButton>
           </Grid>
-          <Grid item xs={11}>
+          <Grid xs={11}>
             <Typography color="textSecondary" variant="body1">
               {kind}
             </Typography>
           </Grid>
-          <Grid item xs={11}>
+          <Grid xs={11}>
             <FormControlLabel
               control={
                 <Switch

@@ -15,22 +15,22 @@
  */
 import React from 'react';
 
-import Avatar from '@material-ui/core/Avatar';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Avatar from '@mui/material/Avatar';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Unstable_Grid2';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import InfoIcon from '@material-ui/icons/Info';
-import WarningIcon from '@material-ui/icons/Warning';
+import InfoIcon from '@mui/icons-material/Info';
+import WarningIcon from '@mui/icons-material/Warning';
 import { DateTime } from 'luxon';
 
 import { useEvents } from './useEvents';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/lab/Skeleton';
 import { DismissableBanner } from '@backstage/core-components';
 import { Event } from 'kubernetes-models/v1';
 
@@ -143,7 +143,7 @@ export const Events = ({
           id="events"
         />
       )}
-      {loading && <Skeleton variant="rect" width="100%" height="100%" />}
+      {loading && <Skeleton variant="rectangular" width="100%" height="100%" />}
       {!loading && value !== undefined && (
         <EventsContent warningEventsOnly={warningEventsOnly} events={value} />
       )}

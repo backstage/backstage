@@ -20,8 +20,8 @@ import {
   EmptyState,
   LogViewer,
 } from '@backstage/core-components';
-import Paper from '@material-ui/core/Paper';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/lab/Skeleton';
 
 import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
@@ -66,7 +66,9 @@ export const PodLogs: React.FC<PodLogsProps> = ({
         elevation={1}
         style={{ height: '100%', width: '100%', minHeight: '55rem' }}
       >
-        {loading && <Skeleton variant="rect" width="100%" height="100%" />}
+        {loading && (
+          <Skeleton variant="rectangular" width="100%" height="100%" />
+        )}
         {!loading &&
           value !== undefined &&
           (value.text === '' ? (

@@ -15,26 +15,28 @@
  */
 import React, { useState } from 'react';
 
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import HelpIcon from '@material-ui/icons/Help';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Unstable_Grid2';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import HelpIcon from '@mui/icons-material/Help';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { Pod } from 'kubernetes-models/v1/Pod';
 import { DetectedError } from '@backstage/plugin-kubernetes-common';
 import { PodLogs } from '../PodLogs';
 import { Events } from '../Events';
 import { LinkButton } from '@backstage/core-components';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -86,17 +88,17 @@ export const FixDialog: React.FC<FixDialogProps> = ({
   const dialogContent = () => {
     return (
       <Grid container>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Typography variant="h6">Detected error:</Typography>
           <Typography>{error.message}</Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Typography variant="h6">Cause explanation:</Typography>
           <Typography>
             {error.proposedFix?.rootCauseExplanation ?? 'unknown'}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Typography variant="h6">Fix:</Typography>
           <List>
             {(error.proposedFix?.actions ?? []).map((fix, i) => {
@@ -111,10 +113,10 @@ export const FixDialog: React.FC<FixDialogProps> = ({
 
         {pf && pf.type === 'logs' && (
           <>
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Typography variant="h6">Crash logs:</Typography>
             </Grid>
-            <Grid item xs={9}>
+            <Grid xs={9}>
               <PodLogs
                 previous
                 containerScope={{
@@ -129,10 +131,10 @@ export const FixDialog: React.FC<FixDialogProps> = ({
         )}
         {pf && pf.type === 'events' && (
           <>
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Typography variant="h6">Events:</Typography>
             </Grid>
-            <Grid item xs={9}>
+            <Grid xs={9}>
               <Events
                 warningEventsOnly
                 involvedObjectName={pod.metadata?.name ?? ''}
