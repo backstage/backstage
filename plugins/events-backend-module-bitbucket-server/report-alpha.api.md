@@ -5,7 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// @alpha
+// @public
 const eventsModuleBitbucketServerEventRouter: BackendFeature;
 export default eventsModuleBitbucketServerEventRouter;
 export { eventsModuleBitbucketServerEventRouter };

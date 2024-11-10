@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskInvocationDefinition,
+  AuthService,
 } from '@backstage/backend-plugin-api';
 import {
   mockServices,
@@ -68,6 +68,8 @@ function pagedResponse(values: any): BitbucketServerPagedResponse<any> {
 }
 
 const logger = mockServices.logger.mock();
+
+const authService = mockServices.auth.mock();
 
 const events = DefaultEventsService.create({ logger });
 
@@ -161,11 +163,11 @@ function setupRepositoryReqHandler(defaultBranch: string) {
   );
 }
 
-const tokenManager = {
-  getToken: async () => {
-    return { token: 'fake-token' };
-  },
-} as any as TokenManager;
+// const authService = {
+//   getPluginRequestToken: async ({onBehalfOf, targetPluginId}) => {
+//     return { token: 'fake-token' };
+//   },
+// } as any as AuthService;
 const repoPushEvent: BitbucketServerEvents.RefsChangedEvent = {
   eventKey: 'repo:refs_changed',
   date: '2017-09-19T09:45:32+1000',
@@ -769,6 +771,10 @@ describe('BitbucketServerEntityProvider', () => {
 
     setupRepositoryReqHandler('master');
 
+    authService.getPluginRequestToken.mockResolvedValue({
+      token: 'fake-token',
+    });
+
     const config = new ConfigReader({
       integrations: {
         bitbucketServer: [
@@ -809,12 +815,13 @@ describe('BitbucketServerEntityProvider', () => {
         };
       },
     };
+
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       catalogApi: catalogApi as any as CatalogApi,
       logger,
       schedule,
       events,
-      tokenManager,
+      auth: authService as any as AuthService,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -885,7 +892,7 @@ describe('BitbucketServerEntityProvider', () => {
       logger,
       schedule,
       events,
-      tokenManager,
+      auth: authService as any as AuthService,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -898,6 +905,9 @@ describe('BitbucketServerEntityProvider', () => {
   it('add onRepoPush', async () => {
     const schedule = new PersistingTaskRunner();
     setupRepositoryReqHandler('master');
+    authService.getPluginRequestToken.mockResolvedValue({
+      token: 'fake-token',
+    });
     const addedModule = createLocationEntity(
       test1RepoUrl,
       `/added-module:${targetPath}`,
@@ -945,7 +955,7 @@ describe('BitbucketServerEntityProvider', () => {
       logger,
       schedule,
       events,
-      tokenManager,
+      auth: authService as any as AuthService,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -1015,7 +1025,7 @@ describe('BitbucketServerEntityProvider', () => {
       logger,
       schedule,
       events,
-      tokenManager,
+      auth: authService as any as AuthService,
     })[0];
 
     await provider.connect(entityProviderConnection);

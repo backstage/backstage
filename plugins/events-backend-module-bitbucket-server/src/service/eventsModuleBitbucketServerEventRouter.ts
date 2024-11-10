@@ -23,7 +23,7 @@ import { BitbucketServerEventRouter } from '../router/BitbucketServerEventRouter
  *
  * Registers the `BitbucketServerEventRouter`.
  *
- * @alpha
+ * @public
  */
 export const eventsModuleBitbucketServerEventRouter = createBackendModule({
   pluginId: 'events',

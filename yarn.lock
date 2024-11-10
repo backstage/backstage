@@ -5737,7 +5737,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket-server@workspace:plugins/catalog-backend-module-bitbucket-server"
   dependencies:
-    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"

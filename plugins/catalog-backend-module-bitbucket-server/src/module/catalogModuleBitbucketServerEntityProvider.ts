@@ -40,13 +40,23 @@ export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
         events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        auth: coreServices.auth,
       },
-      async init({ catalog, catalogApi, config, events, logger, scheduler }) {
+      async init({
+        catalog,
+        catalogApi,
+        config,
+        events,
+        logger,
+        scheduler,
+        auth,
+      }) {
         const providers = BitbucketServerEntityProvider.fromConfig(config, {
           catalogApi,
           events,
           logger,
           scheduler,
+          auth,
         });
 
         catalog.addEntityProvider(providers);

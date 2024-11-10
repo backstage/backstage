@@ -37,6 +37,7 @@ import {
   defaultBitbucketServerLocationParser,
 } from './BitbucketServerLocationParser';
 import {
+  AuthService,
   LoggerService,
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -44,7 +45,6 @@ import {
 import { BitbucketServerEvents } from '../lib';
 import { EventsService } from '@backstage/plugin-events-node';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TokenManager } from '@backstage/backend-common';
 
 const TOPIC_REPO_REFS_CHANGED = 'bitbucketServer.repo:refs_changed';
 
@@ -65,7 +65,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly catalogApi?: CatalogApi;
   private readonly events?: EventsService;
-  private readonly tokenManager?: TokenManager;
+  private readonly auth?: AuthService;
   private eventConfigErrorThrown = false;
   private readonly targetAnnotation: string;
   private readonly defaultBranchAnnotation: string;
@@ -79,7 +79,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
       catalogApi?: CatalogApi;
-      tokenManager?: TokenManager;
+      auth?: AuthService;
     },
   ): BitbucketServerEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -116,7 +116,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         options.parser,
         options.catalogApi,
         options.events,
-        options.tokenManager,
+        options.auth,
       );
     });
   }
@@ -129,7 +129,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     parser?: BitbucketServerLocationParser,
     catalogApi?: CatalogApi,
     events?: EventsService,
-    tokenManager?: TokenManager,
+    auth?: AuthService,
   ) {
     this.integration = integration;
     this.config = config;
@@ -139,7 +139,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.catalogApi = catalogApi;
-    this.tokenManager = tokenManager;
+    this.auth = auth;
     this.targetAnnotation = `${this.config.host.split(':')[0]}/repo-url`;
     this.defaultBranchAnnotation = 'bitbucket.org/default-branch';
     this.events = events;
@@ -301,8 +301,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     if (
       this.catalogApi !== undefined &&
       this.catalogApi !== null &&
-      this.tokenManager !== undefined &&
-      this.tokenManager !== null
+      this.auth !== undefined &&
+      this.auth !== null
     ) {
       return true;
     }
@@ -451,7 +451,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   ): Promise<void> {
     if (!this.canHandleEvents()) {
       this.logger.error(
-        'Bitbucket Server catalog entity provider is not set up to handle events. Missing tokenManager or catalogApi.',
+        'Bitbucket Server catalog entity provider is not set up to handle events. Missing authService or catalogApi.',
       );
       return;
     }
@@ -468,7 +468,10 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       this.logger.error('Failed to create location entity.');
       return;
     }
-    const { token } = await this.tokenManager!.getToken();
+    const { token } = await this.auth!.getPluginRequestToken({
+      onBehalfOf: await this.auth!.getOwnServiceCredentials(),
+      targetPluginId: 'catalog', // e.g. 'catalog'
+    });
     const existing = await this.findExistingLocations(catalogRepoUrl, token);
     const stillExisting: LocationEntity[] = [];
     const removed: DeferredEntity[] = [];
