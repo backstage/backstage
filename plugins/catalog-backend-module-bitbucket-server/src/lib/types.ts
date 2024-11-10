@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/** @public */
 type BitbucketServerRepository = {
   project: {
     key: string;
@@ -31,12 +30,10 @@ type BitbucketServerRepository = {
   defaultBranch: string;
 };
 
-/** @public */
 type BitbucketServerProject = {
   key: string;
 };
 
-/** @public */
 type BitbucketServerDefaultBranch = {
   id: string;
   displayId: string;
@@ -46,7 +43,6 @@ type BitbucketServerDefaultBranch = {
   isDefault: boolean;
 };
 
-/** @public */
 namespace BitbucketServerEvents {
   interface Event {
     eventKey: string;
