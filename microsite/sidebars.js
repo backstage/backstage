@@ -1,4 +1,5 @@
 const { releases } = require('./releases');
+const catalogSidebar = require("../docs/features/software-catalog/api/sidebar");
 
 module.exports = {
   docs: {
@@ -66,6 +67,16 @@ module.exports = {
           'features/software-catalog/external-integrations',
           'features/software-catalog/catalog-customization',
           'features/software-catalog/software-catalog-api',
+          {
+            type: "category",
+            label: "API",
+            link: {
+              type: "generated-index",
+              title: "Catalog API",
+              slug: "/category/catalog-api",
+            },
+            items: catalogSidebar,
+          },
           'features/software-catalog/creating-the-catalog-graph',
           'features/software-catalog/faq',
         ],

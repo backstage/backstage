@@ -80,6 +80,22 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: microsite yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: build OpenAPI API docs
+        working-directory: microsite
+        run: yarn docusaurus gen-api-docs all
+
+      - name: upload OpenAPI API docs
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: stable-openapi-docs
+          path: docs/**/*.api.mdx
+          if-no-files-found: error
+          retention-days: 1
+
   next:
     runs-on: ubuntu-latest
     concurrency:
@@ -137,6 +153,22 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: microsite yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: build OpenAPI API docs
+        working-directory: microsite
+        run: yarn docusaurus gen-api-docs all
+
+      - name: upload OpenAPI API docs
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: next-openapi-docs
+          path: docs/**/*.api.mdx
+          if-no-files-found: error
+          retention-days: 1
+
   deploy-microsite-and-storybook:
     permissions:
       contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
@@ -184,6 +216,12 @@ jobs:
           name: stable-reference
           path: docs/reference
 
+      - name: download stable OpenAPI API docs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: stable-openapi-docs
+          path: docs/**/*.api.mdx
+
       - name: grab lastest releases docs
         run: |
           git fetch origin master --depth 1
@@ -195,6 +233,9 @@ jobs:
 
       - name: clear API reference
         run: rm -r docs/reference
+
+      - name: clear OpenAPI reference
+        run: find . -name '*.api.mdx' -delete
 
       # Next docs
       - name: checkout master
@@ -211,6 +252,12 @@ jobs:
         with:
           name: next-reference
           path: docs/reference
+
+      - name: download next OpenAPI API docs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: next-openapi-docs
+          path: docs/**/*.api.mdx
 
       - name: build microsite
         run: yarn build
