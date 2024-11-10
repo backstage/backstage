@@ -775,7 +775,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     return (
       this.config.groupPattern.test(group.full_path) &&
       (!this.config.group ||
-        group.full_path.startsWith(`${this.config.group}/`))
+        group.full_path.startsWith(`${this.config.group}/`) ||
+        group.full_path === this.config.group)
     );
   }
 

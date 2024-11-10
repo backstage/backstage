@@ -2347,7 +2347,7 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
         name: 'JohnDoe',
       },
       spec: {
-        memberOf: ['subgroup1'],
+        memberOf: ['group1', 'subgroup1'], // since #26554 also config.group needs to be here.
         profile: {
           displayName: 'John Doe',
           email: 'john.doe@company.com',
@@ -2427,6 +2427,29 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
           email: 'mario.mario-company.com',
           picture: 'https://secure.gravatar.com/',
         },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1',
+          'example.com/team-path': 'group1',
+        },
+        name: 'group1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'group1',
+        },
+        type: 'team',
       },
     },
     locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
