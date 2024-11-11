@@ -4526,6 +4526,7 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-history@workspace:plugins/catalog-backend-module-history"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -4534,6 +4535,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     express-promise-router: ^4.1.0
     knex: ^3.0.0

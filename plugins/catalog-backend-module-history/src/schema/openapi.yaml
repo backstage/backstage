@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: events
+  version: '1'
+  description: The hostiry module for the Backstage catalog backend plugin.
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
+servers:
+  - url: /
+components:
+  examples: {}
+  headers: {}
+  parameters:
+    from:
+      name: from
+      in: query
+      description: >
+        Start iterating from the given point. Can be an event ID (not
+        inclusive), or the special strings "start" (start before the earliest
+        event) or "end" (start after the latest event).
+      required: false
+      schema:
+        type: string
+        minLength: 1
+    entityRef:
+      name: entityRef
+      in: query
+      description: Limit results to the given entity ref.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        minLength: 1
+    cursor:
+      name: cursor
+      in: query
+      description: Request items following the given previously returned cursor.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        minLength: 1
+    limit:
+      name: limit
+      in: query
+      description: Number of records to return in the response.
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    order:
+      name: order
+      in: query
+      description: >
+        Return entries in ascending (older to newer events) or descending (newer
+        to older events) order
+      required: false
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+    block:
+      name: block
+      in: query
+      description: >
+        If no events yet match, return a 202 response and block the query until
+        the client should try again. This parameter only applies when the query
+        order is ascending, and trying to use it in descending order queries
+        will lead to a 400 response error.
+      required: false
+      schema:
+        type: boolean
+  requestBodies: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - request
+        - response
+    Event:
+      type: object
+      required:
+        - id
+        - eventAt
+        - eventType
+      properties:
+        id:
+          type: string
+          description: An ISO timestamp string for when the event happened
+        eventAt:
+          type: string
+          description: An ISO timestamp string for when the event happened
+        eventType:
+          type: string
+          description: The distinct type of event
+        entityRef:
+          type: string
+          description: The entity ref related to the event, where applicable
+        entityJson:
+          type: string
+          description: The JSON serialized body of the entity related to the event, where applicable
+    EventsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+          description: The list of events. The number of returned items may be fewer than requested.
+        pageInfo:
+          type: object
+          description: Pagination information. If the "cursor" property is set, it can be used for requesting subsequent pages of data.
+          properties:
+            cursor:
+              type: string
+              description: The cursor for the next set of results.
+      required:
+        - items
+        - pageInfo
+      additionalProperties: false
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /history/v1/events:
+    get:
+      operationId: GetEvents
+      description: Gets history events
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '202':
+          description: No new events are available. Response will block until the client should try again.
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/from'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/entityRef'
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/block'

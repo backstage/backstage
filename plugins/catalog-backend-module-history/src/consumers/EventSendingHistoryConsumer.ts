@@ -17,6 +17,10 @@
 import { EventsService } from '@backstage/plugin-events-node';
 import { HistoryConsumer, HistoryConsumerConnection } from './types';
 
+/**
+ * Subscribes to history, and sends it as events through the events service for
+ * external consumers to listen for
+ */
 export class EventSendingHistoryConsumer implements HistoryConsumer {
   static readonly EVENT_TOPIC = 'catalog.history';
 

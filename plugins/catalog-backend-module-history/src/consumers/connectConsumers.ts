@@ -29,30 +29,7 @@ export async function connectConsumers(options: {
   knex: Knex;
   signal: AbortSignal;
 }): Promise<void> {
-  const subscriptionIdToConsumerId = new Map<string, string>();
-
-  function ensureUnique(
-    consumer: HistoryConsumer,
-    subscription: SubscriptionOptions,
-  ) {
-    if (subscriptionIdToConsumerId.has(subscription.subscriptionId)) {
-      const current = consumer.getConsumerName();
-      const previous = subscriptionIdToConsumerId.get(
-        subscription.subscriptionId,
-      );
-      const offender =
-        current === previous
-          ? `by consumer '${current}'`
-          : `first by consumer '${previous}', then '${current}'`;
-      throw new Error(
-        `Catalog history subscription ID '${subscription.subscriptionId}' was used more than once during startup (${offender}), which is not permitted.`,
-      );
-    }
-    subscriptionIdToConsumerId.set(
-      subscription.subscriptionId,
-      consumer.getConsumerName(),
-    );
-  }
+  const ensureUnique = makeEnsureUnique();
 
   for (const consumer of options.consumers) {
     const connection: HistoryConsumerConnection = {
@@ -79,6 +56,8 @@ export async function connectConsumers(options: {
   }
 }
 
+// Transforms from raw database rows to the format that gets sent to the events
+// system
 function databaseRowToSubscriptionEvent(
   row: EventsTableRow,
 ): SubscriptionEvent {
@@ -89,5 +68,36 @@ function databaseRowToSubscriptionEvent(
     eventType: row.event_type,
     entityRef: row.entity_ref ?? undefined,
     entityJson: row.entity_json ?? undefined,
+  };
+}
+
+// Makes a helper function that ensures that subscriptions are unique
+function makeEnsureUnique(): (
+  consumer: HistoryConsumer,
+  subscription: SubscriptionOptions,
+) => void {
+  const subscriptionIdToConsumerId = new Map<string, string>();
+
+  return function ensureUnique(
+    consumer: HistoryConsumer,
+    subscription: SubscriptionOptions,
+  ) {
+    if (subscriptionIdToConsumerId.has(subscription.subscriptionId)) {
+      const current = consumer.getConsumerName();
+      const previous = subscriptionIdToConsumerId.get(
+        subscription.subscriptionId,
+      );
+      const offender =
+        current === previous
+          ? `by consumer '${current}'`
+          : `first by consumer '${previous}', then '${current}'`;
+      throw new Error(
+        `Catalog history subscription ID '${subscription.subscriptionId}' was used more than once during startup (${offender}), which is not permitted.`,
+      );
+    }
+    subscriptionIdToConsumerId.set(
+      subscription.subscriptionId,
+      consumer.getConsumerName(),
+    );
   };
 }

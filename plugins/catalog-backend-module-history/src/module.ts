@@ -23,7 +23,7 @@ import { connectConsumers } from './consumers/connectConsumers';
 import { HistoryConsumer } from './consumers/types';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
 import { historyConsumersExtensionPoint } from './extensions';
-import { createRouter } from './router';
+import { createRouter } from './service/createRouter';
 
 /**
  * The history module for the catalog backend.
@@ -78,7 +78,12 @@ export const catalogModuleHistory = createBackendModule({
           }),
         );
 
-        httpRouter.use(createRouter(dbPromise));
+        httpRouter.use(
+          await createRouter({
+            knexPromise: dbPromise,
+            signal: controller.signal,
+          }),
+        );
       },
     });
   },
