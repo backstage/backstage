@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.26.3-next.1",
+  "version": "1.26.3-next.2",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -89,7 +89,7 @@
     "classnames": "^2.2.6",
     "git-url-parse": "^15.0.0",
     "humanize-duration": "^3.25.1",
-    "idb-keyval": "5.0.2",
+    "idb-keyval": "5.1.5",
     "json-schema": "^0.4.0",
     "json-schema-library": "^9.0.0",
     "jszip": "^3.10.1",

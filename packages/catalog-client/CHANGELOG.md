@@ -1,5 +1,17 @@
 # @backstage/catalog-client
 
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 656d1ef: Internal update to use the updated generated code from `backstage-cli package schema openapi generate --client-package ...`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+
 ## 1.8.0-next.0
 
 ### Minor Changes

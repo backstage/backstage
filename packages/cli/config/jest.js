@@ -213,7 +213,7 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
           },
         },
       ],
-      '\\.(bmp|gif|jpg|jpeg|png|ico|frag|xml|svg|eot|woff|woff2|ttf)$':
+      '\\.(bmp|gif|jpg|jpeg|png|ico|webp|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('./jestYamlTransform'),
     },

@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
-  coreServices,
-  createBackendModule,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import {
+  TestDatabases,
   mockServices,
   startTestBackend,
-  TestDatabases,
 } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Knex } from 'knex';
@@ -182,11 +178,7 @@ describePerformanceTest('stitchingPerformance', () => {
         features: [
           import('@backstage/plugin-catalog-backend/alpha'),
           mockServices.rootConfig.factory({ data: config }),
-          createServiceFactory({
-            service: coreServices.database,
-            deps: {},
-            factory: () => ({ getClient: async () => knex }),
-          }),
+          mockServices.database.factory({ knex }),
           createBackendModule({
             pluginId: 'catalog',
             moduleId: 'synthetic-load-entities',
@@ -239,11 +231,7 @@ describePerformanceTest('stitchingPerformance', () => {
         features: [
           import('@backstage/plugin-catalog-backend/alpha'),
           mockServices.rootConfig.factory({ data: config }),
-          createServiceFactory({
-            service: coreServices.database,
-            deps: {},
-            factory: () => ({ getClient: async () => knex }),
-          }),
+          mockServices.database.factory({ knex }),
           createBackendModule({
             pluginId: 'catalog',
             moduleId: 'synthetic-load-entities',

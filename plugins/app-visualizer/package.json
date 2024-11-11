@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-visualizer",
-  "version": "0.1.12-next.1",
+  "version": "0.1.12-next.2",
   "description": "Visualizes the Backstage app structure",
   "backstage": {
     "role": "frontend-plugin",
@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
