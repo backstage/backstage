@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -55,8 +56,6 @@ export class BitbucketServerClient {
   };
 }
 
-// Warning: (ae-missing-release-tag) "BitbucketServerDefaultBranch" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BitbucketServerDefaultBranch = {
   id: string;
@@ -88,8 +87,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "BitbucketServerEvents" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export namespace BitbucketServerEvents {
   // (undocumented)
@@ -160,15 +157,11 @@ export type BitbucketServerPagedResponse<T> = {
   nextPageStart: number;
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketServerProject" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BitbucketServerProject = {
   key: string;
 };
 
-// Warning: (ae-missing-release-tag) "BitbucketServerRepository" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BitbucketServerRepository = {
   project: {
@@ -189,4 +182,12 @@ export type BitbucketServerRepository = {
 // @public (undocumented)
 const catalogModuleBitbucketServerEntityProvider: BackendFeature;
 export default catalogModuleBitbucketServerEntityProvider;
+
+// @public (undocumented)
+export function paginated(
+  request: (
+    options: BitbucketServerListOptions,
+  ) => Promise<BitbucketServerPagedResponse<any>>,
+  options?: BitbucketServerListOptions,
+): AsyncGenerator<any, void, unknown>;
 ```
