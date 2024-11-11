@@ -218,7 +218,7 @@ export async function performStitching(options: {
     .where('entity_id', entityId)
     .where('stitch_ticket', stitchTicket)
     .onConflict('entity_id')
-    .merge(['final_entity', 'hash', 'last_updated_at', 'entity_ref']);
+    .merge(['final_entity', 'hash', 'last_updated_at']);
 
   const markDeferred = async () => {
     if (options.strategy.mode !== 'deferred') {

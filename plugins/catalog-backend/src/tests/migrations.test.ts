@@ -409,8 +409,19 @@ describe('migrations', () => {
 
       await knex
         .insert({
-          entity_id: '8222246a-b572-49cf-a702-1a0fcfaae901',
+          entity_id: 'id1',
           entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        })
+        .into('refresh_state');
+      await knex
+        .insert({
+          entity_id: 'id2',
+          entity_ref: 'k:ns/n2',
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
@@ -422,7 +433,7 @@ describe('migrations', () => {
       // Insert a simple entity before the migration
       await knex
         .insert({
-          entity_id: '8222246a-b572-49cf-a702-1a0fcfaae901',
+          entity_id: 'id1',
           hash: '3f5a4d6ba8507be297bb7cd87c4b55b63e3f4c14',
           stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
           final_entity: '{}',
@@ -443,7 +454,7 @@ describe('migrations', () => {
       await expect(knex('final_entities')).resolves.toEqual(
         expect.arrayContaining([
           {
-            entity_id: '8222246a-b572-49cf-a702-1a0fcfaae901',
+            entity_id: 'id1',
             hash: '3f5a4d6ba8507be297bb7cd87c4b55b63e3f4c14',
             stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
             final_entity: '{}',
@@ -452,6 +463,22 @@ describe('migrations', () => {
           },
         ]),
       );
+
+      // Verify that duplicates of entity_ref are not allowed. We lie about the
+      // ref to make it easier to trigger the problem. Also using a weak
+      // expectation due to sqlite flakiness; it rejects, but not necessarily
+      // with a valid error.
+      await expect(
+        knex
+          .insert({
+            entity_id: 'id2',
+            entity_ref: 'k:ns/n',
+            hash: 'other',
+            stitch_ticket: 'other',
+            final_entity: '{}',
+          })
+          .into('final_entities'),
+      ).rejects.toEqual(expect.anything());
 
       await migrateDownOnce(knex);
 
@@ -463,7 +490,7 @@ describe('migrations', () => {
       await expect(knex('final_entities')).resolves.toEqual(
         expect.arrayContaining([
           {
-            entity_id: '8222246a-b572-49cf-a702-1a0fcfaae901',
+            entity_id: 'id1',
             hash: '3f5a4d6ba8507be297bb7cd87c4b55b63e3f4c14',
             stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
             final_entity: '{}',

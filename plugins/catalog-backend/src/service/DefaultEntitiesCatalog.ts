@@ -684,7 +684,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       const parentRows = await this.database<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       )
-
         .innerJoin<DbFinalEntitiesRow>('final_entities', {
           'refresh_state_references.source_entity_ref':
             'final_entities.entity_ref',
