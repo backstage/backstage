@@ -282,10 +282,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return result;
   }
 
-  /**
-   * Checks if the webhook was triggered on a commit to the head branch of a repository
-   * @param event Bitbucket Server webhook repo:refs_changed event
-   */
   private isDefaultBranchPush(
     defaultBranch: String,
     event: BitbucketServerEvents.RefsChangedEvent,
@@ -317,78 +313,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return false;
   }
 
-  /**
-   * Creates a Bitbucket Server location entity for the repository that is referenced in the push event passed in.
-   *
-   * @param event A Bitbucket Server push event with repository information.
-   *
-   * @returns An array of location entities for the repository.
-   *
-   * @example
-   *
-   * const RefsChangedEvent = {
-   *   "eventKey": "repo:refs_changed",
-   *   "date": "2022-01-01T00:00:00Z",
-   *   "actor": {
-   *     "name": "johndoe",
-   *     "emailAddress": "johndoe@example.com",
-   *     "id": 123,
-   *     "displayName": "John Doe",
-   *     "active": true,
-   *     "slug": "johndoe",
-   *     "type": "NORMAL"
-   *   },
-   *   "repository": {
-   *     "slug": "my-repo",
-   *     "id": 123,
-   *     "name": "My Repository",
-   *     "project": {
-   *       "key": "my-project",
-   *       "id": 456,
-   *       "name": "My Project",
-   *       "description": "My project description",
-   *       "public": true,
-   *       "type": "NORMAL"
-   *     }
-   *   },
-   *   "changes": [
-   *     {
-   *       "ref": {
-   *         "id": "refs/heads/master",
-   *         "displayId": "master",
-   *         "type": "BRANCH"
-   *       },
-   *       "refId": "refs/heads/master",
-   *       "fromHash": "0123456789abcdef0123456789abcdef0123456",
-   *       "toHash": "fedcba9876543210fedcba9876543210fedcba9",
-   *       "type": "UPDATE"
-   *     }
-   *   ]
-   * };
-   *
-   * const locationEntities = await getLocationEntity(RefsChangedEvent);
-   *
-   * // locationEntities:
-   * // [
-   * //   {
-   * //     kind: 'Location',
-   * //     metadata: {
-   * //       name: 'my-repo',
-   * //       namespace: 'my-project',
-   * //       annotations: {
-   * //         'backstage.io/managed-by-location': 'url/catalog-info-path',
-   * //         'backstage.io/managed-by-origin-location': 'url/catalog-info-path',
-   * //         'host/repo-url': 'url',
-   * //       },
-   * //     },
-   * //     spec: {
-   * //       type: 'bitbucket',
-   * //       target: 'url/catalog-info-path',
-   * //       presence: 'optional',
-   * //     },
-   * //   },
-   * // ]
-   */
   private async getLocationEntity(
     event: BitbucketServerEvents.RefsChangedEvent,
   ): Promise<Entity[]> {
@@ -441,11 +365,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return result;
   }
 
-  /**
-   * Finds if there are existing location entities for the repository that was pushed. If there are, it simply refreshes those entities,
-   * if not, it discovers any entity that was added and removed in the list of entities
-   * @param event - A Bitbucket Server webhook event for repo:refs_change
-   */
   private async onRepoPush(
     event: BitbucketServerEvents.RefsChangedEvent,
   ): Promise<void> {
@@ -547,12 +466,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return;
   }
 
-  /**
-   * Gets the location entities that are to be newly added to the catalog.
-   * @param targets Location entities for catalog files in the repository that was pushed
-   * @param existing The location entities in the repository that was pushed that already exist
-   * @returns Returns all deferred entities that represent location entities that don't exist in the catalog yet
-   */
   private async getAddedEntities(
     targets: Entity[],
     existing: LocationEntity[],
@@ -571,12 +484,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return added;
   }
 
-  /**
-   * Finds all location entities in the catalog that already have the annotation `metadata.annotations.${this.config.host}/repo-url`
-   * that is equivalent to @param repoURL\.
-   * @param repoURL URL for the reposity that the method finds the existing location entities for
-   * @param token Token from class token manager
-   */
   private async findExistingLocations(
     catalogRepoUrl: string,
     token: string,
@@ -589,40 +496,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       result => result.items,
     ) as Promise<LocationEntity[]>;
   }
-
-  //   private static toLocationSpec(target: string): LocationSpec {
-  //     return {
-  //       type: 'url',
-  //       target: target,
-  //       presence: 'required',
-  //     };
-  //   }
 }
 
-/**
- * Converts an array of entities into an array of deferred entities with the provider's name as the location key.
- *
- * @param targets An array of entities to convert.
- *
- * @returns An array of deferred entities with the provider's name as the location key.
- *
- * @example
- *
- * const entities = [
- *   { kind: 'Component', namespace: 'default', name: 'my-component' },
- *   { kind: 'System', namespace: 'default', name: 'my-system' },
- *   { kind: 'API', namespace: 'default', name: 'my-api' },
- * ];
- *
- * const deferredEntities = toDeferredEntities(entities);
- *
- * // deferredEntities:
- * // [
- * //   { locationKey: 'my-provider', entity: { kind: 'Component', namespace: 'default', name: 'my-component' } },
- * //   { locationKey: 'my-provider', entity: { kind: 'System', namespace: 'default', name: 'my-system' } },
- * //   { locationKey: 'my-provider', entity: { kind: 'API', namespace: 'default', name: 'my-api' } },
- * // ]
- */
 export function toDeferredEntities(
   targets: Entity[],
   locationKey: string,
