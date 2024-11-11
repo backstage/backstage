@@ -22,10 +22,12 @@ import Drawer from '@mui/material/Drawer';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  withStyles,
+} from '@material-ui/core/styles';
 import Close from '@mui/icons-material/Close';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { V1ObjectMeta } from '@kubernetes/client-node';

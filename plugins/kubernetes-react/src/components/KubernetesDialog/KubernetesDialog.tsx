@@ -19,9 +19,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from 'react';
 

@@ -17,9 +17,7 @@ import 'xterm/css/xterm.css';
 
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';

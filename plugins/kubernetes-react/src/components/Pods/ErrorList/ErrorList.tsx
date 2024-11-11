@@ -21,9 +21,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { PodAndErrors } from '../types';
 import { FixDialog } from '../FixDialog/FixDialog';
 
