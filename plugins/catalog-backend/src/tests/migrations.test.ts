@@ -502,4 +502,23 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20241111000000_drop_redundant_indices.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(
+        knex,
+        '20241111000000_drop_redundant_indices.js',
+      );
+
+      await migrateUpOnce(knex);
+
+      await migrateDownOnce(knex);
+
+      expect(true).toBe(true);
+      await knex.destroy();
+    },
+  );
 });
