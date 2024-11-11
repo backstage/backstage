@@ -77,8 +77,15 @@ function getProfileCredentials(
   });
 }
 
-function getDefaultCredentialsChain(): AwsCredentialIdentityProvider {
-  return fromNodeProviderChain();
+/**
+ * Include the region if present, otherwise use the default region.
+ *
+ * @see https://www.npmjs.com/package/@aws-sdk/credential-provider-node
+ */
+function getDefaultCredentialsChain(
+  region = 'us-east-1',
+): AwsCredentialIdentityProvider {
+  return fromNodeProviderChain({ clientConfig: { region } });
 }
 
 /**
@@ -123,7 +130,7 @@ function getSdkCredentialProvider(
     return getProfileCredentials(config.profile!, config.region);
   }
 
-  return getDefaultCredentialsChain();
+  return getDefaultCredentialsChain(config.region);
 }
 
 /**
@@ -145,7 +152,7 @@ function getMainAccountSdkCredentialProvider(
     return getProfileCredentials(config.profile!, config.region);
   }
 
-  return getDefaultCredentialsChain();
+  return getDefaultCredentialsChain(config.region);
 }
 
 /**
