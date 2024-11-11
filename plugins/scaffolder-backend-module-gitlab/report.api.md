@@ -149,8 +149,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_off'
             | 'default_on'
+            | 'default_off'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
