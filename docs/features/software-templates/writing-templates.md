@@ -714,7 +714,7 @@ how to use them in the Scaffolder templates. It's important to mention that Back
 native filters from the Nunjucks library. For a complete list of these native filters and their usage,
 refer to the [Nunjucks documentation](https://mozilla.github.io/nunjucks/templating.html#builtin-filters).
 
-To create your own custom filters, look to the section [Custom Filters](#custom-filters) hereafter.
+To create your own custom filters, look to the section [Custom Filters and Globals](#custom-filters-and-globals) hereafter.
 
 ### parseRepoUrl
 
