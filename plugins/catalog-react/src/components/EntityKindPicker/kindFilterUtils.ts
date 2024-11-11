@@ -73,10 +73,8 @@ export function filterKinds(
     availableKinds = availableKinds.concat([forcedKinds]);
   }
 
-  const kindsMap = availableKinds.sort().reduce((acc, kind) => {
+  return availableKinds.sort().reduce((acc, kind) => {
     acc[kind.toLocaleLowerCase('en-US')] = kind;
     return acc;
   }, {} as Record<string, string>);
-
-  return kindsMap;
 }

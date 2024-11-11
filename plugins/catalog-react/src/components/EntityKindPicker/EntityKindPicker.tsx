@@ -62,13 +62,18 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
     }
   }, [filters.kind]);
 
+  const { allKinds, loading, error } = useAllKinds();
+
+  const labels = filterKinds(allKinds);
+  const selectedKindLabel = labels[selectedKind];
+
   useEffect(() => {
     updateFilters({
-      kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
+      kind: selectedKind
+        ? new EntityKindFilter(selectedKind, selectedKindLabel)
+        : undefined,
     });
-  }, [selectedKind, updateFilters]);
-
-  const { allKinds, loading, error } = useAllKinds();
+  }, [selectedKind, updateFilters, selectedKindLabel]);
 
   return {
     loading,
