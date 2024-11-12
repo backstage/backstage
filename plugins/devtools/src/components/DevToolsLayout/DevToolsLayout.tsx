@@ -19,7 +19,7 @@ import {
   attachComponentData,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import { TabProps } from '@material-ui/core/Tab';
+import { TabProps } from '@mui/material/Tab';
 import { default as React } from 'react';
 
 /** @public */

@@ -30,7 +30,7 @@ import {
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
-import BuildIcon from '@material-ui/icons/Build';
+import BuildIcon from '@mui/icons-material/Build';
 import { rootRouteRef } from '../routes';
 
 /** @alpha */
