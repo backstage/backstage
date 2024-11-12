@@ -141,10 +141,9 @@ Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if
 
 > We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on migrating these in the repository over time too.
 
-
 ### Adding a TemplateExample
 
-A TemplateExample is a predefined structure that can be used to create custom actions in your software templates.  It serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure consistency and standardization across different custom actions.
+A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure consistency and standardization across different custom actions.
 
 #### How to Use a TemplateExample
 
@@ -163,20 +162,20 @@ A TemplateExample is a predefined structure that can be used to create custom ac
 #### Define a TemplateExample and add to your Custom Action
 
 ```ts title="With JSON Schema"
-import { TemplateExample } from "@backstage/plugin-scaffolder-node";
-import yaml from "yaml";
+import { TemplateExample } from '@backstage/plugin-scaffolder-node';
+import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: "Template Example for Creating an Acme file",
+    description: 'Template Example for Creating an Acme file',
     example: yaml.stringify({
       steps: [
         {
-          action: "acme:file:create",
-          name: "Create an Acme file.",
+          action: 'acme:file:create',
+          name: 'Create an Acme file.',
           input: {
-            contents: "file contents...",
-            filename: "ACME.properties"
+            contents: 'file contents...',
+            filename: 'ACME.properties',
           },
         },
       ],
