@@ -1,32 +1,42 @@
 {
   "name": "@backstage/canon",
   "version": "0.0.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "web-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "web-library"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/canon"
   },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
+    "build-storybook": "storybook build",
     "clean": "backstage-cli package clean",
+    "dev": "vite",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test": "backstage-cli package test"
   },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+  "dependencies": {
+    "@base_ui/react": "^1.0.0-alpha.3",
+    "@vanilla-extract/css": "^1.16.0",
+    "@vanilla-extract/recipes": "^0.5.5",
+    "@vanilla-extract/sprinkles": "^1.6.3"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -56,13 +66,8 @@
     "vite": "^5.4.9",
     "vite-plugin-dts": "^4.3.0"
   },
-  "dependencies": {
-    "@base_ui/react": "^1.0.0-alpha.3",
-    "@vanilla-extract/css": "^1.16.0",
-    "@vanilla-extract/recipes": "^0.5.5",
-    "@vanilla-extract/sprinkles": "^1.6.3"
-  },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
 }
