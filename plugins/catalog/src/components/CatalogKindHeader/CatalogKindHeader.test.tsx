@@ -133,7 +133,7 @@ describe('<CatalogKindHeader />', () => {
     fireEvent.click(option);
 
     expect(updateFilters).toHaveBeenCalledWith({
-      kind: new EntityKindFilter('template'),
+      kind: new EntityKindFilter('template', 'Template'),
     });
   });
 
@@ -152,7 +152,7 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('components'),
+      kind: new EntityKindFilter('components', 'Components'),
     });
     rendered.rerender(
       <ApiProvider apis={apis}>
@@ -168,7 +168,7 @@ describe('<CatalogKindHeader />', () => {
     );
     await waitFor(() =>
       expect(updateFilters).toHaveBeenLastCalledWith({
-        kind: new EntityKindFilter('template'),
+        kind: new EntityKindFilter('template', 'Template'),
       }),
     );
   });

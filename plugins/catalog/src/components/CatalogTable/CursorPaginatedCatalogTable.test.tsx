@@ -146,7 +146,7 @@ describe('CursorPaginatedCatalogTable', () => {
           entities: data.map(e => e.entity),
           totalItems: data.length,
           filters: {
-            kind: new EntityKindFilter('component'),
+            kind: new EntityKindFilter('component', 'Component'),
           },
         }}
       >

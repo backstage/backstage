@@ -91,13 +91,16 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     }
   }, [filters.kind]);
 
+  const options = filterKinds(allKinds, allowedKinds, selectedKind);
+  const selectedKindLabel = options[selectedKind];
+
   useEffect(() => {
     updateFilters({
-      kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
+      kind: selectedKind
+        ? new EntityKindFilter(selectedKind, selectedKindLabel)
+        : undefined,
     });
-  }, [selectedKind, updateFilters]);
-
-  const options = filterKinds(allKinds, allowedKinds, selectedKind);
+  }, [selectedKind, updateFilters, selectedKindLabel]);
 
   return (
     <Select
