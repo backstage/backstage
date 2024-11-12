@@ -22,6 +22,7 @@ import {
   EntityTextFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
+import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * @internal
@@ -69,6 +70,9 @@ export function OffsetPaginatedCatalogTable(
       totalCount={totalItems}
       localization={{ pagination: { labelDisplayedRows: '' } }}
       isLoading={isLoading}
+      components={{
+        Toolbar: CatalogTableToolbar,
+      }}
     />
   );
 }

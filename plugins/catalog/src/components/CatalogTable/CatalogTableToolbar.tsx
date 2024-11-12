@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 import React from 'react';
-import { EntitySearchBar } from '@backstage/plugin-catalog-react';
+import {
+  EntitySearchBar,
+  useEntityList,
+} from '@backstage/plugin-catalog-react';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { capitalize } from 'lodash';
+import pluralize from 'pluralize';
 
 /** @public */
 export type CatalogTableToolbarClassKey = 'root' | 'text';
@@ -40,14 +45,28 @@ const useToolbarStyles = makeStyles(
   { name: 'PluginCatalogTableToolbar' },
 );
 
-export function CatalogTableToolbar(props: {
-  title?: string | React.ReactElement<any>;
-}) {
+export function CatalogTableToolbar() {
   const styles = useToolbarStyles();
+
+  const { filters, totalItems } = useEntityList();
+
+  const currentKind = filters.kind?.value || '';
+  const currentType = filters.type?.value || '';
+  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  const titlePreamble = capitalize(filters.user?.value ?? 'all');
+  const title = [
+    titlePreamble,
+    currentType,
+    pluralize(currentKind),
+    currentCount,
+  ]
+    .filter(s => s)
+    .join(' ');
+
   return (
     <Toolbar className={styles.root}>
       <Typography variant="h5" className={styles.text}>
-        {props.title}
+        {title}
       </Typography>
       <EntitySearchBar />
     </Toolbar>
