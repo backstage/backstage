@@ -32,12 +32,10 @@ As an example, we will create a component that validates whether a string is in 
 import React from 'react';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import type { FieldValidation } from '@rjsf/utils';
-import {
-  FormControl,
-  FormHelperText,
-  Input,
-  InputLabel,
-} from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 /*
  This is the actual component that will get rendered in the form
 */
