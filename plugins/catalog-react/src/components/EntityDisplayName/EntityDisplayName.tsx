@@ -34,6 +34,7 @@ const useStyles = makeStyles(
     root: {
       display: 'inline-flex',
       alignItems: 'center',
+      textDecoration: 'inherit',
     },
     icon: {
       marginRight: theme.spacing(0.5),
