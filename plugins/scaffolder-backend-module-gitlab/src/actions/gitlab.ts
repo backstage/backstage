@@ -204,17 +204,20 @@ export function createPublishGitlabAction(options: {
               },
               only_allow_merge_if_all_discussions_are_resolved: {
                 title: 'All threads must be resolved',
-                description: 'Set whether merge requests can only be merged when all the discussions are resolved.',
+                description:
+                  'Set whether merge requests can only be merged when all the discussions are resolved.',
                 type: 'boolean',
               },
               only_allow_merge_if_pipeline_succeeds: {
                 title: 'Pipelines must succeed',
-                description: 'Set whether merge requests can only be merged with successful pipelines. This setting is named Pipelines must succeed in the project settings.',
+                description:
+                  'Set whether merge requests can only be merged with successful pipelines. This setting is named Pipelines must succeed in the project settings.',
                 type: 'boolean',
               },
               allow_merge_on_skipped_pipeline: {
                 title: 'Skipped pipelines are considered successful',
-                description: 'Set whether or not merge requests can be merged with skipped jobs.',
+                description:
+                  'Set whether or not merge requests can be merged with skipped jobs.',
                 type: 'boolean',
               },
             },
