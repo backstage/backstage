@@ -27,7 +27,11 @@ export type {
   AboutContentProps,
   AboutFieldProps,
 } from './components/AboutCard';
-export { AboutContent, AboutField } from './components/AboutCard';
+export {
+  AboutContent,
+  AboutField,
+  useDefaultIconLinks,
+} from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogTable';
 export * from './components/EntityLayout';
