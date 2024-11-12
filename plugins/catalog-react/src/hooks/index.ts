@@ -40,4 +40,4 @@ export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
 export { useStarredEntity } from './useStarredEntity';
 export { useEntityOwnership } from './useEntityOwnership';
-export { useEntityKindFilter } from './useEntityKindFilter';
+export { useEntityKindFilter, useAllKinds } from './useEntityKindFilter';
