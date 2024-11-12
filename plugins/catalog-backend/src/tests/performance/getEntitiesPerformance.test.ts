@@ -16,6 +16,7 @@
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
+  TestBackend,
   TestDatabases,
   mockServices,
   startTestBackend,
@@ -30,6 +31,7 @@ import {
   SyntheticLoadOptions,
 } from './lib/catalogModuleSyntheticLoadEntities';
 import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
+import { default as catalogPlugin } from '../..';
 
 jest.setTimeout(600_000);
 
@@ -67,10 +69,12 @@ describePerformanceTest('getEntitiesPerformanceTest', () => {
     disableDocker: false,
   });
 
-  it.each(databases.eachSupportedId())(
-    'fetch entities, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+  describe.each(databases.eachSupportedId())('database: %p', databaseId => {
+    let knex: Knex;
+    let backend: TestBackend;
+    let expectedTotal: number;
+    beforeEach(async () => {
+      knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
       const load: SyntheticLoadOptions = {
@@ -82,9 +86,9 @@ describePerformanceTest('getEntitiesPerformanceTest', () => {
 
       traceLog('Starting test backend');
 
-      const backend = await startTestBackend({
+      backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          catalogPlugin,
           mockServices.database.factory({ knex }),
           createBackendModule({
             pluginId: 'catalog',
@@ -108,12 +112,19 @@ describePerformanceTest('getEntitiesPerformanceTest', () => {
         ],
       });
 
-      const expectedTotal =
+      expectedTotal =
         load.baseEntitiesCount + load.baseEntitiesCount * load.childrenCount;
       traceLog(`Waiting for completion polling of ${expectedTotal} entities`);
 
-      await expect(completionPolling(load, knex)).resolves.toBeUndefined();
+      await completionPolling(load, knex);
+    });
 
+    afterEach(async () => {
+      await backend.stop();
+      await knex.destroy();
+    });
+
+    it('fetches all entities', async () => {
       const client = new CatalogClient({
         discoveryApi: {
           getBaseUrl: jest
@@ -134,9 +145,6 @@ describePerformanceTest('getEntitiesPerformanceTest', () => {
       traceLog(
         `[${databaseId}] Fetched ${expectedTotal} entities in ${fetchDuration}ms`,
       );
-
-      await backend.stop();
-      await knex.destroy();
-    },
-  );
+    });
+  });
 });
