@@ -81,7 +81,8 @@ export interface AboutCardProps {
   variant?: InfoCardVariants;
   /**
    * Optional list of Icon links to display in the card subheader
-   * Providing any icons here overrides the default icons.
+   * Providing any icons here overrides the default icons. Default icons can be
+   * added using the useDefaultIconLinks hook.
    */
   iconLinks?: IconLinkVerticalProps[];
 }
