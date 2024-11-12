@@ -1,5 +1,20 @@
 # @backstage/repo-tools
 
+## 0.11.0-next.3
+
+### Patch Changes
+
+- 95401a8: The `generate-patch` command now properly includes newly created files in the patch.
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- 3f1fb21: The `generate-patch` command will now fall back to always adding a `resolutions` entry, even if no matching descriptors are found.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.15-next.0
+  - @backstage/cli-node@0.2.10-next.0
+  - @backstage/config-loader@1.9.2-next.0
+  - @backstage/errors@1.2.4
+
 ## 0.11.0-next.2
 
 ### Minor Changes
