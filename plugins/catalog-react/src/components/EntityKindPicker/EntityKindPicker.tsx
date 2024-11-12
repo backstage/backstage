@@ -17,67 +17,11 @@
 import { Select } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
-import React, { useEffect, useMemo, useState } from 'react';
-import { EntityKindFilter } from '../../filters';
-import { useEntityList } from '../../hooks';
-import { filterKinds, useAllKinds } from './kindFilterUtils';
+import React, { useEffect } from 'react';
+import { useEntityKindFilter } from '../../hooks';
+import { filterKinds } from './kindFilterUtils';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-function useEntityKindFilter(opts: { initialFilter: string }): {
-  loading: boolean;
-  error?: Error;
-  allKinds: string[];
-  selectedKind: string;
-  setSelectedKind: (kind: string) => void;
-} {
-  const {
-    filters,
-    queryParameters: { kind: kindParameter },
-    updateFilters,
-  } = useEntityList();
-
-  const queryParamKind = useMemo(
-    () => [kindParameter].flat()[0],
-    [kindParameter],
-  );
-
-  const [selectedKind, setSelectedKind] = useState(
-    queryParamKind ?? filters.kind?.value ?? opts.initialFilter,
-  );
-
-  // Set selected kinds on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
-  useEffect(() => {
-    if (queryParamKind) {
-      setSelectedKind(queryParamKind);
-    }
-  }, [queryParamKind]);
-
-  // Set selected kind from filters; this happens when the kind filter is
-  // updated from another component
-  useEffect(() => {
-    if (filters.kind?.value) {
-      setSelectedKind(filters.kind?.value);
-    }
-  }, [filters.kind]);
-
-  useEffect(() => {
-    updateFilters({
-      kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
-    });
-  }, [selectedKind, updateFilters]);
-
-  const { allKinds, loading, error } = useAllKinds();
-
-  return {
-    loading,
-    error,
-    allKinds: allKinds ?? [],
-    selectedKind,
-    setSelectedKind,
-  };
-}
 
 /**
  * Props for {@link EntityKindPicker}.
