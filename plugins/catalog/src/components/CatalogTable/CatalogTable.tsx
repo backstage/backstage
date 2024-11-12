@@ -38,6 +38,8 @@ import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import { capitalize } from 'lodash';
+import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
@@ -47,7 +49,6 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
-import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * Props for {@link CatalogTable}.
@@ -83,8 +84,15 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
 
-  const { loading, error, entities, pageInfo, paginationMode } =
-    entityListContext;
+  const {
+    loading,
+    error,
+    entities,
+    filters,
+    pageInfo,
+    totalItems,
+    paginationMode,
+  } = entityListContext;
 
   const tableColumns = useMemo(
     () =>
@@ -160,6 +168,20 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
+  const currentKind = filters.kind?.label || '';
+  const currentType = filters.type?.value || '';
+  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
+  const titlePreamble = capitalize(filters.user?.value ?? 'all');
+  const title = [
+    titlePreamble,
+    currentType,
+    pluralize(currentKind),
+    currentCount,
+  ]
+    .filter(s => s)
+    .join(' ');
+
   const actions = props.actions || defaultActions;
   const options = {
     actionsColumnIndex: -1,
@@ -175,6 +197,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
+        title={title}
         actions={actions}
         subtitle={subtitle}
         options={options}
@@ -189,6 +212,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
+        title={title}
         actions={actions}
         subtitle={subtitle}
         options={options}
@@ -211,13 +235,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSizeOptions: [20, 50, 100],
         ...options,
       }}
+      title={title}
       data={rows}
       actions={actions}
       subtitle={subtitle}
       emptyContent={emptyContent}
-      components={{
-        Toolbar: CatalogTableToolbar,
-      }}
     />
   );
 };

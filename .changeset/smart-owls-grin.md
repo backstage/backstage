@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog': patch
 ---
 
-Use Entity Kind label in CatalogTable title and use CatalogTableToolbar in all CatalogTable implementations
+Use Entity Kind label in CatalogTable title

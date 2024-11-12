@@ -250,7 +250,7 @@ describe('DefaultCatalogPage', () => {
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned Components \(1\)/),
     ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/View/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Edit/)).resolves.toBeInTheDocument();
@@ -284,7 +284,7 @@ describe('DefaultCatalogPage', () => {
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned Components \(1\)/),
     ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
@@ -303,18 +303,18 @@ describe('DefaultCatalogPage', () => {
     fireEvent.click(screen.getByTestId('user-picker-owned'));
 
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned Components \(1\)/),
     ).resolves.toBeInTheDocument();
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All Components \(2\)/),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should set initial filter correctly', async () => {
     await renderWrapped(<DefaultCatalogPage initiallySelectedFilter="all" />);
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All Components \(2\)/),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
@@ -326,7 +326,7 @@ describe('DefaultCatalogPage', () => {
 
     fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/Owned Components \(1\)/),
     ).resolves.toBeInTheDocument();
     // The "Starred" menu option should initially be disabled, since there
     // aren't any starred entities.
@@ -336,13 +336,13 @@ describe('DefaultCatalogPage', () => {
     );
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All Components \(2\)/),
     ).resolves.toBeInTheDocument();
 
     const starredIcons = await screen.findAllByTitle('Add to favorites');
     fireEvent.click(starredIcons[0]);
     await expect(
-      screen.findByText(/All components \(2\)/),
+      screen.findByText(/All Components \(2\)/),
     ).resolves.toBeInTheDocument();
 
     // Now that we've starred an entity, the "Starred" menu option should be

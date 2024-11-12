@@ -354,7 +354,7 @@ describe('<EntityAutocompletePicker/>', () => {
       expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
         filter: {
-          kind: 'Component',
+          kind: 'component',
         },
       }),
     );
@@ -387,7 +387,7 @@ describe('<EntityAutocompletePicker/>', () => {
       expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
         filter: {
-          kind: 'Component',
+          kind: 'component',
           'spec.type': ['service'],
         },
       }),
