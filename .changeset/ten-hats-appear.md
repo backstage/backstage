@@ -3,4 +3,4 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Fix contextMenu prop bug in /create/\* routes
+Fix `contextMenu` not being disabled bug in new scaffolder pages
