@@ -168,7 +168,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const currentKind = filters.kind?.label || '';
+  const currentKind = filters.kind?.label || filters.kind?.value || '';
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar

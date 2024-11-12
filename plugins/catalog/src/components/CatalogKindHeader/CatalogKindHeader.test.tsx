@@ -144,7 +144,7 @@ describe('<CatalogKindHeader />', () => {
         <MockEntityListContextProvider
           value={{
             updateFilters,
-            queryParameters: { kind: ['components'] },
+            queryParameters: { kind: ['component'] },
           }}
         >
           <CatalogKindHeader />
@@ -152,7 +152,7 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('components', 'Components'),
+      kind: new EntityKindFilter('component', 'Component'),
     });
     rendered.rerender(
       <ApiProvider apis={apis}>

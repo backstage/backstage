@@ -33,10 +33,9 @@ export function useAllKinds(): {
     loading,
     value: allKinds,
   } = useAsync(async () => {
-    const items = await catalogApi
+    return await catalogApi
       .getEntityFacets({ facets: ['kind'] })
       .then(response => response.facets.kind?.map(f => f.value).sort() || []);
-    return items;
   }, [catalogApi]);
 
   return { loading, error, allKinds: allKinds ?? [] };
@@ -73,10 +72,8 @@ export function filterKinds(
     availableKinds = availableKinds.concat([forcedKinds]);
   }
 
-  const kindsMap = availableKinds.sort().reduce((acc, kind) => {
+  return availableKinds.sort().reduce((acc, kind) => {
     acc[kind.toLocaleLowerCase('en-US')] = kind;
     return acc;
   }, {} as Record<string, string>);
-
-  return kindsMap;
 }

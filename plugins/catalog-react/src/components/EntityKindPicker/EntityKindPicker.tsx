@@ -64,16 +64,14 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
 
   const { allKinds, loading, error } = useAllKinds();
 
-  const labels = filterKinds(allKinds);
-  const selectedKindLabel = labels[selectedKind];
-
   useEffect(() => {
+    const labels = filterKinds(allKinds);
     updateFilters({
       kind: selectedKind
-        ? new EntityKindFilter(selectedKind, selectedKindLabel)
+        ? new EntityKindFilter(selectedKind, labels[selectedKind])
         : undefined,
     });
-  }, [selectedKind, updateFilters, selectedKindLabel]);
+  }, [selectedKind, updateFilters, allKinds]);
 
   return {
     loading,
