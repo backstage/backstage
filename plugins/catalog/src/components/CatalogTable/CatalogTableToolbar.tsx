@@ -50,7 +50,7 @@ export function CatalogTableToolbar() {
 
   const { filters, totalItems } = useEntityList();
 
-  const currentKind = filters.kind?.value || '';
+  const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
