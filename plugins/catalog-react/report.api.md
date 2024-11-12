@@ -738,6 +738,13 @@ export type UnregisterEntityDialogProps = {
 };
 
 // @public
+export function useAllKinds(): {
+  loading: boolean;
+  error?: Error;
+  allKinds: Record<string, string>;
+};
+
+// @public
 export function useAsyncEntity<
   TEntity extends Entity = Entity,
 >(): EntityLoadingStatus<TEntity>;
@@ -745,6 +752,15 @@ export function useAsyncEntity<
 // @public
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
+};
+
+// @public
+export function useEntityKindFilter(opts: { initialFilter: string }): {
+  loading: boolean;
+  error?: Error;
+  allKinds: Record<string, string>;
+  selectedKind: string;
+  setSelectedKind: (kind: string) => void;
 };
 
 // @public
