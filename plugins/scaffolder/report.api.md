@@ -499,6 +499,7 @@ export type RouterProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    create?: boolean;
   };
 };
 
