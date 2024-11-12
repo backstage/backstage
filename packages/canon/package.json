@@ -14,17 +14,53 @@
   },
   "sideEffects": false,
   "scripts": {
-    "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
+    "dev": "vite",
+    "build": "tsc && vite build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0"
+    "@chromatic-com/storybook": "^3.2.2",
+    "@eslint/js": "^9.13.0",
+    "@storybook/addon-essentials": "^8.4.2",
+    "@storybook/addon-interactions": "^8.4.2",
+    "@storybook/addon-links": "^8.4.2",
+    "@storybook/addon-themes": "^8.4.2",
+    "@storybook/blocks": "^8.4.2",
+    "@storybook/react": "^8.4.2",
+    "@storybook/react-vite": "^8.4.2",
+    "@storybook/test": "^8.4.2",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vanilla-extract/vite-plugin": "^4.0.17",
+    "@vitejs/plugin-react": "^4.3.3",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.13",
+    "eslint-plugin-storybook": "^0.11.0",
+    "globals": "^15.11.0",
+    "storybook": "^8.4.2",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.10.0",
+    "vite": "^5.4.9",
+    "vite-plugin-dts": "^4.3.0"
+  },
+  "dependencies": {
+    "@base_ui/react": "^1.0.0-alpha.3",
+    "@vanilla-extract/css": "^1.16.0",
+    "@vanilla-extract/recipes": "^0.5.5",
+    "@vanilla-extract/sprinkles": "^1.6.3"
   },
   "files": [
     "dist"
