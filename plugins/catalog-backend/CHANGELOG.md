@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog-backend
 
+## 1.28.0-next.3
+
+### Minor Changes
+
+- 76857da: Added `entity_ref` column to `final_entities` in order to move `refresh_state` away from the read path
+- 34d4360: Drop redundant indices from the database.
+
+  The following redundant indices are removed in this version:
+
+  - `final_entities_entity_id_idx` - overlaps with `final_entities_pkey`
+  - `refresh_state_entity_id_idx` - overlaps with `refresh_state_pkey`
+  - `refresh_state_entity_ref_idx` - overlaps with `refresh_state_entity_ref_uniq`
+  - `search_key_idx` and `search_value_idx` - these were replaced by the composite index `search_key_value_idx` in #22594
+
+  No negative end user impact is expected, but rather that performance should increase due to less index churn.
+
+### Patch Changes
+
+- b89834b: Fixed an issue where entities would not be marked for restitching if only the target of a relationship changed.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.3
+
 ## 1.28.0-next.2
 
 ### Minor Changes
