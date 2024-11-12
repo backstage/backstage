@@ -161,27 +161,6 @@ const _default: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
-    'nav-item:catalog': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
     'api:catalog/starred-entities': ExtensionDefinition<{
       kind: 'api';
       name: 'starred-entities';
@@ -844,6 +823,27 @@ const _default: FrontendPlugin<
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
+    }>;
+    'nav-item:catalog': ExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
       };
     }>;
     'search-result-list-item:catalog': ExtensionDefinition<{
