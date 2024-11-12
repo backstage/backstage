@@ -22,11 +22,12 @@ import { useApi } from '@backstage/core-plugin-api';
 
 /**
  * Fetch and return all available kinds.
+ * @public
  */
 export function useAllKinds(): {
   loading: boolean;
   error?: Error;
-  allKinds: string[];
+  allKinds: Record<string, string>;
 } {
   const catalogApi = useApi(catalogApiRef);
 
@@ -35,12 +36,15 @@ export function useAllKinds(): {
     loading,
     value: allKinds,
   } = useAsync(async () => {
-    return await catalogApi
-      .getEntityFacets({ facets: ['kind'] })
-      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
+    const response = await catalogApi.getEntityFacets({ facets: ['kind'] });
+    const kinds = response.facets.kind?.map(f => f.value) || [];
+    return kinds.sort().reduce((acc, kind) => {
+      acc[kind.toLocaleLowerCase('en-US')] = kind;
+      return acc;
+    }, {} as Record<string, string>);
   }, [catalogApi]);
 
-  return { loading, error, allKinds: allKinds ?? [] };
+  return { loading, error, allKinds: allKinds ?? {} };
 }
 
 /**
@@ -50,7 +54,7 @@ export function useAllKinds(): {
 export function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;
   error?: Error;
-  allKinds: string[];
+  allKinds: Record<string, string>;
   selectedKind: string;
   setSelectedKind: (kind: string) => void;
 } {
@@ -96,7 +100,7 @@ export function useEntityKindFilter(opts: { initialFilter: string }): {
   return {
     loading,
     error,
-    allKinds: allKinds ?? [],
+    allKinds: allKinds ?? {},
     selectedKind,
     setSelectedKind,
   };

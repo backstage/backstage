@@ -31,6 +31,7 @@ import {
 import {
   getEntityRelations,
   humanizeEntityRef,
+  useAllKinds,
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
@@ -97,8 +98,10 @@ export const CatalogTable = (props: CatalogTableProps) => {
     emptyContent,
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const entityListContext = useEntityList();
 
+  const { allKinds, loading: loadingKinds } = useAllKinds();
+
+  const entityListContext = useEntityList();
   const {
     loading,
     error,
@@ -183,7 +186,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const currentKind = filters.kind?.value || '';
+  const currentKind =
+    loadingKinds || !filters.kind ? '' : allKinds[filters.kind.value];
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
@@ -250,7 +254,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
       components={{
         Toolbar: CatalogTableToolbar,
       }}
-      title={title}
       data={rows}
       actions={actions}
       subtitle={subtitle}
