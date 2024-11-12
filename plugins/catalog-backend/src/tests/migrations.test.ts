@@ -93,6 +93,7 @@ describe('migrations', () => {
           hash: 'h',
           stitch_ticket: '',
           final_entity: '{}',
+          entity_ref: 'k:ns/n1',
         })
         .into('final_entities');
 
@@ -388,6 +389,112 @@ describe('migrations', () => {
             id: '1f99f7f6-1d87-4e8c-994a-8a2ba1d542f6',
             target: 'https://example.com',
             type: 'url',
+          },
+        ]),
+      );
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    '20241024104700_add_entity_ref_to_final_entities.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(
+        knex,
+        '20241024104700_add_entity_ref_to_final_entities.js',
+      );
+
+      await knex
+        .insert({
+          entity_id: 'id1',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        })
+        .into('refresh_state');
+      await knex
+        .insert({
+          entity_id: 'id2',
+          entity_ref: 'k:ns/n2',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        })
+        .into('refresh_state');
+
+      // Insert a simple entity before the migration
+      await knex
+        .insert({
+          entity_id: 'id1',
+          hash: '3f5a4d6ba8507be297bb7cd87c4b55b63e3f4c14',
+          stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
+          final_entity: '{}',
+        })
+        .into('final_entities');
+
+      // verify that the entity_ref column is not present
+      const preColumnInfo = await knex('final_entities').columnInfo();
+      expect(preColumnInfo.entity_ref).toBeUndefined();
+
+      await migrateUpOnce(knex);
+
+      // verify that the entity_ref column has been added
+      const afterColumnInfo = await knex('final_entities').columnInfo();
+      expect(afterColumnInfo.entity_ref).not.toBeUndefined();
+
+      // verify that the contents of the entity_ref column are correct
+      await expect(knex('final_entities')).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: 'id1',
+            hash: '3f5a4d6ba8507be297bb7cd87c4b55b63e3f4c14',
+            stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
+            final_entity: '{}',
+            entity_ref: 'k:ns/n',
+            last_updated_at: null,
+          },
+        ]),
+      );
+
+      // Verify that duplicates of entity_ref are not allowed. We lie about the
+      // ref to make it easier to trigger the problem. Also using a weak
+      // expectation due to sqlite flakiness; it rejects, but not necessarily
+      // with a valid error.
+      await expect(
+        knex
+          .insert({
+            entity_id: 'id2',
+            entity_ref: 'k:ns/n',
+            hash: 'other',
+            stitch_ticket: 'other',
+            final_entity: '{}',
+          })
+          .into('final_entities'),
+      ).rejects.toEqual(expect.anything());
+
+      await migrateDownOnce(knex);
+
+      // verify that the entity_ref column has been removed
+      const revertedColumnInfo = await knex('final_entities').columnInfo();
+      expect(revertedColumnInfo.entity_ref).toBeUndefined();
+
+      // verify that the contents are correct
+      await expect(knex('final_entities')).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: 'id1',
+            hash: '3f5a4d6ba8507be297bb7cd87c4b55b63e3f4c14',
+            stitch_ticket: '52367ed7-120b-405f-b7e0-cdd90f956312',
+            final_entity: '{}',
+            last_updated_at: null,
           },
         ]),
       );
