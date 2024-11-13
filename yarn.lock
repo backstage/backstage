@@ -367,15 +367,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/specs@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@asyncapi/specs@npm:4.1.0"
-  dependencies:
-    "@types/json-schema": ^7.0.11
-  checksum: 6e95f3c1ef7267480cdfc69f5a015f63b9101874289e31843a629346a3ea07490e3043b296a089bf3458e877c664d83d4b4738dcb53d37d7e13b75c7bc08c879
-  languageName: node
-  linkType: hard
-
 "@asyncapi/specs@npm:^6.8.0":
   version: 6.8.0
   resolution: "@asyncapi/specs@npm:6.8.0"
@@ -16631,13 +16622,13 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-rulesets@npm:^1.14.1, @stoplight/spectral-rulesets@npm:^1.18.0":
-  version: 1.20.2
-  resolution: "@stoplight/spectral-rulesets@npm:1.20.2"
+  version: 1.21.1
+  resolution: "@stoplight/spectral-rulesets@npm:1.21.1"
   dependencies:
-    "@asyncapi/specs": ^4.1.0
+    "@asyncapi/specs": ^6.8.0
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ^3.17.0
-    "@stoplight/spectral-core": ^1.8.1
+    "@stoplight/spectral-core": ^1.19.2
     "@stoplight/spectral-formats": ^1.7.0
     "@stoplight/spectral-functions": ^1.5.1
     "@stoplight/spectral-runtime": ^1.1.1
@@ -16649,7 +16640,7 @@ __metadata:
     leven: 3.1.0
     lodash: ~4.17.21
     tslib: ^2.3.0
-  checksum: 53b8515864f7132cd727073886adbf61fcbe39543ddf6d975799c75d9ef13d91f3940d5585c81c72da3c94365fd735d8935e885a3ac388c67d03a943af37977f
+  checksum: 71efa36ce0c2d643016cc4b2f9529bd8452e4b8e8903be1188a160fc2bc14ee33a48fc35117b2cb600cf8e8f32d817649ca76b9c8a0bbec4cc212a27839c705e
   languageName: node
   linkType: hard
 
