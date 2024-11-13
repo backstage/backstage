@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from '@vanilla-extract/css';
+import { createTheme as createVanillaTheme } from '@vanilla-extract/css';
 import { buttonTheme } from '../components/button/button.css';
 
-export const [themeClass, vars] = createTheme({
+const defaultTheme = {
   color: {
     accent: '#1ed760',
     background: '#fff',
@@ -36,4 +36,20 @@ export const [themeClass, vars] = createTheme({
       "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
   },
   button: buttonTheme,
-});
+};
+
+export const [themeClass, vars] = createVanillaTheme(defaultTheme);
+
+// Use the inferred type from defaultVars
+export function createTheme(themeOverrides: Partial<typeof vars> = {}) {
+  const mergedTheme = {
+    ...defaultTheme,
+    ...themeOverrides,
+    color: { ...defaultTheme.color, ...themeOverrides.color },
+    space: { ...defaultTheme.space, ...themeOverrides.space },
+    font: { ...defaultTheme.font, ...themeOverrides.font },
+    button: { ...defaultTheme.button, ...themeOverrides.button },
+  };
+
+  return createVanillaTheme(mergedTheme);
+}
