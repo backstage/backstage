@@ -63,7 +63,7 @@ backend.add(
     register(reg) {
       reg.registerInit({
         deps: { collator: catalogCollatorExtensionPoint },
-        init({ collator }) {
+        async init({ collator }) {
           collator.setEntityTransformer(customTransformer);
         },
       });
