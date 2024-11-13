@@ -21,6 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
+  catalogApiRef,
   EntityKindFilter,
   entityRouteRef,
   MockStarredEntitiesApi,
@@ -33,6 +34,7 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 import { CatalogTableColumnsFunc } from './types';
+import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 
 const entities: Entity[] = [
   {
@@ -53,10 +55,24 @@ const entities: Entity[] = [
 ];
 
 describe('CatalogTable component', () => {
-  const mockApis = TestApiRegistry.from([
-    starredEntitiesApiRef,
-    new MockStarredEntitiesApi(),
-  ]);
+  const mockApis = TestApiRegistry.from(
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+    [
+      catalogApiRef,
+      {
+        getEntityFacets: jest.fn().mockResolvedValue({
+          facets: {
+            kind: [
+              {
+                value: 'Component',
+                count: 1,
+              },
+            ],
+          },
+        } as GetEntityFacetsResponse),
+      },
+    ],
+  );
 
   beforeEach(() => {
     window.open = jest.fn();
