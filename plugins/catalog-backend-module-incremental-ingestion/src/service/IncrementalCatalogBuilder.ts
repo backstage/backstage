@@ -20,13 +20,13 @@ import {
   PluginEnvironment,
 } from '../types';
 import { CatalogBuilder as CoreCatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { createDeferred } from '@backstage/types';
 import { Duration } from 'luxon';
 import { Knex } from 'knex';
 import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { IncrementalProviderRouter } from '../router/routes';
-import { Deferred } from '../util';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
 /** @public */
@@ -43,16 +43,14 @@ export class IncrementalCatalogBuilder {
     return new IncrementalCatalogBuilder(env, builder, client, manager);
   }
 
-  private ready: Deferred<void>;
+  private ready = createDeferred();
 
   private constructor(
     private env: PluginEnvironment,
     private builder: CoreCatalogBuilder,
     private client: Knex,
     private manager: IncrementalIngestionDatabaseManager,
-  ) {
-    this.ready = new Deferred<void>();
-  }
+  ) {}
 
   async build() {
     await applyDatabaseMigrations(this.client);
