@@ -75,7 +75,8 @@ export const useSourceTemplateCompoundEntityRef = (entity: Entity) => {
 };
 
 /**
- * Returns the default set of icons links displayed in the about card sub header
+ * Returns the default set of icons links displayed in the EntityAboutCard sub header
+ * @public
  */
 export const useDefaultIconLinks = (
   entity: Entity,

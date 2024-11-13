@@ -20,6 +20,7 @@ import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
@@ -43,6 +44,7 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
 export interface AboutCardProps {
+  iconLinks?: IconLinkVerticalProps[];
   // (undocumented)
   variant?: InfoCardVariants;
 }
@@ -668,4 +670,12 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
+
+// Warning: (ae-missing-release-tag) "useDefaultIconLinks" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const useDefaultIconLinks: (
+  entity: Entity,
+  iconLinks?: IconLinkVerticalProps[],
+) => IconLinkVerticalProps[];
 ```
