@@ -407,7 +407,16 @@ export const ActionPageContent = () => {
     </>
   );
 };
-export const ActionsPage = () => {
+
+export type ActionsPageProps = {
+  contextMenu?: {
+    editor?: boolean;
+    tasks?: boolean;
+    create?: boolean;
+  };
+};
+
+export const ActionsPage = (props: ActionsPageProps) => {
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
@@ -415,10 +424,19 @@ export const ActionsPage = () => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
-    onEditorClicked: () => navigate(editorLink()),
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
     onActionsClicked: undefined,
-    onTasksClicked: () => navigate(tasksLink()),
-    onCreateClicked: () => navigate(createLink()),
+    onTasksClicked:
+      props?.contextMenu?.tasks !== false
+        ? () => navigate(tasksLink())
+        : undefined,
+    onCreateClicked:
+      props?.contextMenu?.create !== false
+        ? () => navigate(createLink())
+        : undefined,
   };
 
   return (

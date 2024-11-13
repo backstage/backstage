@@ -66,7 +66,12 @@ export function ScaffolderPageContextMenu(
     permission: templateManagementPermission,
   });
 
-  if (!onEditorClicked && !onActionsClicked) {
+  if (
+    !onEditorClicked &&
+    !onActionsClicked &&
+    !onTasksClicked &&
+    !onCreateClicked
+  ) {
     return null;
   }
 

@@ -76,6 +76,7 @@ describe('DefaultEntitiesCatalog', () => {
 
     await knex<DbFinalEntitiesRow>('final_entities').insert({
       entity_id: id,
+      entity_ref: entityRef,
       final_entity: entityJson,
       hash: 'h',
       stitch_ticket: '',
@@ -113,6 +114,7 @@ describe('DefaultEntitiesCatalog', () => {
 
     await knex<DbFinalEntitiesRow>('final_entities').insert({
       entity_id: id,
+      entity_ref: entityRef,
       final_entity: entityJson,
       hash: 'h',
       stitch_ticket: '',

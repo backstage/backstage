@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
 import classnames from 'classnames';
 
 const useStyles = makeStyles(
-  {
-    input: {},
-  },
+  (theme: Theme) =>
+    createStyles({
+      input: {
+        backgroundColor: theme.palette.background.paper,
+      },
+    }),
   {
     name: 'CatalogReactEntityAutocompletePickerInput',
   },
