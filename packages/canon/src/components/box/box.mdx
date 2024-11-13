@@ -1,0 +1,58 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as BoxStories from './box.stories';
+import { PropsTable } from '../../storybook/props-table'
+ 
+<Meta of={BoxStories} />
+ 
+# Box
+ 
+Box is the lowest-level component in Canon. We use it internally to build all of our components.
+ 
+<Canvas of={BoxStories.Basic} />
+
+<PropsTable
+  data={[
+    {
+      prop: 'background',
+      type: 'string',
+      default: 'transparent',
+      description: 'The background color of the box.',
+    },
+    {
+      prop: 'display',
+      type: ['block', 'flex', 'inline-block', 'inline-flex'],
+      default: 'block',
+      description: 'The display property of the box.',
+    },
+    {
+      prop: 'padding',
+      type: 'number',
+      default: '0',
+      description: 'The padding of the box.',
+    },
+    {
+      prop: 'paddingX',
+      type: 'number',
+      default: '0',
+      description: 'The horizontal padding of the box.',
+    },
+    {
+      prop: 'paddingY',
+      type: 'number',
+      default: '0',
+      description: 'The vertical padding of the box.',
+    },
+    {
+      prop: 'paddingLeft',
+      type: 'number',
+      default: '0',
+      description: 'The left padding of the box.',
+    },
+    {
+      prop: 'paddingRight',
+      type: 'number',
+      default: '0',
+      description: 'The right padding of the box.',
+    },
+  ]}
+/>
