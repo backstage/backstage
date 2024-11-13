@@ -16530,8 +16530,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-core@npm:^1.15.1, @stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.7.0, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
-  version: 1.19.1
-  resolution: "@stoplight/spectral-core@npm:1.19.1"
+  version: 1.19.2
+  resolution: "@stoplight/spectral-core@npm:1.19.2"
   dependencies:
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ~3.21.0
@@ -16546,15 +16546,15 @@ __metadata:
     ajv-errors: ~3.0.0
     ajv-formats: ~2.1.0
     es-aggregate-error: ^1.0.7
-    jsonpath-plus: 7.1.0
+    jsonpath-plus: 10.1.0
     lodash: ~4.17.21
     lodash.topath: ^4.5.2
     minimatch: 3.1.2
-    nimma: 0.2.2
+    nimma: 0.2.3
     pony-cause: ^1.0.0
-    simple-eval: 1.0.0
+    simple-eval: 1.0.1
     tslib: ^2.3.0
-  checksum: 35495c3f72eacd02d74b0913ad5a8cdad7573ab06c08cc9f6b44abd68e0c8b2229df9efee11cfe8a47ffeea802ce2b3bb17e378dffe5eab47504f70abd8b492c
+  checksum: d3c071e96f63273176f52861c7005a44857aa9f7400aef7653fdae0fb612324ffa7f6959a0a63c8fa1fbba7b70759cf127177f073af8925b8dafb13acc452d8e
   languageName: node
   linkType: hard
 
@@ -32265,10 +32265,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsep@npm:^1.1.2, jsep@npm:^1.2.0, jsep@npm:^1.3.9":
-  version: 1.3.9
-  resolution: "jsep@npm:1.3.9"
-  checksum: d1f3e2cc00209f67a989b73c2a89d2ccbea908d950ec959e2448c6449b134c6367b47eef4e1292767cb490f0b5b72e7309080b93ee4c7398684df2514dbd33a3
+"jsep@npm:^1.2.0, jsep@npm:^1.3.6, jsep@npm:^1.3.9":
+  version: 1.4.0
+  resolution: "jsep@npm:1.4.0"
+  checksum: 8e7af5ecb91483b227092b87a3e85b5df3e848dbe6f201b19efcb18047567530d21dfeecb0978e09d1f66554fcfaed84176819eeacdfc86f61dc05c40c18f824
   languageName: node
   linkType: hard
 
@@ -32517,16 +32517,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonpath-plus@npm:7.1.0":
-  version: 7.1.0
-  resolution: "jsonpath-plus@npm:7.1.0"
-  checksum: a4005dc860c6b7e339229842537ceb6eb839d87a3447f989792b9c64f2564bbbd40663515f9481fb5a1b6cb0f988afba5b0b150e0285c463b794a45ed1aaf555
-  languageName: node
-  linkType: hard
-
-"jsonpath-plus@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "jsonpath-plus@npm:10.0.0"
+"jsonpath-plus@npm:10.1.0, jsonpath-plus@npm:^10.0.0, jsonpath-plus@npm:^6.0.1 || ^10.1.0":
+  version: 10.1.0
+  resolution: "jsonpath-plus@npm:10.1.0"
   dependencies:
     "@jsep-plugin/assignment": ^1.2.1
     "@jsep-plugin/regex": ^1.0.3
@@ -32534,14 +32527,7 @@ __metadata:
   bin:
     jsonpath: bin/jsonpath-cli.js
     jsonpath-plus: bin/jsonpath-cli.js
-  checksum: 992a62a0a5d2b96b40389de0608943840db39b466f9d3c1d71b4801e34b8d397c74811213e24e33c833b74aa83d9ce7860c1e7e0bc29980161489ea4a3962ecf
-  languageName: node
-  linkType: hard
-
-"jsonpath-plus@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "jsonpath-plus@npm:6.0.1"
-  checksum: bddec34b742249c5b38077dfcd8eb479fab4e077943253017326503ce4f527ef66938288c728712fd923907493d6eaba69a43015dc3dd9fdf48d89028ae7f466
+  checksum: 9369a9466e3bb3eca064debe3fd87d9cf791b9c8a23be7c00902497cd8f9dd632290d471e3c7bb09da0aa92626204f9c9a27c429940802bc5046cc8c87f3c596
   languageName: node
   linkType: hard
 
@@ -35524,22 +35510,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nimma@npm:0.2.2":
-  version: 0.2.2
-  resolution: "nimma@npm:0.2.2"
+"nimma@npm:0.2.3":
+  version: 0.2.3
+  resolution: "nimma@npm:0.2.3"
   dependencies:
     "@jsep-plugin/regex": ^1.0.1
     "@jsep-plugin/ternary": ^1.0.2
     astring: ^1.8.1
     jsep: ^1.2.0
-    jsonpath-plus: ^6.0.1
+    jsonpath-plus: ^6.0.1 || ^10.1.0
     lodash.topath: ^4.5.2
   dependenciesMeta:
     jsonpath-plus:
       optional: true
     lodash.topath:
       optional: true
-  checksum: 09369253a962e6cdddd37c4994d414a5fa00abc955c4d91946140b45b57465749a9f05663a64812ad5ac70caacb7ca22a8fc7c8db002032d0768c83dbba7b3ad
+  checksum: cafa172f78fca7c0f8e7126659dd47f39bbe09d69b7ef60a7363b65d990934dd57e769afe1fac6a89affc30d47e25a725290025b13e452d3d23e7d3cdab972fb
   languageName: node
   linkType: hard
 
@@ -41352,12 +41338,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"simple-eval@npm:1.0.0":
-  version: 1.0.0
-  resolution: "simple-eval@npm:1.0.0"
+"simple-eval@npm:1.0.1":
+  version: 1.0.1
+  resolution: "simple-eval@npm:1.0.1"
   dependencies:
-    jsep: ^1.1.2
-  checksum: 0f0719ae3a84d4b9c19366dc03065b1fe9638c982ed3e9d44ba541d25e3454e99419e3239034974fd6c5074b79c119419168b8f343fef4da6d7e35227cfd1f87
+    jsep: ^1.3.6
+  checksum: 280207cfe4538c500f6b41e4d88576cf250337b0042bec8f9f5cf025b3a70e07974e522edd01e69d378767dd73068765d4f46ad55db5c94943c8f3585bff95af
   languageName: node
   linkType: hard
 
