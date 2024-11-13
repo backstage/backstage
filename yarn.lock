@@ -16499,7 +16499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.7.0, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
+"@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
   version: 1.19.2
   resolution: "@stoplight/spectral-core@npm:1.19.2"
   dependencies:
@@ -16562,12 +16562,12 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-functions@npm:^1.5.1, @stoplight/spectral-functions@npm:^1.6.1, @stoplight/spectral-functions@npm:^1.7.2":
-  version: 1.9.0
-  resolution: "@stoplight/spectral-functions@npm:1.9.0"
+  version: 1.9.1
+  resolution: "@stoplight/spectral-functions@npm:1.9.1"
   dependencies:
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ^3.17.1
-    "@stoplight/spectral-core": ^1.7.0
+    "@stoplight/spectral-core": ^1.19.2
     "@stoplight/spectral-formats": ^1.7.0
     "@stoplight/spectral-runtime": ^1.1.0
     ajv: ^8.17.1
@@ -16576,7 +16576,7 @@ __metadata:
     ajv-formats: ~2.1.0
     lodash: ~4.17.21
     tslib: ^2.3.0
-  checksum: 278dc6e84b3b4fdef73f6b2b2cc7071140ade604dbc938b3946203253f37c0977659a609dc148df6f73668ddcb84a809e279643a12fd3f4372e72e97973f0058
+  checksum: 2d07605b408ff09dcdc0a7b4d6e984a32062bd5032323cb71348a3f07c7187548ddce0cfd94171da019d1d3171658a4603829585bcc5d13ab0c30181e01fd566
   languageName: node
   linkType: hard
 
