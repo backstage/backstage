@@ -61,7 +61,7 @@ const logger = mockServices.logger.mock();
 
 describe('AzureBlobStorageEntityProvider', () => {
   const containerName = 'container-1';
-
+  const accountName = 'myaccount';
   const expectMutation = async (
     providerId: string,
     providerConfig: object,
@@ -157,6 +157,7 @@ describe('AzureBlobStorageEntityProvider', () => {
       'staticContainer',
       {
         containerName,
+        accountName,
       },
       'https://myaccount.blob.core.windows.net/container-1/',
       {
@@ -171,6 +172,7 @@ describe('AzureBlobStorageEntityProvider', () => {
       'staticContainerNoPrefix',
       {
         containerName,
+        accountName,
         schedule: {
           frequency: { minutes: 30 },
           timeout: { minutes: 3 },
@@ -190,9 +192,9 @@ describe('AzureBlobStorageEntityProvider', () => {
         providers: {
           azureBlob: {
             test: {
+              accountName: 'myaccount',
               containerName: 'container-1',
               prefix: 'sub/dir/',
-              accountName: 'myaccount',
             },
           },
         },

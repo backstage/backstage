@@ -110,6 +110,7 @@ describe('readAzureDevOpsConfigs', () => {
 describe('readAzureBlobStorageConfigs', () => {
   it('reads single and multiple Azure Blob Storage provider configs', () => {
     const provider1 = {
+      accountName: 'account-1',
       containerName: 'container-1',
       schedule: {
         frequency: 'PT30M',
@@ -119,6 +120,7 @@ describe('readAzureBlobStorageConfigs', () => {
       },
     };
     const provider2 = {
+      accountName: 'account-1',
       containerName: 'container-2',
     };
 
@@ -148,6 +150,7 @@ describe('readAzureBlobStorageConfigs', () => {
     expect(actualSingle).toHaveLength(1);
     expect(actualSingle[0]).toEqual({
       id: 'default',
+      accountName: 'account-1',
       containerName: 'container-2',
       schedule: undefined, // no schedule provided in this case
     });
@@ -159,6 +162,7 @@ describe('readAzureBlobStorageConfigs', () => {
     expect(actualMulti).toHaveLength(2);
     expect(actualMulti[0]).toEqual({
       id: 'provider1',
+      accountName: 'account-1',
       containerName: 'container-1',
       schedule: {
         ...provider1.schedule,
@@ -167,6 +171,7 @@ describe('readAzureBlobStorageConfigs', () => {
     });
     expect(actualMulti[1]).toEqual({
       id: 'provider2',
+      accountName: 'account-1',
       containerName: 'container-2',
       schedule: undefined, // no schedule provided
     });

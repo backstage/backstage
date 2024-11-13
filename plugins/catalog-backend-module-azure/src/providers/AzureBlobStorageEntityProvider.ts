@@ -79,15 +79,16 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
           azureIntegration =>
             azureIntegration.config.accountName === providerConfig.accountName,
         )[0];
-      if (!integration) {
-        throw new Error(
-          `There is no Azure blob storage integration for host. Please add a configuration entry for it under integrations.azure`,
-        );
-      }
 
       if (!options.schedule && !providerConfig.schedule) {
         throw new Error(
           `No schedule provided neither via code nor config for AzureBlobStorageEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      if (!integration) {
+        throw new Error(
+          `There is no Azure blob storage integration for account. Please add a configuration entry for it under integrations.azureBlobStorage`,
         );
       }
 

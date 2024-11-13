@@ -95,10 +95,19 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
     });
 
     const config = {
+      integrations: {
+        azureBlobStorage: [
+          {
+            accountName: 'test',
+            accountKey: 'test',
+          },
+        ],
+      },
       catalog: {
         providers: {
           azureBlob: {
             containerName: 'test',
+            accountName: 'test',
             schedule: {
               frequency: 'P1M',
               timeout: 'PT3M',
