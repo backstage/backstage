@@ -13248,16 +13248,16 @@ __metadata:
   linkType: hard
 
 "@opensearch-project/opensearch@npm:^2.2.1":
-  version: 2.12.0
-  resolution: "@opensearch-project/opensearch@npm:2.12.0"
+  version: 2.13.0
+  resolution: "@opensearch-project/opensearch@npm:2.13.0"
   dependencies:
     aws4: ^1.11.0
     debug: ^4.3.1
     hpagent: ^1.2.0
-    json11: ^1.1.2
+    json11: ^2.0.0
     ms: ^2.1.3
     secure-json-parse: ^2.4.0
-  checksum: 5bf64305a401a1fe2e3a9d06c2582ba5173f809cbe04ccec7e70247070ccd973c9e6a9f09a00507d0a937cc830354642e1b6e5adcac383a53bbec05b240f857b
+  checksum: 7e30479073f3031923772dcc7b5e8d9db40499067f852274e6af0f98073e140d7d41144c2ec7f4554b6d77ddc297ad3c89dbf70c5fab5e3d0383e9916386ca48
   languageName: node
   linkType: hard
 
@@ -32430,12 +32430,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json11@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "json11@npm:1.1.2"
+"json11@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "json11@npm:2.0.0"
   bin:
     json11: dist/cli.mjs
-  checksum: 5f447f6d5cba0c4ae739c3da46c86921e2dc862db0106b3960e1c79f178e53c94ac54e61f401518fa55cdcff4b264a03f2234a33a591b8b4eb281aba44afd056
+  checksum: 5cfed82fed39dc34ce25280f4b50d057b2a72685583fee0f617cb1b9d22f045b1263ae970efc4604e0f465b36b6315aa897e28259e942bd87250f106f46259c7
   languageName: node
   linkType: hard
 
