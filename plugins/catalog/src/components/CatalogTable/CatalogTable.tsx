@@ -60,6 +60,7 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
+  title?: string;
   subtitle?: string;
 }
 
@@ -173,14 +174,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
-  const title = [
-    titlePreamble,
-    currentType,
-    pluralize(currentKind),
-    currentCount,
-  ]
-    .filter(s => s)
-    .join(' ');
+  const title =
+    props.title ||
+    [titlePreamble, currentType, pluralize(currentKind), currentCount]
+      .filter(s => s)
+      .join(' ');
 
   const actions = props.actions || defaultActions;
   const options = {
@@ -197,8 +195,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
-        title={title}
         actions={actions}
+        title={title}
         subtitle={subtitle}
         options={options}
         data={entities.map(toEntityRow)}
@@ -212,8 +210,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
-        title={title}
         actions={actions}
+        title={title}
         subtitle={subtitle}
         options={options}
         data={entities.map(toEntityRow)}
@@ -235,9 +233,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSizeOptions: [20, 50, 100],
         ...options,
       }}
-      title={title}
       data={rows}
       actions={actions}
+      title={title}
       subtitle={subtitle}
       emptyContent={emptyContent}
     />

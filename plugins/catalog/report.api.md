@@ -214,6 +214,8 @@ export interface CatalogTableProps {
   subtitle?: string;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  // (undocumented)
+  title?: string;
 }
 
 // @public (undocumented)
