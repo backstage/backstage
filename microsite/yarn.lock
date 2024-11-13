@@ -6998,10 +6998,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immutable@npm:^4.0.0":
-  version: 4.2.2
-  resolution: "immutable@npm:4.2.2"
-  checksum: 4d6437ea9388fe8ceca7eed5c768cf438cda7fa14d2831b87b90aa00cc60d536964d107c255b8a2e5dbf4f44a0e1295afbb9d1f0a65fb4f57b936e71df601862
+"immutable@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "immutable@npm:5.0.2"
+  checksum: 4adbd70580c78fafa7e367473e4f307f78f6768372ef464d45ba55f670b7f61d92c71461da571d80011544b61416d3dee0132736d9b592f33dcfa86e43bdd8f1
   languageName: node
   linkType: hard
 
@@ -10857,19 +10857,19 @@ __metadata:
   linkType: hard
 
 "sass@npm:^1.57.1":
-  version: 1.80.6
-  resolution: "sass@npm:1.80.6"
+  version: 1.80.7
+  resolution: "sass@npm:1.80.7"
   dependencies:
     "@parcel/watcher": ^2.4.1
     chokidar: ^4.0.0
-    immutable: ^4.0.0
+    immutable: ^5.0.2
     source-map-js: ">=0.6.2 <2.0.0"
   dependenciesMeta:
     "@parcel/watcher":
       optional: true
   bin:
     sass: sass.js
-  checksum: 1a81e0fe093ff9109228b5dc1ea2ad64d3fb0e266d968e664a52aca059dd448fbe9a90d9a5a7518e5f31fd1087149ea349bf6fe1271ab15075b7a145c1bea0c9
+  checksum: 030f7ba351337661d0b0f3203a682318192454f3476d73a5d3424661c4c0a3fc74aed86ec19e6acd0c3d5b479510359648f024eae9f3f05b6b90d342d755d844
   languageName: node
   linkType: hard
 
