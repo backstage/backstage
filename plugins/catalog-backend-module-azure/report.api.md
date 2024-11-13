@@ -15,9 +15,7 @@ import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
-// Warning: (ae-missing-release-tag) "AzureBlobStorageEntityProvider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class AzureBlobStorageEntityProvider implements EntityProvider {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;

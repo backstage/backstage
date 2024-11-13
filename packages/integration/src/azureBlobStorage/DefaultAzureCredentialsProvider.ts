@@ -23,26 +23,58 @@ import { AzureBlobStorageIntegrationConfig } from './config';
 import { AzureCredentialsManager } from './types';
 import { ScmIntegrationRegistry } from '../registry';
 
+/**
+ * Default implementation of AzureCredentialsManager that supports multiple Azure Blob Storage integrations.
+ * @public
+ */
 export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
-  private config: AzureBlobStorageIntegrationConfig;
   private cachedCredentials: Map<string, TokenCredential>;
 
-  constructor(config: AzureBlobStorageIntegrationConfig) {
-    this.config = config;
+  private constructor(
+    private readonly configProviders: Map<
+      string,
+      AzureBlobStorageIntegrationConfig
+    >,
+  ) {
     this.cachedCredentials = new Map<string, TokenCredential>();
   }
 
   /**
-   * Creates an instance of DefaultAzureCredentialsManager from a Backstage Config.
+   * Creates an instance of DefaultAzureCredentialsManager from a Backstage integration registry.
    */
   static fromIntegrations(
-    integration: ScmIntegrationRegistry,
+    integrations: ScmIntegrationRegistry,
   ): DefaultAzureCredentialsManager {
-    const azureConfig = integration.azureBlobStorage.list().length
-      ? integration.azureBlobStorage.list()[0].config
-      : { host: 'blob.core.windows.net' }; // Default to Azure Blob Storage host if no config found
+    const configProviders = integrations.azureBlobStorage
+      .list()
+      .reduce((acc, integration) => {
+        acc.set(
+          integration.config.accountName || 'default',
+          integration.config,
+        );
+        return acc;
+      }, new Map<string, AzureBlobStorageIntegrationConfig>());
 
-    return new DefaultAzureCredentialsManager(azureConfig);
+    return new DefaultAzureCredentialsManager(configProviders);
+  }
+
+  private createCredential(
+    config: AzureBlobStorageIntegrationConfig,
+  ): TokenCredential {
+    if (
+      config.aadCredential &&
+      config.aadCredential.clientId &&
+      config.aadCredential.clientSecret &&
+      config.aadCredential.tenantId
+    ) {
+      return new ClientSecretCredential(
+        config.aadCredential.tenantId,
+        config.aadCredential.clientId,
+        config.aadCredential.clientSecret,
+      );
+    }
+
+    return new DefaultAzureCredential();
   }
 
   async getCredentials(accountName: string): Promise<TokenCredential> {
@@ -50,22 +82,12 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
       return this.cachedCredentials.get(accountName)!;
     }
 
-    let credential: TokenCredential;
-
-    if (
-      this.config.aadCredential &&
-      this.config.aadCredential.clientId &&
-      this.config.aadCredential.clientSecret &&
-      this.config.aadCredential.tenantId
-    ) {
-      credential = new ClientSecretCredential(
-        this.config.aadCredential.tenantId,
-        this.config.aadCredential.clientId,
-        this.config.aadCredential.clientSecret,
-      );
-    } else {
-      credential = new DefaultAzureCredential();
+    const config = this.configProviders.get(accountName);
+    if (!config) {
+      throw new Error(`No configuration found for account: ${accountName}`);
     }
+
+    const credential = this.createCredential(config);
 
     // Cache the credentials for future use
     this.cachedCredentials.set(accountName, credential);

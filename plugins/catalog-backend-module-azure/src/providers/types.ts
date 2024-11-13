@@ -30,5 +30,6 @@ export type AzureDevOpsConfig = {
 export type AzureBlobStorageConfig = {
   id: string;
   containerName: string;
+  accountName: string;
   schedule?: SchedulerServiceTaskScheduleDefinition;
 };

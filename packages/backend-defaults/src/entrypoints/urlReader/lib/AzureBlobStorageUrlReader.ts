@@ -54,6 +54,12 @@ export function parseUrl(url: string): { path: string; container: string } {
 
   return { path, container };
 }
+
+/**
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for Azure storage accounts urls.
+ *
+ * @public
+ */
 export class AzureBlobStorageUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -71,7 +77,9 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
       );
 
       const predicate = (url: URL) =>
-        url.host.endsWith(integrationConfig.config.host);
+        url.host.endsWith(
+          `${integrationConfig.config.accountName}.${integrationConfig.config.host}`,
+        );
       return { reader, predicate };
     });
   };
@@ -141,16 +149,13 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
       const containerClient = await this.createContainerClient(container);
       const blobClient = containerClient.getBlobClient(path);
 
-      const abortController = new AbortController();
-
       const getBlobOptions: BlobDownloadOptions = {
-        abortSignal: abortController.signal,
+        abortSignal: options?.signal,
         conditions: {
           ...(etag && { ifNoneMatch: etag }),
           ...(lastModifiedAfter && { ifModifiedSince: lastModifiedAfter }),
         },
       };
-      options?.signal?.addEventListener('abort', () => abortController.abort());
 
       const downloadBlockBlobResponse = await blobClient.download(
         0,
@@ -189,13 +194,14 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
       const blobs = containerClient.listBlobsFlat({ prefix: path });
 
       const responses = [];
-      const abortController = new AbortController();
+
       for await (const blob of blobs) {
         const blobClient = containerClient.getBlobClient(blob.name);
-        options?.signal?.addEventListener('abort', () =>
-          abortController.abort(),
+        const downloadBlockBlobResponse = await blobClient.download(
+          undefined,
+          undefined,
+          { abortSignal: options?.signal },
         );
-        const downloadBlockBlobResponse = await blobClient.download();
 
         responses.push({
           data: Readable.from(

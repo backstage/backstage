@@ -42,6 +42,13 @@ import {
 import { TokenCredential } from '@azure/identity';
 import { AzureBlobStorageConfig } from './types';
 
+/**
+ * Provider which discovers catalog files within an Azure Storage accounts.
+ *
+ * Use `AzureBlobStorageEntityProvider.fromConfig(...)` to create instances.
+ *
+ * @public
+ */
 export class AzureBlobStorageEntityProvider implements EntityProvider {
   private readonly logger: LoggerService;
   private connection?: EntityProviderConnection;
@@ -66,7 +73,12 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
     }
 
     return providerConfigs.map(providerConfig => {
-      const integration = scmIntegration.azureBlobStorage.list()[0];
+      const integration = scmIntegration.azureBlobStorage
+        .list()
+        .filter(
+          azureIntegration =>
+            azureIntegration.config.accountName === providerConfig.accountName,
+        )[0];
       if (!integration) {
         throw new Error(
           `There is no Azure blob storage integration for host. Please add a configuration entry for it under integrations.azure`,

@@ -20,6 +20,12 @@ import {
   AnonymousCredential,
 } from '@azure/storage-blob';
 
+/**
+ * This allows implementations to be provided to retrieve Azure Storage accounts credentials.
+ *
+ * @public
+ *
+ */
 export interface AzureCredentialsManager {
   getCredentials(
     accountName: string,

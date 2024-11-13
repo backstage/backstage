@@ -257,6 +257,7 @@ catalog:
         - Location
   providers:
     azureBlob:
+      accountName: ${ACCOUNT_NAME}
       containerName: ${CONTAINER_NAME}
       schedule: # same options as in TaskScheduleDefinition
         # supports cron, ISO duration, "human duration" as used in code

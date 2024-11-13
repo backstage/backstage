@@ -98,6 +98,7 @@ function readAzureBlobStorageConfig(
   config: Config,
 ): AzureBlobStorageConfig {
   const containerName = config.getString('containerName');
+  const accountName = config.getString('accountName');
   const schedule = config.has('schedule')
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
         config.getConfig('schedule'),
@@ -107,6 +108,7 @@ function readAzureBlobStorageConfig(
   return {
     id,
     containerName,
+    accountName,
     schedule,
   };
 }

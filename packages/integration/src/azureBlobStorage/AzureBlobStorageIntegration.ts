@@ -21,6 +21,11 @@ import {
   readAzureBlobStorageIntegrationConfigs,
 } from './config';
 
+/**
+ * Microsoft Azure Blob storage based integration.
+ *
+ * @public
+ */
 export class AzureBlobStorageIntergation implements ScmIntegration {
   static factory: ScmIntegrationsFactory<AzureBlobStorageIntergation> = ({
     config,
