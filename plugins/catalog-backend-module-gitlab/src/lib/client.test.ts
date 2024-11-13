@@ -143,6 +143,31 @@ describe('GitLabClient', () => {
       expect(allItems).toHaveLength(expectedProjects.length);
     });
 
+    it('should get not archived projects', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const archivedProjectsGen = paginated(
+        options => client.listProjects(options),
+        { archived: false },
+      );
+
+      const expectedProjects = mock.all_projects_response.filter(
+        project => !project.archived,
+      );
+
+      const allItems = [];
+      for await (const item of archivedProjectsGen) {
+        allItems.push(item);
+      }
+
+      expect(allItems).toHaveLength(expectedProjects.length);
+    });
+
     it('should get all projects for an instance', async () => {
       const client = new GitLabClient({
         config: readGitLabIntegrationConfig(
@@ -159,6 +184,7 @@ describe('GitLabClient', () => {
       for await (const project of instanceProjects) {
         allProjects.push(project);
       }
+
       expect(allProjects).toHaveLength(mock.all_projects_response.length);
     });
   });

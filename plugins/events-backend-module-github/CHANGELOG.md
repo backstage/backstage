@@ -1,5 +1,27 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.2.14-next.3
+
+### Patch Changes
+
+- 9816f51: Fix the event request validation for incoming requests for GitHub webhook events
+  by using the raw body when verifying the signature.
+- 9816f51: Add raw body information to `RequestDetails`
+  and use the raw body when validating incoming event requests.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+
+## 0.2.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+
 ## 0.2.14-next.1
 
 ### Patch Changes

@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { Knex as KnexType } from 'knex';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
@@ -31,18 +34,6 @@ const highlightOptions: PgSearchHighlightOptions = {
   maxFragments: 0,
   fragmentDelimiter: ' ... ',
 };
-
-function createDatabaseManager(
-  client: KnexType,
-  skipMigrations: boolean = false,
-) {
-  return {
-    getClient: async () => client,
-    migrations: {
-      skip: skipMigrations,
-    },
-  };
-}
 
 jest.setTimeout(60_000);
 
@@ -66,8 +57,7 @@ describe('DatabaseDocumentStore', () => {
       'should fail to create, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
-        const databaseManager = createDatabaseManager(knex);
-
+        const databaseManager = mockServices.database({ knex });
         await expect(
           async () => await DatabaseDocumentStore.create(databaseManager),
         ).rejects.toThrow();
@@ -82,7 +72,7 @@ describe('DatabaseDocumentStore', () => {
 
     async function createStore(databaseId: TestDatabaseId) {
       const knex = await databases.init(databaseId);
-      const databaseManager = createDatabaseManager(knex);
+      const databaseManager = mockServices.database({ knex });
       const store = await DatabaseDocumentStore.create(databaseManager);
 
       return { store, knex };

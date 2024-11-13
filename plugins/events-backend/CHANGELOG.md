@@ -1,5 +1,32 @@
 # @backstage/plugin-events-backend
 
+## 0.3.16-next.3
+
+### Patch Changes
+
+- 9816f51: Add raw body information to `RequestDetails`
+  and use the raw body when validating incoming event requests.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.16-next.2
+
+### Patch Changes
+
+- b7d0334: Cleaning up event subscriptions after the max age window
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/plugin-events-node@0.4.5-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.3.16-next.1
 
 ### Patch Changes

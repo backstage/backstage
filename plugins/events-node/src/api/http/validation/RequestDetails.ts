@@ -15,6 +15,8 @@
  */
 
 /**
+ * View on an incoming request that has to be validated.
+ *
  * @public
  */
 export interface RequestDetails {
@@ -26,4 +28,18 @@ export interface RequestDetails {
    * Key-value pairs of header names and values. Header names are lower-cased.
    */
   headers: Record<string, string | string[] | undefined>;
+  /**
+   * Raw request details.
+   */
+  raw: {
+    /**
+     * Raw request body (buffer).
+     */
+    body: Buffer;
+    /**
+     * Encoding of the raw request body.
+     * Can be used to decode the raw request body like `raw.body.toString(raw.encoding)`.
+     */
+    encoding: BufferEncoding;
+  };
 }

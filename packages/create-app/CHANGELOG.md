@@ -1,5 +1,21 @@
 # @backstage/create-app
 
+## 0.5.22-next.3
+
+### Patch Changes
+
+- 5872964: Use the main entrypoint for `create-app` installs
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+
+## 0.5.22-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+
 ## 0.5.22-next.1
 
 ### Patch Changes

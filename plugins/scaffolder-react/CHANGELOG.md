@@ -1,5 +1,44 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.0-next.3
+
+### Minor Changes
+
+- 69fb6e7: Fix `contextMenu` not being disabled bug in new scaffolder pages
+
+### Patch Changes
+
+- f61d4cc: Add scaffolder permission `scaffolder.template.management` for accessing the template management features
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.7-next.0
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/plugin-catalog-react@1.14.1-next.3
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.2
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.13.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/plugin-catalog-react@1.14.1-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.13.3-next.1
 
 ### Patch Changes

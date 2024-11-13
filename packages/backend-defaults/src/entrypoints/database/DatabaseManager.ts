@@ -96,10 +96,8 @@ export class DatabaseManagerImpl {
 
     const skip =
       this.options?.migrations?.skip ??
-      this.config.getOptionalBoolean(
-        `backend.database.plugin.${pluginId}.skipMigrations`,
-      ) ??
-      this.config.getOptionalBoolean('backend.database.skipMigrations') ??
+      this.config.getOptionalBoolean(`plugin.${pluginId}.skipMigrations`) ??
+      this.config.getOptionalBoolean('skipMigrations') ??
       false;
 
     return { getClient, migrations: { skip } };

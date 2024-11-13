@@ -1,5 +1,18 @@
 # @backstage/backend-openapi-utils
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 1440232: Adds a new `createValidatedOpenApiRouterFromGeneratedEndpointMap` function that uses the new static server generation in `backstage-cli package schema openapi generate --server` to create a typed express router.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.1-next.1
 
 ### Patch Changes

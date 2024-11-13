@@ -48,10 +48,13 @@ export async function createWorkspaceLinkingPlugins(
     }),
     // react and react-dom are always resolved from the target directory
     // Note: this often requires that the linked and target workspace use the same versions of React
-    new bundler.NormalModuleReplacementPlugin(/^react(?:-dom)?$/, resource => {
-      if (!relativePath(linkedRoot.dir, resource.context).startsWith('..')) {
-        resource.context = paths.targetDir;
-      }
-    }),
+    new bundler.NormalModuleReplacementPlugin(
+      /^react(?:-router)?(?:-dom)?$/,
+      resource => {
+        if (!relativePath(linkedRoot.dir, resource.context).startsWith('..')) {
+          resource.context = paths.targetDir;
+        }
+      },
+    ),
   ];
 }

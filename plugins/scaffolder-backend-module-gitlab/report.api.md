@@ -154,6 +154,11 @@ export function createPublishGitlabAction(options: {
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
+          only_allow_merge_if_all_discussions_are_resolved?:
+            | boolean
+            | undefined;
+          only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
+          allow_merge_on_skipped_pipeline?: boolean | undefined;
         }
       | undefined;
     branches?:
