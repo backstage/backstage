@@ -10,7 +10,7 @@ import { default as default_2 } from 'react';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { TabProps } from '@material-ui/core/Tab';
+import { TabProps } from '@mui/material/Tab';
 
 // @public (undocumented)
 export const ConfigContent: () => React_2.JSX.Element;
