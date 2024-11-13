@@ -16499,7 +16499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-core@npm:^1.15.1, @stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.7.0, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
+"@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.7.0, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
   version: 1.19.2
   resolution: "@stoplight/spectral-core@npm:1.19.2"
   dependencies:
@@ -16541,11 +16541,11 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-formatters@npm:^1.1.0":
-  version: 1.4.0
-  resolution: "@stoplight/spectral-formatters@npm:1.4.0"
+  version: 1.4.1
+  resolution: "@stoplight/spectral-formatters@npm:1.4.1"
   dependencies:
     "@stoplight/path": ^1.3.2
-    "@stoplight/spectral-core": ^1.15.1
+    "@stoplight/spectral-core": ^1.19.2
     "@stoplight/spectral-runtime": ^1.1.0
     "@stoplight/types": ^13.15.0
     "@types/markdown-escape": ^1.1.3
@@ -16557,7 +16557,7 @@ __metadata:
     strip-ansi: 6.0
     text-table: ^0.2.0
     tslib: ^2.5.0
-  checksum: fd8b0c96df54b1afa1e2c325edac6a95df0ce4c9a14e3cd46786d229259417eeec7795e7c7ccf4e896a343c5dbd06e62f8692214985acd786d19485bd512958d
+  checksum: 71b236eb49e744f8176ee72588db00f3b7dfde34fb1544217b2a844ed43a81cee66098e32032287fb46e4a363ab74bf646e52ea6f94a1bf5ec7c42ea7dcda19e
   languageName: node
   linkType: hard
 
