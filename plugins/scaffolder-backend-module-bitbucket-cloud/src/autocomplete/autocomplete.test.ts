@@ -26,7 +26,6 @@ describe('handleAutocompleteRequest', () => {
           values: [
             {
               slug: 'workspace1',
-              uuid: '486F4F29-9B88-4BE8-9092-24BEB8A5F3B3',
             },
           ],
         },
@@ -35,9 +34,7 @@ describe('handleAutocompleteRequest', () => {
     listProjectsByWorkspace: jest.fn().mockReturnValue({
       iteratePages: jest.fn().mockReturnValue([
         {
-          values: [
-            { key: 'project1', uuid: '70F065E3-CE7C-487A-99B6-D81EB84E5A21' },
-          ],
+          values: [{ key: 'project1' }],
         },
       ]),
     }),
@@ -47,7 +44,6 @@ describe('handleAutocompleteRequest', () => {
           values: [
             {
               slug: 'repository1',
-              uuid: 'F2F0DAF7-B4D6-4694-A131-C2478A200AC5',
             },
           ],
         },
@@ -85,9 +81,7 @@ describe('handleAutocompleteRequest', () => {
     });
 
     expect(result).toEqual({
-      results: [
-        { title: 'workspace1', id: '486F4F29-9B88-4BE8-9092-24BEB8A5F3B3' },
-      ],
+      results: [{ id: 'workspace1' }],
     });
   });
 
@@ -101,9 +95,7 @@ describe('handleAutocompleteRequest', () => {
     });
 
     expect(result).toEqual({
-      results: [
-        { title: 'project1', id: '70F065E3-CE7C-487A-99B6-D81EB84E5A21' },
-      ],
+      results: [{ id: 'project1' }],
     });
   });
 
@@ -118,9 +110,7 @@ describe('handleAutocompleteRequest', () => {
     });
 
     expect(result).toEqual({
-      results: [
-        { title: 'repository1', id: 'F2F0DAF7-B4D6-4694-A131-C2478A200AC5' },
-      ],
+      results: [{ id: 'repository1' }],
     });
   });
 
@@ -134,7 +124,7 @@ describe('handleAutocompleteRequest', () => {
       },
     });
 
-    expect(result).toEqual({ results: [{ title: 'branch1', id: 'branch1' }] });
+    expect(result).toEqual({ results: [{ id: 'branch1' }] });
   });
 
   it('should throw an error when passing an invalid resource', async () => {

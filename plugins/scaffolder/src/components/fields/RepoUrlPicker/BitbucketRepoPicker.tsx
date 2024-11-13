@@ -89,7 +89,7 @@ export const BitbucketRepoPicker = (
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        setAvailableWorkspaces(results.map(r => r.title!));
+        setAvailableWorkspaces(results.map(r => r.id));
       })
       .catch(() => {
         setAvailableWorkspaces([]);
@@ -118,7 +118,7 @@ export const BitbucketRepoPicker = (
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        setAvailableProjects(results.map(r => r.title!));
+        setAvailableProjects(results.map(r => r.id));
       })
       .catch(() => {
         setAvailableProjects([]);
@@ -148,7 +148,11 @@ export const BitbucketRepoPicker = (
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        onChange({ availableRepos: results.map(r => r.title!) });
+        onChange({
+          availableRepos: results.map(r => {
+            return { name: r.id };
+          }),
+        });
       })
       .catch(() => {
         onChange({ availableRepos: [] });

@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export interface AvailableRepositories {
+  name: string;
+  id?: string;
+}
+
 export interface RepoUrlPickerState {
   host?: string;
   owner?: string;
@@ -21,7 +26,7 @@ export interface RepoUrlPickerState {
   workspace?: string;
   project?: string;
   id?: string;
-  availableRepos?: string[];
+  availableRepos?: AvailableRepositories[];
 }
 
 export type BaseRepoUrlPickerProps<T extends {} = {}> = T & {

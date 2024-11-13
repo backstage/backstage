@@ -242,7 +242,11 @@ export const RepoUrlPicker = (
         repoName={state.repoName}
         allowedRepos={allowedRepos}
         onChange={repo =>
-          setState(prevState => ({ ...prevState, repoName: repo }))
+          setState(prevState => ({
+            ...prevState,
+            repoName: repo.name,
+            id: repo.id || '',
+          }))
         }
         rawErrors={rawErrors}
         availableRepos={state.availableRepos}

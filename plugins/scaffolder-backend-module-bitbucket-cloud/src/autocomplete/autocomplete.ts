@@ -34,12 +34,11 @@ export async function handleAutocompleteRequest({
 
   switch (resource) {
     case 'workspaces': {
-      const results: { title: string; id: string }[] = [];
+      const results: { title?: string; id: string }[] = [];
 
       for await (const page of client.listWorkspaces().iteratePages()) {
         const slugs = [...page.values!].map(p => ({
-          title: p.slug!,
-          id: p.uuid!,
+          id: p.slug!,
         }));
         results.push(...slugs);
       }
@@ -50,14 +49,13 @@ export async function handleAutocompleteRequest({
       if (!context.workspace)
         throw new InputError('Missing workspace context parameter');
 
-      const results: { title: string; id: string }[] = [];
+      const results: { title?: string; id: string }[] = [];
 
       for await (const page of client
         .listProjectsByWorkspace(context.workspace)
         .iteratePages()) {
         const keys = [...page.values!].map(p => ({
-          title: p.key!,
-          id: p.uuid!,
+          id: p.key!,
         }));
         results.push(...keys);
       }
@@ -70,7 +68,7 @@ export async function handleAutocompleteRequest({
           'Missing workspace and/or project context parameter',
         );
 
-      const results: { title: string; id: string }[] = [];
+      const results: { title?: string; id: string }[] = [];
 
       for await (const page of client
         .listRepositoriesByWorkspace(context.workspace, {
@@ -78,8 +76,7 @@ export async function handleAutocompleteRequest({
         })
         .iteratePages()) {
         const slugs = [...page.values!].map(p => ({
-          title: p.slug!,
-          id: p.uuid!,
+          id: p.slug!,
         }));
         results.push(...slugs);
       }
@@ -92,13 +89,12 @@ export async function handleAutocompleteRequest({
           'Missing workspace and/or repository context parameter',
         );
 
-      const results: { title: string; id: string }[] = [];
+      const results: { title?: string; id: string }[] = [];
 
       for await (const page of client
         .listBranchesByRepository(context.repository, context.workspace)
         .iteratePages()) {
         const names = [...page.values!].map(p => ({
-          title: p.name!,
           id: p.name!,
         }));
         results.push(...names);
