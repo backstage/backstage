@@ -110,6 +110,12 @@ describe('DefaultCatalogPage', () => {
           { count: 1, value: 'group:default/not-tools' },
           { count: 1, value: 'group:default/tools' },
         ],
+        kind: [
+          {
+            value: 'Component',
+            count: 1,
+          },
+        ],
       },
     })),
     getEntitiesByRefs: jest.fn().mockImplementation(async () => ({
