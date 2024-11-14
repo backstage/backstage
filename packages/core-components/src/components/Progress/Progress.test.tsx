@@ -23,12 +23,17 @@ import { Progress } from './Progress';
 describe('<Progress />', () => {
   it('renders without exploding', async () => {
     jest.useFakeTimers();
-    const { getByTestId, queryByTestId } = await renderInTestApp(<Progress />);
+    const { getByTestId, queryByTestId, debug } = await renderInTestApp(
+      <Progress />,
+    );
+    debug();
+    expect(queryByTestId('progress-placeholder')).toBeInTheDocument();
     expect(queryByTestId('progress')).not.toBeInTheDocument();
     act(() => {
       jest.advanceTimersByTime(250);
     });
-    expect(getByTestId('progress')).toBeInTheDocument();
+    expect(queryByTestId('progress-placeholder')).not.toBeInTheDocument();
+    expect(queryByTestId('progress')).toBeInTheDocument();
     jest.useRealTimers();
   });
 });

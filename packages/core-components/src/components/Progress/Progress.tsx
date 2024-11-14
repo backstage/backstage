@@ -36,6 +36,6 @@ export function Progress(props: PropsWithChildren<LinearProgressProps>) {
   return isVisible ? (
     <LinearProgress {...props} data-testid="progress" />
   ) : (
-    <Box display="none" />
+    <Box display="none" data-testid="progress-placeholder" />
   );
 }
