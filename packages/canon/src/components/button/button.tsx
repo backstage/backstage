@@ -17,7 +17,7 @@ import React from 'react';
 import { button } from './button.css';
 import { Box } from '../box/box';
 
-interface ButtonProps {
+export interface ButtonProps {
   size?: 'small' | 'medium';
   variant?: 'primary' | 'secondary';
   children: React.ReactNode;
