@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { button } from './button.css.ts';
-import { Box } from '../box/box.tsx';
+import { button } from './button.css';
+import { Box } from '../box/box';
 
 interface ButtonProps {
   size?: 'small' | 'medium';
