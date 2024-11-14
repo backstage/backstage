@@ -64,6 +64,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
    */
   children?: React.ReactNode;
 };
+
 /**
  * A simple card header, rendering a default look for "item cards" - cards that
  * are arranged in a grid for users to select among several options.
