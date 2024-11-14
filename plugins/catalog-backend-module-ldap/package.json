@@ -48,7 +48,7 @@
     "@types/ldapjs": "^2.2.5",
     "ldapjs": "^2.3.3",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

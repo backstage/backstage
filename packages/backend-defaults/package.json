@@ -178,7 +178,7 @@
     "stoppable": "^1.1.0",
     "tar": "^6.1.12",
     "triple-beam": "^1.4.1",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",

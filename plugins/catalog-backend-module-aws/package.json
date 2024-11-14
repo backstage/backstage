@@ -68,7 +68,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "p-limit": "^3.0.2",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

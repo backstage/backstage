@@ -70,7 +70,7 @@
     "pg-connection-string": "^2.3.0",
     "testcontainers": "^10.0.0",
     "textextensions": "^5.16.0",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
