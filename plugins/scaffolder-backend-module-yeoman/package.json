@@ -51,7 +51,6 @@
     "yeoman-environment": "^3.9.1"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/cli": "workspace:^"
   }
 }

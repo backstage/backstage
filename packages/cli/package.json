@@ -158,7 +158,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
