@@ -98,8 +98,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityLinksCard.title': 'Links';
     readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
-    readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.title': 'Entity was not found';
+    readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
@@ -114,8 +114,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'hasSystemsCard.title': 'Has systems';
     readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain';
     readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this';
-    readonly 'systemDiagramCard.description': 'Use pinch & zoo to move around the diagram.';
     readonly 'systemDiagramCard.title': 'System Diagram';
+    readonly 'systemDiagramCard.description': 'Use pinch & zoo to move around the diagram.';
     readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
     readonly 'systemDiagramCard.edgeLabels.partOf': 'part of';
     readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
@@ -127,15 +127,15 @@ const _default: FrontendPlugin<
   {
     catalogIndex: RouteRef<undefined>;
     catalogEntity: RouteRef<{
-      kind: string;
       name: string;
+      kind: string;
       namespace: string;
     }>;
   },
   {
     viewTechDoc: ExternalRouteRef<{
-      kind: string;
       name: string;
+      kind: string;
       namespace: string;
     }>;
     createComponent: ExternalRouteRef<undefined>;
@@ -180,27 +180,6 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         factory: AnyApiFactory;
-      };
-    }>;
-    'nav-item:catalog': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
       };
     }>;
     'api:catalog/starred-entities': ExtensionDefinition<{
@@ -865,6 +844,27 @@ const _default: FrontendPlugin<
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
+    }>;
+    'nav-item:catalog': ExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
       };
     }>;
     'search-result-list-item:catalog': ExtensionDefinition<{

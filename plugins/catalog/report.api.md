@@ -105,8 +105,8 @@ export const catalogPlugin: BackstagePlugin<
   {
     catalogIndex: RouteRef<undefined>;
     catalogEntity: RouteRef<{
-      kind: string;
       name: string;
+      kind: string;
       namespace: string;
     }>;
   },
@@ -114,8 +114,8 @@ export const catalogPlugin: BackstagePlugin<
     createComponent: ExternalRouteRef<undefined, true>;
     viewTechDoc: ExternalRouteRef<
       {
-        kind: string;
         name: string;
+        kind: string;
         namespace: string;
       },
       true
@@ -518,7 +518,7 @@ export const FilterContainer: (props: {
           | 'lg'
           | 'xl'
           | undefined;
-        drawerAnchor?: 'top' | 'bottom' | 'left' | 'right' | undefined;
+        drawerAnchor?: 'left' | 'top' | 'bottom' | 'right' | undefined;
       }
     | undefined;
 }) => JSX_2.Element;
