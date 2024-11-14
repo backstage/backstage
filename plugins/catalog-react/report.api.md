@@ -499,8 +499,8 @@ export function entityRouteParams(entity: Entity): {
 
 // @public
 export const entityRouteRef: RouteRef<{
-  kind: string;
   name: string;
+  kind: string;
   namespace: string;
 }>;
 
