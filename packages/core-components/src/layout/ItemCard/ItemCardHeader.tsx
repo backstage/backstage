@@ -15,15 +15,20 @@
  */
 
 import Box from '@material-ui/core/Box';
-import { makeStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  WithStyles,
+} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const useStyles = makeStyles(
-  theme => ({
+const styles = (theme: Theme) =>
+  createStyles({
     root: {
       color: theme.palette.common.white,
       padding: theme.spacing(2, 2, 3),
@@ -31,12 +36,12 @@ const useStyles = makeStyles(
       backgroundPosition: 0,
       backgroundSize: 'inherit',
     },
-  }),
-  { name: 'BackstageItemCardHeader' },
-);
+  });
+
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
 
 /** @public */
-export type ItemCardHeaderProps = Partial<WithStyles> & {
+export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
   /**
    * A large title to show in the header, providing the main heading.
    *
@@ -59,7 +64,6 @@ export type ItemCardHeaderProps = Partial<WithStyles> & {
    */
   children?: React.ReactNode;
 };
-
 /**
  * A simple card header, rendering a default look for "item cards" - cards that
  * are arranged in a grid for users to select among several options.
@@ -75,7 +79,7 @@ export type ItemCardHeaderProps = Partial<WithStyles> & {
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
-  const classes = useStyles(props);
+  const classes = useStyles();
   return (
     <Box className={classes.root}>
       {subtitle && (

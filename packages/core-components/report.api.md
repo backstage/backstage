@@ -658,8 +658,10 @@ export function ItemCardHeader(props: ItemCardHeaderProps): React_2.JSX.Element;
 // @public (undocumented)
 export type ItemCardHeaderClassKey = 'root';
 
+// Warning: (ae-forgotten-export) The symbol "styles_2" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type ItemCardHeaderProps = Partial<WithStyles> & {
+export type ItemCardHeaderProps = Partial<WithStyles<typeof styles_2>> & {
   title?: React_2.ReactNode;
   subtitle?: React_2.ReactNode;
   children?: React_2.ReactNode;
