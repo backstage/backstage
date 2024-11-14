@@ -577,6 +577,63 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'handles inversion both for existing and missing keys, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n1' },
+          spec: { a: 'foo' },
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n2' },
+          spec: { a: 'bar', b: 'lonely' },
+        };
+        const entity3: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n3' },
+          spec: { a: 'baz', b: 'only' },
+        };
+        await addEntityToSearch(entity1);
+        await addEntityToSearch(entity2);
+        await addEntityToSearch(entity3);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        function f(
+          request: Omit<EntitiesRequest, 'credentials'>,
+        ): Promise<string[]> {
+          return catalog
+            .entities({ ...request, credentials: mockCredentials.none() })
+            .then(response =>
+              response.entities.map(e => e.metadata.name).toSorted(),
+            );
+        }
+
+        await expect(
+          f({
+            filter: { key: 'spec.b', values: ['lonely'] },
+          }),
+        ).resolves.toEqual(['n2']);
+
+        await expect(
+          f({
+            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+          }),
+        ).resolves.toEqual(['n1', 'n3']);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'can order and combine with filtering, %p',
       async databaseId => {
         await createDatabase(databaseId);
@@ -1820,6 +1877,21 @@ describe('DefaultEntitiesCatalog', () => {
           facets: {
             kind: [
               { value: 'k', count: 2 },
+              { value: 'k2', count: 1 },
+            ],
+          },
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['kind'],
+            filter: { key: 'metadata.name', values: ['two'] },
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            kind: [
+              { value: 'k', count: 1 },
               { value: 'k2', count: 1 },
             ],
           },
