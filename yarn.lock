@@ -16475,7 +16475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/json@npm:3.21.0, @stoplight/json@npm:^3.17.0, @stoplight/json@npm:^3.17.1, @stoplight/json@npm:^3.21.0, @stoplight/json@npm:~3.21.0":
+"@stoplight/json@npm:3.21.0":
   version: 3.21.0
   resolution: "@stoplight/json@npm:3.21.0"
   dependencies:
@@ -16486,6 +16486,20 @@ __metadata:
     lodash: ^4.17.21
     safe-stable-stringify: ^1.1
   checksum: 16fe56a6804cd47837bd82d85a8500c4226669558f3feda55d8fb0cd615ca2261622963700f04f049cf30a3a9764eb3c861516003d948743b6ae85dbbabf8a59
+  languageName: node
+  linkType: hard
+
+"@stoplight/json@npm:^3.17.0, @stoplight/json@npm:^3.17.1, @stoplight/json@npm:^3.20.1, @stoplight/json@npm:^3.21.0, @stoplight/json@npm:~3.21.0":
+  version: 3.21.7
+  resolution: "@stoplight/json@npm:3.21.7"
+  dependencies:
+    "@stoplight/ordered-object-literal": ^1.0.3
+    "@stoplight/path": ^1.3.2
+    "@stoplight/types": ^13.6.0
+    jsonc-parser: ~2.2.1
+    lodash: ^4.17.21
+    safe-stable-stringify: ^1.1
+  checksum: 5b0cd67e91e8f4cfac7ff0fe37c07e203611f429e8af7fce51cacb82f9c97150a3fa3aeda41daa9e65bc42d217b630bf01a8bf1f6db12b047079b0da9d7cd9af
   languageName: node
   linkType: hard
 
@@ -16633,27 +16647,17 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-runtime@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@stoplight/spectral-runtime@npm:1.1.2"
+  version: 1.1.3
+  resolution: "@stoplight/spectral-runtime@npm:1.1.3"
   dependencies:
-    "@stoplight/json": ^3.17.0
+    "@stoplight/json": ^3.20.1
     "@stoplight/path": ^1.3.2
-    "@stoplight/types": ^12.3.0
+    "@stoplight/types": ^13.6.0
     abort-controller: ^3.0.0
     lodash: ^4.17.21
     node-fetch: ^2.6.7
-    tslib: ^2.3.1
-  checksum: 35964a38f82384e6e0158988173a50ab7f473a2ed6e942073de023bd28fb696b5b913336a84d016b046346294be9cfa3a88c6a908c2622c0ceb36f16ca76e084
-  languageName: node
-  linkType: hard
-
-"@stoplight/types@npm:^12.3.0":
-  version: 12.5.0
-  resolution: "@stoplight/types@npm:12.5.0"
-  dependencies:
-    "@types/json-schema": ^7.0.4
-    utility-types: ^3.10.0
-  checksum: fe4a09df6e1c2f0cdb53f474b180cc7b8184e814e1ac4427d199642f10958335f597060530a908c0e5800ba2569d077afe124a51deaee466255ce942e1e03941
+    tslib: ^2.8.1
+  checksum: 33af5713fd98de76e8007c9969d41440ef2abbff34e92db9a4b00b37a58dc7e7d4f0a0612c45183fb1aa9cd1a42dfe5ebfa59abf3b784e22d5f4b54c9f9d3d4c
   languageName: node
   linkType: hard
 
