@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Theme
+export { themes } from './theme/themes.css';
+export { ThemeProvider } from './theme/theme-provider';
+
+// Components
 export { Button } from './components/button/button';
 export { Box } from './components/box/box';
-export { createTheme } from './theme/theme.css';

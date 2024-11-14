@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme as createVanillaTheme } from '@vanilla-extract/css';
-import { buttonTheme } from '../components/button/button.css';
+import { createTheme } from '@vanilla-extract/css';
+import { buttonLight, buttonDark } from '../components/button/theme';
 
-const defaultTheme = {
+export const [lightTheme, vars] = createTheme({
   color: {
     accent: '#1ed760',
     background: '#fff',
@@ -35,21 +35,32 @@ const defaultTheme = {
     emoji:
       "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
   },
-  button: buttonTheme,
+  button: buttonLight,
+});
+
+export const darkTheme = createTheme(vars, {
+  color: {
+    accent: '#1ed760',
+    background: '#fff',
+    textPrimary: '#000',
+    textSecondary: '#666',
+  },
+  space: {
+    none: '0',
+    small: '4px',
+    medium: '8px',
+    large: '16px',
+  },
+  font: {
+    regular: "'Inter', sans-serif",
+    monospace: "'Monospace', monospace",
+    emoji:
+      "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+  },
+  button: buttonDark,
+});
+
+export const themes = {
+  light: lightTheme,
+  dark: darkTheme,
 };
-
-export const [themeClass, vars] = createVanillaTheme(defaultTheme);
-
-// Use the inferred type from defaultVars
-export function createTheme(themeOverrides: Partial<typeof vars> = {}) {
-  const mergedTheme = {
-    ...defaultTheme,
-    ...themeOverrides,
-    color: { ...defaultTheme.color, ...themeOverrides.color },
-    space: { ...defaultTheme.space, ...themeOverrides.space },
-    font: { ...defaultTheme.font, ...themeOverrides.font },
-    button: { ...defaultTheme.button, ...themeOverrides.button },
-  };
-
-  return createVanillaTheme(mergedTheme);
-}

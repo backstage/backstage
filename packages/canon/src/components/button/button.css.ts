@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 import { recipe } from '@vanilla-extract/recipes';
-import { vars } from '../../theme/theme.css';
-
-export const buttonTheme = {
-  color: {
-    text: 'blue',
-    background: 'blue',
-  },
-  font: {
-    body: 'arial',
-  },
-};
+import { vars } from '../../theme/themes.css';
 
 export const button = recipe({
   base: {
@@ -41,9 +31,9 @@ export const button = recipe({
   variants: {
     variant: {
       primary: {
-        backgroundColor: 'var(--button-primary-background-color)',
-        color: 'var(--button-primary-text-color)',
-        borderRadius: 'var(--button-primary-border-radius)',
+        backgroundColor: vars.color.background,
+        color: vars.button.color.text,
+        borderRadius: 3,
         border: '1px solid var(--button-primary-border-color)',
         '&:hover': {
           backgroundColor: 'var(--button-primary-background-color-hover)',

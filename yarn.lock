@@ -4046,6 +4046,7 @@ __metadata:
     "@types/react": ^18.3.11
     "@types/react-dom": ^18.3.1
     "@vanilla-extract/css": ^1.16.0
+    "@vanilla-extract/dynamic": ^2.1.2
     "@vanilla-extract/recipes": ^0.5.5
     "@vanilla-extract/sprinkles": ^1.6.3
     "@vanilla-extract/vite-plugin": ^4.0.17
@@ -21400,6 +21401,15 @@ __metadata:
     modern-ahocorasick: ^1.0.0
     picocolors: ^1.0.0
   checksum: 2a0c32105be0a7de62d9271e91dcf53e937b0d72ac0f9f7d6ee6144dc07abe00758ffeafb8f5de21e45cd9ed8e94eb1d0463f6679fdc9385043fa821b81cf574
+  languageName: node
+  linkType: hard
+
+"@vanilla-extract/dynamic@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@vanilla-extract/dynamic@npm:2.1.2"
+  dependencies:
+    "@vanilla-extract/private": ^1.0.6
+  checksum: ec6ec9b02c7ec8a9d60aebf63225fd3f930c06ad824321f03f683f1948eb6d4e554d934303da140b3230b4af2fa15bab494c6da2a3b9a172e4118c245b4f942a
   languageName: node
   linkType: hard
 

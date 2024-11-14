@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
-import { vars } from './theme.css';
-
+import { vars } from './themes.css';
 const responsiveProperties = defineProperties({
   conditions: {
     xs: {},

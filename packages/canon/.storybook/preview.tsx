@@ -2,8 +2,8 @@ import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 
-import '../src/styles.css';
-import { themeClass } from '../src/theme/theme.css';
+import { themes } from '../src/theme/themes.css';
+import './font.css';
 
 const preview: Preview = {
   parameters: {
@@ -32,12 +32,12 @@ const preview: Preview = {
       document.body.style.backgroundColor = backgroundColor;
 
       const docsStoryElements = document.getElementsByClassName('docs-story');
-      Array.from(docsStoryElements).forEach((element) => {
+      Array.from(docsStoryElements).forEach(element => {
         (element as HTMLElement).style.backgroundColor = backgroundColor;
       });
 
       return (
-        <div className={themeClass}>
+        <div className={theme === 'light' ? themes.light : themes.dark}>
           <Story />
         </div>
       );
