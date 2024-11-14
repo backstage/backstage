@@ -84,7 +84,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
-  const { allKinds, loading: loadingKinds } = useAllKinds();
+  const { allKinds } = useAllKinds();
 
   const entityListContext = useEntityList();
   const {
@@ -171,22 +171,24 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  let currentKind = filters.kind?.value || '';
-  if (!loadingKinds && currentKind) {
-    currentKind = allKinds[currentKind] || currentKind;
+  let title = '';
+  if (allKinds) {
+    const currentKindValue = filters.kind?.value || '';
+    const currentKindLabel = allKinds[currentKindValue] || currentKindValue;
+    const currentType = filters.type?.value || '';
+    const currentCount =
+      typeof totalItems === 'number' ? `(${totalItems})` : '';
+    // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
+    const titlePreamble = capitalize(filters.user?.value ?? 'all');
+    title = [
+      titlePreamble,
+      currentType,
+      pluralize(currentKindLabel),
+      currentCount,
+    ]
+      .filter(s => s)
+      .join(' ');
   }
-  const currentType = filters.type?.value || '';
-  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
-  // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
-  const titlePreamble = capitalize(filters.user?.value ?? 'all');
-  const title = [
-    titlePreamble,
-    currentType,
-    pluralize(currentKind),
-    currentCount,
-  ]
-    .filter(s => s)
-    .join(' ');
 
   const actions = props.actions || defaultActions;
   const options = {
@@ -241,6 +243,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSizeOptions: [20, 50, 100],
         ...options,
       }}
+      title={title}
       data={rows}
       actions={actions}
       subtitle={subtitle}
