@@ -16585,14 +16585,14 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-parsers@npm:^1.0.0, @stoplight/spectral-parsers@npm:^1.0.2":
-  version: 1.0.4
-  resolution: "@stoplight/spectral-parsers@npm:1.0.4"
+  version: 1.0.5
+  resolution: "@stoplight/spectral-parsers@npm:1.0.5"
   dependencies:
     "@stoplight/json": ~3.21.0
     "@stoplight/types": ^14.1.1
     "@stoplight/yaml": ~4.3.0
-    tslib: ^2.3.1
-  checksum: ca88183661651d99b40da254316fec062c219253ea3054151b9379e7c492121cdeef49a2d1ac08cd89b2f89f7d16dbc4ecf9da6d7a7539979ac6418991fe804a
+    tslib: ^2.8.1
+  checksum: 633921b78c67201a32ee99c35ecaf4425f488b9ad65e13551b16a7042704846d3d12ee8b87aa39a2525527e78b55840d40bd6b6396c22b3a4aa2aa5ce05c565b
   languageName: node
   linkType: hard
 
