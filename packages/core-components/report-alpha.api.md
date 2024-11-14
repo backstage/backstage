@@ -20,12 +20,12 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
-    readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
     readonly 'signIn.guestProvider.enter': 'Enter';
+    readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
     readonly skipToContent: 'Skip to content';
     readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
-    readonly 'simpleStepper.reset': 'Reset';
     readonly 'simpleStepper.finish': 'Finish';
+    readonly 'simpleStepper.reset': 'Reset';
     readonly 'simpleStepper.next': 'Next';
     readonly 'simpleStepper.skip': 'Skip';
     readonly 'simpleStepper.back': 'Back';
