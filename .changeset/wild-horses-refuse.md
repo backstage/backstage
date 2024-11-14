@@ -3,7 +3,7 @@
 '@backstage/plugin-scaffolder-node': minor
 ---
 
-BREAKING ALPHA: The `checkpoint` method now takes an object instead of previous arguments.
+BREAKING EXPERIMENTAL: The `checkpoint` method now takes an object instead of previous arguments.
 
 ```ts
 await ctx.checkpoint({ key: 'repo.create', fn: () => ockokit.repo.create({...})})
