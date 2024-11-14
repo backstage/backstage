@@ -39,7 +39,7 @@ export type ActionContext<
   workspacePath: string;
   input: TActionInput;
   checkpoint<U extends JsonValue | void>(opts: {
-    key?: string;
+    key: string;
     fn: () => Promise<U> | U;
   }): Promise<U>;
   output(
