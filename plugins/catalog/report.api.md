@@ -105,8 +105,8 @@ export const catalogPlugin: BackstagePlugin<
   {
     catalogIndex: RouteRef<undefined>;
     catalogEntity: RouteRef<{
-      name: string;
       kind: string;
+      name: string;
       namespace: string;
     }>;
   },
@@ -114,8 +114,8 @@ export const catalogPlugin: BackstagePlugin<
     createComponent: ExternalRouteRef<undefined, true>;
     viewTechDoc: ExternalRouteRef<
       {
-        name: string;
         kind: string;
+        name: string;
         namespace: string;
       },
       true
@@ -156,7 +156,7 @@ export interface CatalogSearchResultListItemProps {
   result?: IndexableDocument;
 }
 
-// @public (undocumented)
+// @public
 export const CatalogTable: {
   (props: CatalogTableProps): React_2.JSX.Element;
   columns: Readonly<{
@@ -214,7 +214,6 @@ export interface CatalogTableProps {
   subtitle?: string;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
-  // (undocumented)
   title?: string;
 }
 
@@ -519,7 +518,7 @@ export const FilterContainer: (props: {
           | 'lg'
           | 'xl'
           | undefined;
-        drawerAnchor?: 'left' | 'top' | 'bottom' | 'right' | undefined;
+        drawerAnchor?: 'top' | 'bottom' | 'left' | 'right' | undefined;
       }
     | undefined;
 }) => JSX_2.Element;
