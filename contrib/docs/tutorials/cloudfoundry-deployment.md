@@ -267,7 +267,7 @@ backend.add(import('./oidcProvider'));
 In UAA, create a new OAuth client with scopes that give Backstage the following permissions:
 
 - Ability for the UAA client to issue refresh tokens
-- Obtain a user's openid, profile, and email
+- Obtain a user's `openid`, profile, and email
 - Redirect back to the Backstage instance, after login
 
 ```
