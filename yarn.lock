@@ -10680,8 +10680,8 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@material-ui/core": ^4.12.2
-    "@material-ui/lab": 4.0.0-alpha.61
+    "@backstage/dev-utils": "workspace:^"
+    "@mui/material": ^5.16.7
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -11961,7 +11961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.12.2":
+"@mui/material@npm:^5.12.2, @mui/material@npm:^5.16.7":
   version: 5.16.7
   resolution: "@mui/material@npm:5.16.7"
   dependencies:

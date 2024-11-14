@@ -15,14 +15,14 @@
  */
 import React from 'react';
 import { Table, TableColumn, Progress } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import useAsync from 'react-use/esm/useAsync';
 import {
   discoveryApiRef,
   fetchApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 
 export type Todo = {
   title: string;
