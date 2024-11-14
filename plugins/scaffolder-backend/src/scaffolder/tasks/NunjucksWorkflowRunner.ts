@@ -364,6 +364,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )}`,
           );
         }
+        let checkpointCount = 0;
+
         await action.handler({
           input: iteration.input,
           secrets: task.secrets ?? {},
@@ -371,21 +373,26 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           logger: loggerToWinstonLogger(taskLogger),
           logStream: streamLogger,
           workspacePath,
-          async checkpoint<U extends JsonValue>(
-            keySuffix: string,
-            fn: () => Promise<U>,
-          ) {
-            const key = `v1.task.checkpoint.${step.id}.${keySuffix}`;
+          async checkpoint<T extends JsonValue | void>(opts: {
+            key?: string;
+            fn: () => Promise<T> | T;
+          }) {
+            const { key: checkpointKey = checkpointCount++, fn } = opts;
+            // default the task checkpoint to stepId plus count if there's no explict key provided.
+            const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
+
             try {
-              let prevValue: U | undefined;
+              let prevValue: T | undefined;
+
               if (prevTaskState) {
                 const prevState = (
                   prevTaskState.state?.checkpoints as {
                     [key: string]: CheckpointState;
                   }
                 )?.[key];
+
                 if (prevState && prevState.status === 'success') {
-                  prevValue = prevState.value as U;
+                  prevValue = prevState.value as T;
                 }
               }
 
@@ -395,7 +402,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 task.updateCheckpoint?.({
                   key,
                   status: 'success',
-                  value,
+                  value: value ?? {},
                 });
               }
               return value;

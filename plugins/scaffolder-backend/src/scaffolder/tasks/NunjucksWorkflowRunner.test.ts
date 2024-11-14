@@ -152,19 +152,41 @@ describe('NunjucksWorkflowRunner', () => {
       id: 'checkpoints-action',
       description: 'Mock action with checkpoints',
       handler: async ctx => {
-        const key1 = await ctx.checkpoint('key1', async () => {
-          return 'updated';
+        const key1 = await ctx.checkpoint({
+          key: 'key1',
+          fn: async () => {
+            return 'updated';
+          },
         });
-        const key2 = await ctx.checkpoint('key2', async () => {
-          return 'updated';
+        const key2 = await ctx.checkpoint({
+          key: 'key2',
+          fn: async () => {
+            return 'updated';
+          },
         });
-        const key3 = await ctx.checkpoint('key3', async () => {
-          return 'updated';
+        const key3 = await ctx.checkpoint({
+          key: 'key3',
+          fn: async () => {
+            return 'updated';
+          },
+        });
+
+        const key4 = await ctx.checkpoint({
+          fn: () => {},
+        });
+
+        const key5 = await ctx.checkpoint({
+          fn: async () => {},
         });
 
         ctx.output('key1', key1);
         ctx.output('key2', key2);
         ctx.output('key3', key3);
+
+        // @ts-expect-error - this is void return
+        ctx.output('key4', key4);
+        // @ts-expect-error - this is void return
+        ctx.output('key5', key5);
       },
     });
 
