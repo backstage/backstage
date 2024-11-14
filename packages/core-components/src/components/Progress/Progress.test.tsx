@@ -23,10 +23,7 @@ import { Progress } from './Progress';
 describe('<Progress />', () => {
   it('renders without exploding', async () => {
     jest.useFakeTimers();
-    const { getByTestId, queryByTestId, debug } = await renderInTestApp(
-      <Progress />,
-    );
-    debug();
+    const { queryByTestId } = await renderInTestApp(<Progress />);
     expect(queryByTestId('progress-placeholder')).toBeInTheDocument();
     expect(queryByTestId('progress')).not.toBeInTheDocument();
     act(() => {
