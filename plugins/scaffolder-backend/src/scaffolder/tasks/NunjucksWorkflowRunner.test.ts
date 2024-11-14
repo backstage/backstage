@@ -154,21 +154,15 @@ describe('NunjucksWorkflowRunner', () => {
       handler: async ctx => {
         const key1 = await ctx.checkpoint({
           key: 'key1',
-          fn: async () => {
-            return 'updated';
-          },
+          fn: async () => 'updated',
         });
         const key2 = await ctx.checkpoint({
           key: 'key2',
-          fn: async () => {
-            return 'updated';
-          },
+          fn: async () => 'updated',
         });
         const key3 = await ctx.checkpoint({
           key: 'key3',
-          fn: async () => {
-            return 'updated';
-          },
+          fn: async () => 'updated',
         });
 
         const key4 = await ctx.checkpoint({
@@ -179,6 +173,10 @@ describe('NunjucksWorkflowRunner', () => {
           fn: async () => {},
         });
 
+        const key6 = await ctx.checkpoint({
+          fn: async () => 'look ma no key',
+        });
+
         ctx.output('key1', key1);
         ctx.output('key2', key2);
         ctx.output('key3', key3);
@@ -187,6 +185,8 @@ describe('NunjucksWorkflowRunner', () => {
         ctx.output('key4', key4);
         // @ts-expect-error - this is void return
         ctx.output('key5', key5);
+
+        ctx.output('key6', key6);
       },
     });
 
@@ -654,6 +654,9 @@ describe('NunjucksWorkflowRunner', () => {
             key1: '${{steps.test.output.key1}}',
             key2: '${{steps.test.output.key2}}',
             key3: '${{steps.test.output.key3}}',
+            key4: '${{steps.test.output.key4}}',
+            key5: '${{steps.test.output.key5}}',
+            key6: '${{steps.test.output.key6}}',
           },
         }),
         getTaskState: (): Promise<
@@ -683,6 +686,9 @@ describe('NunjucksWorkflowRunner', () => {
       expect(result.output.key1).toEqual('initial');
       expect(result.output.key2).toEqual('updated');
       expect(result.output.key3).toEqual('updated');
+      expect(result.output.key4).toEqual(undefined);
+      expect(result.output.key5).toEqual(undefined);
+      expect(result.output.key6).toEqual('look ma no key');
     });
 
     it('should template the output from simple actions', async () => {
