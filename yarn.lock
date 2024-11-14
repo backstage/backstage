@@ -16504,15 +16504,15 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
-  version: 1.19.2
-  resolution: "@stoplight/spectral-core@npm:1.19.2"
+  version: 1.19.3
+  resolution: "@stoplight/spectral-core@npm:1.19.3"
   dependencies:
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ~3.21.0
     "@stoplight/path": 1.3.2
     "@stoplight/spectral-parsers": ^1.0.0
     "@stoplight/spectral-ref-resolver": ^1.0.4
-    "@stoplight/spectral-runtime": ^1.0.0
+    "@stoplight/spectral-runtime": ^1.1.2
     "@stoplight/types": ~13.6.0
     "@types/es-aggregate-error": ^1.0.2
     "@types/json-schema": ^7.0.11
@@ -16525,10 +16525,10 @@ __metadata:
     lodash.topath: ^4.5.2
     minimatch: 3.1.2
     nimma: 0.2.3
-    pony-cause: ^1.0.0
+    pony-cause: ^1.1.1
     simple-eval: 1.0.1
-    tslib: ^2.3.0
-  checksum: d3c071e96f63273176f52861c7005a44857aa9f7400aef7653fdae0fb612324ffa7f6959a0a63c8fa1fbba7b70759cf127177f073af8925b8dafb13acc452d8e
+    tslib: ^2.8.1
+  checksum: 7e04c72d3d72dc774b35e3fbbbcf104a1c0c4f1823c195fcf12fe86ce038d2e5e80089b843e6af5ff79a43ebf9807eb3035468847a5b6911fd4f5429a232799a
   languageName: node
   linkType: hard
 
@@ -16632,7 +16632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-runtime@npm:^1.0.0, @stoplight/spectral-runtime@npm:^1.1.0, @stoplight/spectral-runtime@npm:^1.1.1, @stoplight/spectral-runtime@npm:^1.1.2":
+"@stoplight/spectral-runtime@npm:^1.1.0, @stoplight/spectral-runtime@npm:^1.1.1, @stoplight/spectral-runtime@npm:^1.1.2":
   version: 1.1.2
   resolution: "@stoplight/spectral-runtime@npm:1.1.2"
   dependencies:
@@ -37639,7 +37639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pony-cause@npm:^1.0.0":
+"pony-cause@npm:^1.1.1":
   version: 1.1.1
   resolution: "pony-cause@npm:1.1.1"
   checksum: 5ff8878b808be48db801d52246a99d7e4789e52d20575ba504ede30c818fd85d38a033915e02c15fa9b6dce72448836dc1a47094acf8f1c21c4f04a4603b0cfb
@@ -43540,7 +43540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.4.1, tslib@npm:^2.5.0, tslib@npm:^2.6.0, tslib@npm:^2.6.2, tslib@npm:^2.8.0":
+"tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.4.1, tslib@npm:^2.5.0, tslib@npm:^2.6.0, tslib@npm:^2.6.2, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
