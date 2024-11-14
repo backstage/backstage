@@ -16503,7 +16503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.8.0, @stoplight/spectral-core@npm:^1.8.1":
+"@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.8.1":
   version: 1.19.3
   resolution: "@stoplight/spectral-core@npm:1.19.3"
   dependencies:
@@ -16532,15 +16532,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-formats@npm:^1.2.0, @stoplight/spectral-formats@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "@stoplight/spectral-formats@npm:1.7.0"
+"@stoplight/spectral-formats@npm:^1.2.0, @stoplight/spectral-formats@npm:^1.8.1":
+  version: 1.8.2
+  resolution: "@stoplight/spectral-formats@npm:1.8.2"
   dependencies:
     "@stoplight/json": ^3.17.0
-    "@stoplight/spectral-core": ^1.8.0
+    "@stoplight/spectral-core": ^1.19.2
     "@types/json-schema": ^7.0.7
-    tslib: ^2.3.1
-  checksum: eccc2a6c099c7cbdd7c0b6c48b7fbfa334cdc2323958790496aa0295af27ef42ccae8b40e05c742aa3431da724b8d494c837af1af60f86d05189853b95b7c2c9
+    tslib: ^2.8.1
+  checksum: 1724aeaf933446cda79cc62aef4326ff9df4dad2cfa64e3e1286b001957e628235be679610cf61e4f01d53703ede11853ff389f0d038e6af367e7861219a5c2d
   languageName: node
   linkType: hard
 
@@ -16565,22 +16565,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-functions@npm:^1.5.1, @stoplight/spectral-functions@npm:^1.6.1, @stoplight/spectral-functions@npm:^1.7.2":
-  version: 1.9.1
-  resolution: "@stoplight/spectral-functions@npm:1.9.1"
+"@stoplight/spectral-functions@npm:^1.6.1, @stoplight/spectral-functions@npm:^1.7.2, @stoplight/spectral-functions@npm:^1.9.1":
+  version: 1.9.2
+  resolution: "@stoplight/spectral-functions@npm:1.9.2"
   dependencies:
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ^3.17.1
     "@stoplight/spectral-core": ^1.19.2
-    "@stoplight/spectral-formats": ^1.7.0
-    "@stoplight/spectral-runtime": ^1.1.0
+    "@stoplight/spectral-formats": ^1.8.1
+    "@stoplight/spectral-runtime": ^1.1.2
     ajv: ^8.17.1
     ajv-draft-04: ~1.0.0
     ajv-errors: ~3.0.0
     ajv-formats: ~2.1.0
     lodash: ~4.17.21
-    tslib: ^2.3.0
-  checksum: 2d07605b408ff09dcdc0a7b4d6e984a32062bd5032323cb71348a3f07c7187548ddce0cfd94171da019d1d3171658a4603829585bcc5d13ab0c30181e01fd566
+    tslib: ^2.8.1
+  checksum: 98c4b2f7db280a82bb2a3cb310c4a335482e77c635277fe620f440fbb2e7aaede22ad3e2c30cfd9acf7da8f9dd6acdd90e66d378f88c8b95a5eee5d1725ee879
   languageName: node
   linkType: hard
 
@@ -16610,16 +16610,16 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-rulesets@npm:^1.14.1, @stoplight/spectral-rulesets@npm:^1.18.0":
-  version: 1.21.1
-  resolution: "@stoplight/spectral-rulesets@npm:1.21.1"
+  version: 1.21.2
+  resolution: "@stoplight/spectral-rulesets@npm:1.21.2"
   dependencies:
     "@asyncapi/specs": ^6.8.0
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ^3.17.0
     "@stoplight/spectral-core": ^1.19.2
-    "@stoplight/spectral-formats": ^1.7.0
-    "@stoplight/spectral-functions": ^1.5.1
-    "@stoplight/spectral-runtime": ^1.1.1
+    "@stoplight/spectral-formats": ^1.8.1
+    "@stoplight/spectral-functions": ^1.9.1
+    "@stoplight/spectral-runtime": ^1.1.2
     "@stoplight/types": ^13.6.0
     "@types/json-schema": ^7.0.7
     ajv: ^8.17.1
@@ -16627,12 +16627,12 @@ __metadata:
     json-schema-traverse: ^1.0.0
     leven: 3.1.0
     lodash: ~4.17.21
-    tslib: ^2.3.0
-  checksum: 71efa36ce0c2d643016cc4b2f9529bd8452e4b8e8903be1188a160fc2bc14ee33a48fc35117b2cb600cf8e8f32d817649ca76b9c8a0bbec4cc212a27839c705e
+    tslib: ^2.8.1
+  checksum: ec63bc8955426828a4aaf9e5f05a05ce5f2ed574dc747b5e5fc35acbf7bdf4b326ae2df47f2e240e39e5010f77ac2272cb5027427b4d44b5c6f33f4d4c41d7a1
   languageName: node
   linkType: hard
 
-"@stoplight/spectral-runtime@npm:^1.1.0, @stoplight/spectral-runtime@npm:^1.1.1, @stoplight/spectral-runtime@npm:^1.1.2":
+"@stoplight/spectral-runtime@npm:^1.1.2":
   version: 1.1.2
   resolution: "@stoplight/spectral-runtime@npm:1.1.2"
   dependencies:
