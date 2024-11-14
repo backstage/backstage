@@ -364,7 +364,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )}`,
           );
         }
-        let checkpointCount = 0;
 
         await action.handler({
           input: iteration.input,
@@ -377,8 +376,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             key?: string;
             fn: () => Promise<T> | T;
           }) {
-            const { key: checkpointKey = checkpointCount++, fn } = opts;
-            // default the task checkpoint to stepId plus count if there's no explict key provided.
+            const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
             try {

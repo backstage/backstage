@@ -166,15 +166,13 @@ describe('NunjucksWorkflowRunner', () => {
         });
 
         const key4 = await ctx.checkpoint({
+          key: 'key4',
           fn: () => {},
         });
 
         const key5 = await ctx.checkpoint({
+          key: 'key5',
           fn: async () => {},
-        });
-
-        const key6 = await ctx.checkpoint({
-          fn: async () => 'look ma no key',
         });
 
         ctx.output('key1', key1);
@@ -185,8 +183,6 @@ describe('NunjucksWorkflowRunner', () => {
         ctx.output('key4', key4);
         // @ts-expect-error - this is void return
         ctx.output('key5', key5);
-
-        ctx.output('key6', key6);
       },
     });
 
@@ -688,7 +684,6 @@ describe('NunjucksWorkflowRunner', () => {
       expect(result.output.key3).toEqual('updated');
       expect(result.output.key4).toEqual(undefined);
       expect(result.output.key5).toEqual(undefined);
-      expect(result.output.key6).toEqual('look ma no key');
     });
 
     it('should template the output from simple actions', async () => {
