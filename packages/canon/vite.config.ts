@@ -3,12 +3,14 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import dts from 'vite-plugin-dts';
+import yaml from '@modyfi/vite-plugin-yaml';
 
 export default defineConfig({
   plugins: [
     react(),
     dts({ exclude: ['**/*.stories.ts', '**/*.stories.tsx', '**/*.css.ts'] }),
     vanillaExtractPlugin(),
+    yaml(),
   ],
   build: {
     lib: {

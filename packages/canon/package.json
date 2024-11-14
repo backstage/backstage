@@ -22,10 +22,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "EXPERIMENTAL_VITE=true tsc && vite build",
     "build-storybook": "storybook build",
     "clean": "backstage-cli package clean",
-    "dev": "vite",
+    "dev": "EXPERIMENTAL_VITE=true vite",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
@@ -42,6 +42,7 @@
     "@backstage/cli": "workspace:^",
     "@chromatic-com/storybook": "^3.2.2",
     "@eslint/js": "^9.13.0",
+    "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@storybook/addon-essentials": "^8.4.2",
     "@storybook/addon-interactions": "^8.4.2",
     "@storybook/addon-links": "^8.4.2",
