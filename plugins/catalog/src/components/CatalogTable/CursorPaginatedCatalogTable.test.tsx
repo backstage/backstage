@@ -63,6 +63,22 @@ describe('CursorPaginatedCatalogTable', () => {
     );
   };
 
+  it('should display the title and subtitle when passed in', async () => {
+    await renderInTestApp(
+      wrapInContext(
+        <CursorPaginatedCatalogTable
+          data={data}
+          columns={columns}
+          title="My Title"
+          subtitle="My Subtitle"
+        />,
+      ),
+    );
+
+    expect(screen.queryByText('My Title')).toBeInTheDocument();
+    expect(screen.queryByText('My Subtitle')).toBeInTheDocument();
+  });
+
   it('should display all the items', async () => {
     await renderInTestApp(
       wrapInContext(
