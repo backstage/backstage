@@ -40,7 +40,7 @@ to be:
 
 ### Building Backstage
 
-Build your Backstage instance by following the instructions below, based on the [Backastage Docker Build docs](https://backstage.io/docs/deployment/docker). Run the following command in the root directory of your backstage instance:
+Build your Backstage instance by following the instructions below, based on the [Backstage Docker Build docs](https://backstage.io/docs/deployment/docker). Run the following command in the root directory of your backstage instance:
 
 `yarn build:backend --config ../../app-config.yaml`
 
