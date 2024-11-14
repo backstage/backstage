@@ -60,6 +60,10 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
+  /**
+   * A static title to use for the table. If not provided, a title will be
+   * generated based on the current Kind and Type filters and total number of items.
+   */
   title?: string;
   subtitle?: string;
 }
@@ -74,7 +78,16 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
-/** @public */
+/**
+ * CatalogTable is a wrapper around the Table component that is pre-configured
+ * to display catalog entities.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/features/software-catalog/catalog-customization}
+ *
+ * @public
+ */
 export const CatalogTable = (props: CatalogTableProps) => {
   const {
     columns = defaultCatalogTableColumnsFunc,
