@@ -4034,7 +4034,6 @@ __metadata:
     "@base_ui/react": ^1.0.0-alpha.3
     "@chromatic-com/storybook": ^3.2.2
     "@eslint/js": ^9.13.0
-    "@modyfi/vite-plugin-yaml": ^1.1.0
     "@storybook/addon-essentials": ^8.4.2
     "@storybook/addon-interactions": ^8.4.2
     "@storybook/addon-links": ^8.4.2
