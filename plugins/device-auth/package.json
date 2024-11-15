@@ -35,9 +35,9 @@
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.26.11",
-    "@backstage/dev-utils": "^1.0.36",
-    "@backstage/test-utils": "^1.5.9",
+    "@backstage/cli": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
