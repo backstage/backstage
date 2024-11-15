@@ -27,7 +27,7 @@ import {
  * @internal
  */
 export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
-  const { columns, data, isLoading, options } = props;
+  const { actions, columns, data, isLoading, options } = props;
   const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
     useEntityList();
   const [page, setPage] = React.useState(
@@ -51,8 +51,10 @@ export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
+        actionsColumnIndex: -1,
         ...options,
       }}
+      actions={actions}
       onSearchChange={(searchText: string) =>
         updateFilters({
           text: searchText ? new EntityTextFilter(searchText) : undefined,

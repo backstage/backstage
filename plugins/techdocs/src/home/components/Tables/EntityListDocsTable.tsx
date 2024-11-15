@@ -24,14 +24,22 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
+  getEntityRelations,
+  humanizeEntityRef,
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { DocsTable } from './DocsTable';
+import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
+import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
 import { columnFactories } from './columns';
 import { DocsTableRow } from './types';
+import { toLowerMaybe } from '../../../helpers';
+import { rootDocsRouteRef } from '../../../routes';
 
 /**
  * Props for {@link EntityListDocsTable}.
@@ -44,6 +52,14 @@ export type EntityListDocsTableProps = {
   options?: TableOptions<DocsTableRow>;
 };
 
+const defaultColumns: TableColumn<DocsTableRow>[] = [
+  columnFactories.createTitleColumn({ hidden: true }),
+  columnFactories.createNameColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createKindColumn(),
+  columnFactories.createTypeColumn(),
+];
+
 /**
  * Component which renders a table with entities from catalog.
  *
@@ -51,9 +67,12 @@ export type EntityListDocsTableProps = {
  */
 export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   const { columns, actions, options } = props;
-  const { loading, error, entities, filters } = useEntityList();
+  const { loading, error, entities, filters, paginationMode, pageInfo } =
+    useEntityList();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();
+  const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
+  const config = useApi(configApiRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
@@ -64,6 +83,53 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       toggleStarredEntity,
     ),
   ];
+
+  const documents = entities.map(entity => {
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+    return {
+      entity,
+      resolved: {
+        docsUrl: getRouteToReaderPageFor({
+          namespace: toLowerMaybe(
+            entity.metadata.namespace ?? 'default',
+            config,
+          ),
+          kind: toLowerMaybe(entity.kind, config),
+          name: toLowerMaybe(entity.metadata.name, config),
+        }),
+        ownedByRelations,
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
+          .join(', '),
+      },
+    };
+  });
+
+  if (paginationMode === 'cursor') {
+    return (
+      <CursorPaginatedDocsTable
+        columns={columns || defaultColumns}
+        isLoading={loading}
+        title={title}
+        actions={actions || defaultActions}
+        options={options}
+        data={documents}
+        next={pageInfo?.next}
+        prev={pageInfo?.prev}
+      />
+    );
+  } else if (paginationMode === 'offset') {
+    return (
+      <OffsetPaginatedDocsTable
+        columns={columns || defaultColumns}
+        isLoading={loading}
+        title={title}
+        actions={actions || defaultActions}
+        options={options}
+        data={documents}
+      />
+    );
+  }
 
   if (error) {
     return (
