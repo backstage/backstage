@@ -353,13 +353,6 @@ module.exports = {
       },
       'tooling/package-metadata',
     ],
-    Deployment: [
-      {
-        type: 'category',
-        label: 'Using Backstage Deploy (alpha)',
-        items: ['deployment/backstage-deploy/aws-lightsail'],
-      },
-    ],
     'New Backend System': [
       'backend-system/index',
       {
