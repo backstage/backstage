@@ -83,7 +83,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.0.0",
     "@types/prettier": "^2.0.0"
   },
   "peerDependencies": {

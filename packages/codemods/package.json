@@ -52,6 +52,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/jscodeshift": "^0.12.0",
-    "@types/node": "^20.16.0"
+    "@types/node": "^22.0.0"
   }
 }

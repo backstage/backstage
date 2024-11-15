@@ -110,7 +110,7 @@
     "@spotify/eslint-plugin": "^15.0.0",
     "@spotify/prettier-config": "^15.0.0",
     "@techdocs/cli": "workspace:*",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.0.0",
     "@types/webpack": "^5.28.0",
     "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",

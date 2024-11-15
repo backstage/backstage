@@ -60,7 +60,7 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^11.0.0",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.0.0",
     "jest-when": "^3.1.0"
   }
 }

@@ -183,7 +183,7 @@
     "@types/fs-extra": "^11.0.0",
     "@types/http-proxy": "^1.17.4",
     "@types/inquirer": "^8.1.3",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.0.0",
     "@types/npm-packlist": "^3.0.0",
     "@types/recursive-readdir": "^2.2.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",

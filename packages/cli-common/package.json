@@ -36,6 +36,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/node": "^20.16.0"
+    "@types/node": "^22.0.0"
   }
 }
