@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Use default `CatalogTableToolbar` for offset paginated catalog table
+Fixed an issue causing the `CatalogIndexPage` to not properly filter results when using offset pagination.
