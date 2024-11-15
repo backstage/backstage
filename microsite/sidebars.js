@@ -49,7 +49,7 @@ module.exports = {
           'getting-started/create-a-component',
         ],
       },
-      'getting-started/keeping-backstage-updated'
+      'getting-started/keeping-backstage-updated',
     ],
     'Core Features': [
       {
