@@ -21,7 +21,7 @@ export const button = recipe({
     all: 'unset',
     display: 'inline-block',
     userSelect: 'none',
-    fontFamily: 'var(--font-sans)',
+    fontFamily: 'var(--canon-font-sans)',
     fontWeight: 600,
     fontSize: '0.875rem',
     lineHeight: '1.5',

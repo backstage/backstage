@@ -15,6 +15,9 @@
  */
 import { style } from '@vanilla-extract/css';
 
-export const base = style({
-  fontFamily: 'var(--canon-font-sans)',
+export const styles = style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  rowGap: '20px',
+  columnGap: '80px',
 });

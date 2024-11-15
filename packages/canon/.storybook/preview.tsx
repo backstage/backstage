@@ -1,6 +1,9 @@
 import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
-import { withThemeByClassName } from '@storybook/addon-themes';
+import {
+  withThemeByClassName,
+  withThemeByDataAttribute,
+} from '@storybook/addon-themes';
 
 import '../src/styles/styles.css';
 
@@ -17,12 +20,12 @@ const preview: Preview = {
     },
   },
   decorators: [
-    withThemeByClassName<ReactRenderer>({
+    withThemeByDataAttribute<ReactRenderer>({
       themes: {
-        light: 'canon-light',
-        dark: 'canon-dark',
+        light: 'light',
+        dark: 'dark',
       },
-      defaultTheme: 'canon-light',
+      defaultTheme: 'light',
     }),
     (Story, context) => {
       const theme = context.globals.theme || 'light';

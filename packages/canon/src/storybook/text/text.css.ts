@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 
-export const base = style({
-  fontFamily: 'var(--canon-font-sans)',
+export const textStyles = style({
+  marginBottom: '16px !important',
+});
+
+globalStyle(`${textStyles} p`, {
+  fontFamily: '"Geist", sans-serif !important',
+  fontSize: '18px !important',
+  lineHeight: '28px !important',
+  margin: '0 !important',
 });

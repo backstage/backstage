@@ -1,29 +1,33 @@
+/* Light theme */
 :root {
-  --color-accent: #1ed760;
-  --color-bg-primary: #fff;
-  --color-bg-secondary: #f5f5f5;
-  --color-text-primary: #000;
-  --color-text-secondary: #666;
-  --color-border-primary: #ccc;
-  --color-border-secondary: #f0f0f0;
+  --canon-accent: #1ed760;
+  --canon-bg: #fff;
+  --canon-surface-1: #f5f5f5;
+  --canon-surface-2: #000;
+  --canon-outline: #666;
+  --canon-outline-focus: #ccc;
+  --canon-text-primary: #f0f0f0;
+  --canon-text-secondary: #666;
 
-  --font-sans: 'Inter', sans-serif;
-  --font-monospace: 'Monospace', monospace;
-  --font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  --canon-font-sans: 'Geist', serif;
+  --canon-font-monospace: 'Monospace', monospace;
+  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
+}
 
-  /* Font Sizes - Should we actually use these? */
-  --font-size-micro: 0.6875rem;
-  --font-size-microPlus: 0.6875rem;
-  --font-size-mini: 0.75rem;
-  --font-size-miniPlus: 0.75rem;
-  --font-size-small: 0.8125rem;
-  --font-size-smallPlus: 0.8125rem;
-  --font-size-regular: 0.9375rem;
-  --font-size-regularPlus: 0.9375rem;
-  --font-size-large: 1.125rem;
-  --font-size-largePlus: 1.125rem;
-  --font-size-title1: 2.25rem;
-  --font-size-title2: 1.5rem;
-  --font-size-title3: 1.25rem;
+/* Dark theme */
+[data-theme='dark'] {
+  --canon-accent: #1ed760;
+  --canon-bg: #fff;
+  --canon-surface-1: #f5f5f5;
+  --canon-surface-2: #000;
+  --canon-outline: #666;
+  --canon-outline-focus: #ccc;
+  --canon-text-primary: #f0f0f0;
+  --canon-text-secondary: #666;
+
+  --canon-font-sans: 'Geist', serif;
+  --canon-font-monospace: 'Monospace', monospace;
+  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
 }

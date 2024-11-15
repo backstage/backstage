@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { style } from '@vanilla-extract/css';
+import React from 'react';
+import { textStyles } from './text.css';
 
-export const base = style({
-  fontFamily: 'var(--canon-font-sans)',
-});
+export const Text = ({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) => {
+  return (
+    <div className={textStyles} style={style}>
+      {children}
+    </div>
+  );
+};
