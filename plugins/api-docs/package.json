@@ -67,7 +67,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "graphiql": "3.1.1",
+    "graphiql": "3.7.2",
     "graphql": "^16.0.0",
     "graphql-config": "^5.0.2",
     "graphql-ws": "^5.4.1",
