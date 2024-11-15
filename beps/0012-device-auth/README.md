@@ -60,13 +60,14 @@ know that this has succeeded?
 -->
 
 The Device Authorization flow should allow a CLI user to authenticate with Backstage using the Device Authorization Grant flow.
+Best effort support for implementation of refresh token should be included, but may require additional auth redesign to fully support.
 
 ### Non-Goals
 
-<!--
-What is out of scope for this BEP? Listing non-goals helps to focus discussion
-and make progress.
--->
+The following are out of scope for this BEP:
+
+- Access delegation, using OAuth providers, such as the ability to acquire a Github token when running a template task.
+- Implementation of refresh flow, as we expect future design of the auth signin to make this easier to implement.
 
 ## Proposal
 
@@ -162,7 +163,7 @@ Response body:
 }
 ```
 
-#### POST `/api/cli/oauth/token`
+#### POST `/api/auth/oauth/token`
 
 The CLI Auth Backend API checks the database record for the provided `client_id` and `device_code` to see if the user has verified the user code. Request body:
 
@@ -181,6 +182,8 @@ If the user has verified the user code, the backend will return the user's Backs
   "access_token": "access_token"
 }
 ```
+
+** in the future this will include refresh token **
 
 If the user has not verified the user code, the backend will return a 401 Unauthorized response.
 
