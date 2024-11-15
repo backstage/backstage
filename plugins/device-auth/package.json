@@ -1,0 +1,51 @@
+{
+  "name": "@backstage/plugin-device-auth",
+  "version": "0.1.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/core-components": "^0.14.9",
+    "@backstage/core-plugin-api": "^1.9.3",
+    "@backstage/theme": "^0.5.6",
+    "@material-ui/core": "^4.9.13",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.61",
+    "react-use": "^17.2.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.26.11",
+    "@backstage/dev-utils": "^1.0.36",
+    "@backstage/test-utils": "^1.5.9",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^12.1.3",
+    "@testing-library/user-event": "^14.0.0",
+    "msw": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router": "^6.24.0",
+    "react-router-dom": "^6.22.2"
+  }
+}
