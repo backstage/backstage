@@ -22,22 +22,27 @@ export const container = style({
 });
 
 export const title = style({
-  color: '#3b59ff !important',
+  color: '#3b59ff',
+  fontFamily: '"Geist", sans-serif',
+  fontSize: '16px',
+  fontWeight: '400',
+  textDecoration: 'none',
 });
 
 export const pill = recipe({
   base: {
+    fontFamily: '"Geist", sans-serif',
     display: 'inline-flex',
     alignItems: 'center',
     color: '#000',
     borderRadius: '40px',
     padding: '0px 8px',
     height: '24px',
-    fontSize: '12px !important',
+    fontSize: '12px',
     fontWeight: '600',
     borderStyle: 'solid',
     borderWidth: '1px',
-    marginLeft: '8px !important',
+    marginLeft: '8px',
   },
   variants: {
     status: {

@@ -5,7 +5,7 @@ import {
   withThemeByDataAttribute,
 } from '@storybook/addon-themes';
 
-import '../src/styles/styles.css';
+import '../src/theme/styles.css';
 
 const preview: Preview = {
   parameters: {

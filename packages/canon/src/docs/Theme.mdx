@@ -1,12 +1,33 @@
-# Theme
+import { Unstyled, Source } from '@storybook/blocks';
+import { Title } from '../storybook/title';
+import { Text } from '../storybook/text';
 
-Our theming is system is still a work in progress. We will be adding more
-features and documentation over time.
+<Unstyled>
 
-## Colors
+<Title type="h1">Theming</Title>
+<Text>
+  Our theming is system is still a work in progress. We will be adding more
+  features and documentation over time.
+</Text>
 
-TBD
+<Title type="h2">How to create your own theme</Title>
+<Text>TBD</Text>
 
-## Typography
+<Title type="h2">Colors</Title>
+<Text>TBD</Text>
 
-TBD
+<Title type="h2">Typography</Title>
+<Text>
+  Our theming is system is still a work in progress. We will be adding more
+  features and documentation over time.
+</Text>
+
+<Source
+  code={`:root {
+  --color-text-primary: #000;
+}`}
+  language="css"
+  dark
+/>
+
+</Unstyled>

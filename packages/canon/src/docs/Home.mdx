@@ -1,8 +1,11 @@
+import { Unstyled } from '@storybook/blocks';
 import { Text } from '../storybook/text';
 import { ComponentStatus } from '../storybook/component-status';
 import { Columns } from '../storybook/columns';
 
 ![Canon Header](header.png)
+
+<Unstyled>
 
 <Text style={{ marginTop: '64px' }}>
   Welcome to the Canon, the new library for building Backstage plugins. This
@@ -39,3 +42,5 @@ import { Columns } from '../storybook/columns';
   <ComponentStatus name="Header" status="notStarted" />
   <ComponentStatus name="Tabs" status="notStarted" />
 </Columns>
+
+</Unstyled>
