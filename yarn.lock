@@ -29104,8 +29104,8 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3":
-  version: 9.14.2
-  resolution: "google-auth-library@npm:9.14.2"
+  version: 9.15.0
+  resolution: "google-auth-library@npm:9.15.0"
   dependencies:
     base64-js: ^1.3.0
     ecdsa-sig-formatter: ^1.0.11
@@ -29113,7 +29113,7 @@ __metadata:
     gcp-metadata: ^6.1.0
     gtoken: ^7.0.0
     jws: ^4.0.0
-  checksum: 64b3a6c1b1b14f1c891dbcfb850bc4db63dc8fae17e70197636244d00c83b539ac3da8688aae0bd1f09c884fc538d203945ae751edbabf666b41066385d86e30
+  checksum: 7ff63ff755ce43601a1780cfbe6d8b523792bfd2b653a27180e41735b9f0ba5689668eb8b079c915300041e412ec00b7635b5c26e0f2139fecacb346b6f9f12f
   languageName: node
   linkType: hard
 
