@@ -83,7 +83,7 @@ The authorization flow is initiated with a user CLI command to `login`. The CLI 
 
 When the browser opens the verification page a check is performed to confirm the user has an active Backstage session. If they don't have an active session, a popup is opened by the Backstage Auth plugin for the user to authenticate with the configured Auth Provider. Once this is complete and a valid session is established, the user is able to verify the pre-filled user code by clicking the verify button. Clicking the button to verify the user code sends a request to the CLI Auth Backend API's device_authorization endpoint.
 
-The CLI then polls the Device Auth `/token` endpoint until the user has successfully authenticated with the configured Auth Provider and verified the user code. Once the user has authenticated, the Device Auth Backend API returns the users's Backstage Identity token to the CLI, which is then used to authenticate the user on subsequent called to Backstage Backend APIs.
+The CLI then polls the Device Auth `/token` endpoint until the user has successfully authenticated with the configured Auth Provider and verified the user code. Once the user has authenticated, the Device Auth Backend API returns the users' Backstage Identity token to the CLI, which is then used to authenticate the user on subsequent called to Backstage Backend APIs.
 
 ## Design Details
 
@@ -243,7 +243,7 @@ Response body:
 
 ### State Management
 
-The CLI Auth backend must store the device code and user code in state in order to determine if the user has verified the user code. This state could technically live in any storage mechanism, such as memory, file, database, or external cache. The state should be stored in a way that is accessible by all instances of the CLI Auth backend API, as the CLI may be running in multiple instances. Given this requirement, the state should be stored in a shared database or cache. While it possible to use an external cache, such as Redis, for this purpose, there is no guarentee that the cache will be secure (e.g. if the cache is not encrypted or authenticated). Therefore, it is recommended to store the state in a the Backstage database, where Backstage itself stores its secure state.
+The CLI Auth backend must store the device code and user code in state in order to determine if the user has verified the user code. This state could technically live in any storage mechanism, such as memory, file, database, or external cache. The state should be stored in a way that is accessible by all instances of the CLI Auth backend API, as the CLI may be running in multiple instances. Given this requirement, the state should be stored in a shared database or cache. While it possible to use an external cache, such as Redis, for this purpose, there is no guarantee that the cache will be secure (e.g. if the cache is not encrypted or authenticated). Therefore, it is recommended to store the state in a the Backstage database, where Backstage itself stores its secure state.
 
 ### Security Considerations
 
