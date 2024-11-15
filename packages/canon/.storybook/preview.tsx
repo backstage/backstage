@@ -1,9 +1,8 @@
 import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
-import { withThemeByDataAttribute } from '@storybook/addon-themes';
+import { withThemeByClassName } from '@storybook/addon-themes';
 
-import { themes } from '../src/theme/themes.css';
-import './font.css';
+import '../src/styles/styles.css';
 
 const preview: Preview = {
   parameters: {
@@ -18,12 +17,12 @@ const preview: Preview = {
     },
   },
   decorators: [
-    withThemeByDataAttribute<ReactRenderer>({
+    withThemeByClassName<ReactRenderer>({
       themes: {
-        light: 'light',
-        dark: 'dark',
+        light: 'canon-light',
+        dark: 'canon-dark',
       },
-      defaultTheme: 'light',
+      defaultTheme: 'canon-light',
     }),
     (Story, context) => {
       const theme = context.globals.theme || 'light';
@@ -36,11 +35,7 @@ const preview: Preview = {
         (element as HTMLElement).style.backgroundColor = backgroundColor;
       });
 
-      return (
-        <div className={theme === 'light' ? themes.light : themes.dark}>
-          <Story />
-        </div>
-      );
+      return <Story />;
     },
   ],
 };

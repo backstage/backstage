@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import { recipe } from '@vanilla-extract/recipes';
-import { vars } from '../../theme/themes.css';
+// import { vars } from '../../theme/themes.css';
 
 export const button = recipe({
   base: {
     all: 'unset',
+    display: 'inline-block',
     userSelect: 'none',
-    fontFamily: vars.font.regular,
+    fontFamily: 'var(--font-sans)',
     fontWeight: 600,
     fontSize: '0.875rem',
     lineHeight: '1.5',
@@ -31,10 +32,10 @@ export const button = recipe({
   variants: {
     variant: {
       primary: {
-        backgroundColor: vars.color.background,
-        color: vars.button.color.text,
-        borderRadius: 3,
-        border: '1px solid var(--button-primary-border-color)',
+        backgroundColor: 'var(--button-primary-background-color)',
+        color: 'var(--button-primary-text-color)',
+        borderRadius: 'var(--button-primary-border-radius)',
+        border: `1px solid var(--button-primary-border-color)`,
         '&:hover': {
           backgroundColor: 'var(--button-primary-background-color-hover)',
           borderColor: 'var(--button-primary-border-color-hover)',
@@ -44,7 +45,7 @@ export const button = recipe({
         backgroundColor: 'transparent',
         color: 'var(--button-secondary-text-color)',
         borderRadius: 'var(--button-secondary-border-radius)',
-        border: '1px solid var(--button-secondary-border-color)',
+        border: `1px solid var(--button-secondary-border-color)`,
         '&:hover': {
           backgroundColor: 'var(--button-secondary-background-color-hover)',
           borderColor: 'var(--button-secondary-border-color-hover)',

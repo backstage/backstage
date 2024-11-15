@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createElement } from 'react';
-import { sprinkles, Sprinkles } from '../../theme/sprinkles.css';
+import { sprinkles, Sprinkles } from '../../styles/sprinkles.css';
 import { base } from './box.css';
 
 type HTMLProperties = Omit<

@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
-import { vars } from './themes.css';
+
+const space = {
+  none: 0,
+  small: '4px',
+  medium: '8px',
+  large: '16px',
+  // etc.
+};
+
+const colors = {
+  'blue-50': '#eff6ff',
+  'blue-100': '#dbeafe',
+  'blue-200': '#bfdbfe',
+  'gray-700': '#374151',
+  'gray-800': '#1f2937',
+  'gray-900': '#111827',
+  // etc.
+};
+
 const responsiveProperties = defineProperties({
   conditions: {
     xs: {},
@@ -37,12 +55,12 @@ const responsiveProperties = defineProperties({
       'space-between',
     ],
     alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
-    paddingTop: vars.space,
-    paddingBottom: vars.space,
-    paddingLeft: vars.space,
-    paddingRight: vars.space,
-    fontFamily: vars.font,
-    gap: vars.space,
+    paddingTop: space,
+    paddingBottom: space,
+    paddingLeft: space,
+    paddingRight: space,
+    // fontFamily: font,
+    gap: space,
     // etc.
   },
   shorthands: {
@@ -60,8 +78,8 @@ const colorProperties = defineProperties({
   },
   defaultCondition: 'lightMode',
   properties: {
-    color: vars.color,
-    background: vars.color,
+    color: colors,
+    background: colors,
   },
 });
 
