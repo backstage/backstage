@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
+import { Options } from 'http-proxy-middleware';
+
+/**
+ * http-proxy-middleware proxy config interface.
+ *
+ * @alpha
+ */
+export interface ProxyConfig extends Options {
+  allowedMethods?: string[];
+  allowedHeaders?: string[];
+  reviveRequestBody?: boolean;
+}
 
 /**
  * Extension point interface for managing proxy endpoints.
@@ -22,7 +33,7 @@ import { JsonObject } from '@backstage/types';
  * @alpha
  */
 export interface ProxyEndpointsExtensionPoint {
-  addProxyEndpoints(endpoints: JsonObject): void;
+  addProxyEndpoints(endpoints: Record<string, string | ProxyConfig>): void;
 }
 
 /**
