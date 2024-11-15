@@ -17,7 +17,7 @@ jobs:
 
     services:
       postgres16:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -28,7 +28,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
