@@ -5,6 +5,10 @@ sidebar_label: Docker
 description: How to build a Backstage Docker image for deployment
 ---
 
+:::note Note
+Before you start this section, it would be good to have a basic understanding of Docker and how it works. If you are new to Docker, you can start with the [Docker overview](https://docs.docker.com/get-started/overview/) guide.
+:::
+
 This section describes how to build a Backstage App into a deployable Docker
 image. It is split into three sections, first covering the host build approach,
 which is recommended due to its speed and more efficient and often simpler
