@@ -203,26 +203,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:^11.7.0":
-  version: 11.7.0
-  resolution: "@apidevtools/json-schema-ref-parser@npm:11.7.0"
+"@apidevtools/json-schema-ref-parser@npm:^11.0.0, @apidevtools/json-schema-ref-parser@npm:^11.7.0":
+  version: 11.7.2
+  resolution: "@apidevtools/json-schema-ref-parser@npm:11.7.2"
   dependencies:
     "@jsdevtools/ono": ^7.1.3
     "@types/json-schema": ^7.0.15
     js-yaml: ^4.1.0
-  checksum: ee1c9e7c1bbf0b8d935522f9407c382e20a54464414fa65326fa8f56239e5a6f2b911f48c65fe2888a94d3445dced46ba36c286da435d47cefc8699d4a5b0ae2
-  languageName: node
-  linkType: hard
-
-"@apidevtools/json-schema-ref-parser@npm:^9.0.6":
-  version: 9.1.2
-  resolution: "@apidevtools/json-schema-ref-parser@npm:9.1.2"
-  dependencies:
-    "@jsdevtools/ono": ^7.1.3
-    "@types/json-schema": ^7.0.6
-    call-me-maybe: ^1.0.1
-    js-yaml: ^4.1.0
-  checksum: 5bd6885db0fd6633879bb4638b7a3aead6b061cb6422083c6be505ee6873be54e3376380df164c73edd8901d4145a9bfe9bc0b008a568fd8b0626b1df96fae8f
+  checksum: 44096e5cd5a03b17ee5eb0a3b9e9a4db85d87da8ae2abda264eae615f2a43e3e6ba5ca208e1161d4d946755b121c10a9550e88792a725951f2c4cff6df0d8a19
   languageName: node
   linkType: hard
 
@@ -5964,7 +5952,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi"
   dependencies:
-    "@apidevtools/json-schema-ref-parser": ^9.0.6
+    "@apidevtools/json-schema-ref-parser": ^11.0.0
     "@backstage/backend-common": ^0.25.0
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
