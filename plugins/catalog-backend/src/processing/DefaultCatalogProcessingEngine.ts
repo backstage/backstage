@@ -135,13 +135,10 @@ export class DefaultCatalogProcessingEngine {
       pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
-          const { items } = await this.processingDatabase.transaction(
-            async tx => {
-              return this.processingDatabase.getProcessableEntities(tx, {
-                processBatchSize: count,
-              });
-            },
-          );
+          const { items } =
+            await this.processingDatabase.getProcessableEntities(this.knex, {
+              processBatchSize: count,
+            });
           return items;
         } catch (error) {
           this.logger.warn('Failed to load processing items', error);

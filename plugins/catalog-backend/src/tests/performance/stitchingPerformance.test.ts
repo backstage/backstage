@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Knex } from 'knex';
+import { default as catalogPlugin } from '../..';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEntitiesProcessor,
@@ -176,7 +177,7 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          catalogPlugin,
           mockServices.rootConfig.factory({ data: config }),
           mockServices.database.factory({ knex }),
           createBackendModule({
