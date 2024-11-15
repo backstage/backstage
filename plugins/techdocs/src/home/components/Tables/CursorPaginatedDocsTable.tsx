@@ -29,8 +29,17 @@ type PaginatedDocsTableProps = {
  */
 
 export function CursorPaginatedDocsTable(props: PaginatedDocsTableProps) {
-  const { columns, data, next, prev, title, isLoading, options, ...restProps } =
-    props;
+  const {
+    actions,
+    columns,
+    data,
+    next,
+    prev,
+    title,
+    isLoading,
+    options,
+    ...restProps
+  } = props;
 
   return (
     <Table
@@ -45,6 +54,7 @@ export function CursorPaginatedDocsTable(props: PaginatedDocsTableProps) {
         showFirstLastPageButtons: false,
         pageSize: Number.MAX_SAFE_INTEGER,
         emptyRowsWhenPaging: false,
+        actionsColumnIndex: -1,
       }}
       onPageChange={page => {
         if (page > 0) {
