@@ -9190,13 +9190,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.23.0":
-  version: 6.34.2
-  resolution: "@codemirror/view@npm:6.34.2"
+  version: 6.34.3
+  resolution: "@codemirror/view@npm:6.34.3"
   dependencies:
     "@codemirror/state": ^6.4.0
     style-mod: ^4.1.0
     w3c-keyname: ^2.2.4
-  checksum: 31c492e83b0a02c962203896f219c6184e4ee07832f3c71b0065a9bcad70158aa23f286ecfd2c251acde8061ba8dfa4d3a286da71be2951e995ad3e0d21f9e79
+  checksum: 371c5fc6ef52a4cb0f82d6fd014ce52fa31ddbaa8f7041c019ae49a695668d98d102b67d81f7a76006f768d894d7f9504cc4b2c2a359e243b9bf5e1979a0c4a3
   languageName: node
   linkType: hard
 
