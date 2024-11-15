@@ -26,9 +26,9 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.14.9",
-    "@backstage/core-plugin-api": "^1.9.3",
-    "@backstage/theme": "^0.5.6",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
