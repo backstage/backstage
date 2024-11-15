@@ -67,7 +67,8 @@ Best effort support for implementation of refresh token should be included, but 
 The following are out of scope for this BEP:
 
 - Access delegation, using OAuth providers, such as the ability to acquire a Github token when running a template task.
-- Implementation of refresh flow, as we expect future design of the auth signin to make this easier to implement.
+- Implementation of refresh flow, as we expect future design of the auth sign-in to make this easier to implement.
+- A client implementation for CLIs, including a TypeScript API for CLI developers to use. This requires support for profiles or similar in the CLI, and is considered a future effort.
 
 ## Proposal
 
@@ -78,6 +79,12 @@ you're proposing, but should not include things like API designs or
 implementation.
 -->
 
+The authorization flow is initiated with a user CLI command to `login`. The CLI first performs a request to the authorization token endpoint in the Device Auth Backend API, which returns a device code, user code, and a verification URI. The CLI then displays the device code, user code, and the verification URI to the user, and opens the verification URI in the user's default browser.
+
+When the browser opens the verification page a check is performed to confirm the user has an active Backstage session. If they don't have an active session, a popup is opened by the Backstage Auth plugin for the user to authenticate with the configured Auth Provider. Once this is complete and a valid session is established, the user is able to verify the pre-filled user code by clicking the verify button. Clicking the button to verify the user code sends a request to the CLI Auth Backend API's device_authorization endpoint.
+
+The CLI then polls the Device Auth `/token` endpoint until the user has successfully authenticated with the configured Auth Provider and verified the user code. Once the user has authenticated, the Device Auth Backend API returns the users's Backstage Identity token to the CLI, which is then used to authenticate the user on subsequent called to Backstage Backend APIs.
+
 ## Design Details
 
 <!--
@@ -86,11 +93,7 @@ change are understandable. This may include API specs or even code snippets.
 If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
 -->
 
-The authorization flow is initiated with a user CLI command to `login`. The CLI first performs a request to the authorization token endpoint in the Device Auth Backend API, which returns a device code, user code, and a verification URI. The CLI then displays the device code, user code, and the verification URI to the user, and opens the verification URI in the user's default browser.
-
-When the browser opens the verification page a check is performed to confirm the user has an active Backstage session. If they don't have an active session, a popup is opened by the Backstage Auth plugin for the user to authenticate with the configured Auth Provider. Once this is complete and a valid session is established, the user is able to verify the pre-filled user code by clicking the verify button. Clicking the button to verify the user code sends a request to the CLI Auth Backend API's device_authorization endpoint.
-
-The CLI then polls the Device Auth `/token` endpoint until the user has successfully authenticated with the configured Auth Provider and verified the user code. Once the user has authenticated, the Device Auth Backend API returns the users's Backstage Identity token to the CLI, which is then used to authenticate the user on subsequent called to Backstage Backend APIs.
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
