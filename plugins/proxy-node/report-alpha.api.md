@@ -4,12 +4,24 @@
 
 ```ts
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
+import { Options } from 'http-proxy-middleware';
+
+// @alpha
+export interface ProxyConfig extends Options {
+  // (undocumented)
+  allowedHeaders?: string[];
+  // (undocumented)
+  allowedMethods?: string[];
+  // (undocumented)
+  credentials?: 'require' | 'forward' | 'dangerously-allow-unauthenticated';
+  // (undocumented)
+  reviveRequestBody?: boolean;
+}
 
 // @alpha
 export interface ProxyEndpointsExtensionPoint {
   // (undocumented)
-  addProxyEndpoints(endpoints: JsonObject): void;
+  addProxyEndpoints(endpoints: Record<string, string | ProxyConfig>): void;
 }
 
 // @alpha

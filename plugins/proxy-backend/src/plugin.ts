@@ -21,7 +21,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouterInternal } from './service/router';
 import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
-import { JsonObject } from '@backstage/types';
 
 /**
  * The proxy backend plugin.
@@ -34,7 +33,7 @@ export const proxyPlugin = createBackendPlugin({
     const additionalEndpoints = {};
 
     env.registerExtensionPoint(proxyEndpointsExtensionPoint, {
-      addProxyEndpoints(endpoints: JsonObject) {
+      addProxyEndpoints(endpoints) {
         Object.assign(additionalEndpoints, endpoints);
       },
     });
