@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.16.0-next.2
+
+### Patch Changes
+
+- 0f18340: Change core component Table tool bar search box to the a appropriate Search icon and text
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/version-bridge@1.0.10
+
 ## 0.16.0-next.1
 
 ### Patch Changes

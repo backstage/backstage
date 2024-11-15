@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.5.3-next.2",
+  "version": "0.5.3-next.3",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -178,7 +178,7 @@
     "stoppable": "^1.1.0",
     "tar": "^6.1.12",
     "triple-beam": "^1.4.1",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",

@@ -29,7 +29,7 @@ import {
 export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
-  const { columns, data, isLoading } = props;
+  const { columns, data, isLoading, options } = props;
   const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
     useEntityList();
   const [page, setPage] = React.useState(
@@ -53,6 +53,7 @@ export function OffsetPaginatedCatalogTable(
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
+        ...options,
       }}
       onSearchChange={(searchText: string) =>
         updateFilters({
