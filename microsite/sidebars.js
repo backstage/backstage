@@ -29,6 +29,19 @@ module.exports = {
       },
       {
         type: 'category',
+        label: 'Deploying Backstage',
+        items: [
+          'deployment/index',
+          'deployment/scaling',
+          'deployment/docker',
+          'deployment/k8s',
+          'deployment/heroku',
+          'deployment/koyeb',
+          'deployment/flightcontrol',
+        ],
+      },
+      {
+        type: 'category',
         label: 'Using Backstage',
         items: [
           'getting-started/logging-in',
@@ -36,8 +49,7 @@ module.exports = {
           'getting-started/create-a-component',
         ],
       },
-      'getting-started/keeping-backstage-updated',
-      'getting-started/concepts',
+      'getting-started/keeping-backstage-updated'
     ],
     'Core Features': [
       {
@@ -342,13 +354,6 @@ module.exports = {
       'tooling/package-metadata',
     ],
     Deployment: [
-      'deployment/index',
-      'deployment/scaling',
-      'deployment/docker',
-      'deployment/k8s',
-      'deployment/heroku',
-      'deployment/koyeb',
-      'deployment/flightcontrol',
       {
         type: 'category',
         label: 'Using Backstage Deploy (alpha)',

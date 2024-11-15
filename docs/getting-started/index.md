@@ -21,7 +21,22 @@ If you are planning to contribute a new feature or bug fix to the Backstage proj
 
 ## Prerequisites
 
-This guide assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
+Before we dive in, its good to have an understanding of these concepts which are central to Backstage's
+design and functionality. Being an expert in each of these concepts is not
+necessary, however having a base understanding of each will make administering, developing,
+configuring, and operating Backstage easier.
+
+- CHANGELOG - https://keepachangelog.com
+- Docker - https://www.docker.com/
+- Monorepo - https://semaphoreci.com/blog/what-is-monorepo
+- Node.js - https://nodejs.org
+- React - https://reactjs.org
+- Semantic Versioning - https://semver.org
+- TypeScript - https://www.typescriptlang.org
+- YAML - https://yaml.org
+- Yarn - https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js
+
+This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
 
 - Access to a Unix-based operating system, such as Linux, macOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
