@@ -85,6 +85,7 @@ import {
   NotificationsPage,
   UserNotificationSettingsCard,
 } from '@backstage/plugin-notifications';
+import { DeviceAuthPage } from '@backstage/plugin-device-auth';
 
 const app = createApp({
   apis,
@@ -219,6 +220,7 @@ const routes = (
       {customDevToolsPage}
     </Route>
     <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="/device-auth" element={<DeviceAuthPage />} />
   </FlatRoutes>
 );
 
