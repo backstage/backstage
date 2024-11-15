@@ -166,6 +166,16 @@ export class GitLabClient {
     return this.pagedRequest(`/groups`, options);
   }
 
+  async getGroupByPath(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    return this.nonPagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}`,
+      options,
+    );
+  }
+
   async listDescendantGroups(
     groupPath: string,
   ): Promise<PagedResponse<GitLabGroup>> {

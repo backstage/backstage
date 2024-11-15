@@ -1037,6 +1037,13 @@ export const all_saas_users_response: MockObject[] = [
   },
 ];
 
+export const single_group_response: GitLabGroup = {
+  id: 1,
+  name: 'group1',
+  description: 'description1',
+  full_path: 'group1',
+};
+
 export const all_groups_response: GitLabGroup[] = [
   {
     id: 1,
@@ -1111,7 +1118,7 @@ export const expectedSaasGroup: MockObject[] = [
   {
     id: 1,
     name: 'group1',
-    description: 'description1',
+    description: '',
     full_path: 'path/group1',
     parent_id: 123,
   },
@@ -2495,7 +2502,7 @@ export const expected_group_members_group_org_scan_entities: MockObject[] = [
         name: 'JohnDoe',
       },
       spec: {
-        memberOf: ['subgroup1'],
+        memberOf: ['subgroup1', 'group1'],
         profile: {
           displayName: 'John Doe',
           email: 'john.doe@company.com',
@@ -2524,6 +2531,30 @@ export const expected_group_members_group_org_scan_entities: MockObject[] = [
         children: [],
         profile: {
           displayName: 'subgroup1',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1',
+          'example.com/team-path': 'group1',
+        },
+        name: 'group1',
+        description: 'description1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'group1',
         },
         type: 'team',
       },

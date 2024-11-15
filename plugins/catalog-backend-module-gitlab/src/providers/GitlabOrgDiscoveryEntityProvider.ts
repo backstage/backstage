@@ -366,6 +366,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     if (this.gitLabClient.isSelfManaged() && this.config.restrictUsersToGroup) {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
+      groups.push(await this.gitLabClient.getGroupByPath(this.config.group));
       users = paginated<GitLabUser>(
         options =>
           this.gitLabClient.listGroupMembers(this.config.group, options), // calls /groups/<groupId>/members
@@ -395,10 +396,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     else {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
+      groups.push(await this.gitLabClient.getGroupByPath(this.config.group));
       const rootGroupSplit = this.config.group.split('/');
       const rootGroup = this.config.restrictUsersToGroup
         ? rootGroupSplit[rootGroupSplit.length - 1]
         : rootGroupSplit[0];
+
       users = paginated<GitLabUser>(
         options =>
           this.gitLabClient.listSaaSUsers(
