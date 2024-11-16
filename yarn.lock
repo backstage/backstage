@@ -4377,7 +4377,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@date-io/core": ^1.3.13
+    "@date-io/core": ^3.0.0
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -9231,6 +9231,13 @@ __metadata:
   version: 1.3.13
   resolution: "@date-io/core@npm:1.3.13"
   checksum: 5a9e9d1de20f0346a3c7d2d5946190caef4bfb0b64d82ba1f4c566657a9192667c94ebe7f438d11d4286d9c190974daad4fb2159294225cd8af4d9a140239879
+  languageName: node
+  linkType: hard
+
+"@date-io/core@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/core@npm:3.0.0"
+  checksum: 5fdecfb1c6bfe30864096c3ce3f9e73a359a6a12f34a5829504eea7a0327122e361a95d9501ad0eaaf02b2e45322913985d9f47e1c667f3c0a4f7d792c116884
   languageName: node
   linkType: hard
 

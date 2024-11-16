@@ -59,7 +59,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@date-io/core": "^1.3.13",
+    "@date-io/core": "^3.0.0",
     "@material-table/core": "^3.1.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
