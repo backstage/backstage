@@ -34,7 +34,11 @@ overridePackagePathResolution({
 createRootLogger();
 
 describe('appPlugin', () => {
-  beforeEach(() => {
+  afterEach(() => {
+    mockDir.clear();
+  });
+
+  it('boots', async () => {
     mockDir.setContent({
       'package.json': '{}',
       dist: {
@@ -42,9 +46,7 @@ describe('appPlugin', () => {
         'index.html': 'winning',
       },
     });
-  });
 
-  it('boots', async () => {
     const { server } = await startTestBackend({
       features: [
         appPlugin,
@@ -66,5 +68,38 @@ describe('appPlugin', () => {
     await expect(
       fetch(`http://localhost:${server.port()}`).then(res => res.text()),
     ).resolves.toBe('winning');
+  });
+
+  it('injects config into index.html', async () => {
+    mockDir.setContent({
+      'package.json': '{}',
+      dist: {
+        static: {},
+        'index.html.tmpl': '<html><head></head></html>',
+      },
+    });
+
+    const { server } = await startTestBackend({
+      features: [
+        appPlugin,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              disableStaticFallbackCache: true,
+            },
+          },
+        }),
+      ],
+    });
+
+    const htmlContent = await fetch(
+      `http://localhost:${server.port()}/api/app/some/html5/route`,
+    ).then(res => res.text());
+
+    expect(htmlContent).toBe(`<html><head>
+<script type="backstage.io/config">
+[]
+</script>
+</head></html>`);
   });
 });
