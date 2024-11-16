@@ -28,7 +28,6 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Knex } from 'knex';
 import { default as catalogPlugin } from '../..';
-import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEntitiesProcessor,
   SyntheticLoadEntitiesProvider,
@@ -57,8 +56,6 @@ async function createBackend(
   numberOfEntities: number;
   stop: () => Promise<void>;
 }> {
-  await applyDatabaseMigrations(knex);
-
   const numberOfEntities =
     load.baseEntitiesCount + load.baseEntitiesCount * load.childrenCount;
 
