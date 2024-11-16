@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { globalStyle, style } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 
-export const textStyles = style({
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '18px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: '300',
-  paddingBottom: '16px',
-});
-
-globalStyle(`${textStyles} p`, {
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '18px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: '300',
+export const chipStyles = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  fontFamily: 'Geist Mono, monospace',
+  fontSize: '13px',
+  borderRadius: '6px',
+  padding: '0px 8px',
+  height: '24px',
+  backgroundColor: '#eaf2fd',
+  color: '#2563eb',
+  marginRight: '4px',
 });

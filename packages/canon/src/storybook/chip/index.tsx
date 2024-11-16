@@ -13,21 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { globalStyle, style } from '@vanilla-extract/css';
+import React from 'react';
+import { chipStyles } from './chip.css';
 
-export const textStyles = style({
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '18px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: '300',
-  paddingBottom: '16px',
-});
-
-globalStyle(`${textStyles} p`, {
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '18px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: '300',
-});
+export const Chip = ({ children }: { children: React.ReactNode }) => {
+  return <span className={chipStyles}>{children}</span>;
+};
