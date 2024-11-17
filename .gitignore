@@ -174,3 +174,5 @@ knip.json
 # Schemathesis temporary files
 .hypothesis/
 .cassettes/
+
+*storybook.log

@@ -1,5 +1,16 @@
-import type { StorybookConfig } from '@storybook/react-vite';
+import type { StorybookConfig } from '@storybook/react-webpack5';
+const { VanillaExtractPlugin } = require('@vanilla-extract/webpack-plugin');
+import { merge } from 'webpack-merge';
 
+import { join, dirname } from 'path';
+
+/**
+ * This function is used to resolve the absolute path of a package.
+ * It is needed in projects that use Yarn PnP or are set up within a monorepo.
+ */
+function getAbsolutePath(value: string): any {
+  return dirname(require.resolve(join(value, 'package.json')));
+}
 const config: StorybookConfig = {
   stories: [
     '../src/docs/**/*.mdx',
@@ -8,15 +19,23 @@ const config: StorybookConfig = {
   ],
   staticDirs: ['../static'],
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@chromatic-com/storybook',
-    '@storybook/addon-interactions',
-    '@storybook/addon-themes',
+    getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
+    getAbsolutePath('@storybook/addon-onboarding'),
+    getAbsolutePath('@storybook/addon-essentials'),
+    getAbsolutePath('@chromatic-com/storybook'),
+    getAbsolutePath('@storybook/addon-interactions'),
+    // getAbsolutePath("@storybook/addon-styling-webpack")
   ],
   framework: {
-    name: '@storybook/react-vite',
-    options: {},
+    name: getAbsolutePath('@storybook/react-webpack5'),
+    options: {
+      plugins: [new VanillaExtractPlugin()],
+    },
+  },
+  webpackFinal: config => {
+    return merge(config, {
+      plugins: [new VanillaExtractPlugin()],
+    });
   },
 };
 export default config;
