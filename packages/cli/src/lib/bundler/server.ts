@@ -59,6 +59,26 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   let latestFrontendAppConfigs: AppConfig[] = [];
 
+  /** Triggers a full reload of all clients */
+  const triggerReload = () => {
+    if (viteServer) {
+      viteServer.restart();
+    }
+
+    if (webpackServer) {
+      webpackServer.invalidate();
+
+      // For the Rspack server it's not enough to invalidate, we also need to
+      // tell the browser to reload, which we do with a 'static-changed' message
+      if (process.env.EXPERIMENTAL_RSPACK) {
+        webpackServer.sendMessage(
+          webpackServer.webSocketServer?.clients ?? [],
+          'static-changed',
+        );
+      }
+    }
+  };
+
   const cliConfig = await loadCliConfig({
     args: options.configPaths,
     fromPackage: name,
@@ -66,8 +86,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
 
-      webpackServer?.invalidate();
-      viteServer?.restart();
+      triggerReload();
     },
   });
   latestFrontendAppConfigs = cliConfig.frontendAppConfigs;
@@ -102,8 +121,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     config: fullConfig,
     targetPath: paths.targetPath,
     watch() {
-      webpackServer?.invalidate();
-      viteServer?.restart();
+      triggerReload();
     },
   });
 
