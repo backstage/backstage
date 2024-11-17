@@ -56,17 +56,21 @@ describe('migrations', () => {
           entity_ref: 'k:ns/n1',
           unprocessed_entity: '{}',
           errors: '[]',
-          next_update_at: new Date(),
           last_discovery_at: new Date(),
         })
         .into('refresh_state');
+      await knex
+        .insert({
+          entity_id: 'i1',
+          next_update_at: new Date(),
+        })
+        .into('refresh_state_queues');
       await knex
         .insert({
           entity_id: 'i2',
           entity_ref: 'k:ns/n2',
           unprocessed_entity: '{}',
           errors: '[]',
-          next_update_at: new Date(),
           last_discovery_at: new Date(),
         })
         .into('refresh_state');
@@ -99,6 +103,7 @@ describe('migrations', () => {
 
       await knex.delete().from('refresh_state').where({ entity_id: 'i1' });
 
+      await expect(knex('refresh_state_queues')).resolves.toEqual([]);
       await expect(knex('search')).resolves.toEqual([]);
       await expect(knex('refresh_state_references')).resolves.toEqual([]);
       await expect(knex('relations')).resolves.toEqual([]);
@@ -362,9 +367,12 @@ describe('migrations', () => {
         ]),
       );
 
+      const oldLog = console.log;
+      console.log = jest.fn();
       await expect(migrateDownOnce(knex)).rejects.toThrow(
         `Migration aborted: Found 1 entries with 'target' exceeding 255 characters. Manual intervention required.`,
       );
+      console.log = oldLog;
 
       // Now remove the long URL
       await knex('locations')
@@ -519,6 +527,75 @@ describe('migrations', () => {
 
       expect(true).toBe(true);
       await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    '20241117000000_separate_queues.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20241117000000_separate_queues.js');
+
+      await knex('refresh_state').insert([
+        {
+          entity_id: 'id1',
+          entity_ref: 'k:ns/n1',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          last_discovery_at: knex.fn.now(),
+          next_update_at: knex.fn.now(),
+          next_stitch_at: knex.fn.now(),
+          next_stitch_ticket: 't1',
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'k:ns/n2',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          last_discovery_at: knex.fn.now(),
+          next_update_at: knex.fn.now(),
+          next_stitch_at: null,
+          next_stitch_ticket: null,
+        },
+      ]);
+
+      const before = await knex('refresh_state').orderBy('entity_id');
+      expect(before.length).toBe(2);
+      expect(before[0].next_update_at).not.toBeNull();
+      expect(before[0].next_stitch_at).not.toBeNull();
+      expect(before[0].next_stitch_ticket).not.toBeNull();
+      expect(before[1].next_update_at).not.toBeNull();
+      expect(before[1].next_stitch_at).toBeNull();
+      expect(before[1].next_stitch_ticket).toBeNull();
+
+      await expect(knex('refresh_state_queues')).rejects.toThrow();
+
+      await migrateUpOnce(knex);
+
+      const q = await knex('refresh_state_queues').orderBy('entity_id');
+      expect(q.length).toBe(2);
+      expect(q[0].next_update_at).toEqual(before[0].next_update_at);
+      expect(q[0].next_stitch_at).toEqual(before[0].next_stitch_at);
+      expect(q[0].next_stitch_ticket).toEqual(before[0].next_stitch_ticket);
+      expect(q[1].next_update_at).toEqual(before[1].next_update_at);
+      expect(q[1].next_stitch_at).toEqual(before[1].next_stitch_at);
+      expect(q[1].next_stitch_ticket).toEqual(before[1].next_stitch_ticket);
+
+      await migrateDownOnce(knex);
+
+      const after = await knex('refresh_state').orderBy('entity_id');
+      expect(after.length).toBe(2);
+      expect(after[0].next_update_at).toEqual(before[0].next_update_at);
+      expect(after[0].next_stitch_at).toEqual(before[0].next_stitch_at);
+      expect(after[0].next_stitch_ticket).toEqual(before[0].next_stitch_ticket);
+      expect(after[1].next_update_at).toEqual(before[1].next_update_at);
+      expect(after[1].next_stitch_at).toEqual(before[1].next_stitch_at);
+      expect(after[1].next_stitch_ticket).toEqual(before[1].next_stitch_ticket);
+
+      await expect(knex('refresh_state_queues')).rejects.toThrow();
     },
   );
 });
