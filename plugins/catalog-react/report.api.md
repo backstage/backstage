@@ -620,6 +620,8 @@ export interface EntityTypePickerProps {
   hidden?: boolean;
   // (undocumented)
   initialFilter?: string;
+  // (undocumented)
+  sorted?: boolean;
 }
 
 // @public (undocumented)
