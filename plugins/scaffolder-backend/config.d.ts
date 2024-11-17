@@ -26,6 +26,7 @@ export interface Config {
       name?: string;
       email?: string;
     };
+
     /**
      * The commit message used when new components are created.
      */
@@ -64,16 +65,15 @@ export interface Config {
      * be attempted to recover.
      *
      * If not specified, the default value is 5 seconds.
-     *
      */
-    EXPERIMENTAL_recoverTasksTimeout?: HumanDuration;
+    EXPERIMENTAL_recoverTasksTimeout?: HumanDuration | string;
 
     /**
      * Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.
      *
      * By default, the frequency is every 5 minutes.
      */
-    taskTimeoutJanitorFrequency?: HumanDuration;
+    taskTimeoutJanitorFrequency?: HumanDuration | string;
 
     /**
      * Sets the task's heartbeat timeout, when to consider a task to be staled.
@@ -82,6 +82,6 @@ export interface Config {
      *
      * Default value is 24 hours.
      */
-    taskTimeout?: HumanDuration;
+    taskTimeout?: HumanDuration | string;
   };
 }

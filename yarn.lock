@@ -4158,6 +4158,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    ms: ^2.1.3
   languageName: unknown
   linkType: soft
 
