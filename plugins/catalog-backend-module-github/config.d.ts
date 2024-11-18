@@ -114,9 +114,9 @@ export interface Config {
               visibility?: Array<'private' | 'internal' | 'public'>;
             };
             /**
-             * (Optional) TaskScheduleDefinition for the refresh.
+             * TaskScheduleDefinition for the refresh.
              */
-            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            schedule: SchedulerServiceTaskScheduleDefinitionConfig;
           }
         | {
             [name: string]: {
@@ -183,9 +183,9 @@ export interface Config {
                 visibility?: Array<'private' | 'internal' | 'public'>;
               };
               /**
-               * (Optional) TaskScheduleDefinition for the refresh.
+               * TaskScheduleDefinition for the refresh.
                */
-              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+              schedule: SchedulerServiceTaskScheduleDefinitionConfig;
             };
           };
 
