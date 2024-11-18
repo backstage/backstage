@@ -17,17 +17,32 @@ import { attachComponentData, Extension } from '@backstage/core-plugin-api';
 import { FILTERS_KEY, FILTERS_WRAPPER_KEY } from './keys';
 import React from 'react';
 
+/**
+ * A filter template that can be used to create custom filters.
+ *
+ * @public
+ */
 export type FilterTemplate<T = any> = React.ComponentType<
   {
     onChange: (value: any) => void;
   } & T
 >;
 
+/**
+ * Options for creating a filter.
+ *
+ * @public
+ */
 export interface FilterOptions<P = any> {
   name: string;
   component: FilterTemplate<P>;
 }
 
+/**
+ * Method for creating custom filters that can be used in the scaffolder frontend form.
+ *
+ * @public
+ */
 export function createScaffolderFilter(
   options: FilterOptions,
 ): Extension<FilterTemplate> {
@@ -40,6 +55,11 @@ export function createScaffolderFilter(
   };
 }
 
+/**
+ * The wrapping component for defining scaffolder filters as children
+ *
+ * @public
+ */
 export const ScaffolderTemplateFilter: React.ComponentType<
   React.PropsWithChildren<{}>
 > = (): JSX.Element | null => null;

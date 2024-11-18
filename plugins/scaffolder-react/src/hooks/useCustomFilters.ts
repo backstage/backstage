@@ -18,7 +18,7 @@ import { FILTERS_KEY, FILTERS_WRAPPER_KEY } from '../filters/keys';
 import { FilterOptions } from '../filters';
 
 /**
- * Hook that returns all custom field extensions from the current outlet.
+ * Hook that returns all custom filter extensions from the current outlet.
  * @public
  */
 export const useCustomFilters = <TComponentDataType = FilterOptions>(
