@@ -180,16 +180,6 @@ export const columnFactories = Object.freeze({
       searchable: true,
     };
   },
-  createDisplayNameColumn(options?: {
-    hidden?: boolean;
-  }): TableColumn<CatalogTableRow> {
-    return {
-      title: 'Display Name',
-      field: 'entity.spec.profile.displayName',
-      hidden: options?.hidden,
-      searchable: true,
-    };
-  },
   createLabelColumn(
     key: string,
     options?: { title?: string; defaultValue?: string },

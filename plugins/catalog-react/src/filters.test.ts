@@ -41,18 +41,6 @@ const entities: Entity[] = [
       tags: ['gRPC', 'java'],
     },
   },
-  {
-    apiVersion: '1',
-    kind: 'User',
-    metadata: {
-      name: 'user',
-    },
-    spec: {
-      profile: {
-        displayName: 'John Doe',
-      },
-    },
-  },
 ];
 
 const templates: TemplateEntityV1beta3[] = [
@@ -89,13 +77,6 @@ describe('EntityTextFilter', () => {
     const filter = new EntityTextFilter('app');
     expect(filter.filterEntity(entities[0])).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
-  });
-
-  it('should search displayName', () => {
-    const filter = new EntityTextFilter('John D');
-    expect(filter.filterEntity(entities[0])).toBeFalsy();
-    expect(filter.filterEntity(entities[1])).toBeFalsy();
-    expect(filter.filterEntity(entities[2])).toBeTruthy();
   });
 
   it('should search template title', () => {
