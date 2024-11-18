@@ -1,0 +1,86 @@
+{
+  "name": "@backstage/canon",
+  "version": "0.0.0",
+  "backstage": {
+    "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/canon"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@base_ui/react": "^1.0.0-alpha.3",
+    "@vanilla-extract/css": "^1.16.0",
+    "@vanilla-extract/dynamic": "^2.1.2",
+    "@vanilla-extract/recipes": "^0.5.5",
+    "@vanilla-extract/sprinkles": "^1.6.3"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@chromatic-com/storybook": "^3.2.2",
+    "@eslint/js": "^9.13.0",
+    "@storybook/addon-essentials": "^8.4.4",
+    "@storybook/addon-interactions": "^8.4.4",
+    "@storybook/addon-onboarding": "^8.4.4",
+    "@storybook/addon-styling-webpack": "^1.0.1",
+    "@storybook/addon-themes": "^8.4.4",
+    "@storybook/addon-webpack5-compiler-swc": "^1.0.5",
+    "@storybook/blocks": "^8.4.4",
+    "@storybook/react": "^8.4.4",
+    "@storybook/react-webpack5": "^8.4.4",
+    "@storybook/test": "^8.4.4",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vanilla-extract/rollup-plugin": "^1.3.10",
+    "@vanilla-extract/webpack-plugin": "^2.3.14",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.13",
+    "eslint-plugin-storybook": "^0.11.0",
+    "globals": "^15.11.0",
+    "mini-css-extract-plugin": "^2.9.2",
+    "storybook": "^8.4.4",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.10.0",
+    "webpack-merge": "^6.0.1"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

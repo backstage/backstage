@@ -1,0 +1,100 @@
+import { Unstyled, Source } from '@storybook/blocks';
+import { Title } from '../storybook/title';
+import { Text } from '../storybook/text';
+import { Chip } from '../storybook/chip';
+import * as Table from '../storybook/table';
+
+<Unstyled>
+
+<Title type="h1">Theming</Title>
+<Text>
+  Backstage ships with a default theme with a light and dark mode variant. The
+  themes are provided as a part of the{' '}
+  <a href="https://github.com/backstage/backstage">@backstage/canon</a> package,
+  which also includes utilities for customizing the default theme, or creating
+  completely new themes.
+</Text>
+
+<Title type="h2">Light & Dark modes</Title>
+<Text>
+  By default we are supporting both light and dark modes. Each user can opt to
+  choose what theme they want to use or to use their system decide what theme to
+  use. If you want to create your own theme, you will have to set both light and
+  dark themes following the instructions below. If you only set one of them, the
+  other mode will fallback to the default theme.
+</Text>
+
+<Title type="h2">How to create your own theme</Title>
+<Text>
+  To create your own theme, you will have to define the variables below. To do
+  that, create a theme.css file and import it in your application. Here's an
+  example below on how to set your light and dark mode.
+</Text>
+<Source
+  code={`/** Light theme **/
+[data-theme='light'] {
+  --canon-accent: #1ed760;
+  --canon-bg: #fff;
+  --canon-surface-1: #f5f5f5;
+  --canon-surface-2: #000;
+  --canon-outline: #666;
+  --canon-outline-focus: #ccc;
+  --canon-text-primary: #f0f0f0;
+  --canon-text-secondary: #666;
+  --canon-font-sans: 'Geist', serif;
+  --canon-font-monospace: 'Monospace', monospace;
+  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji';
+  /* ... other values */
+}
+  
+/** Dark theme **/
+[data-theme='dark'] {
+  --canon-accent: #1ed760;
+  --canon-bg: #000;
+  --canon-surface-1: #f5f5f5;
+  --canon-surface-2: #000;
+  --canon-outline: #666;
+  --canon-outline-focus: #ccc;
+  --canon-text-primary: #fff;
+  --canon-text-secondary: #666;
+  --canon-font-sans: 'Geist', serif;
+  --canon-font-monospace: 'Monospace', monospace;
+  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji';
+  /* ... other values */
+}
+`}
+  language="css"
+  dark
+/>
+
+<Title type="h2">Colors</Title>
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-accent</Chip>
+      </Table.Cell>
+      <Table.Cell>The accent color for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>The background color for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+<Title type="h2">Typography</Title>
+<Text>
+  Our theming is system is still a work in progress. We will be adding more
+  features and documentation over time.
+</Text>
+
+</Unstyled>

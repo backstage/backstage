@@ -1,0 +1,117 @@
+import { Canvas, Meta, Unstyled } from '@storybook/blocks';
+import * as BoxStories from './box.stories';
+import { PropsTable } from '../../storybook/props-table';
+import { Chip } from '../../storybook/chip';
+import * as Table from '../../storybook/table';
+
+<Meta of={BoxStories} />
+
+# Box
+
+Box is the lowest-level component in Canon. We use it internally to build all of our components.
+
+<Canvas of={BoxStories.Basic} />
+
+<Unstyled>
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Type</Table.HeaderCell>
+      <Table.HeaderCell>Default</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>background</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>string</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>transparent</Chip>
+      </Table.Cell>
+      <Table.Cell>The background color of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>display</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>block</Chip>
+        <Chip>flex</Chip>
+        <Chip>inline-block</Chip>
+        <Chip>inline-flex</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>block</Chip>
+      </Table.Cell>
+      <Table.Cell>The display property of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>padding</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+      <Table.Cell>The padding of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>paddingX</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+      <Table.Cell>The horizontal padding of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>paddingY</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+      <Table.Cell>The vertical padding of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>paddingLeft</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+      <Table.Cell>The left padding of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>paddingRight</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+      <Table.Cell>The right padding of the box.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+</Unstyled>
