@@ -35,9 +35,6 @@ module.exports = {
           'deployment/scaling',
           'deployment/docker',
           'deployment/k8s',
-          'deployment/heroku',
-          'deployment/koyeb',
-          'deployment/flightcontrol',
         ],
       },
       {
