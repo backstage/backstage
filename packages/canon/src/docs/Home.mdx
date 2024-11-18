@@ -1,0 +1,46 @@
+import { Unstyled } from '@storybook/blocks';
+import { Text } from '../storybook/text';
+import { ComponentStatus } from '../storybook/component-status';
+import { Columns } from '../storybook/columns';
+
+![Canon Header](header.png)
+
+<Unstyled>
+
+<Text style={{ marginTop: '64px' }}>
+  Welcome to the Canon, the new library for building Backstage plugins. This
+  project is still under active development but we will make sure to document
+  the API as we go. We are aiming to improve the general UI of Backstage and
+  plugins across Backstage. This new library will take time to build but we are
+  building it incrementally with not conflict with the existing theming system.
+</Text>
+
+<Columns style={{ marginTop: '64px' }}>
+  <ComponentStatus
+    name="Theming system"
+    status="inProgress"
+    link="/?path=/docs/theme--docs"
+  />
+  <ComponentStatus name="Storybook setup" status="inProgress" />
+  <ComponentStatus name="Tokens" status="inProgress" />
+  <ComponentStatus
+    name="Box"
+    status="inProgress"
+    link="/?path=/docs/components-box--docs"
+  />
+  <ComponentStatus
+    name="Button"
+    status="inProgress"
+    link="/?path=/docs/components-button--docs"
+  />
+  <ComponentStatus name="Input" status="notStarted" />
+  <ComponentStatus name="Select" status="notStarted" />
+  <ComponentStatus name="Checkbox" status="notStarted" />
+  <ComponentStatus name="Radio" status="notStarted" />
+  <ComponentStatus name="Switch" status="notStarted" />
+  <ComponentStatus name="Tooltip" status="notStarted" />
+  <ComponentStatus name="Header" status="notStarted" />
+  <ComponentStatus name="Tabs" status="notStarted" />
+</Columns>
+
+</Unstyled>
