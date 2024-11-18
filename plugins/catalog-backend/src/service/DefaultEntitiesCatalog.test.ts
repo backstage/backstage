@@ -1183,7 +1183,6 @@ describe('DefaultEntitiesCatalog', () => {
         const request: QueryEntitiesInitialRequest = {
           filter,
           limit: 100,
-
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
           fullTextFilter: { term: 'cAt ' },
           credentials: mockCredentials.none(),
@@ -1197,6 +1196,60 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response.pageInfo.nextCursor).toBeUndefined();
         expect(response.pageInfo.prevCursor).toBeUndefined();
         expect(response.totalItems).toBe(3);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should filter the results when query is provided with fullTextFilter for camelCase fields, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const entities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'camelCase',
+            },
+            spec: {
+              shouldSearchCamelCase: 'searched',
+            },
+          },
+        ];
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const request: QueryEntitiesInitialRequest = {
+          limit: 100,
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+          fullTextFilter: {
+            term: 'sear',
+            fields: ['spec.shouldSearchCamelCase'],
+          },
+          credentials: mockCredentials.none(),
+        };
+        const response = await catalog.queryEntities(request);
+        expect(response.items).toEqual(entities);
+        expect(response.pageInfo.nextCursor).toBeUndefined();
+        expect(response.pageInfo.prevCursor).toBeUndefined();
+        expect(response.totalItems).toBe(1);
       },
     );
 
