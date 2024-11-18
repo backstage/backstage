@@ -22,6 +22,12 @@ yarn backstage-cli versions:bump
 The reason for bumping all `@backstage` packages at once is to maintain the
 dependencies that they have between each other.
 
+:::tip
+
+To make the the version bump process even easier and more streamlined we highly recommend using the [Backstage yarn plugin](#managing-package-versions-with-the-backstage-yarn-plugin)
+
+:::
+
 By default the bump command will upgrade `@backstage` packages to the latest `main` release line which is released monthly. For those in a hurry that want to track the `next` release line which releases weekly can do so using the `--release next` option.
 
 ```bash
@@ -56,7 +62,7 @@ can find the current version of your Backstage installation in `backstage.json`.
 
 The Backstage yarn plugin makes it easier to manage Backstage package versions,
 by determining the appropriate version for each package based on the overall
-Backstage version in backstage.json. This avoids the need to update every
+Backstage version in `backstage.json`. This avoids the need to update every
 package.json across your Backstage monorepo, and means that when adding new
 `@backstage` dependencies, you don't need to worry about figuring out the right
 version to use to match the currently-installed release of Backstage.
