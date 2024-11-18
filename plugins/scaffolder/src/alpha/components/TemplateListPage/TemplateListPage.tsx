@@ -52,7 +52,10 @@ import {
   viewTechDocRouteRef,
 } from '../../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
-import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import {
+  FilterOptions,
+  TemplateGroupFilter,
+} from '@backstage/plugin-scaffolder-react';
 import {
   TranslationFunction,
   useTranslationRef,
@@ -78,7 +81,7 @@ export type TemplateListPageProps = {
     title?: string;
     subtitle?: string;
   };
-  overrideFilters?: React.ReactNode;
+  additionalFilters?: FilterOptions[];
 };
 
 const createGroupsWithOther = (
@@ -192,21 +195,20 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              {props.overrideFilters ? (
-                props.overrideFilters
-              ) : (
-                <>
-                  <EntitySearchBar />
-                  <EntityKindPicker initialFilter="template" hidden />
-                  <UserListPicker
-                    initialFilter="all"
-                    availableFilters={['all', 'starred']}
-                  />
-                  <TemplateCategoryPicker />
-                  <EntityTagPicker />
-                  <EntityOwnerPicker />
-                </>
-              )}
+              <>
+                <EntitySearchBar />
+                <EntityKindPicker initialFilter="template" hidden />
+                <UserListPicker
+                  initialFilter="all"
+                  availableFilters={['all', 'starred']}
+                />
+                <TemplateCategoryPicker />
+                <EntityTagPicker />
+                <EntityOwnerPicker />
+                {props.additionalFilters?.map(filter => (
+                  <>{React.createElement(filter.component)}</>
+                ))}
+              </>
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
