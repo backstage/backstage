@@ -1,5 +1,35 @@
 # @backstage/plugin-events-node
 
+## 0.4.5-next.3
+
+### Patch Changes
+
+- 9816f51: Add raw body information to `RequestDetails`
+  and use the raw body when validating incoming event requests.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.5-next.2
+
+### Patch Changes
+
+- 0b57aa1: Fixed an issue where the event bus polling would duplicate and increase exponentially over time.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.3-next.0
 
 ### Patch Changes

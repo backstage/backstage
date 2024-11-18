@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-node",
-  "version": "0.1.14-next.0",
+  "version": "0.1.14-next.3",
   "description": "Node.js library for the signals plugin",
   "backstage": {
     "role": "node-library",
@@ -37,14 +37,13 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.17.1",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

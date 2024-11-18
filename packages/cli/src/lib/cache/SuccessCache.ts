@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
+import { paths } from '../paths';
 
 const DEFAULT_CACHE_BASE_PATH = 'node_modules/.cache/backstage-cli';
 
@@ -23,6 +24,15 @@ const CACHE_MAX_AGE_MS = 7 * 24 * 3600_000;
 
 export class SuccessCache {
   readonly #path: string;
+
+  /**
+   * Trim any occurrences of the workspace root path from the input string. This
+   * is useful to ensure stable hashes that don't vary based on the workspace
+   * location.
+   */
+  static trimPaths(input: string) {
+    return input.replaceAll(paths.targetRoot, '');
+  }
 
   constructor(name: string, basePath?: string) {
     this.#path = resolvePath(basePath ?? DEFAULT_CACHE_BASE_PATH, name);

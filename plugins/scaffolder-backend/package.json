@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "1.26.3-next.0",
+  "version": "1.27.0-next.3",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -107,7 +107,7 @@
     "prom-client": "^15.0.0",
     "tar": "^6.1.12",
     "triple-beam": "^1.4.1",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.7.0",
     "yaml": "^2.0.0",

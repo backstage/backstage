@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-backend",
-  "version": "1.0.33-next.0",
+  "version": "1.0.33-next.2",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "todo-list",
@@ -45,7 +45,7 @@
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
@@ -53,7 +53,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
-    "@types/uuid": "^9.0.0",
     "supertest": "^7.0.0"
   }
 }

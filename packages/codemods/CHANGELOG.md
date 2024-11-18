@@ -1,5 +1,13 @@
 # @backstage/codemods
 
+## 0.1.52-next.0
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+
 ## 0.1.51
 
 ### Patch Changes

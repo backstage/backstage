@@ -210,10 +210,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     const projects = paginated<GitLabProject>(
       options => this.gitLabClient.listProjects(options),
       {
-        archived: false,
         group: this.config.group,
         page: 1,
         per_page: 50,
+        ...(!this.config.includeArchivedRepos && { archived: false }),
       },
     );
 

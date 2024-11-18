@@ -26,14 +26,7 @@ import {
   PluginTaskSchedulerImpl,
   parseDuration,
 } from './PluginTaskSchedulerImpl';
-
-function defer() {
-  let resolve = () => {};
-  const promise = new Promise<void>(_resolve => {
-    resolve = _resolve;
-  });
-  return { promise, resolve };
-}
+import { createDeferred } from '@backstage/types';
 
 jest.setTimeout(60_000);
 
@@ -188,14 +181,14 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const { promise, resolve } = defer();
+        const promise = createDeferred();
 
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromObject({ years: 1 }),
           fn: async () => {
-            resolve();
+            promise.resolve();
             await new Promise(r => setTimeout(r, 20000));
           },
           scope: 'global',
@@ -313,14 +306,14 @@ describe('PluginTaskManagerImpl', () => {
     it('cant trigger a running task', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const { promise, resolve } = defer();
+      const promise = createDeferred();
 
       await manager.scheduleTask({
         id: 'task1',
         timeout: Duration.fromMillis(5000),
         frequency: Duration.fromObject({ years: 1 }),
         fn: async () => {
-          resolve();
+          promise.resolve();
           await new Promise(r => setTimeout(r, 20000));
         },
         scope: 'local',

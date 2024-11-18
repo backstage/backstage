@@ -12,9 +12,10 @@ import { ReactNode } from 'react';
 import { Theme } from '@mui/material/styles';
 import { Theme as Theme_2 } from '@material-ui/core/styles';
 import { Theme as Theme_3 } from '@material-ui/core';
+import type { Theme as Theme_4 } from '@material-ui/core/styles/createTheme';
 import { ThemeOptions } from '@mui/material/styles';
 import { ThemeOptions as ThemeOptions_2 } from '@material-ui/core/styles';
-import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core';
+import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core/styles/createTheme';
 import { UnifiedTheme as UnifiedTheme_2 } from '@backstage/theme';
 
 // @public @deprecated
@@ -91,7 +92,7 @@ export type BackstagePaletteOptions = PaletteOptions &
   BackstagePaletteAdditions;
 
 // @public @deprecated
-export interface BackstageTheme extends Theme_3 {
+export interface BackstageTheme extends Theme_4 {
   // (undocumented)
   getPageTheme: (selector: PageThemeSelector) => PageTheme;
   // (undocumented)
@@ -188,13 +189,13 @@ export function createBaseThemeOptions<PaletteOptions>(
 };
 
 // @public @deprecated
-export function createTheme(options: SimpleThemeOptions): Theme_3;
+export function createTheme(options: SimpleThemeOptions): Theme_4;
 
 // @public @deprecated
 export function createThemeOptions(options: SimpleThemeOptions): ThemeOptions_3;
 
 // @public @deprecated
-export function createThemeOverrides(theme: Theme_3): Overrides;
+export function createThemeOverrides(theme: Theme_4): Overrides;
 
 // @public
 export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme;

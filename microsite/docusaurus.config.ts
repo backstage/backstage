@@ -444,5 +444,8 @@ const config: Config = {
       ],
     },
   } satisfies Preset.ThemeConfig,
+  future: {
+    experimental_faster: true,
+  },
 };
 export default config;

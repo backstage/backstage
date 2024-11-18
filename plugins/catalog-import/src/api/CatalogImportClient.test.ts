@@ -61,12 +61,12 @@ import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { CatalogImportClient } from './CatalogImportClient';
 import {
   AzurePrOptions,
   AzurePrResult,
   createAzurePullRequest,
 } from './AzureRepoApiClient';
+import { CatalogImportClient } from './CatalogImportClient';
 
 describe('CatalogImportClient', () => {
   const server = setupServer();
@@ -774,6 +774,75 @@ describe('CatalogImportClient', () => {
           head: pullRequestBranchName,
         }),
       );
+    });
+    it('should create GitHub pull request and validate all documents inside the YAML file', async () => {
+      catalogApi.validateEntity.mockResolvedValue({
+        valid: true,
+      });
+      await expect(
+        catalogImportClient.submitPullRequest({
+          repositoryUrl: 'https://github.com/backstage/backstage',
+          fileContent: `apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: reg-graphql-shopping
+  annotations:
+    github.com/project-slug: tkww/reg-graphql-shopping
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: registry-pandora
+  system: system
+---
+
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: system
+spec:
+  owner: registry-pandora
+  lifecycle: production
+`,
+          title: 'A title/message',
+          body: 'A body',
+        }),
+      ).resolves.toEqual({
+        link: 'http://pull/request/0',
+        location:
+          'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+      });
+      expect(catalogApi.validateEntity).toHaveBeenCalledTimes(2);
+      expect(
+        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
+      ).toEqual({
+        owner: 'backstage',
+        repo: 'backstage',
+        ref: 'refs/heads/backstage-integration',
+        sha: 'any',
+      });
+      expect(
+        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
+          .mock.calls[0][0],
+      ).toEqual({
+        owner: 'backstage',
+        repo: 'backstage',
+        path: 'catalog-info.yaml',
+        message: 'A title/message',
+        content:
+          'YXBpVmVyc2lvbjogYmFja3N0YWdlLmlvL3YxYWxwaGExCmtpbmQ6IENvbXBvbmVudAptZXRhZGF0YToKICBuYW1lOiByZWctZ3JhcGhxbC1zaG9wcGluZwogIGFubm90YXRpb25zOgogICAgZ2l0aHViLmNvbS9wcm9qZWN0LXNsdWc6IHRrd3cvcmVnLWdyYXBocWwtc2hvcHBpbmcKICAgIGJhY2tzdGFnZS5pby90ZWNoZG9jcy1yZWY6IGRpcjouCnNwZWM6CiAgdHlwZTogc2VydmljZQogIGxpZmVjeWNsZTogcHJvZHVjdGlvbgogIG93bmVyOiByZWdpc3RyeS1wYW5kb3JhCiAgc3lzdGVtOiBzeXN0ZW0KLS0tCgphcGlWZXJzaW9uOiBiYWNrc3RhZ2UuaW8vdjFhbHBoYTEKa2luZDogU3lzdGVtCm1ldGFkYXRhOgogIG5hbWU6IHN5c3RlbQpzcGVjOgogIG93bmVyOiByZWdpc3RyeS1wYW5kb3JhCiAgbGlmZWN5Y2xlOiBwcm9kdWN0aW9uCg==',
+        branch: 'backstage-integration',
+      });
+      expect(
+        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
+      ).toEqual({
+        owner: 'backstage',
+        repo: 'backstage',
+        title: 'A title/message',
+        head: 'backstage-integration',
+        body: 'A body',
+        base: 'main',
+      });
     });
   });
 

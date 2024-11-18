@@ -83,6 +83,11 @@ export interface KubernetesProxyApi {
     containerName: string;
     previous?: boolean;
   }): Promise<{ text: string }>;
+  deletePod(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+  }): Promise<{ text: string }>;
   getEventsByInvolvedObjectName(request: {
     clusterName: string;
     involvedObjectName: string;

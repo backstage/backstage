@@ -207,12 +207,10 @@ export const NotificationsFilters = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-created">
-              Created after
-            </InputLabel>
+            <InputLabel id="notifications-filter-created">Sent out</InputLabel>
 
             <Select
-              label="Created after"
+              label="Sent out"
               labelId="notifications-filter-created"
               placeholder="Notifications since"
               value={createdAfter}

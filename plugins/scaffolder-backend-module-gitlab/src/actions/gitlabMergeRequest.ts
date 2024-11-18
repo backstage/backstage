@@ -28,7 +28,7 @@ import {
   LoggerService,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
-import { createGitlabApi } from './helpers';
+import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 import { createHash } from 'crypto';
 
@@ -235,7 +235,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           assigneeId = assigneeUser[0].id;
         } catch (e) {
           ctx.logger.warn(
-            `Failed to find gitlab user id for ${assignee}: ${e}. Proceeding with MR creation without an assignee.`,
+            `Failed to find gitlab user id for ${assignee}: ${getErrorMessage(
+              e,
+            )}. Proceeding with MR creation without an assignee.`,
           );
         }
       }
@@ -272,7 +274,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           });
         } catch (e) {
           ctx.logger.warn(
-            `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${e}`,
+            `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -327,7 +331,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           await api.Branches.create(repoID, branchName, String(targetBranch));
         } catch (e) {
           throw new InputError(
-            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${e}`,
+            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -336,7 +342,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           await api.Commits.create(repoID, branchName, title, actions);
         } catch (e) {
           throw new InputError(
-            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${e}`,
+            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -359,7 +367,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         ctx.output('projectPath', repoID);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
-        throw new InputError(`Merge request creation failed${e}`);
+        throw new InputError(
+          `Merge request creation failed. ${getErrorMessage(e)}`,
+        );
       }
     },
   });

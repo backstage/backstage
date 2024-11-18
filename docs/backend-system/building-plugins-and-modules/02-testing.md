@@ -224,10 +224,7 @@ your test database.
 ```ts
 const { knex, subject } = await createSubject(databaseId);
 const { server } = await startTestBackend({
-  features: [
-    myPlugin(),
-    mockServices.database.mock({ getClient: async () => knex }),
-  ],
+  features: [myPlugin(), mockServices.database.factory({ knex })],
 });
 ```
 

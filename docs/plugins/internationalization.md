@@ -165,8 +165,12 @@ export const userSettingsTranslations = createTranslationResource({
     zh: () => import('./userSettings-zh'),
   },
 });
+```
 
+```ts
 // packages/app/src/translations/userSettings-zh.ts
+
+import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
 import { userSettingsTranslationRef } from '@backstage/plugin-user-settings/alpha';
 
 const zh = createTranslationMessages({

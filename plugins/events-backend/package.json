@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend",
-  "version": "0.3.15-next.0",
+  "version": "0.3.16-next.3",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "events",
@@ -61,6 +61,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
+    "content-type": "^1.0.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
@@ -73,6 +74,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-events-backend-test-utils": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
+    "@types/content-type": "^1.1.8",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

@@ -22,14 +22,7 @@ import React from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-
-function defer<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
-  let resolve: (value: T) => void = () => {};
-  const promise = new Promise<T>(_resolve => {
-    resolve = _resolve;
-  });
-  return { promise, resolve };
-}
+import { createDeferred } from '@backstage/types';
 
 describe('useUnregisterEntityDialogState', () => {
   const catalogApi = catalogApiMock.mock();
@@ -47,15 +40,15 @@ describe('useUnregisterEntityDialogState', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    const deferredLocation = defer<Location | undefined>();
-    const deferredColocatedEntities = defer<Entity[]>();
+    const deferredLocation = createDeferred<Location | undefined>();
+    const deferredColocatedEntities = createDeferred<Entity[]>();
 
     resolveLocation = deferredLocation.resolve;
     resolveColocatedEntities = deferredColocatedEntities.resolve;
 
-    catalogApi.getLocationByRef.mockReturnValue(deferredLocation.promise);
+    catalogApi.getLocationByRef.mockReturnValue(deferredLocation);
     catalogApi.getEntities.mockReturnValue(
-      deferredColocatedEntities.promise.then(items => ({ items })),
+      deferredColocatedEntities.then(items => ({ items })),
     );
 
     entity = {

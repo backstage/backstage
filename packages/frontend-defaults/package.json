@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-defaults",
-  "version": "0.1.2-next.0",
+  "version": "0.1.2-next.2",
   "backstage": {
     "role": "web-library"
   },

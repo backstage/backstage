@@ -175,14 +175,23 @@ export namespace mockServices {
         partialImpl?: Partial<CacheService> | undefined,
       ) => ServiceMock<CacheService>;
   }
+  export function database(options: {
+    knex: Knex;
+    migrations?: {
+      skip?: boolean;
+    };
+  }): DatabaseService;
   // (undocumented)
   export namespace database {
-    const // (undocumented)
-      factory: () => ServiceFactory<DatabaseService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<DatabaseService> | undefined,
-      ) => ServiceMock<DatabaseService>;
+    const factory: (options?: {
+      knex: Knex;
+      migrations?: {
+        skip?: boolean;
+      };
+    }) => ServiceFactory<DatabaseService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<DatabaseService> | undefined,
+    ) => ServiceMock<DatabaseService>;
   }
   // (undocumented)
   export function discovery(): DiscoveryService;
