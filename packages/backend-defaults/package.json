@@ -120,7 +120,6 @@
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",
     "@backstage/backend-app-api": "workspace:^",
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
