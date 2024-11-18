@@ -64,6 +64,8 @@ export interface AboutFieldProps {
   // (undocumented)
   children?: React_2.ReactNode;
   // (undocumented)
+  className?: string;
+  // (undocumented)
   gridSizes?: Record<string, number>;
   // (undocumented)
   label: string;
