@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-export { useCustomFieldExtensions } from './useCustomFieldExtensions';
-export { useCustomLayouts } from './useCustomLayouts';
-export { useCustomFilters } from './useCustomFilters';
 export {
-  useTaskEventStream,
-  type TaskStream,
-  type ScaffolderStep,
-} from './useEventStream';
+  ScaffolderTemplateFilter,
+  createScaffolderFilter,
+} from './createScaffolderFilter';
+export type { FilterTemplate, FilterOptions } from './createScaffolderFilter';
