@@ -4131,6 +4131,7 @@ __metadata:
     eslint-plugin-react-refresh: ^0.4.13
     eslint-plugin-storybook: ^0.11.0
     globals: ^15.11.0
+    lucide-react: ^0.460.0
     mini-css-extract-plugin: ^2.9.2
     storybook: ^8.4.4
     typescript: ~5.6.2
@@ -35991,6 +35992,15 @@ __metadata:
   version: 1.1.0
   resolution: "lru.min@npm:1.1.0"
   checksum: c03dcc83f031387f254856bccc8418daff716b79b67886eceb110e3af57f593f752821a7b019ea382f8f48927767ddb1869087586f4bfc5bf9c90674ca80dfa2
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.460.0":
+  version: 0.460.0
+  resolution: "lucide-react@npm:0.460.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
+  checksum: 6106dc16dd7ce7928d6136e81c9e84e87e1b6b0910a0c78777a387c795c0512755e8bf4c602ab8f09518919999a494ed86ba7190863e8e7aec6c82665147ead3
   languageName: node
   linkType: hard
 

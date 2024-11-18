@@ -42,8 +42,7 @@ import * as Table from '../storybook/table';
   --canon-text-primary: #f0f0f0;
   --canon-text-secondary: #666;
   --canon-font-sans: 'Geist', serif;
-  --canon-font-monospace: 'Monospace', monospace;
-  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji';
+  --canon-font-mono: 'Monospace', monospace;
   /* ... other values */
 }
   
@@ -58,8 +57,7 @@ import * as Table from '../storybook/table';
   --canon-text-primary: #fff;
   --canon-text-secondary: #666;
   --canon-font-sans: 'Geist', serif;
-  --canon-font-monospace: 'Monospace', monospace;
-  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji';
+  --canon-font-mono: 'Monospace', monospace;
   /* ... other values */
 }
 `}
@@ -68,6 +66,11 @@ import * as Table from '../storybook/table';
 />
 
 <Title type="h2">Colors</Title>
+<Text>
+  We provide a set of generic colours tokens that we use across Canon. By
+  changing these colours you can easily change the look and feel of your
+  application to match your brand.
+</Text>
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
@@ -88,13 +91,73 @@ import * as Table from '../storybook/table';
       </Table.Cell>
       <Table.Cell>The background color for the theme.</Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-surface-1</Chip>
+      </Table.Cell>
+      <Table.Cell>The first surface color for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-surface-2</Chip>
+      </Table.Cell>
+      <Table.Cell>The second surface color for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-outline</Chip>
+      </Table.Cell>
+      <Table.Cell>The outline color for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-outline-focus</Chip>
+      </Table.Cell>
+      <Table.Cell>The outline focus color for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-text-primary</Chip>
+      </Table.Cell>
+      <Table.Cell>The primary text color for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-text-secondary</Chip>
+      </Table.Cell>
+      <Table.Cell>The secondary text color for the theme.</Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table.Root>
 
 <Title type="h2">Typography</Title>
 <Text>
-  Our theming is system is still a work in progress. We will be adding more
-  features and documentation over time.
+  We have two fonts that we use across Canon. The first one is the sans-serif
+  font that we use for the body of the application. The second one is the
+  monospace font that we use for code blocks and tables.
 </Text>
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-font-sans</Chip>
+      </Table.Cell>
+      <Table.Cell>The sans-serif font for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip>--canon-font-mono</Chip>
+      </Table.Cell>
+      <Table.Cell>The monospace font for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
 
 </Unstyled>
