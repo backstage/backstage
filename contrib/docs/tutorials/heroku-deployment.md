@@ -1,9 +1,4 @@
----
-id: heroku
-title: Deploying with Heroku
-sidebar_label: Heroku
-description: How to deploy Backstage to Heroku
----
+# Deploying Backstage to Heroku
 
 Heroku is a Platform as a Service (PaaS) designed to simplify application deployment.
 

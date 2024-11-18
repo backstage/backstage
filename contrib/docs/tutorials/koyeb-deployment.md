@@ -1,9 +1,4 @@
----
-id: koyeb
-title: Deploying with Koyeb
-sidebar_label: Koyeb
-description: How to deploy Backstage to Koyeb
----
+# Deploying Backstage to Koyeb
 
 This guide explains how to deploy Backstage to [Koyeb](https://www.koyeb.com/), a serverless platform that provides the fastest way to deploy applications globally. Koyeb supports git-driven and container-based deployments.
 

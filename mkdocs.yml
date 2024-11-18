@@ -35,8 +35,6 @@ nav:
           - Scaling: 'deployment/scaling.md'
           - Docker: 'deployment/docker.md'
           - Kubernetes: 'deployment/k8s.md'
-          - Heroku: 'deployment/heroku.md'
-          - Koyeb: 'deployment/koyeb.md'
       - Using Backstage:
           - Logging in: 'getting-started/logging-in.md'
           - Register a component: 'getting-started/register-a-component.md'
