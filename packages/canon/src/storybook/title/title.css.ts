@@ -25,8 +25,8 @@ export const titleStyles = recipe({
   variants: {
     type: {
       h1: {
-        fontSize: '40px',
-        lineHeight: '48px',
+        fontSize: '36px',
+        lineHeight: '44px',
         marginBottom: '32px',
         marginTop: '0px',
       },

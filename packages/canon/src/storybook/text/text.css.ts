@@ -17,7 +17,7 @@ import { globalStyle, style } from '@vanilla-extract/css';
 
 export const textStyles = style({
   fontFamily: '"Geist", sans-serif',
-  fontSize: '18px',
+  fontSize: '16px',
   lineHeight: '28px',
   margin: '0',
   fontWeight: '300',
@@ -26,7 +26,7 @@ export const textStyles = style({
 
 globalStyle(`${textStyles} p`, {
   fontFamily: '"Geist", sans-serif',
-  fontSize: '18px',
+  fontSize: '16px',
   lineHeight: '28px',
   margin: '0',
   fontWeight: '300',
