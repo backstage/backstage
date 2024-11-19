@@ -1,5 +1,24 @@
 # @backstage/plugin-notifications-backend
 
+## 0.4.3
+
+### Patch Changes
+
+- 97ba58f: Add support for user specific notification settings
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-notifications-common@0.0.6
+  - @backstage/plugin-notifications-node@0.2.9
+  - @backstage/plugin-signals-node@0.1.14
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 0.4.3-next.3
 
 ### Patch Changes

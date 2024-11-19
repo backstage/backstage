@@ -1,5 +1,18 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.9
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-notifications-common@0.0.6
+  - @backstage/plugin-signals-node@0.1.14
+  - @backstage/catalog-model@1.7.1
+
 ## 0.2.9-next.3
 
 ### Patch Changes

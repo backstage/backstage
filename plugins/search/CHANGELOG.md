@@ -1,5 +1,22 @@
 # @backstage/plugin-search
 
+## 1.4.19
+
+### Patch Changes
+
+- a4ccc82: Removes the card UI from the search results type filter for a cleaner UI consistent with other filters
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-search-react@1.8.2
+
 ## 1.4.19-next.3
 
 ### Patch Changes

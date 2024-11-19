@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.6.32
+
+### Patch Changes
+
+- a278fdd: Fix rendering of description in MembersListCard. Add guardrails for potential long texts to prevent it from breaking the UI.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/plugin-catalog-common@1.1.1
+
 ## 0.6.32-next.3
 
 ### Patch Changes

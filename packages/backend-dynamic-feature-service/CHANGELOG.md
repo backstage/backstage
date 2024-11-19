@@ -1,5 +1,44 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.5.0
+
+### Minor Changes
+
+- e939cd7: **BREAKING** The `dynamicPluginsFeatureLoader` options related to the root logger behavior (`transports`, `level`, `format`) are now gathered under a single `logger` option which is a function taking an optional `Config` argument and returning the logger options.
+
+  This breaking change is required for 2 reasons:
+
+  - it's totally possible that the current `Config` would be required to provide the logger options,
+  - the logger-related options should be gathered under a common `logger` option because, when the root auditing service is introduced, distinct but similarly-named options would be required for the auditor as well.
+
+### Patch Changes
+
+- 1aeec12: Enhance the `CommonJSModuleLoader` to add support for `resolvePackagePath` calls from backend dynamic plugins, with customizable package resolution, and make the `CommonJSModuleLoader` public API.
+  Fixing this backend dynamic plugin limitation related to `resolvePackagePath` is important for backend dynamic plugins which use the database, since database migration scripts systematically use `resolvePackagePath`.
+- 8593dfa: Improve the way alpha packages are supported when loading dynamic backend plugins.
+  The `ScannedPluginPackage` descriptor of dynamic backend plugins loaded from their alpha `package.json` now contain both the main package manifest and the alpha manifest. Previously it used to contain only the content of the alpha `package.json`, which is nearly empty.
+  This will make it easier to use or display metadata of loaded dynamic backend plugins, which is contained in the main manifest.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-backend@1.28.0
+  - @backstage/plugin-events-backend@0.3.16
+  - @backstage/config-loader@1.9.2
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-search-backend-node@1.3.5
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/backend-app-api@1.0.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/cli-node@0.2.10
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-app-node@0.1.27
+  - @backstage/plugin-permission-node@0.8.5
+  - @backstage/plugin-search-common@1.2.15
+
 ## 0.5.0-next.3
 
 ### Patch Changes

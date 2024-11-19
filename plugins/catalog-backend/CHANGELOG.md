@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog-backend
 
+## 1.28.0
+
+### Minor Changes
+
+- 39fd704: Internal update to use the new generated server types from `backstage-cli package schema openapi generate --server`.
+- 76857da: Added `entity_ref` column to `final_entities` in order to move `refresh_state` away from the read path
+- 34d4360: Drop redundant indices from the database.
+
+  The following redundant indices are removed in this version:
+
+  - `final_entities_entity_id_idx` - overlaps with `final_entities_pkey`
+  - `refresh_state_entity_id_idx` - overlaps with `refresh_state_pkey`
+  - `refresh_state_entity_ref_idx` - overlaps with `refresh_state_entity_ref_uniq`
+  - `search_key_idx` and `search_value_idx` - these were replaced by the composite index `search_key_value_idx` in #22594
+
+  No negative end user impact is expected, but rather that performance should increase due to less index churn.
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- b89834b: Fixed an issue where entities would not be marked for restitching if only the target of a relationship changed.
+- 1bf02cc: Fixed bug when searching an entity by `spec.profile.displayName` in the catalog on the frontend. Text filter fields were not applied correctly to the database query resulting in empty results.
+- 4e58bc7: Upgrade to uuid v11 internally
+- 5efde17: Internal refactor to slightly speed up the processing loop
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.5
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/backend-openapi-utils@0.3.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-node@0.8.5
+
 ## 1.28.0-next.3
 
 ### Minor Changes

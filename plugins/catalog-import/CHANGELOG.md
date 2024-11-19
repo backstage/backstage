@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-import
 
+## 0.12.6
+
+### Patch Changes
+
+- ea5b7f3: Fixed parsing of catalog-info.yaml when creating a PR to register a repository if the file contains more than one document
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/integration@1.15.2
+  - @backstage/integration-react@1.2.1
+  - @backstage/plugin-catalog-common@1.1.1
+
 ## 0.12.6-next.3
 
 ### Patch Changes

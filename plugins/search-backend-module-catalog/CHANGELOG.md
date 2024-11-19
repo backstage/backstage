@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.2.5
+
+### Patch Changes
+
+- 0b8f344: Fixed a bug where the `filter` setting of the collator was not permitted to be an array.
+- 1a1e2f4: Fix search collator text formatting for catalog entities without description
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-search-backend-node@1.3.5
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-search-common@1.2.15
+
 ## 0.2.5-next.3
 
 ### Patch Changes

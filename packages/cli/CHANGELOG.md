@@ -1,5 +1,77 @@
 # @backstage/cli
 
+## 0.29.0
+
+### Minor Changes
+
+- bc47b17: **BREAKING**: Updates ESLint config to ignore all generated source code under `src/**/generated/**/*.ts`.
+- 6819f8c: Added a new optimization to the `repo test` command that will filter out unused packages in watch mode if all provide filters are paths that point from the repo root. This significantly speeds up running individual tests from the repo root in a large workspace, for example:
+
+  ```sh
+  yarn test packages/app/src/App.test.tsx
+  ```
+
+- d849865: The package packing now populates `typesVersions` for additional entry points rather than using additional `package.json` files for type resolution. This improves auto completion of separate entry points when consuming published packages.
+- bc71665: **BREAKING**: The `LEGACY_BACKEND_START` flag has been removed, along with support for `src/run.ts` as the development entry point.
+
+### Patch Changes
+
+- 4046d53: Fixed an issue where the `--successCache` option for the `repo test` and `repo lint` commands would be include the workspace path in generated cache keys. This previously broke caching in environments where the workspace path varies across builds.
+- 4a378d3: Fix dev server reloads of plugin discovery for new frontend system.
+- 28b60ad: The check for `react-dom/client` in the Jest configuration will now properly always run from the target directory.
+- 6b2888c: Fixed an issue with the `--successCache` flag for `repo test` where the tree hash for the wrong package directory would sometimes be used to generate the cache key.
+- e30b65d: Added `--alwaysPack` as a replacement for the now hidden `--alwaysYarnPack` flag for the `build-workspace` command.
+- be0278e: Removed circular import
+- a7f97e4: Added a new `"rejectFrontendNetworkRequests"` configuration flag that can be set in the `"jest"` field in the root `package.json`:
+
+  ```json
+  {
+    "jest": {
+      "rejectFrontendNetworkRequests": true
+    }
+  }
+  ```
+
+  This flag causes rejection of any form of network requests that are attempted to be made in frontend or common package tests. This flag can only be set in the root `package.json` and can not be overridden in individual package configurations.
+
+- 6c48ebd: Add `--max-warnings -1` support to `backstage-cli package lint`
+- 04297a0: The `--successCache` option for the `repo test` and `repo lint` commands now use an additive store that keeps old entries around for a week before they are cleaned up automatically.
+- a2f0559: When using the experimental Rspack flag the app build and dev server now injects configuration via a `<script type="backstage.io/config">...</script>` tag in `index.html` rather than the `process.env.APP_CONFIG` definition, which will now be defined as an empty array instead.
+
+  This requires the app to be using the config loader from the 1.31 release of Backstage. Make sure your app is using at least that version if you are upgrading to this version of the CLI.
+
+  If you have copied the implementation of the `defaultConfigLoader`, make sure to update it to the new implementation. In particular the config loader needs to be able to read configuration from `script` tags with the type `backstage.io/config`.
+
+- b4627f2: Fixed an issue where the `raw-loader` for loading HTML templates was not resolved from the context of the CLI package.
+- cd1ef2b: Updated dependency `vite` to `^5.0.0`.
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- b533056: Updated dependency `css-loader` to `^7.0.0`.
+- be008c3: Updated dependency `@module-federation/enhanced` to `^0.7.0`.
+- 6266ed3: Updated dependency `del` to `^8.0.0`.
+- 4046d53: Fixed an issue with the `repo lint` command where the cache key for the `--successCache` option would not properly ignore files that should be ignored according to `.eslintignore`s.
+- e19c53c: Fix for the `--link` flag for `package start` to deduplicate `react-router` and `react-router-dom`.
+- 17850a5: Update upgrade-helper link in `versions:bump` command to include `yarnPlugin` parameter when the yarn plugin is installed
+- 09ea093: Fixed an issue where `.css` style injection would fail for published packages.
+- 702f41d: Bumped dev dependencies `@types/node`
+- 5d74716: Remove unused backend-common dependency
+- b084f5a: Bump the Webpack dependency range to `^5.94.0`, as our current configuration is not compatible with some older versions.
+- e565f73: Added support for `.webp` files in the frontend tooling.
+- 946fa34: Added a new `--link <workspace-path>` option for frontend builds that allow you to override module resolution to link in an external workspace at runtime.
+
+  As part of this change the Webpack linked workspace resolution plugin for frontend builds has been removed. It was in place to support the old workspace linking where it was done by Yarn, which is no longer a working option.
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-node@0.2.10
+  - @backstage/errors@1.2.5
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.15.2
+  - @backstage/release-manifests@0.0.11
+
 ## 0.29.0-next.3
 
 ### Minor Changes

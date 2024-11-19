@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.0
+
+### Minor Changes
+
+- 69fb6e7: Fix `contextMenu` not being disabled bug in new scaffolder pages
+
+### Patch Changes
+
+- 8b5ff7e: Fix issue with form state not refreshing when updating
+- ade301c: Fix issue with `Stepper` and trying to trim additional properties. This is now all behind `liveOmit` and `omitExtraData` instead.
+- f61d4cc: Add scaffolder permission `scaffolder.template.management` for accessing the template management features
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/theme@0.6.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/plugin-scaffolder-common@1.5.7
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.28
+
 ## 1.14.0-next.3
 
 ### Minor Changes

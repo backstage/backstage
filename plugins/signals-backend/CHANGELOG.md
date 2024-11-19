@@ -1,5 +1,19 @@
 # @backstage/plugin-signals-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- a1e01ff: The signals backend now supports scaled deployments where clients may be connecting to one of many signal backend instances.
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-signals-node@0.1.14
+
 ## 0.2.3-next.3
 
 ### Patch Changes

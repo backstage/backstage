@@ -1,5 +1,14 @@
 # @backstage/integration-react
 
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/integration@1.15.2
+
 ## 1.2.0
 
 ### Minor Changes
