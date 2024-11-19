@@ -7,6 +7,10 @@ description: How to install Backstage for your own use.
 
 Audience: Developers and Admins
 
+:::note Note
+It is not required, although recommended to have a basic understanding of [Yarn](https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js) and [npm](https://docs.npmjs.com/about-npm) before starting this guide.
+:::
+
 ## Summary
 
 This guide walks through how to get started creating your very own Backstage customizable app. This is the first step in evaluating, developing on, or demoing Backstage.
@@ -21,7 +25,7 @@ If you are planning to contribute a new feature or bug fix to the Backstage proj
 
 ## Prerequisites
 
-This guide assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
+This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
 
 - Access to a Unix-based operating system, such as Linux, macOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
