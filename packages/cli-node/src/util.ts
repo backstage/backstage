@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import { execFile as execFileCb } from 'child_process';
+import { promisify } from 'util';
 import { findPaths } from '@backstage/cli-common';
+
+export const execFile = promisify(execFileCb);
 
 /* eslint-disable-next-line no-restricted-syntax */
 export const paths = findPaths(__dirname);
