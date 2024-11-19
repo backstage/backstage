@@ -16,21 +16,12 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { act } from '@testing-library/react';
 
 import { Progress } from './Progress';
 
 describe('<Progress />', () => {
   it('renders without exploding', async () => {
-    jest.useFakeTimers();
     const { queryByTestId } = await renderInTestApp(<Progress />);
-    expect(queryByTestId('progress-placeholder')).toBeInTheDocument();
-    expect(queryByTestId('progress')).not.toBeInTheDocument();
-    act(() => {
-      jest.advanceTimersByTime(250);
-    });
-    expect(queryByTestId('progress-placeholder')).not.toBeInTheDocument();
     expect(queryByTestId('progress')).toBeInTheDocument();
-    jest.useRealTimers();
   });
 });
