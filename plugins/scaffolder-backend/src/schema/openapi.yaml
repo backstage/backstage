@@ -1007,3 +1007,49 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationError'
       parameters: []
+
+  /v2/autocomplete/{provider}/{resource}:
+    post:
+      operationId: Autocomplete
+      description: Perform an autocomplete for the given provider and resource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: object
+                  additionalProperties:
+                    type: string
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+      parameters:
+        - in: path
+          name: provider
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+        - in: path
+          name: resource
+          required: true
+          allowReserved: true
+          schema:
+            type: string
