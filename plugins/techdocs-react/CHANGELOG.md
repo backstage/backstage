@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.10
+
+### Patch Changes
+
+- 4a2f73a: Fix an issue that caused the current documentation page to be re-rendered when navigating to
+  another one.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/version-bridge@1.0.10
+
 ## 1.2.10-next.2
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.6.0
+
+### Minor Changes
+
+- 6cf91c5: Use `HumanDuration` for all duration needs in the public API, instead of `luxon` types. These are generally compatible, with a few caveats:
+
+  - If you scheduled things to run quarterly (`quarter` or `quarters`), you can use `{ months: 3 }` instead.
+  - If you used the singular nouns such as `year: 1`, use plurals instead (e.g. `years: 1`).
+
+### Patch Changes
+
+- c5e39e7: Internal refactor to use the deferred from the types package
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-backend@1.28.0
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 0.6.0-next.3
 
 ### Patch Changes

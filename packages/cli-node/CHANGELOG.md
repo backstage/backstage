@@ -1,5 +1,14 @@
 # @backstage/cli-node
 
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.5
+
 ## 0.2.10-next.0
 
 ### Patch Changes

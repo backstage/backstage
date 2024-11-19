@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.5.2
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+
 ## 0.5.2-next.3
 
 ### Patch Changes

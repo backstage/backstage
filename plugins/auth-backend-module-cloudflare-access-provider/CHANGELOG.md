@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.3.2
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/errors@1.2.5
+
 ## 0.3.2-next.2
 
 ### Patch Changes

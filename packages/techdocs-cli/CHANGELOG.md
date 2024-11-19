@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.8.22
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/catalog-model@1.7.1
+  - @backstage/plugin-techdocs-node@1.12.13
+
 ## 1.8.22-next.3
 
 ### Patch Changes

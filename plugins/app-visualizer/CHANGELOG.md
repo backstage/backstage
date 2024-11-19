@@ -1,5 +1,15 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.12
+
+### Patch Changes
+
+- e586e77: New `devDependency` for local development setup.
+- Updated dependencies
+  - @backstage/core-components@0.16.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+
 ## 0.1.12-next.3
 
 ### Patch Changes

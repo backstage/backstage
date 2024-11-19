@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.4.2
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- f6b4b8a: Implemented discovery on project-level to shift Bitbucket Cloud API limits
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/plugin-bitbucket-cloud-common@0.2.25
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-common@1.1.1
+
 ## 0.4.2-next.3
 
 ### Patch Changes

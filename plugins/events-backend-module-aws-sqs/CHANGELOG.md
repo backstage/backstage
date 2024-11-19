@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.4.5
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+
 ## 0.4.5-next.3
 
 ### Patch Changes

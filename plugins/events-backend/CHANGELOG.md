@@ -1,5 +1,21 @@
 # @backstage/plugin-events-backend
 
+## 0.3.16
+
+### Patch Changes
+
+- e02a02b: Fix `events.useEventBus` by propagating config to `DefaultEventsService`
+- 9816f51: Add raw body information to `RequestDetails`
+  and use the raw body when validating incoming event requests.
+- b7d0334: Cleaning up event subscriptions after the max age window
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/backend-openapi-utils@0.3.0
+  - @backstage/errors@1.2.5
+
 ## 0.3.16-next.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.8
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+
 ## 0.5.8-next.2
 
 ### Patch Changes
