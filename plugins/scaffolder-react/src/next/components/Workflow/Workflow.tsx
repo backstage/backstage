@@ -31,8 +31,6 @@ import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProper
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { useFormDecorators } from '../../../../../scaffolder/src/alpha/hooks/useFormDecorators';
 
 const useStyles = makeStyles({
   markdown: {
