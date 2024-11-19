@@ -78,13 +78,17 @@ export function createFormField<
 
 // @alpha
 export function createScaffolderFormDecorator<
-  TDeps extends {
-    [key in string]: AnyApiRef;
-  },
   TInputSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;
+  } = {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
   },
-  TInput extends {} = {
+  TDeps extends {
+    [key in string]: AnyApiRef;
+  } = {
+    [key in string]: AnyApiRef;
+  },
+  TInput extends JsonObject = {
     [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
   },
 >(options: {
@@ -93,7 +97,7 @@ export function createScaffolderFormDecorator<
     input?: TInputSchema;
   };
   deps?: TDeps;
-  fn: (
+  decorator: (
     ctx: ScaffolderFormDecoratorContext<TInput>,
     deps: TDeps extends {
       [key in string]: AnyApiRef;
@@ -103,7 +107,7 @@ export function createScaffolderFormDecorator<
         }
       : never,
   ) => Promise<void>;
-}): ScaffolderFormDecorator<TInputSchema, TDeps, TInput>;
+}): ScaffolderFormDecorator<TInput>;
 
 // @alpha
 export const DefaultTemplateOutputs: (props: {
@@ -221,39 +225,16 @@ export interface ScaffolderFieldProps {
 }
 
 // @alpha (undocumented)
-export type ScaffolderFormDecorator<
-  TInputSchema extends {
-    [key in string]: (zImpl: typeof z) => z.ZodType;
-  } = {},
-  TDeps extends {
-    [key in string]: AnyApiRef;
-  } = {
-    [key in string]: AnyApiRef;
-  },
-  TInput extends {} = {
-    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
-  },
-> = {
-  version: 'v1';
-  id: string;
-  schema?: {
-    input?: TInputSchema;
-  };
-  deps?: TDeps;
-  fn: (
-    ctx: ScaffolderFormDecoratorContext<TInput>,
-    deps: TDeps extends {
-      [key in string]: AnyApiRef;
-    }
-      ? {
-          [key in keyof TDeps]: TDeps[key]['T'];
-        }
-      : never,
-  ) => Promise<void>;
+export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
+  readonly $$type: '@backstage/scaffolder/FormDecorator';
+  readonly id: string;
+  readonly TInput: TInput;
 };
 
 // @alpha (undocumented)
-export type ScaffolderFormDecoratorContext<TInput> = {
+export type ScaffolderFormDecoratorContext<
+  TInput extends JsonObject = JsonObject,
+> = {
   input: TInput;
   formState: Record<string, JsonValue>;
   setFormState: (

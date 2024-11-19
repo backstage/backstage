@@ -72,6 +72,7 @@ export type WorkflowProps = {
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { title, description, namespace, templateName, onCreate, ...props } =
     workflowProps;
+
   const analytics = useAnalytics();
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
@@ -79,9 +80,13 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     namespace: namespace,
     name: templateName,
   });
+
   const errorApi = useApi(errorApiRef);
+
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
+
   const sortedManifest = useFilteredSchemaProperties(manifest);
+
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
 
   const workflowOnCreate = useCallback(

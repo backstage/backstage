@@ -120,11 +120,11 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
+  const { presentation, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const [initialState] = useFormDataFromQuery(props.initialState);
-  const { presentation, steps } = useTemplateSchema(props.manifest);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
 
