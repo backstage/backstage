@@ -47,6 +47,10 @@ Yes! BEPs are living documents and anyone can suggest changes to them. We encour
 
 Architecture Decision Records (ADRs) are used to document decisions made for development within the Backstage project. They are not intended to be used for proposing new features or changes to Backstage.
 
+### What's does it mean for a BEP to be in "provisional" state?
+
+This is a state from an older version of the BEP process, and means that it has been approved as work to be done but the exact design is not yet agreed upon. BEPs in this state need to be moved to the `implementable` state before they can be implemented.
+
 ### My FAQ isn't answered here!
 
 The BEP process is still evolving!
