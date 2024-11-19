@@ -31,7 +31,8 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
+import { ThrottleService } from '@backstage/integration-bitbucket-common';
+import nodeFetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
@@ -57,10 +58,14 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     });
   };
 
+  private fetch: typeof nodeFetch;
+
   constructor(
     private readonly integration: BitbucketServerIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+  ) {
+    this.fetch = new ThrottleService().throttle(nodeFetch, integration.config);
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -82,7 +87,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
+      response = await this.fetch(bitbucketUrl.toString(), {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
@@ -137,7 +142,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const archiveResponse = await fetch(
+    const archiveResponse = await this.fetch(
       downloadUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
@@ -206,7 +211,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
     const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
-    const branchListResponse = await fetch(
+    const branchListResponse = await this.fetch(
       branchListUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );

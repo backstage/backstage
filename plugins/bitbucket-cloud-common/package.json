@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@backstage/integration": "workspace:^",
+    "@backstage/integration-bitbucket-common": "workspace:^",
     "cross-fetch": "^4.0.0"
   },
   "devDependencies": {

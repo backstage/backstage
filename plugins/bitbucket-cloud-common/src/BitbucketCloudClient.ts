@@ -15,7 +15,7 @@
  */
 
 import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
-import fetch, { Request } from 'cross-fetch';
+import crossFetch, { Request } from 'cross-fetch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
 import {
@@ -23,18 +23,26 @@ import {
   PartialResponseOptions,
   RequestOptions,
 } from './types';
+import { ThrottleService } from '@backstage/integration-bitbucket-common';
 
 /** @public */
 export class BitbucketCloudClient {
   static fromConfig(
     config: BitbucketCloudIntegrationConfig,
   ): BitbucketCloudClient {
-    return new BitbucketCloudClient(config);
+    return new BitbucketCloudClient(config, new ThrottleService());
   }
 
+  readonly #config: BitbucketCloudIntegrationConfig;
+  readonly #fetch: typeof crossFetch;
+
   private constructor(
-    private readonly config: BitbucketCloudIntegrationConfig,
-  ) {}
+    config: BitbucketCloudIntegrationConfig,
+    throttler: ThrottleService,
+  ) {
+    this.#config = config;
+    this.#fetch = throttler.throttle(crossFetch, config);
+  }
 
   searchCode(
     workspace: string,
@@ -116,7 +124,7 @@ export class BitbucketCloudClient {
   }
 
   private createUrl(endpoint: string, options?: RequestOptions): URL {
-    const request = new URL(this.config.apiBaseUrl + endpoint);
+    const request = new URL(this.#config.apiBaseUrl + endpoint);
     for (const key in options) {
       if (options[key]) {
         request.searchParams.append(key, options[key]!.toString());
@@ -137,7 +145,7 @@ export class BitbucketCloudClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, { headers: this.getAuthHeaders() }).then(
+    return await this.#fetch(req, { headers: this.getAuthHeaders() }).then(
       (response: Response) => {
         if (!response.ok) {
           throw new Error(
@@ -153,14 +161,14 @@ export class BitbucketCloudClient {
   private getAuthHeaders(): Record<string, string> {
     const headers: Record<string, string> = {};
 
-    if (this.config.username) {
+    if (this.#config.username) {
       const buffer = Buffer.from(
-        `${this.config.username}:${this.config.appPassword}`,
+        `${this.#config.username}:${this.#config.appPassword}`,
         'utf8',
       );
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
-    } else if (this.config.token) {
-      headers.Authorization = `Bearer ${this.config.token}`;
+    } else if (this.#config.token) {
+      headers.Authorization = `Bearer ${this.#config.token}`;
     }
 
     return headers;

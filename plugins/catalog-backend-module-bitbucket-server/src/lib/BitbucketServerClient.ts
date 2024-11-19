@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import fetch, { Request, Response } from 'node-fetch';
+import nodeFetch, { Request, Response } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
+import { ThrottleService } from '@backstage/integration-bitbucket-common';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
 
 /**
@@ -29,6 +30,8 @@ import { BitbucketServerProject, BitbucketServerRepository } from './types';
 export class BitbucketServerClient {
   private readonly config: BitbucketServerIntegrationConfig;
 
+  private readonly fetch: typeof nodeFetch;
+
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
   }): BitbucketServerClient {
@@ -37,6 +40,7 @@ export class BitbucketServerClient {
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
     this.config = options.config;
+    this.fetch = new ThrottleService().throttle(nodeFetch, this.config);
   }
 
   async listProjects(options: {
@@ -66,7 +70,7 @@ export class BitbucketServerClient {
     path: string;
   }): Promise<Response> {
     const base = new URL(this.config.apiBaseUrl);
-    return fetch(
+    return this.fetch(
       `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -77,7 +81,7 @@ export class BitbucketServerClient {
     repo: string;
   }): Promise<BitbucketServerRepository> {
     const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}`;
-    const response = await fetch(
+    const response = await this.fetch(
       request,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -118,7 +122,7 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
+    return this.fetch(req, getBitbucketServerRequestOptions(this.config)).then(
       (response: Response) => {
         if (!response.ok) {
           throw new Error(

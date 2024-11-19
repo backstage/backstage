@@ -3595,6 +3595,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-aws-node": "workspace:^"
+    "@backstage/integration-bitbucket-common": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -4835,6 +4836,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/integration-bitbucket-common@workspace:^, @backstage/integration-bitbucket-common@workspace:packages/integration-bitbucket-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/integration-bitbucket-common@workspace:packages/integration-bitbucket-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/types": "workspace:^"
+    p-throttle: ^4.1.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/integration-react@^1.2.0, @backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
@@ -4875,6 +4888,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
@@ -5624,6 +5638,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-bitbucket-common": "workspace:^"
     "@openapitools/openapi-generator-cli": ^2.4.26
     cross-fetch: ^4.0.0
     msw: ^1.0.0
@@ -5734,6 +5749,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-bitbucket-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
