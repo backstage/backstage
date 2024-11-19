@@ -27,7 +27,6 @@ type BoundFieldDecorator = {
   decorator: (ctx: ScaffolderFormDecoratorContext) => Promise<void>;
 };
 
-/** @alpha */
 export const useFormDecorators = ({
   manifest,
 }: {

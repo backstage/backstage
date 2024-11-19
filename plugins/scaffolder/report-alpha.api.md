@@ -19,7 +19,6 @@ import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PathParams } from '@backstage/core-plugin-api';
@@ -30,7 +29,6 @@ import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alph
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
@@ -412,21 +410,6 @@ export type TemplateWizardPageProps = {
     title?: string;
     subtitle?: string;
   };
-};
-
-// @alpha (undocumented)
-export const useFormDecorators: ({
-  manifest,
-}: {
-  manifest?: TemplateParameterSchema | undefined;
-}) => {
-  run: (opts: {
-    formState: Record<string, JsonValue>;
-    secrets: Record<string, string>;
-  }) => Promise<{
-    formState: Record<string, JsonValue>;
-    secrets: Record<string, string>;
-  }>;
 };
 
 // (No @packageDocumentation comment for this package)

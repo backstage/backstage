@@ -22,8 +22,6 @@ export {
   type ScaffolderTemplateFormPreviewerClassKey,
 } from './components';
 
-export * from './hooks';
-
 export { scaffolderTranslationRef } from '../translation';
 export * from './api';
 
