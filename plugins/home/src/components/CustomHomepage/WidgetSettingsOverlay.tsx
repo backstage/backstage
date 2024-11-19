@@ -26,6 +26,8 @@ import { Widget } from './types';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 
 const Form = withTheme(MuiTheme);
 
@@ -64,13 +66,15 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
   const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
   const styles = useStyles();
 
+  const onClose = () => setSettingsDialogOpen(false);
+
   return (
     <div className={styles.settingsOverlay}>
       {widget.settingsSchema && (
         <Dialog
           open={settingsDialogOpen}
           className="widgetSettingsDialog"
-          onClose={() => setSettingsDialogOpen(false)}
+          onClose={onClose}
         >
           <DialogContent>
             <Form
@@ -90,7 +94,16 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
               experimental_defaultFormStateBehavior={{
                 allOf: 'populateDefaults',
               }}
-            />
+            >
+              <Box display="inline-flex" gridGap={8}>
+                <Button color="primary" variant="contained" type="submit">
+                  Submit
+                </Button>
+                <Button color="secondary" onClick={onClose}>
+                  Cancel
+                </Button>
+              </Box>
+            </Form>
           </DialogContent>
         </Dialog>
       )}
