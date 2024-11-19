@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { execFile as execFileCb } from 'child_process';
-import { promisify } from 'util';
+import { createBackend } from '@backstage/backend-defaults';
 
-export const execFile = promisify(execFileCb);
+const backend = createBackend();
+backend.add(import('../src'));
+backend.start();
