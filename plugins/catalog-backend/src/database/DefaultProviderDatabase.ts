@@ -75,10 +75,10 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   }
 
   async replaceUnprocessedEntities(
-    txOpaque: Transaction,
+    txOpaque: Knex | Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
+    const tx = txOpaque as Knex | Knex.Transaction;
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
@@ -205,7 +205,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   }
 
   private async createDelta(
-    tx: Knex.Transaction,
+    tx: Knex | Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<{
     toAdd: { deferred: DeferredEntity; hash: string }[];
