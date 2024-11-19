@@ -25,15 +25,21 @@ import { CacheManager } from './CacheManager';
 // Contrived code because it's hard to spy on a default export
 jest.mock('@keyv/redis', () => {
   const Actual = jest.requireActual('@keyv/redis');
-  return jest.fn((...args: any[]) => {
-    return new Actual(...args);
-  });
+  const DefaultConstructor = Actual.default;
+  return {
+    ...Actual,
+    __esModule: true,
+    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+  };
 });
 jest.mock('@keyv/memcache', () => {
   const Actual = jest.requireActual('@keyv/memcache');
-  return jest.fn((...args: any[]) => {
-    return new Actual(...args);
-  });
+  const DefaultConstructor = Actual.default;
+  return {
+    ...Actual,
+    __esModule: true,
+    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+  };
 });
 
 describe('CacheManager integration', () => {
@@ -42,7 +48,7 @@ describe('CacheManager integration', () => {
   afterEach(jest.clearAllMocks);
 
   it.each(caches.eachSupportedId())(
-    'only creates one underlying connection, %p',
+    'only creates one underlying connection per plugin, %p',
     async cacheId => {
       const { store, connection } = await caches.init(cacheId);
 
@@ -59,10 +65,10 @@ describe('CacheManager integration', () => {
 
       if (store === 'redis') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvRedis).toHaveBeenCalledTimes(1);
+        expect(KeyvRedis).toHaveBeenCalledTimes(3);
       } else if (store === 'memcache') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvMemcache).toHaveBeenCalledTimes(1);
+        expect(KeyvMemcache).toHaveBeenCalledTimes(3);
       }
     },
   );

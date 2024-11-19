@@ -140,14 +140,15 @@ export class CacheManager {
 
   private createRedisStoreFactory(): StoreFactory {
     const KeyvRedis = require('@keyv/redis').default;
-    let store: typeof KeyvRedis | undefined;
+    const stores: Record<string, typeof KeyvRedis> = {};
+
     return (pluginId, defaultTtl) => {
-      if (!store) {
-        store = new KeyvRedis(this.connection, {
+      if (!stores[pluginId]) {
+        stores[pluginId] = new KeyvRedis(this.connection, {
           keyPrefixSeparator: ':',
         });
         // Always provide an error handler to avoid stopping the process
-        store.on('error', (err: Error) => {
+        stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
           this.errorHandler?.(err);
         });
@@ -155,7 +156,7 @@ export class CacheManager {
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
-        store,
+        store: stores[pluginId],
         emitErrors: false,
         useKeyPrefix: false,
       });
@@ -163,13 +164,14 @@ export class CacheManager {
   }
 
   private createMemcacheStoreFactory(): StoreFactory {
-    const KeyvMemcache = require('@keyv/memcache');
-    let store: typeof KeyvMemcache | undefined;
+    const KeyvMemcache = require('@keyv/memcache').default;
+    const stores: Record<string, typeof KeyvMemcache> = {};
+
     return (pluginId, defaultTtl) => {
-      if (!store) {
-        store = new KeyvMemcache(this.connection);
+      if (!stores[pluginId]) {
+        stores[pluginId] = new KeyvMemcache(this.connection);
         // Always provide an error handler to avoid stopping the process
-        store.on('error', (err: Error) => {
+        stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create memcache cache client', err);
           this.errorHandler?.(err);
         });
@@ -178,7 +180,7 @@ export class CacheManager {
         namespace: pluginId,
         ttl: defaultTtl,
         emitErrors: false,
-        store,
+        store: stores[pluginId],
       });
     };
   }
