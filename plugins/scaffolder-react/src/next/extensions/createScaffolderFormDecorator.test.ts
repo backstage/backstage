@@ -25,8 +25,10 @@ describe('createScaffolderFormDecorator', () => {
 
     expect(decorator).toMatchInlineSnapshot(`
       {
+        "$$type": "@backstage/scaffolder/FormDecorator",
+        "TInput": null,
+        "decorator": [Function],
         "deps": {},
-        "fn": [Function],
         "id": "test",
         "version": "v1",
       }
@@ -55,8 +57,10 @@ describe('createScaffolderFormDecorator', () => {
 
     expect(decorator).toMatchInlineSnapshot(`
       {
+        "$$type": "@backstage/scaffolder/FormDecorator",
+        "TInput": null,
+        "decorator": [Function],
         "deps": {},
-        "fn": [Function],
         "id": "test",
         "schema": {
           "input": {
