@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-backend",
-  "version": "0.5.51-next.2",
+  "version": "0.5.51",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "permission",

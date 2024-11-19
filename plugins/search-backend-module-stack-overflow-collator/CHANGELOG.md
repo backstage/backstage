@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.3.3
+
+### Patch Changes
+
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-search-backend-node@1.3.5
+  - @backstage/plugin-search-common@1.2.15
+
 ## 0.3.3-next.3
 
 ### Patch Changes

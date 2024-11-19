@@ -1,5 +1,13 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.25
+
+### Patch Changes
+
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.15.2
+
 ## 0.2.25-next.0
 
 ### Patch Changes

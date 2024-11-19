@@ -1,5 +1,18 @@
 # @backstage/backend-plugin-api
 
+## 1.0.2
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.5
+
 ## 1.0.2-next.2
 
 ### Patch Changes

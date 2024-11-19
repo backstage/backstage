@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.3.0
+
+### Minor Changes
+
+- 75168e3: **BREAKING**: The AWS ALB `fullProfile` will no longer have the its username or email converted to lowercase. This is to ensure unique handling of the users. You may need to update and configure a custom sign-in resolver or profile transform as a result.
+
+### Patch Changes
+
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.24.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/errors@1.2.5
+
 ## 0.3.0-next.2
 
 ### Patch Changes

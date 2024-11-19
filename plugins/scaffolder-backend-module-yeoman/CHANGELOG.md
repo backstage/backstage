@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.3
+
+### Patch Changes
+
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.15
+
 ## 0.4.3-next.3
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.2.4
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-common@1.1.1
+
 ## 0.2.4-next.2
 
 ### Patch Changes

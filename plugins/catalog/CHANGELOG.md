@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog
 
+## 1.25.0
+
+### Minor Changes
+
+- 50df3c8: - Updated EntityLayout component to implement breadcrumb navigation based on the entity relations.
+
+  - Added parentEntityRelations prop to EntityLayoutProps to specify relation types for parent entities.
+
+- 79e9631: Allow `OffsetPaginatedCatalogTable` to configure Table options and `CursorPaginatedCatalogTable` to configure `paginationPosition`.
+
+### Patch Changes
+
+- 2a67594: Fixed an issue causing the `CatalogIndexPage` to not properly filter results when using offset pagination.
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/plugin-scaffolder-common@1.5.7
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/integration-react@1.2.1
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-search-react@1.8.2
+
 ## 1.25.0-next.3
 
 ### Minor Changes
