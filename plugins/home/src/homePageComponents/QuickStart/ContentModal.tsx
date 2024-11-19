@@ -21,12 +21,12 @@ import Box from '@material-ui/core/Box';
 
 import { useStyles } from './styles';
 
-export type Props = {
+export type ContentModalProps = {
   modalContent: React.JSX.Element;
   linkContent: string | React.JSX.Element;
 };
 
-export const ContentModal = (props: Props) => {
+export const ContentModal = (props: ContentModalProps) => {
   const { modalContent, linkContent } = props;
   const styles = useStyles();
   const [open, setOpen] = useState(false);
