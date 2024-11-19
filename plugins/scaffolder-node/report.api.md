@@ -31,10 +31,10 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<U extends JsonValue>(
-    key: string,
-    fn: () => Promise<U>,
-  ): Promise<U>;
+  checkpoint<T extends JsonValue | void>(opts: {
+    key: string;
+    fn: () => Promise<T> | T;
+  }): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
