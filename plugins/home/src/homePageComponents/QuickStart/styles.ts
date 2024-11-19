@@ -17,7 +17,14 @@
 import { makeStyles, Theme } from '@material-ui/core/styles';
 
 /** @public */
-export type QuickStartCardClassKey = 'link' | 'contentActionContainer';
+export type QuickStartCardClassKey =
+  | 'link'
+  | 'linkText'
+  | 'contentActionContainer'
+  | 'cardTitleIcon'
+  | 'videoContainer'
+  | 'imageSize'
+  | 'contentModal';
 
 export const useStyles = makeStyles(
   (theme: Theme) => ({
