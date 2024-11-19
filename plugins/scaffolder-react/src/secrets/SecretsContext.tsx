@@ -94,15 +94,3 @@ export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
 
   return { setSecrets, secrets };
 };
-
-export const useInternalTemplateSecrets = () => {
-  const value = useContext(SecretsContext)?.atVersion(1);
-
-  if (!value) {
-    throw new Error(
-      'useTemplateSecrets must be used within a SecretsContextProvider',
-    );
-  }
-
-  return value;
-};

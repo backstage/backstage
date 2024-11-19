@@ -13,18 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  type FormProps,
-  type TemplateListPageProps,
-  type TemplateWizardPageProps,
-  type ScaffolderCustomFieldExplorerClassKey,
-  type ScaffolderTemplateEditorClassKey,
-  type ScaffolderTemplateFormPreviewerClassKey,
-} from './components';
-
-export * from './hooks';
-
-export { scaffolderTranslationRef } from '../translation';
-export * from './api';
-
-export { default } from './plugin';
+export * from './useFormDecorators';

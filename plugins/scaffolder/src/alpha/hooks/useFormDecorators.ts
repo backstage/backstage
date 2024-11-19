@@ -19,13 +19,20 @@ import useAsync from 'react-use/esm/useAsync';
 import { useMemo } from 'react';
 import { ScaffolderFormDecoratorContext } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormDecorator } from '@internal/scaffolder';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { JsonValue } from '@backstage/types';
 
 /** @internal */
 type BoundFieldDecorator = {
   decorator: (ctx: ScaffolderFormDecoratorContext) => Promise<void>;
 };
 
-export const useFormDecorators = () => {
+/** @alpha */
+export const useFormDecorators = ({
+  manifest,
+}: {
+  manifest?: TemplateParameterSchema;
+}) => {
   const formDecoratorsApi = useApi(formDecoratorsApiRef);
   const errorApi = useApi(errorApiRef);
   const { value: decorators } = useAsync(
@@ -34,7 +41,7 @@ export const useFormDecorators = () => {
   );
   const apiHolder = useApiHolder();
 
-  return useMemo(() => {
+  const boundDecorators = useMemo(() => {
     const decoratorsMap = new Map<string, BoundFieldDecorator>();
 
     for (const decorator of decorators ?? []) {
@@ -62,4 +69,50 @@ export const useFormDecorators = () => {
     }
     return decoratorsMap;
   }, [apiHolder, decorators, errorApi]);
+
+  return {
+    run: async (opts: {
+      formState: Record<string, JsonValue>;
+      secrets: Record<string, string>;
+    }) => {
+      let formState: Record<string, JsonValue> = { ...opts.formState };
+      let secrets: Record<string, string> = {};
+
+      if (manifest?.EXPERIMENTAL_formDecorators) {
+        // for each of the form decorators, go and call the decorator with the context
+        await Promise.all(
+          manifest.EXPERIMENTAL_formDecorators.map(async decorator => {
+            const formDecorator = boundDecorators?.get(decorator.id);
+            if (!formDecorator) {
+              errorApi.post(
+                new Error(`Failed to find form decorator ${decorator.id}`),
+              );
+              return;
+            }
+
+            await formDecorator.decorator({
+              setSecrets: (
+                handler: (
+                  oldState: Record<string, string>,
+                ) => Record<string, string>,
+              ) => {
+                secrets = { ...handler(secrets) };
+              },
+              setFormState: (
+                handler: (
+                  oldState: Record<string, JsonValue>,
+                ) => Record<string, JsonValue>,
+              ) => {
+                formState = { ...handler(formState) };
+              },
+              formState,
+              input: decorator.input ?? {},
+            });
+          }),
+        );
+      }
+
+      return { formState, secrets };
+    },
+  };
 };

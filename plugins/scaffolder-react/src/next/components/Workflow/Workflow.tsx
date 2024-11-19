@@ -26,10 +26,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
-import {
-  SecretsContextProvider,
-  useInternalTemplateSecrets,
-} from '../../../secrets/SecretsContext';
+import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
@@ -88,40 +85,9 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
   const sortedManifest = useFilteredSchemaProperties(manifest);
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
-  const { setSecrets } = useInternalTemplateSecrets();
-  const formDecorators = useFormDecorators();
 
   const workflowOnCreate = useCallback(
-    async (originalFormState: Record<string, JsonValue>) => {
-      let formState: Record<string, JsonValue> = { ...originalFormState };
-
-      if (manifest?.EXPERIMENTAL_formDecorators) {
-        // for each of the form decorators, go and call the decorator with the context
-        await Promise.all(
-          manifest.EXPERIMENTAL_formDecorators.map(async decorator => {
-            const formDecorator = formDecorators?.get(decorator.id);
-            if (!formDecorator) {
-              // eslint-disable-next-line no-console
-              console.error('Failed to find form decorator', decorator.id);
-              return;
-            }
-
-            await formDecorator.decorator({
-              setSecrets,
-              setFormState: (
-                handler: (
-                  oldState: Record<string, JsonValue>,
-                ) => Record<string, JsonValue>,
-              ) => {
-                formState = { ...handler(formState) };
-              },
-              formState,
-              input: decorator.input ?? {},
-            });
-          }),
-        );
-      }
-
+    async (formState: Record<string, JsonValue>) => {
       onCreate(formState);
 
       const name =
@@ -130,15 +96,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
         value: minutesSaved,
       });
     },
-    [
-      manifest?.EXPERIMENTAL_formDecorators,
-      formDecorators,
-      onCreate,
-      analytics,
-      templateName,
-      minutesSaved,
-      setSecrets,
-    ],
+    [onCreate, analytics, templateName, minutesSaved],
   );
 
   useEffect(() => {

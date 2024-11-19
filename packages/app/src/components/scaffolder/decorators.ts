@@ -17,7 +17,7 @@ import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 
 export const mockDecorator = createScaffolderFormDecorator({
-  id: 'githubOauth',
+  id: 'mock-decorator',
   schema: {
     input: {
       test: z => z.string(),
@@ -26,8 +26,11 @@ export const mockDecorator = createScaffolderFormDecorator({
   deps: {
     githubApi: githubAuthApiRef,
   },
-  decorator: async ({ setSecrets }, { githubApi }) => {
-    const token = await githubApi.getAccessToken();
-    setSecrets(state => ({ ...state, GITHUB_TOKEN: token }));
+  decorator: async (
+    { setSecrets, setFormState, input: { test } },
+    { githubApi: _githubApi },
+  ) => {
+    setFormState(state => ({ ...state, test, mock: 'MOCK' }));
+    setSecrets(state => ({ ...state, GITHUB_TOKEN: 'MOCK_TOKEN' }));
   },
 });
