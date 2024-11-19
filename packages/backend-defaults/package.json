@@ -134,7 +134,7 @@
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@google-cloud/storage": "^7.0.0",
-    "@keyv/memcache": "^1.3.5",
+    "@keyv/memcache": "^2.0.1",
     "@keyv/redis": "^4.0.1",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/rest": "^19.0.3",
