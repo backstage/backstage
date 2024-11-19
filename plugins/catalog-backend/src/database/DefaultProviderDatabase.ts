@@ -213,14 +213,32 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     toRemove: string[];
   }> {
     if (options.type === 'delta') {
-      return {
-        toAdd: [],
-        toUpsert: options.added.map(e => ({
-          deferred: e,
-          hash: generateStableHash(e.entity),
-        })),
-        toRemove: options.removed.map(e => e.entityRef),
-      };
+      const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
+      const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
+      const toRemove = options.removed.map(e => e.entityRef);
+
+      for (const chunk of lodash.chunk(options.added, 1000)) {
+        const entityRefs = chunk.map(e => stringifyEntityRef(e.entity));
+        const rows = await tx<DbRefreshStateRow>('refresh_state')
+          .select(['entity_ref', 'unprocessed_hash'])
+          .whereIn('entity_ref', entityRefs);
+        const oldHashes = new Map(
+          rows.map(row => [row.entity_ref, row.unprocessed_hash]),
+        );
+
+        chunk.forEach((deferred, i) => {
+          const entityRef = entityRefs[i];
+          const newHash = generateStableHash(deferred.entity);
+          const oldHash = oldHashes.get(entityRef);
+          if (oldHash === undefined) {
+            toAdd.push({ deferred, hash: newHash });
+          } else if (newHash !== oldHash) {
+            toUpsert.push({ deferred, hash: newHash });
+          }
+        });
+      }
+
+      return { toAdd, toUpsert, toRemove };
     }
 
     // Grab all of the existing references from the same source, and their locationKeys as well
