@@ -70,15 +70,12 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
     const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
 
     const pollingInterval = config.has(pollingIntervalKey)
-      ? readDurationFromConfig(config, {
-          key: pollingIntervalKey,
-        })
+      ? readDurationFromConfig(config, { key: pollingIntervalKey })
       : { seconds: 1 };
     const stitchTimeout = config.has(stitchTimeoutKey)
-      ? readDurationFromConfig(config, {
-          key: stitchTimeoutKey,
-        })
+      ? readDurationFromConfig(config, { key: stitchTimeoutKey })
       : { seconds: 60 };
+
     return {
       mode: 'deferred',
       pollingInterval: pollingInterval,

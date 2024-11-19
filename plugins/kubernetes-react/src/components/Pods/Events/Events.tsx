@@ -76,7 +76,7 @@ export const EventsContent = ({
               }
               return true;
             })
-            .map(event => {
+            .map((event, index) => {
               const timeAgo = event.metadata.creationTimestamp
                 ? DateTime.fromISO(event.metadata.creationTimestamp).toRelative(
                     {
@@ -85,7 +85,7 @@ export const EventsContent = ({
                   )
                 : 'unknown';
               return (
-                <ListItem key={event.metadata.name}>
+                <ListItem key={`${event.metadata.name}-${index}`}>
                   <Tooltip title={`${event.type ?? ''} event`}>
                     {getAvatarByType(event.type)}
                   </Tooltip>

@@ -22,6 +22,7 @@ import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { PluginKeySource } from './keys/types';
+import fetch from 'node-fetch';
 
 const SECONDS_IN_MS = 1000;
 

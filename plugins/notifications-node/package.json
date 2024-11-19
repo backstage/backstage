@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-node",
-  "version": "0.2.9-next.2",
+  "version": "0.2.9-next.3",
   "description": "Node.js library for the notifications plugin",
   "backstage": {
     "role": "node-library",
@@ -37,7 +37,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -45,7 +44,7 @@
     "@backstage/plugin-signals-node": "workspace:^",
     "knex": "^3.0.0",
     "node-fetch": "^2.7.0",
-    "uuid": "^9.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

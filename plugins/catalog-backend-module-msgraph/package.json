@@ -63,7 +63,7 @@
     "node-fetch": "^2.7.0",
     "p-limit": "^3.0.2",
     "qs": "^6.9.4",
-    "uuid": "^9.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

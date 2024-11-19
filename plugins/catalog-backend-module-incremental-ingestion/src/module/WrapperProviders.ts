@@ -24,6 +24,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { createDeferred } from '@backstage/types';
 import express from 'express';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
@@ -35,7 +36,6 @@ import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
 } from '../types';
-import { Deferred } from '../util';
 
 /**
  * Helps in the creation of the catalog entity providers that wrap the
@@ -44,7 +44,7 @@ import { Deferred } from '../util';
 export class WrapperProviders {
   private migrate: Promise<void> | undefined;
   private numberOfProvidersToConnect = 0;
-  private readonly readySignal = new Deferred<void>();
+  private readonly readySignal = createDeferred();
 
   constructor(
     private readonly options: {

@@ -15,10 +15,9 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpec, TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
-import { v4 as uuid } from 'uuid';
-import { pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { Logger } from 'winston';
 import {
   createTemplateAction,
@@ -29,19 +28,19 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
+import path from 'path';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
-  BackstageCredentials,
-  resolveSafeChildPath,
-} from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
+import { v4 as uuid } from 'uuid';
 
 interface DryRunInput {
   spec: TaskSpec;
+  templateInfo: TemplateInfo;
   secrets?: TaskSecrets;
   directoryContents: SerializedFile[];
   credentials: BackstageCredentials;
@@ -94,18 +93,21 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       ]),
     });
 
+    // Extracting contentsPath and dryRunId from the baseUrl
+    const baseUrl = input.templateInfo.baseUrl;
+    if (!baseUrl) {
+      throw new Error('baseUrl is required');
+    }
+    const basePath = fileURLToPath(new URL(baseUrl));
+    const contentsPath = path.dirname(basePath);
     const dryRunId = uuid();
+
     const log = new Array<{ body: JsonObject }>();
-    const contentsPath = resolveSafeChildPath(
-      options.workingDirectory,
-      `dry-run-content-${dryRunId}`,
-    );
 
     try {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);
 
       const abortSignal = new AbortController().signal;
-
       const result = await workflowRunner.execute({
         spec: {
           ...input.spec,
@@ -117,12 +119,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
               action: 'dry-run:extract',
             },
           ],
-          templateInfo: {
-            entityRef: 'template:default/dry-run',
-            baseUrl: pathToFileURL(
-              resolveSafeChildPath(contentsPath, 'template.yaml'),
-            ).toString(),
-          },
+          templateInfo: input.templateInfo,
         },
         secrets: input.secrets,
         getInitiatorCredentials: () => Promise.resolve(input.credentials),

@@ -46,8 +46,7 @@ yarn install --immutable
 yarn tsc
 
 # Build the backend, which bundles it all up into the packages/backend/dist folder.
-# The configuration files here should match the one you use inside the Dockerfile below.
-yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
+yarn build:backend
 ```
 
 Once the host build is complete, we are ready to build our image. The following

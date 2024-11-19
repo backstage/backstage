@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { parseRepoUrl } from '@backstage/plugin-scaffolder-node';
-import { InputError } from '@backstage/errors';
+import { ErrorLike, InputError, isError } from '@backstage/errors';
 import { Gitlab } from '@gitbeaker/node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Resources } from '@gitbeaker/core';
@@ -47,4 +47,18 @@ export function createGitlabApi(options: {
     host: integrationConfig.config.baseUrl,
     [tokenType]: token,
   });
+}
+
+interface GitlabError extends ErrorLike {
+  // Errors from Gitlab may also include a description field that contains additional info
+  description: string;
+}
+
+function isGitlabError(e: unknown): e is GitlabError {
+  return isError(e) && 'description' in e && typeof e.description === 'string';
+}
+
+export function getErrorMessage(e: unknown): string {
+  if (isGitlabError(e)) return `${e} - ${e.description}`;
+  return String(e);
 }

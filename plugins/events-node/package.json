@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-node",
-  "version": "0.4.5-next.2",
+  "version": "0.4.5-next.3",
   "description": "The plugin-events-node module for @backstage/plugin-events-backend",
   "backstage": {
     "role": "node-library",
@@ -59,7 +59,6 @@
     "uri-template": "^2.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "msw": "^1.0.0"

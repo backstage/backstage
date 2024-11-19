@@ -1359,6 +1359,39 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
     });
+
+    it('should have metadata in action context during dry run', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          templateInfo: {
+            entityRef: 'dryRun-Entity',
+            entity: { metadata: { name: 'test-template' } },
+          },
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: token,
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+      expect(
+        fakeActionHandler.mock.calls[0][0].templateInfo.entity.metadata.name,
+      ).toEqual('test-template');
+    });
   });
 
   describe('permissions', () => {
