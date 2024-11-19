@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-device-auth-backend
+  title: '@backstage/plugin-device-auth-backend'
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers

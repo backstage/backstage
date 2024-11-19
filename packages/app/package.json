@@ -52,6 +52,7 @@
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
+    "@backstage/plugin-device-auth": "workspace:^",
     "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
