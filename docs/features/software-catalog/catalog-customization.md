@@ -91,8 +91,6 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 }
 ```
 
-Some other possible values for the existing entity kinds are `user`, `domain`, `system`, `group`, `template` and `location`.
-
 Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
 
 ```tsx title="packages/app/src/App.tsx"
