@@ -49,7 +49,6 @@ export class CacheManager {
   private readonly logger?: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
-  private readonly useRedisSets: boolean;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
 
@@ -69,11 +68,15 @@ export class CacheManager {
     const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
-    const useRedisSets =
-      config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
     const logger = options.logger?.child({
       type: 'cacheManager',
     });
+
+    if (config.has('backend.cache.useRedisSets')) {
+      logger?.warn(
+        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' library no longer supports redis sets.",
+      );
+    }
 
     let defaultTtl: number | undefined;
     if (defaultTtlConfig !== undefined) {
@@ -89,7 +92,6 @@ export class CacheManager {
     return new CacheManager(
       store,
       connectionString,
-      useRedisSets,
       options.onError,
       logger,
       defaultTtl,
@@ -100,7 +102,6 @@ export class CacheManager {
   constructor(
     store: string,
     connectionString: string,
-    useRedisSets: boolean,
     errorHandler: CacheManagerOptions['onError'],
     logger?: LoggerService,
     defaultTtl?: number,
@@ -111,7 +112,6 @@ export class CacheManager {
     this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
     this.connection = connectionString;
-    this.useRedisSets = useRedisSets;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
   }
@@ -139,12 +139,12 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis');
+    const KeyvRedis = require('@keyv/redis').default;
     let store: typeof KeyvRedis | undefined;
     return (pluginId, defaultTtl) => {
       if (!store) {
         store = new KeyvRedis(this.connection, {
-          useRedisSets: this.useRedisSets,
+          keyPrefixSeparator: ':',
         });
         // Always provide an error handler to avoid stopping the process
         store.on('error', (err: Error) => {
@@ -157,7 +157,7 @@ export class CacheManager {
         ttl: defaultTtl,
         store,
         emitErrors: false,
-        useRedisSets: this.useRedisSets,
+        useKeyPrefix: false,
       });
     };
   }
