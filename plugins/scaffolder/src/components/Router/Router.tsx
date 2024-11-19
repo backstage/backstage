@@ -64,7 +64,6 @@ import {
   taskReadPermission,
   templateManagementPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
-import { ScaffolderFormHook } from '@backstage/plugin-scaffolder-react/alpha';
 
 /**
  * The Props for the Scaffolder Router

@@ -32,11 +32,8 @@ export type ScaffolderFormDecoratorContext<TInput> = {
 
 /** @alpha */
 export type ScaffolderFormDecorator<
-  TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
-  TDeps extends { [key in string]: AnyApiRef } = { [key in string]: AnyApiRef },
-  TInput extends {} = {
-    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
-  },
+  TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
+  TDeps extends { [key in string]: AnyApiRef },
 > = {
   version: 'v1';
   id: string;
@@ -45,7 +42,9 @@ export type ScaffolderFormDecorator<
   };
   deps?: TDeps;
   fn: (
-    ctx: ScaffolderFormDecoratorContext<TInput>,
+    ctx: ScaffolderFormDecoratorContext<{
+      [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+    }>,
     deps: TDeps extends { [key in string]: AnyApiRef }
       ? { [key in keyof TDeps]: TDeps[key]['T'] }
       : never,
@@ -53,22 +52,15 @@ export type ScaffolderFormDecorator<
 };
 
 /** @alpha */
-export type AnyScaffolderFormDecorator = ScaffolderFormDecorator<
-  { [key in string]: (zImpl: typeof z) => z.ZodType },
-  { [key in string]: AnyApiRef },
-  any
->;
+export type AnyScaffolderFormDecorator = ScaffolderFormDecorator<any, any>;
 /**
  * Method for creating decorators which can be used to collect
  * secrets from the user before submitting to the backend.
  * @alpha
  */
 export function createScaffolderFormDecorator<
-  TDeps extends { [key in string]: AnyApiRef },
   TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
-  TInput extends {} = {
-    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
-  },
+  TDeps extends { [key in string]: AnyApiRef },
 >(options: {
   id: string;
   schema?: {
@@ -76,12 +68,14 @@ export function createScaffolderFormDecorator<
   };
   deps?: TDeps;
   fn: (
-    ctx: ScaffolderFormDecoratorContext<TInput>,
+    ctx: ScaffolderFormDecoratorContext<{
+      [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+    }>,
     deps: TDeps extends { [key in string]: AnyApiRef }
       ? { [key in keyof TDeps]: TDeps[key]['T'] }
       : never,
   ) => Promise<void>;
-}): ScaffolderFormDecorator<TInputSchema, TDeps, TInput> {
+}): ScaffolderFormDecorator<TInputSchema, TDeps> {
   return {
     ...options,
     version: 'v1',
