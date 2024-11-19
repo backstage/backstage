@@ -76,10 +76,8 @@ Suppose we want to add a new User Email column to the `User` kind in the Catalog
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
     return [
-      // Existing columns (Name, Description, Tags)
-      CatalogTable.columns.createNameColumn(),
-      CatalogTable.columns.createMetadataDescriptionColumn(),
-      CatalogTable.columns.createTagsColumn(),
+      // Render existing columns
+      ...CatalogTable.defaultColumnsFunc(entityListContext),
       // Add new columns here
     ];
   }
