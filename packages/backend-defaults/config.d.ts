@@ -474,8 +474,8 @@ export interface Config {
     cache?:
       | {
           store: 'memory';
-          /** An optional default TTL (in milliseconds). */
-          defaultTtl?: number | HumanDuration;
+          /** An optional default TTL (in milliseconds, if given as a number). */
+          defaultTtl?: number | HumanDuration | string;
         }
       | {
           store: 'redis';
@@ -484,8 +484,8 @@ export interface Config {
            * @visibility secret
            */
           connection: string;
-          /** An optional default TTL (in milliseconds). */
-          defaultTtl?: number | HumanDuration;
+          /** An optional default TTL (in milliseconds, if given as a number). */
+          defaultTtl?: number | HumanDuration | string;
           /**
            * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
            * Defaults to true if unspecified.
@@ -500,7 +500,7 @@ export interface Config {
            */
           connection: string;
           /** An optional default TTL (in milliseconds). */
-          defaultTtl?: number | HumanDuration;
+          defaultTtl?: number | HumanDuration | string;
         };
 
     cors?: {
