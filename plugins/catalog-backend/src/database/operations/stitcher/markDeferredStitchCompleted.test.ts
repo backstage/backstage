@@ -37,7 +37,6 @@ describe('markDeferredStitchCompleted', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
           next_stitch_at: '1971-01-01T00:00:00.000',
           next_stitch_ticket: 'the-ticket',

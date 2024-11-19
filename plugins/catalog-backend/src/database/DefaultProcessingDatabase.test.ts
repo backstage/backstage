@@ -28,6 +28,7 @@ import { applyDatabaseMigrations } from './migrations';
 import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
   DbRefreshKeysRow,
+  DbRefreshStateQueuesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -133,7 +134,6 @@ describe('DefaultProcessingDatabase', () => {
           processed_entity: '{}',
           location_key: 'key',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
         await db.transaction(tx => db.updateProcessedEntity(tx, options));
@@ -168,7 +168,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -207,7 +206,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -292,7 +290,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -350,7 +347,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_hash: generateStableHash({} as any),
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -497,7 +493,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -554,7 +549,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -610,7 +604,6 @@ describe('DefaultProcessingDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
 
@@ -663,8 +656,11 @@ describe('DefaultProcessingDatabase', () => {
           entity_ref: 'location:default/new-root',
           unprocessed_entity: entity,
           errors: '[]',
-          next_update_at: '2019-01-01 23:00:00',
           last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await knex<DbRefreshStateQueuesRow>('refresh_state_queues').insert({
+          entity_id: '2',
+          next_update_at: '2019-01-01 23:00:00',
         });
 
         await knex<DbRefreshStateRow>('refresh_state').insert({
@@ -672,8 +668,11 @@ describe('DefaultProcessingDatabase', () => {
           entity_ref: 'location:default/foobar',
           unprocessed_entity: entity,
           errors: '[]',
-          next_update_at: '2042-01-01 23:00:00',
           last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await knex<DbRefreshStateQueuesRow>('refresh_state_queues').insert({
+          entity_id: '1',
+          next_update_at: '2042-01-01 23:00:00',
         });
 
         await db.transaction(async tx => {
@@ -712,8 +711,11 @@ describe('DefaultProcessingDatabase', () => {
           entity_ref: 'location:default/new-root',
           unprocessed_entity: entity,
           errors: '[]',
-          next_update_at: '2019-01-01 23:00:00',
           last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await knex<DbRefreshStateQueuesRow>('refresh_state_queues').insert({
+          entity_id: '2',
+          next_update_at: '2019-01-01 23:00:00',
         });
         await db.transaction(async tx => {
           // Result does not include the updated timestamp
@@ -722,8 +724,10 @@ describe('DefaultProcessingDatabase', () => {
           });
         });
         const now = DateTime.local();
-        const result = await knex<DbRefreshStateRow>('refresh_state')
-          .where('entity_ref', 'location:default/new-root')
+        const result = await knex<DbRefreshStateQueuesRow>(
+          'refresh_state_queues',
+        )
+          .where('entity_id', '2')
           .select();
         const nextUpdate = timestampToDateTime(result[0].next_update_at);
         const nextUpdateDiff = nextUpdate.diff(now, 'seconds');
@@ -746,7 +750,6 @@ describe('DefaultProcessingDatabase', () => {
           },
         }),
         errors: '[]',
-        next_update_at: '2019-01-01 23:00:00',
         last_discovery_at: '2021-04-01 13:37:00',
       };
     }

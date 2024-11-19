@@ -23,7 +23,11 @@ import {
   RefreshOptions,
   Transaction,
 } from './types';
-import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
+import {
+  DbRefreshStateQueuesRow,
+  DbRefreshStateReferencesRow,
+  DbRefreshStateRow,
+} from './tables';
 import { rethrowError } from './conversion';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -103,9 +107,17 @@ export class DefaultCatalogDatabase implements CatalogDatabase {
     const tx = txOpaque as Knex.Transaction;
     const { entityRef } = options;
 
-    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
+    const updateResult = await tx<DbRefreshStateQueuesRow>(
+      'refresh_state_queues',
+    )
+      .innerJoin<DbRefreshStateRow>(
+        'refresh_state',
+        'refresh_state_queues.entity_ref',
+        'refresh_state.entity_ref',
+      )
       .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
       .update({ next_update_at: tx.fn.now() });
+
     if (updateResult === 0) {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }

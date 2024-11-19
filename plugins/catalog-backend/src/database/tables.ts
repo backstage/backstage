@@ -107,18 +107,6 @@ export type DbRefreshStateRow = {
    * instead.
    */
   location_key?: string;
-};
-
-export type DbRefreshStateQueuesRow = {
-  /**
-   * The unique ID of the entity.
-   */
-  entity_id: string;
-  /**
-   * The next point in time that this entity is due for processing. This
-   * continuously gets moved forward as items are picked up for processing.
-   */
-  next_update_at: string | Date;
   /**
    * If a stitch has been requested, this is the point in time that that last
    * happened.
@@ -160,6 +148,25 @@ export type DbRefreshStateQueuesRow = {
    * timestamp) get reset.
    */
   next_stitch_ticket?: string | null;
+};
+
+/**
+ * Represents the refresh_state_queues table.
+ *
+ * @remarks
+ *
+ * This table is created as `UNLOGGED` when possible.
+ */
+export type DbRefreshStateQueuesRow = {
+  /**
+   * The unique ID of the entity.
+   */
+  entity_id: string;
+  /**
+   * The next point in time that this entity is due for processing. This
+   * continuously gets moved forward as items are picked up for processing.
+   */
+  next_update_at: string | Date;
 };
 
 export type DbRefreshKeysRow = {

@@ -25,14 +25,10 @@ exports.up = async function up(knex) {
     await knex.schema.raw(`
       CREATE UNLOGGED TABLE refresh_state_queues (
         entity_id TEXT PRIMARY KEY NOT NULL REFERENCES refresh_state(entity_id) ON DELETE CASCADE,
-        next_update_at TIMESTAMPTZ NOT NULL,
-        next_stitch_at TIMESTAMPTZ NULL,
-        next_stitch_ticket TEXT NULL
+        next_update_at TIMESTAMPTZ NOT NULL
       );
-      COMMENT ON TABLE refresh_state_queues IS 'Tracks the queues for entities processing and stitching';
+      COMMENT ON TABLE refresh_state_queues IS 'Tracks the queues for entities processing';
       COMMENT ON COLUMN refresh_state_queues.next_update_at IS 'Timestamp of when entity should be updated';
-      COMMENT ON COLUMN refresh_state_queues.next_stitch_at IS 'Timestamp of when entity should be stitched';
-      COMMENT ON COLUMN refresh_state_queues.next_stitch_ticket IS 'Random value distinguishing stitch requests';
     `);
   } else {
     await knex.schema.createTable('refresh_state_queues', table => {
@@ -47,47 +43,26 @@ exports.up = async function up(knex) {
       table
         .timestamp('next_update_at')
         .notNullable()
-        .comment('Timestamp of when entity should be stitched');
-      table
-        .timestamp('next_stitch_at')
-        .nullable()
-        .comment('Timestamp of when entity should be stitched');
-      table
-        .string('next_stitch_ticket')
-        .nullable()
-        .comment('Random value distinguishing stitch requests');
+        .comment('Timestamp of when entity should be updated');
     });
   }
 
   await knex('refresh_state_queues').insert(
-    knex('refresh_state').select([
-      'entity_id',
-      'next_update_at',
-      'next_stitch_at',
-      'next_stitch_ticket',
-    ]),
+    knex('refresh_state').select(['entity_id', 'next_update_at']),
   );
 
   await knex.schema.alterTable('refresh_state_queues', table => {
     table.index('next_update_at', 'refresh_state_queues_next_update_at_idx', {
       predicate: knex.whereNotNull('next_update_at'),
     });
-    table.index('next_stitch_at', 'refresh_state_queues_next_stitch_at_idx', {
-      predicate: knex.whereNotNull('next_stitch_at'),
-    });
   });
 
   await knex.schema.alterTable('refresh_state', table => {
     table.dropIndex([], 'refresh_state_next_update_at_idx');
-    table.dropIndex([], 'refresh_state_next_stitch_at_idx');
   });
 
   // Not sure why, but if we do this with knex alterTable->dropColumn, refresh_state_queue gets purged as well
   await knex.schema.raw(`ALTER TABLE refresh_state DROP COLUMN next_update_at`);
-  await knex.schema.raw(`ALTER TABLE refresh_state DROP COLUMN next_stitch_at`);
-  await knex.schema.raw(
-    `ALTER TABLE refresh_state DROP COLUMN next_stitch_ticket`,
-  );
 };
 
 /**
@@ -100,37 +75,30 @@ exports.down = async function down(knex) {
       .dateTime('next_update_at')
       .nullable() // set non-nullable below
       .comment('Timestamp of when entity should be updated');
-    table
-      .dateTime('next_stitch_at')
-      .nullable()
-      .comment('Timestamp of when entity should be stitched');
-    table
-      .string('next_stitch_ticket')
-      .nullable()
-      .comment('Random value distinguishing stitch requests');
   });
 
-  // This is hand written because knex has documente problems expressing UPDATE
+  // This is hand written because knex has documented problems expressing UPDATE
   // from other tables - the query builder just doesn't cope with it
   if (knex.client.config.client.includes('mysql')) {
     await knex.raw(`
       UPDATE refresh_state
-      JOIN refresh_state_queues
+      LEFT OUTER JOIN refresh_state_queues
         ON refresh_state_queues.entity_id = refresh_state.entity_id
       SET
-        refresh_state.next_update_at = refresh_state_queues.next_update_at,
-        refresh_state.next_stitch_at = refresh_state_queues.next_stitch_at,
-        refresh_state.next_stitch_ticket = refresh_state_queues.next_stitch_ticket
+        refresh_state.next_update_at = COALESCE(refresh_state_queues.next_update_at, CURRENT_TIMESTAMP)
     `);
   } else {
     await knex.raw(`
       UPDATE refresh_state
       SET
-        next_update_at = refresh_state_queues.next_update_at,
-        next_stitch_at = refresh_state_queues.next_stitch_at,
-        next_stitch_ticket = refresh_state_queues.next_stitch_ticket
+        next_update_at = refresh_state_queues.next_update_at
       FROM refresh_state_queues
       WHERE refresh_state_queues.entity_id = refresh_state.entity_id
+    `);
+    await knex.raw(`
+      UPDATE refresh_state
+      SET next_update_at = CURRENT_TIMESTAMP
+      WHERE next_update_at IS NULL
     `);
   }
 
@@ -140,14 +108,10 @@ exports.down = async function down(knex) {
       .notNullable()
       .alter({ alterNullable: true });
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
-    table.index('next_stitch_at', 'refresh_state_next_stitch_at_idx', {
-      predicate: knex.whereNotNull('next_stitch_at'),
-    });
   });
 
   await knex.schema.alterTable('refresh_state_queues', table => {
     table.dropIndex([], 'refresh_state_queues_next_update_at_idx');
-    table.dropIndex([], 'refresh_state_queues_next_stitch_at_idx');
   });
   await knex.schema.dropTable('refresh_state_queues');
 };

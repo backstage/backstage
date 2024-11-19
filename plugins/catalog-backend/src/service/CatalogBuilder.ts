@@ -115,6 +115,7 @@ import {
   UrlReaderService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
+import { DatabaseJanitor } from '../database/DatabaseJanitor';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -490,9 +491,18 @@ export class CatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
+    let janitor: DatabaseJanitor | undefined;
     if (!database.migrations?.skip) {
       logger.info('Performing database migration');
       await applyDatabaseMigrations(dbClient);
+      if (scheduler) {
+        janitor = await DatabaseJanitor.create({
+          knex: dbClient,
+          processingInterval: this.processingInterval,
+          logger,
+          scheduler,
+        });
+      }
     }
 
     const stitcher = DefaultStitcher.fromConfig(config, {
@@ -642,6 +652,7 @@ export class CatalogBuilder {
         async stop() {
           await processingEngine.stop();
           await stitcher.stop();
+          await janitor?.stop();
         },
       },
       router,

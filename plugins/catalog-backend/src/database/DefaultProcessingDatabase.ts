@@ -24,6 +24,7 @@ import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
   DbRefreshKeysRow,
+  DbRefreshStateQueuesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -203,16 +204,22 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<GetProcessableEntitiesResult> {
     const knex = maybeTx as Knex.Transaction | Knex;
 
-    let itemsQuery = knex<DbRefreshStateRow>('refresh_state').select([
-      'entity_id',
-      'entity_ref',
-      'unprocessed_entity',
-      'result_hash',
-      'cache',
-      'errors',
-      'location_key',
-      'next_update_at',
-    ]);
+    let itemsQuery = knex<DbRefreshStateRow>('refresh_state')
+      .innerJoin<DbRefreshStateQueuesRow>(
+        'refresh_state_queues',
+        'refresh_state_queues.entity_id',
+        'refresh_state.entity_id',
+      )
+      .select([
+        'refresh_state.entity_id AS entity_id',
+        'entity_ref',
+        'unprocessed_entity',
+        'result_hash',
+        'cache',
+        'errors',
+        'location_key',
+        'next_update_at',
+      ]);
 
     // This avoids duplication of work because of race conditions and is
     // also fast because locked rows are ignored rather than blocking.
@@ -221,12 +228,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       itemsQuery = itemsQuery.forUpdate().skipLocked();
     }
 
-    const items = await itemsQuery
+    const items: any[] = await itemsQuery
       .where('next_update_at', '<=', knex.fn.now())
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'asc');
-
-    const interval = this.options.refreshInterval();
 
     const nextUpdateAt = (refreshInterval: number) => {
       if (knex.client.config.client.includes('sqlite3')) {
@@ -237,14 +242,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       return knex.raw(`now() + interval '${refreshInterval} seconds'`);
     };
 
-    await knex<DbRefreshStateRow>('refresh_state')
-      .whereIn(
-        'entity_ref',
-        items.map(i => i.entity_ref),
-      )
-      .update({
-        next_update_at: nextUpdateAt(interval),
-      });
+    if (items.length) {
+      await knex<DbRefreshStateQueuesRow>('refresh_state_queues')
+        .insert(
+          items.map(item => ({
+            entity_id: item.entity_id,
+            next_update_at: nextUpdateAt(this.options.refreshInterval()),
+          })),
+        )
+        .onConflict('entity_id')
+        .merge(['next_update_at']);
+    }
 
     return {
       items: items.map(
@@ -273,6 +281,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       'refresh_state_references',
     )
       .where({ target_entity_ref: options.entityRef })
+      .orderBy(['source_entity_ref', 'source_key']) // stable order to avoid thrashing hashes
       .select();
 
     const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
@@ -333,7 +342,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const hash = generateStableHash(entity);
 
       const updated = await updateUnprocessedEntity({
-        tx,
+        knex: tx,
         entity,
         hash,
         locationKey,
@@ -344,7 +353,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
 
       const inserted = await insertUnprocessedEntity({
-        tx,
+        knex: tx,
         entity,
         hash,
         locationKey,

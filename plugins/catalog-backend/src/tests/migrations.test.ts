@@ -17,6 +17,7 @@
 import { Knex } from 'knex';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import fs from 'fs';
+import { ensureStateQueueIsPopulated } from '../database/operations/refreshState/ensureStateQueueIsPopulated';
 
 const migrationsDir = `${__dirname}/../../migrations`;
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();
@@ -565,37 +566,34 @@ describe('migrations', () => {
       const before = await knex('refresh_state').orderBy('entity_id');
       expect(before.length).toBe(2);
       expect(before[0].next_update_at).not.toBeNull();
-      expect(before[0].next_stitch_at).not.toBeNull();
-      expect(before[0].next_stitch_ticket).not.toBeNull();
       expect(before[1].next_update_at).not.toBeNull();
-      expect(before[1].next_stitch_at).toBeNull();
-      expect(before[1].next_stitch_ticket).toBeNull();
 
-      await expect(knex('refresh_state_queues')).rejects.toThrow();
+      await expect(
+        knex.schema.hasTable('refresh_state_queues'),
+      ).resolves.toBeFalsy();
 
       await migrateUpOnce(knex);
+      await ensureStateQueueIsPopulated(knex, 100); // would run at that startup
+
+      await expect(
+        knex.schema.hasTable('refresh_state_queues'),
+      ).resolves.toBeTruthy();
 
       const q = await knex('refresh_state_queues').orderBy('entity_id');
       expect(q.length).toBe(2);
       expect(q[0].next_update_at).toEqual(before[0].next_update_at);
-      expect(q[0].next_stitch_at).toEqual(before[0].next_stitch_at);
-      expect(q[0].next_stitch_ticket).toEqual(before[0].next_stitch_ticket);
       expect(q[1].next_update_at).toEqual(before[1].next_update_at);
-      expect(q[1].next_stitch_at).toEqual(before[1].next_stitch_at);
-      expect(q[1].next_stitch_ticket).toEqual(before[1].next_stitch_ticket);
 
       await migrateDownOnce(knex);
 
       const after = await knex('refresh_state').orderBy('entity_id');
       expect(after.length).toBe(2);
       expect(after[0].next_update_at).toEqual(before[0].next_update_at);
-      expect(after[0].next_stitch_at).toEqual(before[0].next_stitch_at);
-      expect(after[0].next_stitch_ticket).toEqual(before[0].next_stitch_ticket);
       expect(after[1].next_update_at).toEqual(before[1].next_update_at);
-      expect(after[1].next_stitch_at).toEqual(before[1].next_stitch_at);
-      expect(after[1].next_stitch_ticket).toEqual(before[1].next_stitch_ticket);
 
-      await expect(knex('refresh_state_queues')).rejects.toThrow();
+      await expect(
+        knex.schema.hasTable('refresh_state_queues'),
+      ).resolves.toBeFalsy();
     },
   );
 });

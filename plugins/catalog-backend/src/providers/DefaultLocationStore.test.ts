@@ -194,7 +194,6 @@ describe('DefaultLocationStore', () => {
           entity_ref: 'k:ns/n',
           unprocessed_entity: '{}',
           errors: '[]',
-          next_update_at: new Date(),
           last_discovery_at: new Date(),
         });
 

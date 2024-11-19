@@ -68,7 +68,6 @@ describe('DefaultProviderDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
         });
       }
@@ -506,7 +505,6 @@ describe('DefaultProviderDatabase', () => {
           unprocessed_entity: '{}',
           processed_entity: '{}',
           errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
           last_discovery_at: '2021-04-01 13:37:00',
           location_key: 'file:///tmp/old',
         });
@@ -821,7 +819,6 @@ describe('DefaultProviderDatabase', () => {
           entity_id: 'id1',
           entity_ref: stringifyEntityRef(entity1Before),
           last_discovery_at: new Date(),
-          next_update_at: new Date(),
           errors: '[]',
           unprocessed_entity: JSON.stringify(entity1Before),
           unprocessed_hash: generateStableHash(entity1Before),
@@ -834,7 +831,6 @@ describe('DefaultProviderDatabase', () => {
           entity_id: 'id2',
           entity_ref: stringifyEntityRef(entity2Before),
           last_discovery_at: new Date(),
-          next_update_at: new Date(),
           errors: '[]',
           unprocessed_entity: JSON.stringify(entity2Before),
           unprocessed_hash: generateStableHash(entity2After), // lie about the hash!
@@ -847,7 +843,6 @@ describe('DefaultProviderDatabase', () => {
           entity_id: 'id4',
           entity_ref: stringifyEntityRef(entity4),
           last_discovery_at: new Date(),
-          next_update_at: new Date(),
           errors: '[]',
           unprocessed_entity: JSON.stringify(entity4),
           unprocessed_hash: generateStableHash(entity4),
