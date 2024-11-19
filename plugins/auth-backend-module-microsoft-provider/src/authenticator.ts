@@ -33,11 +33,9 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
       // separately from the normal scopes in the client. When request a
       // resource scope we should only include forward the request scope along
       // with offline_access.
-      const hasResourceScope = Array.from(additional).some(s =>
-        s.includes('/'),
-      );
+      const hasResourceScope = Array.from(requested).some(s => s.includes('/'));
       if (hasResourceScope) {
-        return [...additional, 'offline_access'];
+        return [...requested, 'offline_access'];
       }
       return [...requested, ...granted, ...required, ...additional];
     },
