@@ -42,8 +42,8 @@ export async function requirePermission(
     )
   )[0];
 
-  if (decision.result === AuthorizeResult.DENY) {
-    const err = new NotAllowedError('Unauthorized');
-    throw err;
+  if (decision.result === AuthorizeResult.ALLOW) {
+    return;
   }
+  throw new NotAllowedError('Unauthorized');
 }
