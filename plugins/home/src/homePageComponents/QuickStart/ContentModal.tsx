@@ -32,7 +32,7 @@ export const ContentModal = (props: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={styles.linkText}>
+    <div className={styles.linkText} data-testid="content-modal-container">
       <Link
         to="#"
         component="button"
@@ -46,9 +46,9 @@ export const ContentModal = (props: Props) => {
         open={open}
         onClose={() => setOpen(false)}
         aria-labelledby="content-modal"
-        data-cy="content-modal"
+        data-testid="content-modal"
       >
-        <Box className={styles.contentModal} data-cy="content-modal-open">
+        <Box className={styles.contentModal} data-testid="content-modal-open">
           {modalContent}
         </Box>
       </Modal>

@@ -69,7 +69,7 @@ export const Content = (props: QuickStartCardProps): JSX.Element => {
         <Grid item>
           <Link
             to={props.docsLink || 'https://backstage.io/docs/getting-started/'}
-            data-cy="quick-start-link-to-docs"
+            data-testid="quick-start-link-to-docs"
             underline="none"
             variant="h6"
             className={styles.link}

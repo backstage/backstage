@@ -16,52 +16,59 @@
 
 import { Content } from './Content';
 import React from 'react';
-import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import userEvent from '@testing-library/user-event';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import ContentImage from './static/backstageSystemModel.png';
 
-const docsEntities = [
-  {
-    apiVersion: '1',
-    kind: 'Location',
-    metadata: {
-      name: 'getting-started-with-idp',
-      title: 'Getting Started Docs',
-    },
-    spec: {
-      type: 'documentation',
-    },
-  },
-];
-
-describe('<FeaturedDocsCard />', () => {
+describe('<QuickStartCard />', () => {
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <TestApiProvider
-      apis={[[catalogApiRef, catalogApiMock({ entities: docsEntities })]]}
-    >
-      {children}
-    </TestApiProvider>
+    <TestApiProvider apis={[]}>{children}</TestApiProvider>
   );
-
-  it('should show expected featured doc and title', async () => {
-    const { getByTestId, getByText } = await renderInTestApp(
+  const renderContent = async () => {
+    return await renderInTestApp(
       <Wrapper>
         <Content
-          filter={{
-            'spec.type': 'documentation',
-            'metadata.name': 'getting-started-with-idp',
-          }}
-          emptyState={undefined}
+          image={
+            <img
+              src={ContentImage}
+              data-testid="quick-start-image"
+              alt="quick start"
+              width="100%"
+              height="100%"
+            />
+          }
+          docsLinkTitle="Testing docs link"
         />
       </Wrapper>,
-      {
-        mountedRoutes: {
-          '/home': entityRouteRef,
-        },
-      },
     );
-    const docsCardContent = getByTestId('docs-card-content');
-    const docsEntity = getByText('getting-started-with-idp');
-    expect(docsCardContent).toContainElement(docsEntity);
+  };
+
+  it('should have expected card content', async () => {
+    const { getByTestId } = await renderContent();
+    const docsLink = getByTestId('quick-start-link-to-docs');
+    expect(docsLink).toHaveTextContent('Testing docs link');
+    expect(docsLink).toHaveAttribute('target', '_blank');
+  });
+
+  it('clicking the link opens the modal', async () => {
+    const { getByTestId, getByText } = await renderContent();
+    // Find the link element
+    const link = getByText('Onboarding');
+    // Simulate a click event on the link
+    await userEvent.click(link);
+    // Assert that the modal is visible
+    const modal = getByTestId('content-modal-open');
+    expect(modal).toBeVisible();
+  });
+
+  it('clicking the image opens the modal', async () => {
+    const { getByTestId } = await renderContent();
+    // Find the link element
+    const link = getByTestId('quick-start-image');
+    // Simulate a click event on the link
+    await userEvent.click(link);
+    // Assert that the modal is visible
+    const modal = getByTestId('content-modal-open');
+    expect(modal).toBeVisible();
   });
 });
