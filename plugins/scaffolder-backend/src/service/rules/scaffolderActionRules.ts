@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,11 @@
  * limitations under the License.
  */
 
-import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
-import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-} from '@backstage/plugin-scaffolder-common/alpha';
-
-import {
-  TemplateEntityStepV1beta3,
-  TemplateParametersV1beta3,
-} from '@backstage/plugin-scaffolder-common';
-
 import { z } from 'zod';
-import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get } from 'lodash';
-
-export const createTemplatePermissionRule = makeCreatePermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
->();
-
-export const hasTag = createTemplatePermissionRule({
-  name: 'HAS_TAG',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  description: `Match parameters or steps with the given tag`,
-  paramsSchema: z.object({
-    tag: z.string().describe('Name of the tag to match on'),
-  }),
-  apply: (resource, { tag }) => {
-    return resource['backstage:permissions']?.tags?.includes(tag) ?? false;
-  },
-  toQuery: () => ({}),
-});
+import { JsonObject, JsonPrimitive } from '@backstage/types';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 
 export const createActionPermissionRule = makeCreatePermissionRule<
   {
@@ -80,10 +52,12 @@ export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
+
 export const hasNumberProperty = buildHasProperty({
   name: 'HAS_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
+
 export const hasStringProperty = buildHasProperty({
   name: 'HAS_STRING_PROPERTY',
   valueSchema: z.string(),
@@ -129,7 +103,6 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
-export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,
   hasBooleanProperty,

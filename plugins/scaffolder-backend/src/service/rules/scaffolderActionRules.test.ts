@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import {
   hasActionId,
@@ -21,75 +20,10 @@ import {
   hasNumberProperty,
   hasProperty,
   hasStringProperty,
-  hasTag,
-} from './rules';
-import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
+} from './scaffolderActionRules';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-
-describe('hasTag', () => {
-  describe('apply', () => {
-    it('returns false when the tag is not present', () => {
-      expect(
-        hasTag.apply(
-          {
-            'backstage:permissions': {
-              tags: ['foo', 'bar'],
-            },
-          },
-          {
-            tag: 'baz',
-          },
-        ),
-      ).toEqual(false);
-    });
-
-    it('returns false when backstage:permissions is missing', () => {
-      expect(
-        hasTag.apply(
-          {},
-          {
-            tag: 'baz',
-          },
-        ),
-      ).toEqual(false);
-    });
-
-    it('returns false when tags is an empty array', () => {
-      expect(
-        hasTag.apply(
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              'backstage:permissions': {
-                tags: [],
-              },
-            },
-          },
-          {
-            tag: 'baz',
-          },
-        ),
-      ).toEqual(false);
-    });
-
-    it('returns true when the tag is present', () => {
-      expect(
-        hasTag.apply(
-          {
-            'backstage:permissions': {
-              tags: ['foo', 'bar'],
-            },
-          },
-          {
-            tag: 'bar',
-          },
-        ),
-      ).toEqual(true);
-    });
-  });
-});
+import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 
 describe('hasActionId', () => {
   describe('apply', () => {
