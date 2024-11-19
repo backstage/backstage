@@ -343,13 +343,24 @@ export function useReaderState(
     [state.activeSyncState, state.content, state.contentLoading],
   );
 
-  return {
-    state: displayState,
-    contentReload,
-    path: state.path,
-    content: state.content,
-    contentErrorMessage: state.contentError?.toString(),
-    syncErrorMessage: state.syncError?.toString(),
-    buildLog: state.buildLog,
-  };
+  return useMemo(
+    () => ({
+      state: displayState,
+      contentReload,
+      path: state.path,
+      content: state.content,
+      contentErrorMessage: state.contentError?.toString(),
+      syncErrorMessage: state.syncError?.toString(),
+      buildLog: state.buildLog,
+    }),
+    [
+      displayState,
+      contentReload,
+      state.path,
+      state.content,
+      state.contentError,
+      state.syncError,
+      state.buildLog,
+    ],
+  );
 }
