@@ -23,6 +23,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
     "zod": "^3.22.4"
   },

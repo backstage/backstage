@@ -10339,6 +10339,7 @@ __metadata:
   resolution: "@internal/scaffolder@workspace:packages/scaffolder-internal"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     zod: ^3.22.4
   languageName: unknown

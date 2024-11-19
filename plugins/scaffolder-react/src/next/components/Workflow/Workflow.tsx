@@ -106,7 +106,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
               return;
             }
 
-            await formDecorator.fn({
+            await formDecorator.decorator({
               setSecrets,
               setFormState: (
                 handler: (
@@ -116,7 +116,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
                 formState = { ...handler(formState) };
               },
               formState,
-              input: decorator.input,
+              input: decorator.input ?? {},
             });
           }),
         );

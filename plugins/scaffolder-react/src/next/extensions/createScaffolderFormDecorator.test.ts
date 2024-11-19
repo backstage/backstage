@@ -20,7 +20,7 @@ describe('createScaffolderFormDecorator', () => {
     const decorator = createScaffolderFormDecorator({
       id: 'test',
       deps: {},
-      fn: async () => {},
+      decorator: async () => {},
     });
 
     expect(decorator).toMatchInlineSnapshot(`
@@ -43,7 +43,7 @@ describe('createScaffolderFormDecorator', () => {
           age: z => z.number(),
         },
       },
-      fn: async ctx => {
+      decorator: async ctx => {
         const name: string = ctx.input.name;
 
         // @ts-expect-error

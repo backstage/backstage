@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 import { AnyApiRef } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
+import { OpaqueFormDecorator } from '@internal/scaffolder';
 import { z } from 'zod';
 
 /** @alpha */
-export type ScaffolderFormDecoratorContext<TInput> = {
+export type ScaffolderFormDecoratorContext<
+  TInput extends JsonObject = JsonObject,
+> = {
   input: TInput;
   formState: Record<string, JsonValue>;
 
@@ -31,53 +34,51 @@ export type ScaffolderFormDecoratorContext<TInput> = {
 };
 
 /** @alpha */
-export type ScaffolderFormDecorator<
-  TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
-  TDeps extends { [key in string]: AnyApiRef },
-> = {
-  version: 'v1';
-  id: string;
-  schema?: {
-    input?: TInputSchema;
-  };
-  deps?: TDeps;
-  fn: (
-    ctx: ScaffolderFormDecoratorContext<{
-      [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
-    }>,
-    deps: TDeps extends { [key in string]: AnyApiRef }
-      ? { [key in keyof TDeps]: TDeps[key]['T'] }
-      : never,
-  ) => Promise<void>;
+export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
+  readonly $$type: '@backstage/scaffolder/FormDecorator';
+  readonly id: string;
+  readonly TInput: TInput;
 };
 
-/** @alpha */
-export type AnyScaffolderFormDecorator = ScaffolderFormDecorator<any, any>;
 /**
  * Method for creating decorators which can be used to collect
  * secrets from the user before submitting to the backend.
  * @alpha
  */
 export function createScaffolderFormDecorator<
-  TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
-  TDeps extends { [key in string]: AnyApiRef },
+  TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType } = {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
+  TDeps extends { [key in string]: AnyApiRef } = { [key in string]: AnyApiRef },
+  TInput extends JsonObject = {
+    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+  },
 >(options: {
   id: string;
   schema?: {
     input?: TInputSchema;
   };
   deps?: TDeps;
-  fn: (
-    ctx: ScaffolderFormDecoratorContext<{
-      [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
-    }>,
+  decorator: (
+    ctx: ScaffolderFormDecoratorContext<TInput>,
     deps: TDeps extends { [key in string]: AnyApiRef }
       ? { [key in keyof TDeps]: TDeps[key]['T'] }
       : never,
   ) => Promise<void>;
-}): ScaffolderFormDecorator<TInputSchema, TDeps> {
-  return {
+}): ScaffolderFormDecorator<TInput> {
+  return OpaqueFormDecorator.createInstance('v1', {
     ...options,
-    version: 'v1',
-  };
+    TInput: null as unknown as TInput,
+  } as {
+    id: string;
+    schema?: {
+      input?: TInputSchema;
+    };
+    TInput: TInput;
+    deps?: TDeps;
+    decorator: (
+      ctx: ScaffolderFormDecoratorContext,
+      deps: { [key in string]: AnyApiRef['T'] },
+    ) => Promise<void>;
+  });
 }

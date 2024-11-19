@@ -26,7 +26,7 @@ export const mockDecorator = createScaffolderFormDecorator({
   deps: {
     githubApi: githubAuthApiRef,
   },
-  fn: async ({ setSecrets }, { githubApi }) => {
+  decorator: async ({ setSecrets }, { githubApi }) => {
     const token = await githubApi.getAccessToken();
     setSecrets(state => ({ ...state, GITHUB_TOKEN: token }));
   },

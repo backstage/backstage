@@ -15,7 +15,7 @@
  */
 
 import { ScaffolderFormDecoratorsApi } from './types';
-import { AnyScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 
 /** @alpha */
 export class DefaultScaffolderFormDecoratorsApi
@@ -23,17 +23,17 @@ export class DefaultScaffolderFormDecoratorsApi
 {
   private constructor(
     private readonly options: {
-      decorators: Array<AnyScaffolderFormDecorator>;
+      decorators: Array<ScaffolderFormDecorator>;
     },
   ) {}
 
-  static create(options?: { decorators: AnyScaffolderFormDecorator[] }) {
+  static create(options?: { decorators: ScaffolderFormDecorator[] }) {
     return new DefaultScaffolderFormDecoratorsApi(
       options ?? { decorators: [] },
     );
   }
 
-  async getFormDecorators(): Promise<AnyScaffolderFormDecorator[]> {
+  async getFormDecorators(): Promise<ScaffolderFormDecorator[]> {
     return this.options.decorators;
   }
 }

@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AnyApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { formDecoratorsApiRef } from '../api/ref';
 import useAsync from 'react-use/esm/useAsync';
 import { useMemo } from 'react';
 import { ScaffolderFormDecoratorContext } from '@backstage/plugin-scaffolder-react/alpha';
+import { OpaqueFormDecorator } from '@internal/scaffolder';
 
 /** @internal */
 type BoundFieldDecorator = {
-  fn: (ctx: ScaffolderFormDecoratorContext<any>) => Promise<void>;
+  decorator: (ctx: ScaffolderFormDecoratorContext) => Promise<void>;
 };
 
 export const useFormDecorators = () => {
   const formDecoratorsApi = useApi(formDecoratorsApiRef);
+  const errorApi = useApi(errorApiRef);
   const { value: decorators } = useAsync(
     () => formDecoratorsApi.getFormDecorators(),
     [],
@@ -37,27 +39,27 @@ export const useFormDecorators = () => {
 
     for (const decorator of decorators ?? []) {
       try {
-        const resolvedDeps = Object.entries(decorator.deps ?? {}).map(
-          ([key, value]) => {
-            const api = apiHolder.get(value);
-            if (!api) {
-              throw new Error(
-                `Failed to resolve apiRef ${value.id} for form decorator ${decorator.id} it will be disabled`,
-              );
-            }
-            return [key, api];
-          },
-        );
+        const { decorator: decoratorFn, deps } =
+          OpaqueFormDecorator.toInternal(decorator);
+
+        const resolvedDeps = Object.entries(deps ?? {}).map(([key, value]) => {
+          const api = apiHolder.get(value);
+          if (!api) {
+            throw new Error(
+              `Failed to resolve apiRef ${value.id} for form decorator ${decorator.id} it will be disabled`,
+            );
+          }
+          return [key, api];
+        });
 
         decoratorsMap.set(decorator.id, {
-          fn: ctx => decorator.fn(ctx, Object.fromEntries(resolvedDeps)),
+          decorator: ctx => decoratorFn(ctx, Object.fromEntries(resolvedDeps)),
         });
       } catch (ex) {
-        // eslint-disable-next-line no-console
-        console.error(ex);
+        errorApi.post(ex);
         return undefined;
       }
     }
     return decoratorsMap;
-  }, [apiHolder, decorators]);
+  }, [apiHolder, decorators, errorApi]);
 };

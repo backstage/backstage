@@ -38,7 +38,7 @@ describe('useFormDecorators', () => {
         test: z => z.string(),
       },
     },
-    async fn({ input: { test } }, { mockApiRef: mock }) {
+    async decorator({ input: { test } }, { mockApiRef: mock }) {
       mock.test(test);
     },
   });
@@ -70,7 +70,7 @@ describe('useFormDecorators', () => {
       const testDecorator = result.get('test')!;
       expect(testDecorator).toBeDefined();
 
-      await testDecorator.fn({
+      await testDecorator.decorator({
         formState: {},
         setFormState: () => {},
         setSecrets: () => {},
