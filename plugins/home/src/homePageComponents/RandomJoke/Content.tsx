@@ -17,11 +17,19 @@
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useRandomJoke } from './Context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 export const Content = () => {
   const { joke, loading } = useRandomJoke();
+  const { t } = useTranslationRef(homePageTranslationRef);
 
-  if (loading) return <Typography paragraph>Loading...</Typography>;
+  if (loading)
+    return (
+      <Typography paragraph>
+        {t('homePageComponents.randomJoke.loadingLabel')}
+      </Typography>
+    );
 
   return (
     <div>
