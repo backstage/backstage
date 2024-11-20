@@ -20,12 +20,18 @@ import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaf
 import { get } from 'lodash';
 import { JsonPrimitive } from '@backstage/types';
 
+/**
+ * @public
+ */
 export const createTemplateEntityPermissionRule = makeCreatePermissionRule<
   TemplateEntityV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY
 >();
 
+/**
+ * @public
+ */
 export const hasAction = createTemplateEntityPermissionRule({
   name: 'HAS_ACTION',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
@@ -92,22 +98,34 @@ function buildHasActionProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
+/**
+ * @public
+ */
 export const hasActionWithProperty = buildHasActionProperty({
   name: 'HAS_ACTION_WITH_PROPERTY',
   valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
   validateProperty: false,
 });
 
+/**
+ * @public
+ */
 export const hasActionWithBooleanProperty = buildHasActionProperty({
   name: 'HAS_ACTION_WITH_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
 
+/**
+ * @public
+ */
 export const hasActionWithNumberProperty = buildHasActionProperty({
   name: 'HAS_ACTION_WITH_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
 
+/**
+ * @public
+ */
 export const hasActionWithStringProperty = buildHasActionProperty({
   name: 'HAS_ACTION_WITH_STRING_PROPERTY',
   valueSchema: z.string(),

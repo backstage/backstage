@@ -15,11 +15,22 @@
  */
 
 import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
+import {
+  scaffolderActionRules,
+  scaffolderTemplateEntityRules,
+  scaffolderTemplateRules,
+} from './rules';
+
+const templateEntityConditionExports = createConditionExports({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  rules: scaffolderTemplateEntityRules,
+});
 
 const templateConditionExports = createConditionExports({
   pluginId: 'scaffolder',
@@ -34,6 +45,50 @@ const actionsConditionExports = createConditionExports({
 });
 
 /**
+ * `createScaffolderTemplateEntityConditionalDecision` can be used when authoring policies to
+ * create conditional decisions. It requires a permission of type
+ * `ResourcePermission<'scaffolder-entity'>` to be passed as the first parameter.
+ * It's recommended that you use the provided `isResourcePermission` and
+ * `isPermission` helper methods to narrow the type of the permission passed to
+ * the handle method as shown below.
+ *
+ * ```
+ * // MyAuthorizationPolicy.ts
+ * ...
+ * import { createScaffolderTemplateEntityConditionalDecision } from '@backstage/plugin-scaffolder-backend';
+ * import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common';
+ *
+ * class MyAuthorizationPolicy implements PermissionPolicy {
+ *   async handle(request, user) {
+ *    ...
+ *
+ *    if (isResourcePermission(request.permission, RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY)) {
+ *      return createScaffolderTemplateEntityConditionalDecision(
+ *        request.permission,
+ *        { anyOf: [...insert conditions here...] }
+ *      );
+ *    }
+ *
+ *    ...
+ * }
+ *
+ * ```
+ *
+ * @alpha
+ */
+export const createScaffolderTemplateEntityConditionalDecision =
+  templateEntityConditionExports.createConditionalDecision;
+
+/**
+ * These conditions are used when creating conditional decisions for scaffolder
+ * template entities that are returned by authorization policies.
+ *
+ * @alpha
+ */
+export const scaffolderTemplateEntityConditions =
+  templateEntityConditionExports.conditions;
+
+/**
  * `createScaffolderTemplateConditionalDecision` can be used when authoring policies to
  * create conditional decisions. It requires a permission of type
  * `ResourcePermission<'scaffolder-template'>` to be passed as the first parameter.
@@ -44,7 +99,7 @@ const actionsConditionExports = createConditionExports({
  * ```
  * // MyAuthorizationPolicy.ts
  * ...
- * import { createScaffolderPolicyDecision } from '@backstage/plugin-scaffolder-backend';
+ * import { createScaffolderTemplateConditionalDecision } from '@backstage/plugin-scaffolder-backend';
  * import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common';
  *
  * class MyAuthorizationPolicy implements PermissionPolicy {
@@ -52,7 +107,7 @@ const actionsConditionExports = createConditionExports({
  *    ...
  *
  *    if (isResourcePermission(request.permission, RESOURCE_TYPE_SCAFFOLDER_TEMPLATE)) {
- *      return createScaffolderConditionalDecision(
+ *      return createScaffolderTemplateConditionalDecision(
  *        request.permission,
  *        { anyOf: [...insert conditions here...] }
  *      );
