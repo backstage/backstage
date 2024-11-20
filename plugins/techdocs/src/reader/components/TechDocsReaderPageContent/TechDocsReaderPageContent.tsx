@@ -66,11 +66,11 @@ export type TechDocsReaderPageContentProps = {
   withSearch?: boolean;
   /**
    * If {@link TechDocsReaderPageContentProps.withSearch | withSearch} is true,
-   * this will redirect the search result urls, and turn search results into
+   * this will redirect the search result urls, e.g. turn search results into
    * links within the "Docs" tab of the entity page, instead of the global docs
    * page.
    */
-  redirectUrl?: (url: string) => string;
+  searchResultUrlMapper?: (url: string) => string;
   /**
    * Callback called when the content is rendered.
    */
@@ -83,7 +83,7 @@ export type TechDocsReaderPageContentProps = {
  */
 export const TechDocsReaderPageContent = withTechDocsReaderProvider(
   (props: TechDocsReaderPageContentProps) => {
-    const { withSearch = true, redirectUrl, onReady } = props;
+    const { withSearch = true, searchResultUrlMapper, onReady } = props;
     const classes = useStyles();
 
     const {
@@ -149,7 +149,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
               <TechDocsSearch
                 entityId={entityRef}
                 entityTitle={entityMetadata?.metadata?.title}
-                redirectUrl={redirectUrl}
+                searchResultUrlMapper={searchResultUrlMapper}
               />
             </Grid>
           )}

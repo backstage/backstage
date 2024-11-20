@@ -41,7 +41,7 @@ export const EntityPageDocs = ({
 }: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
-  const redirectUrl = useEntityPageTechDocsRedirect(entityRef);
+  const searchResultUrlMapper = useEntityPageTechDocsRedirect(entityRef);
 
   if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
     try {
@@ -58,7 +58,7 @@ export const EntityPageDocs = ({
       <TechDocsReaderPageSubheader />
       <TechDocsReaderPageContent
         withSearch={withSearch}
-        redirectUrl={redirectUrl}
+        searchResultUrlMapper={searchResultUrlMapper}
       />
     </TechDocsReaderPage>
   );

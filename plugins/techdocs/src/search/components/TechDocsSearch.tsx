@@ -34,7 +34,7 @@ export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
   entityTitle?: string;
   debounceTime?: number;
-  redirectUrl?: (url: string) => string;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 type TechDocsDoc = {
@@ -59,7 +59,12 @@ const isTechDocsSearchResult = (
 };
 
 const TechDocsSearchBar = (props: TechDocsSearchProps) => {
-  const { entityId, entityTitle, debounceTime = 150, redirectUrl } = props;
+  const {
+    entityId,
+    entityTitle,
+    debounceTime = 150,
+    searchResultUrlMapper,
+  } = props;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const {
@@ -103,7 +108,9 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
   ) => {
     if (isTechDocsSearchResult(selection)) {
       const { location } = selection.document;
-      navigate(redirectUrl ? redirectUrl(location) : location);
+      navigate(
+        searchResultUrlMapper ? searchResultUrlMapper(location) : location,
+      );
     }
   };
 
