@@ -7797,6 +7797,7 @@ __metadata:
     react-dom: ^18.0.2
     react-router-dom: ^6.3.0
     react-use: ^17.3.2
+    uuid: ^11.0.2
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -44204,7 +44205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.0":
+"uuid@npm:^11.0.0, uuid@npm:^11.0.2":
   version: 11.0.3
   resolution: "uuid@npm:11.0.3"
   bin:
