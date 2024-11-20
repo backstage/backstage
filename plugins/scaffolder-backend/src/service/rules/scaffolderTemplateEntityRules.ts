@@ -35,13 +35,55 @@ export const createTemplateEntityPermissionRule = makeCreatePermissionRule<
 export const hasAction = createTemplateEntityPermissionRule({
   name: 'HAS_ACTION',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
-  description: `Match templates with that use one an action`,
+  description: `Match templates with that use an action`,
   paramsSchema: z.object({
     actionId: z.string().describe('The ID of an action to match on'),
   }),
   apply: (resource, { actionId }) => {
     const actions = resource.spec.steps;
     return !!actions.find(action => action.action === actionId);
+  },
+  toQuery: () => ({}),
+});
+
+/**
+ * @public
+ */
+export const hasTaggedAction = createTemplateEntityPermissionRule({
+  name: 'HAS_TAGGED_ACTION',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  description: `Match templates with that use an action with a tag`,
+  paramsSchema: z.object({
+    actionId: z.string().optional().describe('The ID of an action to match on'),
+    tag: z.string().describe('Name of the tag to match on'),
+  }),
+  apply: (resource, { actionId, tag }) => {
+    const actions = resource.spec.steps;
+    return !!actions.find(action => {
+      if (actionId && action.action !== actionId) return false;
+      return action['backstage:permissions']?.tags?.includes(tag) ?? false;
+    });
+  },
+  toQuery: () => ({}),
+});
+
+/**
+ * @public
+ */
+export const hasTaggedParam = createTemplateEntityPermissionRule({
+  name: 'HAS_TAGGED_PARAM',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  description: `Match templates with that have a parameter with a tag`,
+  paramsSchema: z.object({
+    tag: z.string().describe('Name of the tag to match on'),
+  }),
+  apply: (resource, { tag }) => {
+    const params = resource.spec.parameters;
+    if (!params || !Array.isArray(params)) return false;
+
+    return !!params.find(
+      param => param['backstage:permissions']?.tags?.includes(tag) ?? false,
+    );
   },
   toQuery: () => ({}),
 });
@@ -132,6 +174,8 @@ export const hasActionWithStringProperty = buildHasActionProperty({
 });
 
 export const scaffolderTemplateEntityRules = {
+  hasTaggedAction,
+  hasTaggedParam,
   hasAction,
   hasActionWithProperty,
   hasActionWithBooleanProperty,

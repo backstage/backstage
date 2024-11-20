@@ -31,6 +31,7 @@ import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
+  isTemplateEntityV1beta3,
   TaskSpec,
   TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
@@ -114,6 +115,7 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
+import { keyBy } from 'lodash';
 
 /**
  *
@@ -473,6 +475,33 @@ export async function createRouter(
         resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
         permissions: scaffolderTemplateEntityPermissions,
         rules: templateEntityRules,
+        getResources: async (
+          resourceRefs: string[],
+        ): Promise<TemplateEntityV1beta3[]> => {
+          const credentials = await auth.getOwnServiceCredentials();
+
+          const { token } = await auth.getPluginRequestToken({
+            onBehalfOf: credentials,
+            targetPluginId: 'catalog',
+          });
+
+          const { items } = await catalogClient.getEntitiesByRefs(
+            { entityRefs: resourceRefs },
+            { token },
+          );
+
+          const templates = items.filter(
+            (item): item is TemplateEntityV1beta3 =>
+              !!item && isTemplateEntityV1beta3(item),
+          );
+
+          const templatesByRef = keyBy(templates, stringifyEntityRef);
+
+          return resourceRefs.map(
+            resourceRef =>
+              templatesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
+          );
+        },
       },
       {
         resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
