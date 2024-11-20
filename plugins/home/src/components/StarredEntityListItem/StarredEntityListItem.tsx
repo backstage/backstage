@@ -27,6 +27,8 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { FavoriteToggle } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 type EntityListItemProps = {
   entity: Entity;
@@ -51,6 +53,7 @@ export const StarredEntityListItem = ({
 }: EntityListItemProps) => {
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
+  const { t } = useTranslationRef(homePageTranslationRef);
 
   let secondaryText = '';
   if (showKind) {
@@ -81,7 +84,7 @@ export const StarredEntityListItem = ({
       >
         <FavoriteToggle
           id={`remove-favorite-${entity.metadata.uid}`}
-          title="Remove entity from favorites"
+          title={t('components.staredEntities.favoriteToggleButton.title')}
           isFavorite
           onToggle={() => onToggleStarredEntity(entity)}
         />
