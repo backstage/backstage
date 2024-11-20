@@ -16,11 +16,17 @@
 
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
-export const VisitListFew = () => (
-  <>
-    <Typography variant="body2" color="textSecondary">
-      The more pages you visit, the more pages will appear here.
-    </Typography>
-  </>
-);
+export const VisitListFew = () => {
+  const { t } = useTranslationRef(homePageTranslationRef);
+
+  return (
+    <>
+      <Typography variant="body2" color="textSecondary">
+        {t('components.visitList.visitListFew.description')}
+      </Typography>
+    </>
+  );
+};
