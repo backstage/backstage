@@ -353,18 +353,18 @@ While populating the catalog with organizational data unlocks more powerful ways
 to browse your software ecosystem, it might not always be a viable or prioritized
 option. However, even if you do not have user entities populated in your catalog, you
 can still sign in users. As there are currently no built-in sign-in resolvers for
-this scenario you will need to implement your own.
+this scenario, you will need to implement your own.
 
 Signing in a user that doesn't exist in the catalog is as simple as skipping the
 catalog lookup step from the above example. Rather than looking up the user, we
 instead immediately issue a token using whatever information is available. One caveat
 is that it can be tricky to determine the ownership references, although it can
-be achieved for example through a lookup to an external service. You typically
+be achieved, for example, through a lookup to an external service. You typically
 want to at least use the user itself as a lone ownership reference.
 
 Because we no longer use the catalog as an allow-list of users, it is often important
 that you limit what users are allowed to sign in. This could be a simple email domain
-check like in the example below, or you might for example look up the GitHub organizations
+check like in the example below, or you might for example, look up the GitHub organizations
 that the user belongs to using the user access token in the provided result object.
 
 ```ts
@@ -472,4 +472,4 @@ The second common error is: "Failed to sign-in, unable to resolve user identity"
 
 ![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-reolve-identity.png)
 
-This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).
+This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this, you need to import User, and Group, data from some source of truth for this data at your Organization. To do this, you can use one of the existing Org Data providers, like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs, you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).
