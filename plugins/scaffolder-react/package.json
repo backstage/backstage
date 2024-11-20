@@ -64,6 +64,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/theme": "workspace:^",
@@ -88,6 +89,7 @@
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
+    "swr": "^2.0.0",
     "use-immer": "^0.10.0",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4",
@@ -98,7 +100,6 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
-    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
@@ -109,8 +110,7 @@
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0",
-    "swr": "^2.0.0"
+    "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",

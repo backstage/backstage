@@ -16,6 +16,9 @@ export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 
 // @alpha
+export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY = 'scaffolder-entity';
+
+// @alpha
 export const scaffolderActionPermissions: ResourcePermission<'scaffolder-action'>[];
 
 // @alpha
@@ -29,6 +32,9 @@ export const scaffolderPermissions: (
 export const scaffolderTaskPermissions: BasicPermission[];
 
 // @alpha
+export const scaffolderTemplateEntityPermissions: ResourcePermission<'scaffolder-entity'>[];
+
+// @alpha
 export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
 
 // @alpha
@@ -39,6 +45,9 @@ export const taskCreatePermission: BasicPermission;
 
 // @alpha
 export const taskReadPermission: BasicPermission;
+
+// @alpha
+export const templateExecutePermission: ResourcePermission<'scaffolder-entity'>;
 
 // @alpha
 export const templateManagementPermission: BasicPermission;

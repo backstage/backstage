@@ -14,12 +14,39 @@
  * limitations under the License.
  */
 
-import { useEntityList } from "@backstage/plugin-catalog-react";
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useApi } from '@backstage/frontend-plugin-api';
+import { useEntityList } from '@backstage/plugin-catalog-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import useSWR from 'swr';
 
 export const useTemplateEntityList = () => {
-  const { loading, error, entities } = useEntityList();
+  const { loading, error: listError, entities } = useEntityList();
+  const permissionsApi = useApi(permissionApiRef);
 
-  // TODO: filter entities by "scaffolder.canExecTemplate" permission
+  const { data, error: permissionsError } = useSWR(
+    entities,
+    async (templates: typeof entities) =>
+      asyncFilter(templates, async template => {
+        const { result } = await permissionsApi.authorize({
+          permission: templateExecutePermission,
+          resourceRef: stringifyEntityRef(template),
+        });
 
-  return { loading, error, entities }
+        return result === AuthorizeResult.ALLOW;
+      }),
+  );
+
+  return { loading, error: listError || permissionsError, entities: data };
 };
+
+async function asyncFilter<T>(
+  array: T[],
+  filterFn: (item: T) => Promise<boolean>,
+): Promise<T[]> {
+  return Promise.all(
+    array.map(async item => ((await filterFn(item)) ? item : null)),
+  ).then(items => items.filter((item): item is Awaited<T> => item !== null));
+}
