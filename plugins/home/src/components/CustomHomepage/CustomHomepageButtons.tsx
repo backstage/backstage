@@ -21,6 +21,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,6 +58,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
     restoreDefault,
   } = props;
   const styles = useStyles();
+  const { t } = useTranslationRef(homePageTranslationRef);
 
   return (
     <>
@@ -67,7 +70,9 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
           size="small"
           startIcon={<EditIcon />}
         >
-          Edit
+          {t(
+            'components.customHomepage.customHomepageButtons.editButton.title',
+          )}
         </Button>
       ) : (
         <>
@@ -79,7 +84,9 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               size="small"
               startIcon={<CancelIcon />}
             >
-              Restore defaults
+              {t(
+                'components.customHomepage.customHomepageButtons.restoreDefaultsButton.title',
+              )}
             </Button>
           )}
           {numWidgets > 0 && (
@@ -91,7 +98,9 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               size="small"
               startIcon={<DeleteIcon />}
             >
-              Clear all
+              {t(
+                'components.customHomepage.customHomepageButtons.clearAllButton.title',
+              )}
             </Button>
           )}
           <Button
@@ -101,7 +110,9 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
             size="small"
             startIcon={<AddIcon />}
           >
-            Add widget
+            {t(
+              'components.customHomepage.customHomepageButtons.addWidgetButton.title',
+            )}
           </Button>
           {numWidgets > 0 && (
             <Button
@@ -112,7 +123,9 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               size="small"
               startIcon={<SaveIcon />}
             >
-              Save
+              {t(
+                'components.customHomepage.customHomepageButtons.saveButton.title',
+              )}
             </Button>
           )}
         </>
