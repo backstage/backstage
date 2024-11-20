@@ -17,29 +17,24 @@
 import { Content } from './Content';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import ContentImage from './static/backstageSystemModel.png';
 
 describe('<QuickStartCard />', () => {
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  );
   const renderContent = async () => {
     return await renderInTestApp(
-      <Wrapper>
-        <Content
-          image={
-            <img
-              src={ContentImage}
-              data-testid="quick-start-image"
-              alt="quick start"
-              width="100%"
-              height="100%"
-            />
-          }
-          docsLinkTitle="Testing docs link"
-        />
-      </Wrapper>,
+      <Content
+        image={
+          <img
+            src={ContentImage}
+            data-testid="quick-start-image"
+            alt="quick start"
+            width="100%"
+            height="100%"
+          />
+        }
+        docsLinkTitle="Testing docs link"
+      />,
     );
   };
 
