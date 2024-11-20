@@ -31,7 +31,7 @@ describe('<ToolkitContent>', () => {
     expect(getByText('tool')).toBeInTheDocument();
     expect(getByText('tool 2')).toBeInTheDocument();
     expect(getByText('tool').closest('a')).toHaveAttribute('href', '/url');
-    expect(getByText('tool').closest('a').parentElement?.nodeName).toBe('LI');
+    expect(getByText('tool').closest('a')?.parentElement?.nodeName).toBe('LI');
     expect(getByText('tool 2').closest('a')).toHaveAttribute('href', '/url-2');
   });
 
