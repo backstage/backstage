@@ -2684,15 +2684,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spotify/prettier-config@npm:^15.0.0":
-  version: 15.0.0
-  resolution: "@spotify/prettier-config@npm:15.0.0"
-  peerDependencies:
-    prettier: 2.x
-  checksum: aa5ec5739427f9acdb9d62ae6c04f04a344898567239f7ee45c75c6205ebdffbc61747ea8de6e83baf0bc3785359967de4b7097a8723c4b4063ff57dc5cb6c44
-  languageName: node
-  linkType: hard
-
 "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0":
   version: 8.0.0
   resolution: "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0"
@@ -4008,7 +3999,6 @@ __metadata:
     "@docusaurus/tsconfig": ^3.1.1
     "@docusaurus/types": ^3.1.1
     "@mdx-js/react": ^3.0.0
-    "@spotify/prettier-config": ^15.0.0
     "@swc/core": ^1.3.46
     "@types/luxon": ^3.0.0
     "@types/webpack-env": ^1.18.0

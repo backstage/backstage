@@ -83,7 +83,7 @@
       "node ./scripts/verify-lockfile-duplicates --fix"
     ]
   },
-  "prettier": "@spotify/prettier-config",
+  "prettier": "@backstage/cli/config/prettier",
   "resolutions": {
     "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
@@ -108,7 +108,6 @@
     "@octokit/rest": "^19.0.3",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
-    "@spotify/prettier-config": "^15.0.0",
     "@techdocs/cli": "workspace:*",
     "@types/node": "^20.16.0",
     "@types/webpack": "^5.28.0",
