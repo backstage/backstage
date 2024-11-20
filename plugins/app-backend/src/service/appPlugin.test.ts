@@ -75,6 +75,7 @@ describe('appPlugin', () => {
       'package.json': '{}',
       dist: {
         static: {},
+        'index.html': '<html><head></head></html>',
         'index.html.tmpl': '<html><head></head></html>',
       },
     });
@@ -91,6 +92,26 @@ describe('appPlugin', () => {
         }),
       ],
     });
+
+    const rootContent = await fetch(`http://localhost:${server.port()}`).then(
+      res => res.text(),
+    );
+
+    expect(rootContent).toBe(`<html><head>
+<script type="backstage.io/config">
+[]
+</script>
+</head></html>`);
+
+    const indexContent = await fetch(
+      `http://localhost:${server.port()}/index.html`,
+    ).then(res => res.text());
+
+    expect(indexContent).toBe(`<html><head>
+<script type="backstage.io/config">
+[]
+</script>
+</head></html>`);
 
     const htmlContent = await fetch(
       `http://localhost:${server.port()}/api/app/some/html5/route`,
