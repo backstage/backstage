@@ -21,7 +21,8 @@ import { withLogCollector } from '@backstage/test-utils';
 
 const mockDir = createMockDirectory();
 
-jest.mock('../paths', () => ({
+jest.mock('../util', () => ({
+  ...jest.requireActual('../util'),
   paths: { resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args) },
 }));
 
