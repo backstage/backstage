@@ -68,7 +68,8 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
-    "react-use": "^17.3.2"
+    "react-use": "^17.3.2",
+    "uuid": "^11.0.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

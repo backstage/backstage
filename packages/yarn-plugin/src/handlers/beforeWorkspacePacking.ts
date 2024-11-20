@@ -16,7 +16,11 @@
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
 import { some } from 'lodash';
-import { getCurrentBackstageVersion, getPackageVersion } from '../util';
+import {
+  bindBackstageVersion,
+  getCurrentBackstageVersion,
+  getPackageVersion,
+} from '../util';
 import { PROTOCOL } from '../constants';
 
 const hasBackstageVersion = (range: string) =>
@@ -66,10 +70,7 @@ export const beforeWorkspacePacking = async (
       );
 
       rawManifest[finalDependencyType][ident] = `^${await getPackageVersion(
-        structUtils.makeDescriptor(
-          descriptor,
-          `${PROTOCOL}${backstageVersion}`,
-        ),
+        bindBackstageVersion(descriptor, backstageVersion),
       )}`;
     }
   }
