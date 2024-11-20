@@ -29,6 +29,11 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     textAlign: 'center',
   },
+  item: {
+    textAlign: 'center',
+    width: 'fit-content',
+    padding: 0,
+  },
   tool: {
     margin: theme.spacing(0.5, 1),
   },
@@ -64,7 +69,7 @@ export const Content = (props: ToolkitContentProps) => {
   return (
     <List className={classes.toolkit}>
       {tools.map((tool: Tool) => (
-        <ListItem>
+        <ListItem className={classes.item}>
           <Link key={tool.url} to={tool.url} className={classes.tool}>
             <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
             <ListItemText
