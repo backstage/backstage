@@ -27,7 +27,12 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import {
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -49,6 +54,7 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateExecutePermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -468,6 +474,9 @@ export async function createRouter(
   }
 
   const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
+  const isEntityAuthorized = createConditionAuthorizer(
+    Object.values(templateEntityRules),
+  );
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resources: [
@@ -987,14 +996,19 @@ export async function createRouter(
       return template;
     }
 
-    const [parameterDecision, stepDecision] =
+    const [executeDecision, parameterDecision, stepDecision] =
       await permissions.authorizeConditional(
         [
+          { permission: templateExecutePermission },
           { permission: templateParameterReadPermission },
           { permission: templateStepReadPermission },
         ],
         { credentials },
       );
+
+    if (!isEntityAuthorized(executeDecision, template)) {
+      throw new NotAllowedError();
+    }
 
     // Authorize parameters
     if (Array.isArray(template.spec.parameters)) {
