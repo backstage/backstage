@@ -1,5 +1,11 @@
 # @backstage/plugin-app-backend
 
+## 0.4.1
+
+### Patch Changes
+
+- 69cd281: Fixed a bug where config would not be injected on the `/` and `/index.html` paths.
+
 ## 0.4.0
 
 ### Minor Changes
