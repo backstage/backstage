@@ -22,9 +22,8 @@ import {
 import { PackageInfo, PackageManager } from '../PackageManager';
 import { Lockfile } from '../Lockfile';
 import { YarnVersion } from './types';
-import { paths } from '../../paths';
 import fs from 'fs-extra';
-import { run, execFile, SpawnOptionsPartialEnv } from '../../run';
+import { paths, run, execFile, SpawnOptionsPartialEnv } from '../../util';
 
 export class Yarn implements PackageManager {
   constructor(private readonly yarnVersion: YarnVersion) {}

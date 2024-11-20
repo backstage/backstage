@@ -16,8 +16,7 @@
 
 import { Yarn } from './yarn';
 import { Lockfile } from './Lockfile';
-import { SpawnOptionsPartialEnv } from '../run';
-import { paths } from '../paths';
+import { SpawnOptionsPartialEnv, paths } from '../util';
 import fs from 'fs-extra';
 
 /**
