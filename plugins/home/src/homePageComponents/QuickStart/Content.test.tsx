@@ -22,7 +22,7 @@ import ContentImage from './static/backstageSystemModel.png';
 
 describe('<QuickStartCard />', () => {
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <TestApiProvider apis={[]}>{children}</TestApiProvider>
+    <>{children}</>
   );
   const renderContent = async () => {
     return await renderInTestApp(

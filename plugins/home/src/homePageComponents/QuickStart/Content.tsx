@@ -57,7 +57,7 @@ export const Content = (props: QuickStartCardProps): JSX.Element => {
         linkContent={props.modalTitle || 'Onboarding'}
       />
       <Typography variant="body1" paragraph>
-        {props.cardDescription || "Get started with Backstage's Catalog"}
+        {props.cardDescription || 'Get started with Backstage'}
       </Typography>
       <ContentModal modalContent={props.image} linkContent={props.image} />
       <Grid

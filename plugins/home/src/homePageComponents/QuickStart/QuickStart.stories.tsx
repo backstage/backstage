@@ -23,12 +23,7 @@ import ContentImage from './static/backstageSystemModel.png';
 export default {
   title: 'Plugins/Home/Components/QuickStartCard',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
-      wrapInTestApp(
-        <TestApiProvider apis={[]}>
-          <Story />
-        </TestApiProvider>,
-      ),
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
 };
 
