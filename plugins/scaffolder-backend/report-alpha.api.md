@@ -102,6 +102,23 @@ export const scaffolderTemplateConditions: Conditions<{
 
 // @alpha
 export const scaffolderTemplateEntityConditions: Conditions<{
+  hasTaggedAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+      actionId?: string | undefined;
+    }
+  >;
+  hasTaggedParam: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+    }
+  >;
   hasAction: PermissionRule<
     TemplateEntityV1beta3,
     {},
