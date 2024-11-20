@@ -44205,21 +44205,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.0":
+"uuid@npm:^11.0.0, uuid@npm:^11.0.2":
   version: 11.0.3
   resolution: "uuid@npm:11.0.3"
   bin:
     uuid: dist/esm/bin/uuid
   checksum: 646181c77e8b8df9bd07254faa703943e1c4d5ccde7d080312edf12f443f6c5750801fd9b27bf2e628594182165e6b1b880c0382538f7eca00b26622203741dc
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^11.0.2":
-  version: 11.0.2
-  resolution: "uuid@npm:11.0.2"
-  bin:
-    uuid: dist/esm/bin/uuid
-  checksum: 9b322963db18623d22f46cf98f51b45830f956715577fb24d272ec29324fe919bedbedc6e29627aced490ac3f982ee53c80441651daf4a6ef74f2af58689f2e0
   languageName: node
   linkType: hard
 
