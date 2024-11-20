@@ -41,6 +41,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Schema } from 'jsonschema';
@@ -62,6 +63,7 @@ import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -354,7 +356,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'skip' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -528,6 +530,14 @@ export const executeShellCommand: typeof executeShellCommand_2;
 // @public @deprecated
 export const fetchContents: typeof fetchContents_2;
 
+// @public (undocumented)
+export type PermissionRuleOption<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> =
+  | TemplateEntityPermissionRuleInput<TParams>
+  | TemplatePermissionRuleInput<TParams>
+  | ActionPermissionRuleInput<TParams>;
+
 // @public @deprecated
 export interface RouterOptions {
   // (undocumented)
@@ -560,9 +570,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
+  permissionRules?: PermissionRuleOption[];
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
@@ -848,6 +856,16 @@ export class TemplateActionRegistry {
   // (undocumented)
   register(action: TemplateAction_2): void;
 }
+
+// @public (undocumented)
+export type TemplateEntityPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  TParams
+>;
 
 // @public @deprecated (undocumented)
 export type TemplateFilter = TemplateFilter_2;

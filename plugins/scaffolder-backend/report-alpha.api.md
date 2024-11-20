@@ -12,6 +12,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @alpha (undocumented)
@@ -24,6 +25,12 @@ export const createScaffolderActionConditionalDecision: (
 export const createScaffolderTemplateConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
+) => ConditionalPolicyDecision;
+
+// @alpha
+export const createScaffolderTemplateEntityConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-entity'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-entity'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha (undocumented)
@@ -89,6 +96,58 @@ export const scaffolderTemplateConditions: Conditions<{
     'scaffolder-template',
     {
       tag: string;
+    }
+  >;
+}>;
+
+// @alpha
+export const scaffolderTemplateEntityConditions: Conditions<{
+  hasAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+    }
+  >;
+  hasActionWithProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | number | boolean | null | undefined;
+    }
+  >;
+  hasActionWithBooleanProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasActionWithNumberProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasActionWithStringProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | undefined;
     }
   >;
 }>;
