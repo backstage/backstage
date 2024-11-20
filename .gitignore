@@ -75,7 +75,6 @@ typings/
 
 # Node version directives
 .nvmrc
-.tool-versions
 
 # Optional eslint cache
 .eslintcache
