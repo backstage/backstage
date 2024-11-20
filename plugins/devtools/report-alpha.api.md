@@ -80,7 +80,7 @@ const _default: FrontendPlugin<
       >;
       inputs: {};
       params: {
-        title: string;
+        title: string /** @alpha */;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
       };
