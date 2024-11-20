@@ -41,8 +41,9 @@ export interface DefaultHttpAuthServiceOptions {
   auth: AuthService;
   // (undocumented)
   discovery: DiscoveryService;
-  // (undocumented)
-  extractTokenFromRequest?: (req: Request_2) => string | undefined;
+  getTokenFromRequest?: (req: Request_2) => {
+    token?: string;
+  };
   // (undocumented)
   pluginId: string;
 }

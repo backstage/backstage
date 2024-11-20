@@ -25,21 +25,17 @@ describe('DefaultHttpAuthService', () => {
       discovery: mockServices.discovery(),
       auth,
       pluginId: 'test',
-      extractTokenFromRequest: req => {
-        const authHeader = req.headers.test;
-        if (typeof authHeader === 'string') {
-          const matches = authHeader.match(/^Bearer[ ]+(\S+)$/i);
-          const token = matches?.[1];
-          if (token) {
-            return token;
-          }
+      getTokenFromRequest: req => {
+        let token: string | undefined;
+        const header = req.headers.test;
+        if (typeof header === 'string') {
+          token = header;
         }
-
-        return undefined;
+        return { token };
       },
     });
     await httpAuthService.credentials(
-      createRequest({ headers: { test: 'Bearer mock-user-token' } }),
+      createRequest({ headers: { test: 'mock-user-token' } }),
     );
     expect(auth.authenticate).toHaveBeenCalledWith('mock-user-token');
   });

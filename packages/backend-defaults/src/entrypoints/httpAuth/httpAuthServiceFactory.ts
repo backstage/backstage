@@ -33,16 +33,14 @@ const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const BACKSTAGE_AUTH_COOKIE = 'backstage-auth';
 
 function getTokenFromRequest(req: Request) {
+  let token: string | undefined;
   const authHeader = req.headers.authorization;
   if (typeof authHeader === 'string') {
     const matches = authHeader.match(/^Bearer[ ]+(\S+)$/i);
-    const token = matches?.[1];
-    if (token) {
-      return token;
-    }
+    token = matches?.[1];
   }
 
-  return undefined;
+  return { token };
 }
 
 function getCookieFromRequest(req: Request) {
@@ -78,8 +76,10 @@ export interface DefaultHttpAuthServiceOptions {
   auth: AuthService;
   discovery: DiscoveryService;
   pluginId: string;
-  // Optionally override the default token extraction logic
-  extractTokenFromRequest?: (req: Request) => string | undefined;
+  /**
+   * Optionally override logic for extracting the token from the request.
+   */
+  getTokenFromRequest?: (req: Request) => { token?: string };
 }
 
 /**
@@ -90,19 +90,18 @@ export class DefaultHttpAuthService implements HttpAuthService {
   readonly #auth: AuthService;
   readonly #discovery: DiscoveryService;
   readonly #pluginId: string;
-  readonly #extractTokenFromRequest: (req: Request) => string | undefined;
+  readonly #getToken: (req: Request) => { token?: string };
 
   private constructor(
     auth: AuthService,
     discovery: DiscoveryService,
     pluginId: string,
-    extractTokenFromRequest?: (req: Request) => string | undefined,
+    getToken?: (req: Request) => { token?: string },
   ) {
     this.#auth = auth;
     this.#discovery = discovery;
     this.#pluginId = pluginId;
-    this.#extractTokenFromRequest =
-      extractTokenFromRequest ?? getTokenFromRequest;
+    this.#getToken = getToken ?? getTokenFromRequest;
   }
 
   static create(
@@ -112,12 +111,12 @@ export class DefaultHttpAuthService implements HttpAuthService {
       options.auth,
       options.discovery,
       options.pluginId,
-      options.extractTokenFromRequest,
+      options.getTokenFromRequest,
     );
   }
 
   async #extractCredentialsFromRequest(req: Request) {
-    const token = this.#extractTokenFromRequest(req);
+    const { token } = this.#getToken(req);
     if (!token) {
       return await this.#auth.getNoneCredentials();
     }
@@ -126,7 +125,7 @@ export class DefaultHttpAuthService implements HttpAuthService {
   }
 
   async #extractLimitedCredentialsFromRequest(req: Request) {
-    const token = this.#extractTokenFromRequest(req);
+    const { token } = this.#getToken(req);
     if (token) {
       return await this.#auth.authenticate(token, {
         allowLimitedAccess: true,
