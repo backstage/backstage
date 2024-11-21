@@ -93,9 +93,9 @@ describe('appPlugin', () => {
       ],
     });
 
-    const rootContent = await fetch(`http://localhost:${server.port()}`).then(
-      res => res.text(),
-    );
+    const rootContent = await fetch(
+      `http://localhost:${server.port()}?foo=bar`,
+    ).then(res => res.text());
 
     expect(rootContent).toBe(`<html><head>
 <script type="backstage.io/config">
