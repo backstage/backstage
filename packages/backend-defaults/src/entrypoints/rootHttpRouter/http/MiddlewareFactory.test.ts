@@ -29,8 +29,7 @@ import request from 'supertest';
 import { MiddlewareFactory } from './MiddlewareFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.useFakeTimers();
-jest.setSystemTime(new Date('2024-11-20T00:00:00Z'));
+jest.useFakeTimers({ now: new Date('2024-11-20T00:00:00Z') });
 
 describe('MiddlewareFactory', () => {
   describe('middleware.error', () => {
@@ -256,10 +255,10 @@ describe('MiddlewareFactory', () => {
         ),
         {
           type: 'incomingRequest',
-          date: '20/Nov/2024:00:00:00 +0000',
+          date: 'Wed, 20 Nov 2024 00:00:00 GMT',
           method: 'GET',
           url: '/',
-          status: '200',
+          status: 200,
           httpVersion: '1.1',
           contentLength: '11',
         },
@@ -283,10 +282,10 @@ describe('MiddlewareFactory', () => {
         ),
         {
           type: 'incomingRequest',
-          date: '20/Nov/2024:00:00:00 +0000',
+          date: 'Wed, 20 Nov 2024 00:00:00 GMT',
           method: 'GET',
           url: '/',
-          status: '200',
+          status: 200,
           httpVersion: '1.1',
           userAgent: 'test-agent',
           referrer: 'test-referrer',
