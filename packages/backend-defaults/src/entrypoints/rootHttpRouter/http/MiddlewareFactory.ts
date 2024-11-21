@@ -18,6 +18,7 @@ import {
   RootConfigService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { IncomingMessage, ServerResponse } from 'http';
 import {
   Request,
   Response,
@@ -27,7 +28,7 @@ import {
 } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
+import morgan, { TokenIndexer } from 'morgan';
 import compression from 'compression';
 import { readHelmetOptions } from './readHelmetOptions';
 import { readCorsOptions } from './readCorsOptions';
@@ -44,6 +45,27 @@ import {
 } from '@backstage/errors';
 import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
+
+const getLogMessage = morgan.compile(
+  '[:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
+);
+
+function getLogMeta(
+  tokens: TokenIndexer,
+  req: IncomingMessage,
+  res: ServerResponse,
+) {
+  return {
+    date: tokens.date(req, res, 'clf') ?? '-',
+    method: tokens.method(req, res) ?? '-',
+    url: tokens.url(req, res) ?? '-',
+    httpVersion: tokens['http-version'](req, res) ?? '-',
+    status: tokens.status(req, res) ?? '-',
+    contentLength: tokens.res(req, res, 'content-length') ?? '-',
+    referrer: tokens.referrer(req, res) ?? '-',
+    userAgent: tokens.req(req, res, 'user-agent') ?? '-',
+  };
+}
 
 /**
  * Options used to create a {@link MiddlewareFactory}.
@@ -137,18 +159,25 @@ export class MiddlewareFactory {
    * @returns An Express request handler
    */
   logging(): RequestHandler {
-    const logger = this.#logger.child({
-      type: 'incomingRequest',
-    });
-    const customMorganFormat =
-      '[:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
-    return morgan(customMorganFormat, {
-      stream: {
-        write(message: string) {
-          logger.info(message.trimEnd());
+    const logger = this.#logger;
+    let meta: Record<string, string> = {};
+    return morgan(
+      (tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse) => {
+        meta = getLogMeta(tokens, req, res);
+        return getLogMessage(tokens, req, res);
+      },
+      {
+        stream: {
+          write(message: string) {
+            const middlewareLogger = logger.child({
+              type: 'incomingRequest',
+              ...meta,
+            });
+            middlewareLogger.info(message.trimEnd());
+          },
         },
       },
-    });
+    );
   }
 
   /**

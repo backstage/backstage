@@ -29,6 +29,9 @@ import request from 'supertest';
 import { MiddlewareFactory } from './MiddlewareFactory';
 import { ConfigReader } from '@backstage/config';
 
+jest.useFakeTimers();
+jest.setSystemTime(new Date('2024-11-20T00:00:00Z'));
+
 describe('MiddlewareFactory', () => {
   describe('middleware.error', () => {
     const childLogger = {
@@ -44,7 +47,7 @@ describe('MiddlewareFactory', () => {
       warn: jest.fn(),
       error: jest.fn(),
       debug: jest.fn(),
-      child: () => childLogger,
+      child: jest.fn(() => childLogger),
     };
 
     const middleware = MiddlewareFactory.create({
@@ -53,7 +56,7 @@ describe('MiddlewareFactory', () => {
     });
 
     beforeEach(() => {
-      jest.resetAllMocks();
+      jest.clearAllMocks();
     });
 
     it('gives default code and message', async () => {
@@ -253,6 +256,58 @@ describe('MiddlewareFactory', () => {
       await request(app).get('/NotFound');
 
       expect(childLogger.error).toHaveBeenCalled();
+    });
+
+    it('should log incoming requests', async () => {
+      const app = express();
+      app.use(middleware.logging());
+      app.get('/', (_req, res) => res.send('Hello World'));
+
+      await request(app).get('/').expect(200);
+
+      expect(logger.child).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'incomingRequest',
+          method: 'GET',
+          url: '/',
+          status: '200',
+        }),
+      );
+
+      expect(childLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '[20/Nov/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 11 "-" "-"',
+        ),
+      );
+    });
+
+    it('should log request with all data fields', async () => {
+      const app = express();
+      app.use(middleware.logging());
+      app.get('/', (_req, res) => res.send('Hello World'));
+
+      await request(app)
+        .get('/')
+        .set('User-Agent', 'test-agent')
+        .set('referrer', 'test-referrer')
+        .expect(200);
+
+      expect(logger.child).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'incomingRequest',
+          method: 'GET',
+          url: '/',
+          status: '200',
+          userAgent: 'test-agent',
+          referrer: 'test-referrer',
+        }),
+      );
+
+      expect(childLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '[20/Nov/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
+        ),
+      );
     });
   });
 });
