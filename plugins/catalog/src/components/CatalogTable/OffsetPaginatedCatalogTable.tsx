@@ -27,7 +27,7 @@ import { CatalogTableToolbar } from './CatalogTableToolbar';
 export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
-  const { columns, data, options, ...restProps } = props;
+  const { title, columns, data, options, ...restProps } = props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
   const [page, setPage] = React.useState(
@@ -44,6 +44,7 @@ export function OffsetPaginatedCatalogTable(
 
   return (
     <Table
+      title={title}
       columns={columns}
       data={data}
       options={{
