@@ -473,6 +473,17 @@ describe('buildApiReports', () => {
         outputDir: mockDir.resolve('node_modules/.cache/api-extractor'),
       });
     });
+
+    it('should throw an error if omitMessages ends with a comma', async () => {
+      const opts = {
+        omitMessages: 'ae-missing-release-tag,',
+      };
+      const paths = ['packages/*'];
+
+      await expect(buildApiReports(paths, opts)).rejects.toThrow(
+        `Invalid value for --omit-messages: ${opts.omitMessages}\nMust be a comma-separated list of strings without spaces or wrapped in quotations.`,
+      );
+    });
   });
   describe('isCI', () => {
     it('should set localBuild to false if CI option is passed', async () => {
