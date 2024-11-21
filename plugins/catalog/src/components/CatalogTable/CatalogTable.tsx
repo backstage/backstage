@@ -49,6 +49,7 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
+import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * Props for {@link CatalogTable}.
@@ -208,8 +209,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
-        actions={actions}
         title={title}
+        actions={actions}
         subtitle={subtitle}
         options={options}
         data={entities.map(toEntityRow)}
@@ -223,8 +224,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
-        actions={actions}
         title={title}
+        actions={actions}
         subtitle={subtitle}
         options={options}
         data={entities.map(toEntityRow)}
@@ -246,9 +247,12 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSizeOptions: [20, 50, 100],
         ...options,
       }}
+      components={{
+        Toolbar: CatalogTableToolbar,
+      }}
+      title={title}
       data={rows}
       actions={actions}
-      title={title}
       subtitle={subtitle}
       emptyContent={emptyContent}
     />
