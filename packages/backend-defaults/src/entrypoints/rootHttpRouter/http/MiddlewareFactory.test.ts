@@ -27,32 +27,19 @@ import express from 'express';
 import createError from 'http-errors';
 import request from 'supertest';
 import { MiddlewareFactory } from './MiddlewareFactory';
-import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.useFakeTimers();
 jest.setSystemTime(new Date('2024-11-20T00:00:00Z'));
 
 describe('MiddlewareFactory', () => {
   describe('middleware.error', () => {
-    const childLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      child: jest.fn(),
-    };
-
-    const logger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      child: jest.fn(() => childLogger),
-    };
+    const childLogger = mockServices.logger.mock();
+    const logger = mockServices.logger.mock({ child: () => childLogger });
 
     const middleware = MiddlewareFactory.create({
       logger,
-      config: new ConfigReader({}),
+      config: mockServices.rootConfig.mock(),
     });
 
     beforeEach(() => {
@@ -198,9 +185,7 @@ describe('MiddlewareFactory', () => {
     it('should filter out internal errors', async () => {
       const app = express();
 
-      const grandChildLogger = {
-        error: jest.fn(),
-      };
+      const grandChildLogger = mockServices.logger.mock();
       childLogger.child.mockReturnValue(grandChildLogger);
 
       class DatabaseError extends Error {}
@@ -265,19 +250,19 @@ describe('MiddlewareFactory', () => {
 
       await request(app).get('/').expect(200);
 
-      expect(logger.child).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'incomingRequest',
-          method: 'GET',
-          url: '/',
-          status: '200',
-        }),
-      );
-
-      expect(childLogger.info).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         expect.stringContaining(
           '[20/Nov/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 11 "-" "-"',
         ),
+        {
+          type: 'incomingRequest',
+          date: '20/Nov/2024:00:00:00 +0000',
+          method: 'GET',
+          url: '/',
+          status: '200',
+          httpVersion: '1.1',
+          contentLength: '11',
+        },
       );
     });
 
@@ -292,21 +277,21 @@ describe('MiddlewareFactory', () => {
         .set('referrer', 'test-referrer')
         .expect(200);
 
-      expect(logger.child).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'incomingRequest',
-          method: 'GET',
-          url: '/',
-          status: '200',
-          userAgent: 'test-agent',
-          referrer: 'test-referrer',
-        }),
-      );
-
-      expect(childLogger.info).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         expect.stringContaining(
           '[20/Nov/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
         ),
+        {
+          type: 'incomingRequest',
+          date: '20/Nov/2024:00:00:00 +0000',
+          method: 'GET',
+          url: '/',
+          status: '200',
+          httpVersion: '1.1',
+          userAgent: 'test-agent',
+          referrer: 'test-referrer',
+          contentLength: '11',
+        },
       );
     });
   });

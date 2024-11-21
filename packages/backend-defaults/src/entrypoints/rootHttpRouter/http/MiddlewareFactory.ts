@@ -56,14 +56,14 @@ function getLogMeta(
   res: ServerResponse,
 ) {
   return {
-    date: tokens.date(req, res, 'clf') ?? '-',
-    method: tokens.method(req, res) ?? '-',
-    url: tokens.url(req, res) ?? '-',
-    httpVersion: tokens['http-version'](req, res) ?? '-',
-    status: tokens.status(req, res) ?? '-',
-    contentLength: tokens.res(req, res, 'content-length') ?? '-',
-    referrer: tokens.referrer(req, res) ?? '-',
-    userAgent: tokens.req(req, res, 'user-agent') ?? '-',
+    date: tokens.date(req, res, 'clf'),
+    method: tokens.method(req, res),
+    url: tokens.url(req, res),
+    httpVersion: tokens['http-version'](req, res),
+    status: tokens.status(req, res),
+    contentLength: tokens.res(req, res, 'content-length'),
+    referrer: tokens.referrer(req, res),
+    userAgent: tokens.req(req, res, 'user-agent'),
   };
 }
 
@@ -160,7 +160,7 @@ export class MiddlewareFactory {
    */
   logging(): RequestHandler {
     const logger = this.#logger;
-    let meta: Record<string, string> = {};
+    let meta: Record<string, string | undefined> = {};
     return morgan(
       (tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse) => {
         meta = getLogMeta(tokens, req, res);
@@ -169,11 +169,12 @@ export class MiddlewareFactory {
       {
         stream: {
           write(message: string) {
-            const middlewareLogger = logger.child({
+            logger.info(message.trimEnd(), {
               type: 'incomingRequest',
-              ...meta,
+              ...Object.entries(meta).reduce((reduced, [key, value]) => {
+                return value ? { ...reduced, [key]: value } : reduced;
+              }, {}),
             });
-            middlewareLogger.info(message.trimEnd());
           },
         },
       },
