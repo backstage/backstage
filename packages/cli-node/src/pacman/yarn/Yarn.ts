@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  assertError,
-  ForwardedError,
-  NotImplementedError,
-} from '@backstage/errors';
+import { assertError, ForwardedError } from '@backstage/errors';
 import { PackageInfo, PackageManager } from '../PackageManager';
 import { Lockfile } from '../Lockfile';
 import { YarnVersion } from './types';
 import fs from 'fs-extra';
 import { paths, run, execFile, SpawnOptionsPartialEnv } from '../../util';
+import { fetchPackageInfo } from './packageInfo';
+import { YarnLockfile } from './YarnLockfile';
+import { getHasYarnPlugin } from './plugin';
 
 export class Yarn implements PackageManager {
   constructor(private readonly yarnVersion: YarnVersion) {}
@@ -67,20 +66,21 @@ export class Yarn implements PackageManager {
     await run('yarn', args, options);
   }
 
-  async fetchPackageInfo(): Promise<PackageInfo> {
-    throw new NotImplementedError();
+  async fetchPackageInfo(name: string): Promise<PackageInfo> {
+    return fetchPackageInfo(name, this.yarnVersion);
   }
 
   async loadLockfile(): Promise<Lockfile> {
-    throw new NotImplementedError();
+    const lockfilePath = paths.resolveTargetRoot(this.lockfileName());
+    return this.parseLockfile(await fs.readFile(lockfilePath, 'utf8'));
   }
 
-  async parseLockfile(): Promise<Lockfile> {
-    throw new NotImplementedError();
+  async parseLockfile(lockfileContents: string): Promise<Lockfile> {
+    return YarnLockfile.parse(lockfileContents);
   }
 
   async supportsBackstageVersionProtocol(): Promise<boolean> {
-    throw new NotImplementedError();
+    return (await getHasYarnPlugin()) || false;
   }
 
   toString(): string {

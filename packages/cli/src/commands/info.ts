@@ -16,14 +16,13 @@
 
 import { version as cliVersion } from '../../package.json';
 import os from 'os';
-import { runPlain } from '../lib/run';
 import { paths } from '../lib/paths';
-import { Lockfile } from '../lib/versioning';
+import { detectPackageManager } from '@backstage/cli-node';
 import fs from 'fs-extra';
 
 export default async () => {
   await new Promise(async () => {
-    const yarnVersion = await runPlain('yarn --version');
+    const pacman = await detectPackageManager();
     const isLocal = fs.existsSync(paths.resolveOwn('./src'));
 
     const backstageFile = paths.resolveTargetRoot('backstage.json');
@@ -40,13 +39,12 @@ export default async () => {
 
     console.log(`OS:   ${os.type} ${os.release} - ${os.platform}/${os.arch}`);
     console.log(`node: ${process.version}`);
-    console.log(`yarn: ${yarnVersion}`);
+    console.log(`${pacman.name()}: ${pacman.version()}`);
     console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
     console.log(`backstage:  ${backstageVersion}`);
     console.log();
     console.log('Dependencies:');
-    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-    const lockfile = await Lockfile.load(lockfilePath);
+    const lockfile = await pacman.loadLockfile();
 
     const deps = [...lockfile.keys()].filter(n => n.startsWith('@backstage/'));
     const maxLength = Math.max(...deps.map(d => d.length));

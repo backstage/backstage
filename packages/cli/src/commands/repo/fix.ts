@@ -26,6 +26,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath, posix, relative as relativePath } from 'path';
 import { paths } from '../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
+import { detectPackageManager } from '@backstage/cli-node';
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -39,7 +40,10 @@ export async function readFixablePackages(): Promise<FixablePackage[]> {
   return packages.map(pkg => ({ ...pkg, changed: false }));
 }
 
-export function printPackageFixHint(packages: FixablePackage[]) {
+export function printPackageFixHint(
+  packages: FixablePackage[],
+  packageManager: string,
+) {
   const changed = packages.filter(pkg => pkg.changed);
   if (changed.length > 0) {
     const rootPkg = require(paths.resolveTargetRoot('package.json'));
@@ -48,7 +52,7 @@ export function printPackageFixHint(packages: FixablePackage[]) {
         ? 'fix'
         : 'backstage-cli repo fix';
     console.log(
-      `The following packages are out of sync, run 'yarn ${fixCmd}' to fix them:`,
+      `The following packages are out of sync, run '${packageManager} ${fixCmd}' to fix them:`,
     );
     for (const pkg of changed) {
       console.log(`  ${pkg.packageJson.name}`);
@@ -452,7 +456,8 @@ export async function command(opts: OptionValues): Promise<void> {
   }
 
   if (opts.check) {
-    if (printPackageFixHint(packages)) {
+    const pacman = await detectPackageManager();
+    if (printPackageFixHint(packages, pacman.name())) {
       process.exit(1);
     }
   } else {

@@ -21,7 +21,7 @@ import { relative as relativePath } from 'path';
 import {
   PackageGraph,
   BackstagePackageJson,
-  Lockfile,
+  detectPackageManager,
 } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runWorkerQueueThreads } from '../../lib/parallel';
@@ -39,11 +39,13 @@ function depCount(pkg: BackstagePackageJson) {
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
+  const pacman = await detectPackageManager();
+
   const cache = new SuccessCache('lint', opts.successCacheDir);
   const cacheContext = opts.successCache
     ? {
         entries: await cache.read(),
-        lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
+        lockfile: await pacman.loadLockfile(),
       }
     : undefined;
 

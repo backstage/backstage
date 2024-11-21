@@ -25,6 +25,15 @@ import {
 } from './common/testUtils';
 import { nodeLibraryPackage } from './nodeLibraryPackage';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Lockfile, PackageManager } from '@backstage/cli-node';
+
+const mockLockfile = {
+  get: () => undefined,
+} as unknown as Lockfile;
+const mockPackageManager = {
+  name: () => 'mock',
+  loadLockfile: async () => mockLockfile,
+} as unknown as PackageManager;
 
 describe('nodeLibraryPackage factory', () => {
   const mockDir = createMockDirectory();
@@ -65,6 +74,7 @@ describe('nodeLibraryPackage factory', () => {
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
       license: 'Apache-2.0',
+      pacman: mockPackageManager,
     });
 
     expect(modified).toBe(true);
@@ -101,11 +111,11 @@ describe('nodeLibraryPackage factory', () => {
     );
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock install', {
       cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
       optional: true,
     });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock lint --fix', {
       cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
       optional: true,
     });
@@ -136,14 +146,15 @@ describe('nodeLibraryPackage factory', () => {
       markAsModified: () => {},
       createTemporaryDirectory: () => fs.mkdtemp('test'),
       license: 'Apache-2.0',
+      pacman: mockPackageManager,
     });
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock install', {
       cwd: mockDir.resolve(expectedNodeLibraryPackageName),
       optional: true,
     });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock lint --fix', {
       cwd: mockDir.resolve(expectedNodeLibraryPackageName),
       optional: true,
     });

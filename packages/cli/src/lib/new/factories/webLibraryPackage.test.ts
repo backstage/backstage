@@ -25,6 +25,15 @@ import {
 } from './common/testUtils';
 import { webLibraryPackage } from './webLibraryPackage';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Lockfile, PackageManager } from '@backstage/cli-node';
+
+const mockLockfile = {
+  get: () => undefined,
+} as unknown as Lockfile;
+const mockPackageManager = {
+  name: () => 'mock',
+  loadLockfile: async () => mockLockfile,
+} as unknown as PackageManager;
 
 describe('webLibraryPackage factory', () => {
   const mockDir = createMockDirectory();
@@ -40,7 +49,7 @@ describe('webLibraryPackage factory', () => {
   });
 
   it('should create a web library package', async () => {
-    const expectedwebLibraryPackageName = 'test';
+    const expectedWebLibraryPackageName = 'test';
 
     mockDir.setContent({
       packages: {},
@@ -65,14 +74,15 @@ describe('webLibraryPackage factory', () => {
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
       license: 'Apache-2.0',
+      pacman: mockPackageManager,
     });
 
     expect(modified).toBe(true);
 
     expectLogsToMatch(output, [
-      `Creating web-library package ${expectedwebLibraryPackageName}`,
+      `Creating web-library package ${expectedWebLibraryPackageName}`,
       'Checking Prerequisites:',
-      `availability  ${joinPath('packages', expectedwebLibraryPackageName)}`,
+      `availability  ${joinPath('packages', expectedWebLibraryPackageName)}`,
       'creating      temp dir',
       'Executing Template:',
       'templating    .eslintrc.js.hbs',
@@ -81,32 +91,32 @@ describe('webLibraryPackage factory', () => {
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'Installing:',
-      `moving        ${joinPath('packages', expectedwebLibraryPackageName)}`,
+      `moving        ${joinPath('packages', expectedWebLibraryPackageName)}`,
     ]);
 
     await expect(
       fs.readJson(
         mockDir.resolve(
           'packages',
-          expectedwebLibraryPackageName,
+          expectedWebLibraryPackageName,
           'package.json',
         ),
       ),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: expectedwebLibraryPackageName,
+        name: expectedWebLibraryPackageName,
         private: true,
         version: '1.0.0',
       }),
     );
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
+    expect(Task.forCommand).toHaveBeenCalledWith('mock install', {
+      cwd: mockDir.resolve('packages', expectedWebLibraryPackageName),
       optional: true,
     });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
+    expect(Task.forCommand).toHaveBeenCalledWith('mock lint --fix', {
+      cwd: mockDir.resolve('packages', expectedWebLibraryPackageName),
       optional: true,
     });
   });
@@ -136,14 +146,15 @@ describe('webLibraryPackage factory', () => {
       markAsModified: () => {},
       createTemporaryDirectory: () => fs.mkdtemp('test'),
       license: 'Apache-2.0',
+      pacman: mockPackageManager,
     });
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock install', {
       cwd: mockDir.resolve(expectedwebLibraryPackageName),
       optional: true,
     });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock lint --fix', {
       cwd: mockDir.resolve(expectedwebLibraryPackageName),
       optional: true,
     });

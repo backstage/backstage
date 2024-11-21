@@ -25,6 +25,15 @@ import {
 } from './common/testUtils';
 import { scaffolderModule } from './scaffolderModule';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Lockfile, PackageManager } from '@backstage/cli-node';
+
+const mockLockfile = {
+  get: () => undefined,
+} as unknown as Lockfile;
+const mockPackageManager = {
+  name: () => 'mock',
+  loadLockfile: async () => mockLockfile,
+} as unknown as PackageManager;
 
 const backendIndexTsContent = `
 import { createBackend } from '@backstage/backend-defaults';
@@ -79,6 +88,7 @@ describe('scaffolderModule factory', () => {
       },
       createTemporaryDirectory: (name: string) => fs.mkdtemp(name),
       license: 'Apache-2.0',
+      pacman: mockPackageManager,
     });
 
     expect(modified).toBe(true);
@@ -135,11 +145,11 @@ backend.start();
     );
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock install', {
       cwd: mockDir.resolve('plugins/scaffolder-backend-module-test'),
       optional: true,
     });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock lint --fix', {
       cwd: mockDir.resolve('plugins/scaffolder-backend-module-test'),
       optional: true,
     });
