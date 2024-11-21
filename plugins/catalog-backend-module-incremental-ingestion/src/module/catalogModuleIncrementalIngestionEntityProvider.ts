@@ -25,6 +25,7 @@ import {
   IncrementalEntityProviderOptions,
 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { WrapperProviders } from './WrapperProviders';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
  * @public
@@ -106,6 +107,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           httpRouter: coreServices.httpRouter,
           logger: coreServices.logger,
           scheduler: coreServices.scheduler,
+          events: eventsServiceRef,
         },
         async init({
           catalog,
@@ -122,6 +124,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             logger,
             client,
             scheduler,
+            events,
           });
 
           for (const entry of addedProviders) {

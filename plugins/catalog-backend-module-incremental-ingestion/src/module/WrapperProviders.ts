@@ -36,6 +36,7 @@ import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
 } from '../types';
+import { EventsService } from '@backstage/plugin-events-node';
 
 /**
  * Helps in the creation of the catalog entity providers that wrap the
@@ -53,6 +54,7 @@ export class WrapperProviders {
       client: Knex;
       scheduler: SchedulerService;
       applyDatabaseMigrations?: typeof applyDatabaseMigrations;
+      events: EventsService;
     },
   ) {}
 
@@ -64,7 +66,7 @@ export class WrapperProviders {
     return {
       getProviderName: () => provider.getProviderName(),
       connect: async connection => {
-        await this.startProvider(provider, options, connection);
+        await this.startProvider(provider, options, connection, events);
         this.numberOfProvidersToConnect -= 1;
         if (this.numberOfProvidersToConnect === 0) {
           this.readySignal.resolve();
@@ -84,6 +86,7 @@ export class WrapperProviders {
     provider: IncrementalEntityProvider<unknown, unknown>,
     providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
+    events: EventsService,
   ) {
     const logger = this.options.logger.child({
       entityProvider: provider.getProviderName(),
@@ -130,6 +133,18 @@ export class WrapperProviders {
         frequency,
         timeout: length,
       });
+
+      const topics = engine.supportsEventTopics();
+      if (topics.length > 0) {
+        logger.info(
+          `Provider ${provider.getProviderName()} subscribing to events for topics: ${topics.join()}`,
+        );
+        await events.subscribe({
+          topics,
+          id: provider.getProviderName(),
+          onEvent: evt => engine.onEvent(evt),
+        });
+      }
     } catch (error) {
       logger.warn(
         `Failed to initialize incremental ingestion provider ${provider.getProviderName()}, ${stringifyError(
