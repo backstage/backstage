@@ -1,5 +1,12 @@
 # example-backend
 
+## 0.0.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app-backend@0.4.2
+
 ## 0.0.34
 
 ### Patch Changes
