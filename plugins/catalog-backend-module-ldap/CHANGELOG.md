@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.10.1
+
+### Patch Changes
+
+- 271beed: Re-publish to apply rollup fix.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-catalog-node@1.14.0
+
 ## 0.10.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.6.2
+
+### Patch Changes
+
+- 271beed: Re-publish to apply rollup fix.
+
 ## 0.6.1
 
 ### Patch Changes

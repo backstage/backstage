@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.14
+
+### Patch Changes
+
+- 271beed: Re-publish to apply rollup fix.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.12.13
 
 ### Patch Changes

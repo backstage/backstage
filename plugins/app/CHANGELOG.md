@@ -1,5 +1,18 @@
 # @backstage/plugin-app
 
+## 0.1.3
+
+### Patch Changes
+
+- 271beed: Re-publish to apply rollup fix.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.2
+  - @backstage/theme@0.6.2
+  - @backstage/core-components@0.16.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/integration-react@1.2.1
+  - @backstage/plugin-permission-react@0.4.28
+
 ## 0.1.2
 
 ### Patch Changes
