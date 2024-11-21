@@ -27,16 +27,36 @@ import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
+import { TemplateGroup } from '../TemplateGroup';
+import {
+  PermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('TemplateGroups', () => {
-  beforeEach(() => jest.clearAllMocks());
+  let permissionsApi: PermissionApi;
+
+  beforeEach(() => {
+    permissionsApi = {
+      authorize: jest.fn().mockImplementation(() => {
+        return { result: AuthorizeResult.ALLOW };
+      }),
+    };
+
+    jest.clearAllMocks();
+  });
 
   it('should return progress if the hook is loading', async () => {
     (useEntityList as jest.Mock).mockReturnValue({ loading: true });
 
     const { findByTestId } = await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -52,8 +72,14 @@ describe('TemplateGroups', () => {
     const errorApi = {
       post: jest.fn(),
     };
+
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, errorApi],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -69,7 +95,12 @@ describe('TemplateGroups', () => {
     });
 
     const { findByText } = await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -85,7 +116,12 @@ describe('TemplateGroups', () => {
     });
 
     const { findByText } = await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -120,7 +156,12 @@ describe('TemplateGroups', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups groups={[{ title: 'all', filter: () => true }]} />
       </TestApiProvider>,
     );
@@ -162,7 +203,12 @@ describe('TemplateGroups', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups
           groups={[{ title: 'all', filter: e => e.metadata.name === 't1' }]}
         />
@@ -204,7 +250,12 @@ describe('TemplateGroups', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider
+        apis={[
+          [errorApiRef, {}],
+          [permissionApiRef, permissionsApi],
+        ]}
+      >
         <TemplateGroups
           groups={[{ title: 'all', filter: _ => true }]}
           templateFilter={e => e.metadata.name === 't1'}

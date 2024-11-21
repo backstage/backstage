@@ -16,15 +16,13 @@
 
 import { z } from 'zod';
 import { get } from 'lodash';
-import { JsonObject, JsonPrimitive } from '@backstage/types';
+import { JsonPrimitive } from '@backstage/types';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 export const createActionPermissionRule = makeCreatePermissionRule<
-  {
-    action: string;
-    input: JsonObject | undefined;
-  },
+  TemplateEntityStepV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
 >();

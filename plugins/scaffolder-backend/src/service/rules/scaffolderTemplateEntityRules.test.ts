@@ -197,6 +197,7 @@ describe('hasActionWithProperty', () => {
               resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
+                actionId: 'action',
                 key: 1,
               },
             },
@@ -226,7 +227,7 @@ describe('hasActionWithProperty', () => {
       ).toThrow();
     });
 
-    it('should not throw if params are valid', () => {
+    it('does not throw if params are valid', () => {
       const isActionAuthorized = createConditionAuthorizer([
         hasActionWithProperty,
       ]);
@@ -241,7 +242,7 @@ describe('hasActionWithProperty', () => {
               resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
-                action: 'action',
+                actionId: 'action',
                 key: 'key',
               },
             },
@@ -262,6 +263,7 @@ describe('hasActionWithProperty', () => {
               resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
+                actionId: 'action',
                 key: 'key',
                 value: 'value',
               },

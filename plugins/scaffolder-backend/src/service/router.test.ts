@@ -41,6 +41,7 @@ import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   AuthorizeResult,
+  isPermission,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import {
@@ -51,6 +52,10 @@ import {
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import {
+  templateParameterReadPermission,
+  templateStepReadPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 const mockAccess = jest.fn();
 
@@ -230,14 +235,12 @@ describe('createRouter', () => {
 
       jest
         .spyOn(permissionApi, 'authorizeConditional')
-        .mockImplementation(async () => [
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]);
+        .mockImplementation(async permissionQueries => {
+          return permissionQueries.map(() => {
+            return { result: AuthorizeResult.ALLOW };
+          });
+        });
+
       jest.spyOn(permissionApi, 'authorize').mockImplementation(async () => [
         {
           result: AuthorizeResult.ALLOW,
@@ -295,6 +298,7 @@ describe('createRouter', () => {
             },
           });
 
+        console.log(response);
         expect(response.status).toEqual(201);
         expect(response.body.id).toBe('a-random-id');
       });
@@ -778,14 +782,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       jest
         .spyOn(permissionApi, 'authorizeConditional')
-        .mockImplementation(async () => [
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]);
+        .mockImplementation(async permissionQueries => {
+          return permissionQueries.map(() => {
+            return { result: AuthorizeResult.ALLOW };
+          });
+        });
       jest.spyOn(permissionApi, 'authorize').mockImplementation(async () => [
         {
           result: AuthorizeResult.ALLOW,
@@ -855,14 +856,15 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('filters parameters that the user is not authorized to see', async () => {
         jest
           .spyOn(permissionApi, 'authorizeConditional')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-            {
-              result: AuthorizeResult.ALLOW,
-            },
-          ]);
+          .mockImplementation(async permissionQueries => {
+            return permissionQueries.map(({ permission }) => {
+              if (isPermission(permission, templateParameterReadPermission)) {
+                return { result: AuthorizeResult.DENY };
+              }
+              return { result: AuthorizeResult.ALLOW };
+            });
+          });
+
         const response = await request(app)
           .get(
             '/v2/templates/default/Template/create-react-app-template/parameter-schema',
@@ -879,21 +881,24 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('filters parameters that the user is not authorized to see in case of conditional decision', async () => {
         jest
           .spyOn(permissionApi, 'authorizeConditional')
-          .mockImplementationOnce(async () => [
-            {
-              conditions: {
-                resourceType: 'scaffolder-template',
-                rule: 'HAS_TAG',
-                params: { tag: 'parameters-tag' },
-              },
-              pluginId: 'scaffolder',
-              resourceType: 'scaffolder-template',
-              result: AuthorizeResult.CONDITIONAL,
-            },
-            {
-              result: AuthorizeResult.ALLOW,
-            },
-          ]);
+          .mockImplementation(async permissionQueries => {
+            return permissionQueries.map(({ permission }) => {
+              if (isPermission(permission, templateParameterReadPermission)) {
+                return {
+                  conditions: {
+                    resourceType: 'scaffolder-template',
+                    rule: 'HAS_TAG',
+                    params: { tag: 'parameters-tag' },
+                  },
+                  pluginId: 'scaffolder',
+                  resourceType: 'scaffolder-template',
+                  result: AuthorizeResult.CONDITIONAL,
+                };
+              }
+              return { result: AuthorizeResult.ALLOW };
+            });
+          });
+
         const response = await request(app)
           .get(
             '/v2/templates/default/Template/create-react-app-template/parameter-schema',
@@ -945,14 +950,14 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('filters steps that the user is not authorized to see', async () => {
         jest
           .spyOn(permissionApi, 'authorizeConditional')
-          .mockImplementation(async () => [
-            {
-              result: AuthorizeResult.ALLOW,
-            },
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
+          .mockImplementation(async permissionQueries => {
+            return permissionQueries.map(({ permission }) => {
+              if (isPermission(permission, templateStepReadPermission)) {
+                return { result: AuthorizeResult.DENY };
+              }
+              return { result: AuthorizeResult.ALLOW };
+            });
+          });
 
         const broker =
           taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
@@ -1009,26 +1014,28 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('filters steps that the user is not authorized to see in case of conditional decision', async () => {
         jest
           .spyOn(permissionApi, 'authorizeConditional')
-          .mockImplementation(async () => [
-            {
-              result: AuthorizeResult.ALLOW,
-            },
-            {
-              conditions: {
-                resourceType: 'scaffolder-template',
-                rule: 'HAS_TAG',
-                params: { tag: 'steps-tag' },
-              },
-              pluginId: 'scaffolder',
-              resourceType: 'scaffolder-template',
-              result: AuthorizeResult.CONDITIONAL,
-            },
-          ]);
+          .mockImplementation(async permissionQueries => {
+            return permissionQueries.map(({ permission }) => {
+              if (isPermission(permission, templateStepReadPermission)) {
+                return {
+                  conditions: {
+                    resourceType: 'scaffolder-template',
+                    rule: 'HAS_TAG',
+                    params: { tag: 'steps-tag' },
+                  },
+                  pluginId: 'scaffolder',
+                  resourceType: 'scaffolder-template',
+                  result: AuthorizeResult.CONDITIONAL,
+                };
+              }
+              return { result: AuthorizeResult.ALLOW };
+            });
+          });
 
         const broker =
           taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
         const mockTemplate = getMockTemplate();
-        await request(app)
+        const response = await request(app)
           .post('/v2/tasks')
           .send({
             templateRef: stringifyEntityRef({
@@ -1040,6 +1047,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               requiredParameter2: 'required-value-2',
             },
           });
+
+        console.log(response);
+        expect(response.status).toEqual(201);
         expect(broker).toHaveBeenCalledWith(
           expect.objectContaining({
             createdBy: 'user:default/mock',

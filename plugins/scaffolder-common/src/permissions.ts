@@ -38,6 +38,17 @@ export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 /**
+ * This permission is used to authorize actions that involve running a template
+ *
+ * @alpha
+ */
+export const templateExecutePermission = createPermission({
+  name: 'scaffolder.template.execute',
+  attributes: {},
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+});
+
+/**
  * This permission is used to authorize actions that involve executing
  * an action from a template.
  *
@@ -47,17 +58,6 @@ export const actionExecutePermission = createPermission({
   name: 'scaffolder.action.execute',
   attributes: {},
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-});
-
-/**
- * This permission is used to authorize actions that involve running a template
- *
- * @alpha
- */
-export const templateExecutePermission = createPermission({
-  name: 'scaffolder.template.execute',
-  attributes: {},
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
 });
 
 /**

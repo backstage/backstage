@@ -176,7 +176,9 @@ export type PermissionRuleOption<
 function isTemplateEntityPermissionRuleInput(
   permissionRule: PermissionRuleOption,
 ): permissionRule is TemplateEntityPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
+  return (
+    permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY
+  );
 }
 
 function isTemplatePermissionRuleInput(
@@ -473,10 +475,16 @@ export async function createRouter(
     actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
   }
 
-  const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
   const isEntityAuthorized = createConditionAuthorizer(
     Object.values(templateEntityRules),
   );
+  const isParamAuthorized = createConditionAuthorizer(
+    Object.values(templateRules),
+  );
+  const isStepAuthorized = createConditionAuthorizer([
+    ...Object.values(templateRules), // Template rules support both steps and parameters
+    ...Object.values(actionRules),
+  ]);
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resources: [
@@ -1013,18 +1021,18 @@ export async function createRouter(
     // Authorize parameters
     if (Array.isArray(template.spec.parameters)) {
       template.spec.parameters = template.spec.parameters.filter(step =>
-        isAuthorized(parameterDecision, step),
+        isParamAuthorized(parameterDecision, step),
       );
     } else if (
       template.spec.parameters &&
-      !isAuthorized(parameterDecision, template.spec.parameters)
+      !isParamAuthorized(parameterDecision, template.spec.parameters)
     ) {
       template.spec.parameters = undefined;
     }
 
     // Authorize steps
     template.spec.steps = template.spec.steps.filter(step =>
-      isAuthorized(stepDecision, step),
+      isStepAuthorized(stepDecision, step),
     );
 
     return template;
