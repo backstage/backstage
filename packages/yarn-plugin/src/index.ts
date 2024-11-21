@@ -22,16 +22,20 @@
  */
 
 import { Plugin, semverUtils, YarnVersion } from '@yarnpkg/core';
-import chalk from 'chalk';
 import { beforeWorkspacePacking } from './handlers/beforeWorkspacePacking';
 import { BackstageResolver } from './resolver/BackstageResolver';
+
+// All dependencies of the yarn plugin are bundled during the build. Chalk
+// triples the size of the plugin bundle when included, so we avoid the
+// dependency by hard-coding the ANSI escape codes for the one bit of formatting
+// we need.
+const RED_BOLD = `\u001B[31;1m`;
+const RESET = '\u001B[0m';
 
 if (!semverUtils.satisfiesWithPrereleases(YarnVersion, '^4.1.1')) {
   console.error();
   console.error(
-    `${chalk.bold.red(
-      'Unsupported yarn version.',
-    )}: The Backstage yarn plugin only works with yarn ^4.1.1. Please upgrade yarn, or remove this plugin with "yarn plugin remove @yarnpkg/plugin-backstage".`,
+    `${RED_BOLD}Unsupported yarn version${RESET}: The Backstage yarn plugin only works with yarn ^4.1.1. Please upgrade yarn, or remove this plugin with "yarn plugin remove @yarnpkg/plugin-backstage".`,
   );
   console.error();
 }
