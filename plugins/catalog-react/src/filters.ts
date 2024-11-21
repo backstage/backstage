@@ -94,13 +94,7 @@ export class EntityTextFilter implements EntityFilter {
     const partialMatch = this.toUpperArray([
       entity.metadata.name,
       entity.metadata.title,
-      ...(typeof entity.spec?.profile === 'object' &&
-      entity.spec?.profile !== null &&
-      !Array.isArray(entity.spec.profile) &&
-      'displayName' in entity.spec.profile &&
-      typeof entity.spec.profile.displayName === 'string'
-        ? [entity.spec.profile.displayName]
-        : []),
+      (entity.spec?.profile as { displayName?: string })?.displayName,
     ]);
 
     for (const word of words) {
