@@ -18,7 +18,6 @@ import {
   RootConfigService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { IncomingMessage, ServerResponse } from 'http';
 import {
   Request,
   Response,
@@ -28,7 +27,6 @@ import {
 } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan, { TokenIndexer } from 'morgan';
 import compression from 'compression';
 import { readHelmetOptions } from './readHelmetOptions';
 import { readCorsOptions } from './readCorsOptions';
@@ -46,27 +44,43 @@ import {
 import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
 
-const getLogMessage = morgan.compile(
-  '[:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
-);
+type LogMeta = {
+  date: string;
+  method: string;
+  url: string;
+  status: number;
+  httpVersion: string;
+  userAgent?: string;
+  contentLength?: number;
+  referrer?: string;
+};
 
-function getLogMeta(
-  tokens: TokenIndexer,
-  req: IncomingMessage,
-  res: ServerResponse,
-) {
-  const status = Number(tokens.status(req, res));
-  const contentLength = Number(tokens.res(req, res, 'content-length'));
-  return {
-    date: tokens.date(req, res, 'iso'),
-    method: tokens.method(req, res),
-    url: tokens.url(req, res),
-    httpVersion: tokens['http-version'](req, res),
-    status: isFinite(status) ? status : undefined,
-    contentLength: isFinite(contentLength) ? contentLength : undefined,
-    referrer: tokens.referrer(req, res),
-    userAgent: tokens.req(req, res, 'user-agent'),
+function getLogMeta(req: Request, res: Response): LogMeta {
+  const referrer = req.headers.referer ?? req.headers.referrer;
+  const userAgent = req.headers['user-agent'];
+  const contentLength = Number(res.getHeader('content-length'));
+
+  const meta: LogMeta = {
+    date: new Date().toISOString(),
+    method: req.method,
+    url: req.originalUrl ?? req.url,
+    status: res.statusCode,
+    httpVersion: `${req.httpVersionMajor}.${req.httpVersionMinor}`,
   };
+
+  if (userAgent) {
+    meta.userAgent = userAgent;
+  }
+
+  if (isFinite(contentLength)) {
+    meta.contentLength = contentLength;
+  }
+
+  if (referrer) {
+    meta.referrer = Array.isArray(referrer) ? referrer.join(', ') : referrer;
+  }
+
+  return meta;
 }
 
 /**
@@ -162,24 +176,23 @@ export class MiddlewareFactory {
    */
   logging(): RequestHandler {
     const logger = this.#logger;
-    return morgan(
-      (tokens: TokenIndexer, req: IncomingMessage, res: ServerResponse) => {
-        const meta = getLogMeta(tokens, req, res);
-        const message = getLogMessage(tokens, req, res);
-        return JSON.stringify({ meta, message });
-      },
-      {
-        stream: {
-          write(json: string) {
-            const { meta, message } = JSON.parse(json);
-            logger.info(message.trimEnd(), {
-              type: 'incomingRequest',
-              ...meta,
-            });
+    return (req: Request, res: Response, next: NextFunction) => {
+      res.on('finish', () => {
+        const meta = getLogMeta(req, res);
+        logger.info(
+          `[${meta.date}] "${meta.method} ${meta.url} HTTP/${
+            meta.httpVersion
+          }" ${meta.status} ${meta.contentLength} "${meta.referrer ?? '-'}" "${
+            meta.userAgent ?? '-'
+          }"`,
+          {
+            type: 'incomingRequest',
+            ...meta,
           },
-        },
-      },
-    );
+        );
+      });
+      next();
+    };
   }
 
   /**

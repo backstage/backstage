@@ -251,7 +251,7 @@ describe('MiddlewareFactory', () => {
 
       expect(logger.info).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[20/Nov/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 11 "-" "-"',
+          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 11 "-" "-"',
         ),
         {
           type: 'incomingRequest',
@@ -278,7 +278,7 @@ describe('MiddlewareFactory', () => {
 
       expect(logger.info).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[20/Nov/2024:00:00:00 +0000] "GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
+          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
         ),
         {
           type: 'incomingRequest',
