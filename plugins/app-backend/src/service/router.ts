@@ -306,8 +306,7 @@ async function createEntryPointRouter({
   const rootRouter = Router();
   rootRouter.use((req, _res, next) => {
     // Make sure / and /index.html are handled by the HTML5 route below
-    const urlWithoutQuery = req.url.split('?')[0];
-    if (urlWithoutQuery === '/' || urlWithoutQuery === '/index.html') {
+    if (req.path === '/' || req.path === '/index.html') {
       next('router');
     } else {
       next();
