@@ -56,13 +56,14 @@ function getLogMeta(
   res: ServerResponse,
 ) {
   const status = Number(tokens.status(req, res));
+  const contentLength = Number(tokens.res(req, res, 'content-length'));
   return {
-    date: tokens.date(req, res, 'web'),
+    date: tokens.date(req, res, 'iso'),
     method: tokens.method(req, res),
     url: tokens.url(req, res),
     httpVersion: tokens['http-version'](req, res),
-    status: isNaN(status) ? undefined : status,
-    contentLength: tokens.res(req, res, 'content-length'),
+    status: isFinite(status) ? status : undefined,
+    contentLength: isFinite(contentLength) ? contentLength : undefined,
     referrer: tokens.referrer(req, res),
     userAgent: tokens.req(req, res, 'user-agent'),
   };
@@ -173,9 +174,7 @@ export class MiddlewareFactory {
             const { meta, message } = JSON.parse(json);
             logger.info(message.trimEnd(), {
               type: 'incomingRequest',
-              ...Object.entries(meta).reduce((rest, [key, value]) => {
-                return value ? { ...rest, [key]: value } : rest;
-              }, {}),
+              ...meta,
             });
           },
         },
