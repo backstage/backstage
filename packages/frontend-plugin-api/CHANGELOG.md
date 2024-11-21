@@ -1,5 +1,16 @@
 # @backstage/frontend-plugin-api
 
+## 0.9.2
+
+### Patch Changes
+
+- a9fc871: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/core-components@0.16.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
 ## 0.9.1
 
 ### Patch Changes

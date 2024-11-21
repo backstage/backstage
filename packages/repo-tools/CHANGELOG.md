@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.11.1
+
+### Patch Changes
+
+- a9fc871: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.10
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+
 ## 0.11.0
 
 ### Minor Changes

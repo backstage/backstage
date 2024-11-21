@@ -1,5 +1,16 @@
 # @backstage/core-components
 
+## 0.16.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.2
+  - @backstage/config@1.3.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/version-bridge@1.0.10
+
 ## 0.16.0
 
 ### Minor Changes

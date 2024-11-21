@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.29.2
+
+### Patch Changes
+
+- a9fc871: Update `rollup` to avoid issues with build output when running `backstage-cli package build`.
+- a9fc871: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.10
+  - @backstage/config@1.3.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.15.2
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.2.0
+
 ## 0.29.1
 
 ### Patch Changes
