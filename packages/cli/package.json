@@ -136,7 +136,7 @@
     "react-refresh": "^0.14.0",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^7.1.0",
-    "rollup": "^4.0.0",
+    "rollup": "^4.27.3",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-postcss": "^4.0.0",
