@@ -93,34 +93,37 @@ describe('appPlugin', () => {
       ],
     });
 
-    const rootContent = await fetch(`http://localhost:${server.port()}`).then(
-      res => res.text(),
+    const baseUrl = `http://localhost:${server.port()}`;
+    const withInjectedConfig = `<html><head>
+<script type="backstage.io/config">
+[]
+</script>
+</head></html>`;
+
+    await expect(fetch(`${baseUrl}`).then(res => res.text())).resolves.toBe(
+      withInjectedConfig,
     );
 
-    expect(rootContent).toBe(`<html><head>
-<script type="backstage.io/config">
-[]
-</script>
-</head></html>`);
+    await expect(
+      fetch(`${baseUrl}?foo=bar`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
 
-    const indexContent = await fetch(
-      `http://localhost:${server.port()}/index.html`,
-    ).then(res => res.text());
+    await expect(
+      fetch(`${baseUrl}/index.html`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
 
-    expect(indexContent).toBe(`<html><head>
-<script type="backstage.io/config">
-[]
-</script>
-</head></html>`);
+    await expect(
+      fetch(`${baseUrl}/index.html?foo=bar`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
 
-    const htmlContent = await fetch(
-      `http://localhost:${server.port()}/api/app/some/html5/route`,
-    ).then(res => res.text());
+    await expect(
+      fetch(`${baseUrl}/api/app/some/html5/route`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
 
-    expect(htmlContent).toBe(`<html><head>
-<script type="backstage.io/config">
-[]
-</script>
-</head></html>`);
+    await expect(
+      fetch(`${baseUrl}/api/app/some/html5/route?foo=bar`).then(res =>
+        res.text(),
+      ),
+    ).resolves.toBe(withInjectedConfig);
   });
 });

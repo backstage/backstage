@@ -1,5 +1,11 @@
 # @backstage/plugin-app-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- 087c675: Fix root route handling when query parameters are present
+
 ## 0.4.1
 
 ### Patch Changes
