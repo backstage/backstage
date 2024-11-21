@@ -45,7 +45,15 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const runTsc = opts.tsc;
   const allowWarnings = parseArrayOption(opts.allowWarnings);
   const allowAllWarnings = opts.allowAllWarnings;
-  const omitMessages = parseArrayOption(opts.omitMessages);
+  const omitMessagesRaw = opts.omitMessages;
+
+  if (omitMessagesRaw && omitMessagesRaw.endsWith(',')) {
+    throw new Error(
+      `Invalid value for --omit-messages: ${omitMessagesRaw}\nMust be a comma-separated list of strings without spaces or wrapped in quotations.`,
+    );
+  }
+
+  const omitMessages = parseArrayOption(omitMessagesRaw);
 
   const isAllPackages = !paths?.length;
   const selectedPackageDirs = await resolvePackagePaths({
