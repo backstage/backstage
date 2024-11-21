@@ -6,7 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
-import { JsonObject } from '@backstage/types';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -40,10 +39,7 @@ export default _feature;
 // @alpha
 export const scaffolderActionConditions: Conditions<{
   hasActionId: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    TemplateEntityStepV1beta3,
     {},
     'scaffolder-action',
     {
@@ -51,10 +47,7 @@ export const scaffolderActionConditions: Conditions<{
     }
   >;
   hasBooleanProperty: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    TemplateEntityStepV1beta3,
     {},
     'scaffolder-action',
     {
@@ -63,10 +56,7 @@ export const scaffolderActionConditions: Conditions<{
     }
   >;
   hasNumberProperty: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    TemplateEntityStepV1beta3,
     {},
     'scaffolder-action',
     {
@@ -75,10 +65,7 @@ export const scaffolderActionConditions: Conditions<{
     }
   >;
   hasStringProperty: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    TemplateEntityStepV1beta3,
     {},
     'scaffolder-action',
     {
