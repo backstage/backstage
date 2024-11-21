@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.6.2
+
+### Patch Changes
+
+- a9fc871: Fixed a bug that caused missing code in published packages.
+
 ## 0.6.1
 
 ### Patch Changes

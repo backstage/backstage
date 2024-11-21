@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.3.3
+
+### Patch Changes
+
+- a9fc871: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+
 ## 0.3.2
 
 ### Patch Changes
