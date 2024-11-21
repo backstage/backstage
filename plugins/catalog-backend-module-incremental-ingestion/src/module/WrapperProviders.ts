@@ -66,7 +66,7 @@ export class WrapperProviders {
     return {
       getProviderName: () => provider.getProviderName(),
       connect: async connection => {
-        await this.startProvider(provider, options, connection, events);
+        await this.startProvider(provider, options, connection);
         this.numberOfProvidersToConnect -= 1;
         if (this.numberOfProvidersToConnect === 0) {
           this.readySignal.resolve();
@@ -86,7 +86,6 @@ export class WrapperProviders {
     provider: IncrementalEntityProvider<unknown, unknown>,
     providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
-    events: EventsService,
   ) {
     const logger = this.options.logger.child({
       entityProvider: provider.getProviderName(),
@@ -139,7 +138,7 @@ export class WrapperProviders {
         logger.info(
           `Provider ${provider.getProviderName()} subscribing to events for topics: ${topics.join()}`,
         );
-        await events.subscribe({
+        await this.options.events.subscribe({
           topics,
           id: provider.getProviderName(),
           onEvent: evt => engine.onEvent(evt),

@@ -116,6 +116,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           httpRouter,
           logger,
           scheduler,
+          events,
         }) {
           const client = await database.getClient();
 
