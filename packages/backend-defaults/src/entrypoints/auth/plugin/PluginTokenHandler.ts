@@ -22,7 +22,6 @@ import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { PluginKeySource } from './keys/types';
-import fetch from 'node-fetch';
 
 const SECONDS_IN_MS = 1000;
 
@@ -45,7 +44,22 @@ type Options = {
   algorithm?: string;
 };
 
-export class PluginTokenHandler {
+/**
+ * @public
+ * PluginTokenHandler is responsible for issuing and verifying tokens
+ */
+export interface PluginTokenHandler {
+  verifyToken(
+    token: string,
+  ): Promise<{ subject: string; limitedUserToken?: string } | undefined>;
+  issueToken(options: {
+    pluginId: string;
+    targetPluginId: string;
+    onBehalfOf?: { limitedUserToken: string; expiresAt: Date };
+  }): Promise<{ token: string }>;
+}
+
+export class DefaultPluginTokenHandler implements PluginTokenHandler {
   private jwksMap = new Map<string, JwksClient>();
 
   // Tracking state for isTargetPluginSupported
@@ -53,7 +67,7 @@ export class PluginTokenHandler {
   private targetPluginInflightChecks = new Map<string, Promise<boolean>>();
 
   static create(options: Options) {
-    return new PluginTokenHandler(
+    return new DefaultPluginTokenHandler(
       options.logger,
       options.ownPluginId,
       options.keySource,
@@ -115,7 +129,7 @@ export class PluginTokenHandler {
   async issueToken(options: {
     pluginId: string;
     targetPluginId: string;
-    onBehalfOf?: { token: string; expiresAt: Date };
+    onBehalfOf?: { limitedUserToken: string; expiresAt: Date };
   }): Promise<{ token: string }> {
     const { pluginId, targetPluginId, onBehalfOf } = options;
     const key = await this.keySource.getPrivateSigningKey();
@@ -131,7 +145,7 @@ export class PluginTokenHandler {
         )
       : ourExp;
 
-    const claims = { sub, aud, iat, exp, obo: onBehalfOf?.token };
+    const claims = { sub, aud, iat, exp, obo: onBehalfOf?.limitedUserToken };
     const token = await new SignJWT(claims)
       .setProtectedHeader({
         typ: tokenTypes.plugin.typParam,
@@ -180,7 +194,7 @@ export class PluginTokenHandler {
 
         this.supportedTargetPlugins.add(targetPluginId);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error('Unexpected failure for target JWKS check', error);
         return false;
       } finally {
