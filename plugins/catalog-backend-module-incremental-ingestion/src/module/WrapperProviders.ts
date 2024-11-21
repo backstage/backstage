@@ -136,11 +136,13 @@ export class WrapperProviders {
       const topics = engine.supportsEventTopics();
       if (topics.length > 0) {
         logger.info(
-          `Provider ${provider.getProviderName()} subscribing to events for topics: ${topics.join()}`,
+          `Provider ${provider.getProviderName()} subscribing to events for topics: ${topics.join(
+            ',',
+          )}`,
         );
         await this.options.events.subscribe({
           topics,
-          id: provider.getProviderName(),
+          id: `catalog-backend-module-incremental-ingestion:${provider.getProviderName()}`,
           onEvent: evt => engine.onEvent(evt),
         });
       }
