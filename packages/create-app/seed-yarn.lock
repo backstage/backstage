@@ -17,7 +17,8 @@
 // query: the version query to pin the version for, e.g. ^14.0.0
 // version: the version to pin to, must be in range of the query, e.g. 14.11.0
 
-"@swagger-api/apidom-json-pointer@*":
+// https://github.com/swagger-api/apidom/issues/4539
+"@swagger-api/apidom-json-pointer@^1.0.0-alpha.1":
   version "1.0.0-alpha.10"
   resolved "https://registry.yarnpkg.com/@swagger-api/apidom-json-pointer/-/apidom-json-pointer-1.0.0-alpha.10.tgz#762e972b9200b603ca4311ed34246d6026d5b03e"
   integrity sha512-Xo0v4Jxp0ZiAm+OOL2PSLyjiw5OAkCMxI0nN9+vOw1/mfXcC+tdb30QQ9WNtF7O9LExjznfFID/NnDEYqBRDwA==
