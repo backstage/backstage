@@ -104,7 +104,7 @@ or [contribute](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.
 
 ### Custom token extraction logic
 
-In some cases, you might want to customize how tokens are extracted from incoming requests. It might be that you want to extract tokens from a different location in the request. To support this you supply your own slightly modified httpAuth service. The `DefaultHttpAuthService` class is exported from the `@backstage/backend-defaults` package and it's `create` method can be used to pass in a custom `getTokenFromRequest` extraction function.
+In some cases, you might want to customize how tokens are extracted from incoming requests. It might be that you want to extract tokens from a different location in the request. To support this you can supply your own slightly modified httpAuth service. The `DefaultHttpAuthService` class is exported from the `@backstage/backend-defaults` package and it's `create` method can be used to pass in a custom `getTokenFromRequest` extraction function.
 
 ```ts
 import { DefaultHttpAuthService } from '@backstage/backend-defaults/httpAuth';
