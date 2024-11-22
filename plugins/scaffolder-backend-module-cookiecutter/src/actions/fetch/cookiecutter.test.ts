@@ -65,6 +65,7 @@ describe('fetch:cookiecutter', () => {
     copyWithoutRender?: string[];
     extensions?: string[];
     imageName?: string;
+    directory: string;
   }>;
 
   const containerRunner: jest.Mocked<ContainerRunner> = {
@@ -93,6 +94,7 @@ describe('fetch:cookiecutter', () => {
         values: {
           help: 'me',
         },
+        directory: 'someDir',
       },
       templateInfo: {
         entityRef: 'template:default/cookiecutter',
@@ -165,6 +167,8 @@ describe('fetch:cookiecutter', () => {
           '--no-input',
           '-o',
           join(mockTmpDir, 'intermediate'),
+          '--directory',
+          mockContext.input.directory,
           join(mockTmpDir, 'template'),
           '--verbose',
         ],
@@ -182,7 +186,15 @@ describe('fetch:cookiecutter', () => {
       expect.objectContaining({
         imageName: 'spotify/backstage-cookiecutter',
         command: 'cookiecutter',
-        args: ['--no-input', '-o', '/output', '/input', '--verbose'],
+        args: [
+          '--no-input',
+          '-o',
+          '/output',
+          '--directory',
+          mockContext.input.directory,
+          '/input',
+          '--verbose',
+        ],
         mountDirs: {
           [join(mockTmpDir, 'intermediate')]: '/output',
           [join(mockTmpDir, 'template')]: '/input',

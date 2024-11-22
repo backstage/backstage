@@ -116,4 +116,25 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Fetch and template using cookiecutter with a custom nested directory.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'fetchTemplate',
+          action: 'fetch:cookiecutter',
+          name: 'Fetch and Template Using Cookiecutter',
+          input: {
+            url: 'https://google.com/cookie/cutter',
+            targetPath: 'custom-path',
+            values: {
+              help: 'me',
+            },
+            directory: 'someDir',
+          },
+        },
+      ],
+    }),
+  },
 ];

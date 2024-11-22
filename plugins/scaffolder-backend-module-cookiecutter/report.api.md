@@ -29,6 +29,7 @@ export function createFetchCookiecutterAction(options: {
     copyWithoutRender?: string[] | undefined;
     extensions?: string[] | undefined;
     imageName?: string | undefined;
+    directory?: string | undefined;
   },
   JsonObject
 >;

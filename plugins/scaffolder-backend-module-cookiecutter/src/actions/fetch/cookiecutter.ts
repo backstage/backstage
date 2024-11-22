@@ -61,6 +61,7 @@ export class CookiecutterRunner {
     imageName,
     templateDir,
     templateContentsDir,
+    directory = '.',
   }: {
     workspacePath: string;
     values: JsonObject;
@@ -68,6 +69,7 @@ export class CookiecutterRunner {
     imageName?: string;
     templateDir: string;
     templateContentsDir: string;
+    directory?: string;
   }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
@@ -98,7 +100,15 @@ export class CookiecutterRunner {
     if (cookieCutterInstalled) {
       await executeShellCommand({
         command: 'cookiecutter',
-        args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
+        args: [
+          '--no-input',
+          '-o',
+          intermediateDir,
+          '--directory',
+          directory,
+          templateDir,
+          '--verbose',
+        ],
         logStream,
       });
     } else {
@@ -110,7 +120,15 @@ export class CookiecutterRunner {
       await this.containerRunner.runContainer({
         imageName: imageName ?? 'spotify/backstage-cookiecutter',
         command: 'cookiecutter',
-        args: ['--no-input', '-o', '/output', '/input', '--verbose'],
+        args: [
+          '--no-input',
+          '-o',
+          '/output',
+          '--directory',
+          directory,
+          '/input',
+          '--verbose',
+        ],
         mountDirs,
         workingDir: '/input',
         // Set the home directory inside the container as something that applications can
@@ -153,6 +171,7 @@ export function createFetchCookiecutterAction(options: {
     url: string;
     targetPath?: string;
     values: JsonObject;
+    directory?: string;
     copyWithoutRender?: string[];
     extensions?: string[];
     imageName?: string;
@@ -260,6 +279,7 @@ export function createFetchCookiecutterAction(options: {
         imageName: ctx.input.imageName,
         templateDir: templateDir,
         templateContentsDir: templateContentsDir,
+        directory: ctx.input.directory,
       });
 
       // Finally move the template result into the task workspace
