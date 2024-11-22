@@ -60,7 +60,7 @@ import {
 import {
   createScaffolderActionConditionalDecision,
   scaffolderTemplateConditions,
-} from '@backstage/plugin-scaffolder-backend/alpha';
+} from '@backstage/plugin-scaffolder-node/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -103,7 +103,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-backend/alpha';
+} from '@backstage/plugin-scaffolder-node/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -141,7 +141,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-backend/alpha';
+} from '@backstage/plugin-scaffolder-node/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {

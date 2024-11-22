@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
-} from '@backstage/plugin-scaffolder-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import {
   scaffolderActionRules,
-  scaffolderTemplateEntityRules,
+  scaffolderEntityRules,
   scaffolderTemplateRules,
 } from './rules';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 const templateEntityConditionExports = createConditionExports({
   pluginId: 'scaffolder',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
-  rules: scaffolderTemplateEntityRules,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  rules: scaffolderEntityRules,
 });
 
 const templateConditionExports = createConditionExports({
@@ -45,7 +45,7 @@ const actionsConditionExports = createConditionExports({
 });
 
 /**
- * `createScaffolderTemplateEntityConditionalDecision` can be used when authoring policies to
+ * `createScaffolderEntityConditionalDecision` can be used when authoring policies to
  * create conditional decisions. It requires a permission of type
  * `ResourcePermission<'scaffolder-entity'>` to be passed as the first parameter.
  * It's recommended that you use the provided `isResourcePermission` and
@@ -55,7 +55,7 @@ const actionsConditionExports = createConditionExports({
  * ```
  * // MyAuthorizationPolicy.ts
  * ...
- * import { createScaffolderTemplateEntityConditionalDecision } from '@backstage/plugin-scaffolder-backend';
+ * import { createScaffolderEntityConditionalDecision } from '@backstage/plugin-scaffolder-backend';
  * import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common';
  *
  * class MyAuthorizationPolicy implements PermissionPolicy {
@@ -63,7 +63,7 @@ const actionsConditionExports = createConditionExports({
  *    ...
  *
  *    if (isResourcePermission(request.permission, RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY)) {
- *      return createScaffolderTemplateEntityConditionalDecision(
+ *      return createScaffolderEntityConditionalDecision(
  *        request.permission,
  *        { anyOf: [...insert conditions here...] }
  *      );
@@ -76,7 +76,7 @@ const actionsConditionExports = createConditionExports({
  *
  * @alpha
  */
-export const createScaffolderTemplateEntityConditionalDecision =
+export const createScaffolderEntityConditionalDecision =
   templateEntityConditionExports.createConditionalDecision;
 
 /**

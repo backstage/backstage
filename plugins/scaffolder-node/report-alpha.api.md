@@ -5,11 +5,34 @@
 ```ts
 /// <reference types="node" />
 
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+
+// @alpha (undocumented)
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;
 
 // @alpha
 export type AutocompleteHandler = ({
@@ -26,11 +49,306 @@ export type AutocompleteHandler = ({
   }[];
 }>;
 
+// @public (undocumented)
+export const createActionPermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    TParams
+  >,
+) => PermissionRule<
+  TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-action',
+  TParams
+>;
+
+// @alpha (undocumented)
+export const createScaffolderActionConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-action'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
+) => ConditionalPolicyDecision;
+
+// @alpha
+export const createScaffolderEntityConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-entity'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-entity'>>,
+) => ConditionalPolicyDecision;
+
+// @public (undocumented)
+export const createScaffolderEntityPermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<TemplateEntityV1beta3, {}, 'scaffolder-entity', TParams>,
+) => PermissionRule<TemplateEntityV1beta3, {}, 'scaffolder-entity', TParams>;
+
+// @alpha
+export const createScaffolderTemplateConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-template'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
+) => ConditionalPolicyDecision;
+
+// @public (undocumented)
+export const createTemplatePermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    TParams
+  >,
+) => PermissionRule<
+  TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-template',
+  TParams
+>;
+
+// @public (undocumented)
+export const hasAction: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    actionId: string;
+  }
+>;
+
+// @public (undocumented)
+export const hasActionId: PermissionRule<
+  TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-action',
+  {
+    actionId: string;
+  }
+>;
+
+// @public (undocumented)
+export const hasActionWithBooleanProperty: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    actionId: string;
+    key: string;
+    value?: boolean | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasActionWithNumberProperty: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    actionId: string;
+    key: string;
+    value?: number | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasActionWithProperty: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    actionId: string;
+    key: string;
+    value?: string | number | boolean | null | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasActionWithStringProperty: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    actionId: string;
+    key: string;
+    value?: string | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasBooleanProperty: PermissionRule<
+  TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-action',
+  {
+    key: string;
+    value?: boolean | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasNumberProperty: PermissionRule<
+  TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-action',
+  {
+    key: string;
+    value?: number | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasProperty: PermissionRule<
+  TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-action',
+  {
+    key: string;
+    value?: string | number | boolean | null | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasStringProperty: PermissionRule<
+  TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-action',
+  {
+    key: string;
+    value?: string | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasTag: PermissionRule<
+  TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-template',
+  {
+    tag: string;
+  }
+>;
+
+// @public (undocumented)
+export const hasTaggedAction: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    tag: string;
+    actionId?: string | undefined;
+  }
+>;
+
+// @public (undocumented)
+export const hasTaggedParam: PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  'scaffolder-entity',
+  {
+    tag: string;
+  }
+>;
+
+// @alpha (undocumented)
+export function isActionPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRule,
+): permissionRule is ActionPermissionRuleInput;
+
+// @alpha (undocumented)
+export function isTemplateEntityPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRule,
+): permissionRule is TemplateEntityPermissionRuleInput;
+
+// @alpha (undocumented)
+export function isTemplatePermissionRuleInput(
+  permissionRule: ScaffolderPermissionRule,
+): permissionRule is TemplatePermissionRuleInput;
+
 // @alpha
 export const restoreWorkspace: (opts: {
   path: string;
   buffer?: Buffer;
 }) => Promise<void>;
+
+// @alpha
+export const scaffolderActionConditions: Conditions<{
+  hasActionId: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      actionId: string;
+    }
+  >;
+  hasBooleanProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasNumberProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasStringProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+}>;
+
+// @public (undocumented)
+export const scaffolderActionRules: {
+  hasActionId: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      actionId: string;
+    }
+  >;
+  hasBooleanProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasNumberProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasStringProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+};
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
@@ -56,6 +374,92 @@ export interface ScaffolderAutocompleteExtensionPoint {
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
+// @public (undocumented)
+export const scaffolderEntityRules: {
+  hasTaggedAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+      actionId?: string | undefined;
+    }
+  >;
+  hasTaggedParam: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+    }
+  >;
+  hasAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+    }
+  >;
+  hasActionWithProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | number | boolean | null | undefined;
+    }
+  >;
+  hasActionWithBooleanProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasActionWithNumberProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasActionWithStringProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+};
+
+// @alpha (undocumented)
+export type ScaffolderPermissionRule<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> =
+  | TemplateEntityPermissionRuleInput<TParams>
+  | TemplatePermissionRuleInput<TParams>
+  | ActionPermissionRuleInput<TParams>;
+
+// @alpha
+export interface ScaffolderPermissionsExtensionPoint {
+  // (undocumented)
+  addRule(...rules: ScaffolderPermissionRule[]): void;
+}
+
+// @alpha
+export const scaffolderPermissionsExtensionPoint: ExtensionPoint<ScaffolderPermissionsExtensionPoint>;
+
 // @alpha
 export interface ScaffolderTaskBrokerExtensionPoint {
   // (undocumented)
@@ -64,6 +468,99 @@ export interface ScaffolderTaskBrokerExtensionPoint {
 
 // @alpha
 export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBrokerExtensionPoint>;
+
+// @alpha
+export const scaffolderTemplateConditions: Conditions<{
+  hasTag: PermissionRule<
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+}>;
+
+// @alpha
+export const scaffolderTemplateEntityConditions: Conditions<{
+  hasTaggedAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+      actionId?: string | undefined;
+    }
+  >;
+  hasTaggedParam: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+    }
+  >;
+  hasAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+    }
+  >;
+  hasActionWithProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | number | boolean | null | undefined;
+    }
+  >;
+  hasActionWithBooleanProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasActionWithNumberProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasActionWithStringProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+}>;
+
+// @public (undocumented)
+export const scaffolderTemplateRules: {
+  hasTag: PermissionRule<
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+};
 
 // @alpha
 export interface ScaffolderTemplatingExtensionPoint {
@@ -89,6 +586,26 @@ export const scaffolderWorkspaceProviderExtensionPoint: ExtensionPoint<Scaffolde
 export const serializeWorkspace: (opts: { path: string }) => Promise<{
   contents: Buffer;
 }>;
+
+// @alpha (undocumented)
+export type TemplateEntityPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  TParams
+>;
+
+// @alpha (undocumented)
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 
 // @alpha
 export interface WorkspaceProvider {

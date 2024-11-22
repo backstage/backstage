@@ -22,12 +22,18 @@ import {
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { z } from 'zod';
 
+/**
+ * @public
+ */
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
+/**
+ * @public
+ */
 export const hasTag = createTemplatePermissionRule({
   name: 'HAS_TAG',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
@@ -41,4 +47,7 @@ export const hasTag = createTemplatePermissionRule({
   toQuery: () => ({}),
 });
 
+/**
+ * @public
+ */
 export const scaffolderTemplateRules = { hasTag };

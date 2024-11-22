@@ -13,10 +13,10 @@ export const actionExecutePermission: ResourcePermission<'scaffolder-action'>;
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 // @alpha
-export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
+export const RESOURCE_TYPE_SCAFFOLDER_ENTITY = 'scaffolder-entity';
 
 // @alpha
-export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY = 'scaffolder-entity';
+export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 
 // @alpha
 export const scaffolderActionPermissions: ResourcePermission<'scaffolder-action'>[];

@@ -16,13 +16,34 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
+  TaskBroker,
   TemplateAction,
   TemplateFilter,
   TemplateGlobal,
-  TaskBroker,
 } from '@backstage/plugin-scaffolder-node';
+import { ScaffolderPermissionRule } from './permissions/alpha';
 
 export * from './tasks/alpha';
+export * from './permissions/alpha';
+
+/**
+ * Extension point for managing scaffolder actions.
+ *
+ * @alpha
+ */
+export interface ScaffolderPermissionsExtensionPoint {
+  addRule(...rules: ScaffolderPermissionRule[]): void;
+}
+
+/**
+ * Extension point for adding custom scaffolder permission rules.
+ *
+ * @alpha
+ */
+export const scaffolderPermissionsExtensionPoint =
+  createExtensionPoint<ScaffolderPermissionsExtensionPoint>({
+    id: 'scaffolder.permissions',
+  });
 
 /**
  * Extension point for managing scaffolder actions.

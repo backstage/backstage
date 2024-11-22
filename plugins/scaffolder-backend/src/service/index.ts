@@ -14,4 +14,43 @@
  * limitations under the License.
  */
 
-export * from './conditionExports';
+import {
+  createScaffolderEntityConditionalDecision,
+  scaffolderTemplateEntityConditions,
+  createScaffolderTemplateConditionalDecision,
+  scaffolderTemplateConditions,
+  createScaffolderActionConditionalDecision,
+  scaffolderActionConditions,
+} from '@backstage/plugin-scaffolder-node/alpha';
+
+export {
+  /**
+   * @deprecated use {@link createScaffolderEntityConditionalDecision} from @backstage/plugin-scaffolder-node/alpha instead
+   */
+  createScaffolderEntityConditionalDecision,
+
+  /**
+   * @deprecated use {@link scaffolderTemplateEntityConditions} from @backstage/plugin-scaffolder-node/alpha instead
+   */
+  scaffolderTemplateEntityConditions,
+
+  /**
+   * @deprecated use {@link createScaffolderTemplateConditionalDecision} from @backstage/plugin-scaffolder-node/alpha instead
+   */
+  createScaffolderTemplateConditionalDecision,
+
+  /**
+   * @deprecated use {@link scaffolderTemplateConditions} from @backstage/plugin-scaffolder-node/alpha instead
+   */
+  scaffolderTemplateConditions,
+
+  /**
+   * @deprecated use {@link createScaffolderActionConditionalDecision} from @backstage/plugin-scaffolder-node/alpha instead
+   */
+  createScaffolderActionConditionalDecision,
+
+  /**
+   * @deprecated use {@link scaffolderActionConditions} from @backstage/plugin-scaffolder-node/alpha instead
+   */
+  scaffolderActionConditions,
+};

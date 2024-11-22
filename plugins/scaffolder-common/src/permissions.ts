@@ -21,7 +21,7 @@ import { createPermission } from '@backstage/plugin-permission-common';
  *
  * @alpha
  */
-export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY = 'scaffolder-entity';
+export const RESOURCE_TYPE_SCAFFOLDER_ENTITY = 'scaffolder-entity';
 
 /**
  * Permission resource type which corresponds to a scaffolder templates.
@@ -45,7 +45,7 @@ export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 export const templateExecutePermission = createPermission({
   name: 'scaffolder.template.execute',
   attributes: {},
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
 });
 
 /**

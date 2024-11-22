@@ -4,157 +4,28 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
-import { Conditions } from '@backstage/plugin-permission-node';
-import { PermissionCondition } from '@backstage/plugin-permission-common';
-import { PermissionCriteria } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { createScaffolderActionConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
+import { createScaffolderEntityConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
+import { createScaffolderTemplateConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderActionConditions } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderTemplateConditions } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderTemplateEntityConditions } from '@backstage/plugin-scaffolder-node/alpha';
 
-// @alpha (undocumented)
-export const createScaffolderActionConditionalDecision: (
-  permission: ResourcePermission<'scaffolder-action'>,
-  conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
-) => ConditionalPolicyDecision;
+export { createScaffolderActionConditionalDecision };
 
-// @alpha
-export const createScaffolderTemplateConditionalDecision: (
-  permission: ResourcePermission<'scaffolder-template'>,
-  conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
-) => ConditionalPolicyDecision;
+export { createScaffolderEntityConditionalDecision };
 
-// @alpha
-export const createScaffolderTemplateEntityConditionalDecision: (
-  permission: ResourcePermission<'scaffolder-entity'>,
-  conditions: PermissionCriteria<PermissionCondition<'scaffolder-entity'>>,
-) => ConditionalPolicyDecision;
+export { createScaffolderTemplateConditionalDecision };
 
 // @alpha (undocumented)
 const _feature: BackendFeature;
 export default _feature;
 
-// @alpha
-export const scaffolderActionConditions: Conditions<{
-  hasActionId: PermissionRule<
-    TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-action',
-    {
-      actionId: string;
-    }
-  >;
-  hasBooleanProperty: PermissionRule<
-    TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-action',
-    {
-      key: string;
-      value?: boolean | undefined;
-    }
-  >;
-  hasNumberProperty: PermissionRule<
-    TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-action',
-    {
-      key: string;
-      value?: number | undefined;
-    }
-  >;
-  hasStringProperty: PermissionRule<
-    TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-action',
-    {
-      key: string;
-      value?: string | undefined;
-    }
-  >;
-}>;
+export { scaffolderActionConditions };
 
-// @alpha
-export const scaffolderTemplateConditions: Conditions<{
-  hasTag: PermissionRule<
-    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-template',
-    {
-      tag: string;
-    }
-  >;
-}>;
+export { scaffolderTemplateConditions };
 
-// @alpha
-export const scaffolderTemplateEntityConditions: Conditions<{
-  hasTaggedAction: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      tag: string;
-      actionId?: string | undefined;
-    }
-  >;
-  hasTaggedParam: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      tag: string;
-    }
-  >;
-  hasAction: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-    }
-  >;
-  hasActionWithProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: string | number | boolean | null | undefined;
-    }
-  >;
-  hasActionWithBooleanProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: boolean | undefined;
-    }
-  >;
-  hasActionWithNumberProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: number | undefined;
-    }
-  >;
-  hasActionWithStringProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: string | undefined;
-    }
-  >;
-}>;
+export { scaffolderTemplateEntityConditions };
 
 // (No @packageDocumentation comment for this package)
 ```

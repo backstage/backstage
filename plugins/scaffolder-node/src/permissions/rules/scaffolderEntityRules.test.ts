@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject, JsonPrimitive } from '@backstage/types';
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import {
@@ -23,7 +23,7 @@ import {
   hasActionWithNumberProperty,
   hasActionWithProperty,
   hasActionWithStringProperty,
-} from './scaffolderTemplateEntityRules';
+} from './scaffolderEntityRules';
 import {
   TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
@@ -190,11 +190,11 @@ describe('hasActionWithProperty', () => {
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
                 actionId: 'action',
@@ -211,11 +211,11 @@ describe('hasActionWithProperty', () => {
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {},
             },
@@ -235,11 +235,11 @@ describe('hasActionWithProperty', () => {
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
                 actionId: 'action',
@@ -256,11 +256,11 @@ describe('hasActionWithProperty', () => {
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
                 actionId: 'action',

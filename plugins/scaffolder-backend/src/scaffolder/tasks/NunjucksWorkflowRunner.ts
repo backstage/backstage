@@ -39,10 +39,10 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 
 import {
+  TaskContext,
   TemplateAction,
   TemplateFilter,
   TemplateGlobal,
-  TaskContext,
 } from '@backstage/plugin-scaffolder-node';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
@@ -52,11 +52,11 @@ import {
   AuthorizeResult,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { scaffolderActionRules } from '@backstage/plugin-scaffolder-node/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -140,91 +140,11 @@ const isActionAuthorized = createConditionAuthorizer(
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
+  private readonly tracker = scaffoldingTracker();
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
     this.defaultTemplateFilters = createDefaultFilters({
       integrations: this.options.integrations,
-    });
-  }
-
-  private readonly tracker = scaffoldingTracker();
-
-  private isSingleTemplateString(input: string) {
-    const { parser, nodes } = nunjucks as unknown as {
-      parser: {
-        parse(
-          template: string,
-          ctx: object,
-          options: nunjucks.ConfigureOptions,
-        ): { children: { children?: unknown[] }[] };
-      };
-      nodes: { TemplateData: Function };
-    };
-
-    const parsed = parser.parse(
-      input,
-      {},
-      {
-        autoescape: false,
-        tags: {
-          variableStart: '${{',
-          variableEnd: '}}',
-        },
-      },
-    );
-
-    return (
-      parsed.children.length === 1 &&
-      !(parsed.children[0]?.children?.[0] instanceof nodes.TemplateData)
-    );
-  }
-
-  private render<T>(
-    input: T,
-    context: TemplateContext,
-    renderTemplate: SecureTemplateRenderer,
-  ): T {
-    return JSON.parse(JSON.stringify(input), (_key, value) => {
-      try {
-        if (typeof value === 'string') {
-          try {
-            if (this.isSingleTemplateString(value)) {
-              // Lets convert ${{ parameters.bob }} to ${{ (parameters.bob) | dump }} so we can keep the input type
-              const wrappedDumped = value.replace(
-                /\${{(.+)}}/g,
-                '${{ ( $1 ) | dump }}',
-              );
-
-              // Run the templating
-              const templated = renderTemplate(wrappedDumped, context);
-
-              // If there's an empty string returned, then it's undefined
-              if (templated === '') {
-                return undefined;
-              }
-
-              // Reparse the dumped string
-              return JSON.parse(templated);
-            }
-          } catch (ex) {
-            this.options.logger.error(
-              `Failed to parse template string: ${value} with error ${ex.message}`,
-            );
-          }
-
-          // Fallback to default behaviour
-          const templated = renderTemplate(value, context);
-
-          if (templated === '') {
-            return undefined;
-          }
-
-          return templated;
-        }
-      } catch {
-        return value;
-      }
-      return value;
     });
   }
 
@@ -522,6 +442,85 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await fs.remove(workspacePath);
       }
     }
+  }
+
+  private isSingleTemplateString(input: string) {
+    const { parser, nodes } = nunjucks as unknown as {
+      parser: {
+        parse(
+          template: string,
+          ctx: object,
+          options: nunjucks.ConfigureOptions,
+        ): { children: { children?: unknown[] }[] };
+      };
+      nodes: { TemplateData: Function };
+    };
+
+    const parsed = parser.parse(
+      input,
+      {},
+      {
+        autoescape: false,
+        tags: {
+          variableStart: '${{',
+          variableEnd: '}}',
+        },
+      },
+    );
+
+    return (
+      parsed.children.length === 1 &&
+      !(parsed.children[0]?.children?.[0] instanceof nodes.TemplateData)
+    );
+  }
+
+  private render<T>(
+    input: T,
+    context: TemplateContext,
+    renderTemplate: SecureTemplateRenderer,
+  ): T {
+    return JSON.parse(JSON.stringify(input), (_key, value) => {
+      try {
+        if (typeof value === 'string') {
+          try {
+            if (this.isSingleTemplateString(value)) {
+              // Lets convert ${{ parameters.bob }} to ${{ (parameters.bob) | dump }} so we can keep the input type
+              const wrappedDumped = value.replace(
+                /\${{(.+)}}/g,
+                '${{ ( $1 ) | dump }}',
+              );
+
+              // Run the templating
+              const templated = renderTemplate(wrappedDumped, context);
+
+              // If there's an empty string returned, then it's undefined
+              if (templated === '') {
+                return undefined;
+              }
+
+              // Reparse the dumped string
+              return JSON.parse(templated);
+            }
+          } catch (ex) {
+            this.options.logger.error(
+              `Failed to parse template string: ${value} with error ${ex.message}`,
+            );
+          }
+
+          // Fallback to default behaviour
+          const templated = renderTemplate(value, context);
+
+          if (templated === '') {
+            return undefined;
+          }
+
+          return templated;
+        }
+      } catch {
+        return value;
+      }
+      return value;
+    });
   }
 }
 

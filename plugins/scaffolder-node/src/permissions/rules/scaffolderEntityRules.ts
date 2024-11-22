@@ -16,25 +16,25 @@
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod';
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
 import { get } from 'lodash';
 import { JsonPrimitive } from '@backstage/types';
 
 /**
  * @public
  */
-export const createTemplateEntityPermissionRule = makeCreatePermissionRule<
+export const createScaffolderEntityPermissionRule = makeCreatePermissionRule<
   TemplateEntityV1beta3,
   {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY
+  typeof RESOURCE_TYPE_SCAFFOLDER_ENTITY
 >();
 
 /**
  * @public
  */
-export const hasAction = createTemplateEntityPermissionRule({
+export const hasAction = createScaffolderEntityPermissionRule({
   name: 'HAS_ACTION',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
   description: `Match templates with that use an action`,
   paramsSchema: z.object({
     actionId: z.string().describe('The ID of an action to match on'),
@@ -49,9 +49,9 @@ export const hasAction = createTemplateEntityPermissionRule({
 /**
  * @public
  */
-export const hasTaggedAction = createTemplateEntityPermissionRule({
+export const hasTaggedAction = createScaffolderEntityPermissionRule({
   name: 'HAS_TAGGED_ACTION',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
   description: `Match templates with that use an action with a tag`,
   paramsSchema: z.object({
     actionId: z.string().optional().describe('The ID of an action to match on'),
@@ -70,9 +70,9 @@ export const hasTaggedAction = createTemplateEntityPermissionRule({
 /**
  * @public
  */
-export const hasTaggedParam = createTemplateEntityPermissionRule({
+export const hasTaggedParam = createScaffolderEntityPermissionRule({
   name: 'HAS_TAGGED_PARAM',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
   description: `Match templates with that have a parameter with a tag`,
   paramsSchema: z.object({
     tag: z.string().describe('Name of the tag to match on'),
@@ -97,10 +97,10 @@ function buildHasActionProperty<Schema extends z.ZodType<JsonPrimitive>>({
   valueSchema: Schema;
   validateProperty?: boolean;
 }) {
-  return createTemplateEntityPermissionRule({
+  return createScaffolderEntityPermissionRule({
     name,
     description: `Allow actions with the specified property`,
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
     paramsSchema: z.object({
       actionId: z.string().describe('The ID of an action to match on'),
       key: z
@@ -173,7 +173,10 @@ export const hasActionWithStringProperty = buildHasActionProperty({
   valueSchema: z.string(),
 });
 
-export const scaffolderTemplateEntityRules = {
+/**
+ * @public
+ */
+export const scaffolderEntityRules = {
   hasTaggedAction,
   hasTaggedParam,
   hasAction,

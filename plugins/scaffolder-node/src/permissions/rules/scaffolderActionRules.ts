@@ -21,12 +21,18 @@ import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-co
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 
+/**
+ * @public
+ */
 export const createActionPermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
 >();
 
+/**
+ * @public
+ */
 export const hasActionId = createActionPermissionRule({
   name: 'HAS_ACTION_ID',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
@@ -40,22 +46,34 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
+/**
+ * @public
+ */
 export const hasProperty = buildHasProperty({
   name: 'HAS_PROPERTY',
   valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
   validateProperty: false,
 });
 
+/**
+ * @public
+ */
 export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
 
+/**
+ * @public
+ */
 export const hasNumberProperty = buildHasProperty({
   name: 'HAS_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
 
+/**
+ * @public
+ */
 export const hasStringProperty = buildHasProperty({
   name: 'HAS_STRING_PROPERTY',
   valueSchema: z.string(),
@@ -101,6 +119,9 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
+/**
+ * @public
+ */
 export const scaffolderActionRules = {
   hasActionId,
   hasBooleanProperty,

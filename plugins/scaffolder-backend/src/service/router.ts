@@ -38,15 +38,13 @@ import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   isTemplateEntityV1beta3,
   TaskSpec,
-  TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
-  TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  RESOURCE_TYPE_SCAFFOLDER_ENTITY,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplateEntityPermissions,
@@ -85,17 +83,10 @@ import {
   parseNumberParam,
   parseStringsParam,
 } from './helpers';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
-  PermissionRule,
 } from '@backstage/plugin-permission-node';
-import {
-  scaffolderActionRules,
-  scaffolderTemplateEntityRules,
-  scaffolderTemplateRules,
-} from './rules';
 import { Duration } from 'luxon';
 import {
   AuthService,
@@ -116,82 +107,22 @@ import {
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 import {
+  ActionPermissionRuleInput,
   AutocompleteHandler,
+  isActionPermissionRuleInput,
+  isTemplateEntityPermissionRuleInput,
+  isTemplatePermissionRuleInput,
+  scaffolderActionRules,
+  ScaffolderPermissionRule,
+  scaffolderEntityRules,
+  scaffolderTemplateRules,
+  TemplateEntityPermissionRuleInput,
+  TemplatePermissionRuleInput,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { keyBy } from 'lodash';
-
-/**
- *
- * @public
- */
-export type TemplateEntityPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
-  TParams
->;
-
-/**
- *
- * @public
- */
-export type TemplatePermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TParams
->;
-
-/**
- *
- * @public
- */
-export type ActionPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  TParams
->;
-
-/**
- *
- * @public
- */
-export type PermissionRuleOption<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> =
-  | TemplateEntityPermissionRuleInput<TParams>
-  | TemplatePermissionRuleInput<TParams>
-  | ActionPermissionRuleInput<TParams>;
-
-function isTemplateEntityPermissionRuleInput(
-  permissionRule: PermissionRuleOption,
-): permissionRule is TemplateEntityPermissionRuleInput {
-  return (
-    permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY
-  );
-}
-
-function isTemplatePermissionRuleInput(
-  permissionRule: PermissionRuleOption,
-): permissionRule is TemplatePermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
-}
-
-function isActionPermissionRuleInput(
-  permissionRule: PermissionRuleOption,
-): permissionRule is ActionPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
-}
 
 /**
  * RouterOptions
@@ -223,7 +154,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
-  permissionRules?: PermissionRuleOption[];
+  permissionRules?: ScaffolderPermissionRule[];
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
@@ -457,7 +388,7 @@ export async function createRouter(
   });
 
   const templateEntityRules: TemplateEntityPermissionRuleInput[] =
-    Object.values(scaffolderTemplateEntityRules);
+    Object.values(scaffolderEntityRules);
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
     scaffolderTemplateRules,
   );
@@ -489,7 +420,7 @@ export async function createRouter(
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resources: [
       {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
         permissions: scaffolderTemplateEntityPermissions,
         rules: templateEntityRules,
         getResources: async (

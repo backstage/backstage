@@ -15,8 +15,8 @@
  */
 
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
@@ -31,6 +31,8 @@ import {
   AutocompleteHandler,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
+  ScaffolderPermissionRule,
+  scaffolderPermissionsExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
   scaffolderWorkspaceProviderExtensionPoint,
@@ -59,6 +61,13 @@ import { createRouter } from './service/router';
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',
   register(env) {
+    const addedRules = new Array<ScaffolderPermissionRule>();
+    env.registerExtensionPoint(scaffolderPermissionsExtensionPoint, {
+      addRule(...newRules) {
+        addedRules.push(...newRules);
+      },
+    });
+
     const addedActions = new Array<TemplateAction<any, any>>();
     env.registerExtensionPoint(scaffolderActionsExtensionPoint, {
       addActions(...newActions: TemplateAction<any>[]) {
@@ -187,6 +196,7 @@ export const scaffolderPlugin = createBackendPlugin({
           httpAuth,
           discovery,
           permissions,
+          permissionRules: addedRules,
           autocompleteHandlers,
           additionalWorkspaceProviders,
         });
