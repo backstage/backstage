@@ -248,6 +248,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       });
 
     const esbQueries = [];
+    // https://regex101.com/r/Lr0MqS/1
     const phraseTerms = term.match(/"[^"]*"/g);
 
     if (isBlank(term)) {
