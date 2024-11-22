@@ -805,6 +805,18 @@ describe('DefaultProviderDatabase', () => {
           metadata: { namespace: 'ns', name: 'n4' },
         };
 
+        const entity5: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n5' },
+        };
+
+        const entity6: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n6' },
+        };
+
         await insertRefreshStateRow(knex, {
           entity_id: 'id1',
           entity_ref: stringifyEntityRef(entity1Before),
@@ -844,6 +856,33 @@ describe('DefaultProviderDatabase', () => {
           source_key: 'my-provider',
           target_entity_ref: stringifyEntityRef(entity4),
         });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id5',
+          entity_ref: stringifyEntityRef(entity5),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity5),
+          unprocessed_hash: generateStableHash(entity5),
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity5),
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id6',
+          entity_ref: stringifyEntityRef(entity6),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity6),
+          unprocessed_hash: generateStableHash(entity6),
+          location_key: 'old',
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity6),
+        });
 
         await db.transaction(async tx => {
           await db.replaceUnprocessedEntities(tx, {
@@ -856,13 +895,22 @@ describe('DefaultProviderDatabase', () => {
               { entity: entity2After },
               // this didn't exist, so will become an add
               { entity: entity3 },
+              // only the location key changed, so this will become an update
+              { entity: entity5, locationKey: 'new' },
+              // only the location key changed, so this will become an update
+              { entity: entity6, locationKey: 'new' },
             ],
             removed: [{ entityRef: stringifyEntityRef(entity4) }],
           });
         });
 
         const state = await knex<DbRefreshStateRow>('refresh_state')
-          .select(['entity_ref', 'unprocessed_entity', 'unprocessed_hash'])
+          .select([
+            'entity_ref',
+            'unprocessed_entity',
+            'unprocessed_hash',
+            'location_key',
+          ])
           .orderBy('entity_ref');
 
         expect(state).toEqual([
@@ -870,16 +918,32 @@ describe('DefaultProviderDatabase', () => {
             entity_ref: stringifyEntityRef(entity1After),
             unprocessed_entity: JSON.stringify(entity1After),
             unprocessed_hash: generateStableHash(entity1After),
+            location_key: null,
           },
           {
             entity_ref: stringifyEntityRef(entity2After),
             unprocessed_entity: JSON.stringify(entity2Before), // didn't change
             unprocessed_hash: generateStableHash(entity2After),
+            location_key: null,
           },
           {
             entity_ref: stringifyEntityRef(entity3),
             unprocessed_entity: JSON.stringify(entity3),
             unprocessed_hash: generateStableHash(entity3),
+            location_key: null,
+          },
+          // entity4 was deleted here
+          {
+            entity_ref: stringifyEntityRef(entity5),
+            unprocessed_entity: JSON.stringify(entity5),
+            unprocessed_hash: generateStableHash(entity5),
+            location_key: 'new', // permitted to change, because it was null before
+          },
+          {
+            entity_ref: stringifyEntityRef(entity6),
+            unprocessed_entity: JSON.stringify(entity6),
+            unprocessed_hash: generateStableHash(entity6),
+            location_key: 'old', // TODO(freben): This should have been updated to "new", but we do not support that yet
           },
         ]);
       },

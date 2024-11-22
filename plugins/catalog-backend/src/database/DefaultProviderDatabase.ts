@@ -220,19 +220,28 @@ export class DefaultProviderDatabase implements ProviderDatabase {
       for (const chunk of lodash.chunk(options.added, 1000)) {
         const entityRefs = chunk.map(e => stringifyEntityRef(e.entity));
         const rows = await tx<DbRefreshStateRow>('refresh_state')
-          .select(['entity_ref', 'unprocessed_hash'])
+          .select(['entity_ref', 'unprocessed_hash', 'location_key'])
           .whereIn('entity_ref', entityRefs);
-        const oldHashes = new Map(
-          rows.map(row => [row.entity_ref, row.unprocessed_hash]),
+        const oldStates = new Map(
+          rows.map(row => [
+            row.entity_ref,
+            {
+              unprocessed_hash: row.unprocessed_hash,
+              location_key: row.location_key,
+            },
+          ]),
         );
 
         chunk.forEach((deferred, i) => {
           const entityRef = entityRefs[i];
           const newHash = generateStableHash(deferred.entity);
-          const oldHash = oldHashes.get(entityRef);
-          if (oldHash === undefined) {
+          const oldState = oldStates.get(entityRef);
+          if (oldState === undefined) {
             toAdd.push({ deferred, hash: newHash });
-          } else if (newHash !== oldHash) {
+          } else if (
+            newHash !== oldState.unprocessed_hash ||
+            (deferred.locationKey ?? null) !== (oldState.location_key ?? null) // normalize undefined/null
+          ) {
             toUpsert.push({ deferred, hash: newHash });
           }
         });
