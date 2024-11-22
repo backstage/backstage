@@ -169,6 +169,7 @@ export const examples: TemplateExample[] = [
   },
 ];
 ```
+
 Add the example to the `createTemplateAction` under the object property `examples`:
 
 `return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...};`
