@@ -374,6 +374,75 @@ export interface ScaffolderAutocompleteExtensionPoint {
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
+// @alpha
+export const scaffolderEntityConditions: Conditions<{
+  hasTaggedAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+      actionId?: string | undefined;
+    }
+  >;
+  hasTaggedParam: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      tag: string;
+    }
+  >;
+  hasAction: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+    }
+  >;
+  hasActionWithProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | number | boolean | null | undefined;
+    }
+  >;
+  hasActionWithBooleanProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasActionWithNumberProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasActionWithStringProperty: PermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    'scaffolder-entity',
+    {
+      actionId: string;
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+}>;
+
 // @public (undocumented)
 export const scaffolderEntityRules: {
   hasTaggedAction: PermissionRule<
@@ -454,7 +523,7 @@ export type ScaffolderPermissionRule<
 // @alpha
 export interface ScaffolderPermissionsExtensionPoint {
   // (undocumented)
-  addRule(...rules: ScaffolderPermissionRule[]): void;
+  addPermissionRule(...rules: ScaffolderPermissionRule[]): void;
 }
 
 // @alpha
@@ -477,75 +546,6 @@ export const scaffolderTemplateConditions: Conditions<{
     'scaffolder-template',
     {
       tag: string;
-    }
-  >;
-}>;
-
-// @alpha
-export const scaffolderEntityConditions: Conditions<{
-  hasTaggedAction: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      tag: string;
-      actionId?: string | undefined;
-    }
-  >;
-  hasTaggedParam: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      tag: string;
-    }
-  >;
-  hasAction: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-    }
-  >;
-  hasActionWithProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: string | number | boolean | null | undefined;
-    }
-  >;
-  hasActionWithBooleanProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: boolean | undefined;
-    }
-  >;
-  hasActionWithNumberProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: number | undefined;
-    }
-  >;
-  hasActionWithStringProperty: PermissionRule<
-    TemplateEntityV1beta3,
-    {},
-    'scaffolder-entity',
-    {
-      actionId: string;
-      key: string;
-      value?: string | undefined;
     }
   >;
 }>;
