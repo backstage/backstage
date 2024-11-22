@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React, { useCallback } from 'react';
-import { isTemplateEntityV1beta3, TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  isTemplateEntityV1beta3,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import { Link, Progress } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
