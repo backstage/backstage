@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -14,16 +15,5 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { loadCliConfig } from '../../lib/config';
-
-export default async (opts: OptionValues) => {
-  await loadCliConfig({
-    args: opts.config,
-    fromPackage: opts.package,
-    mockEnv: opts.lax,
-    fullVisibility: !opts.frontend,
-    withDeprecatedKeys: opts.deprecated,
-    strict: opts.strict,
-  });
-};
+require('@backstage/cli/config/nodeTransform.cjs');
+require('../src/alpha');

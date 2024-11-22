@@ -15,15 +15,11 @@
  */
 
 import { Command, Option } from 'commander';
-import { assertError } from '@backstage/errors';
-import { exitWithError } from '../lib/errors';
-
-const configOption = [
-  '--config <path>',
-  'Config files to load instead of app-config.yaml',
-  (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-  Array<string>(),
-] as const;
+import { lazy } from '../lib/lazy';
+import {
+  configOption,
+  registerCommands as registerConfigCommands,
+} from '../modules/config';
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -279,66 +275,7 @@ export function registerCommands(program: Command) {
     .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./new/new').then(m => m.default)));
 
-  program
-    .command('config:docs')
-    .option(
-      '--package <name>',
-      'Only include the schema that applies to the given package',
-    )
-    .description('Browse the configuration reference documentation')
-    .action(lazy(() => import('./config/docs').then(m => m.default)));
-
-  program
-    .command('config:print')
-    .option(
-      '--package <name>',
-      'Only load config schema that applies to the given package',
-    )
-    .option('--lax', 'Do not require environment variables to be set')
-    .option('--frontend', 'Print only the frontend configuration')
-    .option('--with-secrets', 'Include secrets in the printed configuration')
-    .option(
-      '--format <format>',
-      'Format to print the configuration in, either json or yaml [yaml]',
-    )
-    .option(...configOption)
-    .description('Print the app configuration for the current package')
-    .action(lazy(() => import('./config/print').then(m => m.default)));
-
-  program
-    .command('config:check')
-    .option(
-      '--package <name>',
-      'Only load config schema that applies to the given package',
-    )
-    .option('--lax', 'Do not require environment variables to be set')
-    .option('--frontend', 'Only validate the frontend configuration')
-    .option('--deprecated', 'Output deprecated configuration settings')
-    .option(
-      '--strict',
-      'Enable strict config validation, forbidding errors and unknown keys',
-    )
-    .option(...configOption)
-    .description(
-      'Validate that the given configuration loads and matches schema',
-    )
-    .action(lazy(() => import('./config/validate').then(m => m.default)));
-
-  program
-    .command('config:schema')
-    .option(
-      '--package <name>',
-      'Only output config schema that applies to the given package',
-    )
-    .option(
-      '--format <format>',
-      'Format to print the schema in, either json or yaml [yaml]',
-    )
-    .option('--merge', 'Print the config schemas merged', true)
-    .option('--no-merge', 'Print the config schemas not merged')
-    .description('Print configuration schema')
-    .action(lazy(() => import('./config/schema').then(m => m.default)));
-
+  registerConfigCommands(program);
   registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
@@ -442,22 +379,5 @@ function removed(message?: string) {
         : 'This command has been removed',
     );
     process.exit(1);
-  };
-}
-
-// Wraps an action function so that it always exits and handles errors
-function lazy(
-  getActionFunc: () => Promise<(...args: any[]) => Promise<void>>,
-): (...args: any[]) => Promise<never> {
-  return async (...args: any[]) => {
-    try {
-      const actionFunc = await getActionFunc();
-      await actionFunc(...args);
-
-      process.exit(0);
-    } catch (error) {
-      assertError(error);
-      exitWithError(error);
-    }
   };
 }
