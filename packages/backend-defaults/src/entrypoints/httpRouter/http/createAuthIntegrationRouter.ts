@@ -18,6 +18,9 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
 
+/**
+ * @public
+ */
 export function createAuthIntegrationRouter(options: {
   auth: AuthService;
 }): express.Router {

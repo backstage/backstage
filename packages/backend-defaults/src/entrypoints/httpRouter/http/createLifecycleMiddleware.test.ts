@@ -15,7 +15,7 @@
  */
 
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
-import { BackendLifecycleImpl } from '../rootLifecycle/rootLifecycleServiceFactory';
+import { BackendLifecycleImpl } from '../../rootLifecycle/rootLifecycleServiceFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ServiceUnavailableError } from '@backstage/errors';
 
