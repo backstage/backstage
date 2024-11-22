@@ -88,7 +88,7 @@ export const hasTaggedParam = createScaffolderEntityPermissionRule({
   toQuery: () => ({}),
 });
 
-function buildHasActionProperty<Schema extends z.ZodType<JsonPrimitive>>({
+function buildHasActionWithProperty<Schema extends z.ZodType<JsonPrimitive>>({
   name,
   valueSchema,
   validateProperty = true,
@@ -143,7 +143,7 @@ function buildHasActionProperty<Schema extends z.ZodType<JsonPrimitive>>({
 /**
  * @public
  */
-export const hasActionWithProperty = buildHasActionProperty({
+export const hasActionWithProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_PROPERTY',
   valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
   validateProperty: false,
@@ -152,7 +152,7 @@ export const hasActionWithProperty = buildHasActionProperty({
 /**
  * @public
  */
-export const hasActionWithBooleanProperty = buildHasActionProperty({
+export const hasActionWithBooleanProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
@@ -160,7 +160,7 @@ export const hasActionWithBooleanProperty = buildHasActionProperty({
 /**
  * @public
  */
-export const hasActionWithNumberProperty = buildHasActionProperty({
+export const hasActionWithNumberProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
@@ -168,7 +168,7 @@ export const hasActionWithNumberProperty = buildHasActionProperty({
 /**
  * @public
  */
-export const hasActionWithStringProperty = buildHasActionProperty({
+export const hasActionWithStringProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_STRING_PROPERTY',
   valueSchema: z.string(),
 });

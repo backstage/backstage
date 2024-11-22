@@ -32,7 +32,7 @@ export const scaffolderPermissions: (
 export const scaffolderTaskPermissions: BasicPermission[];
 
 // @alpha
-export const scaffolderTemplateEntityPermissions: ResourcePermission<'scaffolder-entity'>[];
+export const scaffolderEntityPermissions: ResourcePermission<'scaffolder-entity'>[];
 
 // @alpha
 export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];

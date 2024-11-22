@@ -85,7 +85,7 @@ export const createScaffolderEntityConditionalDecision =
  *
  * @alpha
  */
-export const scaffolderTemplateEntityConditions =
+export const scaffolderEntityConditions =
   templateEntityConditionExports.conditions;
 
 /**

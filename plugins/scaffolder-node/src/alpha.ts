@@ -32,7 +32,7 @@ export * from './permissions/alpha';
  * @alpha
  */
 export interface ScaffolderPermissionsExtensionPoint {
-  addRule(...rules: ScaffolderPermissionRule[]): void;
+  addPermissionRule(...rules: ScaffolderPermissionRule[]): void;
 }
 
 /**

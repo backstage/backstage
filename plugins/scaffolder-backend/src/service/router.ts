@@ -47,7 +47,7 @@ import {
   RESOURCE_TYPE_SCAFFOLDER_ENTITY,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
-  scaffolderTemplateEntityPermissions,
+  scaffolderEntityPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
@@ -421,7 +421,7 @@ export async function createRouter(
     resources: [
       {
         resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
-        permissions: scaffolderTemplateEntityPermissions,
+        permissions: scaffolderEntityPermissions,
         rules: templateEntityRules,
         getResources: async (
           resourceRefs: string[],

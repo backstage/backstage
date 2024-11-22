@@ -63,7 +63,7 @@ export const scaffolderPlugin = createBackendPlugin({
   register(env) {
     const addedRules = new Array<ScaffolderPermissionRule>();
     env.registerExtensionPoint(scaffolderPermissionsExtensionPoint, {
-      addRule(...newRules) {
+      addPermissionRule(...newRules) {
         addedRules.push(...newRules);
       },
     });

@@ -145,7 +145,7 @@ export const templateManagementPermission = createPermission({
  * List of the scaffolder permissions that are associated with template entity.
  * @alpha
  */
-export const scaffolderTemplateEntityPermissions = [templateExecutePermission];
+export const scaffolderEntityPermissions = [templateExecutePermission];
 
 /**
  * List of the scaffolder permissions that are associated with template steps and parameters.

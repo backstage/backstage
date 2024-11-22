@@ -4,9 +4,285 @@ title: 'Authorizing scaffolder tasks, parameters, steps, and actions'
 description: How to authorize parts of a template and authorize scaffolder task access
 ---
 
-The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview.md), which allows you to control access to certain parameters and steps in your templates based on the user executing the template. It also allows you to control access to scaffolder tasks.
+The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview.md), which allows you to control who can execute a template, or control access to certain parameters and steps in your templates based on the user executing the template. It also allows you to control access to scaffolder tasks.
 
-### Authorizing parameters and steps
+## Authorizing Template execution
+
+To control who is able to execute a template, [edit your permission policy](../../permissions/writing-a-policy.md), by targeting the `templateExecutePermission` permission, which is provided by the scaffolder plugin. For example:
+
+```ts title="packages/backend/src/permissionPolicy.ts"
+/* highlight-add-start */
+import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  createScaffolderEntityConditionalDecision,
+  scaffolderEntityConditions,
+} from '@backstage/plugin-scaffolder-node/alpha';
+/* highlight-add-end */
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    /* highlight-add-start */
+    if (isPermission(request.permission, templateExecutePermission)) {
+      if (user?.info.userEntityRef === 'user:default/spiderman')
+        return createScaffolderEntityConditionalDecision(request.permission, {
+          not: scaffolderEntityConditions.hasAction({ actionId: 'debug:log' }),
+        });
+    }
+    /* highlight-add-end */
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+```
+
+In this example, the user `spiderman` is not authorized to execute any template that uses the `debug:log` action, and will also exclude the template from the template index page.
+
+:::note Note
+`templateExecutePermission` does not control if a template is visible in the Backstage Catalog. Use
+`catalogEntityReadPermission` from `@backstage/plugin-catalog-common/alpha` to control read access of templates.
+:::
+
+### Authorizing on tagged actions and parameters
+
+To mark specific parameters or steps as requiring permission, add the `backstage:permissions` property to the parameter or step with one or more tags. For example:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: my_custom_template
+spec:
+  type: service
+  parameters:
+    - title: Provide some simple information
+      properties:
+        title:
+          title: Title
+          type: string
+    - title: Extra information
+      properties:
+        description:
+          title: Description
+          type: string
+      backstage:permissions:
+        tags:
+          - secret
+  steps:
+    - id: step1
+      name: First log
+      action: debug:log
+      input:
+        message: hello
+    - id: step2
+      name: Log message
+      action: debug:log
+      input:
+        message: hello
+      backstage:permissions:
+        tags:
+          - secret
+```
+
+In this example, the `description` parameter and the `step2` step are marked with the `secret` tag.
+
+To conditionally authorize parameters and steps based on the tags, you can use the `hasTaggedAction` and`hasTaggedParam` conditions to filter access:
+
+```ts title="packages/backend/src/permissionPolicy.ts"
+/* highlight-add-start */
+import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  createScaffolderEntityConditionalDecision,
+  scaffolderEntityConditions,
+} from '@backstage/plugin-scaffolder-node/alpha';
+
+/* highlight-add-end */
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    /* highlight-add-start */
+    if (isPermission(request.permission, templateExecutePermission)) {
+      if (user?.info.userEntityRef === 'user:default/spiderman')
+        return createScaffolderTemplateConditionalDecision(request.permission, {
+          anyOf: [
+            {
+              not: scaffolderTemplateConditions.hasTaggedAction({
+                tag: 'secret',
+              }),
+            },
+            {
+              not: scaffolderTemplateConditions.hasTaggedParam({
+                tag: 'secret',
+              }),
+            },
+          ],
+        });
+    }
+    /* highlight-add-end */
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+```
+
+In this example, the user `spiderman` is not authorized to execute any template that contains a parameter or step marked with the `secret` tag.
+
+### Authorizing action properties
+
+You can also restrict the input provided to the action by combining multiple rules. In the example below, `spiderman` won't be able to execute `debug:log` when passing `{ "message": "not-this!" }` as action input:
+
+```ts title="packages/backend/src/permissionPolicy.ts"
+import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  createScaffolderEntityConditionalDecision,
+  scaffolderEntityConditions,
+} from '@backstage/plugin-scaffolder-node/alpha';
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    /* highlight-add-start */
+    if (isPermission(request.permission, templateExecutePermission)) {
+      if (user?.info.userEntityRef === 'user:default/spiderman')
+        return createScaffolderEntityConditionalDecision(request.permission, {
+          not: scaffolderEntityConditions.hasActionWithProperty({
+            actionId: 'debug:log',
+            key: 'message',
+            value: 'not-this!',
+          }),
+        });
+    }
+    /* highlight-add-end */
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+```
+
+## Custom rules
+
+### Define custom rule
+
+The scaffolder plugin exports `createScaffolderEntityPermissionRule` from `@backstage/plugin-scaffolder-node/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable.
+
+For this example, we'll define the rule and create a condition in `packages/backend/src/permissions/rules/scaffolder.ts`.
+
+We use `zod` in our example below. To install them run:
+
+```sh title="from your Backstage root directory"
+yarn --cwd packages/backend add zod
+```
+
+```ts title="packages/backend/src/extensions/scaffolderPermissionRules.ts"
+import { createScaffolderEntityPermissionRule } from '@backstage/plugin-scaffolder-node/alpha';
+import { createConditionFactory } from '@backstage/plugin-permission-node';
+
+const isOwnedByRule = createScaffolderEntityPermissionRule({
+  name: 'IS_OWNED_BY',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  description: `Match templates that are owned by a entity`,
+  paramsSchema: z.object({
+    ownerRef: z.string().describe('EntityRef of the owner to match'),
+  }),
+  apply: (resource, { ownerId }) => {
+    if (!resource.relations) {
+      return false;
+    }
+
+    return resource.relations
+      .filter(relation => relation.type === 'ownedBy')
+      .some(relation => relation.targetRef === ownerRef);
+  },
+  toQuery: () => ({}),
+});
+
+export const customScaffolderEntityConditions = {
+  isOwnedBy: createConditionFactory(isOwnedByRule),
+};
+```
+
+For a more detailed explanation on defining rules, refer to the [documentation for plugin authors](../../permissions/plugin-authors/03-adding-a-resource-permission-check.md/#adding-support-for-conditional-decisions).
+
+### Install custom rules
+
+After defining the new rule, we need to add it to the scaffolder plugin via the `scaffolderPermissionsExtensionPoint` and a Backend module.
+
+```ts title="packages/backend/src/extensions/scaffolderPermissionRules.ts"
+//... File as above
+
+import { scaffolderPermissionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+export default createBackendModule({
+  pluginId: 'scaffolder',
+  moduleId: 'permission-rules',
+  register(reg) {
+    reg.registerInit({
+      deps: { scaffolder: scaffolderPermissionsExtensionPoint },
+      async init({ scaffolder }) {
+        scaffolder.addPermissionRule(isOwnedByRule);
+      },
+    });
+  },
+});
+```
+
+Afterwards it can be added to the backend by adding the following line:
+
+```ts title="packages/backend/src/index.ts"
+// catalog plugin
+backend.add(import('@backstage/plugin-catalog-backend'));
+/* highlight-add-start */
+backend.add(import('./extensions/scaffolderPermissionRules'));
+/* highlight-add-end */
+backend.add(import('./permissionPolicy'));
+```
+
+### Use custom rules
+
+Once installed, the custom conditions can be imported and used in your policy:
+
+```ts title="packages/backend/src/permissionPolicy.ts"
+import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import { createScaffolderEntityConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
+import { customScaffolderEntityConditions } from './extensions/scaffolderPermissionRules';
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, templateExecutePermission)) {
+      return createScaffolderEntityConditionalDecision(
+        request.permission,
+        customScaffolderEntityConditions.isOwnedBy({
+          ownerRef: user?.info.userEntityRef,
+        }),
+      );
+    }
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+```
+
+## Authorizing parameters and steps
+
+The `templateParameterReadPermission` and `templateStepReadPermission` permissions can be used to limit who is able to provide a parameter or execute and action in a template, but they do not block execution of a template. These permissions can be used if a user needs to run different actions based on if they have a particular permission or not.
 
 To mark specific parameters or steps as requiring permission, add the `backstage:permissions` property to the parameter or step with one or more tags. For example:
 
@@ -51,7 +327,7 @@ In this example, the `description` parameter and the `step2` step are marked wit
 
 To conditionally authorize parameters and steps based on the user executing the template, [edit your permission policy](../../permissions/writing-a-policy.md), by targeting `templateParameterReadPermission` and `templateStepReadPermission` permissions, which are provided by the scaffolder plugin. For example:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts title="packages/backend/src/permissionPolicy.ts"
 /* highlight-add-start */
 import {
   templateParameterReadPermission,
@@ -89,15 +365,23 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 In this example, the user `spiderman` is not authorized to read parameters or steps marked with the `secret` tag.
 
+:::note Note
+This does not block execution of a template, and will allow the user to skip entering a parameter if they don't have access.
+:::
+
 By combining this feature with restricting the ingestion of templates in the Catalog as recommended in our threat model, you can create a solid system to restrict certain actions.
 
-### Authorizing actions
+## Authorizing actions
 
 Similar to parameters and steps, the scaffolder plugin exposes permissions to restrict access to certain actions. This can be useful if you want to secure your templates.
 
+:::note Note
+This does not block execution of a template, and will allow the user to skip an action if they don't have access.
+:::
+
 To restrict access to a particular action, you can modify your permission policy as follows:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts title="packages/backend/src/permissionPolicy.ts"
 /* highlight-add-start */
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
@@ -135,7 +419,7 @@ With this permission policy, the user `spiderman` won't be able to execute the `
 You can also restrict the input provided to the action by combining multiple rules.
 In the example below, `spiderman` won't be able to execute `debug:log` when passing `{ "message": "not-this!" }` as action input:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts title="packages/backend/src/permissionPolicy.ts"
 /* highlight-add-start */
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
@@ -174,11 +458,11 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 }
 ```
 
-### Authorizing scaffolder tasks
+## Authorizing scaffolder tasks
 
 The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder.
 
-```ts title="packages/src/backend/plugins/permissions.ts"
+```ts title="packages/backend/src/permissionPolicy.ts"
 /* highlight-add-start */
 import {
   taskCancelPermission,
@@ -233,11 +517,11 @@ Any other user would be denied access to these actions/resources.
 
 Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex use cases.
 
-### Authorizing in the New Backend System
+## Authorizing in the New Backend System
 
-Instead of the changes in `permission.ts` noted in the above example you will make them in your `index.ts`. You will need to create a module where your permission policy will get added. Here is a very simplified example of how to do that:
+To add your policy to the Backend, you will need to create a module that installs your permission policy. Here is a simplified example of how to do that:
 
-```ts title="packages/backend/src/index.ts"
+```ts title="packages/backend/src/permissionPolicy.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   PolicyDecision,
@@ -263,9 +547,9 @@ class ExamplePermissionPolicy implements PermissionPolicy {
   }
 }
 
-const customPermissionBackendModule = createBackendModule({
+const permissionPolicyBackendModule = createBackendModule({
   pluginId: 'permission',
-  moduleId: 'allow-all-policy',
+  moduleId: 'example-policy',
   register(reg) {
     reg.registerInit({
       deps: { policy: policyExtensionPoint },
@@ -276,18 +560,16 @@ const customPermissionBackendModule = createBackendModule({
   },
 });
 
-const backend = createBackend();
-
-// Other plugins...
-
-/* highlight-add-start */
-backend.add(import('@backstage/plugin-permission-backend'));
-backend.add(customPermissionBackendModule);
-/* highlight-add-end */
+export default permissionPolicyBackendModule;
 ```
 
-:::note Note
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
 
-The `ExamplePermissionPolicy` here could be the one from the [Authorizing parameters and steps](#authorizing-parameters-and-steps) example or from the [Authorizing actions](#authorizing-actions) example. It would work the same way for both of them.
+backend.add(import('@backstage/plugin-permission-backend'));
+/* highlight-add-start */
+backend.add(import('./permissionPolicy'));
+/* highlight-add-end */
 
-:::
+// Other plugins...
+```

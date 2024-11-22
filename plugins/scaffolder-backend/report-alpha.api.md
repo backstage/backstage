@@ -6,16 +6,12 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
-import * as nodeAlpha from '@backstage/plugin-scaffolder-node/alpha';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
-
-// @alpha @deprecated (undocumented)
-export type ActionPermissionRuleInput = nodeAlpha.ActionPermissionRuleInput;
 
 // @alpha @deprecated (undocumented)
 export const createScaffolderActionConditionalDecision: (
@@ -83,9 +79,6 @@ export const scaffolderTemplateConditions: Conditions<{
     }
   >;
 }>;
-
-// @alpha @deprecated (undocumented)
-export type TemplatePermissionRuleInput = nodeAlpha.TemplatePermissionRuleInput;
 
 // (No @packageDocumentation comment for this package)
 ```

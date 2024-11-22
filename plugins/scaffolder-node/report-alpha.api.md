@@ -482,7 +482,7 @@ export const scaffolderTemplateConditions: Conditions<{
 }>;
 
 // @alpha
-export const scaffolderTemplateEntityConditions: Conditions<{
+export const scaffolderEntityConditions: Conditions<{
   hasTaggedAction: PermissionRule<
     TemplateEntityV1beta3,
     {},
