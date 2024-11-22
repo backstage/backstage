@@ -16,25 +16,6 @@ import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
 // @public
-export class AzureBlobStorageEntityProvider implements EntityProvider {
-  // (undocumented)
-  connect(connection: EntityProviderConnection): Promise<void>;
-  // (undocumented)
-  static fromConfig(
-    configRoot: Config,
-    options: {
-      logger: LoggerService;
-      schedule?: SchedulerServiceTaskRunner;
-      scheduler?: SchedulerService;
-    },
-  ): AzureBlobStorageEntityProvider[];
-  // (undocumented)
-  getProviderName(): string;
-  // (undocumented)
-  refresh(logger: LoggerService): Promise<void>;
-}
-
-// @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;

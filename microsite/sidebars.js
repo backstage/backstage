@@ -140,6 +140,14 @@ module.exports = {
       },
       {
         type: 'category',
+        label: 'Azure Blob Storage',
+        items: [
+          'integrations/azure-blobStorage/locations',
+          'integrations/azure-blobStorage/discovery',
+        ],
+      },
+      {
+        type: 'category',
         label: 'Azure',
         items: [
           'integrations/azure/locations',

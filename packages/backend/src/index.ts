@@ -56,6 +56,5 @@ backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-backend.add(import('@backstage/plugin-catalog-backend-module-azure'));
 
 backend.start();
