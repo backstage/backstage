@@ -17,14 +17,24 @@
 import {
   ActionContext as ActionContextNode,
   createTemplateAction as createTemplateActionNode,
-  TaskSecrets as TaskSecretsNode,
-  TemplateAction as TemplateActionNode,
   executeShellCommand as executeShellCommandNode,
   ExecuteShellCommandOptions as ExecuteShellCommandOptionsNode,
   fetchContents as fetchContentsNode,
+  TaskSecrets as TaskSecretsNode,
+  TemplateAction as TemplateActionNode,
 } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessorModule } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import {
+  TemplateEntityStepV1beta3,
+  TemplateParametersV1beta3,
+} from '@backstage/plugin-scaffolder-common';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * @public
@@ -84,3 +94,29 @@ export const fetchContents = fetchContentsNode;
  * @deprecated Import from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead
  */
 export const ScaffolderEntitiesProcessor = ScaffolderEntitiesProcessorModule;
+
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
+
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;

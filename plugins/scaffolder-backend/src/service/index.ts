@@ -14,43 +14,31 @@
  * limitations under the License.
  */
 
-import {
-  createScaffolderEntityConditionalDecision,
-  scaffolderTemplateEntityConditions,
-  createScaffolderTemplateConditionalDecision,
-  scaffolderTemplateConditions,
-  createScaffolderActionConditionalDecision,
-  scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+import * as nodeAlpha from '@backstage/plugin-scaffolder-node/alpha';
 
-export {
-  /**
-   * @deprecated use {@link createScaffolderEntityConditionalDecision} from @backstage/plugin-scaffolder-node/alpha instead
-   */
-  createScaffolderEntityConditionalDecision,
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export const createScaffolderTemplateConditionalDecision =
+  nodeAlpha.createScaffolderTemplateConditionalDecision;
 
-  /**
-   * @deprecated use {@link scaffolderTemplateEntityConditions} from @backstage/plugin-scaffolder-node/alpha instead
-   */
-  scaffolderTemplateEntityConditions,
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export const scaffolderTemplateConditions =
+  nodeAlpha.scaffolderTemplateConditions;
 
-  /**
-   * @deprecated use {@link createScaffolderTemplateConditionalDecision} from @backstage/plugin-scaffolder-node/alpha instead
-   */
-  createScaffolderTemplateConditionalDecision,
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export const createScaffolderActionConditionalDecision =
+  nodeAlpha.createScaffolderActionConditionalDecision;
 
-  /**
-   * @deprecated use {@link scaffolderTemplateConditions} from @backstage/plugin-scaffolder-node/alpha instead
-   */
-  scaffolderTemplateConditions,
-
-  /**
-   * @deprecated use {@link createScaffolderActionConditionalDecision} from @backstage/plugin-scaffolder-node/alpha instead
-   */
-  createScaffolderActionConditionalDecision,
-
-  /**
-   * @deprecated use {@link scaffolderActionConditions} from @backstage/plugin-scaffolder-node/alpha instead
-   */
-  scaffolderActionConditions,
-};
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export const scaffolderActionConditions = nodeAlpha.scaffolderActionConditions;

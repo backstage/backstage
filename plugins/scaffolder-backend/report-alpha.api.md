@@ -4,28 +4,88 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { createScaffolderActionConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
-import { createScaffolderEntityConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
-import { createScaffolderTemplateConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
-import { scaffolderActionConditions } from '@backstage/plugin-scaffolder-node/alpha';
-import { scaffolderTemplateConditions } from '@backstage/plugin-scaffolder-node/alpha';
-import { scaffolderTemplateEntityConditions } from '@backstage/plugin-scaffolder-node/alpha';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
+import * as nodeAlpha from '@backstage/plugin-scaffolder-node/alpha';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-export { createScaffolderActionConditionalDecision };
+// @alpha @deprecated (undocumented)
+export type ActionPermissionRuleInput = nodeAlpha.ActionPermissionRuleInput;
 
-export { createScaffolderEntityConditionalDecision };
+// @alpha @deprecated (undocumented)
+export const createScaffolderActionConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-action'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
+) => ConditionalPolicyDecision;
 
-export { createScaffolderTemplateConditionalDecision };
+// @alpha @deprecated (undocumented)
+export const createScaffolderTemplateConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-template'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
+) => ConditionalPolicyDecision;
 
 // @alpha (undocumented)
 const _feature: BackendFeature;
 export default _feature;
 
-export { scaffolderActionConditions };
+// @alpha @deprecated (undocumented)
+export const scaffolderActionConditions: Conditions<{
+  hasActionId: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      actionId: string;
+    }
+  >;
+  hasBooleanProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasNumberProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasStringProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+}>;
 
-export { scaffolderTemplateConditions };
+// @alpha @deprecated (undocumented)
+export const scaffolderTemplateConditions: Conditions<{
+  hasTag: PermissionRule<
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+}>;
 
-export { scaffolderTemplateEntityConditions };
+// @alpha @deprecated (undocumented)
+export type TemplatePermissionRuleInput = nodeAlpha.TemplatePermissionRuleInput;
 
 // (No @packageDocumentation comment for this package)
 ```

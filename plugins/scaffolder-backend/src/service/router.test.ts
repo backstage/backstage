@@ -298,7 +298,6 @@ describe('createRouter', () => {
             },
           });
 
-        console.log(response);
         expect(response.status).toEqual(201);
         expect(response.body.id).toBe('a-random-id');
       });
@@ -1048,7 +1047,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             },
           });
 
-        console.log(response);
         expect(response.status).toEqual(201);
         expect(broker).toHaveBeenCalledWith(
           expect.objectContaining({
