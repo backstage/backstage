@@ -34,7 +34,7 @@
     "@backstage/release-manifests": "workspace:^",
     "@yarnpkg/core": "^4.0.3",
     "@yarnpkg/fslib": "^3.0.2",
-    "chalk": "^4.0.0",
+    "@yarnpkg/plugin-pack": "^4.0.0",
     "lodash": "^4.17.21",
     "semver": "^7.6.0"
   },

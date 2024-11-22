@@ -15,7 +15,6 @@
  */
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
-import { some } from 'lodash';
 import {
   bindBackstageVersion,
   getCurrentBackstageVersion,
@@ -76,9 +75,11 @@ export const beforeWorkspacePacking = async (
   }
 
   if (
-    some(
-      ['dependencies', 'devDependencies', 'optionalDependencies'],
-      dependencyType => some(rawManifest[dependencyType], hasBackstageVersion),
+    ['dependencies', 'devDependencies', 'optionalDependencies'].some(
+      dependencyType =>
+        Object.values<string>(rawManifest[dependencyType] ?? {}).some(
+          hasBackstageVersion,
+        ),
     )
   ) {
     throw new Error(
