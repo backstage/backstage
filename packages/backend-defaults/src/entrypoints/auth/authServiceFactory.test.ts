@@ -428,7 +428,6 @@ describe('authServiceFactory', () => {
                 { subject: string; limitedUserToken?: string } | undefined
               > {
                 customLogic(token);
-                // check if token is iam/auth or basicAuth, verify.
                 return defaultImplementation.verifyToken(token);
               }
               issueToken(options: {

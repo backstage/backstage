@@ -16,7 +16,7 @@
 
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { decodeJwt, importJWK, SignJWT, decodeProtectedHeader } from 'jose';
-import { AuthenticationError } from '@backstage/errors';
+import { assertError, AuthenticationError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
@@ -46,7 +46,7 @@ type Options = {
 
 /**
  * @public
- * Issues and verifies {@link https://backstage.io/docs/auth/service-to-service-auth | service-to-service tokens}.
+ * Issues and verifies {@link https://backstage.iceio/docs/auth/service-to-service-auth | service-to-service tokens}.
  */
 export interface PluginTokenHandler {
   verifyToken(
@@ -194,7 +194,8 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
 
         this.supportedTargetPlugins.add(targetPluginId);
         return true;
-      } catch (error: any) {
+      } catch (error) {
+        assertError(error);
         this.logger.error('Unexpected failure for target JWKS check', error);
         return false;
       } finally {

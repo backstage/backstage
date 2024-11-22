@@ -412,3 +412,48 @@ Each entry has one or more of the following fields:
         # Also supports the shorthand form:
         # action: create, read
   ```
+
+## Adding custom or logic for validation and issuing of tokens
+
+The `pluginTokenHandlerDecoratorServiceRef` can be used to decorate the existing token handler without having to re-implement the entire `PluginTokenHandler`.
+This is particularly useful when you want to add additional logic to the handler, such as logging or metrics or custom token validation.
+
+The `PluginTokenHandler` interface has two methods:
+
+- `issueToken`: This method is used to issue a token for a plugin. It takes in the `pluginId` and `targetPluginId` as arguments, and an optional `limitedUserToken` object which can be used to issue a token on behalf of another user. The method returns a promise that resolves to an object containing the issued token.
+
+- `verifyToken`: This method is used to verify a token. It takes in the token as an argument and returns a promise that resolves to an object containing the subject of the token and an optional limited user token.
+
+```ts
+import {
+  PluginTokenHandler,
+  pluginTokenHandlerDecoratorServiceRef,
+} from '@backstage/backend-defaults/auth';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
+
+const decoratedPluginTokenHandler = createServiceFactory({
+  service: pluginTokenHandlerDecoratorServiceRef,
+  deps: {},
+  async factory() {
+    return (defaultImplementation: PluginTokenHandler) =>
+      new (class CustomHandler implements PluginTokenHandler {
+        verifyToken(
+          token: string,
+        ): Promise<{ subject: string; limitedUserToken?: string } | undefined> {
+          // custom logic here
+          if (isMyCustomToken(token)) {
+            return { subject: 'custom-subject' };
+          }
+          return defaultImplementation.verifyToken(token);
+        }
+        issueToken(options: {
+          pluginId: string;
+          targetPluginId: string;
+          limitedUserToken?: { token: string; expiresAt: Date };
+        }): Promise<{ token: string }> {
+          return defaultImplementation.issueToken(options);
+        }
+      })();
+  },
+});
+```
