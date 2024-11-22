@@ -436,24 +436,7 @@ const decoratedPluginTokenHandler = createServiceFactory({
   deps: {},
   async factory() {
     return (defaultImplementation: PluginTokenHandler) =>
-      new (class CustomHandler implements PluginTokenHandler {
-        verifyToken(
-          token: string,
-        ): Promise<{ subject: string; limitedUserToken?: string } | undefined> {
-          // custom logic here
-          if (isMyCustomToken(token)) {
-            return { subject: 'custom-subject' };
-          }
-          return defaultImplementation.verifyToken(token);
-        }
-        issueToken(options: {
-          pluginId: string;
-          targetPluginId: string;
-          limitedUserToken?: { token: string; expiresAt: Date };
-        }): Promise<{ token: string }> {
-          return defaultImplementation.issueToken(options);
-        }
-      })();
+      new CustomTokenHandler(defaultImplementation);
   },
 });
 ```
