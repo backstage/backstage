@@ -11,7 +11,7 @@ This documentation is written for [the new backend system](../../backend-system/
 :::
 
 The Azure Blob Storage account integration has a special entity provider for discovering catalog
-entities located in a stroage account container. If you have a conatiner that contains multiple
+entities located in a storage account container. If you have a container that contains multiple
 catalog files, and you want to automatically discover them, you can use this
 provider. The provider will crawl your Blob Storage account container and register entities
 matching the configured path. This can be useful as an alternative to static
