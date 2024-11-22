@@ -145,20 +145,6 @@ Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if
 
 A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure consistency and standardization across different custom actions.
 
-#### How to Use a TemplateExample
-
-1. Identify the custom action you want to create.
-2. Refer to the TemplateExample to understand the required structure and components.
-3. Fill in the necessary details in the template, such as action name, parameters, and logic.
-4. Integrate the completed template into your software template to enable the custom action.
-
-#### Benefits
-
-- Serves as templates for users to understand how to configure and use the actions.
-- Ensures consistency in custom actions.
-- Simplifies the creation process by providing a clear structure.
-- Helps in maintaining standardization across different templates.
-
 #### Define a TemplateExample and add to your Custom Action
 
 ```ts title="With JSON Schema"
@@ -183,47 +169,9 @@ export const examples: TemplateExample[] = [
   },
 ];
 ```
-
 Add the example to the `createTemplateAction` under the object property `examples`:
 
-```ts title="With JSON Schema"
-import { examples } from './acmeExample.examples';
-
-export const createNewFileAction = () => {
-  return createTemplateAction<{ contents: string; filename: string }>({
-    id: 'acme:file:create',
-    description: 'Create an Acme file.',
-    examples,
-    schema: {
-      input: {
-        required: ['contents', 'filename'],
-        type: 'object',
-        properties: {
-          contents: {
-            type: 'string',
-            title: 'Contents',
-            description: 'The contents of the file',
-          },
-          filename: {
-            type: 'string',
-            title: 'Filename',
-            description: 'The filename of the file that will be created',
-          },
-        },
-      },
-    },
-    async handler(ctx) {
-      const { signal } = ctx;
-      await writeFile(
-        resolveSafeChildPath(ctx.workspacePath, ctx.input.filename),
-        ctx.input.contents,
-        { signal },
-        _ => {},
-      );
-    },
-  });
-};
-```
+`return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...};`
 
 ### The context object
 
