@@ -19,13 +19,16 @@ import type {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
-import { kubernetesResourcePermission } from '@backstage/plugin-kubernetes-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  type BasicPermission,
+} from '@backstage/plugin-permission-common';
 
 import express from 'express';
 
 export async function requirePermission(
   permissionApi: PermissionsService,
+  permissionRequired: BasicPermission,
   httpAuth: HttpAuthService,
   req: express.Request,
 ) {
@@ -33,7 +36,7 @@ export async function requirePermission(
     await permissionApi.authorize(
       [
         {
-          permission: kubernetesResourcePermission,
+          permission: permissionRequired,
         },
       ],
       {
