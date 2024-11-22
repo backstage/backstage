@@ -36,6 +36,7 @@ import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
 } from '../types';
+import { EventsService } from '@backstage/plugin-events-node';
 
 /**
  * Helps in the creation of the catalog entity providers that wrap the
@@ -53,6 +54,7 @@ export class WrapperProviders {
       client: Knex;
       scheduler: SchedulerService;
       applyDatabaseMigrations?: typeof applyDatabaseMigrations;
+      events: EventsService;
     },
   ) {}
 
@@ -130,6 +132,20 @@ export class WrapperProviders {
         frequency,
         timeout: length,
       });
+
+      const topics = engine.supportsEventTopics();
+      if (topics.length > 0) {
+        logger.info(
+          `Provider ${provider.getProviderName()} subscribing to events for topics: ${topics.join(
+            ',',
+          )}`,
+        );
+        await this.options.events.subscribe({
+          topics,
+          id: `catalog-backend-module-incremental-ingestion:${provider.getProviderName()}`,
+          onEvent: evt => engine.onEvent(evt),
+        });
+      }
     } catch (error) {
       logger.warn(
         `Failed to initialize incremental ingestion provider ${provider.getProviderName()}, ${stringifyError(

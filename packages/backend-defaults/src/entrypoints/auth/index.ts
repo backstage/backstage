@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export { authServiceFactory } from './authServiceFactory';
+export {
+  authServiceFactory,
+  pluginTokenHandlerDecoratorServiceRef,
+} from './authServiceFactory';
+
+export type { PluginTokenHandler } from './plugin/PluginTokenHandler';
