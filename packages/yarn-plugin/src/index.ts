@@ -22,6 +22,7 @@
  */
 
 import { Plugin, semverUtils, YarnVersion } from '@yarnpkg/core';
+import { Hooks } from '@yarnpkg/plugin-pack';
 import { beforeWorkspacePacking } from './handlers/beforeWorkspacePacking';
 import { BackstageResolver } from './resolver/BackstageResolver';
 
@@ -43,7 +44,7 @@ if (!semverUtils.satisfiesWithPrereleases(YarnVersion, '^4.1.1')) {
 /**
  * @public
  */
-const plugin: Plugin = {
+const plugin: Plugin<Hooks> = {
   hooks: {
     beforeWorkspacePacking,
   },
