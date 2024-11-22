@@ -1,5 +1,42 @@
 # @backstage/plugin-auth-backend
 
+## 0.24.0
+
+### Minor Changes
+
+- 75168e3: **BREAKING**: The AWS ALB `fullProfile` will no longer have the its username or email converted to lowercase. This is to ensure unique handling of the users. You may need to update and configure a custom sign-in resolver or profile transform as a result.
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.2.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.3.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.3.2
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.3.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.3.2
+  - @backstage/plugin-auth-backend-module-auth0-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-bitbucket-server-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.3.2
+  - @backstage/plugin-auth-backend-module-github-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.3.2
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-okta-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.2.2
+
 ## 0.24.0-next.2
 
 ### Patch Changes

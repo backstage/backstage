@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.3.2
+
+### Patch Changes
+
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.24.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+
 ## 0.3.2-next.2
 
 ### Patch Changes

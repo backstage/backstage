@@ -199,11 +199,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         }
 
         const maxWarnings = lintOptions?.maxWarnings ?? 0;
+        const ignoreWarnings = +maxWarnings === -1;
+
         const resultText = formatter.format(results) as string;
         const failed =
           results.some(r => r.errorCount > 0) ||
-          results.reduce((current, next) => current + next.warningCount, 0) >
-            maxWarnings;
+          (!ignoreWarnings &&
+            results.reduce((current, next) => current + next.warningCount, 0) >
+              maxWarnings);
 
         return {
           relativeDir,

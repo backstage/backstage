@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.7
+
+### Patch Changes
+
+- f61d4cc: Add scaffolder permission `scaffolder.template.management` for accessing the template management features
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+
+## 1.5.7-next.0
+
+### Patch Changes
+
+- f61d4cc: Add scaffolder permission `scaffolder.template.management` for accessing the template management features
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 1.5.6
 
 ### Patch Changes

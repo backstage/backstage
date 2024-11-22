@@ -1,5 +1,87 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.27.0
+
+### Minor Changes
+
+- 0587633: Bumped the `isolated-vm` dependency from v4 to v5, which drops support for Node.js v16.
+- e61d5ef: BREAKING EXPERIMENTAL: The `checkpoint` method now takes an object instead of previous arguments.
+
+  ```ts
+  await ctx.checkpoint({ key: 'repo.create', fn: () => ockokit.repo.create({...})})
+  ```
+
+  You can also now return `void` from the checkpoint if the method returns `void` inside the `checkpoint` handler.
+
+### Patch Changes
+
+- 6aa5b98: Fix tasks listing with postgres
+- 59137ff: Fix issue with token not being available because it's now non-enumerable
+- c5e39e7: Internal refactor to use the deferred from the types package
+- e4f5d95: Align with type declaration of template filter/global function by supporting undefined as return value.
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- 7ab3371: Modified `createDryRunner` and corresponding route to include `templateMetaData` inside the `templateInfo`. This allows custom action writers to access things like `templateInfo.entity.metadata.name` via the action context while executing templates using the dry run framework.
+- 4e58bc7: Upgrade to uuid v11 internally
+- 2dae341: Add new `fs:readdir` action to list current content of the workspace
+- 97ba58f: Add example template for notification sending
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1
+  - @backstage/plugin-scaffolder-common@1.5.7
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/plugin-bitbucket-cloud-common@0.2.25
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2
+  - @backstage/plugin-permission-node@0.8.5
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2
+
+## 1.27.0-next.3
+
+### Patch Changes
+
+- 7ab3371: Modified `createDryRunner` and corresponding route to include `templateMetaData` inside the `templateInfo`. This allows custom action writers to access things like `templateInfo.entity.metadata.name` via the action context while executing templates using the dry run framework.
+- 2dae341: Add new `fs:readdir` action to list current content of the workspace
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.25-next.0
+  - @backstage/backend-defaults@0.5.3-next.3
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2-next.3
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1-next.3
+  - @backstage/plugin-scaffolder-node@0.5.1-next.3
+
 ## 1.27.0-next.2
 
 ### Patch Changes

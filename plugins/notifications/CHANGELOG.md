@@ -1,5 +1,40 @@
 # @backstage/plugin-notifications
 
+## 0.4.0
+
+### Minor Changes
+
+- 87ffc1c: Rephrasing labels of the View filter to be more clear. Based on the received users' feedback.
+
+### Patch Changes
+
+- 4186105: Added title to the Notifications' table. The title clearly states the filter selection and total count of messages. This change aligns the look and feel closer to other tables.
+- 3a0731e: The "Created after" filter renamed to the "Sent out" based on the received users' feedback.
+- 3e135f2: The notification's title is emphasized to be clearly distinguished from the description.
+- 97ba58f: Add support for user specific notification settings
+- 1d87c43: Show count of unread notifications in the left-side MenuItem. This replaces the simple true/false bullet.
+- Updated dependencies
+  - @backstage/theme@0.6.1
+  - @backstage/types@1.2.0
+  - @backstage/core-components@0.16.0
+  - @backstage/plugin-notifications-common@0.0.6
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-signals-react@0.0.7
+
+## 0.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.6-next.0
+  - @backstage/plugin-signals-react@0.0.6
+
 ## 0.3.3-next.1
 
 ### Patch Changes

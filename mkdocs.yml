@@ -30,12 +30,16 @@ nav:
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
           - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
           - Customizing your Homepage: 'getting-started/homepage.md'
+      - Deployment:
+          - Deploying Backstage: 'deployment/index.md'
+          - Scaling: 'deployment/scaling.md'
+          - Docker: 'deployment/docker.md'
+          - Kubernetes: 'deployment/k8s.md'
       - Using Backstage:
           - Logging in: 'getting-started/logging-in.md'
           - Register a component: 'getting-started/register-a-component.md'
           - Create a component: 'getting-started/create-a-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
-      - Key Concepts: 'getting-started/concepts.md'
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
@@ -189,13 +193,6 @@ nav:
           - Debugging Backstage: 'tooling/local-dev/debugging.md'
           - Profiling Backstage: 'tooling/local-dev/profiling.md'
       - Package Metadata: 'tooling/package-metadata.md'
-  - Deployment:
-      - Deploying Backstage: 'deployment/index.md'
-      - Scaling: 'deployment/scaling.md'
-      - Docker: 'deployment/docker.md'
-      - Kubernetes: 'deployment/k8s.md'
-      - Heroku: 'deployment/heroku.md'
-      - Koyeb: 'deployment/koyeb.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'
       - Component Design Guidelines: 'dls/component-design-guidelines.md'

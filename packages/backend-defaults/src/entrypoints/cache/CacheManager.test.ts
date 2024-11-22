@@ -185,6 +185,6 @@ describe('CacheManager integration', () => {
           },
         }),
       ),
-    ).toThrow(/Invalid configuration backend.cache.defaultTtl/);
+    ).toThrow(/Invalid duration 'hello' in config/);
   });
 });

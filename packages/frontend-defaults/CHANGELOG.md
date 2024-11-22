@@ -1,5 +1,28 @@
 # @backstage/frontend-defaults
 
+## 0.1.2
+
+### Patch Changes
+
+- 44b82da: The default config loader no longer requires `process.env.APP_CONFIG` to be set, allowing config to be read from other sources instead.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-app-api@0.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/plugin-app@0.1.2
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-app-api@0.10.1-next.2
+  - @backstage/frontend-plugin-api@0.9.1-next.2
+  - @backstage/plugin-app@0.1.2-next.2
+
 ## 0.1.2-next.1
 
 ### Patch Changes

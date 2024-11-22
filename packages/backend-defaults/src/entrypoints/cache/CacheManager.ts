@@ -24,6 +24,7 @@ import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManagerOptions, ttlToMilliseconds } from './types';
 import { durationToMilliseconds } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -75,17 +76,12 @@ export class CacheManager {
     });
 
     let defaultTtl: number | undefined;
-    if (defaultTtlConfig !== undefined && defaultTtlConfig !== null) {
+    if (defaultTtlConfig !== undefined) {
       if (typeof defaultTtlConfig === 'number') {
         defaultTtl = defaultTtlConfig;
-      } else if (
-        typeof defaultTtlConfig === 'object' &&
-        !Array.isArray(defaultTtlConfig)
-      ) {
-        defaultTtl = durationToMilliseconds(defaultTtlConfig);
       } else {
-        throw new Error(
-          `Invalid configuration backend.cache.defaultTtl: ${defaultTtlConfig}, expected milliseconds number or HumanDuration object`,
+        defaultTtl = durationToMilliseconds(
+          readDurationFromConfig(config, { key: 'backend.cache.defaultTtl' }),
         );
       }
     }

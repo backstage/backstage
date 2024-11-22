@@ -1,5 +1,23 @@
 # @backstage/plugin-app-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- 815b702: Configuration is no longer injected into static assets if a `index.html.tmpl` file is present.
+
+### Patch Changes
+
+- 815b702: The `index.html` templating is now done and served from memory rather than written to the filesystem. This means that you can now use config injection with a read-only filesystem, and you no longer need to use the `app.disableConfigInjection` flag.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-app-node@0.1.27
+
 ## 0.3.77-next.2
 
 ### Patch Changes

@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.5.0
+
+### Minor Changes
+
+- 1b5fdd9: Extended the configuration with the `includeArchivedRepos` property, which allows including repositories when the project is archived.
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-common@1.1.1
+
+## 0.5.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+  - @backstage/backend-defaults@0.5.3-next.3
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+
 ## 0.5.0-next.2
 
 ### Minor Changes

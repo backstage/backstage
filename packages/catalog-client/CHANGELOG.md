@@ -1,5 +1,19 @@
 # @backstage/catalog-client
 
+## 1.8.0
+
+### Minor Changes
+
+- 656d1ef: Internal update to use the updated generated code from `backstage-cli package schema openapi generate --client-package ...`.
+- 31c4fe0: The client now automatically splits up very large `getEntitiesByRefs` calls into several smaller requests behind the scenes when needed. This ensures that each individual request does not exceed common Express.js request body limits or overload the server.
+
+### Patch Changes
+
+- 873f89a: Fix for certain filter fields in the `catalogApiMock` being case sensitive.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 1.8.0-next.1
 
 ### Minor Changes

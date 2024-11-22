@@ -27,7 +27,6 @@ import {
 } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import compression from 'compression';
 import { readHelmetOptions } from './readHelmetOptions';
 import { readCorsOptions } from './readCorsOptions';
@@ -44,6 +43,45 @@ import {
 } from '@backstage/errors';
 import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
+
+type LogMeta = {
+  date: string;
+  method: string;
+  url: string;
+  status: number;
+  httpVersion: string;
+  userAgent?: string;
+  contentLength?: number;
+  referrer?: string;
+};
+
+function getLogMeta(req: Request, res: Response): LogMeta {
+  const referrer = req.headers.referer ?? req.headers.referrer;
+  const userAgent = req.headers['user-agent'];
+  const contentLength = Number(res.getHeader('content-length'));
+
+  const meta: LogMeta = {
+    date: new Date().toISOString(),
+    method: req.method,
+    url: req.originalUrl ?? req.url,
+    status: res.statusCode,
+    httpVersion: `${req.httpVersionMajor}.${req.httpVersionMinor}`,
+  };
+
+  if (userAgent) {
+    meta.userAgent = userAgent;
+  }
+
+  if (isFinite(contentLength)) {
+    meta.contentLength = contentLength;
+  }
+
+  if (referrer) {
+    meta.referrer = Array.isArray(referrer) ? referrer.join(', ') : referrer;
+  }
+
+  return meta;
+}
 
 /**
  * Options used to create a {@link MiddlewareFactory}.
@@ -137,18 +175,24 @@ export class MiddlewareFactory {
    * @returns An Express request handler
    */
   logging(): RequestHandler {
-    const logger = this.#logger.child({
-      type: 'incomingRequest',
-    });
-    const customMorganFormat =
-      '[:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
-    return morgan(customMorganFormat, {
-      stream: {
-        write(message: string) {
-          logger.info(message.trimEnd());
-        },
-      },
-    });
+    const logger = this.#logger;
+    return (req: Request, res: Response, next: NextFunction) => {
+      res.on('finish', () => {
+        const meta = getLogMeta(req, res);
+        logger.info(
+          `[${meta.date}] "${meta.method} ${meta.url} HTTP/${
+            meta.httpVersion
+          }" ${meta.status} ${meta.contentLength} "${meta.referrer ?? '-'}" "${
+            meta.userAgent ?? '-'
+          }"`,
+          {
+            type: 'incomingRequest',
+            ...meta,
+          },
+        );
+      });
+      next();
+    };
   }
 
   /**

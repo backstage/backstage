@@ -75,10 +75,10 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   }
 
   async replaceUnprocessedEntities(
-    txOpaque: Transaction,
+    txOpaque: Knex | Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
+    const tx = txOpaque as Knex | Knex.Transaction;
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
@@ -205,7 +205,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   }
 
   private async createDelta(
-    tx: Knex.Transaction,
+    tx: Knex | Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<{
     toAdd: { deferred: DeferredEntity; hash: string }[];
@@ -213,14 +213,41 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     toRemove: string[];
   }> {
     if (options.type === 'delta') {
-      return {
-        toAdd: [],
-        toUpsert: options.added.map(e => ({
-          deferred: e,
-          hash: generateStableHash(e.entity),
-        })),
-        toRemove: options.removed.map(e => e.entityRef),
-      };
+      const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
+      const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
+      const toRemove = options.removed.map(e => e.entityRef);
+
+      for (const chunk of lodash.chunk(options.added, 1000)) {
+        const entityRefs = chunk.map(e => stringifyEntityRef(e.entity));
+        const rows = await tx<DbRefreshStateRow>('refresh_state')
+          .select(['entity_ref', 'unprocessed_hash', 'location_key'])
+          .whereIn('entity_ref', entityRefs);
+        const oldStates = new Map(
+          rows.map(row => [
+            row.entity_ref,
+            {
+              unprocessed_hash: row.unprocessed_hash,
+              location_key: row.location_key,
+            },
+          ]),
+        );
+
+        chunk.forEach((deferred, i) => {
+          const entityRef = entityRefs[i];
+          const newHash = generateStableHash(deferred.entity);
+          const oldState = oldStates.get(entityRef);
+          if (oldState === undefined) {
+            toAdd.push({ deferred, hash: newHash });
+          } else if (
+            newHash !== oldState.unprocessed_hash ||
+            (deferred.locationKey ?? null) !== (oldState.location_key ?? null) // normalize undefined/null
+          ) {
+            toUpsert.push({ deferred, hash: newHash });
+          }
+        });
+      }
+
+      return { toAdd, toUpsert, toRemove };
     }
 
     // Grab all of the existing references from the same source, and their locationKeys as well

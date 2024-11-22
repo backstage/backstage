@@ -113,6 +113,10 @@ export const eventsPlugin = createBackendPlugin({
         // that is used there as part of the middleware stack.
         httpRouter.use(eventsRouter);
 
+        const notifyTimeoutMs = config.getOptionalNumber(
+          'events.notifyTimeoutMs',
+        );
+
         httpRouter.use(
           await createEventBusRouter({
             database,
@@ -120,6 +124,7 @@ export const eventsPlugin = createBackendPlugin({
             logger,
             httpAuth,
             scheduler,
+            notifyTimeoutMs,
           }),
         );
 

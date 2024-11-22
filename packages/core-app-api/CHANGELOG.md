@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.15.2
+
+### Patch Changes
+
+- 44b82da: The default config loader no longer requires `process.env.APP_CONFIG` to be set, allowing config to be read from other sources instead.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/version-bridge@1.0.10
+
 ## 1.15.1
 
 ### Patch Changes

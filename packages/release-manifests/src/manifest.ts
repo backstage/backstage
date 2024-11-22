@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-
 const VERSIONS_BASE_URL = 'https://versions.backstage.io';
 const GITHUB_RAW_BASE_URL =
   'https://raw.githubusercontent.com/backstage/versions/main';

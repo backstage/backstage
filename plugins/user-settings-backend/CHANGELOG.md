@@ -1,5 +1,33 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-signals-node@0.1.14
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.27-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.3-next.3
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.2
+  - @backstage/plugin-signals-node@0.1.14-next.3
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.2.27-next.2
 
 ### Patch Changes

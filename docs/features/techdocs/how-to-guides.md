@@ -612,7 +612,7 @@ Note: To refer external diagram files, we need to include the diagrams directory
 
 ## How to add Mermaid support in TechDocs
 
-There are two options for adding Mermaid support in TechDocs: using [Kroki](https://kroki.io) or by using [markdown-inline-mermaid](https://github.com/johanneswuerbach/markdown-inline-mermaid). We currently use `markdown-inline-mermaid` for the [Mermaid example on the Demo site](https://demo.backstage.io/docs/default/component/backstage-demo/examples/mermaid/).
+There are a few options for adding Mermaid support in TechDocs: using [Kroki](https://kroki.io) or [markdown-inline-mermaid](https://github.com/johanneswuerbach/markdown-inline-mermaid) to generate the diagrams at build time, or the [`backstage-plugin-techdocs-addon-mermaid`](https://github.com/johanneswuerbach/backstage-plugin-techdocs-addon-mermaid) plugin to generate the diagram in the browser. We currently use `backstage-plugin-techdocs-addon-mermaid` plugin for the [Mermaid example on the Demo site](https://demo.backstage.io/docs/default/component/backstage-demo/examples/mermaid/).
 
 ### Using Kroki
 
@@ -718,16 +718,23 @@ Done! Now you have a support of the following diagrams along with mermaid:
 
 To use `markdown-inline-mermaid` to generate your Mermaid diagrams in TechDocs you'll need to do the following:
 
-1. In your Dockerfile you will need to make sure you install `markdown-inline-mermaid` like this: `RUN pip3 install mkdocs-techdocs-core markdown-inline-mermaid`
-2. You will also need to install the `@mermaid-js/mermaid-cli`, to do that add this: `RUN yarn global add @mermaid-js/mermaid-cli`
-3. Now in your `mkdocs.yml` file you will need to add the following section (this is at the root level like `plugins` which you should already have):
+1. In your Dockerfile you will need to make sure you install `markdown-inline-mermaid` and its dependencies, you will also need to install the `@mermaid-js/mermaid-cli`:
+
+   ```dockerfile title="Dockerfile"
+   RUN apt-get install -y chromium
+   RUN pip3 install mkdocs-techdocs-core markdown-inline-mermaid
+   RUN npm install -g @mermaid-js/mermaid-cli
+   ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+   ```
+
+2. Now in your `mkdocs.yml` file you will need to add the following section (this is at the root level like `plugins` which you should already have):
 
    ```yaml title="mkdocs.yml"
    markdown_extensions:
      - markdown_inline_mermaid
    ```
 
-4. With this in place you can now add Mermaid diagrams in your Markdown files like this:
+3. With this in place you can now add Mermaid diagrams in your Markdown files like this:
 
    ````md
    ```mermaid
@@ -737,6 +744,10 @@ To use `markdown-inline-mermaid` to generate your Mermaid diagrams in TechDocs y
    Alice-)John: See you later!
    ```
    ````
+
+### Using the `backstage-plugin-techdocs-addon-mermaid` plugin
+
+Please follow the [Getting Started](https://github.com/johanneswuerbach/backstage-plugin-techdocs-addon-mermaid?tab=readme-ov-file#getting-started) instructions in the plugin's README.
 
 ## How to implement a hybrid build strategy
 

@@ -251,13 +251,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     });
 
     if (!request?.order) {
-      entitiesQuery = entitiesQuery
-        .leftOuterJoin(
-          'refresh_state',
-          'refresh_state.entity_id',
-          'final_entities.entity_id',
-        )
-        .orderBy('refresh_state.entity_ref', 'asc'); // default sort
+      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc'); // default sort
     } else {
       entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
     }
@@ -326,16 +320,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     for (const chunk of lodashChunk(request.entityRefs, 200)) {
       let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .innerJoin<DbRefreshStateRow>(
-          'refresh_state',
-          'refresh_state.entity_id',
-          'final_entities.entity_id',
-        )
         .select({
-          entityRef: 'refresh_state.entity_ref',
+          entityRef: 'final_entities.entity_ref',
           entity: 'final_entities.final_entity',
         })
-        .whereIn('refresh_state.entity_ref', chunk);
+        .whereIn('final_entities.entity_ref', chunk);
 
       if (request?.filter) {
         query = parseFilter(
@@ -343,7 +332,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           query,
           this.database,
           false,
-          'refresh_state.entity_id',
+          'final_entities.entity_id',
         );
       }
 
@@ -422,7 +411,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       } else {
         const matchQuery = db<DbSearchRow>('search')
           .select('search.entity_id')
-          .whereIn('key', textFilterFields)
+          // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
+          .whereIn(
+            'key',
+            textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+          )
           .andWhere(function keyFilter() {
             this.andWhereRaw(
               'value like ?',
@@ -669,11 +662,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {
-    const [rootRow] = await this.database<DbRefreshStateRow>('refresh_state')
-      .leftJoin<DbFinalEntitiesRow>('final_entities', {
-        'refresh_state.entity_id': 'final_entities.entity_id',
-      })
-      .where('refresh_state.entity_ref', '=', rootRef)
+    const [rootRow] = await this.database<DbFinalEntitiesRow>('final_entities')
+      .where('final_entities.entity_ref', '=', rootRef)
       .select({
         entityJson: 'final_entities.final_entity',
       });
@@ -698,16 +688,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       const parentRows = await this.database<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       )
-        .innerJoin<DbRefreshStateRow>('refresh_state', {
-          'refresh_state_references.source_entity_ref':
-            'refresh_state.entity_ref',
-        })
         .innerJoin<DbFinalEntitiesRow>('final_entities', {
-          'refresh_state.entity_id': 'final_entities.entity_id',
+          'refresh_state_references.source_entity_ref':
+            'final_entities.entity_ref',
         })
         .where('refresh_state_references.target_entity_ref', '=', currentRef)
         .select({
-          parentEntityRef: 'refresh_state.entity_ref',
+          parentEntityRef: 'final_entities.entity_ref',
           parentEntityJson: 'final_entities.final_entity',
         });
 

@@ -1,5 +1,37 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.3
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-notifications-common@0.0.6
+  - @backstage/plugin-notifications-node@0.2.9
+  - @backstage/catalog-model@1.7.1
+
+## 0.3.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.13-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-notifications-common@0.0.6-next.0
+  - @backstage/plugin-notifications-node@0.2.9-next.3
+
 ## 0.3.3-next.2
 
 ### Patch Changes

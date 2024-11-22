@@ -1,5 +1,42 @@
 # @backstage/repo-tools
 
+## 0.11.0
+
+### Minor Changes
+
+- 1440232: `backstage-repo-tools package schema openapi generate --server` now generates complete TS interfaces for all request/response objects in your OpenAPI schema. This fixes an edge case around recursive schemas and standardizes both the generated client and server to have similar generated types.
+- 47fdbb4: Adds a `--watch` mode to the `schema openapi generate` command for a better local schema writing experience.
+
+### Patch Changes
+
+- 95401a8: The `generate-patch` command now properly includes newly created files in the patch.
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- 3f1fb21: The `generate-patch` command will now fall back to always adding a `resolutions` entry, even if no matching descriptors are found.
+- dde85ee: Added a new `generate-patch` command that can be used to generate patches for current changes in a source workspace to be installed it a target workspace.
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/config-loader@1.9.2
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-node@0.2.10
+  - @backstage/errors@1.2.5
+
+## 0.11.0-next.3
+
+### Patch Changes
+
+- 95401a8: The `generate-patch` command now properly includes newly created files in the patch.
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- 3f1fb21: The `generate-patch` command will now fall back to always adding a `resolutions` entry, even if no matching descriptors are found.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.15-next.0
+  - @backstage/cli-node@0.2.10-next.0
+  - @backstage/config-loader@1.9.2-next.0
+  - @backstage/errors@1.2.4
+
 ## 0.11.0-next.2
 
 ### Minor Changes

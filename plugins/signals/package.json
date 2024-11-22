@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals",
-  "version": "0.0.12-next.1",
+  "version": "0.0.12",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "signals",
@@ -47,7 +47,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "react-use": "^17.2.4",
-    "uuid": "^9.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

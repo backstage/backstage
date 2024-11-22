@@ -92,9 +92,11 @@ Usage: backstage-cli repo lint [options]
 Lint all packages in the project
 
 Options:
-  --format <format>  Lint report output format (default: "eslint-formatter-friendly")
-  --since <ref>      Only lint packages that changed since the specified ref
-  --fix              Attempt to automatically fix violations
+  --format <format>         Lint report output format (default: "eslint-formatter-friendly")
+  --since <ref>             Only lint packages that changed since the specified ref
+  --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
+  --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
+  --fix                     Attempt to automatically fix violations
 ```
 
 ## repo test
@@ -185,8 +187,9 @@ Usage: backstage-cli package lint [options]
 Lint a package
 
 Options:
-  --format <format>  Lint report output format (default: "eslint-formatter-friendly")
-  --fix              Attempt to automatically fix violations
+  --format <format>        Lint report output format (default: "eslint-formatter-friendly")
+  --fix                    Attempt to automatically fix violations
+  --max-warnings <number>  Fail if more than this number of warnings. -1 allows warnings. (default: 0)
 ```
 
 ## package test

@@ -27,33 +27,22 @@ import express from 'express';
 import createError from 'http-errors';
 import request from 'supertest';
 import { MiddlewareFactory } from './MiddlewareFactory';
-import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
+
+jest.useFakeTimers({ now: new Date('2024-11-20T00:00:00Z') });
 
 describe('MiddlewareFactory', () => {
   describe('middleware.error', () => {
-    const childLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      child: jest.fn(),
-    };
-
-    const logger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      child: () => childLogger,
-    };
+    const childLogger = mockServices.logger.mock();
+    const logger = mockServices.logger.mock({ child: () => childLogger });
 
     const middleware = MiddlewareFactory.create({
       logger,
-      config: new ConfigReader({}),
+      config: mockServices.rootConfig.mock(),
     });
 
     beforeEach(() => {
-      jest.resetAllMocks();
+      jest.clearAllMocks();
     });
 
     it('gives default code and message', async () => {
@@ -195,9 +184,7 @@ describe('MiddlewareFactory', () => {
     it('should filter out internal errors', async () => {
       const app = express();
 
-      const grandChildLogger = {
-        error: jest.fn(),
-      };
+      const grandChildLogger = mockServices.logger.mock();
       childLogger.child.mockReturnValue(grandChildLogger);
 
       class DatabaseError extends Error {}
@@ -253,6 +240,58 @@ describe('MiddlewareFactory', () => {
       await request(app).get('/NotFound');
 
       expect(childLogger.error).toHaveBeenCalled();
+    });
+
+    it('should log incoming requests', async () => {
+      const app = express();
+      app.use(middleware.logging());
+      app.get('/', (_req, res) => res.send('Hello World'));
+
+      await request(app).get('/').expect(200);
+
+      expect(logger.info).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 11 "-" "-"',
+        ),
+        {
+          type: 'incomingRequest',
+          date: '2024-11-20T00:00:00.000Z',
+          method: 'GET',
+          url: '/',
+          status: 200,
+          httpVersion: '1.1',
+          contentLength: 11,
+        },
+      );
+    });
+
+    it('should log request with all data fields', async () => {
+      const app = express();
+      app.use(middleware.logging());
+      app.get('/', (_req, res) => res.send('Hello World'));
+
+      await request(app)
+        .get('/')
+        .set('User-Agent', 'test-agent')
+        .set('referrer', 'test-referrer')
+        .expect(200);
+
+      expect(logger.info).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
+        ),
+        {
+          type: 'incomingRequest',
+          date: '2024-11-20T00:00:00.000Z',
+          method: 'GET',
+          url: '/',
+          status: 200,
+          httpVersion: '1.1',
+          userAgent: 'test-agent',
+          referrer: 'test-referrer',
+          contentLength: 11,
+        },
+      );
     });
   });
 });

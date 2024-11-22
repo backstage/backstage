@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.2.2
+
+### Patch Changes
+
+- 9cf827c: Fix double branch creation in `public:bitbucket{Cloud,Server}:pull-request`
+  This resulted in the following error when using the actions:
+
+  ```
+  AlreadyExistsError: Failed to create branch at create-test because it already exists.
+  ```
+
+  The issue was original introduced in d103a48fa306d745599dc0c793668c9e6a479d32
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+
+## 0.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.3
+
 ## 0.2.2-next.2
 
 ### Patch Changes
