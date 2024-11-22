@@ -46,7 +46,7 @@ type Options = {
 
 /**
  * @public
- * PluginTokenHandler is responsible for issuing and verifying tokens
+ * Issues and verifies {@link https://backstage.io/docs/auth/service-to-service-auth | service-to-service tokens}.
  */
 export interface PluginTokenHandler {
   verifyToken(
