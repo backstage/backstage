@@ -1,4 +1,4 @@
-# @backstage/openapi-utils
+# @backstage/backend-openapi-utils
 
 ## Summary
 
