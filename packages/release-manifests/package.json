@@ -35,9 +35,6 @@
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
   },
-  "dependencies": {
-    "cross-fetch": "^4.0.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",

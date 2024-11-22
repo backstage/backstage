@@ -8291,7 +8291,6 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    cross-fetch: ^4.0.0
     msw: ^1.0.0
   languageName: unknown
   linkType: soft
