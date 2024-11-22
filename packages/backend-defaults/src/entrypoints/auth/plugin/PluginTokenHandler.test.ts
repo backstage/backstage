@@ -15,7 +15,7 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { PluginTokenHandler } from './PluginTokenHandler';
+import { DefaultPluginTokenHandler } from './PluginTokenHandler';
 import { decodeJwt } from 'jose';
 
 describe('PluginTokenHandler', () => {
@@ -42,7 +42,7 @@ describe('PluginTokenHandler', () => {
     });
 
     const getKeyMock = jest.fn(async () => mockPrivateKey);
-    const handler = PluginTokenHandler.create({
+    const handler = DefaultPluginTokenHandler.create({
       discovery: mockServices.discovery(),
       keyDuration: { seconds: 10 },
       logger: mockServices.logger.mock(),

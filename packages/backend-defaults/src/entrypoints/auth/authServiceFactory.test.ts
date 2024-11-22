@@ -19,12 +19,17 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { authServiceFactory } from './authServiceFactory';
+import {
+  authServiceFactory,
+  pluginTokenHandlerDecoratorServiceRef,
+} from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
+import { PluginTokenHandler } from './plugin/PluginTokenHandler';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 
 const server = setupServer();
 
@@ -405,6 +410,42 @@ describe('authServiceFactory', () => {
       scaffolderAuth.authenticate('unlimited-static-token'),
     ).resolves.toMatchObject({
       principal: { subject: 'unlimited-static-subject' },
+    });
+  });
+
+  describe('decorate PluginTokenHandler', () => {
+    it('should allow custom logic to be injected into the plugin token handler', async () => {
+      const customLogic = jest.fn();
+      const customPluginTokenHandler = createServiceFactory({
+        service: pluginTokenHandlerDecoratorServiceRef,
+        deps: {},
+        async factory() {
+          return (defaultImplementation: PluginTokenHandler) =>
+            new (class CustomHandler implements PluginTokenHandler {
+              verifyToken(
+                token: string,
+              ): Promise<
+                { subject: string; limitedUserToken?: string } | undefined
+              > {
+                customLogic(token);
+                return defaultImplementation.verifyToken(token);
+              }
+              issueToken(options: {
+                pluginId: string;
+                targetPluginId: string;
+                limitedUserToken?: { token: string; expiresAt: Date };
+              }): Promise<{ token: string }> {
+                return defaultImplementation.issueToken(options);
+              }
+            })();
+        },
+      });
+      const tester = ServiceFactoryTester.from(authServiceFactory, {
+        dependencies: [...mockDeps, customPluginTokenHandler],
+      });
+      const searchAuth = await tester.getSubject('search');
+      searchAuth.authenticate('unlimited-static-token');
+      expect(customLogic).toHaveBeenCalledWith('unlimited-static-token');
     });
   });
 });
