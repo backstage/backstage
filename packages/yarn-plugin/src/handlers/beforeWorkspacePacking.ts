@@ -76,7 +76,10 @@ export const beforeWorkspacePacking = async (
 
   if (
     ['dependencies', 'devDependencies', 'optionalDependencies'].some(
-      dependencyType => rawManifest[dependencyType]?.some(hasBackstageVersion),
+      dependencyType =>
+        Object.values<string>(rawManifest[dependencyType] ?? {}).some(
+          hasBackstageVersion,
+        ),
     )
   ) {
     throw new Error(
