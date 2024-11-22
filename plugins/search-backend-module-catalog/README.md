@@ -16,12 +16,10 @@ Add the collator to your backend instance, along with the search plugin itself:
 ```tsx
 // packages/backend/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
 
 const backend = createBackend();
-backend.add(searchPlugin);
-backend.add(searchModuleCatalogCollator);
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 backend.start();
 ```
 
@@ -35,12 +33,8 @@ This module also has an extension point, which lets you inject advanced customiz
 // packages/backend/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { CatalogCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-catalog';
-import {
-  searchModuleCatalogCollator,
-  catalogCollatorExtensionPoint,
-} from '@backstage/plugin-search-backend-module-catalog/alpha';
+import { catalogCollatorExtensionPoint } from '@backstage/plugin-search-backend-module-catalog/alpha';
 
 const customTransformer: CatalogCollatorEntityTransformer = entity => ({
   title: entity.metadata.title || entity.metadata.name,
@@ -54,8 +48,8 @@ const customTransformer: CatalogCollatorEntityTransformer = entity => ({
 });
 
 const backend = createBackend();
-backend.add(searchPlugin);
-backend.add(searchModuleCatalogCollator);
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 backend.add(
   createBackendModule({
     pluginId: 'search',
