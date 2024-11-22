@@ -3,4 +3,6 @@
 '@backstage/plugin-kubernetes-common': minor
 ---
 
-Introduced resource permission type to be used with the kubernetes endpoint's permission framework integration for all endpoints except the proxy endpoints.
+The `/clusters` endpoint is now protected by the `kubernetes.cluster` permission.
+The `/services` endpoint is now protected by the `kubernetes.service` permission.
+The `/resources` endpoints are now protected by the `kubernetes.resource` permission.
