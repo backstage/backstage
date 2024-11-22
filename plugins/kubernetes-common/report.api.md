@@ -317,6 +317,9 @@ export interface JobsFetchResponse {
   type: 'jobs';
 }
 
+// @public
+export const kubernetesClusterPermission: BasicPermission;
+
 // @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
@@ -349,6 +352,9 @@ export interface KubernetesRequestBody {
 
 // @public
 export const kubernetesResourcePermission: BasicPermission;
+
+// @public
+export const kubernetesServicePermission: BasicPermission;
 
 // @public (undocumented)
 export interface LimitRangeFetchResponse {
