@@ -1037,13 +1037,6 @@ export const all_saas_users_response: MockObject[] = [
   },
 ];
 
-export const single_group_response: GitLabGroup = {
-  id: 1,
-  name: 'group1',
-  description: 'description1',
-  full_path: 'group1',
-};
-
 export const all_groups_response: GitLabGroup[] = [
   {
     id: 1,
