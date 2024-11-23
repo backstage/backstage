@@ -61,7 +61,6 @@
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "@types/luxon": "^3.0.0",
-    "express": "^4.17.1",
     "knex": "^3.0.0",
     "luxon": "^3.0.0"
   },

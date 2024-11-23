@@ -3470,8 +3470,6 @@ __metadata:
     compression: ^1.7.4
     cookie: ^0.7.0
     cors: ^2.8.5
-    express: ^4.17.1
-    express-promise-router: ^4.1.0
     helmet: ^6.0.0
     http-errors: ^2.0.0
     jose: ^5.0.0
@@ -3752,7 +3750,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
-    express: ^4.17.1
     knex: ^3.0.0
     luxon: ^3.0.0
   languageName: unknown
