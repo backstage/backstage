@@ -144,6 +144,21 @@ const httpHandlers = [
 
 // dynamic handlers
 
+const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
+  // Handler for apiBaseUrl
+  rest.get(`${apiBaseUrl}/groups/${group.full_path}`, (_, res, ctx) => {
+    return res(
+      ctx.json(all_groups_response.find(g => g.full_path === group.full_path)),
+    );
+  }),
+  // Handler for apiSaaSBaseUrl
+  rest.get(`${apiBaseUrlSaas}/groups/${group.full_path}`, (_, res, ctx) => {
+    return res(
+      ctx.json(all_groups_response.find(g => g.full_path === group.full_path)),
+    );
+  }),
+]);
+
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {
   return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
     return res(ctx.json(all_groups_response.find(g => g.id === group.id)));
@@ -491,7 +506,7 @@ const graphqlHandlers = [
                       {
                         id: 'gid://gitlab/Group/1',
                         name: 'group1',
-                        description: 'description1',
+                        description: '',
                         fullPath: 'path/group1',
                         parent: {
                           id: '123',
@@ -626,4 +641,5 @@ export const handlers = [
   ...httpGroupListDescendantProjectsById,
   ...httpGroupListDescendantProjectsByName,
   ...graphqlHandlers,
+  ...httpGroupFindByEncodedPathDynamic,
 ];

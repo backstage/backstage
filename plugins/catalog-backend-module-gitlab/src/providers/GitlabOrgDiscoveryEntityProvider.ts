@@ -396,7 +396,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     else {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
+
       groups.push(await this.gitLabClient.getGroupByPath(this.config.group));
+
       const rootGroupSplit = this.config.group.split('/');
       const rootGroup = this.config.restrictUsersToGroup
         ? rootGroupSplit[rootGroupSplit.length - 1]

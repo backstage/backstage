@@ -170,10 +170,7 @@ export class GitLabClient {
     groupPath: string,
     options?: CommonListOptions,
   ): Promise<GitLabGroup> {
-    return this.nonPagedRequest(
-      `/groups/${encodeURIComponent(groupPath)}`,
-      options,
-    );
+    return this.nonPagedRequest(`/groups/${groupPath}`, options);
   }
 
   async listDescendantGroups(
