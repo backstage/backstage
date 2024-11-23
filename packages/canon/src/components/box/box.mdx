@@ -5,13 +5,10 @@ import * as Table from '../../storybook/table';
 import { Box } from './box';
 import { Stack } from '../stack/stack';
 import { Title, Text } from '../../storybook';
-import {
-  alignItems,
-  backgroundColors,
-  boxShadows,
-  borderRadius,
-  display,
-} from './properties';
+import { Padding } from './docs/padding';
+import { listResponsiveValues, listColorValues } from '../../utils/list-values';
+import { responsiveProperties } from './sprinkles.css';
+import { PropsTable } from './docs/props-table';
 
 <Meta of={BoxStories} />
 
@@ -20,137 +17,19 @@ import {
 <Title type="h1">Box</Title>
 <Text>
   Box is the lowest-level component in Canon. We use it internally to build all
-  of our components.
+  of our components. It is a wrapper around the HTML `<div>` element and
+  provides a consistent API for styling and layout. You'll find below a list of all the available properties.
 </Text>
 
-<Stack
-  direction="column"
-  items="center"
-  justify="center"
-  borderRadius="small"
-  mb="xxl"
-  gap="xl"
-  py="xl"
-  style={{ border: '1px solid #e7e7e7' }}
->
-  <Stack items="center" gap="xl">
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      p="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>padding</span>
-      </Stack>
-    </Stack>
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      px="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>paddingX</span>
-      </Stack>
-    </Stack>
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      py="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>paddingY</span>
-      </Stack>
-    </Stack>
-  </Stack>
-  <Stack items="center" gap="xl">
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      pt="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>paddingTop</span>
-      </Stack>
-    </Stack>
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      pb="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>paddingBottom</span>
-      </Stack>
-    </Stack>
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      pl="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>paddingLeft</span>
-      </Stack>
-    </Stack>
-    <Stack
-      items="center"
-      justify="center"
-      borderRadius="small"
-      pr="md"
-      style={{ background: '#c4cafb', color: 'white' }}
-    >
-      <Stack
-        px="md"
-        py="sm"
-        borderRadius="small"
-        style={{ background: '#1f47ff', color: 'white' }}
-      >
-        <span>paddingRight</span>
-      </Stack>
-    </Stack>
-  </Stack>
-</Stack>
+<PropsTable />
 
+<Title type="h2">Padding & Margin</Title>
+<Text>
+  Padding and margin are used to create space around your component using our
+  predefined spacing tokens. We would recommend to use padding over margin to
+  avoid collapsing margins but both are available.
+</Text>
+<Padding />
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
@@ -160,68 +39,6 @@ import {
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>alignItems</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        {alignItems.map(n => (
-          <Chip>{n}</Chip>
-        ))}
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>stretch</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>background</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        {Object.keys(backgroundColors).map(n => (
-          <Chip>{n}</Chip>
-        ))}
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>transparent</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>borderRadius</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        {Object.keys(borderRadius).map(n => (
-          <Chip>{n}</Chip>
-        ))}
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>none</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>boxShadow</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        {Object.keys(boxShadows).map(n => (
-          <Chip>{n}</Chip>
-        ))}
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>display</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        {display.map(n => (
-          <Chip>{n}</Chip>
-        ))}
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>block</Chip>
-      </Table.Cell>
-    </Table.Row>
     <Table.Row>
       <Table.Cell>
         <Chip head>padding</Chip>

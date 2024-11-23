@@ -15,13 +15,13 @@
  */
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Stack } from './stack';
+import { Inline } from './inline';
 import { Box } from '../box/box';
 
 const meta = {
-  title: 'Layout/Stack',
-  component: Stack,
-} satisfies Meta<typeof Stack>;
+  title: 'Layout/Inline',
+  component: Inline,
+} satisfies Meta<typeof Inline>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
