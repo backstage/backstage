@@ -1048,7 +1048,7 @@ export const all_groups_response: GitLabGroup[] = [
   {
     id: 1,
     name: 'group1',
-    description: '',
+    description: 'description1',
     full_path: 'group1',
   },
   {
@@ -1118,7 +1118,7 @@ export const expectedSaasGroup: MockObject[] = [
   {
     id: 1,
     name: 'group1',
-    description: '',
+    description: 'description1',
     full_path: 'path/group1',
     parent_id: 123,
   },
@@ -1811,6 +1811,7 @@ export const expected_group_user_entity: MockObject[] = [
             'url:https://example.com/group1',
           'example.com/team-path': 'group1',
         },
+        description: 'description1',
         name: 'group1',
       },
       spec: {
@@ -2097,6 +2098,7 @@ export const expected_full_org_scan_entities: MockObject[] = [
             'url:https://example.com/group1',
           'example.com/team-path': 'group1',
         },
+        description: 'description1',
         name: 'group1',
       },
       spec: {
@@ -2449,6 +2451,7 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
             'url:https://example.com/group1',
           'example.com/team-path': 'group1',
         },
+        description: 'description1',
         name: 'group1',
       },
       spec: {

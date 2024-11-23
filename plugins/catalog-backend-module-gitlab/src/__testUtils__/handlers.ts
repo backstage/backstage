@@ -30,7 +30,6 @@ import {
   some_endpoint,
   unhealthy_endpoint,
   userID,
-  single_group_response,
 } from './mocks';
 
 const httpHandlers = [
@@ -72,18 +71,11 @@ const httpHandlers = [
     return res(ctx.set('x-next-page', ''), ctx.json(all_groups_response));
   }),
 
-  rest.get(`${apiBaseUrl}/groups/group1`, (_req, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(single_group_response));
-  }),
   rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
   rest.get(`${apiBaseUrl}/groups/group1/members/all`, (_req, res, ctx) => {
     return res(ctx.json(all_self_hosted_group1_members));
-  }),
-
-  rest.get(`${apiBaseUrlSaas}/groups/group1`, (_req, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(single_group_response));
   }),
 
   rest.get(`${apiBaseUrlSaas}/groups/group1/members/all`, (_req, res, ctx) => {
@@ -506,7 +498,7 @@ const graphqlHandlers = [
                       {
                         id: 'gid://gitlab/Group/1',
                         name: 'group1',
-                        description: '',
+                        description: 'description1',
                         fullPath: 'path/group1',
                         parent: {
                           id: '123',
