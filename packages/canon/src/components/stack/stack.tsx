@@ -15,19 +15,24 @@
  */
 import { createElement } from 'react';
 import { sprinkles, Sprinkles } from './sprinkles.css';
-import { base } from './box.css';
+import { stackStyles } from './stack.css';
 
 type HTMLProperties = Omit<
   React.AllHTMLAttributes<HTMLElement>,
   keyof Sprinkles
 >;
 
-export type BoxProps = Sprinkles &
+export type StackProps = Sprinkles &
   HTMLProperties & {
     as?: keyof JSX.IntrinsicElements;
   };
 
-export const Box = ({ as = 'div', className, style, ...props }: BoxProps) => {
+export const Stack = ({
+  as = 'div',
+  className,
+  style,
+  ...props
+}: StackProps) => {
   const sprinklesProps: Record<string, unknown> = {};
   const nativeProps: Record<string, unknown> = {};
 
@@ -45,7 +50,9 @@ export const Box = ({ as = 'div', className, style, ...props }: BoxProps) => {
   const sprinklesClassName = sprinkles(sprinklesProps);
 
   return createElement(as, {
-    className: [base, sprinklesClassName, className].filter(Boolean).join(' '),
+    className: [stackStyles, sprinklesClassName, className]
+      .filter(Boolean)
+      .join(' '),
     style,
     ...nativeProps,
   });

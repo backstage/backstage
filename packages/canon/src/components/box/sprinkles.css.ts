@@ -14,66 +14,83 @@
  * limitations under the License.
  */
 import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
+import {
+  alignItems,
+  borderRadius,
+  breakpoints,
+  colors,
+  backgroundColors,
+  display,
+  flexDirection,
+  justifyContent,
+  space,
+  boxShadows,
+  border,
+} from './properties';
 
-const space = {
-  none: 0,
-  small: '4px',
-  medium: '8px',
-  large: '16px',
-  // etc.
+export const commonProperties = {
+  flexDirection,
+  justifyContent,
+  alignItems,
+  borderRadius,
+  boxShadow: boxShadows,
+  border,
+  paddingTop: space,
+  paddingBottom: space,
+  paddingLeft: space,
+  paddingRight: space,
+  marginTop: space,
+  marginBottom: space,
+  marginLeft: space,
+  marginRight: space,
+  gap: space,
 };
 
-const colors = {
-  background: '#eff6ff',
+export const boxShorthands: Record<string, string[]> = {
+  padding: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
+  paddingX: ['paddingLeft', 'paddingRight'],
+  paddingY: ['paddingTop', 'paddingBottom'],
+  p: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
+  pt: ['paddingTop'],
+  pr: ['paddingRight'],
+  pb: ['paddingBottom'],
+  pl: ['paddingLeft'],
+  px: ['paddingLeft', 'paddingRight'],
+  py: ['paddingTop', 'paddingBottom'],
+  margin: ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'],
+  marginX: ['marginLeft', 'marginRight'],
+  marginY: ['marginTop', 'marginBottom'],
+  m: ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'],
+  mt: ['marginTop'],
+  mr: ['marginRight'],
+  mb: ['marginBottom'],
+  ml: ['marginLeft'],
+  mx: ['marginLeft', 'marginRight'],
+  my: ['marginTop', 'marginBottom'],
 };
 
 const responsiveProperties = defineProperties({
-  conditions: {
-    xs: {},
-    sm: { '@media': 'screen and (min-width: 640px)' },
-    md: { '@media': 'screen and (min-width: 768px)' },
-    lg: { '@media': 'screen and (min-width: 1024px)' },
-    xl: { '@media': 'screen and (min-width: 1280px)' },
-    '2xl': { '@media': 'screen and (min-width: 1536px)' },
-  },
+  conditions: breakpoints,
   defaultCondition: 'xs',
   properties: {
-    display: ['none', 'flex', 'block', 'inline'],
-    flexDirection: ['row', 'column'],
-    justifyContent: [
-      'stretch',
-      'flex-start',
-      'center',
-      'flex-end',
-      'space-around',
-      'space-between',
-    ],
-    alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
-    paddingTop: space,
-    paddingBottom: space,
-    paddingLeft: space,
-    paddingRight: space,
-    // fontFamily: font,
-    gap: space,
-    // etc.
+    ...commonProperties,
+    display,
   },
   shorthands: {
-    padding: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
-    paddingX: ['paddingLeft', 'paddingRight'],
-    paddingY: ['paddingTop', 'paddingBottom'],
+    ...boxShorthands,
     placeItems: ['justifyContent', 'alignItems'],
   },
 });
 
 const colorProperties = defineProperties({
   conditions: {
-    lightMode: {},
-    darkMode: { '@media': '(prefers-color-scheme: dark)' },
+    light: { selector: '[data-theme="light"] &' },
+    dark: { selector: '[data-theme="dark"] &' },
   },
-  defaultCondition: 'lightMode',
+  defaultCondition: ['light', 'dark'],
   properties: {
     color: colors,
-    background: colors,
+    background: backgroundColors,
   },
 });
 

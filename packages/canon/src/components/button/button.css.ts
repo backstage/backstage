@@ -19,7 +19,8 @@ import { recipe } from '@vanilla-extract/recipes';
 export const button = recipe({
   base: {
     all: 'unset',
-    display: 'inline-block',
+    display: 'inline-flex',
+    alignItems: 'center',
     userSelect: 'none',
     fontFamily: 'var(--canon-font-sans)',
     fontWeight: 600,

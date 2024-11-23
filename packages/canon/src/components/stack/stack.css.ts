@@ -13,29 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { recipe } from '@vanilla-extract/recipes';
+import { style } from '@vanilla-extract/css';
 
-export const chipStyles = recipe({
-  base: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontFamily: 'Geist Mono, monospace',
-    fontSize: '13px',
-    borderRadius: '6px',
-    padding: '0px 8px',
-    height: '24px',
-    marginRight: '4px',
-  },
-  variants: {
-    head: {
-      true: {
-        backgroundColor: '#eaf2fd',
-        color: '#2563eb',
-      },
-      false: {
-        backgroundColor: '#f0f0f0',
-        color: '#5d5d5d',
-      },
-    },
-  },
+export const stackStyles = style({
+  fontFamily: 'var(--canon-font-sans)',
+  display: 'flex',
 });

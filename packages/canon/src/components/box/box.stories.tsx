@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './box';
 
 const meta = {
-  title: 'Components/Box',
+  title: 'Layout/Box',
   component: Box,
   parameters: {
     layout: 'centered',
@@ -31,7 +31,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
   render: () => (
-    <Box padding="medium" background="background">
+    <Box
+      padding="medium"
+      background="background"
+      paddingX="large"
+      paddingY="medium"
+      borderRadius="small"
+    >
       Basic Box
     </Box>
   ),

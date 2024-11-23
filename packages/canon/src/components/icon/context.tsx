@@ -1,9 +1,15 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { MoveUp, MoveDown } from 'lucide-react';
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Cloud } from 'lucide-react';
 import { CustomIcon } from './custom-icon';
 
 // List of icons available that can also be overridden.
-export type IconNames = 'MoveDown' | 'MoveUp' | 'CustomIcon';
+export type IconNames =
+  | 'ArrowDown'
+  | 'ArrowLeft'
+  | 'ArrowRight'
+  | 'ArrowUp'
+  | 'Cloud'
+  | 'CustomIcon';
 
 type IconMap = Partial<Record<IconNames, React.ComponentType>>;
 
@@ -13,8 +19,11 @@ interface IconContextProps {
 
 // Create a default icon map with only the necessary icons
 const defaultIcons: IconMap = {
-  MoveUp,
-  MoveDown,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Cloud,
   CustomIcon,
 };
 
