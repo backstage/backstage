@@ -3834,8 +3834,8 @@ __metadata:
     "@storybook/react-webpack5": ^8.4.5
     "@storybook/test": ^8.4.5
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^18.3.11
-    "@types/react-dom": ^18.3.1
+    "@types/react": ^18.0.0
+    "@types/react-dom": ^18.0.0
     "@vanilla-extract/css": ^1.16.0
     "@vanilla-extract/dynamic": ^2.1.2
     "@vanilla-extract/recipes": ^0.5.5
@@ -3849,6 +3849,9 @@ __metadata:
     globals: ^15.11.0
     lucide-react: ^0.460.0
     mini-css-extract-plugin: ^2.9.2
+    react: ^18.0.0
+    react-dom: ^18.0.0
+    react-router-dom: ^6.3.0
     storybook: ^8.4.5
     typescript: ~5.6.2
     typescript-eslint: ^8.10.0
@@ -40968,7 +40971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react-dom@npm:^18.0.2":
+"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react-dom@npm:^18.0.0, react-dom@npm:^18.0.2":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -41553,7 +41556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react@npm:^18.0.2":
+"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react@npm:^18.0.0, react@npm:^18.0.2":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
