@@ -18,7 +18,7 @@ const meta = {
     },
   },
   args: {
-    name: 'MoveDown',
+    name: 'ArrowDown',
   },
 } satisfies Meta<typeof Icon>;
 
@@ -27,7 +27,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    name: 'MoveDown',
+    name: 'ArrowDown',
   },
 };
 
@@ -39,11 +39,11 @@ export const CustomIcon: Story = {
 
 export const WithCustomIcon: Story = {
   args: {
-    name: 'MoveDown',
+    name: 'ArrowDown',
   },
   decorators: [
     Story => (
-      <IconProvider overrides={{ MoveDown: () => <div>Custom Icon</div> }}>
+      <IconProvider overrides={{ ArrowDown: () => <div>Custom Icon</div> }}>
         <Story />
       </IconProvider>
     ),

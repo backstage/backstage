@@ -16,6 +16,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './button';
+import { Box } from '../box/box';
 
 const meta = {
   title: 'Components/Button',
@@ -60,6 +61,32 @@ export const Sizes: Story = {
       <Button {...args} size="small" />
       <Button {...args} size="medium" />
     </div>
+  ),
+};
+
+export const WithIcons: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: args => (
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <Button {...args} iconStart="Cloud" />
+      <Button {...args} iconEnd="ArrowRight" />
+      <Button {...args} iconStart="Cloud" iconEnd="ArrowRight" />
+    </div>
+  ),
+};
+
+export const FullWidth: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: args => (
+    <Box>
+      <Button {...args} iconStart="Cloud" />
+      <Button {...args} iconEnd="ArrowRight" />
+      <Button {...args} iconStart="Cloud" iconEnd="ArrowRight" />
+    </Box>
   ),
 };
 

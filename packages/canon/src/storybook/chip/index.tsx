@@ -16,6 +16,12 @@
 import React from 'react';
 import { chipStyles } from './chip.css';
 
-export const Chip = ({ children }: { children: React.ReactNode }) => {
-  return <span className={chipStyles}>{children}</span>;
+export const Chip = ({
+  children,
+  head = false,
+}: {
+  children: React.ReactNode;
+  head?: boolean;
+}) => {
+  return <span className={chipStyles({ head })}>{children}</span>;
 };

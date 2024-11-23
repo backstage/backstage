@@ -47,6 +47,7 @@ export const headerCellStyles = style({
   backgroundColor: '#f5f5f5 !important',
   borderBottom: '1px solid #e7e7e7 !important',
   fontWeight: '500',
+  fontSize: '14px',
 });
 
 export const rowStyles = style({

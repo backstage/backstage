@@ -16,12 +16,16 @@
 import React from 'react';
 import { button } from './button.css';
 import { Box } from '../box/box';
+import { Icon } from '../icon/icon';
+import { IconNames } from '../icon/context';
 
 export interface ButtonProps {
   size?: 'small' | 'medium';
   variant?: 'primary' | 'secondary';
   children: React.ReactNode;
   disabled?: boolean;
+  iconStart?: IconNames;
+  iconEnd?: IconNames;
 }
 
 export const Button = ({
@@ -29,6 +33,8 @@ export const Button = ({
   variant = 'primary',
   children,
   disabled,
+  iconStart,
+  iconEnd,
   ...props
 }: ButtonProps) => {
   return (
@@ -38,7 +44,9 @@ export const Button = ({
       disabled={disabled}
       className={button({ size, variant, disabled })}
     >
+      {iconStart && <Icon name={iconStart} />}
       {children}
+      {iconEnd && <Icon name={iconEnd} />}
     </Box>
   );
 };

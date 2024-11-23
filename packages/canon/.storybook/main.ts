@@ -1,5 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
-const { VanillaExtractPlugin } = require('@vanilla-extract/webpack-plugin');
+import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
 import { merge } from 'webpack-merge';
 
 import { join, dirname } from 'path';
@@ -20,11 +20,10 @@ const config: StorybookConfig = {
   staticDirs: ['../static'],
   addons: [
     getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
-    getAbsolutePath('@storybook/addon-onboarding'),
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@chromatic-com/storybook'),
     getAbsolutePath('@storybook/addon-interactions'),
-    // getAbsolutePath("@storybook/addon-styling-webpack")
+    getAbsolutePath('@storybook/addon-themes'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),

@@ -1,18 +1,155 @@
 import { Canvas, Meta, Unstyled } from '@storybook/blocks';
 import * as BoxStories from './box.stories';
-import { PropsTable } from '../../storybook/props-table';
 import { Chip } from '../../storybook/chip';
 import * as Table from '../../storybook/table';
+import { Box } from './box';
+import { Stack } from '../stack/stack';
+import { Title, Text } from '../../storybook';
+import {
+  alignItems,
+  backgroundColors,
+  boxShadows,
+  borderRadius,
+  display,
+} from './properties';
 
 <Meta of={BoxStories} />
 
-# Box
-
-Box is the lowest-level component in Canon. We use it internally to build all of our components.
-
-<Canvas of={BoxStories.Basic} />
-
 <Unstyled>
+
+<Title type="h1">Box</Title>
+<Text>
+  Box is the lowest-level component in Canon. We use it internally to build all
+  of our components.
+</Text>
+
+<Stack
+  direction="column"
+  items="center"
+  justify="center"
+  borderRadius="small"
+  mb="xxl"
+  gap="xl"
+  py="xl"
+  style={{ border: '1px solid #e7e7e7' }}
+>
+  <Stack items="center" gap="xl">
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      p="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>padding</span>
+      </Stack>
+    </Stack>
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      px="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>paddingX</span>
+      </Stack>
+    </Stack>
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      py="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>paddingY</span>
+      </Stack>
+    </Stack>
+  </Stack>
+  <Stack items="center" gap="xl">
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      pt="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>paddingTop</span>
+      </Stack>
+    </Stack>
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      pb="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>paddingBottom</span>
+      </Stack>
+    </Stack>
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      pl="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>paddingLeft</span>
+      </Stack>
+    </Stack>
+    <Stack
+      items="center"
+      justify="center"
+      borderRadius="small"
+      pr="md"
+      style={{ background: '#c4cafb', color: 'white' }}
+    >
+      <Stack
+        px="md"
+        py="sm"
+        borderRadius="small"
+        style={{ background: '#1f47ff', color: 'white' }}
+      >
+        <span>paddingRight</span>
+      </Stack>
+    </Stack>
+  </Stack>
+</Stack>
 
 <Table.Root>
   <Table.Header>
@@ -20,40 +157,75 @@ Box is the lowest-level component in Canon. We use it internally to build all of
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Type</Table.HeaderCell>
       <Table.HeaderCell>Default</Table.HeaderCell>
-      <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        <Chip>background</Chip>
+        <Chip head>alignItems</Chip>
       </Table.Cell>
       <Table.Cell>
-        <Chip>string</Chip>
+        {alignItems.map(n => (
+          <Chip>{n}</Chip>
+        ))}
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>stretch</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>background</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        {Object.keys(backgroundColors).map(n => (
+          <Chip>{n}</Chip>
+        ))}
       </Table.Cell>
       <Table.Cell>
         <Chip>transparent</Chip>
       </Table.Cell>
-      <Table.Cell>The background color of the box.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>display</Chip>
+        <Chip head>borderRadius</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        {Object.keys(borderRadius).map(n => (
+          <Chip>{n}</Chip>
+        ))}
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>none</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>boxShadow</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        {Object.keys(boxShadows).map(n => (
+          <Chip>{n}</Chip>
+        ))}
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>display</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        {display.map(n => (
+          <Chip>{n}</Chip>
+        ))}
       </Table.Cell>
       <Table.Cell>
         <Chip>block</Chip>
-        <Chip>flex</Chip>
-        <Chip>inline-block</Chip>
-        <Chip>inline-flex</Chip>
       </Table.Cell>
-      <Table.Cell>
-        <Chip>block</Chip>
-      </Table.Cell>
-      <Table.Cell>The display property of the box.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>padding</Chip>
+        <Chip head>padding</Chip>
+        <Chip head>p</Chip>
       </Table.Cell>
       <Table.Cell>
         <Chip>number</Chip>
@@ -61,11 +233,11 @@ Box is the lowest-level component in Canon. We use it internally to build all of
       <Table.Cell>
         <Chip>0</Chip>
       </Table.Cell>
-      <Table.Cell>The padding of the box.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>paddingX</Chip>
+        <Chip head>paddingX</Chip>
+        <Chip head>px</Chip>
       </Table.Cell>
       <Table.Cell>
         <Chip>number</Chip>
@@ -73,11 +245,11 @@ Box is the lowest-level component in Canon. We use it internally to build all of
       <Table.Cell>
         <Chip>0</Chip>
       </Table.Cell>
-      <Table.Cell>The horizontal padding of the box.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>paddingY</Chip>
+        <Chip head>paddingY</Chip>
+        <Chip head>py</Chip>
       </Table.Cell>
       <Table.Cell>
         <Chip>number</Chip>
@@ -85,11 +257,11 @@ Box is the lowest-level component in Canon. We use it internally to build all of
       <Table.Cell>
         <Chip>0</Chip>
       </Table.Cell>
-      <Table.Cell>The vertical padding of the box.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>paddingLeft</Chip>
+        <Chip head>paddingLeft</Chip>
+        <Chip head>pl</Chip>
       </Table.Cell>
       <Table.Cell>
         <Chip>number</Chip>
@@ -97,11 +269,11 @@ Box is the lowest-level component in Canon. We use it internally to build all of
       <Table.Cell>
         <Chip>0</Chip>
       </Table.Cell>
-      <Table.Cell>The left padding of the box.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>paddingRight</Chip>
+        <Chip head>paddingRight</Chip>
+        <Chip head>pr</Chip>
       </Table.Cell>
       <Table.Cell>
         <Chip>number</Chip>
@@ -109,7 +281,66 @@ Box is the lowest-level component in Canon. We use it internally to build all of
       <Table.Cell>
         <Chip>0</Chip>
       </Table.Cell>
-      <Table.Cell>The right padding of the box.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>margin</Chip>
+        <Chip head>m</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>marginX</Chip>
+        <Chip head>mx</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>marginY</Chip>
+        <Chip head>my</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>marginLeft</Chip>
+        <Chip head>ml</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>marginRight</Chip>
+        <Chip head>mr</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>number</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0</Chip>
+      </Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>

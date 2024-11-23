@@ -1,9 +1,6 @@
 import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
-import {
-  withThemeByClassName,
-  withThemeByDataAttribute,
-} from '@storybook/addon-themes';
+import { withThemeByDataAttribute } from '@storybook/addon-themes';
 
 import '../src/theme/styles.css';
 
