@@ -1,7 +1,7 @@
 /* Light theme */
 :root {
   --canon-accent: #1ed760;
-  --canon-bg: #fff;
+  --canon-background: #fff;
   --canon-surface-1: #f5f5f5;
   --canon-surface-2: #000;
   --canon-outline: #666;
@@ -31,7 +31,7 @@
 /* Dark theme */
 [data-theme='dark'] {
   --canon-accent: #1ed760;
-  --canon-bg: #fff;
+  --canon-background: #fff;
   --canon-surface-1: #f5f5f5;
   --canon-surface-2: #000;
   --canon-outline: #666;

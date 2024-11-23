@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './box';
@@ -32,10 +33,10 @@ type Story = StoryObj<typeof meta>;
 export const Basic: Story = {
   render: () => (
     <Box
-      padding="medium"
+      padding="xs"
       background="background"
-      paddingX="large"
-      paddingY="medium"
+      paddingX="lg"
+      paddingY="md"
       borderRadius="small"
     >
       Basic Box
@@ -47,7 +48,7 @@ export const Responsive: Story = {
   render: () => (
     <Box
       display={{ xs: 'block', sm: 'flex' }}
-      padding={{ xs: 'small', sm: 'medium', lg: 'large' }}
+      padding={{ xs: 'xs', sm: 'md', lg: 'lg' }}
       background="background"
     >
       Responsive Box
@@ -60,16 +61,16 @@ export const FlexContainer: Story = {
     <Box
       display="flex"
       flexDirection="column"
-      padding="large"
+      padding="lg"
       background="background"
     >
-      <Box padding="medium" background="background">
+      <Box padding="md" background="background" color="primary">
         Item 1
       </Box>
-      <Box padding="medium" background="background">
+      <Box padding="md" background="background" color="primary">
         Item 2
       </Box>
-      <Box padding="medium" background="background">
+      <Box padding="md" background="background" color="primary">
         Item 3
       </Box>
     </Box>
@@ -78,24 +79,24 @@ export const FlexContainer: Story = {
 
 export const Nested: Story = {
   render: () => (
-    <Box padding="large" background="background">
-      <Box padding="medium" background="background">
+    <Box padding="lg" background="background">
+      <Box padding="md" background="background">
         Header
       </Box>
       <Box
         display="flex"
-        padding="medium"
+        padding="md"
         background="background"
         justifyContent="space-between"
       >
-        <Box padding="small" background="background">
+        <Box padding="xs" background="background">
           Sidebar
         </Box>
-        <Box padding="small" background="background">
+        <Box padding="xs" background="background">
           Main Content
         </Box>
       </Box>
-      <Box padding="medium" background="background">
+      <Box padding="md" background="background">
         Footer
       </Box>
     </Box>
@@ -106,13 +107,13 @@ export const Alignment: Story = {
   render: () => (
     <Box
       display="flex"
-      padding="large"
+      padding="lg"
       background="background"
       justifyContent="center"
       alignItems="center"
       style={{ height: '200px' }}
     >
-      <Box padding="medium" background="background">
+      <Box padding="md" background="background">
         Centered Content
       </Box>
     </Box>
@@ -122,17 +123,17 @@ export const Alignment: Story = {
 // Example showing different spacing combinations
 export const Spacing: Story = {
   render: () => (
-    <Box display="flex" flexDirection="column" gap="medium">
-      <Box padding="small" background="background">
+    <Box display="flex" flexDirection="column" gap="md">
+      <Box padding="xs" background="background">
         Small Padding
       </Box>
-      <Box padding="medium" background="background">
+      <Box padding="md" background="background">
         Medium Padding
       </Box>
-      <Box padding="large" background="background">
+      <Box padding="lg" background="background">
         Large Padding
       </Box>
-      <Box paddingX="large" paddingY="small" background="background">
+      <Box paddingX="lg" paddingY="xs" background="background">
         Mixed Padding
       </Box>
     </Box>
@@ -142,14 +143,14 @@ export const Spacing: Story = {
 // Example showing different display values
 export const DisplayVariants: Story = {
   render: () => (
-    <Box display="flex" flexDirection="column" gap="medium">
-      <Box padding="medium" background="background" display="block">
+    <Box display="flex" flexDirection="column" gap="md">
+      <Box padding="md" background="background" display="block">
         Display Block
       </Box>
-      <Box padding="medium" background="background" display="flex">
+      <Box padding="md" background="background" display="flex">
         Display Flex
       </Box>
-      <Box padding="medium" background="background" display="inline">
+      <Box padding="md" background="background" display="inline">
         Display Inline
       </Box>
     </Box>

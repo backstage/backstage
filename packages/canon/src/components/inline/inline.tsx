@@ -18,54 +18,38 @@ import React from 'react';
 import { Box, BoxProps } from '../box/box';
 import { alignToFlexAlign } from '../../utils/align';
 
-const validStackComponents = [
+export const validInlineComponents = [
   'div',
   'span',
   'p',
-  'article',
-  'section',
-  'main',
   'nav',
-  'aside',
   'ul',
   'ol',
   'li',
-  'details',
-  'summary',
-  'dd',
-  'dl',
-  'dt',
 ] as const;
 
-export interface StackProps extends Omit<BoxProps, 'alignItems'> {
+export interface InlineProps extends Omit<BoxProps, 'alignItems'> {
+  as?: (typeof validInlineComponents)[number];
   children: React.ReactNode;
-  as?: (typeof validStackComponents)[number];
   align?: 'left' | 'center' | 'right';
   gap?: BoxProps['gap'];
 }
 
-export const Stack = ({
+export const Inline = ({
+  align,
   as = 'div',
   children,
-  align: alignProp,
   gap = 'xs',
   ...restProps
-}: StackProps) => {
-  /**
-   * Creating a seam between the provided prop and the default value
-   * to enable only setting the text alignment when the `align` prop
-   * is provided — not when it's defaulted.
-   */
-  const align = alignProp || 'left';
-
+}: InlineProps) => {
   return (
     <Box
       as={as}
       display="flex"
-      flexDirection="column"
       alignItems={align !== 'left' ? alignToFlexAlign(align) : undefined}
+      justifyContent="flex-start"
+      flexWrap="wrap"
       gap={gap}
-      // textAlign={alignProp}
       {...restProps}
     >
       {children}
