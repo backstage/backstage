@@ -136,6 +136,7 @@ const httpHandlers = [
 
 // dynamic handlers
 
+// https://docs.gitlab.com/ee/api/groups.html#list-group-details supports encoded path and id
 const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
   // Handler for apiBaseUrl
   rest.get(`${apiBaseUrl}/groups/${group.full_path}`, (_, res, ctx) => {
