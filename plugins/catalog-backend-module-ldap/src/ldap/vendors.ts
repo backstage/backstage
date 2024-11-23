@@ -32,11 +32,6 @@ export type LdapVendor = {
   uuidAttributeName: string;
 
   /**
-   * The attribute that determines behaviour of the (dn,members,memberOf) for entries.
-   */
-  dnCaseSensitive?: boolean;
-
-  /**
    * Decode ldap entry values for a given attribute name to their string representation.
    *
    * @param entry - The ldap entry
