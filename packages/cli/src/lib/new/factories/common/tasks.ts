@@ -19,7 +19,6 @@ import chalk from 'chalk';
 import { resolve as resolvePath, relative as relativePath } from 'path';
 import { paths } from '../../../paths';
 import { Task, templatingTask } from '../../../tasks';
-import { Lockfile } from '../../../versioning';
 import { createPackageVersionProvider } from '../../../version';
 import { CreateContext } from '../../types';
 
@@ -33,12 +32,7 @@ export async function executePluginPackageTemplate(
 ) {
   const { targetDir } = options;
 
-  let lockfile: Lockfile | undefined;
-  try {
-    lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
-  } catch {
-    /* ignored */
-  }
+  const lockfile = await ctx.pacman.loadLockfile();
 
   Task.section('Checking Prerequisites');
   const shortPluginDir = relativePath(paths.targetRoot, targetDir);

@@ -17,16 +17,31 @@
 import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
-import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
+import { Lockfile, LockfileDiff } from '../pacman';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
 
 jest.mock('../util', () => ({
+  ...jest.requireActual('../util'),
   paths: {
     targetRoot: '/',
     resolveTargetRoot: (...paths: string[]) => resolvePath('/', ...paths),
+  },
+}));
+
+const mockLoadLockfile = jest.fn();
+const mockParseLockfile = jest.fn();
+jest.mock('../pacman', () => ({
+  ...jest.requireActual('../pacman'),
+  detectPackageManager: () => {
+    return {
+      name: () => 'mock',
+      lockfileName: () => 'mock.lock',
+      loadLockfile: mockLoadLockfile,
+      parseLockfile: mockParseLockfile,
+    };
   },
 }));
 
@@ -182,36 +197,38 @@ describe('PackageGraph', () => {
     const graph = PackageGraph.fromPackages(testPackages);
 
     mockListChangedFiles.mockResolvedValueOnce(
-      ['README.md', 'packages/a/src/foo.ts', 'yarn.lock'].sort(),
+      ['README.md', 'packages/a/src/foo.ts', 'mock.lock'].sort(),
     );
-    mockReadFileAtRef.mockResolvedValueOnce(`
-a@^1:
-  version: "1.0.0"
 
-c@^1:
-  version: "1.0.0"
-  dependencies:
-      c-dep: ^1
+    const dependencyGraph = new Map<string, Set<string>>([
+      ['a', new Set()],
+      ['c', new Set(['c-dep'])],
+      ['c-dep', new Set()],
+    ]);
 
-c-dep@^2:
-  version: "2.0.0"
-  integrity: sha512-xyz
-`);
-    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
-      Lockfile.parse(`
-a@^1:
-  version: "1.0.0"
+    const oldLockfile = {
+      createSimplifiedDependencyGraph: () => dependencyGraph,
+    } as unknown as Lockfile;
 
-c@^1:
-  version: "1.0.0"
-  dependencies:
-      c-dep: ^1
+    const currentLockfile = {
+      diff: (): LockfileDiff => {
+        return {
+          changed: [{ name: 'c', range: '^1' }],
+          added: [],
+          removed: [],
+        };
+      },
+      createSimplifiedDependencyGraph: () => dependencyGraph,
+    } as unknown as Lockfile;
 
-c-dep@^2:
-  version: "2.0.0"
-  integrity: sha512-xyz-other
-`),
+    // the old one gets `parsed` as the input to it is read from GitUtils.readFileAtRef
+    mockParseLockfile.mockResolvedValue(oldLockfile);
+    mockReadFileAtRef.mockResolvedValueOnce(
+      'does not really matter, we mock the lockfile parsing directly',
     );
+
+    // the current one just gets `loaded`
+    mockLoadLockfile.mockResolvedValue(currentLockfile);
 
     await expect(
       graph
@@ -223,7 +240,7 @@ c-dep@^2:
     ).resolves.toEqual(['a', 'c']);
 
     expect(mockReadFileAtRef).toHaveBeenCalledWith(
-      'yarn.lock',
+      'mock.lock',
       'origin/master',
     );
   });

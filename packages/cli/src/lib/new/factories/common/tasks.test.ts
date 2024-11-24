@@ -24,6 +24,28 @@ import {
 import { CreateContext } from '../../types';
 import { executePluginPackageTemplate } from './tasks';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Lockfile, LockfileEntry } from '@backstage/cli-node';
+
+const LOCKFILE_PACKAGES: Map<string, LockfileEntry[]> = new Map([
+  [
+    'some-package',
+    [
+      {
+        range: '^1.1.0',
+        version: '1.5.0',
+      },
+    ],
+  ],
+]);
+
+const mockLockfile = {
+  get: (name: string) => {
+    return LOCKFILE_PACKAGES.get(name);
+  },
+} as unknown as Lockfile;
+const mockPackageManager = {
+  loadLockfile: async () => mockLockfile,
+};
 
 const mockDir = createMockDirectory();
 
@@ -39,12 +61,7 @@ describe('executePluginPackageTemplate', () => {
 
   it('should execute template', async () => {
     mockDir.setContent({
-      root: {
-        'yarn.lock': `
-some-package@^1.1.0:
-  version "1.5.0"
-`,
-      },
+      root: {},
       own: {
         templates: {
           'test-template': {
@@ -80,6 +97,7 @@ some-package@^1.1.0:
         markAsModified: () => {
           modified = true;
         },
+        pacman: mockPackageManager,
       } as CreateContext,
       {
         templateName: 'test-template',

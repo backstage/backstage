@@ -21,7 +21,7 @@ import { relative as relativePath, resolve as resolvePath } from 'path';
 import { paths } from '../paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
-import { PackageRoles } from '@backstage/cli-node';
+import { detectPackageManager, PackageRoles } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
 
 export function formatErrorMessage(error: any) {
@@ -93,11 +93,12 @@ export const buildPackage = async (options: BuildOptions) => {
       paths.resolveTargetRoot('package.json'),
     );
     if (resolutions?.esbuild) {
+      const pacman = await detectPackageManager();
       console.warn(
         chalk.red(
           'Your root package.json contains a "resolutions" entry for "esbuild". This was ' +
             'included in older @backstage/create-app templates in order to work around build ' +
-            'issues that have since been fixed. Please remove the entry and run `yarn install`',
+            `issues that have since been fixed. Please remove the entry and run '${pacman.name()} install'`,
         ),
       );
     }

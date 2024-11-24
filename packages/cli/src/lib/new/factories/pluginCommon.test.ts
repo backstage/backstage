@@ -25,6 +25,15 @@ import {
 } from './common/testUtils';
 import { pluginCommon } from './pluginCommon';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Lockfile, PackageManager } from '@backstage/cli-node';
+
+const mockLockfile = {
+  get: () => undefined,
+} as unknown as Lockfile;
+const mockPackageManager = {
+  name: () => 'mock',
+  loadLockfile: async () => mockLockfile,
+} as unknown as PackageManager;
 
 describe('pluginCommon factory', () => {
   const mockDir = createMockDirectory();
@@ -63,6 +72,7 @@ describe('pluginCommon factory', () => {
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
       license: 'Apache-2.0',
+      pacman: mockPackageManager,
     });
 
     expect(modified).toBe(true);
@@ -94,11 +104,11 @@ describe('pluginCommon factory', () => {
     );
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock install', {
       cwd: mockDir.resolve('plugins/test-common'),
       optional: true,
     });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
+    expect(Task.forCommand).toHaveBeenCalledWith('mock lint --fix', {
       cwd: mockDir.resolve('plugins/test-common'),
       optional: true,
     });

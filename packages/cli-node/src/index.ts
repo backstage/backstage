@@ -23,3 +23,4 @@
 export * from './git';
 export * from './monorepo';
 export * from './roles';
+export * from './pacman';

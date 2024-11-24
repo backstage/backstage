@@ -34,7 +34,10 @@ import {
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import {
+  BackstagePackageJson,
+  detectPackageManager,
+} from '@backstage/cli-node';
 import { svgrTemplate } from '../svgrTemplate';
 import { readEntryPoints } from '../entryPoints';
 
@@ -212,9 +215,10 @@ export async function makeRollupConfigs(
       const declarationsExist = await fs.pathExists(path);
       if (!declarationsExist) {
         const declarationPath = relativePath(targetDir, path);
+        const pacman = await detectPackageManager();
         throw new Error(
           `No declaration files found at ${declarationPath}, be sure to run ${chalk.bgRed.white(
-            'yarn tsc',
+            `${pacman.name()} tsc`,
           )} to generate .d.ts files before packaging`,
         );
       }
