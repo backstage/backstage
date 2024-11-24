@@ -17,4 +17,5 @@ import { style } from '@vanilla-extract/css';
 
 export const base = style({
   fontFamily: 'var(--canon-font-sans)',
+  color: 'var(--canon-text-primary)',
 });

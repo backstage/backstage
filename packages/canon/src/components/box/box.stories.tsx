@@ -17,6 +17,97 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './box';
+import { listResponsiveValues } from '../../utils/list-values';
+import { responsiveProperties, colorProperties } from './sprinkles.css';
+
+const argTypesResponsive = Object.keys(responsiveProperties.styles)
+  .filter(
+    n =>
+      ![
+        'm',
+        'mb',
+        'ml',
+        'mr',
+        'mt',
+        'mx',
+        'my',
+        'p',
+        'pb',
+        'pl',
+        'pr',
+        'pt',
+        'px',
+        'py',
+      ].includes(n),
+  )
+  .reduce<Record<string, any>>((acc, n) => {
+    if (
+      [
+        'margin',
+        'marginBottom',
+        'marginLeft',
+        'marginRight',
+        'marginTop',
+        'marginX',
+        'marginY',
+        'padding',
+        'paddingBottom',
+        'paddingLeft',
+        'paddingRight',
+        'paddingTop',
+        'paddingX',
+        'paddingY',
+      ].includes(n)
+    ) {
+      acc[n] = {
+        control: 'select',
+        options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
+      };
+    } else {
+      acc[n] = {
+        control: 'select',
+        options: listResponsiveValues(
+          n as keyof typeof responsiveProperties.styles,
+        ),
+      };
+    }
+    return acc;
+  }, {});
+
+const argTypesColor = Object.keys(colorProperties.styles).reduce<
+  Record<string, any>
+>((acc, n) => {
+  acc[n as keyof typeof colorProperties.styles] = {
+    control: 'select',
+    options: Object.keys(
+      colorProperties.styles[n as keyof typeof colorProperties.styles].values,
+    ),
+  };
+  return acc;
+}, {});
+
+const argTypes = {
+  ...argTypesResponsive,
+  ...argTypesColor,
+};
+
+// Sort the resulting object keys alphabetically
+const sortedArgTypes = Object.keys(argTypes)
+  .sort()
+  .reduce((acc, key) => {
+    acc[key] = argTypes[key];
+    return acc;
+  }, {} as Record<string, any>);
+
+// Add 'as' and 'children' to the sortedArgTypes
+sortedArgTypes['as'] = {
+  control: 'select',
+  options: ['div', 'span', 'article', 'section'],
+};
+
+sortedArgTypes['children'] = {
+  control: 'text',
+};
 
 const meta = {
   title: 'Layout/Box',
@@ -24,24 +115,22 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  // tags: ['autodocs'],
+  argTypes: sortedArgTypes,
+  args: {
+    as: 'div',
+    background: 'elevation1',
+    borderRadius: 'small',
+    children: 'Basic Box',
+    display: 'block',
+    padding: 'sm',
+  },
 } satisfies Meta<typeof Box>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-  render: () => (
-    <Box
-      padding="xs"
-      background="background"
-      paddingX="lg"
-      paddingY="md"
-      borderRadius="small"
-    >
-      Basic Box
-    </Box>
-  ),
+  args: {},
 };
 
 export const Responsive: Story = {
