@@ -15,6 +15,7 @@
  */
 
 import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import { InputError } from '@backstage/errors';
 import { DbSearchRow } from '../../tables';
 
 // These are excluded in the generic loop, either because they do not make sense
@@ -197,6 +198,24 @@ export function buildEntitySearch(
       key: `relations.${relation.type}`,
       value: relation.targetRef,
     });
+  }
+
+  // This validates that there are no keys that vary only in casing, such
+  // as `spec.foo` and `spec.Foo`.
+  const keys = new Set(raw.map(r => r.key));
+  const lowerKeys = new Set(raw.map(r => r.key.toLocaleLowerCase('en-US')));
+  if (keys.size !== lowerKeys.size) {
+    const difference = [];
+    for (const key of keys) {
+      const lower = key.toLocaleLowerCase('en-US');
+      if (!lowerKeys.delete(lower)) {
+        difference.push(lower);
+      }
+    }
+    const badKeys = `'${difference.join("', '")}'`;
+    throw new InputError(
+      `Entity has duplicate keys that vary only in casing, ${badKeys}`,
+    );
   }
 
   return mapToRows(raw, entityId);

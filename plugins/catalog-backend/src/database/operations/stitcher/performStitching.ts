@@ -209,6 +209,11 @@ export async function performStitching(options: {
       entity.metadata.etag = hash;
     }
 
+    // This may throw if the entity is invalid, so we call it before
+    // the final_entities write, even though we may end up not needing
+    // to write the search index.
+    const searchEntries = buildEntitySearch(entityId, entity);
+
     const amountOfRowsChanged = await knex<DbFinalEntitiesRow>('final_entities')
       .update({
         final_entity: JSON.stringify(entity),
@@ -223,7 +228,6 @@ export async function performStitching(options: {
       return 'abandoned';
     }
 
-    const searchEntries = buildEntitySearch(entityId, entity);
     await knex.transaction(async trx => {
       await trx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
       await trx.batchInsert('search', searchEntries, BATCH_SIZE);
