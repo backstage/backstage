@@ -1,14 +1,14 @@
 /* Light theme */
 :root {
   --canon-accent: #1ed760;
-  --canon-background: #fff;
-  --canon-surface-1: #f5f5f5;
-  --canon-surface-2: #000;
+  --canon-background: #f8f8f8;
+  --canon-surface-1: #fff;
+  --canon-surface-2: #f4f4f4;
   --canon-outline: #666;
   --canon-outline-focus: #ccc;
   --canon-error: #f50000;
-  --canon-text-primary: #f0f0f0;
-  --canon-text-secondary: #666;
+  --canon-text-primary: #000;
+  --canon-text-secondary: #646464;
   --canon-box-shadow-small: 0 0 0 1px rgba(0, 0, 0, 0.05);
   --canon-box-shadow-medium: 0 0 0 1px rgba(0, 0, 0, 0.1);
   --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2);
@@ -31,9 +31,9 @@
 /* Dark theme */
 [data-theme='dark'] {
   --canon-accent: #1ed760;
-  --canon-background: #fff;
-  --canon-surface-1: #f5f5f5;
-  --canon-surface-2: #000;
+  --canon-background: #000;
+  --canon-surface-1: #121212;
+  --canon-surface-2: #292929;
   --canon-outline: #666;
   --canon-outline-focus: #ccc;
   --canon-text-primary: #f0f0f0;
