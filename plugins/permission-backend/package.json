@@ -58,7 +58,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
-    "@types/express": "*",
+    "@types/express": "^4.17.6",
     "dataloader": "^2.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
