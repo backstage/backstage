@@ -32,6 +32,7 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
+import { MarkdownContent } from '@backstage/core-components';
 
 import { notificationsApiRef } from '../../api';
 import { SelectAll } from './SelectAll';
@@ -42,6 +43,10 @@ const ThrottleDelayMs = 1000;
 
 const useStyles = makeStyles(theme => ({
   description: {
+    /** to make the styles for React Markdown not leak into the description */
+    '& :first-child': {
+      margin: 0,
+    },
     maxHeight: '5rem',
     overflow: 'auto',
   },
@@ -57,6 +62,26 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(0.5),
   },
 }));
+
+const unescapeString = (str: string) => {
+  return str
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\r')
+    .replace(/\\t/g, '\t')
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\')
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&([^;]+);/g, entity => {
+      const entities: Record<string, string> = {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#39;': "'",
+      };
+      return entities[entity] || entity;
+    });
+};
 
 /** @public */
 export type NotificationsTableProps = Pick<
@@ -240,9 +265,10 @@ export const NotificationsTable = ({
                     )}
                   </Typography>
                   {notification.payload.description ? (
-                    <Typography variant="body2" className={classes.description}>
-                      {notification.payload.description}
-                    </Typography>
+                    <MarkdownContent
+                      className={classes.description}
+                      content={unescapeString(notification.payload.description)}
+                    />
                   ) : null}
 
                   <Typography variant="caption">
