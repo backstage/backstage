@@ -222,15 +222,15 @@ integrations:
   #   username: ${BITBUCKET_SERVER_USERNAME}
   #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
 
-  azureBlobStorage:
-    - accountName: ${ACCOUNT_NAME} # required
-      endpoint: ${CUSTOM_ENDPOINT} # custom endpoint will require either aadCredentials or sasToken
-      sasToken: ${SAS_TOKEN}
-      aadCredential:
-        clientId: ${CLIENT_ID}
-        tenantId: ${TENANT_ID}
-        clientSecret: ${CLIENT_SECRET}
-      accountKey: ${ACCOUNT_KEY}
+  # azureBlobStorage:
+  #   - accountName: ${ACCOUNT_NAME} # required
+  #     endpoint: ${CUSTOM_ENDPOINT} # custom endpoint will require either aadCredentials or sasToken
+  #     sasToken: ${SAS_TOKEN}
+  #     aadCredential:
+  #       clientId: ${CLIENT_ID}
+  #       tenantId: ${TENANT_ID}
+  #       clientSecret: ${CLIENT_SECRET}
+  #     accountKey: ${ACCOUNT_KEY}
 
   azure:
     - host: dev.azure.com
