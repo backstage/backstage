@@ -44,6 +44,8 @@ auth:
         audience: ${AUTH_AUTH0_AUDIENCE}
         connection: ${AUTH_AUTH0_CONNECTION}
         connectionScope: ${AUTH_AUTH0_CONNECTION_SCOPE}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
   session:
     secret: ${AUTH_SESSION_SECRET}
 ```
@@ -66,6 +68,7 @@ Auth0 requires a session, so you need to give the session a secret key.
 - `audience`: The intended recipients of the token.
 - `connection`: Social identity provider name. To check the available social connections, please visit [Auth0 Social Connections](https://marketplace.auth0.com/features/social-connections).
 - `connectionScope`: Additional scopes in the interactive token request. It should always be used in combination with the `connection` parameter.
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 

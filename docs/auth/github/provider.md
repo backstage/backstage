@@ -49,6 +49,8 @@ auth:
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
         ## uncomment if using GitHub Enterprise
         # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers
@@ -66,6 +68,7 @@ The GitHub provider is a structure with these configuration keys:
   initiating an OAuth flow, e.g.
   `https://your-intermediate-service.com/handler`. Only needed if Backstage is
   not the immediate receiver (e.g. one OAuth app for many backstage instances).
+- `sessionDuration` (optional): Lifespan of the user session.
 - `signIn`: The configuration for the sign-in process, including the **resolvers**
   that should be used to match the user from the auth provider with the user
   entity in the Backstage catalog (typically a single resolver is sufficient).

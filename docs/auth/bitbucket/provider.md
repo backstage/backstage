@@ -37,6 +37,8 @@ auth:
       development:
         clientId: ${AUTH_BITBUCKET_CLIENT_ID}
         clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/bitbucket/provider#resolvers for more resolvers
@@ -48,6 +50,10 @@ The Bitbucket provider is a structure with two configuration keys:
 - `clientId`: The Key that you generated in Bitbucket, e.g.
   `b59241722e3c3b4816e2`
 - `clientSecret`: The Secret tied to the generated Key.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 
