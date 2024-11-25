@@ -236,8 +236,8 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    title?: string | undefined;
     description?: string | undefined;
+    title?: string | undefined;
   }
 >;
 
@@ -245,8 +245,8 @@ export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
 export const MyGroupsPickerFieldSchema: FieldSchema<
   string,
   {
-    title?: string | undefined;
     description?: string | undefined;
+    title?: string | undefined;
   }
 >;
 
@@ -387,10 +387,10 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -423,10 +423,10 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -450,10 +450,10 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -622,8 +622,8 @@ export const scaffolderPlugin: BackstagePlugin<
     registerComponent: ExternalRouteRef<undefined, true>;
     viewTechDoc: ExternalRouteRef<
       {
-        name: string;
         kind: string;
+        name: string;
         namespace: string;
       },
       true
