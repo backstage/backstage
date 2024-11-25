@@ -237,11 +237,16 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           const newHash = generateStableHash(deferred.entity);
           const oldState = oldStates.get(entityRef);
           if (oldState === undefined) {
+            // Add any entity that does not exist in the database
             toAdd.push({ deferred, hash: newHash });
           } else if (
-            newHash !== oldState.unprocessed_hash ||
-            (deferred.locationKey ?? null) !== (oldState.location_key ?? null) // normalize undefined/null
+            (deferred.locationKey ?? null) !== (oldState.location_key ?? null)
           ) {
+            // Remove and then re-add any entity that exists, but with a different location key
+            toRemove.push(entityRef);
+            toAdd.push({ deferred, hash: newHash });
+          } else if (newHash !== oldState.unprocessed_hash) {
+            // Entities with modifications should be pushed through too
             toUpsert.push({ deferred, hash: newHash });
           }
         });
@@ -294,7 +299,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         // Add any entity that does not exist in the database
         toAdd.push(upsertItem);
       } else if (
-        (oldRef?.locationKey ?? undefined) !==
+        (oldRef.locationKey ?? undefined) !==
         (item.deferred.locationKey ?? undefined)
       ) {
         // Remove and then re-add any entity that exists, but with a different location key
