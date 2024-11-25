@@ -9,11 +9,11 @@ export const breakpoints = {
 
 export const space = {
   none: 0,
-  xxs: 'var(--space-xxs)',
-  xs: 'var(--space-xs)',
-  sm: 'var(--space-sm)',
-  md: 'var(--space-md)',
-  lg: 'var(--space-lg)',
-  xl: 'var(--space-xl)',
-  xxl: 'var(--space-xxl)',
+  xxs: 'var(--canon-space-xxs)',
+  xs: 'var(--canon-space-xs)',
+  sm: 'var(--canon-space-sm)',
+  md: 'var(--canon-space-md)',
+  lg: 'var(--canon-space-lg)',
+  xl: 'var(--canon-space-xl)',
+  xxl: 'var(--canon-space-xxl)',
 };

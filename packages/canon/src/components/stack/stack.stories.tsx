@@ -19,7 +19,7 @@ import { Stack } from './stack';
 import { Box } from '../box/box';
 
 const meta = {
-  title: 'Layout/Stack',
+  title: 'Components/Stack',
   component: Stack,
 } satisfies Meta<typeof Stack>;
 

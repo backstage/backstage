@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 
 export const wrapperStyles = style({
   border: '1px solid #e7e7e7',
@@ -37,6 +37,11 @@ export const cellStyles = style({
   fontFamily: '"Geist", sans-serif',
   fontSize: '16px',
   fontWeight: '300',
+});
+
+// Apply global styles to <p> elements inside cellStyles
+globalStyle(`${cellStyles} p`, {
+  margin: '0',
 });
 
 export const headerRowStyles = style({

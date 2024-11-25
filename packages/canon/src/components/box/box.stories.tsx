@@ -110,7 +110,7 @@ sortedArgTypes['children'] = {
 };
 
 const meta = {
-  title: 'Layout/Box',
+  title: 'Components/Box',
   component: Box,
   parameters: {
     layout: 'centered',
