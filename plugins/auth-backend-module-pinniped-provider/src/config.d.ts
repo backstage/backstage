@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
@@ -27,6 +29,7 @@ export interface Config {
            */
           clientSecret: string;
           scope?: string;
+          sessionDuration?: HumanDuration | string;
         };
       };
     };
