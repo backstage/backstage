@@ -245,13 +245,13 @@ describe('MiddlewareFactory', () => {
     it('should log incoming requests', async () => {
       const app = express();
       app.use(middleware.logging());
-      app.get('/', (_req, res) => res.send('Hello World'));
+      app.get('/', (_req, res) => res.send(''));
 
       await request(app).get('/').expect(200);
 
       expect(logger.info).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 11 "-" "-"',
+          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 0 "-" "-"',
         ),
         {
           type: 'incomingRequest',
@@ -260,7 +260,7 @@ describe('MiddlewareFactory', () => {
           url: '/',
           status: 200,
           httpVersion: '1.1',
-          contentLength: 11,
+          contentLength: 0,
         },
       );
     });

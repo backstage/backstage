@@ -182,9 +182,9 @@ export class MiddlewareFactory {
         logger.info(
           `[${meta.date}] "${meta.method} ${meta.url} HTTP/${
             meta.httpVersion
-          }" ${meta.status} ${meta.contentLength} "${meta.referrer ?? '-'}" "${
-            meta.userAgent ?? '-'
-          }"`,
+          }" ${meta.status} ${meta.contentLength ?? 0} "${
+            meta.referrer ?? '-'
+          }" "${meta.userAgent ?? '-'}"`,
           {
             type: 'incomingRequest',
             ...meta,
