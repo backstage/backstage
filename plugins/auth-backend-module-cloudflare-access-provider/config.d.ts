@@ -43,6 +43,7 @@ export interface Config {
        * The backstage token expiration.
        */
       backstageTokenExpiration?: HumanDuration | string;
+      cookieMaxAge?: HumanDuration | string;
     };
   };
 }

@@ -40,7 +40,7 @@ import {
   SignInResolver,
 } from '../types';
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
 
 /** @public */
@@ -99,6 +99,9 @@ export function createOAuthRouteHandlers<TProfile>(
   const callbackUrl =
     config.getOptionalString('callbackUrl') ??
     `${baseUrl}/${providerId}/handler/frame`;
+  const cookieMaxAge = config.has('cookieMaxAge')
+    ? readDurationFromConfig(config, { key: 'cookieMaxAge' })
+    : undefined;
 
   const stateTransform = options.stateTransform ?? (state => ({ state }));
   const profileTransform =
@@ -110,6 +113,7 @@ export function createOAuthRouteHandlers<TProfile>(
     defaultAppOrigin,
     providerId,
     cookieConfigurer,
+    cookieMaxAge,
   });
 
   const scopeManager = CookieScopeManager.create({
