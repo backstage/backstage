@@ -943,7 +943,7 @@ describe('DefaultProviderDatabase', () => {
             entity_ref: stringifyEntityRef(entity6),
             unprocessed_entity: JSON.stringify(entity6),
             unprocessed_hash: generateStableHash(entity6),
-            location_key: 'old', // TODO(freben): This should have been updated to "new", but we do not support that yet
+            location_key: 'new', // managed to update only the location key
           },
         ]);
       },

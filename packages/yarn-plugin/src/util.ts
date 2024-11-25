@@ -16,7 +16,7 @@
 
 import { ppath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
-import { memoize } from 'lodash';
+import memoize from 'lodash/memoize';
 import { getManifestByVersion as getManifestByVersionBase } from '@backstage/release-manifests';
 import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { Descriptor, structUtils } from '@yarnpkg/core';
