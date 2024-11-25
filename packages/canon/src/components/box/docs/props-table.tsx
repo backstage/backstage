@@ -1,6 +1,6 @@
 import React from 'react';
-import * as Table from '../../../storybook';
-import { Chip } from '../../../storybook';
+import * as Table from '../../../../docs/components';
+import { Chip } from '../../../../docs/components';
 import { listResponsiveValues } from '../../../utils/list-values';
 import { responsiveProperties } from '../sprinkles.css';
 

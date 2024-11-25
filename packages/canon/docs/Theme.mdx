@@ -1,6 +1,6 @@
 import { Unstyled, Source } from '@storybook/blocks';
-import { Title, Text, Chip } from '../storybook';
-import * as Table from '../storybook/table';
+import { Title, Text, Chip } from './components';
+import * as Table from './components/table';
 
 <Unstyled>
 
@@ -79,49 +79,49 @@ import * as Table from '../storybook/table';
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-accent</Chip>
+        <Chip head>--canon-accent</Chip>
       </Table.Cell>
       <Table.Cell>The accent color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-bg</Chip>
+        <Chip head>--canon-bg</Chip>
       </Table.Cell>
       <Table.Cell>The background color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-surface-1</Chip>
+        <Chip head>--canon-surface-1</Chip>
       </Table.Cell>
       <Table.Cell>The first surface color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-surface-2</Chip>
+        <Chip head>--canon-surface-2</Chip>
       </Table.Cell>
       <Table.Cell>The second surface color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-outline</Chip>
+        <Chip head>--canon-outline</Chip>
       </Table.Cell>
       <Table.Cell>The outline color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-outline-focus</Chip>
+        <Chip head>--canon-outline-focus</Chip>
       </Table.Cell>
       <Table.Cell>The outline focus color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-text-primary</Chip>
+        <Chip head>--canon-text-primary</Chip>
       </Table.Cell>
       <Table.Cell>The primary text color for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-text-secondary</Chip>
+        <Chip head>--canon-text-secondary</Chip>
       </Table.Cell>
       <Table.Cell>The secondary text color for the theme.</Table.Cell>
     </Table.Row>
@@ -145,15 +145,84 @@ import * as Table from '../storybook/table';
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-font-sans</Chip>
+        <Chip head>--canon-font-sans</Chip>
       </Table.Cell>
       <Table.Cell>The sans-serif font for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip>--canon-font-mono</Chip>
+        <Chip head>--canon-font-mono</Chip>
       </Table.Cell>
       <Table.Cell>The monospace font for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+<Title type="h2">Spacing</Title>
+<Text>
+  Our default spacing system is made to made to work in most scenarios. We have
+  7 scale values from `xxs` to `xxl`. We use the values on padding and margin in
+  our layout components mostly. If you prefer to use a different spacing system,
+  you can do that by changing the values below.
+</Text>
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-unit</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The base unit for the spacing system. Default value is `1em`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-xxs</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `0.25 x space unit`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-xs</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `0.5 x space unit`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-sm</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `0.75 x space unit`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-md</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `1.25 x space unit`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-lg</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `2 x space unit`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-xl</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `3.25 x space unit`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-xxl</Chip>
+      </Table.Cell>
+      <Table.Cell>Default value is `5.25 x space unit`</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>

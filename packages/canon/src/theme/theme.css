@@ -18,14 +18,14 @@
   --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
 
-  --space-unit: 1em;
-  --space-xxs: calc(0.25 * var(--space-unit));
-  --space-xs: calc(0.5 * var(--space-unit));
-  --space-sm: calc(0.75 * var(--space-unit));
-  --space-md: calc(1.25 * var(--space-unit));
-  --space-lg: calc(2 * var(--space-unit));
-  --space-xl: calc(3.25 * var(--space-unit));
-  --space-xxl: calc(5.25 * var(--space-unit));
+  --canon-space-unit: 1em;
+  --canon-space-xxs: calc(0.25 * var(--canon-space-unit));
+  --canon-space-xs: calc(0.5 * var(--canon-space-unit));
+  --canon-space-sm: calc(0.75 * var(--canon-space-unit));
+  --canon-space-md: calc(1.25 * var(--canon-space-unit));
+  --canon-space-lg: calc(2 * var(--canon-space-unit));
+  --canon-space-xl: calc(3.25 * var(--canon-space-unit));
+  --canon-space-xxl: calc(5.25 * var(--canon-space-unit));
 }
 
 /* Dark theme */

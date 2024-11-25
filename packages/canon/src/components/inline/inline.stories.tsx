@@ -19,7 +19,7 @@ import { Inline } from './inline';
 import { Box } from '../box/box';
 
 const meta = {
-  title: 'Layout/Inline',
+  title: 'Components/Inline',
   component: Inline,
 } satisfies Meta<typeof Inline>;
 
