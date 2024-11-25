@@ -31,9 +31,9 @@ export function initDatabaseMetrics(knex: Knex) {
       async collect() {
         const results = await knex<DbSearchRow>('search')
           .where('key', '=', 'kind')
-          .whereNotNull('original_value')
-          .select({ kind: 'original_value', count: knex.raw('count(*)') })
-          .groupBy('original_value');
+          .whereNotNull('value')
+          .select({ kind: 'value', count: knex.raw('count(*)') })
+          .groupBy('value');
 
         results.forEach(({ kind, count }) => {
           seenProm.add(kind);
@@ -76,9 +76,9 @@ export function initDatabaseMetrics(knex: Knex) {
       .addCallback(async gauge => {
         const results = await knex<DbSearchRow>('search')
           .where('key', '=', 'kind')
-          .whereNotNull('original_value')
-          .select({ kind: 'original_value', count: knex.raw('count(*)') })
-          .groupBy('original_value');
+          .whereNotNull('value')
+          .select({ kind: 'value', count: knex.raw('count(*)') })
+          .groupBy('value');
 
         results.forEach(({ kind, count }) => {
           seen.add(kind);
