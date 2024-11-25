@@ -52,11 +52,11 @@ import {
   AuthorizeResult,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { scaffolderActionRules } from '@backstage/plugin-scaffolder-node/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
