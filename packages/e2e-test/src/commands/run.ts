@@ -61,10 +61,15 @@ export async function run(opts: OptionValues) {
 
   print('Creating a Backstage Plugin');
   const pluginId = 'test';
-  await createPlugin({ appDir, pluginId, select: 'plugin' });
+  await createPlugin({ appDir, workspaceDir, pluginId, select: 'plugin' });
 
   print('Creating a Backstage Backend Plugin');
-  await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
+  await createPlugin({
+    appDir,
+    workspaceDir,
+    pluginId,
+    select: 'backend-plugin',
+  });
 
   print(`Running 'yarn test:e2e' in newly created app with new plugin`);
   await runPlain(['yarn', 'test:e2e'], {
@@ -374,10 +379,11 @@ async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
  */
 async function createPlugin(options: {
   appDir: string;
+  workspaceDir: string;
   pluginId: string;
   select: string;
 }) {
-  const { appDir, pluginId, select } = options;
+  const { appDir, workspaceDir, pluginId, select } = options;
   const child = spawnPiped(
     ['yarn', 'new', '--select', select, '--option', `id=${pluginId}`],
     {
@@ -400,8 +406,13 @@ async function createPlugin(options: {
       select === 'backend-plugin' ? `${pluginId}-backend` : pluginId,
     );
 
-    print(`Running 'yarn tsc' in root for newly created plugin`);
-    await runPlain(['yarn', 'tsc'], { cwd: appDir });
+    print('Rewriting module resolutions in newly-created plugin');
+    await overrideModuleResolutions(appDir, workspaceDir);
+
+    for (const cmd of [['install'], ['tsc']]) {
+      print(`Running 'yarn ${cmd.join(' ')}' in root for newly created plugin`);
+      await runPlain(['yarn', ...cmd], { cwd: appDir });
+    }
 
     for (const cmd of [['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
