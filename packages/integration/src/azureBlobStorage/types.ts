@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader } from '@backstage/config';
+
+import { TokenCredential } from '@azure/identity';
 import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from './ScmIntegrationsApi';
+  StorageSharedKeyCredential,
+  AnonymousCredential,
+} from '@azure/storage-blob';
 
-describe('scmIntegrationsApiRef', () => {
-  it('should export api', () => {
-    expect(scmIntegrationsApiRef).toBeDefined();
-  });
-
-  it('should be instantiated', () => {
-    const i = ScmIntegrationsApi.fromConfig(new ConfigReader({}));
-    expect(i.list().length).toBe(7); // The default ones
-  });
-});
+/**
+ * This allows implementations to be provided to retrieve Azure Storage accounts credentials.
+ *
+ * @public
+ *
+ */
+export interface AzureCredentialsManager {
+  getCredentials(
+    accountName: string,
+  ): Promise<
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
+}

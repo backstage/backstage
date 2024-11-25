@@ -3581,6 +3581,8 @@ __metadata:
     "@aws-sdk/credential-providers": ^3.350.0
     "@aws-sdk/types": ^3.347.0
     "@aws-sdk/util-stream-node": ^3.350.0
+    "@azure/identity": ^4.0.0
+    "@azure/storage-blob": ^12.5.0
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-dev-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -4673,6 +4675,7 @@ __metadata:
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
     "@azure/identity": ^4.0.0
+    "@azure/storage-blob": ^12.5.0
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
@@ -5418,6 +5421,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-azure@workspace:plugins/catalog-backend-module-azure"
   dependencies:
+    "@azure/identity": ^4.0.0
+    "@azure/storage-blob": ^12.5.0
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
