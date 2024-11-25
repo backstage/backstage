@@ -42,6 +42,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { PopperProps } from '@material-ui/core/Popper';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -91,6 +92,10 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
 };
+
+const Popper = React.memo(function Popper({ children }: PopperProps) {
+  return <div>{children as ReactNode}</div>;
+});
 
 function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
   const classes = useStyles();
@@ -188,9 +193,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
       <Typography className={classes.label} variant="button" component="label">
         {t('entityOwnerPicker.title')}
         <Autocomplete
-          PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children as ReactNode}</div>
-          )}
+          PopperComponent={Popper}
           multiple
           disableCloseOnSelect
           loading={loading}
