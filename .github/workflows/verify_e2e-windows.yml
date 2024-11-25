@@ -11,6 +11,8 @@ on:
       - 'packages/cli/**'
       - 'packages/e2e-test/**'
       - 'packages/create-app/**'
+  push:
+    branches: [master]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
