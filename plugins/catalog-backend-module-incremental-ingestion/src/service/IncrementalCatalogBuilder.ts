@@ -29,7 +29,10 @@ import { IncrementalIngestionDatabaseManager } from '../database/IncrementalInge
 import { IncrementalProviderRouter } from '../router/routes';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system and import `@backstage/plugin-catalog-backend-module-incremental-ingestion` as a module, and add providers to the `incrementalIngestionProvidersExtensionPoint` instead
+ */
 export class IncrementalCatalogBuilder {
   /**
    * Creates the incremental catalog builder, which extends the regular catalog builder.

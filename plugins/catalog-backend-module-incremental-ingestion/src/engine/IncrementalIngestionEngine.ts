@@ -21,12 +21,10 @@ import { performance } from 'perf_hooks';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';
 
-export class IncrementalIngestionEngine
-  implements IterationEngine, EventSubscriber
-{
+export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
   private readonly backoff: HumanDuration[];
 
