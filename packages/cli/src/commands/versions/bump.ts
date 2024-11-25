@@ -44,6 +44,7 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from './utils';
+import { run } from '../../lib/run';
 
 function shouldUseGlobalAgent(): boolean {
   // see https://www.npmjs.com/package/global-agent
@@ -118,6 +119,20 @@ export default async (opts: OptionValues) => {
       releaseLine: opts.releaseLine,
       releaseManifest,
     });
+  }
+
+  if (hasYarnPlugin) {
+    console.log();
+    console.log(
+      `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
+    );
+    console.log();
+    await run('yarn', [
+      'plugin',
+      'import',
+      `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`,
+    ]);
+    console.log();
   }
 
   // First we discover all Backstage dependencies within our own repo
