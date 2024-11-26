@@ -154,6 +154,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
     alwaysUseDefaultNamespace?: boolean;
+    userQueryOptions?: QueryOptions;
+    teamQueryOptions?: QueryOptions;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -175,7 +177,9 @@ export interface GithubMultiOrgEntityProviderOptions {
   logger: LoggerService;
   orgs?: string[];
   schedule?: 'manual' | SchedulerServiceTaskRunner;
+  teamQueryOptions?: QueryOptions;
   teamTransformer?: TeamTransformer;
+  userQueryOptions?: QueryOptions;
   userTransformer?: UserTransformer;
 }
 
@@ -229,6 +233,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
+    userQueryOptions?: QueryOptions;
+    teamQueryOptions?: QueryOptions;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -251,7 +257,9 @@ export interface GithubOrgEntityProviderOptions {
   logger: LoggerService;
   orgUrl: string;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
+  teamQueryOptions?: QueryOptions;
   teamTransformer?: TeamTransformer;
+  userQueryOptions?: QueryOptions;
   userTransformer?: UserTransformer;
 }
 
@@ -300,6 +308,12 @@ export type GithubUser = {
   email?: string;
   name?: string;
   organizationVerifiedDomainEmails?: string[];
+};
+
+// @public
+export type QueryOptions = {
+  pageSize?: number;
+  requestDelayMs?: number;
 };
 
 // @public
