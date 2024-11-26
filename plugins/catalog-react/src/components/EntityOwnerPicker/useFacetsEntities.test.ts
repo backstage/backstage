@@ -17,7 +17,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFacetsEntities } from './useFacetsEntities';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 const mockCatalogApi = catalogApiMock.mock();
 
@@ -35,25 +34,6 @@ describe('useFacetsEntities', () => {
     facets: {
       'relations.ownedBy': entityRefs.map(value => ({ count: 1, value })),
     },
-  });
-
-  const entitiesFromEntityRefs = (
-    entityRefs: string[],
-    enrichedEntities: { [key: string]: Entity } = {},
-  ) => ({
-    items: entityRefs.map(ref => {
-      const compoundRef = parseEntityRef(ref);
-      return (
-        enrichedEntities[ref] || {
-          apiVersion: 'backstage.io/v1beta1',
-          kind: compoundRef.kind,
-          metadata: {
-            name: compoundRef.name,
-            namespace: compoundRef.namespace,
-          },
-        }
-      );
-    }),
   });
 
   it(`should return empty items when facets are loading`, () => {
