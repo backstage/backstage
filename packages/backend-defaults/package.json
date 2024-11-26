@@ -168,7 +168,7 @@
     "cron": "^3.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "express-rate-limit": "^7.4.0",
+    "express-rate-limit": "^7.5.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",

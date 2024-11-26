@@ -117,11 +117,11 @@ const rootHttpRouterServiceFactoryWithOptions = (
           if (trustProxy !== undefined) {
             app.set('trust proxy', trustProxy);
           }
-          app.use(middleware.rateLimit());
           app.use(middleware.helmet());
           app.use(middleware.cors());
           app.use(middleware.compression());
           app.use(middleware.logging());
+          app.use(middleware.rateLimit());
           app.use(healthRouter);
           app.use(routes);
           app.use(middleware.notFound());

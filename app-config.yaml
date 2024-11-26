@@ -36,6 +36,12 @@ backend:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
 
+  # Used for testing rate limiting locally
+  # rateLimit:
+  #   windowMs: 60000
+  #   incomingRequestLimit: 1
+  #   ipAllowList: []
+
   auth:
     # TODO: once plugins have been migrated we can remove this, but right now it
     # is require for the backend-next to work in this repo

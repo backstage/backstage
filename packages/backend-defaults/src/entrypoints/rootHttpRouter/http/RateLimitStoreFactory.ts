@@ -15,7 +15,6 @@
  */
 import { Config } from '@backstage/config';
 import type { Store } from 'express-rate-limit';
-import KeyvRedis from '@keyv/redis';
 import { RedisStore } from 'rate-limit-redis';
 
 /**
@@ -24,10 +23,8 @@ import { RedisStore } from 'rate-limit-redis';
  * @internal
  */
 export class RateLimitStoreFactory {
-  constructor(private readonly config: Config) {}
-
-  create(): Store | undefined {
-    const store = this.config.getOptionalConfig('backend.rateLimit.store');
+  static create(config: Config): Store | undefined {
+    const store = config.getOptionalConfig('backend.rateLimit.store');
     if (!store) {
       return undefined;
     }
@@ -40,12 +37,15 @@ export class RateLimitStoreFactory {
     }
   }
 
-  redis(storeConfig: Config): Store {
+  private static redis(storeConfig: Config): Store {
     const connectionString = storeConfig.getString('connection');
+    const KeyvRedis = require('@keyv/redis').default;
     const keyv = new KeyvRedis(connectionString);
     return new RedisStore({
-      // Keyv uses ioredis under the hood
-      sendCommand: (...args: string[]) => keyv.redis.call(...args),
+      sendCommand: async (...args: string[]) => {
+        const client = await keyv.getClient();
+        return client.sendCommand(args);
+      },
     });
   }
 }

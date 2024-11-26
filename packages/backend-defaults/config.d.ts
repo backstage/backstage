@@ -791,10 +791,10 @@ export interface Config {
     };
 
     /**
-     * Rate limiting options
+     * Rate limiting options. Defining this as `true` will enable rate limiting with default values.
      */
     rateLimit?:
-      | false
+      | true
       | {
           store?:
             | {
@@ -806,9 +806,9 @@ export interface Config {
               };
           /**
            * Time frame in milliseconds or as human duration for which requests are checked/remembered.
-           * Defaults to 6000ms.
+           * Defaults to one minute.
            */
-          window?: number | HumanDuration;
+          window?: string | HumanDuration;
           /**
            * The maximum number of connections to allow during the `window` before rate limiting the client.
            * Defaults to 5.
