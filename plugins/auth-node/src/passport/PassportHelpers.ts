@@ -19,6 +19,7 @@ import { decodeJwt } from 'jose';
 import { Strategy } from 'passport';
 import { PassportProfile } from './types';
 import { ProfileInfo } from '../types';
+import { ForwardedError } from '@backstage/errors';
 
 // Re-declared here to avoid direct dependency on passport-oauth2
 /** @internal */
@@ -76,7 +77,10 @@ export class PassportHelpers {
           displayName = decoded.name;
         }
       } catch (e) {
-        throw new Error(`Failed to parse id token and get profile info, ${e}`);
+        throw new ForwardedError(
+          `Failed to parse id token and get profile info`,
+          e,
+        );
       }
     }
 
@@ -191,9 +195,7 @@ export class PassportHelpers {
           params: any,
         ) => {
           if (err) {
-            reject(
-              new Error(`Failed to refresh access token ${err.toString()}`),
-            );
+            reject(new ForwardedError(`Failed to refresh access token`, err));
           }
           if (!accessToken) {
             reject(
