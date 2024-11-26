@@ -252,22 +252,22 @@ catalog:
 
   processors:
     ldapOrg:
-    ### Example for how to add your enterprise LDAP server
-    # providers:
-    #   - target: ldaps://ds.example.net
-    #     bind:
-    #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-    #       secret: ${LDAP_SECRET}
-    #     users:
-    #       dn: ou=people,ou=example,dc=example,dc=net
-    #       options:
-    #         filter: (uid=*)
-    #       map:
-    #         description: l
-    #     groups:
-    #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
-    #       options:
-    #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
+      ### Example for how to add your enterprise LDAP server
+      # providers:
+      #   - target: ldaps://ds.example.net
+      #     bind:
+      #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+      #       secret: ${LDAP_SECRET}
+      #     users:
+      #       dn: ou=people,ou=example,dc=example,dc=net
+      #       options:
+      #         filter: (uid=*)
+      #       map:
+      #         description: l
+      #     groups:
+      #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+      #       options:
+      #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
 
   locations:
     # Add a location here to ingest it, for example from a URL:
@@ -306,12 +306,12 @@ catalog:
       rules:
         - allow: [Template]
 scaffolder:
-# Use to customize default commit author info used when new components are created
-# defaultAuthor:
-#   name: Scaffolder
-#   email: scaffolder@backstage.io
-# Use to customize the default commit message when new components are created
-# defaultCommitMessage: 'Initial commit'
+  # Use to customize default commit author info used when new components are created
+  # defaultAuthor:
+  #   name: Scaffolder
+  #   email: scaffolder@backstage.io
+  # Use to customize the default commit message when new components are created
+  # defaultCommitMessage: 'Initial commit'
 
 auth:
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
