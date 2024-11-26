@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices, TestCaches } from '@backstage/backend-test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory';
-import { RedisStore } from 'rate-limit-redis';
+
+jest.mock('@keyv/redis', () => {
+  const Actual = jest.requireActual('@keyv/redis');
+  return {
+    ...Actual,
+    __esModule: true,
+    default: jest.fn(() => {
+      return {
+        getClient: jest.fn(() => ({
+          sendCommand: jest.fn().mockReturnValue('mock'),
+        })),
+      };
+    }),
+  };
+});
 
 describe('CacheRateLimitStoreFactory', () => {
-  const caches = TestCaches.create();
-
   afterEach(jest.clearAllMocks);
 
   it('should return undefined store with auto configuration if redis is not available', () => {
@@ -32,31 +44,24 @@ describe('CacheRateLimitStoreFactory', () => {
         },
       },
     });
-    const factory = new RateLimitStoreFactory(config);
-    const store = factory.create();
+    const store = RateLimitStoreFactory.create(config);
     expect(store).toBeUndefined();
   });
 
   it('should return redis store if configured explicitly', async () => {
-    if (!caches.supports('REDIS_7')) {
-      return;
-    }
-    const conf = await caches.init('REDIS_7');
-
     const config = mockServices.rootConfig({
       data: {
         backend: {
           rateLimit: {
             store: {
               client: 'redis',
-              connection: conf.connection,
+              connection: 'redis://localhost:6379',
             },
           },
         },
       },
     });
-    const factory = new RateLimitStoreFactory(config);
-    const store = factory.create();
-    expect(store).toBeInstanceOf(RedisStore);
+    const store = RateLimitStoreFactory.create(config);
+    expect(store).not.toBeUndefined();
   });
 });
