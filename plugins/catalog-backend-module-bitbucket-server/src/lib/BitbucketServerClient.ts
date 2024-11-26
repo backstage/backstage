@@ -28,7 +28,7 @@ const throttle = pThrottle({
 });
 
 const throttledFetch = throttle(
-  async (url: fetch.RequestInfo, options?: fetch.RequestInit) => {
+  async (url: RequestInfo, options?: RequestInit) => {
     return await fetch(url, options);
   },
 );
