@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- cce9cae: Deprecate old-backend-system `IncrementalCatalogBuilder`
+- 5aa44d2: Wire up the events together in the new backend system
+- cbfc69e: Create a `dev/index.ts` entrypoint for `yarn start`
+- 3ca5f70: Ensure that the scheduled worker task doesn't run at an unreasonably high frequency
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-catalog-backend@1.28.1-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+  - @backstage/plugin-permission-common@0.8.2
+
 ## 0.6.0
 
 ### Minor Changes

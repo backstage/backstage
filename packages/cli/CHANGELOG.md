@@ -1,5 +1,28 @@
 # @backstage/cli
 
+## 0.29.3-next.0
+
+### Patch Changes
+
+- 2b6c1ea: If the Backstage yarn plugin is installed, it will now be automatically updated as part of `versions:bump`.
+- 7dcff85: Remove special-casing for `@types` packages when generating dependency entries
+  during templating
+- 0aff006: Bumped the version range for `html-webpack-plugin` to fix the `htmlPluginExports.getCompilationHooks is not a function` error when using experimental Rspack.
+- 583f3d4: Added `@backstage/cli/config/prettier` as a replacement for `@spotify/prettier-config`, but with the same configuration.
+- 5f04976: Update `rollup` to avoid issues with build output when running `backstage-cli package build`.
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/release-manifests@0.0.12-next.0
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.0
+
 ## 0.29.0
 
 ### Minor Changes

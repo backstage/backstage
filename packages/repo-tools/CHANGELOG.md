@@ -1,5 +1,22 @@
 # @backstage/repo-tools
 
+## 0.12.0-next.0
+
+### Minor Changes
+
+- c1eccd6: Fix invalid path and malformed flags bugs in api-reports.ts
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+
 ## 0.11.0
 
 ### Minor Changes

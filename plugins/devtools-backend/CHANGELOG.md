@@ -1,5 +1,21 @@
 # @backstage/plugin-devtools-backend
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- 1e624ca: Restrict `@types/express` version range from `*` to `^4.17.6`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-devtools-common@0.1.13
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-node@0.8.6-next.0
+
 ## 0.4.2
 
 ### Patch Changes
