@@ -44,8 +44,8 @@ export class RateLimitStoreFactory {
     const connectionString = storeConfig.getString('connection');
     const keyv = new KeyvRedis(connectionString);
     return new RedisStore({
-      // Keyv uses ioredis under the hood
-      sendCommand: (...args: string[]) => keyv.redis.call(...args),
+      // Keyv uses node-redis under the hood
+      sendCommand: (...args: string[]) => keyv.client.sendCommand(args),
     });
   }
 }

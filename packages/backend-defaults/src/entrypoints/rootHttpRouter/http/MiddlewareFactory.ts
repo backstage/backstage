@@ -44,8 +44,8 @@ import {
 } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
 import { rateLimit } from 'express-rate-limit';
-import { Config } from '@backstage/config';
-import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory';
 
 type LogMeta = {
@@ -242,44 +242,41 @@ export class MiddlewareFactory {
    * @returns An Express request handler
    */
   rateLimit(): RequestHandler {
-    const conf = this.#config.getOptional<boolean | Config>(
-      'backend.rateLimit',
-    );
-    if (!conf || typeof conf !== 'object') {
+    const enabled = this.#config.has('backend.rateLimit');
+    if (!enabled) {
       return (_req: Request, _res: Response, next: NextFunction) => {
         next();
       };
     }
-    const rateLimitOptions = conf as Config;
-    const window = rateLimitOptions.getOptional<number | HumanDuration>(
-      'window',
-    );
-    let windowMs: number | undefined;
-    if (window !== undefined) {
-      if (typeof window === 'number') {
-        windowMs = window;
-      } else if (typeof window === 'object' && !Array.isArray(window)) {
-        windowMs = durationToMilliseconds(window);
-      } else {
-        throw new Error(
-          `Invalid configuration backend.rateLimit.window: ${window}, expected milliseconds number or HumanDuration object`,
-        );
-      }
+
+    const useDefaults = this.#config.getOptional('backend.rateLimit');
+    const rateLimitOptions =
+      useDefaults === true
+        ? undefined
+        : this.#config.getOptionalConfig('backend.rateLimit');
+
+    let windowMs: number = 60000;
+    if (rateLimitOptions && rateLimitOptions.has('window')) {
+      const windowDuration = readDurationFromConfig(rateLimitOptions, {
+        key: 'window',
+      });
+      windowMs = durationToMilliseconds(windowDuration);
     }
 
-    const ipAllowList = rateLimitOptions.getOptionalStringArray(
+    const ipAllowList = rateLimitOptions?.getOptionalStringArray(
       'ipAllowList',
     ) ?? ['127.0.0.1', '0:0:0:0:0:0:0:1', '::1'];
 
     return rateLimit({
       windowMs,
-      limit: rateLimitOptions.getOptionalNumber('incomingRequestLimit'),
-      skipSuccessfulRequests: rateLimitOptions.getOptionalBoolean(
+      limit: rateLimitOptions?.getOptionalNumber('incomingRequestLimit'),
+      skipSuccessfulRequests: rateLimitOptions?.getOptionalBoolean(
         'skipSuccessfulRequests',
       ),
       skipFailedRequests:
-        rateLimitOptions.getOptionalBoolean('skipFailedRequests'),
-      passOnStoreError: rateLimitOptions.getOptionalBoolean('passOnStoreError'),
+        rateLimitOptions?.getOptionalBoolean('skipFailedRequests'),
+      passOnStoreError:
+        rateLimitOptions?.getOptionalBoolean('passOnStoreError'),
       keyGenerator(req, _res): string {
         if (!req.ip) {
           return req.socket.remoteAddress!;
@@ -298,7 +295,9 @@ export class MiddlewareFactory {
       validate: {
         trustProxy: false,
       },
-      store: new RateLimitStoreFactory(this.#config).create(),
+      store: useDefaults
+        ? undefined
+        : new RateLimitStoreFactory(this.#config).create(),
     });
   }
 
