@@ -21,3 +21,4 @@ export * from './text';
 export * from './columns';
 export * from './component-status';
 export * from './layout-components';
+export * from './banner';
