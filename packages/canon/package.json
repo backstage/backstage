@@ -9,6 +9,7 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "private": true,
   "keywords": [
     "backstage"
   ],
