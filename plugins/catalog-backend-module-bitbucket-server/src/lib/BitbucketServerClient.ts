@@ -21,14 +21,14 @@ import {
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
 import pThrottle from 'p-throttle';
 
+// 1 per second
 const throttle = pThrottle({
   limit: 1,
-  interval: 500,
+  interval: 1000,
 });
 
 const throttledFetch = throttle(
   async (url: fetch.RequestInfo, options?: fetch.RequestInit) => {
-    console.log(JSON.stringify(url));
     return await fetch(url, options);
   },
 );
