@@ -475,6 +475,8 @@ export async function createRouter(
             description: schema.description,
             schema,
           })),
+          EXPERIMENTAL_formDecorators:
+            template.spec.EXPERIMENTAL_formDecorators,
         });
       },
     )

@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 
-export { formFieldsApiRef, formDecoratorsApiRef } from './ref';
-export type {
-  ScaffolderFormFieldsApi,
-  ScaffolderFormDecoratorsApi,
-} from './types';
-export { DefaultScaffolderFormDecoratorsApi } from './FormDecoratorsApi';
+export const mockDecorator = createScaffolderFormDecorator({
+  id: 'mock-decorator',
+  schema: {
+    input: {
+      test: z => z.string(),
+    },
+  },
+  deps: {
+    githubApi: githubAuthApiRef,
+  },
+  decorator: async (
+    { setSecrets, setFormState, input: { test } },
+    { githubApi: _githubApi },
+  ) => {
+    setFormState(state => ({ ...state, test, mock: 'MOCK' }));
+    setSecrets(state => ({ ...state, GITHUB_TOKEN: 'MOCK_TOKEN' }));
+  },
+});

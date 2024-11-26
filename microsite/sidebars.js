@@ -101,6 +101,7 @@ module.exports = {
           'features/software-templates/migrating-to-rjsf-v5',
           'features/software-templates/migrating-from-v1beta2-to-v1beta3',
           'features/software-templates/dry-run-testing',
+          'features/software-templates/experimental',
         ],
       },
       {
