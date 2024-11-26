@@ -94,6 +94,16 @@ export const GoogleLdapVendor: LdapVendor = {
   },
 };
 
+export const LLDAPVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'entryuuid',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name.toLocaleLowerCase('en-US'), value => {
+      return value.toString();
+    });
+  },
+};
+
 // Decode an attribute to a consumer
 function decode(
   entry: SearchEntry,

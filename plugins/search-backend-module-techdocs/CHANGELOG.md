@@ -1,5 +1,22 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- ed0aaec: Update README
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-techdocs-node@1.12.15-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-search-backend-node@1.3.6-next.0
+  - @backstage/plugin-search-common@1.2.15
+
 ## 0.3.2
 
 ### Patch Changes

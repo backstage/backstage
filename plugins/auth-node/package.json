@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.5.4",
+  "version": "0.5.5-next.0",
   "backstage": {
     "role": "node-library",
     "pluginId": "auth",
@@ -44,7 +44,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "*",
+    "@types/express": "^4.17.6",
     "@types/passport": "^1.0.3",
     "express": "^4.17.1",
     "jose": "^5.0.0",

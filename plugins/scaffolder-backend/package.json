@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "1.27.0",
+  "version": "1.28.0-next.0",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -73,6 +73,7 @@
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-azure": "workspace:^",

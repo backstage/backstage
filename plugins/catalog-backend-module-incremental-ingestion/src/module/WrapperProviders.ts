@@ -119,12 +119,17 @@ export class WrapperProviders {
         connection,
       });
 
-      const frequency = Duration.isDuration(burstInterval)
+      let frequency = Duration.isDuration(burstInterval)
         ? burstInterval
         : Duration.fromObject(burstInterval);
-      const length = Duration.isDuration(burstLength)
+      if (frequency.as('milliseconds') < 5000) {
+        frequency = Duration.fromObject({ seconds: 5 }); // don't let it be silly low, to not overload the scheduler
+      }
+
+      let length = Duration.isDuration(burstLength)
         ? burstLength
         : Duration.fromObject(burstLength);
+      length = length.plus(Duration.fromObject({ minutes: 1 })); // some margin from the actual completion
 
       await this.options.scheduler.scheduleTask({
         id: provider.getProviderName(),

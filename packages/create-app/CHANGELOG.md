@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.5.23-next.0
+
+### Patch Changes
+
+- 5819f8d: Updated Dockerfile to include `backstage.json` file
+- 583f3d4: Updated the template to use `@backstage/cli/config/prettier` instead of `@spotify/prettier-config`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.22
 
 ### Patch Changes

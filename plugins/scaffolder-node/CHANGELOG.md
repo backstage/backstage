@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 0.6.0
 
 ### Minor Changes

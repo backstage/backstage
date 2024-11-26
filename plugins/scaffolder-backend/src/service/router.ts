@@ -122,6 +122,7 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
+import { EventsService } from '@backstage/plugin-events-node';
 import { keyBy } from 'lodash';
 
 /**
@@ -159,6 +160,7 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
   discovery?: DiscoveryService;
+  events?: EventsService;
 
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
@@ -271,6 +273,7 @@ export async function createRouter(
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
     autocompleteHandlers = {},
+    events: eventsService,
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -290,7 +293,10 @@ export async function createRouter(
 
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({ database });
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database,
+      events: eventsService,
+    });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,
       logger,
@@ -498,6 +504,8 @@ export async function createRouter(
             description: schema.description,
             schema,
           })),
+          EXPERIMENTAL_formDecorators:
+            template.spec.EXPERIMENTAL_formDecorators,
         });
       },
     )

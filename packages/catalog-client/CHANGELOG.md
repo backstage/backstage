@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- d7e7836: Fixed a bug in the `queryEntities` method where errors were not being handled properly.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 1.8.0
 
 ### Minor Changes

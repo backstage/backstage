@@ -1,5 +1,42 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.28.0-next.0
+
+### Minor Changes
+
+- c05a343: Emit scaffolder events using the optional `EventsService`
+
+### Patch Changes
+
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- 8f59dc5: Add fs:readdir to scaffolder startup
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.0
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.3-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.4-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3-next.0
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-node@0.8.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.3-next.0
+
 ## 1.27.0
 
 ### Minor Changes

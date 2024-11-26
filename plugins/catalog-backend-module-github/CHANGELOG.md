@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.7.8-next.0
+
+### Patch Changes
+
+- 468bbcc: Pass in a default schedule to the `GithubEntityProvider` if none is provided
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-catalog-backend@1.28.1-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+
 ## 0.7.7
 
 ### Patch Changes

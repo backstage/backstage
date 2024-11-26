@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 277092a: Added the Azure Blob Storage as catalog entity provider to import all the desired entities from storage account provided in app-config.yaml
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+
 ## 0.2.4
 
 ### Patch Changes
