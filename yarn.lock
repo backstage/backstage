@@ -5876,6 +5876,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     luxon: ^3.0.0
     msw: ^1.0.0
+    p-throttle: ^4.1.1
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
