@@ -12,8 +12,6 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResponsiveArray } from '@vanilla-extract/sprinkles';
 
-// Warning: (ae-missing-release-tag) "Box" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Box: ({
   as,
@@ -28,18 +26,2558 @@ export const Box: ({
   string | JSXElementConstructor<any>
 >;
 
-// Warning: (ae-forgotten-export) The symbol "Sprinkles" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "HTMLProperties" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "BoxProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type BoxProps = Sprinkles &
-  HTMLProperties & {
+// @public
+export type BoxProps = Parameters<typeof boxSprinkles>[0] &
+  Omit<
+    React.AllHTMLAttributes<HTMLElement>,
+    keyof Parameters<typeof boxSprinkles>[0]
+  > & {
     as?: keyof JSX.IntrinsicElements;
   };
 
-// Warning: (ae-missing-release-tag) "Button" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export const boxSprinkles: ((
+  props: {
+    flexDirection?:
+      | (
+          | 'column'
+          | 'row'
+          | {
+              xs?: 'column' | 'row' | undefined;
+              sm?: 'column' | 'row' | undefined;
+              md?: 'column' | 'row' | undefined;
+              lg?: 'column' | 'row' | undefined;
+              xl?: 'column' | 'row' | undefined;
+              '2xl'?: 'column' | 'row' | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<2 | 1 | 3 | 4 | 5 | 6, 'column' | 'row' | null>;
+    justifyContent?:
+      | (
+          | 'center'
+          | 'space-around'
+          | 'space-between'
+          | 'stretch'
+          | 'flex-end'
+          | 'flex-start'
+          | {
+              xs?:
+                | 'center'
+                | 'space-around'
+                | 'space-between'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+              sm?:
+                | 'center'
+                | 'space-around'
+                | 'space-between'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+              md?:
+                | 'center'
+                | 'space-around'
+                | 'space-between'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+              lg?:
+                | 'center'
+                | 'space-around'
+                | 'space-between'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+              xl?:
+                | 'center'
+                | 'space-around'
+                | 'space-between'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+              '2xl'?:
+                | 'center'
+                | 'space-around'
+                | 'space-between'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          | 'center'
+          | 'space-around'
+          | 'space-between'
+          | 'stretch'
+          | 'flex-end'
+          | 'flex-start'
+          | null
+        >;
+    alignItems?:
+      | (
+          | 'center'
+          | 'stretch'
+          | 'flex-end'
+          | 'flex-start'
+          | {
+              xs?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
+              sm?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
+              md?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
+              lg?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
+              xl?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
+              '2xl'?:
+                | 'center'
+                | 'stretch'
+                | 'flex-end'
+                | 'flex-start'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'center' | 'stretch' | 'flex-end' | 'flex-start' | null
+        >;
+    borderRadius?:
+      | (
+          | 'small'
+          | 'none'
+          | 'medium'
+          | 'full'
+          | {
+              xs?: 'small' | 'none' | 'medium' | 'full' | undefined;
+              sm?: 'small' | 'none' | 'medium' | 'full' | undefined;
+              md?: 'small' | 'none' | 'medium' | 'full' | undefined;
+              lg?: 'small' | 'none' | 'medium' | 'full' | undefined;
+              xl?: 'small' | 'none' | 'medium' | 'full' | undefined;
+              '2xl'?: 'small' | 'none' | 'medium' | 'full' | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'small' | 'none' | 'medium' | 'full' | null
+        >;
+    boxShadow?:
+      | (
+          | 'small'
+          | 'medium'
+          | 'large'
+          | {
+              xs?: 'small' | 'medium' | 'large' | undefined;
+              sm?: 'small' | 'medium' | 'large' | undefined;
+              md?: 'small' | 'medium' | 'large' | undefined;
+              lg?: 'small' | 'medium' | 'large' | undefined;
+              xl?: 'small' | 'medium' | 'large' | undefined;
+              '2xl'?: 'small' | 'medium' | 'large' | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'small' | 'medium' | 'large' | null
+        >;
+    border?:
+      | (
+          | 'none'
+          | 'error'
+          | 'thin'
+          | {
+              xs?: 'none' | 'error' | 'thin' | undefined;
+              sm?: 'none' | 'error' | 'thin' | undefined;
+              md?: 'none' | 'error' | 'thin' | undefined;
+              lg?: 'none' | 'error' | 'thin' | undefined;
+              xl?: 'none' | 'error' | 'thin' | undefined;
+              '2xl'?: 'none' | 'error' | 'thin' | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'error' | 'thin' | null
+        >;
+    display?:
+      | (
+          | 'flex'
+          | 'inline'
+          | 'none'
+          | 'block'
+          | {
+              xs?: 'flex' | 'inline' | 'none' | 'block' | undefined;
+              sm?: 'flex' | 'inline' | 'none' | 'block' | undefined;
+              md?: 'flex' | 'inline' | 'none' | 'block' | undefined;
+              lg?: 'flex' | 'inline' | 'none' | 'block' | undefined;
+              xl?: 'flex' | 'inline' | 'none' | 'block' | undefined;
+              '2xl'?: 'flex' | 'inline' | 'none' | 'block' | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'flex' | 'inline' | 'none' | 'block' | null
+        >;
+    paddingTop?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    paddingBottom?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    paddingLeft?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    paddingRight?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    marginTop?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    marginBottom?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    marginLeft?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    marginRight?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    gap?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    flexWrap?:
+      | (
+          | 'wrap'
+          | 'nowrap'
+          | {
+              xs?: 'wrap' | 'nowrap' | undefined;
+              sm?: 'wrap' | 'nowrap' | undefined;
+              md?: 'wrap' | 'nowrap' | undefined;
+              lg?: 'wrap' | 'nowrap' | undefined;
+              xl?: 'wrap' | 'nowrap' | undefined;
+              '2xl'?: 'wrap' | 'nowrap' | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<2 | 1 | 3 | 4 | 5 | 6, 'wrap' | 'nowrap' | null>;
+    padding?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    paddingX?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    paddingY?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    p?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    pt?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    pr?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    pb?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    pl?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    px?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    py?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    margin?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    marginX?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    marginY?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    m?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    mt?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    mr?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    mb?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    ml?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    mx?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+    my?:
+      | (
+          | 'none'
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | 'xxs'
+          | 'xxl'
+          | {
+              xs?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              sm?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              md?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              lg?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              xl?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+              '2xl'?:
+                | 'none'
+                | 'xs'
+                | 'sm'
+                | 'md'
+                | 'lg'
+                | 'xl'
+                | 'xxs'
+                | 'xxl'
+                | undefined;
+            }
+          | undefined
+        )
+      | ResponsiveArray<
+          2 | 1 | 3 | 4 | 5 | 6,
+          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
+        >;
+  } & {
+    color?:
+      | 'error'
+      | 'primary'
+      | 'secondary'
+      | {
+          light?: 'error' | 'primary' | 'secondary' | undefined;
+          dark?: 'error' | 'primary' | 'secondary' | undefined;
+        }
+      | undefined;
+    background?:
+      | 'transparent'
+      | 'background'
+      | 'elevation1'
+      | 'elevation2'
+      | {
+          light?:
+            | 'transparent'
+            | 'background'
+            | 'elevation1'
+            | 'elevation2'
+            | undefined;
+          dark?:
+            | 'transparent'
+            | 'background'
+            | 'elevation1'
+            | 'elevation2'
+            | undefined;
+        }
+      | undefined;
+  },
+) => string) & {
+  properties: Set<
+    | 'alignItems'
+    | 'background'
+    | 'border'
+    | 'borderRadius'
+    | 'boxShadow'
+    | 'color'
+    | 'display'
+    | 'flexDirection'
+    | 'flexWrap'
+    | 'gap'
+    | 'justifyContent'
+    | 'margin'
+    | 'marginBottom'
+    | 'marginLeft'
+    | 'marginRight'
+    | 'marginTop'
+    | 'padding'
+    | 'paddingBottom'
+    | 'paddingLeft'
+    | 'paddingRight'
+    | 'paddingTop'
+    | 'p'
+    | 'm'
+    | 'mt'
+    | 'mr'
+    | 'mb'
+    | 'ml'
+    | 'mx'
+    | 'my'
+    | 'pt'
+    | 'pr'
+    | 'pb'
+    | 'pl'
+    | 'px'
+    | 'py'
+    | 'marginX'
+    | 'marginY'
+    | 'paddingX'
+    | 'paddingY'
+  >;
+};
+
 // @public (undocumented)
 export const Button: ({
   size,
@@ -51,9 +2589,7 @@ export const Button: ({
   ...props
 }: ButtonProps) => React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ButtonProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ButtonProps {
   // (undocumented)
   children: React_2.ReactNode;
@@ -69,13 +2605,9 @@ export interface ButtonProps {
   variant?: 'primary' | 'secondary';
 }
 
-// Warning: (ae-missing-release-tag) "Icon" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "IconNames" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type IconNames =
   | 'ArrowDown'
@@ -85,26 +2617,14 @@ export type IconNames =
   | 'Cloud'
   | 'CustomIcon';
 
-// Warning: (ae-missing-release-tag) "IconProvider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const IconProvider: ({
   children,
   overrides,
 }: {
   children: ReactNode;
-  overrides: IconMap;
+  overrides: Partial<Record<IconNames, React_2.ComponentType>>;
 }) => React_2.JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "IconContextProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "useIcons" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const useIcons: () => IconContextProps;
-
-// Warnings were encountered during analysis:
-//
-// src/components/icon/context.d.ts:9:5 - (ae-forgotten-export) The symbol "IconMap" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

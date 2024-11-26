@@ -13,36 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createElement } from 'react';
-import { sprinkles, Sprinkles } from './sprinkles.css';
+import { boxSprinkles } from './sprinkles.css';
 import { base } from './box.css';
 
-type HTMLProperties = Omit<
-  React.AllHTMLAttributes<HTMLElement>,
-  keyof Sprinkles
->;
-
-export type BoxProps = Sprinkles &
-  HTMLProperties & {
+/**
+ * Properties for {@link Box}
+ *
+ * @public
+ */
+export type BoxProps = Parameters<typeof boxSprinkles>[0] &
+  Omit<
+    React.AllHTMLAttributes<HTMLElement>,
+    keyof Parameters<typeof boxSprinkles>[0]
+  > & {
     as?: keyof JSX.IntrinsicElements;
   };
 
+/** @public */
 export const Box = ({ as = 'div', className, style, ...props }: BoxProps) => {
-  const sprinklesProps: Record<string, unknown> = {};
+  const boxSprinklesProps: Record<string, unknown> = {};
   const nativeProps: Record<string, unknown> = {};
 
   // Split props between sprinkles and native HTML props
   Object.entries(props).forEach(([key, value]) => {
     if (value === undefined) return;
 
-    if (sprinkles.properties.has(key as keyof Sprinkles)) {
-      sprinklesProps[key] = value;
+    if (
+      boxSprinkles.properties.has(
+        key as keyof Parameters<typeof boxSprinkles>[0],
+      )
+    ) {
+      boxSprinklesProps[key] = value;
     } else {
       nativeProps[key] = value;
     }
   });
 
-  const sprinklesClassName = sprinkles(sprinklesProps);
+  const sprinklesClassName = boxSprinkles(boxSprinklesProps);
 
   return createElement(as, {
     className: [base, sprinklesClassName, className].filter(Boolean).join(' '),

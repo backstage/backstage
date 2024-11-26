@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { button } from './button.css';
 import { Box } from '../box/box';
 import { Icon } from '../icon/icon';
 import { IconNames } from '../icon/context';
 
+/**
+ * Properties for {@link Button}
+ *
+ * @public
+ */
 export interface ButtonProps {
   size?: 'small' | 'medium';
   variant?: 'primary' | 'secondary';
@@ -28,6 +34,7 @@ export interface ButtonProps {
   iconEnd?: IconNames;
 }
 
+/** @public */
 export const Button = ({
   size = 'medium',
   variant = 'primary',

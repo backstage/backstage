@@ -15,6 +15,6 @@
  */
 
 // Components
-export * from './components/button/button';
-export * from './components/box/box';
+export * from './components/button';
+export * from './components/box';
 export * from './components/icon';

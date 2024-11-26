@@ -111,10 +111,11 @@ export const colorProperties = defineProperties({
   },
 });
 
-export const sprinkles = createSprinkles(responsiveProperties, colorProperties);
-
-// It's a good idea to export the Sprinkles type too
-export type Sprinkles = Parameters<typeof sprinkles>[0];
+/** @public */
+export const boxSprinkles = createSprinkles(
+  responsiveProperties,
+  colorProperties,
+);
 
 export type OptionalResponsiveValue<Value extends string | number> =
   ConditionalValue<typeof responsiveProperties, Value>;
