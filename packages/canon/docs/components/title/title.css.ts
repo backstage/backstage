@@ -19,7 +19,7 @@ export const titleStyles = recipe({
   base: {
     fontFamily: '"Geist", sans-serif',
     margin: '0',
-    fontWeight: '500',
+    fontWeight: 500,
     border: 'none',
   },
   variants: {

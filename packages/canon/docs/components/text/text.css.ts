@@ -20,7 +20,7 @@ export const textStyles = style({
   fontSize: '16px',
   lineHeight: '28px',
   margin: '0',
-  fontWeight: '300',
+  fontWeight: 300,
   paddingBottom: '16px',
 });
 
@@ -29,5 +29,5 @@ globalStyle(`${textStyles} p`, {
   fontSize: '16px',
   lineHeight: '28px',
   margin: '0',
-  fontWeight: '300',
+  fontWeight: 300,
 });

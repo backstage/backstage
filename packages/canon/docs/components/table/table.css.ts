@@ -36,7 +36,7 @@ export const cellStyles = style({
   backgroundColor: 'white !important',
   fontFamily: '"Geist", sans-serif',
   fontSize: '16px',
-  fontWeight: '300',
+  fontWeight: 300,
 });
 
 // Apply global styles to <p> elements inside cellStyles
@@ -51,7 +51,7 @@ export const headerRowStyles = style({
 export const headerCellStyles = style({
   backgroundColor: '#f5f5f5 !important',
   borderBottom: '1px solid #e7e7e7 !important',
-  fontWeight: '500',
+  fontWeight: 500,
   fontSize: '14px',
 });
 
