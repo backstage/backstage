@@ -1,5 +1,4 @@
 ---
-'@backstage/core-components': patch
 '@backstage/plugin-scaffolder-react': patch
 ---
 
