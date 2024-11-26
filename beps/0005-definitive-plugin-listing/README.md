@@ -1,6 +1,6 @@
 ---
 title: Definitive Plugin Listing
-status: provisional
+status: implementable
 authors:
   - '@aramissennyeydd'
 owners:
@@ -222,7 +222,7 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-- Implement the proposed service + plugin.
+- Implement the proposed service + plugin as _experimental_.
 - Create a new plugin to host the instance service HTTP API.
 
 ## Dependencies
