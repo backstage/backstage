@@ -33,7 +33,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { actionFactories } from './actions';
-import { columnFactories } from './columns';
+import { columnFactories, defaultColumns } from './columns';
 import { toLowerMaybe } from '../../../helpers';
 import { DocsTableRow } from './types';
 
@@ -50,14 +50,6 @@ export type DocsTableProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   options?: TableOptions<DocsTableRow>;
 };
-
-const defaultColumns: TableColumn<DocsTableRow>[] = [
-  columnFactories.createTitleColumn({ hidden: true }),
-  columnFactories.createNameColumn(),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createKindColumn(),
-  columnFactories.createTypeColumn(),
-];
 
 /**
  * Component which renders a table documents
