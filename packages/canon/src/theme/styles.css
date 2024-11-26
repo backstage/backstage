@@ -22,4 +22,4 @@
 @import './theme.css';
 
 /* Components */
-@import '../components-new/Button/styles.css';
+@import '../components/Button/styles.css';

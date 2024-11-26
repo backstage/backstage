@@ -15,14 +15,12 @@
  */
 
 import React from 'react';
-import * as Table from '../../../../docs/components-new';
-import { Chip } from '../../../../docs/components-new';
+import * as Table from '../../../../docs/components';
+import { Chip } from '../../../../docs/components';
 import { listResponsiveValues } from '../../../utils/list-values';
 import { responsiveProperties } from '../sprinkles.css';
 
-console.log(responsiveProperties.styles);
-
-export const SpacingTable = () => {
+export const PropsTable = () => {
   return (
     <Table.Root>
       <Table.Header>
@@ -33,23 +31,24 @@ export const SpacingTable = () => {
       </Table.Header>
       <Table.Body>
         {Object.keys(responsiveProperties.styles)
-          .filter(n =>
-            [
-              'padding',
-              'paddingX',
-              'paddingY',
-              'paddingLeft',
-              'paddingRight',
-              'paddingTop',
-              'paddingBottom',
-              'margin',
-              'marginX',
-              'marginY',
-              'marginLeft',
-              'marginRight',
-              'marginTop',
-              'marginBottom',
-            ].includes(n),
+          .filter(
+            n =>
+              ![
+                'padding',
+                'paddingX',
+                'paddingY',
+                'paddingLeft',
+                'paddingRight',
+                'paddingTop',
+                'paddingBottom',
+                'margin',
+                'marginX',
+                'marginY',
+                'marginLeft',
+                'marginRight',
+                'marginTop',
+                'marginBottom',
+              ].includes(n),
           )
           .map(n => (
             <Table.Row key={n}>
@@ -58,7 +57,7 @@ export const SpacingTable = () => {
               </Table.Cell>
               <Table.Cell>
                 {listResponsiveValues(
-                  'paddingTop' as keyof typeof responsiveProperties.styles,
+                  n as keyof typeof responsiveProperties.styles,
                 ).map(value => (
                   <Chip key={value}>{value}</Chip>
                 ))}

@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './components-new/Button';
-export * from './components-new/Box';
-export * from './components-new/Icon';
+export * from './components/Button';
+export * from './components/Box';
+export * from './components/Icon';
