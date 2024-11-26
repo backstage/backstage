@@ -25,7 +25,7 @@ export const title = style({
   color: '#3b59ff',
   fontFamily: '"Geist", sans-serif',
   fontSize: '16px',
-  fontWeight: '400',
+  fontWeight: 400,
   textDecoration: 'none',
 });
 
@@ -39,7 +39,7 @@ export const pill = recipe({
     padding: '0px 8px',
     height: '24px',
     fontSize: '12px',
-    fontWeight: '600',
+    fontWeight: 600,
     borderStyle: 'solid',
     borderWidth: '1px',
     marginLeft: '8px',
