@@ -16,8 +16,8 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Inline } from './inline';
-import { Box } from '../box/box';
+import { Inline } from './Inline';
+import { Box } from '../Box/Box';
 
 const meta = {
   title: 'Components/Inline',

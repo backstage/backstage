@@ -16,63 +16,45 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Box } from './box';
+import { Box } from './Box';
 import { listResponsiveValues } from '../../utils/list-values';
 import { responsiveProperties, colorProperties } from './sprinkles.css';
 
-const argTypesResponsive = Object.keys(responsiveProperties.styles)
-  .filter(
-    n =>
-      ![
-        'm',
-        'mb',
-        'ml',
-        'mr',
-        'mt',
-        'mx',
-        'my',
-        'p',
-        'pb',
-        'pl',
-        'pr',
-        'pt',
-        'px',
-        'py',
-      ].includes(n),
-  )
-  .reduce<Record<string, any>>((acc, n) => {
-    if (
-      [
-        'margin',
-        'marginBottom',
-        'marginLeft',
-        'marginRight',
-        'marginTop',
-        'marginX',
-        'marginY',
-        'padding',
-        'paddingBottom',
-        'paddingLeft',
-        'paddingRight',
-        'paddingTop',
-        'paddingX',
-        'paddingY',
-      ].includes(n)
-    ) {
-      acc[n] = {
-        control: 'select',
-        options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-      };
-    } else {
-      acc[n] = {
-        control: 'select',
-        options: listResponsiveValues(
-          n as keyof typeof responsiveProperties.styles,
-        ),
-      };
-    }
-    return acc;
-  }, {});
+const argTypesResponsive = Object.keys(responsiveProperties.styles).reduce<
+  Record<string, any>
+>((acc, n) => {
+  if (
+    [
+      'margin',
+      'marginBottom',
+      'marginLeft',
+      'marginRight',
+      'marginTop',
+      'marginX',
+      'marginY',
+      'padding',
+      'paddingBottom',
+      'paddingLeft',
+      'paddingRight',
+      'paddingTop',
+      'paddingX',
+      'paddingY',
+    ].includes(n)
+  ) {
+    acc[n] = {
+      control: 'select',
+      options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
+    };
+  } else {
+    acc[n] = {
+      control: 'select',
+      options: listResponsiveValues(
+        n as keyof typeof responsiveProperties.styles,
+      ),
+    };
+  }
+  return acc;
+}, {});
 
 const argTypesColor = Object.keys(colorProperties.styles).reduce<
   Record<string, any>

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Icon } from './icon';
+import { Icon } from './Icon';
 import { IconProvider } from './context';
 import * as LucideIcons from 'lucide-react';
 

@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { Stack } from '../../stack/stack';
-import { Inline } from '../../inline/inline';
-import { Box } from '../box';
+import { Stack } from '../../Stack';
+import { Inline } from '../../Inline';
+import { Box } from '../Box';
 
 const FakeBox = ({ children }: { children: string }) => (
   <Box
-    px="md"
-    py="sm"
+    paddingX="md"
+    paddingY="sm"
     borderRadius="small"
     style={{ background: '#1f47ff', color: 'white' }}
   >
@@ -35,16 +35,16 @@ export const Padding = () => {
     <Stack
       align="center"
       borderRadius="small"
-      mb="md"
+      marginBottom="md"
       gap="xl"
-      py="xl"
+      paddingY="xl"
       style={{ border: '1px solid #e7e7e7' }}
     >
       <Inline align="center" gap="xl">
         <Stack
           align="center"
           borderRadius="small"
-          p="md"
+          padding="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>padding</FakeBox>
@@ -52,7 +52,7 @@ export const Padding = () => {
         <Stack
           align="center"
           borderRadius="small"
-          px="md"
+          paddingX="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingX</FakeBox>
@@ -60,7 +60,7 @@ export const Padding = () => {
         <Stack
           align="center"
           borderRadius="small"
-          py="md"
+          paddingY="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingY</FakeBox>
@@ -70,7 +70,7 @@ export const Padding = () => {
         <Stack
           align="center"
           borderRadius="small"
-          pt="md"
+          paddingTop="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingTop</FakeBox>
@@ -78,7 +78,7 @@ export const Padding = () => {
         <Stack
           align="center"
           borderRadius="small"
-          pb="md"
+          paddingBottom="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingBottom</FakeBox>
@@ -86,7 +86,7 @@ export const Padding = () => {
         <Stack
           align="center"
           borderRadius="small"
-          pl="md"
+          paddingLeft="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingLeft</FakeBox>
@@ -94,7 +94,7 @@ export const Padding = () => {
         <Stack
           align="center"
           borderRadius="small"
-          pr="md"
+          paddingRight="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingRight</FakeBox>

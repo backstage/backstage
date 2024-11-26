@@ -13,13 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
-
-export * from './components/Button';
-export * from './components/Box';
-export * from './components/Icon';
+export { Inline } from './Inline';

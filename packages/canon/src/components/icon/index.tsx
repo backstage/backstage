@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './icon';
+export * from './Icon';
 export { IconProvider } from './context';
 export type { IconNames } from './context';

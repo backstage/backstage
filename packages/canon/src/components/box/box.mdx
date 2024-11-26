@@ -1,14 +1,15 @@
 import { Canvas, Meta, Unstyled } from '@storybook/blocks';
-import * as BoxStories from './box.stories';
+import * as BoxStories from './Box.stories';
 import { Chip } from '../../../docs/components/chip';
 import * as Table from '../../../docs/components/table';
-import { Box } from './box';
-import { Stack } from '../stack/stack';
+import { Box } from './Box';
+import { Stack } from '../Stack';
 import { Title, Text } from '../../../docs/components';
 import { Padding } from './docs/padding';
 import { listResponsiveValues, listColorValues } from '../../utils/list-values';
 import { responsiveProperties } from './sprinkles.css';
 import { PropsTable } from './docs/props-table';
+import { SpacingTable } from './docs/spacing-table';
 
 <Meta of={BoxStories} />
 
@@ -29,137 +30,9 @@ import { PropsTable } from './docs/props-table';
   predefined spacing tokens. We would recommend to use padding over margin to
   avoid collapsing margins but both are available.
 </Text>
+
 <Padding />
-<Table.Root>
-  <Table.Header>
-    <Table.HeaderRow>
-      <Table.HeaderCell>Prop</Table.HeaderCell>
-      <Table.HeaderCell>Type</Table.HeaderCell>
-      <Table.HeaderCell>Default</Table.HeaderCell>
-    </Table.HeaderRow>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>padding</Chip>
-        <Chip head>p</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>paddingX</Chip>
-        <Chip head>px</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>paddingY</Chip>
-        <Chip head>py</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>paddingLeft</Chip>
-        <Chip head>pl</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>paddingRight</Chip>
-        <Chip head>pr</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>margin</Chip>
-        <Chip head>m</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>marginX</Chip>
-        <Chip head>mx</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>marginY</Chip>
-        <Chip head>my</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>marginLeft</Chip>
-        <Chip head>ml</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>marginRight</Chip>
-        <Chip head>mr</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>number</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        <Chip>0</Chip>
-      </Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table.Root>
+
+<SpacingTable />
 
 </Unstyled>

@@ -20,7 +20,9 @@ import { Chip } from '../../../../docs/components';
 import { listResponsiveValues } from '../../../utils/list-values';
 import { responsiveProperties } from '../sprinkles.css';
 
-export const PropsTable = () => {
+console.log(responsiveProperties.styles);
+
+export const SpacingTable = () => {
   return (
     <Table.Root>
       <Table.Header>
@@ -31,24 +33,23 @@ export const PropsTable = () => {
       </Table.Header>
       <Table.Body>
         {Object.keys(responsiveProperties.styles)
-          .filter(
-            n =>
-              ![
-                'padding',
-                'paddingX',
-                'paddingY',
-                'paddingLeft',
-                'paddingRight',
-                'paddingTop',
-                'paddingBottom',
-                'margin',
-                'marginX',
-                'marginY',
-                'marginLeft',
-                'marginRight',
-                'marginTop',
-                'marginBottom',
-              ].includes(n),
+          .filter(n =>
+            [
+              'padding',
+              'paddingX',
+              'paddingY',
+              'paddingLeft',
+              'paddingRight',
+              'paddingTop',
+              'paddingBottom',
+              'margin',
+              'marginX',
+              'marginY',
+              'marginLeft',
+              'marginRight',
+              'marginTop',
+              'marginBottom',
+            ].includes(n),
           )
           .map(n => (
             <Table.Row key={n}>
@@ -57,7 +58,7 @@ export const PropsTable = () => {
               </Table.Cell>
               <Table.Cell>
                 {listResponsiveValues(
-                  n as keyof typeof responsiveProperties.styles,
+                  'paddingTop' as keyof typeof responsiveProperties.styles,
                 ).map(value => (
                   <Chip key={value}>{value}</Chip>
                 ))}

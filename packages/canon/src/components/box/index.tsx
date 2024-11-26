@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Box } from './box';
-export type { BoxProps } from './box';
+export { Box } from './Box';
+export type { BoxProps } from './Box';
 export { boxSprinkles } from './sprinkles.css';

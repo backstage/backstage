@@ -16,8 +16,8 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Stack } from './stack';
-import { Box } from '../box/box';
+import { Stack } from './Stack';
+import { Box } from '../Box/Box';
 
 const meta = {
   title: 'Components/Stack',

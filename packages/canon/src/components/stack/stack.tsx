@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Box, BoxProps } from '../box/box';
+import { Box, BoxProps } from '../Box/Box';
 import { alignToFlexAlign } from '../../utils/align';
 
 const validStackComponents = [

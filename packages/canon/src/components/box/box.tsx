@@ -32,12 +32,13 @@ export type BoxProps = Parameters<typeof boxSprinkles>[0] &
   };
 
 /** @public */
-export const Box = ({ as = 'div', className, style, ...props }: BoxProps) => {
+export const Box = (props: BoxProps) => {
+  const { as = 'div', className, style, ...rest } = props;
   const boxSprinklesProps: Record<string, unknown> = {};
   const nativeProps: Record<string, unknown> = {};
 
   // Split props between sprinkles and native HTML props
-  Object.entries(props).forEach(([key, value]) => {
+  Object.entries(rest).forEach(([key, value]) => {
     if (value === undefined) return;
 
     if (
