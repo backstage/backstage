@@ -25,10 +25,7 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
-  getEntityRelations,
-  humanizeEntityRef,
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
@@ -38,8 +35,8 @@ import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
 import { columnFactories, defaultColumns } from './columns';
 import { DocsTableRow } from './types';
-import { toLowerMaybe } from '../../../helpers';
 import { rootDocsRouteRef } from '../../../routes';
+import { entitiesToDocsMapper } from './helpers';
 
 /**
  * Props for {@link EntityListDocsTable}.
@@ -76,26 +73,11 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     ),
   ];
 
-  const documents = entities.map(entity => {
-    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-    return {
-      entity,
-      resolved: {
-        docsUrl: getRouteToReaderPageFor({
-          namespace: toLowerMaybe(
-            entity.metadata.namespace ?? 'default',
-            config,
-          ),
-          kind: toLowerMaybe(entity.kind, config),
-          name: toLowerMaybe(entity.metadata.name, config),
-        }),
-        ownedByRelations,
-        ownedByRelationsTitle: ownedByRelations
-          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
-          .join(', '),
-      },
-    };
-  });
+  const documents = entitiesToDocsMapper(
+    entities,
+    getRouteToReaderPageFor,
+    config,
+  );
 
   if (paginationMode === 'cursor') {
     return (
