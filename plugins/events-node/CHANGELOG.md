@@ -1,5 +1,22 @@
 # @backstage/plugin-events-node
 
+## 0.4.6-next.0
+
+### Patch Changes
+
+- 79a06f6: Clarified purpose of subscriber ID in TSDoc for `EventsServiceSubscribeOptions`.
+- 1577511: Allow configuring a timeout for event bus polling requests. This can be set like so in your app-config:
+
+  ```yaml
+  events:
+    notifyTimeoutMs: 30000
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 0.4.5
 
 ### Patch Changes

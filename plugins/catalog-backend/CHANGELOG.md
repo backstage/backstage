@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend
 
+## 1.28.1-next.0
+
+### Patch Changes
+
+- f159b25: Compute deltas more efficiently, which generally leads to less wasted processing cycles
+- 56511ba: Be more aggressive in dequeueing entities for stitching
+- 71152e3: Correctly report stitching queue length
+- 3ab57c6: Support changing location keys on existing entities, in delta mutations
+- 2924ffe: Compute some metrics using search table facet aggregations instead of reading the full refresh state
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/backend-openapi-utils@0.3.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-node@0.8.6-next.0
+
 ## 1.28.0
 
 ### Minor Changes

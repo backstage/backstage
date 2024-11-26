@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.2.3-next.0
+
+### Patch Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26-next.0
+
 ## 0.2.2
 
 ### Patch Changes
