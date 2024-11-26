@@ -93,10 +93,6 @@ export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
 };
 
-const Popper = React.memo(function Popper({ children }: PopperProps) {
-  return <div>{children as ReactNode}</div>;
-});
-
 function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
   const classes = useStyles();
   const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
@@ -267,3 +263,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     </Box>
   );
 };
+
+function Popper({ children }: PopperProps) {
+  return <div>{children as ReactNode}</div>;
+}
