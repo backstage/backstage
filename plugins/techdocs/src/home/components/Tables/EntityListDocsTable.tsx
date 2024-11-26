@@ -36,7 +36,7 @@ import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories } from './columns';
+import { columnFactories, defaultColumns } from './columns';
 import { DocsTableRow } from './types';
 import { toLowerMaybe } from '../../../helpers';
 import { rootDocsRouteRef } from '../../../routes';
@@ -51,14 +51,6 @@ export type EntityListDocsTableProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   options?: TableOptions<DocsTableRow>;
 };
-
-const defaultColumns: TableColumn<DocsTableRow>[] = [
-  columnFactories.createTitleColumn({ hidden: true }),
-  columnFactories.createNameColumn(),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createKindColumn(),
-  columnFactories.createTypeColumn(),
-];
 
 /**
  * Component which renders a table with entities from catalog.
