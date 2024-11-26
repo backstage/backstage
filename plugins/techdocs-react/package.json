@@ -51,7 +51,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/styles": "^4.11.0",
+    "@mui/styles": "^5.0.0",
     "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
