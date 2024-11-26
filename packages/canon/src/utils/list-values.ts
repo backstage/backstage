@@ -17,7 +17,7 @@
 import {
   responsiveProperties,
   colorProperties,
-} from '../components/Box/sprinkles.css';
+} from '../components-new/Box/sprinkles.css';
 
 export const listResponsiveValues = (
   value: keyof typeof responsiveProperties.styles,

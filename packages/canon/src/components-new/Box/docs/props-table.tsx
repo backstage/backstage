@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import * as Table from '../../../../docs/components';
-import { Chip } from '../../../../docs/components';
+import * as Table from '../../../../docs/components-new';
+import { Chip } from '../../../../docs/components-new';
 import { listResponsiveValues } from '../../../utils/list-values';
 import { responsiveProperties } from '../sprinkles.css';
 

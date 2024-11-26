@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export * from './chip';
-export * from './table';
-export * from './title';
-export * from './text';
-export * from './columns';
-export * from './component-status';
-export * from './layout-components';
-export * from './banner';
+export * from './Chip';
+export * from './Table';
+export * from './Title';
+export * from './Text';
+export * from './Columns';
+export * from './ComponentStatus';
+export * from './LayoutComponents';
+export * from './Banner';

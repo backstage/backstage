@@ -17,7 +17,7 @@
 import {
   type OptionalResponsiveValue,
   mapResponsiveValue,
-} from '../components/Box/sprinkles.css';
+} from '../components-new/Box/sprinkles.css';
 
 export type Align = 'left' | 'center' | 'right';
 export type AlignY = 'top' | 'center' | 'bottom';
