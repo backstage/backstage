@@ -47,6 +47,7 @@ import {
   createFetchTemplateFileAction,
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
+  createFilesystemReadDirAction,
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
@@ -164,6 +165,7 @@ export const scaffolderPlugin = createBackendPlugin({
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
+          createFilesystemReadDirAction(),
         ];
 
         const actionIds = actions.map(action => action.id).join(', ');
