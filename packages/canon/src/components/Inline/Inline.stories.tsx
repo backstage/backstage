@@ -29,8 +29,8 @@ type Story = StoryObj<typeof meta>;
 
 const FakeBox = () => (
   <Box
-    px="xl"
-    py="md"
+    paddingX="xl"
+    paddingY="md"
     borderRadius="small"
     style={{ background: '#1f47ff', color: 'white' }}
   >
