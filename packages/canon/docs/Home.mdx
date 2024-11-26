@@ -1,5 +1,5 @@
 import { Unstyled } from '@storybook/blocks';
-import { Columns, Text, ComponentStatus } from './components';
+import { Columns, Text, ComponentStatus, Banner } from './components';
 
 <Unstyled>
 
@@ -12,6 +12,11 @@ import { Columns, Text, ComponentStatus } from './components';
   plugins across Backstage. This new library will take time to build but we are
   building it incrementally with not conflict with the existing theming system.
 </Text>
+
+<Banner variant="warning">
+  This library is still under heavy construction. Please be aware that the API
+  will change until we reach a stable release.
+</Banner>
 
 <Columns style={{ marginTop: '64px' }}>
   <ComponentStatus
