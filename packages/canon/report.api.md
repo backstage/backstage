@@ -2625,6 +2625,4 @@ export const IconProvider: ({
   children: ReactNode;
   overrides: Partial<Record<IconNames, React_2.ComponentType>>;
 }) => React_2.JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-// Components
+/**
+ * Components used by Backstage plugins and apps
+ *
+ * @packageDocumentation
+ */
+
 export * from './components/button';
 export * from './components/box';
 export * from './components/icon';
