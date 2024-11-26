@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
+import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { renderInTestApp } from '@backstage/test-utils';
+import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 
 describe('RepoUrlPickerRepoName', () => {
   it('should call onChange with the first allowed repo if there is none set already', async () => {
@@ -32,7 +32,7 @@ describe('RepoUrlPickerRepoName', () => {
       />,
     );
 
-    expect(onChange).toHaveBeenCalledWith('foo');
+    expect(onChange).toHaveBeenCalledWith({ name: 'foo' });
   });
 
   it('should render a dropdown of all the options', async () => {
@@ -78,11 +78,11 @@ describe('RepoUrlPickerRepoName', () => {
       textArea.blur();
     });
 
-    expect(onChange).toHaveBeenCalledWith('foo');
+    expect(onChange).toHaveBeenCalledWith({ name: 'foo' });
   });
 
   it('should autocomplete with provided availableRepos', async () => {
-    const availableRepos = ['foo', 'bar'];
+    const availableRepos = [{ name: 'foo' }, { name: 'bar' }];
 
     const onChange = jest.fn();
 
@@ -100,11 +100,11 @@ describe('RepoUrlPickerRepoName', () => {
 
     // Verify that available repos are shown
     for (const repo of availableRepos) {
-      expect(getByText(repo)).toBeInTheDocument();
+      expect(getByText(repo.name)).toBeInTheDocument();
     }
 
     // Verify that selecting an option calls onChange
-    await userEvent.click(getByText(availableRepos[0]));
+    await userEvent.click(getByText(availableRepos[0].name));
     expect(onChange).toHaveBeenCalledWith(availableRepos[0]);
   });
 });
