@@ -29,7 +29,10 @@ export const scaffolderPermissions: (
 export const scaffolderTaskPermissions: BasicPermission[];
 
 // @alpha
-export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
+export const scaffolderTemplatePermissions: (
+  | BasicPermission
+  | ResourcePermission<'scaffolder-template'>
+)[];
 
 // @alpha
 export const taskCancelPermission: BasicPermission;
