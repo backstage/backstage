@@ -24,7 +24,6 @@ import {
 } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
-import fs from 'fs/promises';
 
 type Options = {
   ci?: boolean;
@@ -49,10 +48,6 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const omitMessages = parseArrayOption(opts.omitMessages);
 
   const isAllPackages = !paths?.length;
-
-  if (!isAllPackages) {
-    checkValidPaths(paths);
-  }
 
   const selectedPackageDirs = await resolvePackagePaths({
     paths,
@@ -142,20 +137,4 @@ function parseArrayOption(value: string | undefined) {
         .map(s => s.trim())
         .filter(Boolean)
     : [];
-}
-
-/**
- * Checks if the provided paths are valid.
- *
- * @throws Error if any of the paths are invalid.
- * @param paths An array of paths to check.
- */
-function checkValidPaths(paths: string[]) {
-  paths.forEach(async path => {
-    try {
-      await fs.access(path);
-    } catch (error) {
-      throw new Error(`Invalid path provided: ${path}`);
-    }
-  });
 }
