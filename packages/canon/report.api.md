@@ -930,19 +930,19 @@ export const boxSprinkles: ((
         >;
     flexWrap?:
       | (
-          | 'wrap'
           | 'nowrap'
+          | 'wrap'
           | {
-              xs?: 'wrap' | 'nowrap' | undefined;
-              sm?: 'wrap' | 'nowrap' | undefined;
-              md?: 'wrap' | 'nowrap' | undefined;
-              lg?: 'wrap' | 'nowrap' | undefined;
-              xl?: 'wrap' | 'nowrap' | undefined;
-              '2xl'?: 'wrap' | 'nowrap' | undefined;
+              xs?: 'nowrap' | 'wrap' | undefined;
+              sm?: 'nowrap' | 'wrap' | undefined;
+              md?: 'nowrap' | 'wrap' | undefined;
+              lg?: 'nowrap' | 'wrap' | undefined;
+              xl?: 'nowrap' | 'wrap' | undefined;
+              '2xl'?: 'nowrap' | 'wrap' | undefined;
             }
           | undefined
         )
-      | ResponsiveArray<2 | 1 | 3 | 4 | 5 | 6, 'wrap' | 'nowrap' | null>;
+      | ResponsiveArray<2 | 1 | 3 | 4 | 5 | 6, 'nowrap' | 'wrap' | null>;
     padding?:
       | (
           | 'none'
