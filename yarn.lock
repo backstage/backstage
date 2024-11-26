@@ -10791,12 +10791,12 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "@keyv/redis@npm:4.0.1"
+  version: 4.0.2
+  resolution: "@keyv/redis@npm:4.0.2"
   dependencies:
     keyv: "*"
     redis: ^4.7.0
-  checksum: a2e05be0cf9d7fa9e425322a853544d4ed264220469413e63039c599ad6f1c3b81c6116116db9bff64f958bb5c9c904bc26cc28a6915fbae169beebedfebc2a3
+  checksum: 356dcf125072b35be45649fcf5af5e5400b0227b25013d2f7494176a920654a1de63cb95e2a4a661b7db4c1cef8b7553d6e33603ace03d5fbe0a7e22955c9f2b
   languageName: node
   linkType: hard
 
