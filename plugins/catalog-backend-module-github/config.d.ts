@@ -15,7 +15,7 @@
  */
 
 import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
-import { QuerySettings, QueryOptions } from './src/lib/github';
+import { QueryOptions } from './src/lib/github';
 
 export interface Config {
   catalog?: {
