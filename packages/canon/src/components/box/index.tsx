@@ -13,22 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { globalStyle, style } from '@vanilla-extract/css';
-
-export const textStyles = style({
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '16px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: 300,
-  paddingBottom: '16px',
-});
-
-globalStyle(`${textStyles} p`, {
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '16px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: 300,
-});
+export { Box } from './box';
+export type { BoxProps } from './box';
+export { boxSprinkles } from './sprinkles.css';

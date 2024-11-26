@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { recipe } from '@vanilla-extract/recipes';
-// import { vars } from '../../theme/themes.css';
 
 export const button = recipe({
   base: {
