@@ -31,9 +31,11 @@ import {
   tryInitGitRepository,
   readGitConfig,
   fetchYarnLockSeedTask,
+  tryCommandForVersion,
 } from './lib/tasks';
 
 const DEFAULT_BRANCH = 'master';
+const NODE_LTS_VERSIONS = [20, 22];
 
 export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
@@ -74,6 +76,44 @@ export default async (opts: OptionValues): Promise<void> => {
   const appDir = opts.path
     ? resolvePath(paths.targetDir, opts.path)
     : resolvePath(paths.targetDir, answers.name);
+
+  // Mic check
+  const [major, minor, patch] = process.versions.node.split('.').map(Number);
+  const yarn = await tryCommandForVersion('yarn -v');
+  const python = await tryCommandForVersion('python3 --version');
+
+  Task.log();
+  Task.log('Dependency check...');
+  Task.log();
+  Task.log(`  Node version is: ${major}.${minor}.${patch}`);
+  Task.log(`  Yarn version is: ${yarn.version}`);
+  Task.log(`  Python version is: ${python.version}`);
+
+  if (yarn.error) {
+    Task.error(yarn.error);
+  }
+
+  if (python.error) {
+    Task.log(chalk.yellow(`Warning: ${python.error}`));
+  }
+
+  if (major < Math.min(...NODE_LTS_VERSIONS)) {
+    Task.log(
+      chalk.yellow(
+        `Warning: Node version ${major} is currently older than the oldest supported LTS version which is Node ${Math.min(
+          ...NODE_LTS_VERSIONS,
+        )}, please upgrade for proper support.`,
+      ),
+    );
+  }
+
+  if (major > Math.max(...NODE_LTS_VERSIONS)) {
+    Task.error(
+      `Node version ${major} is currently newer than the latest supported LTS version which is Node ${Math.max(
+        ...NODE_LTS_VERSIONS,
+      )}, please downgrade and try again.`,
+    );
+  }
 
   Task.log();
   Task.log('Creating the app...');
