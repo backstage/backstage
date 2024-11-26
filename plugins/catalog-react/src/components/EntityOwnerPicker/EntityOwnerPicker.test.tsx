@@ -402,17 +402,16 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
+    // // some-owner, some-owner-2, another-owner, another-owner-2
     await waitFor(() =>
-      expect(screen.getByText('Another Owner')).toBeInTheDocument(),
+      expect(screen.getByText('some-owner')).toBeInTheDocument(),
     );
 
-    [
-      'some-owner',
-      'Some Owner 2',
-      'Another Owner in Another Namespace',
-    ].forEach(owner => {
-      expect(screen.getByText(owner)).toBeInTheDocument();
-    });
+    ['some-owner-2', 'another-owner', 'test-namespace/another-owner-2'].forEach(
+      owner => {
+        expect(screen.getByText(owner)).toBeInTheDocument();
+      },
+    );
 
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
 
@@ -423,9 +422,9 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     );
 
     [
-      'some-owner-batch-2',
-      'Some Owner Batch 2',
-      'Another Owner in Another Namespace Batch 2',
+      'some-owner-2-batch-2',
+      'another-owner-batch-2',
+      'test-namespace/another-owner-2-batch-2',
     ].forEach(owner => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
@@ -465,10 +464,8 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: [...ownerEntitiesBatch1, ...ownerEntitiesBatch2].map(entity =>
-        stringifyEntityRef(entity),
-      ),
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+      facets: ['relations.ownedBy'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,
