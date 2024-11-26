@@ -49,7 +49,6 @@ export class CacheManager {
   private readonly logger?: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
-  private readonly useRedisSets: boolean;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
 
@@ -69,11 +68,15 @@ export class CacheManager {
     const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
-    const useRedisSets =
-      config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
     const logger = options.logger?.child({
       type: 'cacheManager',
     });
+
+    if (config.has('backend.cache.useRedisSets')) {
+      logger?.warn(
+        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' library no longer supports redis sets.",
+      );
+    }
 
     let defaultTtl: number | undefined;
     if (defaultTtlConfig !== undefined) {
@@ -89,7 +92,6 @@ export class CacheManager {
     return new CacheManager(
       store,
       connectionString,
-      useRedisSets,
       options.onError,
       logger,
       defaultTtl,
@@ -100,7 +102,6 @@ export class CacheManager {
   constructor(
     store: string,
     connectionString: string,
-    useRedisSets: boolean,
     errorHandler: CacheManagerOptions['onError'],
     logger?: LoggerService,
     defaultTtl?: number,
@@ -111,7 +112,6 @@ export class CacheManager {
     this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
     this.connection = connectionString;
-    this.useRedisSets = useRedisSets;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
   }
@@ -139,15 +139,16 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis');
-    let store: typeof KeyvRedis | undefined;
+    const KeyvRedis = require('@keyv/redis').default;
+    const stores: Record<string, typeof KeyvRedis> = {};
+
     return (pluginId, defaultTtl) => {
-      if (!store) {
-        store = new KeyvRedis(this.connection, {
-          useRedisSets: this.useRedisSets,
+      if (!stores[pluginId]) {
+        stores[pluginId] = new KeyvRedis(this.connection, {
+          keyPrefixSeparator: ':',
         });
         // Always provide an error handler to avoid stopping the process
-        store.on('error', (err: Error) => {
+        stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
           this.errorHandler?.(err);
         });
@@ -155,21 +156,22 @@ export class CacheManager {
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
-        store,
+        store: stores[pluginId],
         emitErrors: false,
-        useRedisSets: this.useRedisSets,
+        useKeyPrefix: false,
       });
     };
   }
 
   private createMemcacheStoreFactory(): StoreFactory {
-    const KeyvMemcache = require('@keyv/memcache');
-    let store: typeof KeyvMemcache | undefined;
+    const KeyvMemcache = require('@keyv/memcache').default;
+    const stores: Record<string, typeof KeyvMemcache> = {};
+
     return (pluginId, defaultTtl) => {
-      if (!store) {
-        store = new KeyvMemcache(this.connection);
+      if (!stores[pluginId]) {
+        stores[pluginId] = new KeyvMemcache(this.connection);
         // Always provide an error handler to avoid stopping the process
-        store.on('error', (err: Error) => {
+        stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create memcache cache client', err);
           this.errorHandler?.(err);
         });
@@ -178,7 +180,7 @@ export class CacheManager {
         namespace: pluginId,
         ttl: defaultTtl,
         emitErrors: false,
-        store,
+        store: stores[pluginId],
       });
     };
   }
