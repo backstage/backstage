@@ -16,9 +16,11 @@
 
 import chalk from 'chalk';
 import { ModuleFederationOptions } from './types';
+import { BackstagePackageJson } from '@backstage/cli-node';
+import { readEntryPoints } from '../entryPoints';
 
 export function getModuleFederationOptions(
-  name: string,
+  packageJson: BackstagePackageJson,
   isModuleFederationRemote?: boolean,
 ): ModuleFederationOptions | undefined {
   if (
@@ -39,6 +41,17 @@ export function getModuleFederationOptions(
     // The default output mode requires the name to be a usable as a code
     // symbol, there might be better options here but for now we need to
     // sanitize the name.
-    name: name.replaceAll('@', '').replaceAll('/', '__').replaceAll('-', '_'),
+    name: packageJson.name
+      .replaceAll('@', '')
+      .replaceAll('/', '__')
+      .replaceAll('-', '_'),
+    exposes:
+      isModuleFederationRemote && packageJson.exports
+        ? Object.fromEntries(
+            readEntryPoints(packageJson)
+              .filter(ep => ep.mount !== './package.json')
+              .map(ep => [ep.mount, ep.path]),
+          )
+        : undefined,
   };
 }
