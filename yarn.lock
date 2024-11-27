@@ -7842,7 +7842,7 @@ __metadata:
     "@types/react": ^18.0.0
     ajv-errors: ^3.0.0
     classnames: ^2.2.6
-    flatted: 3.3.1
+    flatted: 3.3.2
     humanize-duration: ^3.25.1
     json-schema: ^0.4.0
     json-schema-library: ^9.0.0
@@ -28325,10 +28325,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatted@npm:3.3.1, flatted@npm:^3.1.0, flatted@npm:^3.2.7":
-  version: 3.3.1
-  resolution: "flatted@npm:3.3.1"
-  checksum: 85ae7181650bb728c221e7644cbc9f4bf28bc556f2fc89bb21266962bdf0ce1029cc7acc44bb646cd469d9baac7c317f64e841c4c4c00516afa97320cdac7f94
+"flatted@npm:3.3.2, flatted@npm:^3.1.0, flatted@npm:^3.2.7":
+  version: 3.3.2
+  resolution: "flatted@npm:3.3.2"
+  checksum: ac3c159742e01d0e860a861164bcfd35bb567ccbebb8a0dd041e61cf3c64a435b917dd1e7ed1c380c2ebca85735fb16644485ec33665bc6aafc3b316aa1eed44
   languageName: node
   linkType: hard
 
