@@ -380,7 +380,7 @@ export class CatalogBuilder {
 
     return [
       new FileReaderProcessor(),
-      new UrlReaderProcessor({ reader, logger }),
+      new UrlReaderProcessor({ reader, logger, config }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),
       new AnnotateLocationEntityProcessor({ integrations }),
     ];

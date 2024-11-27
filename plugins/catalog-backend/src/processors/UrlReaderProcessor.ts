@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import limiterFactory, { Limit } from 'p-limit';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
+import parseGitUrl from 'git-url-parse';
 import {
   CatalogProcessor,
   CatalogProcessorCache,
@@ -28,6 +29,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 
 const CACHE_KEY = 'v1';
 
@@ -46,14 +48,25 @@ export class UrlReaderProcessor implements CatalogProcessor {
   // This limiter is used for only consuming a limited number of read streams
   // concurrently.
   #limiter: Limit;
+  #useUrlReadersSearch: boolean;
 
   constructor(
     private readonly options: {
       reader: UrlReaderService;
       logger: LoggerService;
+      config?: Config;
     },
   ) {
     this.#limiter = limiterFactory(5);
+
+    this.#useUrlReadersSearch =
+      this.options.config?.getOptionalBoolean('catalog.useUrlReadersSearch') ||
+      false;
+    if (!this.#useUrlReadersSearch) {
+      this.options.logger.warn(
+        'UrlReaderProcessor uses the legacy readUrl/search behavior which will be removed in a future release. Set catalog.useUrlReadersSearch to true to adopt the new behavior.',
+      );
+    }
   }
 
   getProcessorName() {
@@ -120,6 +133,10 @@ export class UrlReaderProcessor implements CatalogProcessor {
         }
         emit(processingResult.refresh(`${location.type}:${location.target}`));
         await cache.set(CACHE_KEY, cacheItem);
+      } else if (error.name === 'NotFoundError') {
+        if (!optional) {
+          emit(processingResult.notFoundError(location, message));
+        }
       } else {
         emit(processingResult.generalError(location, message));
       }
@@ -132,13 +149,35 @@ export class UrlReaderProcessor implements CatalogProcessor {
     location: string,
     etag?: string,
   ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
-    const response = await this.options.reader.search(location, { etag });
+    // New behavior: always use the search method
+    if (this.#useUrlReadersSearch) {
+      const response = await this.options.reader.search(location, { etag });
 
-    const output = response.files.map(async file => ({
-      url: file.url,
-      data: await this.#limiter(file.content),
-    }));
+      const output = response.files.map(async file => ({
+        url: file.url,
+        data: await this.#limiter(file.content),
+      }));
 
-    return { response: await Promise.all(output), etag: response.etag };
+      return { response: await Promise.all(output), etag: response.etag };
+    }
+
+    // Old behavior: Does it contain globs? I.e. does it contain asterisks or question marks
+    // (no curly braces for now)
+
+    const { filepath } = parseGitUrl(location);
+    if (filepath?.match(/[*?]/)) {
+      const response = await this.options.reader.search(location, { etag });
+      const output = response.files.map(async file => ({
+        url: file.url,
+        data: await this.#limiter(file.content),
+      }));
+      return { response: await Promise.all(output), etag: response.etag };
+    }
+
+    const data = await this.options.reader.readUrl(location, { etag });
+    return {
+      response: [{ url: location, data: await data.buffer() }],
+      etag: data.etag,
+    };
   }
 }
