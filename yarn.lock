@@ -11221,7 +11221,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes-models/apimachinery@npm:^2.0.0":
+"@kubernetes-models/apimachinery@npm:^2.0.0, @kubernetes-models/apimachinery@npm:^2.0.1":
   version: 2.0.1
   resolution: "@kubernetes-models/apimachinery@npm:2.0.1"
   dependencies:
@@ -33106,14 +33106,14 @@ __metadata:
   linkType: hard
 
 "kubernetes-models@npm:^4.1.0, kubernetes-models@npm:^4.3.1":
-  version: 4.4.0
-  resolution: "kubernetes-models@npm:4.4.0"
+  version: 4.4.1
+  resolution: "kubernetes-models@npm:4.4.1"
   dependencies:
-    "@kubernetes-models/apimachinery": ^2.0.0
+    "@kubernetes-models/apimachinery": ^2.0.1
     "@kubernetes-models/base": ^5.0.0
     "@kubernetes-models/validate": ^4.0.0
     "@swc/helpers": ^0.5.8
-  checksum: 9884c56c35415fe4b44a676a8b628e91fab17eb9a5ef5de08b7b9652d74afeb843d4a139d52bb19e1aaaeba44545542e92cef737b845a2cff5139aa62f820ced
+  checksum: 18616a04e98cc3d8c916424ea439247a1826dd6f655bd64c17091df63324aa0c2d3a09c30ee75d2eaf82c30a2ee5053989de81eb793a82f8a3ebda1c37cda4a8
   languageName: node
   linkType: hard
 
