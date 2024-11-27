@@ -15,7 +15,7 @@
  */
 import React from 'react';
 
-import SubjectIcon from '@material-ui/icons/Subject';
+import SubjectIcon from '@mui/icons-material/Subject';
 
 import { KubernetesDialog } from '../../KubernetesDialog';
 import { PodLogs } from './PodLogs';

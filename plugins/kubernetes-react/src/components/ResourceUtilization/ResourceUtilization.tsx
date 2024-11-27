@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 
 import React from 'react';
 import { GaugePropsGetColor, LinearGauge } from '@backstage/core-components';
@@ -69,12 +69,12 @@ export const ResourceUtilization = ({
   const utilization = currentToDeclaredResourceToPerc(usage, total);
   return (
     <Grid container spacing={0}>
-      <Grid item xs={12}>
+      <Grid xs={12}>
         <Typography
           variant={compressed ? 'caption' : 'subtitle2'}
         >{`${title}: ${totalFormatted}`}</Typography>
       </Grid>
-      <Grid item xs={12}>
+      <Grid xs={12}>
         <LinearGauge
           getColor={getProgressColor}
           width={compressed ? 'thin' : 'thick'}

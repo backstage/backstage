@@ -29,7 +29,7 @@ import { useMatchingErrors } from '../../hooks/useMatchingErrors';
 import { Pod } from 'kubernetes-models/v1/Pod';
 import { V1Pod } from '@kubernetes/client-node';
 import { usePodMetrics } from '../../hooks/usePodMetrics';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 /**
  *

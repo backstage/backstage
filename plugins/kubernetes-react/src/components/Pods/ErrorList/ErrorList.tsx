@@ -15,12 +15,12 @@
  */
 import React from 'react';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { PodAndErrors } from '../types';
 import { FixDialog } from '../FixDialog/FixDialog';
@@ -68,13 +68,13 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
                   {i > 0 && <Divider key={`error-divider${i}`} />}
                   <ListItem>
                     <Grid container>
-                      <Grid item xs={9}>
+                      <Grid xs={9}>
                         <ListItemText
                           primary={error.message}
                           secondary={onlyPodWithErrors.pod.metadata?.name}
                         />
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid xs={3}>
                         <FixDialog
                           pod={onlyPodWithErrors.pod}
                           error={error}

@@ -16,8 +16,8 @@
 import React from 'react';
 import { V1Job } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
 
 export const JobDrawer = ({
   job,
@@ -47,12 +47,12 @@ export const JobDrawer = ({
         alignItems="flex-start"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <Typography variant="body1">
             {job.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography color="textSecondary" variant="subtitle1">
             Job
           </Typography>

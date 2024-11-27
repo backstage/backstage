@@ -15,17 +15,17 @@
  */
 
 import React from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import {
   ClientPodStatus,
   ClusterObjects,
   groupResponses,
 } from '@backstage/plugin-kubernetes-common';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { StatefulSetsAccordions } from '../StatefulSetsAccordions';
 import { IngressesAccordions } from '../IngressesAccordions';
@@ -60,18 +60,18 @@ const ClusterSummary = ({
       direction="row"
       justifyContent="space-between"
       alignItems="flex-start"
-      spacing={0}
+      spacing={2}
+      xs={12}
     >
       <Grid
         xs={6}
-        item
         container
         direction="column"
         justifyContent="flex-start"
         alignItems="flex-start"
         spacing={0}
       >
-        <Grid item xs>
+        <Grid xs={12}>
           <Typography variant="body1">{clusterName}</Typography>
           <Typography color="textSecondary" variant="subtitle1">
             Cluster
@@ -79,7 +79,6 @@ const ClusterSummary = ({
         </Grid>
       </Grid>
       <Grid
-        item
         container
         xs={3}
         direction="column"
@@ -87,10 +86,10 @@ const ClusterSummary = ({
         alignItems="flex-end"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <StatusOK>{totalNumberOfPods} pods</StatusOK>
         </Grid>
-        <Grid item>
+        <Grid>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
           ) : (
@@ -128,7 +127,7 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
       <GroupedResponsesContext.Provider value={groupedResponses}>
         <PodMetricsContext.Provider value={podMetricsMap}>
           <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
+            <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <ClusterSummary
                   clusterName={
@@ -139,39 +138,39 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                 />
               </AccordionSummary>
               <AccordionDetails>
-                <Grid container direction="column">
+                <Grid container direction="column" rowSpacing={2}>
                   {groupedResponses.customResources.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <CustomResources />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.deployments.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <DeploymentsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.daemonSets.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <DaemonSetsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.statefulsets.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <StatefulSetsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.ingresses.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <IngressesAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.services.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <ServicesAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.cronJobs.length > 0 ? (
-                    <Grid item>
+                    <Grid>
                       <CronJobsAccordions />
                     </Grid>
                   ) : undefined}

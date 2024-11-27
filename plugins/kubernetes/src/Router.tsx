@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { KubernetesContent } from './KubernetesContent';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 
 const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =

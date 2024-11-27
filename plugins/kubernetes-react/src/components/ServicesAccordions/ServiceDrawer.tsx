@@ -17,9 +17,9 @@
 import React from 'react';
 import { V1Service } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Chip from '@material-ui/core/Chip';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
+import Chip from '@mui/material/Chip';
 
 export const ServiceDrawer = ({
   service,
@@ -45,18 +45,18 @@ export const ServiceDrawer = ({
         alignItems="flex-start"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           <Typography variant="body1">
             {service.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography color="textSecondary" variant="subtitle1">
             Service
           </Typography>
         </Grid>
         {namespace && (
-          <Grid item>
+          <Grid>
             <Chip size="small" label={`namespace: ${namespace}`} />
           </Grid>
         )}

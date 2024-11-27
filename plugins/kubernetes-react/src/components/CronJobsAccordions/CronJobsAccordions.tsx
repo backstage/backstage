@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { V1CronJob, V1Job } from '@kubernetes/client-node';
 import { JobsAccordions } from '../JobsAccordions';
 import { CronJobDrawer } from './CronJobsDrawer';
@@ -55,28 +55,28 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
       direction="row"
       justifyContent="space-between"
       alignItems="center"
-      spacing={0}
+      spacing={2}
+      xs={12}
     >
-      <Grid xs={6} item>
+      <Grid xs={5}>
         <CronJobDrawer cronJob={cronJob} />
       </Grid>
       <Grid
-        item
         container
-        xs={6}
+        xs={5}
         direction="column"
         justifyContent="flex-start"
         alignItems="flex-end"
         spacing={0}
       >
-        <Grid item>
+        <Grid>
           {cronJob.spec?.suspend ? (
             <StatusError>Suspended</StatusError>
           ) : (
             <StatusOK>Active</StatusOK>
           )}
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography variant="body1">
             Schedule:{' '}
             {cronJob.spec?.schedule
@@ -93,7 +93,10 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
 
 const CronJobAccordion = ({ cronJob, ownedJobs }: CronJobAccordionProps) => {
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
+    <Accordion
+      slotProps={{ transition: { unmountOnExit: true } }}
+      variant="outlined"
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <CronJobSummary cronJob={cronJob} />
       </AccordionSummary>
@@ -118,10 +121,11 @@ export const CronJobsAccordions = ({}: CronJobsAccordionsProps) => {
       direction="column"
       justifyContent="flex-start"
       alignItems="flex-start"
+      xs={12}
     >
       {groupedResponses.cronJobs.map((cronJob, i) => (
-        <Grid container item key={i} xs>
-          <Grid item xs>
+        <Grid container key={i} xs={12}>
+          <Grid xs={12}>
             <CronJobAccordion
               ownedJobs={getOwnedResources(cronJob, groupedResponses.jobs)}
               cronJob={cronJob}

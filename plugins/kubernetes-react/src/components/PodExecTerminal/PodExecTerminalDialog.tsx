@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
+import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
 import React from 'react';
 
 import { KubernetesDialog } from '../KubernetesDialog';

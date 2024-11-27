@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Grid from '@material-ui/core/Grid';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Unstable_Grid2';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DefaultCustomResourceDrawer } from './DefaultCustomResourceDrawer';
 import { StructuredMetadataTable } from '@backstage/core-components';
 
@@ -55,7 +55,7 @@ const DefaultCustomResourceSummary = ({
       alignItems="center"
       spacing={0}
     >
-      <Grid xs={12} item>
+      <Grid xs={12}>
         <DefaultCustomResourceDrawer
           customResource={customResource}
           customResourceName={customResourceName}
@@ -73,7 +73,7 @@ const DefaultCustomResourceAccordion = ({
   return (
     <Accordion
       defaultExpanded={defaultExpanded}
-      TransitionProps={{ unmountOnExit: true }}
+      slotProps={{ transition: { unmountOnExit: true } }}
       variant="outlined"
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -102,10 +102,11 @@ export const DefaultCustomResourceAccordions = ({
       direction="column"
       justifyContent="flex-start"
       alignItems="flex-start"
+      xs={12}
     >
       {customResources.map((cr, i) => (
-        <Grid container item key={i} xs>
-          <Grid item xs>
+        <Grid container key={i} xs={12}>
+          <Grid xs={12}>
             <DefaultCustomResourceAccordion
               defaultExpanded={defaultExpanded}
               customResource={cr}

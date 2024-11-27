@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { CodeSnippet } from '@backstage/core-components';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import jsyaml from 'js-yaml';
 import React, { useState } from 'react';
 

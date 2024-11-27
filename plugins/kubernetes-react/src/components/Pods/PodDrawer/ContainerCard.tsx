@@ -15,12 +15,12 @@
  */
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
 import React from 'react';
@@ -128,8 +128,8 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
         subheader={containerStatus.image}
       />
       <CardContent>
-        <Grid container>
-          <Grid item xs={12}>
+        <Grid container spacing={1}>
+          <Grid xs={12}>
             {containerStartedTime && (
               <ContainerDatetime
                 prefix="Started"
@@ -155,22 +155,22 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
               </Typography>
             )}
           </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <Typography variant="subtitle2">
               Status: {getCurrentState(containerStatus)}
             </Typography>
           </Grid>
           {containerStatus.restartCount > 0 && (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Typography variant="subtitle2">
                 Restarts: {containerStatus.restartCount}
               </Typography>
             </Grid>
           )}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <Typography variant="subtitle2">Container health</Typography>
           </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <StructuredMetadataTable
               metadata={getContainerHealthChecks(
                 containerSpec,
@@ -179,13 +179,13 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
             />
           </Grid>
           {containerMetrics && (
-            <Grid container item xs={12} spacing={0}>
-              <Grid item xs={12}>
+            <Grid container xs={12} spacing={0}>
+              <Grid xs={12}>
                 <Typography variant="subtitle1">
                   Resource utilization
                 </Typography>
               </Grid>
-              <Grid item xs={12} style={{ minHeight: '5rem' }}>
+              <Grid xs={12} style={{ minHeight: '5rem' }}>
                 <ResourceUtilization
                   compressed
                   title="CPU requests"

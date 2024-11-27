@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
 import { WarningPanel } from '@backstage/core-components';
 
