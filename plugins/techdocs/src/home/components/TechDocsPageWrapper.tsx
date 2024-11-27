@@ -26,6 +26,9 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
  */
 export type TechDocsPageWrapperProps = {
   children?: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+  hideSubtitle?: boolean;
 };
 
 /**
@@ -34,16 +37,18 @@ export type TechDocsPageWrapperProps = {
  * @public
  */
 export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
-  const { children } = props;
+  const { children, title, subtitle, hideSubtitle } = props;
   const configApi = useApi(configApiRef);
-  const generatedSubtitle = `Documentation available in ${
-    configApi.getOptionalString('organization.name') ?? 'Backstage'
-  }`;
+  const generatedSubtitle =
+    subtitle ||
+    `Documentation available in ${
+      configApi.getOptionalString('organization.name') ?? 'Backstage'
+    }`;
 
   return (
     <PageWithHeader
-      title="Documentation"
-      subtitle={generatedSubtitle}
+      title={title || 'Documentation'}
+      subtitle={hideSubtitle ? undefined : generatedSubtitle}
       themeId="documentation"
     >
       {children}

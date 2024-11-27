@@ -46,15 +46,28 @@ export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
  * @public
  */
 export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
-  const { initialFilter = 'owned', columns, actions, ownerPickerMode } = props;
+  const {
+    initialFilter = 'owned',
+    columns,
+    actions,
+    ownerPickerMode,
+    showHeader,
+    options,
+    title,
+    subtitle,
+    hideSupport,
+  } = props;
+  const Wrapper = showHeader !== false ? TechDocsPageWrapper : React.Fragment;
   return (
-    <TechDocsPageWrapper>
+    <Wrapper title={title} subtitle={subtitle}>
       <Content>
-        <ContentHeader title="">
-          <SupportButton>
-            Discover documentation in your ecosystem.
-          </SupportButton>
-        </ContentHeader>
+        {hideSupport !== true && (
+          <ContentHeader title="">
+            <SupportButton>
+              Discover documentation in your ecosystem.
+            </SupportButton>
+          </ContentHeader>
+        )}
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
@@ -64,11 +77,15 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
-              <EntityListDocsTable actions={actions} columns={columns} />
+              <EntityListDocsTable
+                actions={actions}
+                columns={columns}
+                options={options}
+              />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>
       </Content>
-    </TechDocsPageWrapper>
+    </Wrapper>
   );
 };

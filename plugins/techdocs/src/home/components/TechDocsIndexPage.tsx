@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { useOutlet } from 'react-router-dom';
-import { TableColumn, TableProps } from '@backstage/core-components';
+import {
+  TableColumn,
+  TableProps,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityOwnerPickerProps,
   UserListFilterKind,
@@ -34,6 +38,11 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  showHeader?: boolean;
+  hideSupport?: boolean;
+  options?: TableOptions<DocsTableRow>;
+  title?: string;
+  subtitle?: string;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

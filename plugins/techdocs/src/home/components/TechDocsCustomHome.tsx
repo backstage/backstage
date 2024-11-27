@@ -26,8 +26,9 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTable } from './Tables';
-import { DocsCardGrid } from './Grids';
+import { DocsCardGrid, InfoCardGird } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { TechDocsIndexPage } from './TechDocsIndexPage';
 
 import {
   CodeSnippet,
@@ -40,10 +41,13 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 
 const panels = {
   DocsTable: DocsTable,
   DocsCardGrid: DocsCardGrid,
+  TechDocsIndexPage: TechDocsIndexPage,
+  InfoCardGird: InfoCardGird,
 };
 
 /**
@@ -51,7 +55,11 @@ const panels = {
  *
  * @public
  */
-export type PanelType = 'DocsCardGrid' | 'DocsTable';
+export type PanelType =
+  | 'DocsCardGrid'
+  | 'DocsTable'
+  | 'TechDocsIndexPage'
+  | 'InfoCardGird';
 
 /**
  * Type representing a TechDocsCustomHome panel.
@@ -64,6 +72,7 @@ export interface PanelConfig {
   panelType: PanelType;
   panelCSS?: CSSProperties;
   filterPredicate: ((entity: Entity) => boolean) | string;
+  panelProps?: Record<string, any>;
 }
 
 /**
@@ -119,15 +128,21 @@ const CustomPanel = ({
 
   return (
     <>
-      <ContentHeader title={config.title} description={config.description}>
-        {index === 0 ? (
-          <SupportButton>
-            Discover documentation in your ecosystem.
-          </SupportButton>
-        ) : null}
-      </ContentHeader>
+      {config.panelProps?.showHeader !== false && (
+        <ContentHeader title={config.title} description={config.description}>
+          {index === 0 && config.panelProps?.hideSupport !== true && (
+            <SupportButton>
+              Discover documentation in your ecosystem.
+            </SupportButton>
+          )}
+        </ContentHeader>
+      )}
       <div className={classes.panelContainer}>
-        <Panel data-testid="techdocs-custom-panel" entities={shownEntities} />
+        <Panel
+          data-testid="techdocs-custom-panel"
+          entities={shownEntities}
+          {...config.panelProps}
+        />
       </div>
     </>
   );
@@ -140,10 +155,14 @@ const CustomPanel = ({
  */
 export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
+  filter?: EntityFilterQuery;
+  title?: string;
+  subtitle?: string;
+  hideSubtitle?: boolean;
 };
 
 export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
-  const { tabsConfig } = props;
+  const { tabsConfig, filter, title, subtitle, hideSubtitle } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 
@@ -153,7 +172,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
     error,
   } = useAsync(async () => {
     const response = await catalogApi.getEntities({
-      filter: {
+      filter: filter || {
         [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: CATALOG_FILTER_EXISTS,
       },
       fields: [
@@ -165,16 +184,18 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
         'spec.type',
       ],
     });
-    return response.items.filter((entity: Entity) => {
-      return !!entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
-    });
+    return response.items;
   });
 
   const currentTabConfig = tabsConfig[selectedTab];
 
   if (loading) {
     return (
-      <TechDocsPageWrapper>
+      <TechDocsPageWrapper
+        title={title}
+        subtitle={subtitle}
+        hideSubtitle={hideSubtitle}
+      >
         <Content>
           <Progress />
         </Content>
@@ -184,7 +205,11 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
 
   if (error) {
     return (
-      <TechDocsPageWrapper>
+      <TechDocsPageWrapper
+        title={title}
+        subtitle={subtitle}
+        hideSubtitle={hideSubtitle}
+      >
         <Content>
           <WarningPanel
             severity="error"
@@ -198,7 +223,11 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
   }
 
   return (
-    <TechDocsPageWrapper>
+    <TechDocsPageWrapper
+      title={title}
+      subtitle={subtitle}
+      hideSubtitle={hideSubtitle}
+    >
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={index => setSelectedTab(index)}
