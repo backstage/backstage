@@ -23566,13 +23566,13 @@ __metadata:
   linkType: hard
 
 "better-sqlite3@npm:^11.0.0":
-  version: 11.5.0
-  resolution: "better-sqlite3@npm:11.5.0"
+  version: 11.6.0
+  resolution: "better-sqlite3@npm:11.6.0"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.1
-  checksum: 37acef8d4272ad57fe211aa5a2e177f95443eafb794c7db6c2d0dae0a4fe4c2ef508b8b970d82f1d9744d009677d82067279f45e27d4155a5e68a578f5c5c051
+  checksum: 4570559e8b62da295060b086cfe7902648670863790993be1a43e73867f3d9767598aa52fb8332cf3eb16aa30f3037c3705ce5a195db59c076006067e43eea98
   languageName: node
   linkType: hard
 
