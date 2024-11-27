@@ -174,12 +174,7 @@ export const EntityListDocsTable: {
       toggleStarredEntity: Function,
     ): (row: DocsTableRow) => {
       cellStyle: {
-        paddingLeft: string
-        /**
-         * Props for {@link EntityListDocsTable}.
-         *
-         * @public
-         */;
+        paddingLeft: string;
       };
       icon: () => React_2.JSX.Element;
       tooltip: string;
