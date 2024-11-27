@@ -32,6 +32,7 @@ import { defaultEntityDataParser } from '../util/parse';
 import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { mockApis } from '@backstage/test-utils';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -185,7 +186,7 @@ describe('UrlReaderProcessor', () => {
     expect(generated.location).toBe(spec);
     expect(generated.error.name).toBe('NotFoundError');
     expect(generated.error.message).toBe(
-      `Unable to read url, no matching files found for ${mockApiOrigin}/component-notfound.yaml`,
+      `Unable to read url, NotFoundError: could not read ${mockApiOrigin}/component-notfound.yaml, 404 Not Found`,
     );
   });
 
@@ -204,6 +205,38 @@ describe('UrlReaderProcessor', () => {
 
     await processor.readLocation(
       { type: 'url', target: 'https://github.com/a/b/blob/x/**/b.yaml' },
+      false,
+      emit,
+      defaultEntityDataParser,
+      mockCache,
+    );
+
+    expect(reader.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses search when catalog.useUrlReadersSearch flag is set to true', async () => {
+    const logger = mockServices.logger.mock();
+
+    const reader: jest.Mocked<UrlReaderService> = {
+      readUrl: jest.fn(),
+      readTree: jest.fn(),
+      search: jest.fn().mockImplementation(async () => []),
+    };
+
+    const config = mockApis.config({
+      data: {
+        catalog: {
+          useUrlReadersSearch: true,
+        },
+      },
+    });
+
+    const processor = new UrlReaderProcessor({ reader, logger, config });
+
+    const emit = jest.fn();
+
+    await processor.readLocation(
+      { type: 'url', target: 'https://github.com/a/b/blob/x/b.yaml' },
       false,
       emit,
       defaultEntityDataParser,
