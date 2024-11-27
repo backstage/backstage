@@ -11222,13 +11222,13 @@ __metadata:
   linkType: hard
 
 "@kubernetes-models/apimachinery@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@kubernetes-models/apimachinery@npm:2.0.0"
+  version: 2.0.1
+  resolution: "@kubernetes-models/apimachinery@npm:2.0.1"
   dependencies:
     "@kubernetes-models/base": ^5.0.0
     "@kubernetes-models/validate": ^4.0.0
     "@swc/helpers": ^0.5.8
-  checksum: 0e9ed8f05166221e2ccfe21a45a3aa480ab31c8e8b97b2dbb22d1d3c60477fb0b093def5d78727ba1037df4f14a9c7f38a7da0432c769fdc606097b4b6018dd6
+  checksum: 4e9d8773e7e313b09d1a81f86cfaa65eefb52dd35fc84b4fbbe13ce02836797739c7c864f82de30f6d1eb8ea25cb2b1cd820be056cfd48fdb80bfa02aa302935
   languageName: node
   linkType: hard
 
