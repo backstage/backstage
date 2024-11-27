@@ -30553,19 +30553,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^13.1.2":
-  version: 13.1.3
-  resolution: "globby@npm:13.1.3"
-  dependencies:
-    dir-glob: ^3.0.1
-    fast-glob: ^3.2.11
-    ignore: ^5.2.0
-    merge2: ^1.4.1
-    slash: ^4.0.0
-  checksum: 93f06e02002cdf368f7e3d55bd59e7b00784c7cc8fe92c7ee5082cc7171ff6109fda45e1c97a80bb48bc811dedaf7843c7c9186f5f84bde4883ab630e13c43df
-  languageName: node
-  linkType: hard
-
 "globby@npm:^14.0.2":
   version: 14.0.2
   resolution: "globby@npm:14.0.2"
@@ -43075,13 +43062,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slash@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "slash@npm:4.0.0"
-  checksum: da8e4af73712253acd21b7853b7e0dbba776b786e82b010a5bfc8b5051a1db38ed8aba8e1e8f400dd2c9f373be91eb1c42b66e91abb407ff42b10feece5e1d2d
-  languageName: node
-  linkType: hard
-
 "slash@npm:^5.1.0":
   version: 5.1.0
   resolution: "slash@npm:5.1.0"
@@ -43240,20 +43220,20 @@ __metadata:
   linkType: hard
 
 "sort-package-json@npm:^2.8.0":
-  version: 2.10.1
-  resolution: "sort-package-json@npm:2.10.1"
+  version: 2.12.0
+  resolution: "sort-package-json@npm:2.12.0"
   dependencies:
     detect-indent: ^7.0.1
     detect-newline: ^4.0.0
     get-stdin: ^9.0.0
     git-hooks-list: ^3.0.0
-    globby: ^13.1.2
     is-plain-obj: ^4.1.0
     semver: ^7.6.0
     sort-object-keys: ^1.1.3
+    tinyglobby: ^0.2.9
   bin:
     sort-package-json: cli.js
-  checksum: 861d8161565fba322414d70b6be10fb331680549b73399778965be628783833c85c4e02929bcea5a2d96994884b0327dfe2f7c7a79409c901d2582b703f5333d
+  checksum: c4bd25516b0e23c83a6c0f9ad418869a4b09675628e96f8c44b6b1f3458fbbd8a84d623ed63e24af620675977ab8a867e0f5356fc3cc4f9c7be85dcd3136d4ac
   languageName: node
   linkType: hard
 
