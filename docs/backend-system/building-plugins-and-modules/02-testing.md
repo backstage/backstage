@@ -144,7 +144,7 @@ Example:
 
 ```ts
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 
 describe('read from remote', () => {
@@ -155,7 +155,7 @@ describe('read from remote', () => {
     expect.assertions(1);
 
     worker.use(
-      rest.get('https://remote-server.com/api/v3/foo', (req, res, ctx) => {
+      http.get('https://remote-server.com/api/v3/foo', (req, res, ctx) => {
         expect(req.headers.get('authorization')).toBe('Bearer fake');
         return res(
           ctx.status(200),
