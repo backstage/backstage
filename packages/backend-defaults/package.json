@@ -198,6 +198,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@google-cloud/cloud-sql-connector": "^1.4.0",
     "@types/archiver": "^6.0.0",
     "@types/base64-stream": "^1.0.2",
     "@types/concat-stream": "^2.0.0",
