@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Icon } from '../../../src/components/Icon';
-import type { IconNames } from '../../../src/components/Icon/types';
+import { Icon } from '@backstage/canon';
+import type { IconNames } from '@backstage/canon';
 import { defaultIcons } from '../../../src/components/Icon/icons';
 import { Text } from '../Text';
+
 export const IconLibrary = () => {
   const icons = Object.keys(defaultIcons);
 
