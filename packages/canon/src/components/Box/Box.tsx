@@ -21,30 +21,19 @@ import { BoxProps } from './types';
 
 /** @public */
 export const Box = (props: BoxProps) => {
-  const { as = 'div', className, style, ...rest } = props;
-  const boxSprinklesProps: Record<string, unknown> = {};
-  const nativeProps: Record<string, unknown> = {};
+  const { as = 'div', className, style, children, ...restProps } = props;
 
-  // Split props between sprinkles and native HTML props
-  Object.entries(rest).forEach(([key, value]) => {
-    if (value === undefined) return;
+  // Generate the list of class names
+  const sprinklesClassName = boxSprinkles(restProps);
 
-    if (
-      boxSprinkles.properties.has(
-        key as keyof Parameters<typeof boxSprinkles>[0],
-      )
-    ) {
-      boxSprinklesProps[key] = value;
-    } else {
-      nativeProps[key] = value;
-    }
-  });
-
-  const sprinklesClassName = boxSprinkles(boxSprinklesProps);
+  // Combine the base class name, the sprinkles class name, and any additional class names
+  const classNames = [base, sprinklesClassName, className]
+    .filter(Boolean)
+    .join(' ');
 
   return createElement(as, {
-    className: [base, sprinklesClassName, className].filter(Boolean).join(' '),
+    className: classNames,
     style,
-    ...nativeProps,
+    children,
   });
 };

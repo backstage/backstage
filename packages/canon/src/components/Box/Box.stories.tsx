@@ -17,79 +17,22 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
-import { listResponsiveValues } from '../../utils/list-values';
-import { responsiveProperties, colorProperties } from './sprinkles.css';
+import {
+  listResponsiveValues,
+  argTypesSpacing,
+  argTypesColor,
+} from '../../../docs/utils/argTypes';
+import { boxProperties } from './sprinkles.css';
 
-const argTypesResponsive = Object.keys(responsiveProperties.styles).reduce<
+const argTypesBox = Object.keys(boxProperties.styles).reduce<
   Record<string, any>
 >((acc, n) => {
-  if (
-    [
-      'margin',
-      'marginBottom',
-      'marginLeft',
-      'marginRight',
-      'marginTop',
-      'marginX',
-      'marginY',
-      'padding',
-      'paddingBottom',
-      'paddingLeft',
-      'paddingRight',
-      'paddingTop',
-      'paddingX',
-      'paddingY',
-    ].includes(n)
-  ) {
-    acc[n] = {
-      control: 'select',
-      options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-    };
-  } else {
-    acc[n] = {
-      control: 'select',
-      options: listResponsiveValues(
-        n as keyof typeof responsiveProperties.styles,
-      ),
-    };
-  }
-  return acc;
-}, {});
-
-const argTypesColor = Object.keys(colorProperties.styles).reduce<
-  Record<string, any>
->((acc, n) => {
-  acc[n as keyof typeof colorProperties.styles] = {
+  acc[n] = {
     control: 'select',
-    options: Object.keys(
-      colorProperties.styles[n as keyof typeof colorProperties.styles].values,
-    ),
+    options: listResponsiveValues(n as keyof typeof boxProperties.styles),
   };
   return acc;
 }, {});
-
-const argTypes = {
-  ...argTypesResponsive,
-  ...argTypesColor,
-};
-
-// Sort the resulting object keys alphabetically
-const sortedArgTypes = Object.keys(argTypes)
-  .sort()
-  .reduce((acc, key) => {
-    acc[key] = argTypes[key];
-    return acc;
-  }, {} as Record<string, any>);
-
-// Add 'as' and 'children' to the sortedArgTypes
-sortedArgTypes['as'] = {
-  control: 'select',
-  options: ['div', 'span', 'article', 'section'],
-};
-
-sortedArgTypes['children'] = {
-  control: 'text',
-};
 
 const meta = {
   title: 'Components/Box',
@@ -97,7 +40,18 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  argTypes: sortedArgTypes,
+  argTypes: {
+    ...argTypesSpacing,
+    ...argTypesColor,
+    ...argTypesBox,
+    as: {
+      control: { type: 'select' },
+      options: ['div', 'span', 'article', 'section'],
+    },
+    children: {
+      control: false,
+    },
+  },
   args: {
     as: 'div',
     background: 'elevation1',

@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  defineProperties,
-  createSprinkles,
-  RequiredConditionalValue,
-  ConditionalValue,
-  createMapValueFn,
-} from '@vanilla-extract/sprinkles';
-import { breakpoints, space } from './properties';
+import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
+import { breakpoints } from '../../layout/properties';
+import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
 
-export const responsiveProperties = defineProperties({
+export const boxProperties = defineProperties({
   conditions: breakpoints,
   defaultCondition: 'xs',
   responsiveArray: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
@@ -55,57 +50,12 @@ export const responsiveProperties = defineProperties({
       error: '1px solid var(--canon-error)',
     },
     display: ['none', 'flex', 'block', 'inline'],
-    paddingTop: space,
-    paddingBottom: space,
-    paddingLeft: space,
-    paddingRight: space,
-    marginTop: space,
-    marginBottom: space,
-    marginLeft: space,
-    marginRight: space,
-    gap: space,
     flexWrap: ['wrap', 'nowrap'],
-  },
-  shorthands: {
-    padding: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
-    paddingX: ['paddingLeft', 'paddingRight'],
-    paddingY: ['paddingTop', 'paddingBottom'],
-    margin: ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'],
-    marginX: ['marginLeft', 'marginRight'],
-    marginY: ['marginTop', 'marginBottom'],
-  },
-});
-
-export const colorProperties = defineProperties({
-  conditions: {
-    light: { selector: '[data-theme="light"] &' },
-    dark: { selector: '[data-theme="dark"] &' },
-  },
-  defaultCondition: ['light', 'dark'],
-  properties: {
-    color: {
-      primary: 'var(--canon-text-primary)',
-      secondary: 'var(--canon-text-secondary)',
-      error: 'var(--canon-error)',
-    },
-    background: {
-      background: 'var(--canon-background)',
-      elevation1: 'var(--canon-surface-1)',
-      elevation2: 'var(--canon-surface-2)',
-      transparent: 'transparent',
-    },
   },
 });
 
 export const boxSprinkles = createSprinkles(
-  responsiveProperties,
+  spacingProperties,
+  boxProperties,
   colorProperties,
 );
-
-export type OptionalResponsiveValue<Value extends string | number> =
-  ConditionalValue<typeof responsiveProperties, Value>;
-
-export type RequiredResponsiveValue<Value extends string | number> =
-  RequiredConditionalValue<typeof responsiveProperties, Value>;
-
-export const mapResponsiveValue = createMapValueFn(responsiveProperties);

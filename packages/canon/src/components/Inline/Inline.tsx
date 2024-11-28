@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Box } from '../Box/Box';
-import { alignToFlexAlign } from '../../utils/align';
 import type { BoxProps } from '../Box/types';
 
 export const validInlineComponents = [
@@ -47,7 +46,7 @@ export const Inline = ({
     <Box
       as={as}
       display="flex"
-      alignItems={align !== 'left' ? alignToFlexAlign(align) : undefined}
+      // alignItems={align !== 'left' ? alignToFlexAlign(align) : undefined}
       justifyContent="flex-start"
       flexWrap="wrap"
       gap={gap}

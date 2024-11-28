@@ -13,30 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
+import { SpaceProps } from '../../layout/types';
 
-import {
-  responsiveProperties,
-  colorProperties,
-} from '../components/Box/sprinkles.css';
+/** @public */
+export type AlignProps =
+  | 'left'
+  | 'center'
+  | 'right'
+  | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
 
-export const listResponsiveValues = (
-  value: keyof typeof responsiveProperties.styles,
-) => {
-  const values = responsiveProperties.styles[value];
-
-  if ('values' in values) {
-    return Object.keys(values.values);
-  }
-
-  return [];
-};
-
-export const listColorValues = (value: keyof typeof colorProperties.styles) => {
-  const values = colorProperties.styles[value];
-
-  if ('values' in values) {
-    return Object.keys(values.values);
-  }
-
-  return [];
-};
+export interface StackProps extends SpaceProps, ColorProps {
+  children: React.ReactNode;
+  as?: AsProps;
+  align?: AlignProps;
+  className?: string;
+  style?: React.CSSProperties;
+}
