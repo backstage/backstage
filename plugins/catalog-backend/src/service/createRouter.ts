@@ -19,6 +19,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
+  parseEntityRef,
   parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -27,7 +28,7 @@ import { InputError, NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
-import { EntitiesCatalog } from '../catalog/types';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import {
@@ -57,6 +58,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
+import { DeferredPromise, createDeferred } from '@backstage/types';
 
 /**
  * Options used by {@link createRouter}.
@@ -135,24 +137,139 @@ export async function createRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
-        const { entities, pageInfo } = await entitiesCatalog.entities({
-          filter: parseEntityFilterParams(req.query),
-          fields: parseEntityTransformParams(req.query),
-          order: parseEntityOrderParams(req.query),
-          pagination: parseEntityPaginationParams(req.query),
-          credentials: await httpAuth.credentials(req),
-        });
+        const filter = parseEntityFilterParams(req.query);
+        const fields = parseEntityTransformParams(req.query);
+        const order = parseEntityOrderParams(req.query);
+        const pagination = parseEntityPaginationParams(req.query);
+        const credentials = await httpAuth.credentials(req);
 
-        // Add a Link header to the next page
-        if (pageInfo.hasNextPage) {
-          const url = new URL(`http://ignored${req.url}`);
-          url.searchParams.delete('offset');
-          url.searchParams.set('after', pageInfo.endCursor);
-          res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+        // When pagination parameters are passed in, use the legacy slow path
+        // that loads all entities into memory
+
+        if (pagination) {
+          const { entities, pageInfo } = await entitiesCatalog.entities({
+            filter,
+            fields,
+            order,
+            pagination,
+            credentials,
+          });
+
+          // Add a Link header to the next page
+          if (pageInfo.hasNextPage) {
+            const url = new URL(`http://ignored${req.url}`);
+            url.searchParams.delete('offset');
+            url.searchParams.set('after', pageInfo.endCursor);
+            res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+          }
+
+          res.json(entities);
+          return;
         }
 
-        // TODO(freben): encode the pageInfo in the response
-        res.json(entities);
+        // For other read-the-entire-world cases, use queryEntities and stream
+        // out results.
+
+        // Imitate the httpRouter behavior of pretty-printing in development
+        const prettyPrint = process.env.NODE_ENV === 'development';
+
+        // The write lock is used for back pressure, preventing slow readers
+        // from forcing our read loop to pile up response data in userspace
+        // buffers faster than the kernel buffer is emptied.
+        // https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback
+        let writeLock: DeferredPromise | undefined;
+        const controller = new AbortController();
+        req.on('end', () => {
+          controller.abort();
+          writeLock?.resolve();
+          writeLock = undefined;
+        });
+        res.on('drain', () => {
+          writeLock?.resolve();
+          writeLock = undefined;
+        });
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.status(200);
+        res.flushHeaders();
+        res.write(prettyPrint ? '[\n' : '[');
+
+        const limit = 10000;
+        let cursor: Cursor | undefined;
+        let firstSend = true;
+        do {
+          const result = await entitiesCatalog.queryEntities(
+            !cursor
+              ? { credentials, fields, limit, filter, orderFields: order }
+              : { credentials, fields, limit, cursor },
+          );
+
+          if (result.items.length) {
+            // TODO(freben): This is added as a compatibility guarantee, until we can be
+            // sure that all adopters have re-stitched their entities so that the new
+            // targetRef field is present on them, and that they have stopped consuming
+            // the now-removed old field
+            // TODO(jhaals): Remove this in April 2022
+            for (const entity of result.items) {
+              if (entity.relations) {
+                for (const relation of entity.relations as any) {
+                  if (!relation.targetRef && relation.target) {
+                    // This is the case where an old-form entity, not yet stitched with
+                    // the updated code, was in the database
+                    relation.targetRef = stringifyEntityRef(relation.target);
+                  } else if (!relation.target && relation.targetRef) {
+                    // This is the case where a new-form entity, stitched with the
+                    // updated code, was in the database but we still want to produce
+                    // the old data shape as well for compatibility reasons
+                    relation.target = parseEntityRef(relation.targetRef);
+                  }
+                }
+              }
+            }
+
+            // Stringify
+            let data: string;
+            if (prettyPrint) {
+              data = JSON.stringify(result.items, null, 2).slice(2, -2);
+              if (!firstSend) {
+                data = `,\n${data}`;
+              }
+            } else {
+              data = JSON.stringify(result.items).slice(1, -1);
+              if (!firstSend) {
+                data = `,${data}`;
+              }
+            }
+
+            if (writeLock) {
+              await writeLock;
+            }
+
+            if (controller.signal.aborted) {
+              res.end();
+              return;
+            }
+
+            if (!res.write(data)) {
+              // The kernel buffer is full. Create the lock but do not await it
+              // yet - we can better spend our time going to the next round of
+              // the loop and read from the database while we wait for it to
+              // drain.
+              writeLock = createDeferred();
+            }
+
+            firstSend = false;
+          }
+
+          if (controller.signal.aborted) {
+            res.end();
+            return;
+          }
+
+          cursor = result.pageInfo?.nextCursor;
+        } while (cursor);
+
+        res.end(prettyPrint && !firstSend ? '\n]' : ']');
       })
       .get('/entities/by-query', async (req, res) => {
         const { items, pageInfo, totalItems } =
