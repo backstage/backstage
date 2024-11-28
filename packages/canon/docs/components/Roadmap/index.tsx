@@ -13,36 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { container, pill, title } from './component-status.css';
+import { RoadmapItem } from './list';
 
-export const ComponentStatus = ({
-  name,
+export const Roadmap = ({ list }: { list: RoadmapItem[] }) => {
+  const orderList = ['inProgress', 'notStarted', 'completed'];
+  return (
+    <div className="roadmap">
+      {list
+        .sort(
+          (a, b) => orderList.indexOf(a.status) - orderList.indexOf(b.status),
+        )
+        .map(Item)}
+    </div>
+  );
+};
+
+const Item = ({
+  title,
   status = 'notStarted',
-  style,
-  link,
 }: {
-  name: string;
-  status: 'notStarted' | 'inProgress' | 'alpha' | 'beta' | 'stable';
-  style?: React.CSSProperties;
-  link?: string;
+  title: string;
+  status: 'notStarted' | 'inProgress' | 'inReview' | 'completed';
 }) => {
   return (
-    <div className={container} style={style}>
-      {link ? (
-        <a href={link} className={title}>
-          {name}
-        </a>
-      ) : (
-        <span className={title}>{name}</span>
-      )}
-      <span className={pill({ status })}>
+    <div className={['roadmap-item', status].join(' ')}>
+      <div className="left">
+        <div className="dot" />
+        <div className="title">{title}</div>
+      </div>
+      <span className="pill">
         {status === 'notStarted' && 'Not Started'}
         {status === 'inProgress' && 'In Progress'}
-        {status === 'alpha' && 'Alpha'}
-        {status === 'beta' && 'Beta'}
-        {status === 'stable' && 'Stable'}
+        {status === 'inReview' && 'Ready for Review'}
+        {status === 'completed' && 'Completed'}
       </span>
     </div>
   );

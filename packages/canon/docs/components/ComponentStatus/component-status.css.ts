@@ -57,12 +57,17 @@ export const pill = recipe({
         borderColor: '#FFD000',
         color: '#D79927',
       },
-      review: {
+      alpha: {
         backgroundColor: '#D7F9D7',
         borderColor: '#4ED14A',
         color: '#3A9837',
       },
-      done: {
+      beta: {
+        backgroundColor: '#D7F9D7',
+        borderColor: '#4ED14A',
+        color: '#3A9837',
+      },
+      stable: {
         backgroundColor: '#D7F9D7',
         borderColor: '#4ED14A',
         color: '#3A9837',
