@@ -9,7 +9,6 @@ import { CSSProperties } from 'react';
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
-import { ReactNode } from 'react';
 
 // @public (undocumented)
 export type AlignItems =
@@ -190,22 +189,18 @@ export type Gap = Space | Partial<Record<Breakpoint, Space>>;
 export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export type IconNames =
-  | 'ArrowDown'
-  | 'ArrowLeft'
-  | 'ArrowRight'
-  | 'ArrowUp'
-  | 'Cloud'
-  | 'CustomIcon';
+export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
 
 // @public (undocumented)
-export const IconProvider: ({
-  children,
-  overrides,
-}: {
-  children: ReactNode;
-  overrides: Partial<Record<IconNames, React_2.ComponentType>>;
-}) => React_2.JSX.Element;
+export type IconNames =
+  | 'arrowDown'
+  | 'arrowLeft'
+  | 'arrowRight'
+  | 'arrowUp'
+  | 'cloud'
+  | 'heart'
+  | 'plus'
+  | 'trash';
 
 // @public (undocumented)
 export type JustifyContent =

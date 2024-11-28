@@ -17,8 +17,8 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Icon } from './Icon';
-import { IconProvider } from './context';
-import * as LucideIcons from 'lucide-react';
+import { ThemeProvider } from '../../theme/context';
+import { defaultIcons } from './icons';
 
 const meta = {
   title: 'Components/Icon',
@@ -26,15 +26,14 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
   argTypes: {
     name: {
       control: 'select',
-      options: Object.keys(LucideIcons),
+      options: Object.keys(defaultIcons),
     },
   },
   args: {
-    name: 'ArrowDown',
+    name: 'heart',
   },
 } satisfies Meta<typeof Icon>;
 
@@ -43,40 +42,19 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    name: 'ArrowDown',
-  },
-};
-
-export const CustomIcon: Story = {
-  args: {
-    name: 'CustomIcon',
+    name: 'heart',
   },
 };
 
 export const WithCustomIcon: Story = {
   args: {
-    name: 'ArrowDown',
+    name: 'arrowDown',
   },
   decorators: [
     Story => (
-      <IconProvider overrides={{ ArrowDown: () => <div>Custom Icon</div> }}>
+      <ThemeProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
         <Story />
-      </IconProvider>
-    ),
-  ],
-};
-
-export const WithCustomIconOverride: Story = {
-  args: {
-    name: 'CustomIcon',
-  },
-  decorators: [
-    Story => (
-      <IconProvider
-        overrides={{ CustomIcon: () => <div>Custom Super Icon</div> }}
-      >
-        <Story />
-      </IconProvider>
+      </ThemeProvider>
     ),
   ],
 };

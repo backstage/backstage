@@ -17,7 +17,7 @@
 import React from 'react';
 import { button } from './button.css';
 import { Icon } from '../Icon/Icon';
-import { IconNames } from '../Icon/context';
+import type { IconNames } from '../Icon/types';
 
 /**
  * Properties for {@link Button}
