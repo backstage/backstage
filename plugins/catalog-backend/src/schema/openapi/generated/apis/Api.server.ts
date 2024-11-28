@@ -31,6 +31,7 @@ import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
 import { Location } from '../models/Location.model';
+import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
@@ -179,18 +180,16 @@ export type GetLocations = {
 /**
  * @public
  */
-export type ValidateEntity = {
-  body: ValidateEntityRequest;
-  response: void | ValidateEntity400Response;
-};
-import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
-
-/**
- * @public
- */
 export type RefreshEntity = {
   body: RefreshEntityRequest;
   response: void | Error | Error;
+};
+/**
+ * @public
+ */
+export type ValidateEntity = {
+  body: ValidateEntityRequest;
+  response: void | ValidateEntity400Response;
 };
 
 export type EndpointMap = {
@@ -222,7 +221,7 @@ export type EndpointMap = {
 
   '#get|/locations': GetLocations;
 
-  '#post|/validate-entity': ValidateEntity;
-
   '#post|/refresh': RefreshEntity;
+
+  '#post|/validate-entity': ValidateEntity;
 };

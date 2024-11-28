@@ -34,8 +34,8 @@ import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
 import { Location } from '../models/Location.model';
-import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
+import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -184,14 +184,14 @@ export type GetLocations = {};
 /**
  * @public
  */
-export type ValidateEntity = {
-  body: ValidateEntityRequest;
+export type RefreshEntity = {
+  body: RefreshEntityRequest;
 };
 /**
  * @public
  */
-export type RefreshEntity = {
-  body: RefreshEntityRequest;
+export type ValidateEntity = {
+  body: ValidateEntityRequest;
 };
 
 /**
@@ -599,17 +599,17 @@ export class DefaultApiClient {
   }
 
   /**
-   * Validate that a passed in entity has no errors in schema.
-   * @param validateEntityRequest -
+   * Refresh the entity related to entityRef.
+   * @param refreshEntityRequest -
    */
-  public async validateEntity(
+  public async refreshEntity(
     // @ts-ignore
-    request: ValidateEntity,
+    request: RefreshEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/validate-entity`;
+    const uriTemplate = `/refresh`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
@@ -624,17 +624,17 @@ export class DefaultApiClient {
   }
 
   /**
-   * Refresh the entity related to entityRef.
-   * @param refreshEntityRequest -
+   * Validate that a passed in entity has no errors in schema.
+   * @param validateEntityRequest -
    */
-  public async refreshEntity(
+  public async validateEntity(
     // @ts-ignore
-    request: RefreshEntity,
+    request: ValidateEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/refresh`;
+    const uriTemplate = `/validate-entity`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
