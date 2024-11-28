@@ -15,8 +15,9 @@
  */
 
 import React from 'react';
-import { Box, BoxProps } from '../Box/Box';
+import { Box } from '../Box/Box';
 import { alignToFlexAlign } from '../../utils/align';
+import type { BoxProps } from '../Box/types';
 
 export const validInlineComponents = [
   'div',

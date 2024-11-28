@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 export { Box } from './Box';
-export type { BoxProps } from './Box';
-export { boxSprinkles } from './sprinkles.css';
+export type * from './types';
+export { breakpoints, space, themes } from './properties';

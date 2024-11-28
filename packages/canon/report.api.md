@@ -10,7 +10,34 @@ import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { ResponsiveArray } from '@vanilla-extract/sprinkles';
+
+// @public (undocumented)
+export type AlignItems =
+  | 'stretch'
+  | 'flex-start'
+  | 'center'
+  | 'flex-end'
+  | Partial<
+      Record<Breakpoint, 'stretch' | 'flex-start' | 'center' | 'flex-end'>
+    >;
+
+// @public (undocumented)
+export type Background =
+  | 'background'
+  | 'elevation1'
+  | 'elevation2'
+  | 'transparent'
+  | Partial<
+      Record<Theme, 'background' | 'elevation1' | 'elevation2' | 'transparent'>
+    >;
+
+// @public (undocumented)
+export type BorderRadius =
+  | 'none'
+  | 'small'
+  | 'medium'
+  | 'full'
+  | Partial<Record<Breakpoint, 'none' | 'small' | 'medium' | 'full'>>;
 
 // @public (undocumented)
 export const Box: (props: BoxProps) => ReactElement<
@@ -21,1450 +48,85 @@ export const Box: (props: BoxProps) => ReactElement<
   string | JSXElementConstructor<any>
 >;
 
-// @public
-export type BoxProps = Parameters<typeof boxSprinkles>[0] &
-  Omit<
-    React.AllHTMLAttributes<HTMLElement>,
-    keyof Parameters<typeof boxSprinkles>[0]
-  > & {
-    as?: keyof JSX.IntrinsicElements;
-  };
+// @public (undocumented)
+export interface BoxProps {
+  // (undocumented)
+  alignItems?: AlignItems;
+  // (undocumented)
+  as?: keyof JSX.IntrinsicElements;
+  // (undocumented)
+  background?: Background;
+  // (undocumented)
+  borderRadius?: BorderRadius;
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  color?: Color;
+  // (undocumented)
+  display?: Display;
+  // (undocumented)
+  flexDirection?: FlexDirection;
+  // (undocumented)
+  flexWrap?: FlexWrap;
+  // (undocumented)
+  gap?: Gap;
+  // (undocumented)
+  justifyContent?: JustifyContent;
+  // (undocumented)
+  margin?: Margin;
+  // (undocumented)
+  marginBottom?: MarginBottom;
+  // (undocumented)
+  marginLeft?: MarginLeft;
+  // (undocumented)
+  marginRight?: MarginRight;
+  // (undocumented)
+  marginTop?: MarginTop;
+  // (undocumented)
+  marginX?: MarginX;
+  // (undocumented)
+  marginY?: MarginY;
+  // (undocumented)
+  padding?: Padding;
+  // (undocumented)
+  paddingBottom?: PaddingBottom;
+  // (undocumented)
+  paddingLeft?: PaddingLeft;
+  // (undocumented)
+  paddingRight?: PaddingRight;
+  // (undocumented)
+  paddingTop?: PaddingTop;
+  // (undocumented)
+  paddingX?: PaddingX;
+  // (undocumented)
+  paddingY?: PaddingY;
+  // (undocumented)
+  style?: React.CSSProperties;
+}
 
 // @public (undocumented)
-export const boxSprinkles: ((
-  props: {
-    flexDirection?:
-      | (
-          | 'column'
-          | 'row'
-          | {
-              xs?: 'column' | 'row' | undefined;
-              sm?: 'column' | 'row' | undefined;
-              md?: 'column' | 'row' | undefined;
-              lg?: 'column' | 'row' | undefined;
-              xl?: 'column' | 'row' | undefined;
-              '2xl'?: 'column' | 'row' | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<2 | 1 | 3 | 4 | 5 | 6, 'column' | 'row' | null>;
-    justifyContent?:
-      | (
-          | 'center'
-          | 'space-around'
-          | 'space-between'
-          | 'stretch'
-          | 'flex-end'
-          | 'flex-start'
-          | {
-              xs?:
-                | 'center'
-                | 'space-around'
-                | 'space-between'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-              sm?:
-                | 'center'
-                | 'space-around'
-                | 'space-between'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-              md?:
-                | 'center'
-                | 'space-around'
-                | 'space-between'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-              lg?:
-                | 'center'
-                | 'space-around'
-                | 'space-between'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-              xl?:
-                | 'center'
-                | 'space-around'
-                | 'space-between'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-              '2xl'?:
-                | 'center'
-                | 'space-around'
-                | 'space-between'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          | 'center'
-          | 'space-around'
-          | 'space-between'
-          | 'stretch'
-          | 'flex-end'
-          | 'flex-start'
-          | null
-        >;
-    alignItems?:
-      | (
-          | 'center'
-          | 'stretch'
-          | 'flex-end'
-          | 'flex-start'
-          | {
-              xs?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
-              sm?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
-              md?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
-              lg?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
-              xl?: 'center' | 'stretch' | 'flex-end' | 'flex-start' | undefined;
-              '2xl'?:
-                | 'center'
-                | 'stretch'
-                | 'flex-end'
-                | 'flex-start'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'center' | 'stretch' | 'flex-end' | 'flex-start' | null
-        >;
-    borderRadius?:
-      | (
-          | 'small'
-          | 'none'
-          | 'medium'
-          | 'full'
-          | {
-              xs?: 'small' | 'none' | 'medium' | 'full' | undefined;
-              sm?: 'small' | 'none' | 'medium' | 'full' | undefined;
-              md?: 'small' | 'none' | 'medium' | 'full' | undefined;
-              lg?: 'small' | 'none' | 'medium' | 'full' | undefined;
-              xl?: 'small' | 'none' | 'medium' | 'full' | undefined;
-              '2xl'?: 'small' | 'none' | 'medium' | 'full' | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'small' | 'none' | 'medium' | 'full' | null
-        >;
-    boxShadow?:
-      | (
-          | 'small'
-          | 'medium'
-          | 'large'
-          | {
-              xs?: 'small' | 'medium' | 'large' | undefined;
-              sm?: 'small' | 'medium' | 'large' | undefined;
-              md?: 'small' | 'medium' | 'large' | undefined;
-              lg?: 'small' | 'medium' | 'large' | undefined;
-              xl?: 'small' | 'medium' | 'large' | undefined;
-              '2xl'?: 'small' | 'medium' | 'large' | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'small' | 'medium' | 'large' | null
-        >;
-    border?:
-      | (
-          | 'none'
-          | 'error'
-          | 'thin'
-          | {
-              xs?: 'none' | 'error' | 'thin' | undefined;
-              sm?: 'none' | 'error' | 'thin' | undefined;
-              md?: 'none' | 'error' | 'thin' | undefined;
-              lg?: 'none' | 'error' | 'thin' | undefined;
-              xl?: 'none' | 'error' | 'thin' | undefined;
-              '2xl'?: 'none' | 'error' | 'thin' | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'error' | 'thin' | null
-        >;
-    display?:
-      | (
-          | 'flex'
-          | 'inline'
-          | 'none'
-          | 'block'
-          | {
-              xs?: 'flex' | 'inline' | 'none' | 'block' | undefined;
-              sm?: 'flex' | 'inline' | 'none' | 'block' | undefined;
-              md?: 'flex' | 'inline' | 'none' | 'block' | undefined;
-              lg?: 'flex' | 'inline' | 'none' | 'block' | undefined;
-              xl?: 'flex' | 'inline' | 'none' | 'block' | undefined;
-              '2xl'?: 'flex' | 'inline' | 'none' | 'block' | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'flex' | 'inline' | 'none' | 'block' | null
-        >;
-    paddingTop?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    paddingBottom?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    paddingLeft?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    paddingRight?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    marginTop?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    marginBottom?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    marginLeft?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    marginRight?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    gap?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    flexWrap?:
-      | (
-          | 'nowrap'
-          | 'wrap'
-          | {
-              xs?: 'nowrap' | 'wrap' | undefined;
-              sm?: 'nowrap' | 'wrap' | undefined;
-              md?: 'nowrap' | 'wrap' | undefined;
-              lg?: 'nowrap' | 'wrap' | undefined;
-              xl?: 'nowrap' | 'wrap' | undefined;
-              '2xl'?: 'nowrap' | 'wrap' | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<2 | 1 | 3 | 4 | 5 | 6, 'nowrap' | 'wrap' | null>;
-    padding?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    paddingX?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    paddingY?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    margin?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    marginX?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-    marginY?:
-      | (
-          | 'none'
-          | 'xs'
-          | 'sm'
-          | 'md'
-          | 'lg'
-          | 'xl'
-          | 'xxs'
-          | 'xxl'
-          | {
-              xs?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              sm?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              md?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              lg?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              xl?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-              '2xl'?:
-                | 'none'
-                | 'xs'
-                | 'sm'
-                | 'md'
-                | 'lg'
-                | 'xl'
-                | 'xxs'
-                | 'xxl'
-                | undefined;
-            }
-          | undefined
-        )
-      | ResponsiveArray<
-          2 | 1 | 3 | 4 | 5 | 6,
-          'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxs' | 'xxl' | null
-        >;
-  } & {
-    color?:
-      | 'error'
-      | 'primary'
-      | 'secondary'
-      | {
-          light?: 'error' | 'primary' | 'secondary' | undefined;
-          dark?: 'error' | 'primary' | 'secondary' | undefined;
-        }
-      | undefined;
-    background?:
-      | 'transparent'
-      | 'background'
-      | 'elevation1'
-      | 'elevation2'
-      | {
-          light?:
-            | 'transparent'
-            | 'background'
-            | 'elevation1'
-            | 'elevation2'
-            | undefined;
-          dark?:
-            | 'transparent'
-            | 'background'
-            | 'elevation1'
-            | 'elevation2'
-            | undefined;
-        }
-      | undefined;
-  },
-) => string) & {
-  properties: Set<
-    | 'alignItems'
-    | 'background'
-    | 'border'
-    | 'borderRadius'
-    | 'boxShadow'
-    | 'color'
-    | 'display'
-    | 'flexDirection'
-    | 'flexWrap'
-    | 'gap'
-    | 'justifyContent'
-    | 'margin'
-    | 'marginBottom'
-    | 'marginLeft'
-    | 'marginRight'
-    | 'marginTop'
-    | 'padding'
-    | 'paddingBottom'
-    | 'paddingLeft'
-    | 'paddingRight'
-    | 'paddingTop'
-    | 'marginX'
-    | 'marginY'
-    | 'paddingX'
-    | 'paddingY'
-  >;
+export type Breakpoint = keyof typeof breakpoints;
+
+// @public (undocumented)
+export const breakpoints: {
+  xs: {};
+  sm: {
+    '@media': string;
+  };
+  md: {
+    '@media': string;
+  };
+  lg: {
+    '@media': string;
+  };
+  xl: {
+    '@media': string;
+  };
+  '2xl': {
+    '@media': string;
+  };
 };
 
 // @public (undocumented)
@@ -1495,6 +157,36 @@ export interface ButtonProps {
 }
 
 // @public (undocumented)
+export type Color =
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | Partial<Record<Theme, 'primary' | 'secondary' | 'error'>>;
+
+// @public (undocumented)
+export type Display =
+  | 'flex'
+  | 'none'
+  | 'inline'
+  | 'block'
+  | Partial<Record<Breakpoint, 'flex' | 'none' | 'inline' | 'block'>>;
+
+// @public (undocumented)
+export type FlexDirection =
+  | 'row'
+  | 'column'
+  | Partial<Record<Breakpoint, 'row' | 'column'>>;
+
+// @public (undocumented)
+export type FlexWrap =
+  | 'wrap'
+  | 'nowrap'
+  | Partial<Record<Breakpoint, 'wrap' | 'nowrap'>>;
+
+// @public (undocumented)
+export type Gap = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
 export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
 
 // @public (undocumented)
@@ -1514,4 +206,94 @@ export const IconProvider: ({
   children: ReactNode;
   overrides: Partial<Record<IconNames, React_2.ComponentType>>;
 }) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type JustifyContent =
+  | 'stretch'
+  | 'flex-start'
+  | 'center'
+  | 'flex-end'
+  | 'space-around'
+  | 'space-between'
+  | Partial<
+      Record<
+        Breakpoint,
+        | 'stretch'
+        | 'flex-start'
+        | 'center'
+        | 'flex-end'
+        | 'space-around'
+        | 'space-between'
+      >
+    >;
+
+// @public (undocumented)
+export type Margin = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type MarginBottom = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type MarginLeft = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type MarginRight = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type MarginTop = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type MarginX = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type MarginY = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type Padding = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type PaddingBottom = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type PaddingLeft = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type PaddingRight = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type PaddingTop = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type PaddingX = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type PaddingY = Space | Partial<Record<Breakpoint, Space>>;
+
+// @public (undocumented)
+export type Space = keyof typeof space;
+
+// @public (undocumented)
+export const space: {
+  none: number;
+  xxs: string;
+  xs: string;
+  sm: string;
+  md: string;
+  lg: string;
+  xl: string;
+  xxl: string;
+};
+
+// @public (undocumented)
+export type Theme = keyof typeof themes;
+
+// @public (undocumented)
+export const themes: {
+  light: {
+    selector: string;
+  };
+  dark: {
+    selector: string;
+  };
+};
 ```

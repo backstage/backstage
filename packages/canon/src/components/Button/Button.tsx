@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { button } from './button.css';
-import { Box } from '../Box/Box';
 import { Icon } from '../Icon/Icon';
 import { IconNames } from '../Icon/context';
 
@@ -45,16 +44,15 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   return (
-    <Box
+    <button
       {...props}
-      as="button"
       disabled={disabled}
       className={button({ size, variant, disabled })}
     >
       {iconStart && <Icon name={iconStart} />}
       {children}
       {iconEnd && <Icon name={iconEnd} />}
-    </Box>
+    </button>
   );
 };
 

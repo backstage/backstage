@@ -21,8 +21,30 @@ import {
   ConditionalValue,
   createMapValueFn,
 } from '@vanilla-extract/sprinkles';
-import { breakpoints, space } from './properties';
 
+/** @public */
+export const breakpoints = {
+  xs: {},
+  sm: { '@media': 'screen and (min-width: 640px)' },
+  md: { '@media': 'screen and (min-width: 768px)' },
+  lg: { '@media': 'screen and (min-width: 1024px)' },
+  xl: { '@media': 'screen and (min-width: 1280px)' },
+  '2xl': { '@media': 'screen and (min-width: 1536px)' },
+};
+
+/** @public */
+export const space = {
+  none: 0,
+  xxs: 'var(--canon-space-xxs)',
+  xs: 'var(--canon-space-xs)',
+  sm: 'var(--canon-space-sm)',
+  md: 'var(--canon-space-md)',
+  lg: 'var(--canon-space-lg)',
+  xl: 'var(--canon-space-xl)',
+  xxl: 'var(--canon-space-xxl)',
+};
+
+/** @public */
 export const responsiveProperties = defineProperties({
   conditions: breakpoints,
   defaultCondition: 'xs',
@@ -54,7 +76,7 @@ export const responsiveProperties = defineProperties({
       thin: '1px solid var(--canon-outline)',
       error: '1px solid var(--canon-error)',
     },
-    display: ['none', 'flex', 'block', 'inline'],
+    display: ['flex', 'none', 'inline', 'block'],
     paddingTop: space,
     paddingBottom: space,
     paddingLeft: space,
@@ -76,6 +98,7 @@ export const responsiveProperties = defineProperties({
   },
 });
 
+/** @public */
 export const colorProperties = defineProperties({
   conditions: {
     light: { selector: '[data-theme="light"] &' },

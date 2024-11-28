@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export const breakpoints = {
   xs: {},
   sm: { '@media': 'screen and (min-width: 640px)' },
@@ -23,6 +24,13 @@ export const breakpoints = {
   '2xl': { '@media': 'screen and (min-width: 1536px)' },
 };
 
+/** @public */
+export const themes = {
+  light: { selector: '[data-theme="light"] &' },
+  dark: { selector: '[data-theme="dark"] &' },
+};
+
+/** @public */
 export const space = {
   none: 0,
   xxs: 'var(--canon-space-xxs)',
