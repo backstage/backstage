@@ -138,12 +138,13 @@ describe('postgres', () => {
       });
     });
 
-    it('uses the correct config when using pg+google-cloudsql', async () => {
+    it('uses the correct config when using cloudsql', async () => {
       expect(
         await buildPgDatabaseConfig(
           new ConfigReader({
-            client: 'pg+google-cloudsql',
+            client: 'pg',
             connection: {
+              type: 'cloudsql',
               user: 'ben@gke.com',
               instance: 'project:region:instance',
               port: 5423,
@@ -155,7 +156,6 @@ describe('postgres', () => {
         client: 'pg',
         connection: {
           user: 'ben@gke.com',
-          instance: 'project:region:instance',
           port: 5423,
           database: 'other_db',
         },
@@ -174,8 +174,9 @@ describe('postgres', () => {
       expect(
         await buildPgDatabaseConfig(
           new ConfigReader({
-            client: 'pg+google-cloudsql',
+            client: 'pg',
             connection: {
+              type: 'cloudsql',
               user: 'ben@gke.com',
               instance: 'project:region:instance',
               port: 5423,
@@ -187,7 +188,6 @@ describe('postgres', () => {
         client: 'pg',
         connection: {
           user: 'ben@gke.com',
-          instance: 'project:region:instance',
           port: 5423,
           stream: mockStream,
           database: 'other_db',

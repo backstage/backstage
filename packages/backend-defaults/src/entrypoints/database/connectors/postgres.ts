@@ -77,7 +77,7 @@ export async function buildPgDatabaseConfig(
     overrides,
   );
 
-  if (config.client === 'pg+google-cloudsql') {
+  if (config.connection?.type === 'cloudsql') {
     if (!config.connection.instance) {
       throw new Error('Missing instance connection name for Cloud SQL');
     }
@@ -94,7 +94,7 @@ export async function buildPgDatabaseConfig(
       authType: AuthTypes.IAM,
     });
 
-    return {
+    const cloudsqlConfig = {
       ...config,
       client: 'pg',
       connection: {
@@ -102,6 +102,12 @@ export async function buildPgDatabaseConfig(
         ...clientOpts,
       },
     };
+
+    // Trim additional properties from the connection object passed to knex
+    delete cloudsqlConfig.connection.type;
+    delete cloudsqlConfig.connection.instance;
+
+    return cloudsqlConfig;
   }
 
   return config;
