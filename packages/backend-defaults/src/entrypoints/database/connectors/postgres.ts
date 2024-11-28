@@ -78,23 +78,25 @@ export async function buildPgDatabaseConfig(
   );
 
   if (config.client === 'pg+google-cloudsql') {
+    if (!config.connection.instance) {
+      throw new Error('Missing instance connection name for Cloud SQL');
+    }
+
     const {
       Connector: CloudSqlConnector,
       IpAddressTypes,
       AuthTypes,
     } = await import('@google-cloud/cloud-sql-connector');
-    // override the config to be pg for backwards compat with other code
-    config.client = 'pg';
-
     const connector = new CloudSqlConnector();
     const clientOpts = await connector.getOptions({
-      instanceConnectionName: dbConfig.getString('instanceConnectionName'),
+      instanceConnectionName: config.connection.instance,
       ipType: IpAddressTypes.PUBLIC,
       authType: AuthTypes.IAM,
     });
 
     return {
       ...config,
+      client: 'pg',
       connection: {
         ...config.connection,
         ...clientOpts,

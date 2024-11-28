@@ -377,7 +377,7 @@ export interface Config {
     /** Database connection configuration, select base database type using the `client` field */
     database: {
       /** Default database client to use */
-      client: 'better-sqlite3' | 'sqlite3' | 'pg';
+      client: 'better-sqlite3' | 'sqlite3' | 'pg' | 'pg+google-cloudsql';
       /**
        * Base database connection string, or object with individual connection properties
        * @visibility secret
@@ -390,6 +390,10 @@ export interface Config {
              * @visibility secret
              */
             password?: string;
+            /**
+             * The instance connection name to use for google cloudsql connector. Should be format of `project:region:instance`
+             */
+            instance?: string;
             /**
              * Other connection settings
              */
@@ -436,12 +440,28 @@ export interface Config {
       plugin?: {
         [pluginId: string]: {
           /** Database client override */
-          client?: 'better-sqlite3' | 'sqlite3' | 'pg';
+          client?: 'better-sqlite3' | 'sqlite3' | 'pg' | 'pg+google-cloudsql';
           /**
            * Database connection string or Knex object override
            * @visibility secret
            */
-          connection?: string | object;
+          connection?:
+            | string
+            | {
+                /**
+                 * Password that belongs to the client User
+                 * @visibility secret
+                 */
+                password?: string;
+                /**
+                 * The instance connection name to use for google cloudsql connector. Should be format of `project:region:instance`
+                 */
+                instance?: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
           /**
            * Whether to ensure the given database exists by creating it if it does not.
            * Defaults to base config if unspecified.

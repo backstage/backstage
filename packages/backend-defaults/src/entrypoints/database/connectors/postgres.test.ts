@@ -139,26 +139,26 @@ describe('postgres', () => {
     });
 
     it('uses the correct config when using pg+google-cloudsql', async () => {
-      const mockConnectionString = createMockConnectionString();
-      const mockConnection = createMockConnection();
-
       expect(
         await buildPgDatabaseConfig(
           new ConfigReader({
             client: 'pg+google-cloudsql',
-            connection: mockConnectionString,
-            instanceConnectionName: 'project:region:instance',
+            connection: {
+              user: 'ben@gke.com',
+              instance: 'project:region:instance',
+              port: 5423,
+            },
           }),
           { connection: { database: 'other_db' } },
         ),
       ).toEqual({
         client: 'pg',
         connection: {
-          ...mockConnection,
-          port: '5432',
+          user: 'ben@gke.com',
+          instance: 'project:region:instance',
+          port: 5423,
           database: 'other_db',
         },
-        instanceConnectionName: 'project:region:instance',
         useNullAsDefault: true,
       });
     });
@@ -171,27 +171,27 @@ describe('postgres', () => {
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
 
-      const mockConnectionString = createMockConnectionString();
-      const mockConnection = createMockConnection();
-
       expect(
         await buildPgDatabaseConfig(
           new ConfigReader({
             client: 'pg+google-cloudsql',
-            connection: mockConnectionString,
-            instanceConnectionName: 'project:region:instance',
+            connection: {
+              user: 'ben@gke.com',
+              instance: 'project:region:instance',
+              port: 5423,
+            },
           }),
           { connection: { database: 'other_db' } },
         ),
       ).toEqual({
         client: 'pg',
         connection: {
-          ...mockConnection,
-          port: '5432',
-          database: 'other_db',
+          user: 'ben@gke.com',
+          instance: 'project:region:instance',
+          port: 5423,
           stream: mockStream,
+          database: 'other_db',
         },
-        instanceConnectionName: 'project:region:instance',
         useNullAsDefault: true,
       });
     });
