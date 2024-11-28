@@ -23,7 +23,6 @@ import {
 } from '@vanilla-extract/sprinkles';
 import { breakpoints, space } from './properties';
 
-/** @public */
 export const responsiveProperties = defineProperties({
   conditions: breakpoints,
   defaultCondition: 'xs',
@@ -55,7 +54,7 @@ export const responsiveProperties = defineProperties({
       thin: '1px solid var(--canon-outline)',
       error: '1px solid var(--canon-error)',
     },
-    display: ['flex', 'none', 'inline', 'block'],
+    display: ['none', 'flex', 'block', 'inline'],
     paddingTop: space,
     paddingBottom: space,
     paddingLeft: space,
@@ -77,7 +76,6 @@ export const responsiveProperties = defineProperties({
   },
 });
 
-/** @public */
 export const colorProperties = defineProperties({
   conditions: {
     light: { selector: '[data-theme="light"] &' },
@@ -99,7 +97,6 @@ export const colorProperties = defineProperties({
   },
 });
 
-/** @public */
 export const boxSprinkles = createSprinkles(
   responsiveProperties,
   colorProperties,
