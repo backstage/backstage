@@ -56,8 +56,8 @@ List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
 
-1. As an integrator, I can now get a list of currently installed features across my deployment.
-1. As an integrator/administrator, I can get a list of currently installed features for a single instance in my deployment.
+1. As a plugin builder, I can now get a list of currently installed features across my deployment.
+1. As a plugin builder, I can get a list of currently installed features for a single instance in my deployment.
 1. As an integrator/administrator, I can continue to use my static `HostDiscovery` config.
 
 ### Non-Goals
