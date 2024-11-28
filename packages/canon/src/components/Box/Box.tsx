@@ -19,19 +19,6 @@ import { boxSprinkles } from './sprinkles.css';
 import { base } from './box.css';
 import { BoxProps } from './types';
 
-// /**
-//  * Properties for {@link Box}
-//  *
-//  * @public
-//  */
-// export type BoxProps = Parameters<typeof boxSprinkles>[0] &
-//   Omit<
-//     React.AllHTMLAttributes<HTMLElement>,
-//     keyof Parameters<typeof boxSprinkles>[0]
-//   > & {
-//     as?: keyof JSX.IntrinsicElements;
-//   };
-
 /** @public */
 export const Box = (props: BoxProps) => {
   const { as = 'div', className, style, ...rest } = props;
