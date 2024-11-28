@@ -30,7 +30,6 @@ import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import {
   getPathToCurrentOpenApiSpec,
   getRelativePathToFile,
-  toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
 
 async function generateSpecFile() {
@@ -112,8 +111,6 @@ async function generate(abortSignal?: AbortController) {
       ),
       '--generator-key',
       'v3.0',
-      '--additional-properties',
-      toGeneratorAdditionalProperties({ defaultValue: { useTags: false } }),
     ],
     {
       maxBuffer: Number.MAX_VALUE,

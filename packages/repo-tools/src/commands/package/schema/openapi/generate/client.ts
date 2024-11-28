@@ -39,6 +39,9 @@ async function generate(
     outputDirectory,
     OUTPUT_PATH,
   );
+  const additionalProperties = toGeneratorAdditionalProperties({
+    initialValue: clientAdditionalProperties,
+  });
 
   await fs.emptyDir(resolvedOutputDirectory);
 
@@ -65,11 +68,9 @@ async function generate(
       ),
       '--generator-key',
       'v3.0',
-      '--additional-properties',
-      toGeneratorAdditionalProperties({
-        defaultValue: { useTags: false },
-        initialValue: clientAdditionalProperties,
-      }),
+      additionalProperties
+        ? `--additional-properties=${additionalProperties}`
+        : '',
     ],
     {
       signal: abortSignal?.signal,
