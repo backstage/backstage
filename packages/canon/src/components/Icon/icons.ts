@@ -14,5 +14,28 @@
  * limitations under the License.
  */
 
-export * from './Icon';
-export type * from './types';
+// We can add custom icons to the list outside of Remix
+
+import type { IconMap } from './types';
+import {
+  RiHeartFill,
+  RiArrowDownFill,
+  RiCloudFill,
+  RiArrowLeftFill,
+  RiArrowRightFill,
+  RiArrowUpFill,
+  RiDeleteBin6Line,
+  RiAddLine,
+} from '@remixicon/react';
+
+// List of default icons
+export const defaultIcons: IconMap = {
+  arrowDown: RiArrowDownFill,
+  arrowLeft: RiArrowLeftFill,
+  arrowRight: RiArrowRightFill,
+  arrowUp: RiArrowUpFill,
+  cloud: RiCloudFill,
+  heart: RiHeartFill,
+  plus: RiAddLine,
+  trash: RiDeleteBin6Line,
+};

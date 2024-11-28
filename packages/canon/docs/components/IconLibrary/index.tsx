@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+import { Icon } from '@backstage/canon';
+import type { IconNames } from '@backstage/canon';
+import { defaultIcons } from '../../../src/components/Icon/icons';
+import { Text } from '../Text';
 
-/** @public */
-export const Icon = ({ name }: { name: IconNames }) => {
-  const { icons } = useTheme();
+export const IconLibrary = () => {
+  const icons = Object.keys(defaultIcons);
 
-  const RemixIcon = icons[name];
-
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found.`);
-    return <svg />; // Return default icon perhaps?
-  }
-
-  return <RemixIcon />;
+  return (
+    <div className="icon-library">
+      {icons.map(icon => (
+        <div key={icon} className="icon-library-item">
+          <div className="icon-library-item-icon">
+            <Icon name={icon as IconNames} />
+          </div>
+          <Text>{icon}</Text>
+        </div>
+      ))}
+    </div>
+  );
 };

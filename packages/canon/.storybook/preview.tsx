@@ -2,6 +2,10 @@ import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 
+// Storybook specific styles
+import '../docs/components/styles.css';
+
+// Canon specific styles
 import '../src/theme/styles.css';
 
 const preview: Preview = {

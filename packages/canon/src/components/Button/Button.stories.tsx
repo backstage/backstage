@@ -71,9 +71,9 @@ export const WithIcons: Story = {
   },
   render: args => (
     <div style={{ display: 'flex', gap: '10px' }}>
-      <Button {...args} iconStart="Cloud" />
-      <Button {...args} iconEnd="ArrowRight" />
-      <Button {...args} iconStart="Cloud" iconEnd="ArrowRight" />
+      <Button {...args} iconStart="cloud" />
+      <Button {...args} iconEnd="arrowRight" />
+      <Button {...args} iconStart="cloud" iconEnd="arrowRight" />
     </div>
   ),
 };
@@ -84,9 +84,9 @@ export const FullWidth: Story = {
   },
   render: args => (
     <Box>
-      <Button {...args} iconStart="Cloud" />
-      <Button {...args} iconEnd="ArrowRight" />
-      <Button {...args} iconStart="Cloud" iconEnd="ArrowRight" />
+      <Button {...args} iconStart="cloud" />
+      <Button {...args} iconEnd="arrowRight" />
+      <Button {...args} iconStart="cloud" iconEnd="arrowRight" />
     </Box>
   ),
 };

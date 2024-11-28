@@ -97,7 +97,6 @@ export const colorProperties = defineProperties({
   },
 });
 
-/** @public */
 export const boxSprinkles = createSprinkles(
   responsiveProperties,
   colorProperties,

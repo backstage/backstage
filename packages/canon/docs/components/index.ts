@@ -22,3 +22,4 @@ export * from './Columns';
 export * from './ComponentStatus';
 export * from './LayoutComponents';
 export * from './Banner';
+export * from './IconLibrary';

@@ -15,39 +15,19 @@
  */
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Cloud } from 'lucide-react';
-import { CustomIcon } from './custom-icon';
+import { IconMap, IconNames } from '../components/Icon/types';
+import { defaultIcons } from '../components/Icon/icons';
 
-// List of icons available that can also be overridden.
-/** @public */
-export type IconNames =
-  | 'ArrowDown'
-  | 'ArrowLeft'
-  | 'ArrowRight'
-  | 'ArrowUp'
-  | 'Cloud'
-  | 'CustomIcon';
-
-type IconMap = Partial<Record<IconNames, React.ComponentType>>;
-
-interface IconContextProps {
+interface ThemeContextProps {
   icons: IconMap;
 }
 
-// Create a default icon map with only the necessary icons
-const defaultIcons: IconMap = {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  Cloud,
-  CustomIcon,
-};
-
-const IconContext = createContext<IconContextProps>({ icons: defaultIcons });
+const ThemeContext = createContext<ThemeContextProps>({
+  icons: defaultIcons,
+});
 
 /** @public */
-export const IconProvider = ({
+export const ThemeProvider = ({
   children,
   overrides,
 }: {
@@ -58,11 +38,11 @@ export const IconProvider = ({
   const combinedIcons = { ...defaultIcons, ...overrides };
 
   return (
-    <IconContext.Provider value={{ icons: combinedIcons }}>
+    <ThemeContext.Provider value={{ icons: combinedIcons }}>
       {children}
-    </IconContext.Provider>
+    </ThemeContext.Provider>
   );
 };
 
 /** @public */
-export const useIcons = () => useContext(IconContext);
+export const useTheme = () => useContext(ThemeContext);

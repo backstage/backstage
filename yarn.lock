@@ -3823,6 +3823,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@base_ui/react": ^1.0.0-alpha.3
     "@chromatic-com/storybook": ^3.2.2
+    "@remixicon/react": ^4.5.0
     "@storybook/addon-essentials": ^8.4.5
     "@storybook/addon-interactions": ^8.4.5
     "@storybook/addon-styling-webpack": ^1.0.1
@@ -3843,7 +3844,6 @@ __metadata:
     "@vanilla-extract/webpack-plugin": ^2.3.14
     eslint-plugin-storybook: ^0.11.1
     globals: ^15.11.0
-    lucide-react: ^0.460.0
     mini-css-extract-plugin: ^2.9.2
     react: ^18.0.2
     react-dom: ^18.0.2
@@ -15455,6 +15455,15 @@ __metadata:
   version: 1.3.2
   resolution: "@remix-run/router@npm:1.3.2"
   checksum: ee2108b87d4a1241cdea137dd7e1741ee679228bd33fd81e22a6bb2940f81186cefe9a85e26d60cc49bbcc1bdbc57d1954b7d4d62f8a51ef69feddfc899f55fa
+  languageName: node
+  linkType: hard
+
+"@remixicon/react@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "@remixicon/react@npm:4.5.0"
+  peerDependencies:
+    react: ">=18.2.0"
+  checksum: e37b61090954954601d35367a740b7be30c105a49f67eaa5a697db16d4668d71d9fd94b339da6d449a254736d5af3b567d3694021b79d3c82fe28afb818830bc
   languageName: node
   linkType: hard
 
@@ -35190,15 +35199,6 @@ __metadata:
   version: 1.1.0
   resolution: "lru.min@npm:1.1.0"
   checksum: c03dcc83f031387f254856bccc8418daff716b79b67886eceb110e3af57f593f752821a7b019ea382f8f48927767ddb1869087586f4bfc5bf9c90674ca80dfa2
-  languageName: node
-  linkType: hard
-
-"lucide-react@npm:^0.460.0":
-  version: 0.460.0
-  resolution: "lucide-react@npm:0.460.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
-  checksum: 6106dc16dd7ce7928d6136e81c9e84e87e1b6b0910a0c78777a387c795c0512755e8bf4c602ab8f09518919999a494ed86ba7190863e8e7aec6c82665147ead3
   languageName: node
   linkType: hard
 

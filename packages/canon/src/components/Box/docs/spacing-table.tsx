@@ -20,8 +20,6 @@ import { Chip } from '../../../../docs/components';
 import { listResponsiveValues } from '../../../utils/list-values';
 import { responsiveProperties } from '../sprinkles.css';
 
-console.log(responsiveProperties.styles);
-
 export const SpacingTable = () => {
   return (
     <Table.Root>

@@ -38,11 +38,11 @@
   },
   "dependencies": {
     "@base_ui/react": "^1.0.0-alpha.3",
+    "@remixicon/react": "^4.5.0",
     "@vanilla-extract/css": "^1.16.0",
     "@vanilla-extract/dynamic": "^2.1.2",
     "@vanilla-extract/recipes": "^0.5.5",
-    "@vanilla-extract/sprinkles": "^1.6.3",
-    "lucide-react": "^0.460.0"
+    "@vanilla-extract/sprinkles": "^1.6.3"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
