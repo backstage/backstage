@@ -20,6 +20,10 @@ export type RoadmapItem = {
 
 export const list: RoadmapItem[] = [
   {
+    title: 'Remove Vanilla Extract and use pure CSS instead',
+    status: 'inProgress',
+  },
+  {
     title: 'Add collapsing across breakpoints for the Inline component',
     status: 'notStarted',
   },
