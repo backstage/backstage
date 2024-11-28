@@ -452,6 +452,8 @@ describe('Git', () => {
           'user-agent': 'git/@isomorphic-git',
         },
         onAuth: expect.any(Function),
+        corsProxy: '',
+        url: undefined,
       });
     });
 
@@ -480,6 +482,8 @@ describe('Git', () => {
           'user-agent': 'git/@isomorphic-git',
         },
         onAuth: expect.any(Function),
+        corsProxy: '',
+        url: undefined,
       });
     });
 
@@ -506,6 +510,8 @@ describe('Git', () => {
           'user-agent': 'git/@isomorphic-git',
         },
         onAuth: expect.any(Function),
+        corsProxy: '',
+        url: undefined,
       });
     });
 
