@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-/* Geist font */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
+import { breakpoints } from '../../layout/properties';
+import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
 
-/* Theme */
-@import './theme.css';
+const inlineProperties = defineProperties({
+  conditions: breakpoints,
+  defaultCondition: 'xs',
+  properties: {
+    alignItems: ['flex-start', 'center', 'flex-end'],
+    justifyContent: ['flex-start', 'center', 'flex-end'],
+  },
+});
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
+export const inlineSprinkles = createSprinkles(
+  spacingProperties,
+  colorProperties,
+  inlineProperties,
+);

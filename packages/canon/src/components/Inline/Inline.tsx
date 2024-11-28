@@ -14,45 +14,50 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Box } from '../Box/Box';
-import type { BoxProps } from '../Box/types';
+import { createElement } from 'react';
+import { inlineSprinkles } from './sprinkles.css';
+import type { InlineProps } from './types';
 
-export const validInlineComponents = [
-  'div',
-  'span',
-  'p',
-  'nav',
-  'ul',
-  'ol',
-  'li',
-] as const;
+const alignYToFlexAlign = (alignY: InlineProps['alignY']) => {
+  if (alignY === 'top') return 'flex-start';
+  if (alignY === 'center') return 'center';
+  if (alignY === 'bottom') return 'flex-end';
+  return undefined;
+};
 
-export interface InlineProps extends Omit<BoxProps, 'alignItems'> {
-  as?: (typeof validInlineComponents)[number];
-  children: React.ReactNode;
-  align?: 'left' | 'center' | 'right';
-  gap?: BoxProps['gap'];
-}
+const alignToFlexAlignY = (align: InlineProps['align']) => {
+  if (align === 'left') return 'flex-start';
+  if (align === 'center') return 'center';
+  if (align === 'right') return 'flex-end';
+  return undefined;
+};
 
 export const Inline = ({
-  align,
   as = 'div',
   children,
+  align = 'left',
+  alignY = 'top',
   gap = 'xs',
+  className,
+  style,
   ...restProps
 }: InlineProps) => {
-  return (
-    <Box
-      as={as}
-      display="flex"
-      // alignItems={align !== 'left' ? alignToFlexAlign(align) : undefined}
-      justifyContent="flex-start"
-      flexWrap="wrap"
-      gap={gap}
-      {...restProps}
-    >
-      {children}
-    </Box>
-  );
+  // Generate the list of class names
+  const sprinklesClassName = inlineSprinkles({
+    ...restProps,
+    gap,
+    alignItems: alignYToFlexAlign(alignY),
+    justifyContent: alignToFlexAlignY(align),
+  });
+
+  // Combine the base class name, the sprinkles class name, and any additional class names
+  const classNames = ['inline', sprinklesClassName, className]
+    .filter(Boolean)
+    .join(' ');
+
+  return createElement(as, {
+    className: classNames,
+    style,
+    children,
+  });
 };

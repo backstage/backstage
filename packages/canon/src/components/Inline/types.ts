@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-/* Geist font */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
+import { SpaceProps } from '../../layout/types';
 
-/* Theme */
-@import './theme.css';
-
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
+export interface InlineProps extends SpaceProps, ColorProps {
+  children: React.ReactNode;
+  as?: AsProps;
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  alignY?:
+    | 'top'
+    | 'center'
+    | 'bottom'
+    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
+  className?: string;
+  style?: React.CSSProperties;
+}

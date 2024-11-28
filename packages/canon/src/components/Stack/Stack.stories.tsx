@@ -18,8 +18,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Stack } from './Stack';
 import { Box } from '../Box/Box';
-import { argTypesSpacing } from '../../../docs/utils/argTypes';
-import { argTypesColor } from '../../../docs/utils/argTypes';
+import { argTypesSpacing, argTypesColor } from '../../../docs/utils/argTypes';
 
 const meta = {
   title: 'Components/Stack',

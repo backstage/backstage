@@ -42,7 +42,7 @@ export const Padding = () => {
       paddingY="xl"
       style={{ border: '1px solid #e7e7e7' }}
     >
-      <Inline align="center" gap="xl">
+      <Inline align="center" alignY="center" gap="xl">
         <Box
           alignItems="center"
           borderRadius="small"
@@ -68,7 +68,7 @@ export const Padding = () => {
           <FakeBox>paddingY</FakeBox>
         </Box>
       </Inline>
-      <Inline align="center" gap="xl">
+      <Inline align="center" alignY="center" gap="xl">
         <Box
           alignItems="center"
           borderRadius="small"

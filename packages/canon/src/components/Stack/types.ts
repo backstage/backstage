@@ -16,17 +16,14 @@
 import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
 import { SpaceProps } from '../../layout/types';
 
-/** @public */
-export type AlignProps =
-  | 'left'
-  | 'center'
-  | 'right'
-  | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-
 export interface StackProps extends SpaceProps, ColorProps {
   children: React.ReactNode;
   as?: AsProps;
-  align?: AlignProps;
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
   className?: string;
   style?: React.CSSProperties;
 }
