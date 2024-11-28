@@ -724,4 +724,59 @@ describe('BackendInitializer', () => {
 
     await init.start();
   });
+
+  it('should properly add plugins + modules to the instance metadata service', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const instanceMetadataPlugin = createBackendPlugin({
+      pluginId: 'instance-metadata',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.EXPERIMENTAL_instanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            expect(instanceMetadata.getInstalledFeatures()).toEqual([
+              {
+                pluginId: 'test',
+                type: 'plugin',
+              },
+              {
+                pluginId: 'test',
+                moduleId: 'test',
+                type: 'module',
+              },
+              {
+                pluginId: 'instance-metadata',
+                type: 'plugin',
+              },
+            ]);
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    backend.add(plugin);
+    backend.add(module);
+    backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
 });

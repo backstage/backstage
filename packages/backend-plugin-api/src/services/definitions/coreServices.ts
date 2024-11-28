@@ -251,4 +251,15 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
+
+  /**
+   * EXPERIMENTAL: Instance metadata service.
+   *
+   * @public
+   */
+  export const EXPERIMENTAL_instanceMetadata = createServiceRef<
+    import('./InstanceMetadataService').InstanceMetadataService
+  >({
+    id: 'core.instanceMetadata',
+  });
 }

@@ -22,6 +22,7 @@ import {
   ServiceFactory,
   LifecycleService,
   RootLifecycleService,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
@@ -95,6 +96,49 @@ const instanceRegistry = new (class InstanceRegistry {
     }
   };
 })();
+
+type BackendFeatureMeta =
+  | {
+      type: 'plugin';
+      pluginId: string;
+    }
+  | {
+      type: 'module';
+      pluginId: string;
+      moduleId: string;
+    };
+
+function createInstanceMetadataServiceFactory(
+  registrations: InternalBackendRegistrations[],
+) {
+  const installedFeatures = registrations
+    .map(registration => {
+      if (registration.featureType === 'registrations') {
+        return registration
+          .getRegistrations()
+          .map(feature => {
+            if (feature.type === 'plugin') {
+              return { type: 'plugin', pluginId: feature.pluginId };
+            } else if (feature.type === 'module') {
+              return {
+                type: 'module',
+                pluginId: feature.pluginId,
+                moduleId: feature.moduleId,
+              };
+            }
+            return undefined;
+          })
+          .filter(Boolean) as BackendFeatureMeta[];
+      }
+      return [];
+    })
+    .flat();
+  return createServiceFactory({
+    service: coreServices.EXPERIMENTAL_instanceMetadata,
+    deps: {},
+    factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
+  });
+}
 
 export class BackendInitializer {
   #startPromise?: Promise<void>;
@@ -209,6 +253,10 @@ export class BackendInitializer {
     }
 
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
+
+    this.#serviceRegistry.add(
+      createInstanceMetadataServiceFactory(this.#registrations),
+    );
 
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
