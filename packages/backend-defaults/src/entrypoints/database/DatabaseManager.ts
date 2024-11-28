@@ -252,7 +252,7 @@ export class DatabaseManager {
         databaseConfig,
         {
           pg: new PgConnector(databaseConfig, prefix),
-          'pg+cloudsql': new PgConnector(databaseConfig, prefix),
+          'pg+google-cloudsql': new PgConnector(databaseConfig, prefix),
           sqlite3: new Sqlite3Connector(databaseConfig),
           'better-sqlite3': new Sqlite3Connector(databaseConfig),
           mysql: new MysqlConnector(databaseConfig, prefix),

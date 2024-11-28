@@ -138,14 +138,14 @@ describe('postgres', () => {
       });
     });
 
-    it('uses the correct config when using pg+google-cloud-sql', async () => {
+    it('uses the correct config when using pg+google-cloudsql', async () => {
       const mockConnectionString = createMockConnectionString();
       const mockConnection = createMockConnection();
 
       expect(
         await buildPgDatabaseConfig(
           new ConfigReader({
-            client: 'pg+google-cloud-sql',
+            client: 'pg+google-cloudsql',
             connection: mockConnectionString,
             instanceConnectionName: 'project:region:instance',
           }),
@@ -177,7 +177,7 @@ describe('postgres', () => {
       expect(
         await buildPgDatabaseConfig(
           new ConfigReader({
-            client: 'pg+google-cloud-sql',
+            client: 'pg+google-cloudsql',
             connection: mockConnectionString,
             instanceConnectionName: 'project:region:instance',
           }),

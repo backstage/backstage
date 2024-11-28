@@ -77,7 +77,7 @@ export async function buildPgDatabaseConfig(
     overrides,
   );
 
-  if (config.client === 'pg+google-cloud-sql') {
+  if (config.client === 'pg+google-cloudsql') {
     const {
       Connector: CloudSqlConnector,
       IpAddressTypes,
