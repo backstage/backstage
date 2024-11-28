@@ -788,6 +788,7 @@ export const spec = {
     '/refresh': {
       post: {
         operationId: 'RefreshEntity',
+        tags: ['Entity'],
         description: 'Refresh the entity related to entityRef.',
         responses: {
           '200': {

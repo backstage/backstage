@@ -1,4 +1,7 @@
+//
 {{>licenseInfo}}
+{{#apiInfo}}
+{{#apis}}
 {{#imports}}
 import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
 {{/imports}}
@@ -39,16 +42,19 @@ export type {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} = {
     response: {{#responses}} {{{dataType}}}{{^dataType}}void{{/dataType}} {{^-last}} | {{/-last}} {{/responses}}
 }
 {{/operation}}
-
-/**
- * {{{description}}}{{^description}}no description{{/description}}
- */
+{{/operations}}
+{{/apis}}
 
 export type EndpointMap = {
+    {{#apis}}
+    {{#operations}}
     {{#operation}}
     
     '#{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}|{{path}}': {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
     
     {{/operation}}
+    {{/operations}}
+    {{/apis}}
 }
-{{/operations}}
+
+{{/apiInfo}}

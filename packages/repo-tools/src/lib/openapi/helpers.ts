@@ -51,3 +51,23 @@ export async function loadAndValidateOpenApiYaml(path: string) {
   await Parser.validate(cloneDeep(yaml) as any);
   return yaml;
 }
+
+export function toGeneratorAdditionalProperties({
+  initialValue,
+  defaultValue,
+}: {
+  initialValue?: string;
+  defaultValue?: Record<string, any>;
+}) {
+  const items = initialValue?.split(',') ?? [];
+  const parsed = items.reduce(
+    (acc, item) => {
+      const [key, value] = item.split('=');
+      return { ...acc, [key]: value };
+    },
+    { ...defaultValue },
+  );
+  return Object.entries(parsed)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(',');
+}
