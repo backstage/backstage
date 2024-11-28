@@ -112,7 +112,7 @@ While we could attach the existing information to the `PluginMetadataService`, w
 
 ```ts
 interface InstanceMetadataService {
-  getInstalledFeatures: () => BackendFeatureMeta[];
+  getLocallyInstalledFeatures: () => BackendFeatureMeta[];
 }
 ```
 
@@ -154,9 +154,9 @@ paths:
                         moduleId: { type: string }
 ```
 
-### New `DeploymentMetadataPlugin`
+### New `DeploymentMetadataService`
 
-This will be a new core plugin that will be provided through a new package. The idea is that it will show all information across your entire deployment. One can imagine this hosting aggregate information around instances in the deployment, like their internal and external URLs.
+This will be a new core service. The idea is that it will show information about your whole Backstage deployment, which can have multiple instances. Initially, this will host aggregate information around instances in the deployment, like their internal and external URLs.
 
 ```ts
 interface BackstageInstance {
@@ -166,21 +166,18 @@ interface BackstageInstance {
   };
 }
 
-interface DeploymentMetadataPluginExtensionPoint {
-  setInstances: (instances: BackstageInstance[]) => Promise<void>;
+interface DeploymentMetadataService {
+  listInstances: () => BackstageInstance[];
 }
 ```
 
-By default, this will either
+By default, this will
 a. be the exact same as `InstanceMetadataService` if we are not using `HostDiscovery` static config, or
-b. TODO: How will users define their endpoints statically such that we can access other instance's `InstanceMetadataService` HTTP APIs?
+b. use the `HostDiscovery` static config to fetch other instance's base URLs.
 
-This new plugin would be designed as follows:
+TODO: How will users define their endpoints statically such that we can access other instance's `InstanceMetadataService` HTTP APIs?
 
-1. `@backstage/plugin-deployment-metadata-backend`: Provides an extension point for custom deployment metadata implementations, if no module is installed, we fall back to instance metadata provided by `InstanceMetadataService`.
-2. `@backstage/plugin-deployment-metadata-backend-module-host-discovery-provider`: Provides the default implementation of the `HostDiscovery`-based static deployment metadata.
-
-### `DeploymentMetadataPlugin` API
+### `DeploymentMetadataService` HTTP API
 
 ```yaml
 paths:
