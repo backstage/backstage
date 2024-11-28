@@ -6,12 +6,12 @@
 /// <reference types="react" />
 
 import { CSSProperties } from 'react';
-import { JSXElementConstructor } from 'react';
+import { DOMElement } from 'react';
 import { default as React_2 } from 'react';
-import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 
 // @public (undocumented)
-export type AlignItems =
+export type AlignItemsProps =
   | 'stretch'
   | 'flex-start'
   | 'center'
@@ -19,6 +19,25 @@ export type AlignItems =
   | Partial<
       Record<Breakpoint, 'stretch' | 'flex-start' | 'center' | 'flex-end'>
     >;
+
+// @public (undocumented)
+export type AsProps =
+  | 'div'
+  | 'span'
+  | 'p'
+  | 'article'
+  | 'section'
+  | 'main'
+  | 'nav'
+  | 'aside'
+  | 'ul'
+  | 'ol'
+  | 'li'
+  | 'details'
+  | 'summary'
+  | 'dd'
+  | 'dl'
+  | 'dt';
 
 // @public (undocumented)
 export type Background =
@@ -31,7 +50,7 @@ export type Background =
     >;
 
 // @public (undocumented)
-export type BorderRadius =
+export type BorderRadiusProps =
   | 'none'
   | 'small'
   | 'medium'
@@ -39,68 +58,35 @@ export type BorderRadius =
   | Partial<Record<Breakpoint, 'none' | 'small' | 'medium' | 'full'>>;
 
 // @public (undocumented)
-export const Box: (props: BoxProps) => ReactElement<
+export const Box: (props: BoxProps) => DOMElement<
   {
     className: string;
     style: CSSProperties | undefined;
+    children: ReactNode;
   },
-  string | JSXElementConstructor<any>
+  Element
 >;
 
 // @public (undocumented)
-export interface BoxProps {
+export interface BoxProps extends SpaceProps, ColorProps {
   // (undocumented)
-  alignItems?: AlignItems;
+  alignItems?: AlignItemsProps;
   // (undocumented)
   as?: keyof JSX.IntrinsicElements;
   // (undocumented)
-  background?: Background;
-  // (undocumented)
-  borderRadius?: BorderRadius;
+  borderRadius?: BorderRadiusProps;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  color?: Color;
+  display?: DisplayProps;
   // (undocumented)
-  display?: Display;
+  flexDirection?: FlexDirectionProps;
   // (undocumented)
-  flexDirection?: FlexDirection;
+  flexWrap?: FlexWrapProps;
   // (undocumented)
-  flexWrap?: FlexWrap;
-  // (undocumented)
-  gap?: Gap;
-  // (undocumented)
-  justifyContent?: JustifyContent;
-  // (undocumented)
-  margin?: Margin;
-  // (undocumented)
-  marginBottom?: MarginBottom;
-  // (undocumented)
-  marginLeft?: MarginLeft;
-  // (undocumented)
-  marginRight?: MarginRight;
-  // (undocumented)
-  marginTop?: MarginTop;
-  // (undocumented)
-  marginX?: MarginX;
-  // (undocumented)
-  marginY?: MarginY;
-  // (undocumented)
-  padding?: Padding;
-  // (undocumented)
-  paddingBottom?: PaddingBottom;
-  // (undocumented)
-  paddingLeft?: PaddingLeft;
-  // (undocumented)
-  paddingRight?: PaddingRight;
-  // (undocumented)
-  paddingTop?: PaddingTop;
-  // (undocumented)
-  paddingX?: PaddingX;
-  // (undocumented)
-  paddingY?: PaddingY;
+  justifyContent?: JustifyContentProps;
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -163,7 +149,15 @@ export type Color =
   | Partial<Record<Theme, 'primary' | 'secondary' | 'error'>>;
 
 // @public (undocumented)
-export type Display =
+export interface ColorProps {
+  // (undocumented)
+  background?: Background;
+  // (undocumented)
+  color?: Color;
+}
+
+// @public (undocumented)
+export type DisplayProps =
   | 'flex'
   | 'none'
   | 'inline'
@@ -171,13 +165,13 @@ export type Display =
   | Partial<Record<Breakpoint, 'flex' | 'none' | 'inline' | 'block'>>;
 
 // @public (undocumented)
-export type FlexDirection =
+export type FlexDirectionProps =
   | 'row'
   | 'column'
   | Partial<Record<Breakpoint, 'row' | 'column'>>;
 
 // @public (undocumented)
-export type FlexWrap =
+export type FlexWrapProps =
   | 'wrap'
   | 'nowrap'
   | Partial<Record<Breakpoint, 'wrap' | 'nowrap'>>;
@@ -203,7 +197,7 @@ export type IconNames =
   | 'trash';
 
 // @public (undocumented)
-export type JustifyContent =
+export type JustifyContentProps =
   | 'stretch'
   | 'flex-start'
   | 'center'
@@ -278,6 +272,40 @@ export const space: {
   xl: string;
   xxl: string;
 };
+
+// @public (undocumented)
+export interface SpaceProps {
+  // (undocumented)
+  gap?: Gap;
+  // (undocumented)
+  margin?: Margin;
+  // (undocumented)
+  marginBottom?: MarginBottom;
+  // (undocumented)
+  marginLeft?: MarginLeft;
+  // (undocumented)
+  marginRight?: MarginRight;
+  // (undocumented)
+  marginTop?: MarginTop;
+  // (undocumented)
+  marginX?: MarginX;
+  // (undocumented)
+  marginY?: MarginY;
+  // (undocumented)
+  padding?: Padding;
+  // (undocumented)
+  paddingBottom?: PaddingBottom;
+  // (undocumented)
+  paddingLeft?: PaddingLeft;
+  // (undocumented)
+  paddingRight?: PaddingRight;
+  // (undocumented)
+  paddingTop?: PaddingTop;
+  // (undocumented)
+  paddingX?: PaddingX;
+  // (undocumented)
+  paddingY?: PaddingY;
+}
 
 // @public (undocumented)
 export type Theme = keyof typeof themes;
