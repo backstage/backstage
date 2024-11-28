@@ -1,11 +1,11 @@
 import { Unstyled } from '@storybook/blocks';
-import { Columns, Text, ComponentStatus, Banner } from './components';
+import { Columns, Text, ComponentStatus, Banner, Title } from './components';
 
 <Unstyled>
 
 <img src="header.png" style={{ width: '100%', marginTop: '-16px' }} />
 
-<Text style={{ marginTop: '64px' }}>
+<Text style={{ marginTop: '64px', marginBottom: '24px' }}>
   Welcome to the Canon, the new design library for Backstage plugins. This
   project is still under active development but we will make sure to document
   the API as we go. We are aiming to improve the general UI of Backstage and
@@ -18,32 +18,62 @@ import { Columns, Text, ComponentStatus, Banner } from './components';
   will change until we reach a stable release.
 </Banner>
 
-<Columns style={{ marginTop: '64px' }}>
+<Title style={{ marginTop: '48px' }} type="h2">
+  Project Status
+</Title>
+<Text>
+  We are still in the process of documenting the API and building the
+  components. You can use the statuses below to see what is ready and what is
+  coming soon. If there is a component missing that you need, please let us know
+  by opening an issue on GitHub.
+</Text>
+
+<Columns style={{ marginTop: '32px' }}>
+  <ComponentStatus name="Storybook setup" status="done" />
+  <ComponentStatus
+    name="Iconography"
+    status="done"
+    link="/?path=/docs/iconography--docs"
+  />
+  <ComponentStatus name="Global tokens" status="inProgress" />
   <ComponentStatus
     name="Theming system"
     status="inProgress"
     link="/?path=/docs/theme--docs"
   />
-  <ComponentStatus name="Storybook setup" status="inProgress" />
-  <ComponentStatus name="Tokens" status="inProgress" />
   <ComponentStatus
-    name="Box"
+    name="Box component"
     status="inProgress"
     link="/?path=/docs/components-box--docs"
   />
   <ComponentStatus
-    name="Button"
+    name="Inline component"
+    status="inProgress"
+    link="/?path=/story/components-inline--default"
+  />
+  <ComponentStatus
+    name="Stack component"
+    status="inProgress"
+    link="/?path=/docs/components-stack--default"
+  />
+  <ComponentStatus
+    name="Button component"
     status="inProgress"
     link="/?path=/docs/components-button--docs"
   />
-  <ComponentStatus name="Input" status="notStarted" />
-  <ComponentStatus name="Select" status="notStarted" />
-  <ComponentStatus name="Checkbox" status="notStarted" />
-  <ComponentStatus name="Radio" status="notStarted" />
-  <ComponentStatus name="Switch" status="notStarted" />
-  <ComponentStatus name="Tooltip" status="notStarted" />
-  <ComponentStatus name="Header" status="notStarted" />
-  <ComponentStatus name="Tabs" status="notStarted" />
+  <ComponentStatus
+    name="Icon component"
+    status="inProgress"
+    link="/?path=/docs/components-icon--docs"
+  />
+  <ComponentStatus name="Input component" status="notStarted" />
+  <ComponentStatus name="Select component" status="notStarted" />
+  <ComponentStatus name="Checkbox component" status="notStarted" />
+  <ComponentStatus name="Radio component" status="notStarted" />
+  <ComponentStatus name="Switch component" status="notStarted" />
+  <ComponentStatus name="Tooltip component" status="notStarted" />
+  <ComponentStatus name="Header component" status="notStarted" />
+  <ComponentStatus name="Tabs component" status="notStarted" />
 </Columns>
 
 </Unstyled>
