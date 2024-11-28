@@ -22,6 +22,8 @@ import {
   parsePgConnectionString,
 } from './postgres';
 
+jest.mock('@google-cloud/cloud-sql-connector');
+
 describe('postgres', () => {
   const createMockConnection = () => ({
     host: 'acme',
@@ -37,33 +39,35 @@ describe('postgres', () => {
     new ConfigReader({ client: 'pg', connection });
 
   describe('buildPgDatabaseConfig', () => {
-    it('builds a postgres config', () => {
+    it('builds a postgres config', async () => {
       const mockConnection = createMockConnection();
 
-      expect(buildPgDatabaseConfig(createConfig(mockConnection))).toEqual({
-        client: 'pg',
-        connection: mockConnection,
-        useNullAsDefault: true,
-      });
-    });
-
-    it('builds a connection string config', () => {
-      const mockConnectionString = createMockConnectionString();
-
-      expect(buildPgDatabaseConfig(createConfig(mockConnectionString))).toEqual(
+      expect(await buildPgDatabaseConfig(createConfig(mockConnection))).toEqual(
         {
           client: 'pg',
-          connection: mockConnectionString,
+          connection: mockConnection,
           useNullAsDefault: true,
         },
       );
     });
 
-    it('overrides the database name', () => {
+    it('builds a connection string config', async () => {
+      const mockConnectionString = createMockConnectionString();
+
+      expect(
+        await buildPgDatabaseConfig(createConfig(mockConnectionString)),
+      ).toEqual({
+        client: 'pg',
+        connection: mockConnectionString,
+        useNullAsDefault: true,
+      });
+    });
+
+    it('overrides the database name', async () => {
       const mockConnection = createMockConnection();
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnection), {
+        await buildPgDatabaseConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
         }),
       ).toEqual({
@@ -76,14 +80,14 @@ describe('postgres', () => {
       });
     });
 
-    it('overrides the schema name', () => {
+    it('overrides the schema name', async () => {
       const mockConnection = {
         ...createMockConnection(),
         schema: 'schemaName',
       };
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnection), {
+        await buildPgDatabaseConfig(createConfig(mockConnection), {
           searchPath: ['schemaName'],
         }),
       ).toEqual({
@@ -94,11 +98,11 @@ describe('postgres', () => {
       });
     });
 
-    it('adds additional config settings', () => {
+    it('adds additional config settings', async () => {
       const mockConnection = createMockConnection();
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnection), {
+        await buildPgDatabaseConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
           pool: { min: 0, max: 7 },
           debug: true,
@@ -115,12 +119,12 @@ describe('postgres', () => {
       });
     });
 
-    it('overrides the database from connection string', () => {
+    it('overrides the database from connection string', async () => {
       const mockConnectionString = createMockConnectionString();
       const mockConnection = createMockConnection();
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnectionString), {
+        await buildPgDatabaseConfig(createConfig(mockConnectionString), {
           connection: { database: 'other_db' },
         }),
       ).toEqual({
@@ -130,6 +134,64 @@ describe('postgres', () => {
           port: '5432',
           database: 'other_db',
         },
+        useNullAsDefault: true,
+      });
+    });
+
+    it('uses the correct config when using pg+google-cloud-sql', async () => {
+      const mockConnectionString = createMockConnectionString();
+      const mockConnection = createMockConnection();
+
+      expect(
+        await buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg+google-cloud-sql',
+            connection: mockConnectionString,
+            instanceConnectionName: 'project:region:instance',
+          }),
+          { connection: { database: 'other_db' } },
+        ),
+      ).toEqual({
+        client: 'pg',
+        connection: {
+          ...mockConnection,
+          port: '5432',
+          database: 'other_db',
+        },
+        instanceConnectionName: 'project:region:instance',
+        useNullAsDefault: true,
+      });
+    });
+
+    it('adds the settings from cloud-sql-connector', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
+
+      const mockConnectionString = createMockConnectionString();
+      const mockConnection = createMockConnection();
+
+      expect(
+        await buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg+google-cloud-sql',
+            connection: mockConnectionString,
+            instanceConnectionName: 'project:region:instance',
+          }),
+          { connection: { database: 'other_db' } },
+        ),
+      ).toEqual({
+        client: 'pg',
+        connection: {
+          ...mockConnection,
+          port: '5432',
+          database: 'other_db',
+          stream: mockStream,
+        },
+        instanceConnectionName: 'project:region:instance',
         useNullAsDefault: true,
       });
     });
@@ -174,9 +236,9 @@ describe('postgres', () => {
   });
 
   describe('createPgDatabaseClient', () => {
-    it('creates a postgres knex instance', () => {
+    it('creates a postgres knex instance', async () => {
       expect(
-        createPgDatabaseClient(
+        await createPgDatabaseClient(
           createConfig({
             host: 'acme',
             user: 'foo',
@@ -187,14 +249,14 @@ describe('postgres', () => {
       ).toBeTruthy();
     });
 
-    it('attempts to read an ssl cert', () => {
-      expect(() =>
+    it('attempts to read an ssl cert', async () => {
+      await expect(() =>
         createPgDatabaseClient(
           createConfig(
             'postgresql://postgres:pass@localhost:5432/dbname?sslrootcert=/path/to/file',
           ),
         ),
-      ).toThrow(/no such file or directory/);
+      ).rejects.toThrow(/no such file or directory/);
     });
   });
 

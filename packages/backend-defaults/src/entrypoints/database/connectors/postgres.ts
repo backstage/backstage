@@ -37,11 +37,11 @@ const ddlLimiter = limiterFactory(1);
  * @param dbConfig - The database config
  * @param overrides - Additional options to merge with the config
  */
-export function createPgDatabaseClient(
+export async function createPgDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
 ) {
-  const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
+  const knexConfig = await buildPgDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
 
   const role = dbConfig.getOptionalString('role');
@@ -64,11 +64,11 @@ export function createPgDatabaseClient(
  * @param dbConfig - The database config
  * @param overrides - Additional options to merge with the config
  */
-export function buildPgDatabaseConfig(
+export async function buildPgDatabaseConfig(
   dbConfig: Config,
   overrides?: Knex.Config,
 ) {
-  return mergeDatabaseConfig(
+  const config = mergeDatabaseConfig(
     dbConfig.get(),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
@@ -76,6 +76,33 @@ export function buildPgDatabaseConfig(
     },
     overrides,
   );
+
+  if (config.client === 'pg+google-cloud-sql') {
+    const {
+      Connector: CloudSqlConnector,
+      IpAddressTypes,
+      AuthTypes,
+    } = await import('@google-cloud/cloud-sql-connector');
+    // override the config to be pg for backwards compat with other code
+    config.client = 'pg';
+
+    const connector = new CloudSqlConnector();
+    const clientOpts = await connector.getOptions({
+      instanceConnectionName: dbConfig.getString('instanceConnectionName'),
+      ipType: IpAddressTypes.PUBLIC,
+      authType: AuthTypes.IAM,
+    });
+
+    return {
+      ...config,
+      connection: {
+        ...config.connection,
+        ...clientOpts,
+      },
+    };
+  }
+
+  return config;
 }
 
 /**
@@ -130,7 +157,7 @@ export async function ensurePgDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
 ) {
-  const admin = createPgDatabaseClient(dbConfig, {
+  const admin = await createPgDatabaseClient(dbConfig, {
     connection: {
       database: 'postgres',
     },
@@ -186,7 +213,7 @@ export async function ensurePgSchemaExists(
   dbConfig: Config,
   ...schemas: Array<string>
 ): Promise<void> {
-  const admin = createPgDatabaseClient(dbConfig);
+  const admin = await createPgDatabaseClient(dbConfig);
   const role = dbConfig.getOptionalString('role');
 
   try {
@@ -219,7 +246,7 @@ export async function dropPgDatabase(
   dbConfig: Config,
   ...databases: Array<string>
 ) {
-  const admin = createPgDatabaseClient(dbConfig);
+  const admin = await createPgDatabaseClient(dbConfig);
   try {
     await Promise.all(
       databases.map(async database => {

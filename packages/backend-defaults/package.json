@@ -185,6 +185,14 @@
     "yn": "^4.0.0",
     "zod": "^3.22.4"
   },
+  "peerDependencies": {
+    "@google-cloud/cloud-sql-connector": "^1.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@google-cloud/cloud-sql-connector": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
     "@backstage/backend-plugin-api": "workspace:^",
