@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  Configuration,
+  Descriptor,
+  httpUtils,
+  structUtils,
+} from '@yarnpkg/core';
 import { ppath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
-import memoize from 'lodash/memoize';
-import { getManifestByVersion as getManifestByVersionBase } from '@backstage/release-manifests';
 import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
-import { Descriptor, structUtils } from '@yarnpkg/core';
-import { PROTOCOL } from './constants';
+import { getManifestByVersion } from '@backstage/release-manifests';
 
-const getManifestByVersion = memoize(
-  getManifestByVersionBase,
-  ({ version }) => version,
-);
+import { PROTOCOL } from './constants';
 
 export const getCurrentBackstageVersion = () => {
   const workspaceRoot = ppath.resolve(findPaths(ppath.cwd()).targetRoot);
@@ -50,7 +50,10 @@ export const bindBackstageVersion = (
   return structUtils.bindDescriptor(descriptor, { v: backstageVersion });
 };
 
-export const getPackageVersion = async (descriptor: Descriptor) => {
+export const getPackageVersion = async (
+  descriptor: Descriptor,
+  configuration: Configuration,
+) => {
   const ident = structUtils.stringifyIdent(descriptor);
   const range = structUtils.parseRange(descriptor.range);
 
@@ -80,6 +83,36 @@ export const getPackageVersion = async (descriptor: Descriptor) => {
 
   const manifest = await getManifestByVersion({
     version: range.params.v,
+    // We override the fetch function used inside getManifestByVersion with a
+    // custom implementation that calls yarn's built-in `httpUtils` method
+    // instead. This has a couple of benefits:
+    //
+    // 1. This means that the fetch should leverage yarn's built-in cache, so we
+    //    don't need to explicitly memoize the fetch.
+    // 2. The request should automatically take account of any proxy settings
+    //    configured in yarn.
+    fetch: async (url: string) => {
+      const response = await httpUtils.get(url, {
+        configuration,
+        jsonResponse: true,
+      });
+
+      // The release-manifests package expects fetchFn to resolve with a subset
+      // of the native HTTP Response object, but yarn's httpUtils implementation
+      // keeps most of the details hidden. This means we need to construct an
+      // object which quacks like a Response in the appropriate ways.
+      return {
+        // The function has some custom handling for non-200 errors. Yarn
+        // doesn't provide the status code, but if we've got to this point
+        // without throwing, we can assume the request has been successful.
+        status: 200,
+        // The requested URL, used to correctly report errors
+        url,
+        // Yarn automatically parses the response as JSON, so our implementation
+        // can simply return it.
+        json: () => response,
+      };
+    },
   });
 
   const manifestEntry = manifest.packages.find(

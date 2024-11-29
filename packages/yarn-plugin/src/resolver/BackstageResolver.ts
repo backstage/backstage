@@ -20,6 +20,7 @@ import {
   Locator,
   Package,
   Resolver,
+  ResolveOptions,
 } from '@yarnpkg/core';
 import { PROTOCOL } from '../constants';
 import {
@@ -60,11 +61,18 @@ export class BackstageResolver implements Resolver {
    * concrete version into the appropriate concrete npm version for that
    * backstage release.
    */
-  async getCandidates(descriptor: Descriptor): Promise<Locator[]> {
+  async getCandidates(
+    descriptor: Descriptor,
+    _dependencies: Record<string, Package>,
+    opts: ResolveOptions,
+  ): Promise<Locator[]> {
     return [
       structUtils.makeLocator(
         descriptor,
-        `npm:${await getPackageVersion(descriptor)}`,
+        `npm:${await getPackageVersion(
+          descriptor,
+          opts.project.configuration,
+        )}`,
       ),
     ];
   }
@@ -79,8 +87,12 @@ export class BackstageResolver implements Resolver {
     descriptor: Descriptor,
     _dependencies: Record<string, Package>,
     locators: Array<Locator>,
+    opts: ResolveOptions,
   ): Promise<{ locators: Locator[]; sorted: boolean }> {
-    const packageVersion = await getPackageVersion(descriptor);
+    const packageVersion = await getPackageVersion(
+      descriptor,
+      opts.project.configuration,
+    );
 
     return {
       locators: locators.filter(
