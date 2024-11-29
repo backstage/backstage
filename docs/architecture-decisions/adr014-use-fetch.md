@@ -1,30 +1,31 @@
 ---
-id: adrs-adr013
-title: 'ADR013: [superseded] Proper use of HTTP fetching libraries'
+id: adrs-adr014
+title: 'ADR014: Proper use of HTTP fetching libraries'
 # prettier-ignore
-description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, node-fetch, and cross-fetch for data fetching.
+description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, native fetch, and cross-fetch for data fetching.
 ---
-
-:::note Superseded
-
-This ADR has been superseded by [ADR014](./adr014-use-fetch.md) and no longer applies.
-
-:::
 
 ## Context
 
-Using multiple HTTP packages for data fetching increases the complexity and the
-support burden of keeping said package up to date.
+Until now we have been recommending the use of `node-fetch` in Node.js contexts
+through [ADR013](./adr013-use-node-fetch.md). Since then, Backstage has had its
+minimum requirements upgraded to Node.js 20 or newer. The Node.js platform has
+established a stable, reliable `undici` based native `fetch` in these versions.
+Additionally, there are [some issues](https://github.com/backstage/backstage/issues/24590)
+with using third party libraries that only appeared in newer versions of
+Node.js.
 
 ## Decision
 
-Backend (node) packages should use the `node-fetch` package for HTTP data
-fetching. Example:
+All code that is executed in Node.js (including backend and CLIs) should use the
+native `fetch` for HTTP data fetching, and `typeof fetch` as the TypeScript type
+in code where a `fetch` implementation can be injected or is referred to.
+Example:
 
 ```ts
-import fetch from 'node-fetch';
 import { ResponseError } from '@backstage/errors';
 
+// this is implicitly global.fetch
 const response = await fetch('https://example.com/api/v1/users.json');
 if (!response.ok) {
   throw await ResponseError.fromResponse(response);
@@ -34,12 +35,11 @@ const users = await response.json();
 
 Frontend plugins and packages should prefer to use the
 [`fetchApiRef`](https://backstage.io/docs/reference/core-plugin-api.fetchapiref).
-It uses `cross-fetch` internally. Example:
 
 ```ts
 import { useApi } from '@backstage/core-plugin-api';
 
-// Inside some functional React component...
+// Inside some React component...
 const { fetch } = useApi(fetchApiRef);
 
 const response = await fetch('https://example.com/api/v1/users.json');
@@ -74,6 +74,5 @@ export class MyClient {
 
 ## Consequences
 
-We will gradually transition away from third party packages such as `axios`,
-`got` and others. Once we have transitioned to `node-fetch` we will add lint
-rules to enforce this decision.
+We will gradually transition away from third party `fetch` replacement packages
+such as `node-fetch` and others on the Node.js platform.
