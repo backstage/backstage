@@ -35,7 +35,11 @@ import type {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
-import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  experimentalServices,
+  featureDiscoveryServiceRef,
+  BackendFeatureMeta,
+} from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
@@ -97,18 +101,6 @@ const instanceRegistry = new (class InstanceRegistry {
   };
 })();
 
-// Duplicating from `@backstage/backend-plugin-api` to avoid a deep import.
-type BackendFeatureMeta =
-  | {
-      type: 'plugin';
-      pluginId: string;
-    }
-  | {
-      type: 'module';
-      pluginId: string;
-      moduleId: string;
-    };
-
 function createInstanceMetadataServiceFactory(
   registrations: InternalBackendRegistrations[],
 ) {
@@ -136,7 +128,7 @@ function createInstanceMetadataServiceFactory(
     })
     .flat();
   return createServiceFactory({
-    service: coreServices.EXPERIMENTAL_instanceMetadata,
+    service: experimentalServices.EXPERIMENTAL_instanceMetadata,
     deps: {},
     factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
   });

@@ -34,3 +34,6 @@ export const featureDiscoveryServiceRef =
     id: 'core.featureDiscovery',
     scope: 'root',
   });
+
+export { experimentalServices } from './services/definitions/experimentalServices';
+export type { BackendFeatureMeta } from './services/definitions/InstanceMetadataService';
