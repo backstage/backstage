@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
+import { SpaceProps } from '../../layout/types';
 
-import { style } from '@vanilla-extract/css';
-
-export const styles = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  rowGap: '20px',
-  columnGap: '80px',
-});
+export interface StackProps extends SpaceProps, ColorProps {
+  children: React.ReactNode;
+  as?: AsProps;
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  className?: string;
+  style?: React.CSSProperties;
+}

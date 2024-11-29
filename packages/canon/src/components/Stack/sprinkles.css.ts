@@ -13,74 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
-import { breakpoints, space } from '../Box/properties';
-import { colorProperties } from '../Box/sprinkles.css';
 
-const responsiveProperties = defineProperties({
+import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
+import { breakpoints } from '../../layout/properties';
+import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
+
+const stackProperties = defineProperties({
   conditions: breakpoints,
   defaultCondition: 'xs',
   properties: {
-    flexDirection: ['row', 'column'],
-    justifyContent: [
-      'stretch',
-      'flex-start',
-      'center',
-      'flex-end',
-      'space-around',
-      'space-between',
-    ],
     alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
-    borderRadius: {
-      none: 0,
-      small: '4px',
-      medium: '8px',
-      full: '9999px',
-    },
-    boxShadow: {
-      small: 'var(--canon-box-shadow-small)',
-      medium: 'var(--canon-box-shadow-medium)',
-      large: 'var(--canon-box-shadow-large)',
-    },
-    border: {
-      none: 'none',
-      thin: '1px solid var(--canon-outline)',
-      error: '1px solid var(--canon-error)',
-    },
-    display: ['none', 'flex', 'block', 'inline'],
-    paddingTop: space,
-    paddingBottom: space,
-    paddingLeft: space,
-    paddingRight: space,
-    marginTop: space,
-    marginBottom: space,
-    marginLeft: space,
-    marginRight: space,
-    gap: space,
-    flexWrap: ['wrap', 'nowrap'],
-  },
-  shorthands: {
-    p: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
-    pt: ['paddingTop'],
-    pr: ['paddingRight'],
-    pb: ['paddingBottom'],
-    pl: ['paddingLeft'],
-    px: ['paddingLeft', 'paddingRight'],
-    py: ['paddingTop', 'paddingBottom'],
-    m: ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'],
-    mt: ['marginTop'],
-    mr: ['marginRight'],
-    mb: ['marginBottom'],
-    ml: ['marginLeft'],
-    mx: ['marginLeft', 'marginRight'],
-    my: ['marginTop', 'marginBottom'],
-    direction: ['flexDirection'],
-    items: ['alignItems'],
-    justify: ['justifyContent'],
   },
 });
 
-export const sprinkles = createSprinkles(responsiveProperties, colorProperties);
-
-// It's a good idea to export the Sprinkles type too
-export type Sprinkles = Parameters<typeof sprinkles>[0];
+export const stackSprinkles = createSprinkles(
+  spacingProperties,
+  colorProperties,
+  stackProperties,
+);

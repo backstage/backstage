@@ -14,61 +14,44 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Box } from '../Box/Box';
-import { alignToFlexAlign } from '../../utils/align';
-import type { BoxProps } from '../Box/types';
-const validStackComponents = [
-  'div',
-  'span',
-  'p',
-  'article',
-  'section',
-  'main',
-  'nav',
-  'aside',
-  'ul',
-  'ol',
-  'li',
-  'details',
-  'summary',
-  'dd',
-  'dl',
-  'dt',
-] as const;
+import { createElement } from 'react';
+import { StackProps } from './types';
+import { stackSprinkles } from './sprinkles.css';
 
-export interface StackProps extends Omit<BoxProps, 'alignItems'> {
-  children: React.ReactNode;
-  as?: (typeof validStackComponents)[number];
-  align?: 'left' | 'center' | 'right';
-  gap?: BoxProps['gap'];
-}
+const alignToFlexAlign = (align: StackProps['align']) => {
+  if (align === 'left') return 'stretch';
+  if (align === 'center') return 'center';
+  if (align === 'right') return 'flex-end';
+  return undefined;
+};
 
 export const Stack = ({
   as = 'div',
   children,
-  align: alignProp,
+  align = 'left',
   gap = 'xs',
+  className,
+  style,
   ...restProps
 }: StackProps) => {
-  /**
-   * Creating a seam between the provided prop and the default value
-   * to enable only setting the text alignment when the `align` prop
-   * is provided — not when it's defaulted.
-   */
-  const align = alignProp || 'left';
+  // Transform the align prop
+  const flexAlign = alignToFlexAlign(align);
 
-  return (
-    <Box
-      as={as}
-      display="flex"
-      flexDirection="column"
-      alignItems={align !== 'left' ? alignToFlexAlign(align) : undefined}
-      gap={gap}
-      // textAlign={alignProp}
-      {...restProps}
-    >
-      {children}
-    </Box>
-  );
+  // Generate the list of class names
+  const sprinklesClassName = stackSprinkles({
+    ...restProps,
+    gap,
+    alignItems: flexAlign,
+  });
+
+  // Combine the base class name, the sprinkles class name, and any additional class names
+  const classNames = ['stack', sprinklesClassName, className]
+    .filter(Boolean)
+    .join(' ');
+
+  return createElement(as, {
+    className: classNames,
+    style,
+    children,
+  });
 };

@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-import {
-  responsiveProperties,
+import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
+import { breakpoints } from '../../layout/properties';
+import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
+
+const inlineProperties = defineProperties({
+  conditions: breakpoints,
+  defaultCondition: 'xs',
+  properties: {
+    alignItems: ['flex-start', 'center', 'flex-end'],
+    justifyContent: ['flex-start', 'center', 'flex-end'],
+  },
+});
+
+export const inlineSprinkles = createSprinkles(
+  spacingProperties,
   colorProperties,
-} from '../components/Box/sprinkles.css';
-
-export const listResponsiveValues = (
-  value: keyof typeof responsiveProperties.styles,
-) => {
-  const values = responsiveProperties.styles[value];
-
-  if ('values' in values) {
-    return Object.keys(values.values);
-  }
-
-  return [];
-};
-
-export const listColorValues = (value: keyof typeof colorProperties.styles) => {
-  const values = colorProperties.styles[value];
-
-  if ('values' in values) {
-    return Object.keys(values.values);
-  }
-
-  return [];
-};
+  inlineProperties,
+);

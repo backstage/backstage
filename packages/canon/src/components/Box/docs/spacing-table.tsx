@@ -17,8 +17,8 @@
 import React from 'react';
 import * as Table from '../../../../docs/components';
 import { Chip } from '../../../../docs/components';
-import { listResponsiveValues } from '../../../utils/list-values';
-import { responsiveProperties } from '../sprinkles.css';
+import { spacingProperties } from '../../../layout/sprinkles.css';
+import { space } from '../../../layout/properties';
 
 export const SpacingTable = () => {
   return (
@@ -30,7 +30,7 @@ export const SpacingTable = () => {
         </Table.HeaderRow>
       </Table.Header>
       <Table.Body>
-        {Object.keys(responsiveProperties.styles)
+        {Object.keys(spacingProperties.styles)
           .filter(n =>
             [
               'padding',
@@ -55,9 +55,7 @@ export const SpacingTable = () => {
                 <Chip head>{n}</Chip>
               </Table.Cell>
               <Table.Cell>
-                {listResponsiveValues(
-                  'paddingTop' as keyof typeof responsiveProperties.styles,
-                ).map(value => (
+                {Object.keys(space).map(value => (
                   <Chip key={value}>{value}</Chip>
                 ))}
               </Table.Cell>

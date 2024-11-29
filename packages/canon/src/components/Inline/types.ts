@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import { style } from '@vanilla-extract/css';
+import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
+import { SpaceProps } from '../../layout/types';
 
-export const styles = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  rowGap: '20px',
-  columnGap: '80px',
-});
+export interface InlineProps extends SpaceProps, ColorProps {
+  children: React.ReactNode;
+  as?: AsProps;
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  alignY?:
+    | 'top'
+    | 'center'
+    | 'bottom'
+    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
+  className?: string;
+  style?: React.CSSProperties;
+}

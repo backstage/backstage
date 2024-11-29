@@ -1,0 +1,4 @@
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+}

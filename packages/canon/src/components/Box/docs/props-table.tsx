@@ -17,8 +17,8 @@
 import React from 'react';
 import * as Table from '../../../../docs/components';
 import { Chip } from '../../../../docs/components';
-import { listResponsiveValues } from '../../../utils/list-values';
-import { responsiveProperties } from '../sprinkles.css';
+import { listResponsiveValues } from '../../../../docs/utils/argTypes';
+import { boxProperties } from '../sprinkles.css';
 
 export const PropsTable = () => {
   return (
@@ -30,7 +30,7 @@ export const PropsTable = () => {
         </Table.HeaderRow>
       </Table.Header>
       <Table.Body>
-        {Object.keys(responsiveProperties.styles)
+        {Object.keys(boxProperties.styles)
           .filter(
             n =>
               ![
@@ -57,7 +57,7 @@ export const PropsTable = () => {
               </Table.Cell>
               <Table.Cell>
                 {listResponsiveValues(
-                  n as keyof typeof responsiveProperties.styles,
+                  n as keyof typeof boxProperties.styles,
                 ).map(value => (
                   <Chip key={value}>{value}</Chip>
                 ))}

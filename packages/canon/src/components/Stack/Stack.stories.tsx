@@ -18,10 +18,32 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Stack } from './Stack';
 import { Box } from '../Box/Box';
+import { argTypesSpacing, argTypesColor } from '../../../docs/utils/argTypes';
 
 const meta = {
   title: 'Components/Stack',
   component: Stack,
+  argTypes: {
+    ...argTypesSpacing,
+    ...argTypesColor,
+    align: {
+      control: 'inline-radio',
+      options: ['left', 'center', 'right'],
+    },
+    children: {
+      control: false,
+    },
+    as: {
+      control: false,
+    },
+    className: {
+      control: 'text',
+    },
+  },
+  args: {
+    align: 'left',
+    gap: 'xs',
+  },
 } satisfies Meta<typeof Stack>;
 
 export default meta;
@@ -47,6 +69,49 @@ export const Default: Story = {
         <FakeBox />
       </>
     ),
+  },
+};
+
+export const AlignLeft: Story = {
+  args: {
+    ...Default.args,
+    align: 'left',
+  },
+};
+
+export const AlignCenter: Story = {
+  args: {
+    ...Default.args,
+    align: 'center',
+  },
+};
+
+export const AlignRight: Story = {
+  args: {
+    ...Default.args,
+    align: 'right',
+  },
+};
+
+export const ResponsiveAlign: Story = {
+  args: {
+    ...Default.args,
+    align: {
+      xs: 'left',
+      md: 'center',
+      lg: 'right',
+    },
+  },
+};
+
+export const ResponsiveGap: Story = {
+  args: {
+    ...Default.args,
+    gap: {
+      xs: 'xs',
+      md: 'md',
+      lg: 'xxl',
+    },
   },
 };
 

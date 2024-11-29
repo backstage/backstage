@@ -23,3 +23,5 @@
 
 /* Components */
 @import '../components/Button/styles.css';
+@import '../components/Stack/styles.css';
+@import '../components/Inline/styles.css';

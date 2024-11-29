@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { Stack } from '../../Stack';
 import { Inline } from '../../Inline';
 import { Box } from '../Box';
 
@@ -32,74 +31,77 @@ const FakeBox = ({ children }: { children: string }) => (
 
 export const Padding = () => {
   return (
-    <Stack
-      align="center"
+    <Box
+      display="flex"
+      justifyContent="center"
+      flexDirection="column"
+      alignItems="center"
       borderRadius="small"
       marginBottom="md"
       gap="xl"
       paddingY="xl"
       style={{ border: '1px solid #e7e7e7' }}
     >
-      <Inline align="center" gap="xl">
-        <Stack
-          align="center"
+      <Inline align="center" alignY="center" gap="xl">
+        <Box
+          alignItems="center"
           borderRadius="small"
           padding="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>padding</FakeBox>
-        </Stack>
-        <Stack
-          align="center"
+        </Box>
+        <Box
+          alignItems="center"
           borderRadius="small"
           paddingX="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingX</FakeBox>
-        </Stack>
-        <Stack
-          align="center"
+        </Box>
+        <Box
+          alignItems="center"
           borderRadius="small"
           paddingY="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingY</FakeBox>
-        </Stack>
+        </Box>
       </Inline>
-      <Inline align="center" gap="xl">
-        <Stack
-          align="center"
+      <Inline align="center" alignY="center" gap="xl">
+        <Box
+          alignItems="center"
           borderRadius="small"
           paddingTop="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingTop</FakeBox>
-        </Stack>
-        <Stack
-          align="center"
+        </Box>
+        <Box
+          alignItems="center"
           borderRadius="small"
           paddingBottom="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingBottom</FakeBox>
-        </Stack>
-        <Stack
-          align="center"
+        </Box>
+        <Box
+          alignItems="center"
           borderRadius="small"
           paddingLeft="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingLeft</FakeBox>
-        </Stack>
-        <Stack
-          align="center"
+        </Box>
+        <Box
+          alignItems="center"
           borderRadius="small"
           paddingRight="md"
           style={{ background: '#c4cafb', color: 'white' }}
         >
           <FakeBox>paddingRight</FakeBox>
-        </Stack>
+        </Box>
       </Inline>
-    </Stack>
+    </Box>
   );
 };
