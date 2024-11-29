@@ -31,6 +31,7 @@ import {
   // ownerPrompt, // 🚨 WIP
 } from '../../lib/new/factories/common/prompts';
 import defaultTemplates from '../../../templates';
+import { executePluginPackageTemplate } from '../../lib/new/factories/common/tasks';
 
 type ConfigurablePrompt =
   | {
@@ -43,8 +44,10 @@ type ConfigurablePrompt =
   | string;
 
 interface Template {
+  id: string;
   description?: string;
   template: string;
+  templatePath: string;
   targetPath: string;
   prompts?: ConfigurablePrompt[];
   additionalActions?: string[];
@@ -103,7 +106,10 @@ async function templateSelector(
   return answer.name;
 }
 
-async function verifyTemplate({ target }: TemplateLocation): Promise<Template> {
+async function verifyTemplate({
+  id,
+  target,
+}: TemplateLocation): Promise<Template> {
   if (target.startsWith('http')) {
     throw new Error('🚨 WIP');
   }
@@ -117,7 +123,10 @@ async function verifyTemplate({ target }: TemplateLocation): Promise<Template> {
       `Your CLI template skeleton does not exist: ${templatePath}`,
     );
   }
-  return template;
+  if (!template.targetPath) {
+    throw new Error(`Your template, ${id}, is missing a targetPath`);
+  }
+  return { id, templatePath, ...template };
 }
 
 async function promptOptions({
@@ -125,8 +134,8 @@ async function promptOptions({
   globals,
 }: {
   prompts: ConfigurablePrompt[];
-  globals: Record<string, string>;
-}): Promise<Record<string, string>> {
+  globals: Record<string, string | boolean>;
+}): Promise<Record<string, string | boolean>> {
   const answers = await inquirer.prompt(
     prompts.map((prompt: ConfigurablePrompt) => {
       if (typeof prompt === 'string') {
@@ -176,84 +185,124 @@ async function promptOptions({
   return { ...globals, ...answers };
 }
 
+interface Options extends Record<string, string | boolean> {
+  id: string;
+  private: boolean;
+  baseVersion: string;
+  license: string;
+  targetDir: string;
+}
+
+async function populateOptions(
+  prompts: Record<string, string | boolean>,
+  template: Template,
+): Promise<Options> {
+  return {
+    id: prompts.id as string,
+    private: prompts.private as boolean,
+    baseVersion: await calculateBaseVersion(prompts.baseVersion as string),
+    license: (prompts.license as string) ?? 'Apache-2.0',
+    targetDir: paths.resolveTargetRoot(
+      template.targetPath,
+      prompts.id as string,
+    ),
+    ...prompts,
+  };
+}
+
+async function calculateBaseVersion(baseVersion: string) {
+  if (!baseVersion) {
+    const lernaVersion = await fs
+      .readJson(paths.resolveTargetRoot('lerna.json'))
+      .then(pkg => pkg.version)
+      .catch(() => undefined);
+    if (lernaVersion) {
+      return lernaVersion;
+    }
+    return '0.1.0';
+  }
+  return baseVersion;
+}
+
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
   const { templates, globals } = await readCliConfig(cliConfig);
   const template = await verifyTemplate(await templateSelector(templates));
-  console.log(
-    await promptOptions({
-      prompts: template.prompts || [],
-      globals,
-    }),
-  );
+  const prompts = await promptOptions({
+    prompts: template.prompts || [],
+    globals,
+  });
+  const options = await populateOptions(prompts, template);
 
-  // let defaultVersion = '0.1.0';
-  // if (opts.baseVersion) {
-  //   defaultVersion = opts.baseVersion;
-  // } else {
-  //   const lernaVersion = await fs
-  //     .readJson(paths.resolveTargetRoot('lerna.json'))
-  //     .then(pkg => pkg.version)
-  //     .catch(() => undefined);
-  //   if (lernaVersion) {
-  //     defaultVersion = lernaVersion;
-  //   }
-  // }
+  const tempDirs = new Array<string>();
+  async function createTemporaryDirectory(name: string): Promise<string> {
+    const dir = await fs.mkdtemp(joinPath(os.tmpdir(), name));
+    tempDirs.push(dir);
+    return dir;
+  }
 
-  // const tempDirs = new Array<string>();
-  // async function createTemporaryDirectory(name: string): Promise<string> {
-  //   const dir = await fs.mkdtemp(joinPath(os.tmpdir(), name));
-  //   tempDirs.push(dir);
-  //   return dir;
-  // }
+  let modified = false;
+  try {
+    await executePluginPackageTemplate(
+      {
+        private: options.private,
+        defaultVersion: options.baseVersion,
+        license: options.license,
+        isMonoRepo: await isMonoRepo(),
+        createTemporaryDirectory,
+        markAsModified() {
+          modified = true;
+        },
+      },
+      {
+        targetDir: options.targetDir,
+        templateDir: template.templatePath,
+        values: {
+          name: options.id,
+          pluginVersion: options.baseVersion,
+          ...options,
+        },
+      },
+    );
 
-  // const license = opts.license ?? 'Apache-2.0';
+    // create scope prompt
+    // npmregistry prompt
+    // incorporate owners prompt
+    // additional actions
+    // add to frontend
+    // add to backend
+    // install and lint
 
-  // let modified = false;
-  // try {
-  //   await factory.create(options, {
-  //     isMonoRepo: await isMonoRepo(),
-  //     defaultVersion,
-  //     license,
-  //     scope: opts.scope?.replace(/^@/, ''),
-  //     npmRegistry: opts.npmRegistry,
-  //     private: Boolean(opts.private),
-  //     createTemporaryDirectory,
-  //     markAsModified() {
-  //       modified = true;
-  //     },
-  //   });
+    Task.log();
+    Task.log(`🎉  Successfully created ${template.id}`);
+    Task.log();
+  } catch (error) {
+    assertError(error);
+    Task.error(error.message);
 
-  //   Task.log();
-  //   Task.log(`🎉  Successfully created ${factory.name}`);
-  //   Task.log();
-  // } catch (error) {
-  //   assertError(error);
-  //   Task.error(error.message);
+    if (modified) {
+      Task.log('It seems that something went wrong in the creation process 🤔');
+      Task.log();
+      Task.log(
+        'We have left the changes that were made intact in case you want to',
+      );
+      Task.log(
+        'continue manually, but you can also revert the changes and try again.',
+      );
 
-  //   if (modified) {
-  //     Task.log('It seems that something went wrong in the creation process 🤔');
-  //     Task.log();
-  //     Task.log(
-  //       'We have left the changes that were made intact in case you want to',
-  //     );
-  //     Task.log(
-  //       'continue manually, but you can also revert the changes and try again.',
-  //     );
-
-  //     Task.error(`🔥  Failed to create ${factory.name}!`);
-  //   }
-  // } finally {
-  //   for (const dir of tempDirs) {
-  //     try {
-  //       await fs.remove(dir);
-  //     } catch (error) {
-  //       console.error(
-  //         `Failed to remove temporary directory '${dir}', ${error}`,
-  //       );
-  //     }
-  //   }
-  // }
+      Task.error(`🔥  Failed to create ${template.id}!`);
+    }
+  } finally {
+    // for (const dir of tempDirs) {
+    //   try {
+    //     await fs.remove(dir);
+    //   } catch (error) {
+    //     console.error(
+    //       `Failed to remove temporary directory '${dir}', ${error}`,
+    //     );
+    //   }
+    // }
+  }
 };
