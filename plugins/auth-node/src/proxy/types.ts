@@ -15,14 +15,15 @@
  */
 
 import { Config } from '@backstage/config';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ProfileTransform } from '../types';
 
 /** @public */
 export interface ProxyAuthenticator<
   TContext,
   TResult,
-  TProviderInfo = undefined,
+  TProviderInfo,
+  TLogoutResult = undefined,
 > {
   defaultProfileTransform: ProfileTransform<TResult>;
   initialize(ctx: { config: Config }): TContext;
@@ -30,11 +31,25 @@ export interface ProxyAuthenticator<
     options: { req: Request },
     ctx: TContext,
   ): Promise<{ result: TResult; providerInfo?: TProviderInfo }>;
+  logout?(
+    options: { req: Request; res: Response },
+    ctx: { logoutRedirectUrl?: string },
+  ): TLogoutResult;
 }
 
 /** @public */
-export function createProxyAuthenticator<TContext, TResult, TProviderInfo>(
-  authenticator: ProxyAuthenticator<TContext, TResult, TProviderInfo>,
-): ProxyAuthenticator<TContext, TResult, TProviderInfo> {
+export function createProxyAuthenticator<
+  TContext,
+  TResult,
+  TProviderInfo,
+  TLogoutResult,
+>(
+  authenticator: ProxyAuthenticator<
+    TContext,
+    TResult,
+    TProviderInfo,
+    TLogoutResult
+  >,
+): ProxyAuthenticator<TContext, TResult, TProviderInfo, TLogoutResult> {
   return authenticator;
 }

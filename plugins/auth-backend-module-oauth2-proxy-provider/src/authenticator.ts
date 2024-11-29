@@ -39,7 +39,10 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator({
       },
     };
   },
-  async initialize() {},
+  async initialize({ config }) {
+    const logoutRedirectUrl = config.getOptionalString('logoutRedirectUrl');
+    return { logoutRedirectUrl };
+  },
   async authenticate({ req }) {
     try {
       // This unpacking of the JWT is just a utility provided by the
@@ -76,5 +79,16 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator({
     } catch (e) {
       throw new AuthenticationError('Authentication failed', e);
     }
+  },
+  logout({ res }, { logoutRedirectUrl }) {
+    if (logoutRedirectUrl && res) {
+      return res
+        .status(200)
+        .json({
+          redirectUrl: logoutRedirectUrl,
+        })
+        .send();
+    }
+    return res.status(204).send();
   },
 });

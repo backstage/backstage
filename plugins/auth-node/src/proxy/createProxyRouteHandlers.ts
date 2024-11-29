@@ -29,7 +29,7 @@ import { NotImplementedError } from '@backstage/errors';
 
 /** @public */
 export interface ProxyAuthRouteHandlersOptions<TResult> {
-  authenticator: ProxyAuthenticator<any, TResult, unknown>;
+  authenticator: ProxyAuthenticator<any, TResult, unknown, unknown>;
   config: Config;
   resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<TResult>;
@@ -45,6 +45,12 @@ export function createProxyAuthRouteHandlers<TResult>(
   const profileTransform =
     options.profileTransform ?? authenticator.defaultProfileTransform;
   const authenticatorCtx = authenticator.initialize({ config });
+
+  const logoutCallback = authenticator.logout
+    ? async (req: Request, res: Response): Promise<void> => {
+        authenticator.logout?.({ req, res }, await authenticatorCtx);
+      }
+    : undefined;
 
   return {
     async start(): Promise<void> {
@@ -76,5 +82,7 @@ export function createProxyAuthRouteHandlers<TResult>(
 
       res.status(200).json(response);
     },
+
+    logout: logoutCallback,
   };
 }
