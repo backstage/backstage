@@ -70,6 +70,7 @@ export const beforeWorkspacePacking = async (
 
       rawManifest[finalDependencyType][ident] = `^${await getPackageVersion(
         bindBackstageVersion(descriptor, backstageVersion),
+        workspace.project.configuration,
       )}`;
     }
   }
