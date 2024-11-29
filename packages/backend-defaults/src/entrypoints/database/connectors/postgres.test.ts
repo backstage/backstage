@@ -163,6 +163,31 @@ describe('postgres', () => {
       });
     });
 
+    it('should throw with incorrect config', async () => {
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'cloudsql',
+            },
+          }),
+        ),
+      ).rejects.toThrow(/Missing instance connection name for Cloud SQL/);
+
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'not-pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'asd:asd:asd',
+            },
+          }),
+        ),
+      ).rejects.toThrow(/Cloud SQL only supports the pg client/);
+    });
+
     it('adds the settings from cloud-sql-connector', async () => {
       const { Connector } = jest.requireMock(
         '@google-cloud/cloud-sql-connector',

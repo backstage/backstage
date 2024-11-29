@@ -78,6 +78,10 @@ export async function buildPgDatabaseConfig(
   );
 
   if (config.connection?.type === 'cloudsql') {
+    if (config.client !== 'pg') {
+      throw new Error('Cloud SQL only supports the pg client');
+    }
+
     if (!config.connection.instance) {
       throw new Error('Missing instance connection name for Cloud SQL');
     }
