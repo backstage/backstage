@@ -16,25 +16,23 @@
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod';
-import { RESOURCE_TYPE_SCAFFOLDER_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
 import { get } from 'lodash';
 import { JsonPrimitive } from '@backstage/types';
 
 /**
  * @public
  */
-export const createScaffolderEntityPermissionRule = makeCreatePermissionRule<
-  TemplateEntityV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ENTITY
->();
+export const createScaffolderTemplateEntityPermissionRule =
+  makeCreatePermissionRule<
+    TemplateEntityV1beta3,
+    {},
+    typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY
+  >();
 
-/**
- * @public
- */
-export const hasAction = createScaffolderEntityPermissionRule({
+const hasAction = createScaffolderTemplateEntityPermissionRule({
   name: 'HAS_ACTION',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   description: `Match templates with that use an action`,
   paramsSchema: z.object({
     actionId: z.string().describe('The ID of an action to match on'),
@@ -46,12 +44,9 @@ export const hasAction = createScaffolderEntityPermissionRule({
   toQuery: () => ({}),
 });
 
-/**
- * @public
- */
-export const hasTaggedAction = createScaffolderEntityPermissionRule({
+const hasTaggedAction = createScaffolderTemplateEntityPermissionRule({
   name: 'HAS_TAGGED_ACTION',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   description: `Match templates with that use an action with a tag`,
   paramsSchema: z.object({
     actionId: z.string().optional().describe('The ID of an action to match on'),
@@ -67,12 +62,9 @@ export const hasTaggedAction = createScaffolderEntityPermissionRule({
   toQuery: () => ({}),
 });
 
-/**
- * @public
- */
-export const hasTaggedParam = createScaffolderEntityPermissionRule({
+const hasTaggedParam = createScaffolderTemplateEntityPermissionRule({
   name: 'HAS_TAGGED_PARAM',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   description: `Match templates with that have a parameter with a tag`,
   paramsSchema: z.object({
     tag: z.string().describe('Name of the tag to match on'),
@@ -97,10 +89,10 @@ function buildHasActionWithProperty<Schema extends z.ZodType<JsonPrimitive>>({
   valueSchema: Schema;
   validateProperty?: boolean;
 }) {
-  return createScaffolderEntityPermissionRule({
+  return createScaffolderTemplateEntityPermissionRule({
     name,
     description: `Allow actions with the specified property`,
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
     paramsSchema: z.object({
       actionId: z.string().describe('The ID of an action to match on'),
       key: z
@@ -140,35 +132,23 @@ function buildHasActionWithProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
-/**
- * @public
- */
-export const hasActionWithProperty = buildHasActionWithProperty({
+const hasActionWithProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_PROPERTY',
   valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
   validateProperty: false,
 });
 
-/**
- * @public
- */
-export const hasActionWithBooleanProperty = buildHasActionWithProperty({
+const hasActionWithBooleanProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
 
-/**
- * @public
- */
-export const hasActionWithNumberProperty = buildHasActionWithProperty({
+const hasActionWithNumberProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
 
-/**
- * @public
- */
-export const hasActionWithStringProperty = buildHasActionWithProperty({
+const hasActionWithStringProperty = buildHasActionWithProperty({
   name: 'HAS_ACTION_WITH_STRING_PROPERTY',
   valueSchema: z.string(),
 });
@@ -176,7 +156,7 @@ export const hasActionWithStringProperty = buildHasActionWithProperty({
 /**
  * @public
  */
-export const scaffolderEntityRules = {
+export const scaffolderTemplateEntityRules = {
   hasTaggedAction,
   hasTaggedParam,
   hasAction,

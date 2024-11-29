@@ -14,8 +14,8 @@ To control who is able to execute a template, [edit your permission policy](../.
 /* highlight-add-start */
 import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
-  createScaffolderEntityConditionalDecision,
-  scaffolderEntityConditions,
+  createScaffolderTemplateEntityConditionalDecision,
+  scaffolderTemplateEntityConditions,
 } from '@backstage/plugin-scaffolder-node/alpha';
 /* highlight-add-end */
 
@@ -27,9 +27,14 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     /* highlight-add-start */
     if (isPermission(request.permission, templateExecutePermission)) {
       if (user?.info.userEntityRef === 'user:default/spiderman')
-        return createScaffolderEntityConditionalDecision(request.permission, {
-          not: scaffolderEntityConditions.hasAction({ actionId: 'debug:log' }),
-        });
+        return createScaffolderTemplateEntityConditionalDecision(
+          request.permission,
+          {
+            not: scaffolderTemplateEntityConditions.hasAction({
+              actionId: 'debug:log',
+            }),
+          },
+        );
     }
     /* highlight-add-end */
 
@@ -98,8 +103,8 @@ To conditionally authorize parameters and steps based on the tags, you can use t
 /* highlight-add-start */
 import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
-  createScaffolderEntityConditionalDecision,
-  scaffolderEntityConditions,
+  createScaffolderTemplateEntityConditionalDecision,
+  scaffolderTemplateEntityConditions,
 } from '@backstage/plugin-scaffolder-node/alpha';
 
 /* highlight-add-end */
@@ -112,20 +117,23 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     /* highlight-add-start */
     if (isPermission(request.permission, templateExecutePermission)) {
       if (user?.info.userEntityRef === 'user:default/spiderman')
-        return createScaffolderEntityConditionalDecision(request.permission, {
-          anyOf: [
-            {
-              not: scaffolderEntityConditions.hasTaggedAction({
-                tag: 'secret',
-              }),
-            },
-            {
-              not: scaffolderEntityConditions.hasTaggedParam({
-                tag: 'secret',
-              }),
-            },
-          ],
-        });
+        return createScaffolderTemplateEntityConditionalDecision(
+          request.permission,
+          {
+            anyOf: [
+              {
+                not: scaffolderTemplateEntityConditions.hasTaggedAction({
+                  tag: 'secret',
+                }),
+              },
+              {
+                not: scaffolderTemplateEntityConditions.hasTaggedParam({
+                  tag: 'secret',
+                }),
+              },
+            ],
+          },
+        );
     }
     /* highlight-add-end */
 
@@ -145,8 +153,8 @@ You can also restrict the input provided to the action by combining multiple rul
 ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
 import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
-  createScaffolderEntityConditionalDecision,
-  scaffolderEntityConditions,
+  createScaffolderTemplateEntityConditionalDecision,
+  scaffolderTemplateEntityConditions,
 } from '@backstage/plugin-scaffolder-node/alpha';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -157,13 +165,16 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     /* highlight-add-start */
     if (isPermission(request.permission, templateExecutePermission)) {
       if (user?.info.userEntityRef === 'user:default/spiderman')
-        return createScaffolderEntityConditionalDecision(request.permission, {
-          not: scaffolderEntityConditions.hasActionWithProperty({
-            actionId: 'debug:log',
-            key: 'message',
-            value: 'not-this!',
-          }),
-        });
+        return createScaffolderTemplateEntityConditionalDecision(
+          request.permission,
+          {
+            not: scaffolderTemplateEntityConditions.hasActionWithProperty({
+              actionId: 'debug:log',
+              key: 'message',
+              value: 'not-this!',
+            }),
+          },
+        );
     }
     /* highlight-add-end */
 
@@ -178,7 +189,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 ### Define custom rule
 
-The scaffolder plugin exports `createScaffolderEntityPermissionRule` from `@backstage/plugin-scaffolder-node/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable.
+The scaffolder plugin exports `createScaffolderTemplateEntityPermissionRule` from `@backstage/plugin-scaffolder-node/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable.
 
 For this example, we'll define the rule and create a condition in `packages/backend/src/permissions/rules/scaffolder.ts`.
 
@@ -191,15 +202,15 @@ yarn --cwd packages/backend add zod
 ```ts title="packages/backend/src/extensions/scaffolderPermissionRules.ts"
 import z from 'zod';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   templateExecutePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
-import { createScaffolderEntityPermissionRule } from '@backstage/plugin-scaffolder-node/alpha';
+import { createScaffolderTemplateEntityPermissionRule } from '@backstage/plugin-scaffolder-node/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
 
-const isOwnedByRule = createScaffolderEntityPermissionRule({
+const isOwnedByRule = createScaffolderTemplateEntityPermissionRule({
   name: 'IS_OWNED_BY',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   description: `Match templates that are owned by a entity`,
   paramsSchema: z.object({
     ownerRef: z.string().describe('EntityRef of the owner to match'),
@@ -216,7 +227,7 @@ const isOwnedByRule = createScaffolderEntityPermissionRule({
   toQuery: () => ({}),
 });
 
-export const customScaffolderEntityConditions = {
+export const customScaffolderTemplateEntityConditions = {
   isOwnedBy: createConditionFactory(isOwnedByRule),
 };
 ```
@@ -263,8 +274,8 @@ Once installed, the custom conditions can be imported and used in your policy:
 
 ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
 import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { createScaffolderEntityConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
-import { customScaffolderEntityConditions } from './extensions/scaffolderPermissionRules';
+import { createScaffolderTemplateEntityConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
+import { customScaffolderTemplateEntityConditions } from './extensions/scaffolderPermissionRules';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
@@ -272,9 +283,9 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     if (isPermission(request.permission, templateExecutePermission)) {
-      return createScaffolderEntityConditionalDecision(
+      return createScaffolderTemplateEntityConditionalDecision(
         request.permission,
-        customScaffolderEntityConditions.isOwnedBy({
+        customScaffolderTemplateEntityConditions.isOwnedBy({
           ownerRef: user?.info.userEntityRef,
         }),
       );

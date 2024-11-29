@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 import { JsonObject, JsonPrimitive } from '@backstage/types';
-import { RESOURCE_TYPE_SCAFFOLDER_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
-import {
-  hasAction,
-  hasActionWithBooleanProperty,
-  hasActionWithNumberProperty,
-  hasActionWithProperty,
-  hasActionWithStringProperty,
-} from './scaffolderEntityRules';
+import { scaffolderTemplateEntityRules } from './scaffolderTemplateEntityRules';
 import {
   TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
@@ -52,7 +46,7 @@ describe('hasAction', () => {
   describe('apply', () => {
     it('returns false when actionId is not matched', () => {
       expect(
-        hasAction.apply(
+        scaffolderTemplateEntityRules.hasAction.apply(
           templateFactory({
             steps: [{ action: 'fetch:files' }],
           }),
@@ -65,7 +59,7 @@ describe('hasAction', () => {
 
     it('returns true when actionId is matched', () => {
       expect(
-        hasAction.apply(
+        scaffolderTemplateEntityRules.hasAction.apply(
           templateFactory({
             steps: [{ action: 'fetch:files' }],
           }),
@@ -100,7 +94,7 @@ describe('hasActionWithProperty', () => {
       'propwitharray.100',
     ])(`returns false when a property doesn't exist in the input`, key => {
       expect(
-        hasActionWithProperty.apply(
+        scaffolderTemplateEntityRules.hasActionWithProperty.apply(
           templateFactory({
             steps: [{ action: 'action', input }],
           }),
@@ -123,7 +117,7 @@ describe('hasActionWithProperty', () => {
       'nested.nested.propwithnumber',
     ])(`returns true when a property exists, property=%s`, key => {
       expect(
-        hasActionWithProperty.apply(
+        scaffolderTemplateEntityRules.hasActionWithProperty.apply(
           templateFactory({
             steps: [{ action: 'action', input }],
           }),
@@ -149,7 +143,7 @@ describe('hasActionWithProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -172,7 +166,7 @@ describe('hasActionWithProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -184,17 +178,17 @@ describe('hasActionWithProperty', () => {
 
     it('throws if params are invalid', () => {
       const isActionAuthorized = createConditionAuthorizer([
-        hasActionWithProperty,
+        scaffolderTemplateEntityRules.hasActionWithProperty,
       ]);
 
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
                 actionId: 'action',
@@ -211,11 +205,11 @@ describe('hasActionWithProperty', () => {
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {},
             },
@@ -229,17 +223,17 @@ describe('hasActionWithProperty', () => {
 
     it('does not throw if params are valid', () => {
       const isActionAuthorized = createConditionAuthorizer([
-        hasActionWithProperty,
+        scaffolderTemplateEntityRules.hasActionWithProperty,
       ]);
 
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
                 actionId: 'action',
@@ -256,11 +250,11 @@ describe('hasActionWithProperty', () => {
       expect(() =>
         isActionAuthorized(
           {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
             pluginId: 'scaffolder',
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
               rule: 'HAS_ACTION_WITH_PROPERTY',
               params: {
                 actionId: 'action',
@@ -284,7 +278,7 @@ describe('hasActionWithBooleanProperty', () => {
       `returns false when a property doesn't exist in the input`,
       key => {
         expect(
-          hasActionWithBooleanProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithBooleanProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -308,7 +302,7 @@ describe('hasActionWithBooleanProperty', () => {
       `returns false when a property exists and is not a boolean, property=%s`,
       key => {
         expect(
-          hasActionWithBooleanProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithBooleanProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -325,7 +319,7 @@ describe('hasActionWithBooleanProperty', () => {
       'propwitharray.3',
     ])(`returns true when a property exists, property=%s`, key => {
       expect(
-        hasActionWithBooleanProperty.apply(
+        scaffolderTemplateEntityRules.hasActionWithBooleanProperty.apply(
           templateFactory({
             steps: [{ action: 'action', input }],
           }),
@@ -352,7 +346,7 @@ describe('hasActionWithBooleanProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithBooleanProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithBooleanProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -371,7 +365,7 @@ describe('hasActionWithBooleanProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithBooleanProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithBooleanProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -389,7 +383,7 @@ describe('hasActionWithNumberProperty', () => {
       `returns false when a property doesn't exist in the input`,
       key => {
         expect(
-          hasActionWithNumberProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithNumberProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -413,7 +407,7 @@ describe('hasActionWithNumberProperty', () => {
       `returns false when a property exists and is not a number, property=%s`,
       key => {
         expect(
-          hasActionWithNumberProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithNumberProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -429,7 +423,7 @@ describe('hasActionWithNumberProperty', () => {
       'propwitharray.1',
     ])(`returns true when a property exists, property=%s`, key => {
       expect(
-        hasActionWithNumberProperty.apply(
+        scaffolderTemplateEntityRules.hasActionWithNumberProperty.apply(
           templateFactory({
             steps: [{ action: 'action', input }],
           }),
@@ -456,7 +450,7 @@ describe('hasActionWithNumberProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithNumberProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithNumberProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -474,7 +468,7 @@ describe('hasActionWithNumberProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithNumberProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithNumberProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -492,7 +486,7 @@ describe('hasActionWithStringProperty', () => {
       `returns false when a property doesn't exist in the input`,
       key => {
         expect(
-          hasActionWithStringProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithStringProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -516,7 +510,7 @@ describe('hasActionWithStringProperty', () => {
       `returns false when a property exists and is not a string, property=%s`,
       key => {
         expect(
-          hasActionWithStringProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithStringProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -530,7 +524,7 @@ describe('hasActionWithStringProperty', () => {
       `returns true when a property exists, property=%s`,
       key => {
         expect(
-          hasActionWithStringProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithStringProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -557,7 +551,7 @@ describe('hasActionWithStringProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithStringProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithStringProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),
@@ -575,7 +569,7 @@ describe('hasActionWithStringProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasActionWithStringProperty.apply(
+          scaffolderTemplateEntityRules.hasActionWithStringProperty.apply(
             templateFactory({
               steps: [{ action: 'action', input }],
             }),

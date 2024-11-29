@@ -30,10 +30,7 @@ export const createActionPermissionRule = makeCreatePermissionRule<
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
 >();
 
-/**
- * @public
- */
-export const hasActionId = createActionPermissionRule({
+const hasActionId = createActionPermissionRule({
   name: 'HAS_ACTION_ID',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   description: `Match actions with the given actionId`,
@@ -46,35 +43,23 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-/**
- * @public
- */
-export const hasProperty = buildHasProperty({
+const hasProperty = buildHasProperty({
   name: 'HAS_PROPERTY',
   valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
   validateProperty: false,
 });
 
-/**
- * @public
- */
-export const hasBooleanProperty = buildHasProperty({
+const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
 
-/**
- * @public
- */
-export const hasNumberProperty = buildHasProperty({
+const hasNumberProperty = buildHasProperty({
   name: 'HAS_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
 
-/**
- * @public
- */
-export const hasStringProperty = buildHasProperty({
+const hasStringProperty = buildHasProperty({
   name: 'HAS_STRING_PROPERTY',
   valueSchema: z.string(),
 });
@@ -124,6 +109,7 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
  */
 export const scaffolderActionRules = {
   hasActionId,
+  hasProperty,
   hasBooleanProperty,
   hasNumberProperty,
   hasStringProperty,

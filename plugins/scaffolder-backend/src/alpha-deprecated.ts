@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-import * as nodeAlpha from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  createScaffolderActionConditionalDecision as createScaffolderActionConditionalDecisionNode,
+  createScaffolderTemplateConditionalDecision as createScaffolderTemplateConditionalDecisionNode,
+  scaffolderActionConditions as scaffolderActionConditionsNode,
+  scaffolderTemplateConditions as scaffolderTemplateConditionsNode,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  * @alpha
  * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
  */
 export const createScaffolderTemplateConditionalDecision =
-  nodeAlpha.createScaffolderTemplateConditionalDecision;
+  createScaffolderTemplateConditionalDecisionNode;
 
 /**
  * @alpha
  * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
  */
-export const scaffolderTemplateConditions =
-  nodeAlpha.scaffolderTemplateConditions;
+export const scaffolderTemplateConditions = scaffolderTemplateConditionsNode;
 
 /**
  * @alpha
  * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
  */
 export const createScaffolderActionConditionalDecision =
-  nodeAlpha.createScaffolderActionConditionalDecision;
+  createScaffolderActionConditionalDecisionNode;
 
 /**
  * @alpha
  * @deprecated Import from `@backstage/plugin-scaffolder-node/alpha` instead
  */
-export const scaffolderActionConditions = nodeAlpha.scaffolderActionConditions;
+export const scaffolderActionConditions = scaffolderActionConditionsNode;

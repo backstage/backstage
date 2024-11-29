@@ -23,18 +23,13 @@ import {
   TaskSecrets as TaskSecretsNode,
   TemplateAction as TemplateActionNode,
 } from '@backstage/plugin-scaffolder-node';
+import {
+  ActionPermissionRuleInput as ActionPermissionRuleInputNode,
+  TemplatePermissionRuleInput as TemplatePermissionRuleInputNode,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonObject } from '@backstage/types';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessorModule } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import {
-  TemplateEntityStepV1beta3,
-  TemplateParametersV1beta3,
-} from '@backstage/plugin-scaffolder-common';
-import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-} from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * @public
@@ -101,12 +96,7 @@ export const ScaffolderEntitiesProcessor = ScaffolderEntitiesProcessorModule;
  */
 export type TemplatePermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TParams
->;
+> = TemplatePermissionRuleInputNode<TParams>;
 
 /**
  * @public
@@ -114,9 +104,4 @@ export type TemplatePermissionRuleInput<
  */
 export type ActionPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  TParams
->;
+> = ActionPermissionRuleInputNode<TParams>;

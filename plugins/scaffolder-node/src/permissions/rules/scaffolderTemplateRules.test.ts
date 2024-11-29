@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { hasTag } from '../rules';
+import { scaffolderTemplateRules } from '../rules';
 
 describe('hasTag', () => {
   describe('apply', () => {
     it('returns false when the tag is not present', () => {
       expect(
-        hasTag.apply(
+        scaffolderTemplateRules.hasTag.apply(
           {
             'backstage:permissions': {
               tags: ['foo', 'bar'],
@@ -34,7 +34,7 @@ describe('hasTag', () => {
 
     it('returns false when backstage:permissions is missing', () => {
       expect(
-        hasTag.apply(
+        scaffolderTemplateRules.hasTag.apply(
           {},
           {
             tag: 'baz',
@@ -45,7 +45,7 @@ describe('hasTag', () => {
 
     it('returns false when tags is an empty array', () => {
       expect(
-        hasTag.apply(
+        scaffolderTemplateRules.hasTag.apply(
           {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Component',
@@ -64,7 +64,7 @@ describe('hasTag', () => {
 
     it('returns true when the tag is present', () => {
       expect(
-        hasTag.apply(
+        scaffolderTemplateRules.hasTag.apply(
           {
             'backstage:permissions': {
               tags: ['foo', 'bar'],

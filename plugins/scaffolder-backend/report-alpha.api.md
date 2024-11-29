@@ -39,6 +39,15 @@ export const scaffolderActionConditions: Conditions<{
       actionId: string;
     }
   >;
+  hasProperty: PermissionRule<
+    TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | number | boolean | null | undefined;
+    }
+  >;
   hasBooleanProperty: PermissionRule<
     TemplateEntityStepV1beta3,
     {},

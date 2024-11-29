@@ -16,4 +16,4 @@
 
 export * from './scaffolderActionRules';
 export * from './scaffolderTemplateRules';
-export * from './scaffolderEntityRules';
+export * from './scaffolderTemplateEntityRules';

@@ -24,7 +24,7 @@ import {
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 export * from './rules';
@@ -38,7 +38,7 @@ export type TemplateEntityPermissionRuleInput<
 > = PermissionRule<
   TemplateEntityV1beta3,
   {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   TParams
 >;
 
@@ -82,7 +82,9 @@ export type ScaffolderPermissionRule<
 export function isTemplateEntityPermissionRuleInput(
   permissionRule: ScaffolderPermissionRule,
 ): permissionRule is TemplateEntityPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ENTITY;
+  return (
+    permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY
+  );
 }
 
 /**

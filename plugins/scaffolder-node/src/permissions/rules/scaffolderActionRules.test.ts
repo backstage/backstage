@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject, JsonPrimitive } from '@backstage/types';
-import {
-  hasActionId,
-  hasBooleanProperty,
-  hasNumberProperty,
-  hasProperty,
-  hasStringProperty,
-} from './scaffolderActionRules';
+import { scaffolderActionRules } from './scaffolderActionRules';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
@@ -29,7 +23,7 @@ describe('hasActionId', () => {
   describe('apply', () => {
     it('returns false when actionId is not matched', () => {
       expect(
-        hasActionId.apply(
+        scaffolderActionRules.hasActionId.apply(
           {
             action: 'action',
             input: {},
@@ -43,7 +37,7 @@ describe('hasActionId', () => {
 
     it('returns true when actionId is matched', () => {
       expect(
-        hasActionId.apply(
+        scaffolderActionRules.hasActionId.apply(
           {
             action: 'action',
             input: {},
@@ -78,9 +72,12 @@ describe('hasProperty', () => {
       '',
       'propwitharray.100',
     ])(`returns false when a property doesn't exist in the input`, key => {
-      expect(hasProperty.apply({ action: 'action', input }, { key })).toEqual(
-        false,
-      );
+      expect(
+        scaffolderActionRules.hasProperty.apply(
+          { action: 'action', input },
+          { key },
+        ),
+      ).toEqual(false);
     });
 
     it.each([
@@ -96,9 +93,12 @@ describe('hasProperty', () => {
       'nested.nested',
       'nested.nested.propwithnumber',
     ])(`returns true when a property exists, property=%s`, key => {
-      expect(hasProperty.apply({ action: 'action', input }, { key })).toEqual(
-        true,
-      );
+      expect(
+        scaffolderActionRules.hasProperty.apply(
+          { action: 'action', input },
+          { key },
+        ),
+      ).toEqual(true);
     });
 
     it.each([
@@ -118,7 +118,7 @@ describe('hasProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasProperty.apply(
+          scaffolderActionRules.hasProperty.apply(
             { action: 'action', input },
             { key, value: value as JsonPrimitive },
           ),
@@ -139,13 +139,18 @@ describe('hasProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(true);
       },
     );
 
     it('should throw if params are invalid', () => {
-      const isActionAuthorized = createConditionAuthorizer([hasProperty]);
+      const isActionAuthorized = createConditionAuthorizer([
+        scaffolderActionRules.hasProperty,
+      ]);
 
       expect(() =>
         isActionAuthorized(
@@ -182,7 +187,9 @@ describe('hasProperty', () => {
     });
 
     it('should not throw if params are valid', () => {
-      const isActionAuthorized = createConditionAuthorizer([hasProperty]);
+      const isActionAuthorized = createConditionAuthorizer([
+        scaffolderActionRules.hasProperty,
+      ]);
 
       expect(() =>
         isActionAuthorized(
@@ -230,7 +237,10 @@ describe('hasBooleanProperty', () => {
       `returns false when a property doesn't exist in the input`,
       key => {
         expect(
-          hasBooleanProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasBooleanProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(false);
       },
     );
@@ -249,7 +259,10 @@ describe('hasBooleanProperty', () => {
       `returns false when a property exists and is not a boolean, property=%s`,
       key => {
         expect(
-          hasBooleanProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasBooleanProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(false);
       },
     );
@@ -261,7 +274,10 @@ describe('hasBooleanProperty', () => {
       'propwitharray.3',
     ])(`returns true when a property exists, property=%s`, key => {
       expect(
-        hasBooleanProperty.apply({ action: 'action', input }, { key }),
+        scaffolderActionRules.hasBooleanProperty.apply(
+          { action: 'action', input },
+          { key },
+        ),
       ).toEqual(true);
     });
 
@@ -283,7 +299,10 @@ describe('hasBooleanProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasBooleanProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasBooleanProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(false);
       },
     );
@@ -297,7 +316,10 @@ describe('hasBooleanProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasBooleanProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasBooleanProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(true);
       },
     );
@@ -310,7 +332,10 @@ describe('hasNumberProperty', () => {
       `returns false when a property doesn't exist in the input`,
       key => {
         expect(
-          hasNumberProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasNumberProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(false);
       },
     );
@@ -329,7 +354,10 @@ describe('hasNumberProperty', () => {
       `returns false when a property exists and is not a number, property=%s`,
       key => {
         expect(
-          hasNumberProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasNumberProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(false);
       },
     );
@@ -340,7 +368,10 @@ describe('hasNumberProperty', () => {
       'propwitharray.1',
     ])(`returns true when a property exists, property=%s`, key => {
       expect(
-        hasNumberProperty.apply({ action: 'action', input }, { key }),
+        scaffolderActionRules.hasNumberProperty.apply(
+          { action: 'action', input },
+          { key },
+        ),
       ).toEqual(true);
     });
 
@@ -362,7 +393,10 @@ describe('hasNumberProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasNumberProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasNumberProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(false);
       },
     );
@@ -375,7 +409,10 @@ describe('hasNumberProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasNumberProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasNumberProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(true);
       },
     );
@@ -388,7 +425,10 @@ describe('hasStringProperty', () => {
       `returns false when a property doesn't exist in the input`,
       key => {
         expect(
-          hasStringProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasStringProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(false);
       },
     );
@@ -407,7 +447,10 @@ describe('hasStringProperty', () => {
       `returns false when a property exists and is not a string, property=%s`,
       key => {
         expect(
-          hasStringProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasStringProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(false);
       },
     );
@@ -416,7 +459,10 @@ describe('hasStringProperty', () => {
       `returns true when a property exists, property=%s`,
       key => {
         expect(
-          hasStringProperty.apply({ action: 'action', input }, { key }),
+          scaffolderActionRules.hasStringProperty.apply(
+            { action: 'action', input },
+            { key },
+          ),
         ).toEqual(true);
       },
     );
@@ -438,7 +484,10 @@ describe('hasStringProperty', () => {
       `returns false when a property exists but the value doesn't match, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasStringProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasStringProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(false);
       },
     );
@@ -451,7 +500,10 @@ describe('hasStringProperty', () => {
       `returns true when a property exists and the value matches, key=%s value=%o`,
       (key, value) => {
         expect(
-          hasStringProperty.apply({ action: 'action', input }, { key, value }),
+          scaffolderActionRules.hasStringProperty.apply(
+            { action: 'action', input },
+            { key, value },
+          ),
         ).toEqual(true);
       },
     );

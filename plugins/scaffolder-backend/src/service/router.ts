@@ -44,10 +44,10 @@ import {
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
-  scaffolderEntityPermissions,
+  scaffolderTemplateEntityPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
@@ -114,7 +114,7 @@ import {
   isTemplatePermissionRuleInput,
   scaffolderActionRules,
   ScaffolderPermissionRule,
-  scaffolderEntityRules,
+  scaffolderTemplateEntityRules,
   scaffolderTemplateRules,
   TemplateEntityPermissionRuleInput,
   TemplatePermissionRuleInput,
@@ -394,7 +394,7 @@ export async function createRouter(
   });
 
   const templateEntityRules: TemplateEntityPermissionRuleInput[] =
-    Object.values(scaffolderEntityRules);
+    Object.values(scaffolderTemplateEntityRules);
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
     scaffolderTemplateRules,
   );
@@ -426,8 +426,8 @@ export async function createRouter(
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resources: [
       {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
-        permissions: scaffolderEntityPermissions,
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+        permissions: scaffolderTemplateEntityPermissions,
         rules: templateEntityRules,
         getResources: async (
           resourceRefs: string[],

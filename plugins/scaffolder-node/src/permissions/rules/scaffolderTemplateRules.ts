@@ -31,10 +31,7 @@ export const createTemplatePermissionRule = makeCreatePermissionRule<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
-/**
- * @public
- */
-export const hasTag = createTemplatePermissionRule({
+const hasTag = createTemplatePermissionRule({
   name: 'HAS_TAG',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   description: `Match parameters or steps with the given tag`,

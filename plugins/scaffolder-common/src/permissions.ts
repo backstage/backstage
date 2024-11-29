@@ -21,7 +21,8 @@ import { createPermission } from '@backstage/plugin-permission-common';
  *
  * @alpha
  */
-export const RESOURCE_TYPE_SCAFFOLDER_ENTITY = 'scaffolder-entity';
+export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY =
+  'scaffolder-template-entity';
 
 /**
  * Permission resource type which corresponds to a scaffolder templates.
@@ -45,7 +46,7 @@ export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 export const templateExecutePermission = createPermission({
   name: 'scaffolder.template.execute',
   attributes: {},
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
 });
 
 /**
@@ -145,7 +146,7 @@ export const templateManagementPermission = createPermission({
  * List of the scaffolder permissions that are associated with template entity.
  * @alpha
  */
-export const scaffolderEntityPermissions = [templateExecutePermission];
+export const scaffolderTemplateEntityPermissions = [templateExecutePermission];
 
 /**
  * List of the scaffolder permissions that are associated with template steps and parameters.
@@ -177,6 +178,7 @@ export const scaffolderTaskPermissions = [
  * @alpha
  */
 export const scaffolderPermissions = [
+  ...scaffolderTemplateEntityPermissions,
   ...scaffolderTemplatePermissions,
   ...scaffolderActionPermissions,
   ...scaffolderTaskPermissions,
