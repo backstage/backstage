@@ -7,6 +7,25 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
+export type BackendFeatureMeta =
+  | {
+      type: 'plugin';
+      pluginId: string;
+    }
+  | {
+      type: 'module';
+      pluginId: string;
+      moduleId: string;
+    };
+
+// @alpha
+export const EXPERIMENTAL_instanceMetadataServiceRef: ServiceRef<
+  InstanceMetadataService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha (undocumented)
 export interface FeatureDiscoveryService {
   // (undocumented)
   getBackendFeatures(): Promise<{
@@ -20,6 +39,12 @@ export const featureDiscoveryServiceRef: ServiceRef<
   'root',
   'singleton'
 >;
+
+// @alpha (undocumented)
+export interface InstanceMetadataService {
+  // (undocumented)
+  getInstalledFeatures: () => BackendFeatureMeta[];
+}
 
 // (No @packageDocumentation comment for this package)
 ```

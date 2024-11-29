@@ -36,7 +36,7 @@ import type {
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import {
-  experimentalServices,
+  EXPERIMENTAL_instanceMetadataServiceRef,
   featureDiscoveryServiceRef,
   BackendFeatureMeta,
 } from '@backstage/backend-plugin-api/alpha';
@@ -128,7 +128,7 @@ function createInstanceMetadataServiceFactory(
     })
     .flat();
   return createServiceFactory({
-    service: experimentalServices.EXPERIMENTAL_instanceMetadata,
+    service: EXPERIMENTAL_instanceMetadataServiceRef,
     deps: {},
     factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
   });

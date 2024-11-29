@@ -35,5 +35,18 @@ export const featureDiscoveryServiceRef =
     scope: 'root',
   });
 
-export { experimentalServices } from './services/definitions/experimentalServices';
-export type { BackendFeatureMeta } from './services/definitions/InstanceMetadataService';
+/**
+ * EXPERIMENTAL: Instance metadata service.
+ *
+ * @alpha
+ */
+export const EXPERIMENTAL_instanceMetadataServiceRef = createServiceRef<
+  import('./services/definitions/InstanceMetadataService').InstanceMetadataService
+>({
+  id: 'experimental.instanceMetadata',
+});
+
+export type {
+  BackendFeatureMeta,
+  InstanceMetadataService,
+} from './services/definitions/InstanceMetadataService';
