@@ -8,7 +8,7 @@ Audience: Admins
 
 ## Summary
 
-This guide walks through how to set up a PostgreSQL database to host your Backstage data. It assumes you've already have a scaffolded Backstage app from following the [Standalone Install](../index.md) guide.
+This guide walks through how to set up a PostgreSQL database to host your Backstage data. It assumes you've already have a scaffolded Backstage app from following the [Creating your Backstage App](../index.md) guide.
 
 By the end of this tutorial, you will have a working PostgreSQL database hooked up to your Backstage install.
 
@@ -23,7 +23,7 @@ This guide assumes a basic understanding of working on a Linux based operating s
 - If the database is not hosted on the same server as the Backstage app, the
   PostgreSQL port needs to be accessible (the default is `5432` or `5433`)
 
-## 1. Install and configure PostgreSQL
+## 1. Install and Configure PostgreSQL
 
 :::tip Already configured your database?
 
@@ -67,24 +67,6 @@ postgres=# ALTER USER postgres PASSWORD '<secret>';
 That's enough database administration to get started. Type `\q`, followed by
 pressing the enter key. Then again type `exit` and press enter. Next, you need
 to install and configure the client.
-
-### Docker Alternative
-
-Alternatively you can run Postgres in a Docker container, this is great for local development or getting a Backstage POC up and running quickly, here's how:
-
-First we need to pull down the container image, we'll use Postgres 17, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions as supported.
-
-```shell
-docker pull postgres:17.0-bookworm
-```
-
-Then we just need to start up the container.
-
-```shell
-docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-bookworm
-```
-
-This will run Postgres in the background for you, but remember to start it up again when you reboot your system.
 
 ## 2. Configuring Backstage `pg` Client
 
@@ -135,6 +117,47 @@ yarn dev
 After the Backstage frontend launches, you should notice that nothing has changed. This is a good sign. If everything is setup correctly above, this means that the data is flowing from the demo data files directly into your database!
 
 We've now made your data persist in your Backstage database.
+
+## Alternatives
+
+You may not want to install Postgres locally, the following sections outline alternatives.
+
+### Docker
+
+You can run Postgres in a Docker container, this is great for local development or getting a Backstage POC up and running quickly, here's how:
+
+First we need to pull down the container image, we'll use Postgres 17, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions are supported.
+
+```shell
+docker pull postgres:17.0-bookworm
+```
+
+Then we just need to start up the container.
+
+```shell
+docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-bookworm
+```
+
+This will run Postgres in the background for you, but remember to start it up again when you reboot your system.
+
+### Docker Compose
+
+Another way to run Postgres is to use Docker Compose, here's what that would look like:
+
+```yaml title="docker-compose.local.yaml"
+version: '4'
+
+services:
+  postgres:
+    image: postgres:17.0-bookworm
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: <secret>
+    ports:
+      - 5432:5432
+```
+
+Then you would just run `docker compose -f docker-compose.local.yaml up` to start Postgres.
 
 ## Next Steps
 
