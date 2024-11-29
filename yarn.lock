@@ -297,7 +297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.3.0":
+"@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.3.0, @asyncapi/parser@npm:^3.4.0":
   version: 3.4.0
   resolution: "@asyncapi/parser@npm:3.4.0"
   dependencies:
@@ -324,25 +324,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/protobuf-schema-parser@npm:^3.2.14":
-  version: 3.2.14
-  resolution: "@asyncapi/protobuf-schema-parser@npm:3.2.14"
+"@asyncapi/protobuf-schema-parser@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@asyncapi/protobuf-schema-parser@npm:3.3.0"
   dependencies:
-    "@asyncapi/parser": ^3.1.0
-    "@types/protocol-buffers-schema": ^3.4.1
-    protobufjs: ^7.2.6
-  checksum: b00a50ea806c5e92961d98e51d3c6b61f61377e18f7fe93ccfce5bb47df208c9bdd635b15a6ce3345bb2c33048ed17a1d422b6bd536c8e332c98a29dc1c37ae9
+    "@asyncapi/parser": ^3.4.0
+    "@types/protocol-buffers-schema": ^3.4.3
+    protobufjs: ^7.4.0
+  checksum: abe9f09f289c20eb93de450f8106380142ce3aed115060939f90f3826030be56d24759ff3d9c63a2476d22888bb56df5da37222d2eca3e9596f9e0ad6461e93f
   languageName: node
   linkType: hard
 
 "@asyncapi/react-component@npm:^2.3.3":
-  version: 2.4.3
-  resolution: "@asyncapi/react-component@npm:2.4.3"
+  version: 2.4.5
+  resolution: "@asyncapi/react-component@npm:2.4.5"
   dependencies:
     "@asyncapi/avro-schema-parser": ^3.0.24
     "@asyncapi/openapi-schema-parser": ^3.0.24
     "@asyncapi/parser": ^3.3.0
-    "@asyncapi/protobuf-schema-parser": ^3.2.14
+    "@asyncapi/protobuf-schema-parser": ^3.3.0
     highlight.js: ^10.7.2
     isomorphic-dompurify: ^2.14.0
     marked: ^4.0.14
@@ -351,7 +351,7 @@ __metadata:
   peerDependencies:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: a302bb0afac4952d77da6558fede68aecedd55096a322ad5b8ca0653aa6e001d21fe681914abea2656c14fb79e1dc6ef8e18ecefce44f877677f0f15fbf6c3c4
+  checksum: 681eb6eb3fe2f9874725b368c298b7069373b7fb706437d15449ad747552ee515c0677ed7334c1826776b786fab57363817fd737d31f9f1d116fea3b58eef742
   languageName: node
   linkType: hard
 
@@ -19935,7 +19935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/protocol-buffers-schema@npm:^3.4.1":
+"@types/protocol-buffers-schema@npm:^3.4.3":
   version: 3.4.3
   resolution: "@types/protocol-buffers-schema@npm:3.4.3"
   dependencies:
@@ -40105,7 +40105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^7.2.5, protobufjs@npm:^7.2.6, protobufjs@npm:^7.3.0, protobufjs@npm:^7.3.2":
+"protobufjs@npm:^7.2.5, protobufjs@npm:^7.2.6, protobufjs@npm:^7.3.0, protobufjs@npm:^7.3.2, protobufjs@npm:^7.4.0":
   version: 7.4.0
   resolution: "protobufjs@npm:7.4.0"
   dependencies:
