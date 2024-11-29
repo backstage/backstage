@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.1
+
 ## 0.5.1
 
 ### Patch Changes
