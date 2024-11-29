@@ -2060,6 +2060,50 @@ describe('DefaultEntitiesCatalog', () => {
         });
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'works with a mixture of present and missing facets, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+          },
+          spec: {},
+        });
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'two',
+          },
+          spec: {},
+        });
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name', 'missing'],
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': expect.arrayContaining([
+              { value: 'one', count: 1 },
+              { value: 'two', count: 1 },
+            ]),
+            missing: [],
+          },
+        });
+      },
+    );
   });
 });
 

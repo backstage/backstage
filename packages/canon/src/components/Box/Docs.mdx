@@ -1,0 +1,32 @@
+import { Canvas, Meta, Unstyled } from '@storybook/blocks';
+import * as BoxStories from './Box.stories';
+import { Title, Text } from '../../../docs/components';
+import { Padding } from './docs/padding';
+import { PropsTable } from './docs/props-table';
+import { SpacingTable } from './docs/spacing-table';
+
+<Meta of={BoxStories} />
+
+<Unstyled>
+
+<Title type="h1">Box</Title>
+<Text>
+  Box is the lowest-level component in Canon. We use it internally to build all
+  of our components. It is a wrapper around the HTML `<div>` element and
+  provides a consistent API for styling and layout. You'll find below a list of all the available properties.
+</Text>
+
+<PropsTable />
+
+<Title type="h2">Padding & Margin</Title>
+<Text>
+  Padding and margin are used to create space around your component using our
+  predefined spacing tokens. We would recommend to use padding over margin to
+  avoid collapsing margins but both are available.
+</Text>
+
+<Padding />
+
+<SpacingTable />
+
+</Unstyled>
