@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.1
+
+### Patch Changes
+
+- 2238e0b: Make sure that isomorphic git push commands are not proxied.
+
 ## 0.6.0
 
 ### Minor Changes
