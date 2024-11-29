@@ -1,19 +1,26 @@
 ---
-id: adrs-adr013
-title: 'ADR013: Proper use of HTTP fetching libraries'
+id: adrs-adr014
+title: 'ADR014: Proper use of HTTP fetching libraries'
 # prettier-ignore
 description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, native fetch, and cross-fetch for data fetching.
 ---
 
 ## Context
 
-Using multiple HTTP packages for data fetching increases the complexity and the
-support burden of keeping said package up to date.
+Until now we have been recommending the use of `node-fetch` in Node.js contexts
+through [ADR013](./adr013-use-node-fetch.md). Since then, Backstage has had its
+minimum requirements upgraded to Node.js 20 or newer. The Node.js platform has
+established a stable, reliable `undici` based native `fetch` in these versions.
+Additionally, there are [some issues](https://github.com/backstage/backstage/issues/24590)
+with using third party libraries that only appeared in newer versions of
+Node.js.
 
 ## Decision
 
 All code that is executed in Node.js (including backend and CLIs) should use the
-native `fetch` for HTTP data fetching. Example:
+native `fetch` for HTTP data fetching, and `typeof fetch` as the TypeScript type
+in code where a `fetch` implementation can be injected or is referred to.
+Example:
 
 ```ts
 import { ResponseError } from '@backstage/errors';
