@@ -1,0 +1,111 @@
+name: API Breaking Changes (comment)
+
+on:
+  workflow_run:
+    workflows:
+      - 'API Breaking Changes (Trigger)'
+    types:
+      - completed
+
+jobs:
+  setup:
+    name: Add values from previous step
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      # "If you specify the access for any of these scopes, all of those that are not specified are set to none."
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+      actions: read # Access cache
+    outputs:
+      git-ref: ${{ steps.event.outputs.GIT_REF }}
+      pr-number: ${{ steps.event.outputs.PR_NUMBER }}
+      action: ${{ steps.event.outputs.ACTION }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+
+      - name: 'Download artifacts'
+        # Fetch output (zip archive) from the workflow run that triggered this workflow.
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "preview-spec"
+            })[0];
+            if (matchArtifact === undefined) {
+              throw TypeError('Build Artifact not found!');
+            }
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/preview-spec.zip`, Buffer.from(download.data));
+
+      - name: 'Accept event from first stage'
+        run: unzip preview-spec.zip event.json
+
+      - name: Read Event into ENV
+        id: event
+        run: |
+          echo PR_NUMBER=$(jq '.number | tonumber' < event.json) >> $GITHUB_OUTPUT
+          echo ACTION=$(jq --raw-output '.action | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
+          echo GIT_REF=$(jq --raw-output '.pull_request.head.sha | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
+
+      - name: DEBUG - Print Job Outputs
+        if: ${{ runner.debug }}
+        run: |
+          echo "PR number: ${{ steps.event.outputs.PR_NUMBER }}"
+          echo "Git Ref: ${{ steps.event.outputs.GIT_REF }}"
+          echo "Action: ${{ steps.event.outputs.ACTION }}"
+          cat event.json
+
+      - name: Get Comment
+        id: get-comment
+        run: |
+          unzip preview-spec.zip comment.md
+          ls
+          grep
+
+  add-comment:
+    name: Write comment about issues
+    needs:
+      - setup
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      # Identify comment to be updated
+      - name: Find comment for API Changes
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        id: find-comment
+        with:
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: API changes
+          direction: last
+
+      - name: Create or Update Comment with API Changes
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: comment.md
+          edit-mode: replace

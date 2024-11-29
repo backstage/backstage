@@ -1,0 +1,58 @@
+{
+  "name": "@internal/plugin-todo-list-backend",
+  "version": "1.0.34-next.0",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "todo-list",
+    "pluginPackages": [
+      "@internal/plugin-todo-list",
+      "@internal/plugin-todo-list-backend",
+      "@internal/plugin-todo-list-common"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "private": true,
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/example-todo-list-backend"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@types/express": "^4.17.6",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "uuid": "^11.0.0",
+    "yn": "^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^7.0.0"
+  }
+}

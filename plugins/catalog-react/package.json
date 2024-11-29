@@ -1,0 +1,118 @@
+{
+  "name": "@backstage/plugin-catalog-react",
+  "version": "1.14.3-next.0",
+  "description": "A frontend library that helps other Backstage plugins interact with the catalog",
+  "backstage": {
+    "role": "web-library",
+    "pluginId": "catalog",
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-common",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-react"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha/index.ts",
+    "./testUtils": "./src/testUtils.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "@react-hookz/web": "^24.0.0",
+    "classnames": "^2.2.6",
+    "lodash": "^4.17.21",
+    "material-ui-popup-state": "^1.9.3",
+    "qs": "^6.9.4",
+    "react-use": "^17.2.4",
+    "yaml": "^2.0.0",
+    "zen-observable": "^0.10.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-scaffolder-common": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react": "^18.0.0",
+    "@types/zen-observable": "^0.8.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
+    "react-test-renderer": "^16.13.1"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

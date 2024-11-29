@@ -1,0 +1,10 @@
+---
+title: Snyk
+author: Snyk Tech Services
+authorUrl: https://snyk.io
+category: Security
+description: View Snyk scanned vulnerabilities and license compliance of your components directly in Backstage.
+documentation: https://github.com/snyk-tech-services/backstage-plugin-snyk/blob/main/README.md
+iconUrl: https://github.com/snyk-tech-services/backstage-plugin-snyk/assets/109112986/95eb1b06-b3e8-4910-9233-11926e02fa18
+npmPackageName: 'backstage-plugin-snyk'
+addedDate: '2021-01-22'

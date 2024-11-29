@@ -1,0 +1,51 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-unprocessed",
+  "version": "0.5.3-next.0",
+  "description": "Backstage Catalog module to view unprocessed entities",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-unprocessed"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "express-promise-router": "^4.1.1",
+    "knex": "^3.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/express": "^4.17.6"
+  }
+}

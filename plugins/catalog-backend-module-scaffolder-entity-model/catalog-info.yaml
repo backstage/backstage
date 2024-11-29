@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-scaffolder-entity-model
+  title: '@backstage/plugin-catalog-backend-module-scaffolder-entity-model'
+  description: >-
+    Adds support for the scaffolder specific entity model (e.g. the Template
+    kind) to the catalog backend plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

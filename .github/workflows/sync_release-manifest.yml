@@ -1,0 +1,89 @@
+name: Sync Release Manifest
+on:
+  repository_dispatch:
+    types: [release-published]
+
+jobs:
+  create-new-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # 'v' prefix is added here for the tag, we keep it out of the manifest logic
+          ref: v${{ github.event.client_payload.version }}
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 20.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v20.x
+
+      - name: Build yarn plugin
+        working-directory: packages/yarn-plugin
+        run: yarn build
+
+      # Checkout backstage/versions into /backstage/versions, which is where store the output
+      - name: Checkout versions
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: backstage/versions
+          path: versions
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'Github versions workflow'
+
+      - name: Create release
+        # This grabs the scripts from master in order to support backfills
+        run: |
+          mkdir -p scripts
+          wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
+          node scripts/assemble-manifest.js ${{ github.event.client_payload.version }}
+
+      # Copies the build output of the yarn-plugin package to the appropriate
+      # directory, allowing the plugin to be installed with a command like
+      # `yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin`
+      - name: Add yarn plugin to release
+        working-directory: packages/yarn-plugin
+        run: >-
+          cp
+          bundles/@yarnpkg/plugin-backstage.js
+          ../../versions/v1/releases/${{ github.event.client_payload.version }}/yarn-plugin
+
+      - name: Commit to versions repo
+        working-directory: versions
+        run: |
+          git add .
+          git commit -am "${{ github.event.client_payload.version }}"
+          git push
+
+      - name: Dispatch update-helper update
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while
+          script: |
+            console.log('Dispatching upgrade helper sync');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'backstage',
+              repo: 'upgrade-helper-diff',
+              workflow_id: 'release.yml',
+              ref: 'master',
+              inputs: {
+                version: require('./packages/create-app/package.json').version,
+                releaseVersion: require('./package.json').version
+              },
+            });

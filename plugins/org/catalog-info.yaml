@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-org
+  title: '@backstage/plugin-org'
+  description: A Backstage plugin that helps you create entity pages for your organization
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

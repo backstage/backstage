@@ -1,0 +1,29 @@
+{
+  "id": "backstage__plugin_test",
+  "name": "backstage__plugin_test",
+  "metaData": {
+    "name": "backstage__plugin_test",
+    "type": "app",
+    "buildInfo": {
+      "buildVersion": "0.0.0",
+      "buildName": "@backstage/plugin-test"
+    },
+    "remoteEntry": {
+      "name": "remoteEntry.js",
+      "path": "",
+      "type": "global"
+    },
+    "types": {
+      "path": "",
+      "name": "",
+      "zip": "",
+      "api": ""
+    },
+    "globalName": "backstage__plugin_test",
+    "pluginVersion": "0.0.0",
+    "publicPath": "auto"
+  },
+  "shared": [],
+  "remotes": [],
+  "exposes": []
+}

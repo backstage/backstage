@@ -1,0 +1,10 @@
+---
+title: Rollbar
+author: '@andrewthauer'
+authorUrl: https://github.com/andrewthauer
+category: Monitoring
+description: View Rollbar errors for your services in Backstage.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/rollbar/plugins/rollbar
+iconUrl: https://rollbar.com/assets/media/rollbar-mark-color.png
+npmPackageName: '@backstage-community/plugin-rollbar'
+addedDate: '2020-11-03'

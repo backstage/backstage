@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+  labels:
+    app: backstage
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: backstage
+        component: frontend
+    spec:
+      containers:
+        - name: app
+          image: spotify/backstage:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: app
+              protocol: TCP

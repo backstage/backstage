@@ -1,0 +1,39 @@
+{
+  "name": "@internal/frontend",
+  "version": "0.0.4-next.0",
+  "backstage": {
+    "role": "web-library",
+    "inline": true
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/frontend-internal"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/frontend-app-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0"
+  }
+}

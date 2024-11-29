@@ -1,0 +1,70 @@
+{
+  "name": "@backstage/plugin-search-backend-module-catalog",
+  "version": "0.2.6-next.0",
+  "description": "A module for the search backend that exports catalog modules",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/search-backend-module-catalog"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "msw": "^1.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

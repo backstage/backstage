@@ -1,0 +1,71 @@
+{
+  "name": "@backstage/plugin-permission-react",
+  "version": "0.4.28",
+  "backstage": {
+    "role": "web-library",
+    "pluginId": "permission",
+    "pluginPackages": [
+      "@backstage/plugin-permission-backend",
+      "@backstage/plugin-permission-common",
+      "@backstage/plugin-permission-node",
+      "@backstage/plugin-permission-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/permission-react"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/config": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "swr": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

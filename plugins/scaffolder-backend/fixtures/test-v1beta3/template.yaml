@@ -1,0 +1,35 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: test-v1beta3
+  title: Test v1beta3
+  description: Test V1 Beta 3 Demo Templates
+spec:
+  type: website
+  owner: team-a
+  parameters:
+    - name: Enter some stuff
+      description: Enter some stuff
+      properties:
+        inputString:
+          type: string
+          title: string input test
+        inputObject:
+          type: object
+          title: object input test
+          description: a little nested thing never hurt anyone right?
+          properties:
+            first:
+              type: string
+              title: first
+            second:
+              type: number
+              title: second
+  steps:
+    - id: debug
+      if: ${{ true === true }}
+      name: Debug
+      action: debug:log
+      input:
+        message: ${{ parameters.inputString }}
+        extra: ${{ parameters.inputObject }}

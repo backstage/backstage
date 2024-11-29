@@ -1,0 +1,66 @@
+{
+  "name": "@backstage/plugin-scaffolder-backend-module-rails",
+  "version": "0.5.3-next.0",
+  "description": "A module for the scaffolder backend that lets you template projects using Rails",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-backend-module-rails"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "command-exists": "^1.2.9",
+    "fs-extra": "^11.0.0",
+    "yaml": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
+    "@types/command-exists": "^1.2.0",
+    "@types/fs-extra": "^11.0.0",
+    "@types/node": "^20.16.0",
+    "jest-when": "^3.1.0"
+  }
+}

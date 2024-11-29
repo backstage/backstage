@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-types
+  title: '@backstage/types'
+  description: Common TypeScript types used within Backstage
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

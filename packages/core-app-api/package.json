@@ -1,0 +1,93 @@
+{
+  "name": "@backstage/core-app-api",
+  "version": "1.15.3-next.0",
+  "description": "Core app API used by Backstage apps",
+  "backstage": {
+    "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/core-app-api"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/config": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
+    "@types/prop-types": "^15.7.3",
+    "history": "^5.0.0",
+    "i18next": "^22.4.15",
+    "lodash": "^4.17.21",
+    "prop-types": "^15.7.2",
+    "react-use": "^17.2.4",
+    "zen-observable": "^0.10.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/react-hooks": "^8.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react": "^18.0.0",
+    "@types/zen-observable": "^0.8.0",
+    "msw": "^1.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-beta": "npm:react-router@6.0.0-beta.0",
+    "react-router-dom": "^6.3.0",
+    "react-router-dom-beta": "npm:react-router-dom@6.0.0-beta.0",
+    "react-router-dom-stable": "npm:react-router-dom@^6.3.0",
+    "react-router-stable": "npm:react-router@^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "configSchema": "config.d.ts"
+}

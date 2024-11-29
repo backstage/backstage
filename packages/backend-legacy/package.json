@@ -1,0 +1,89 @@
+{
+  "name": "example-backend-legacy",
+  "version": "0.2.105-next.0",
+  "backstage": {
+    "role": "backend"
+  },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend-legacy"
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-app-backend": "workspace:^",
+    "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "@backstage/plugin-permission-backend": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-proxy-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^",
+    "@backstage/plugin-search-backend": "workspace:^",
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^",
+    "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^",
+    "@backstage/plugin-search-backend-module-explore": "workspace:^",
+    "@backstage/plugin-search-backend-module-pg": "workspace:^",
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
+    "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-signals-backend": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
+    "@backstage/plugin-techdocs-backend": "workspace:^",
+    "@gitbeaker/node": "^35.1.0",
+    "@octokit/rest": "^19.0.3",
+    "azure-devops-node-api": "^14.0.0",
+    "better-sqlite3": "^11.0.0",
+    "dockerode": "^4.0.0",
+    "example-app": "link:../app",
+    "express": "^4.17.1",
+    "express-prom-bundle": "^7.0.0",
+    "express-promise-router": "^4.1.0",
+    "luxon": "^3.0.0",
+    "mysql2": "^3.0.0",
+    "pg": "^8.11.3",
+    "pg-connection-string": "^2.3.0",
+    "prom-client": "^15.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/dockerode": "^3.3.0",
+    "@types/express": "^4.17.6",
+    "@types/express-serve-static-core": "^4.17.5",
+    "@types/luxon": "^3.0.0"
+  }
+}

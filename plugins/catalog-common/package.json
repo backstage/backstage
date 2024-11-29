@@ -1,0 +1,66 @@
+{
+  "name": "@backstage/plugin-catalog-common",
+  "version": "1.1.1",
+  "description": "Common functionalities for the catalog plugin",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "catalog",
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-common",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-common"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

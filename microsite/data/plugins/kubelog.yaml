@@ -1,0 +1,10 @@
+---
+title: Kubelog
+author: Julio Fernandez
+authorUrl: https://github.com/jfvilas
+category: Observability
+description: Kubelog provides your Backstage users the ability to view logs of your Kubernetes objects linked to Backstage entities. Security controls can be applied.
+documentation: https://github.com/jfvilas/kubelog
+iconUrl: https://raw.githubusercontent.com/jfvilas/kubelog/master/src/assets/kubelog-logo.png
+npmPackageName: '@jfvilas/plugin-kubelog'
+addedDate: 2024-08-25

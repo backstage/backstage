@@ -1,0 +1,62 @@
+{
+  "name": "@backstage/catalog-model",
+  "version": "1.7.1",
+  "description": "Types and validators that help describe the model of a Backstage Catalog",
+  "backstage": {
+    "role": "common-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/catalog-model"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "ajv": "^8.10.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/json-schema": "^7.0.5",
+    "@types/lodash": "^4.14.151",
+    "yaml": "^2.0.0"
+  }
+}

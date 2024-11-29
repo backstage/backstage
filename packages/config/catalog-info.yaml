@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-config
+  title: '@backstage/config'
+  description: Config API used by Backstage core, backend, and CLI
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

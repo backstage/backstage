@@ -1,0 +1,12 @@
+**/node_modules/**
+**/dist/**
+**/dist-types/**
+**/storybook-static/**
+**/coverage/**
+**/build/**
+**/.git/**
+**/public/**
+**/microsite/**
+**/templates/**
+**/sample-templates/**
+playwright.config.ts

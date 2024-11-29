@@ -1,0 +1,104 @@
+{
+  "name": "@backstage/plugin-api-docs",
+  "version": "0.12.2-next.0",
+  "description": "A Backstage plugin that helps represent API entities in the frontend",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "api-docs",
+    "pluginPackages": [
+      "@backstage/plugin-api-docs"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/api-docs"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.tsx",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.tsx"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@asyncapi/react-component": "^2.3.3",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
+    "@graphiql/react": "^0.23.0",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "graphiql": "3.1.1",
+    "graphql": "^16.0.0",
+    "graphql-config": "^5.0.2",
+    "graphql-ws": "^5.4.1",
+    "isomorphic-form-data": "^2.0.0",
+    "swagger-ui-react": "^5.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/highlightjs": "^10.1.0",
+    "@types/react": "^18.0.0",
+    "@types/swagger-ui-react": "^4.18.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

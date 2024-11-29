@@ -1,0 +1,135 @@
+{
+  "name": "@backstage/core-components",
+  "version": "0.16.2-next.0",
+  "description": "Core components used by Backstage plugins and apps",
+  "backstage": {
+    "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/core-components"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./testUtils": "./src/testUtils.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/config": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
+    "@date-io/core": "^1.3.13",
+    "@material-table/core": "^3.1.0",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "@react-hookz/web": "^24.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react-sparklines": "^1.7.0",
+    "ansi-regex": "^6.0.1",
+    "classnames": "^2.2.6",
+    "d3-selection": "^3.0.0",
+    "d3-shape": "^3.0.0",
+    "d3-zoom": "^3.0.0",
+    "dagre": "^0.8.5",
+    "linkify-react": "4.1.3",
+    "linkifyjs": "4.1.3",
+    "lodash": "^4.17.21",
+    "pluralize": "^8.0.0",
+    "qs": "^6.9.4",
+    "rc-progress": "3.5.1",
+    "react-helmet": "6.1.0",
+    "react-hook-form": "^7.12.2",
+    "react-idle-timer": "5.7.2",
+    "react-markdown": "^8.0.0",
+    "react-sparklines": "^1.7.0",
+    "react-syntax-highlighter": "^15.4.5",
+    "react-use": "^17.3.2",
+    "react-virtualized-auto-sizer": "^1.0.11",
+    "react-window": "^1.8.6",
+    "remark-gfm": "^3.0.1",
+    "zen-observable": "^0.10.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@backstage/app-defaults": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/ansi-regex": "^5.0.0",
+    "@types/classnames": "^2.2.9",
+    "@types/d3-selection": "^3.0.1",
+    "@types/d3-shape": "^3.0.1",
+    "@types/d3-zoom": "^3.0.1",
+    "@types/dagre": "^0.7.44",
+    "@types/google-protobuf": "^3.7.2",
+    "@types/react": "^18.0.0",
+    "@types/react-helmet": "^6.1.0",
+    "@types/react-syntax-highlighter": "^15.0.0",
+    "@types/react-virtualized-auto-sizer": "^1.0.1",
+    "@types/react-window": "^1.8.5",
+    "@types/zen-observable": "^0.8.0",
+    "cross-fetch": "^4.0.0",
+    "history": "^5.0.0",
+    "msw": "^1.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "configSchema": "config.d.ts"
+}

@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-backend-module-cookiecutter
+  title: '@backstage/plugin-scaffolder-backend-module-cookiecutter'
+  description: >-
+    A module for the scaffolder backend that lets you template projects using
+    cookiecutter
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

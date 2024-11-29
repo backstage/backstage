@@ -1,0 +1,70 @@
+{
+  "name": "@backstage/plugin-scaffolder-common",
+  "version": "1.5.8-next.0",
+  "description": "Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "scaffolder",
+    "pluginPackages": [
+      "@backstage/plugin-scaffolder",
+      "@backstage/plugin-scaffolder-backend",
+      "@backstage/plugin-scaffolder-common",
+      "@backstage/plugin-scaffolder-node",
+      "@backstage/plugin-scaffolder-node-test-utils",
+      "@backstage/plugin-scaffolder-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "scaffolder"
+  ],
+  "homepage": "https://backstage.io",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-common"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

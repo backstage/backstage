@@ -1,0 +1,10 @@
+---
+title: Scaffolder odo CLI actions
+author: Red Hat
+authorUrl: https://developers.redhat.com
+category: Scaffolder
+description: Collection of actions to run odo CLI commands. odo is a developer-focused CLI for container-based application development on Podman and Kubernetes.
+documentation: https://github.com/redhat-developer/backstage-odo-devfile-plugin/blob/main/packages/scaffolder-odo-actions-backend/README.md
+iconUrl: https://odo.dev/img/logo.png
+npmPackageName: '@redhat-developer/plugin-scaffolder-odo-actions'
+addedDate: '2023-12-08'

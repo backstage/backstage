@@ -1,0 +1,74 @@
+{
+  "name": "@backstage/plugin-notifications-backend",
+  "version": "0.4.4-next.0",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "notifications",
+    "pluginPackages": [
+      "@backstage/plugin-notifications",
+      "@backstage/plugin-notifications-backend",
+      "@backstage/plugin-notifications-common",
+      "@backstage/plugin-notifications-node"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/notifications-backend"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "migrations/**/*.{js,d.ts}"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-notifications-common": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "knex": "^3.0.0",
+    "node-fetch": "^2.7.0",
+    "uuid": "^11.0.0",
+    "winston": "^3.2.1",
+    "yn": "^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
+    "@backstage/plugin-signals-backend": "workspace:^",
+    "@types/express": "^4.17.6",
+    "@types/supertest": "^2.0.8",
+    "msw": "^1.0.0",
+    "supertest": "^7.0.0"
+  }
+}

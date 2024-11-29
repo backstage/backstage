@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-backend-openapi-utils
+  title: '@backstage/backend-openapi-utils'
+  description: OpenAPI typescript support.
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: openapi-tooling-maintainers

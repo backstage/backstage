@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: www-artist
+  description: Artist main website
+  annotations:
+    backstage.io/source-template: template:default/react-ssr-template
+spec:
+  type: website
+  lifecycle: production
+  owner: team-a
+  system: artist-engagement-portal
+  consumesApis: ['component:artist-lookup']

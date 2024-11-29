@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-backend-module-rails
+  title: '@backstage/plugin-scaffolder-backend-module-rails'
+  description: >-
+    A module for the scaffolder backend that lets you template projects using
+    Rails
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

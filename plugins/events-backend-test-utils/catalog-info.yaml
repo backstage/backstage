@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-events-backend-test-utils
+  title: '@backstage/plugin-events-backend-test-utils'
+  description: The plugin-events-backend-test-utils for @backstage/plugin-events-node
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

@@ -1,0 +1,60 @@
+{
+  "name": "@backstage/catalog-client",
+  "version": "1.8.1-next.0",
+  "description": "An isomorphic client for the catalog backend",
+  "backstage": {
+    "role": "common-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/catalog-client"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./testUtils": "./src/testUtils.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "testUtils": [
+        "src/testUtils.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "cross-fetch": "^4.0.0",
+    "uri-template": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "msw": "^1.0.0"
+  }
+}

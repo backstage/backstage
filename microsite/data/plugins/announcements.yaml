@@ -1,0 +1,10 @@
+---
+title: Announcements
+author: procore-oss
+authorUrl: https://github.com/procore-oss
+category: Discovery
+description: Write and share announcements within Backstage.
+documentation: https://github.com/procore-oss/backstage-plugin-announcements/
+iconUrl: /img/plugin-announcements-logo.png
+npmPackageName: '@procore-oss/backstage-plugin-announcements'
+addedDate: '2022-11-09'

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-opaque
+  title: '@internal/opaque'
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: maintainers

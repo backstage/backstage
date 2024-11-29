@@ -1,0 +1,10 @@
+---
+title: Flux Plugins
+author: Weaveworks
+authorUrl: https://weave.works
+category: GitOps
+description: View the status of fluxcd.io resources
+documentation: https://github.com/weaveworks/weaveworks-backstage/tree/main/plugins/backstage-plugin-flux#readme
+iconUrl: https://raw.githubusercontent.com/fluxcd/website/main/assets/icons/logo.svg
+npmPackageName: '@weaveworksoss/backstage-plugin-flux'
+addedDate: '2023-08-23'

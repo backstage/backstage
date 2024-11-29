@@ -1,0 +1,61 @@
+name: Storybook
+on:
+  # NOTE: If you change these you must update verify_storybook-noop.yml as well
+  pull_request:
+    paths:
+      - '.github/workflows/verify_storybook.yml'
+      - 'storybook/**'
+      - 'packages/config/src/**'
+      - 'packages/theme/src/**'
+      - 'packages/types/src/**'
+      - 'packages/errors/src/**'
+      - 'packages/version-bridge/src/**'
+      - 'packages/test-utils/src/**'
+      - 'packages/core-app-api/src/**'
+      - 'packages/core-plugin-api/src/**'
+      - 'packages/core-components/src/**'
+      - '**/*.stories.tsx'
+
+jobs:
+  chromatic:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [20.x]
+
+    name: Storybook
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0 # Required to retrieve git history
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+      - name: storybook yarn install
+        run: yarn install --immutable
+        working-directory: storybook
+
+      - run: yarn build-storybook
+
+      - uses: chromaui/action@0efa3230f403b7848d5d65c6ce140b617fb68380 # v11
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # projectToken intentionally shared to allow collaborators to run Chromatic on forks
+          # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
+          projectToken: 9tzak77m9nj
+          workingDir: storybook
+          storybookBuildDir: dist

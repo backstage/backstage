@@ -1,0 +1,16 @@
+---
+title: VeeCode Kong Service Manager
+author: VeeCode Platform
+authorUrl: https://platform.vee.codes/
+category: api-manager
+description: The Kong Service Manager plugin provides information about the kong service, a list of the routes it has and also offers the possibility of manipulating plugins without leaving the backstage.
+documentation: https://platform.vee.codes/plugin/kong-service-manager/
+iconUrl: https://veecode-platform.github.io/support/imgs/logo_3.svg
+npmPackageName: '@veecode-platform/plugin-kong-service-manager'
+tags:
+  - kong
+  - api-manager
+  - services
+  - routes
+  - plugins
+addedDate: '2024-05-27'

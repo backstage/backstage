@@ -1,0 +1,113 @@
+{
+  "name": "@backstage/plugin-kubernetes-backend",
+  "version": "0.19.1-next.0",
+  "description": "A Backstage backend plugin that integrates towards Kubernetes",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "kubernetes"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/kubernetes-backend"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@aws-crypto/sha256-js": "^5.0.0",
+    "@aws-sdk/credential-providers": "^3.350.0",
+    "@aws-sdk/signature-v4": "^3.347.0",
+    "@azure/identity": "^4.0.0",
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/plugin-kubernetes-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@google-cloud/container": "^5.0.0",
+    "@jest-mock/express": "^2.0.1",
+    "@kubernetes/client-node": "1.0.0-rc7",
+    "@types/express": "^4.17.6",
+    "@types/http-proxy-middleware": "^1.0.0",
+    "@types/luxon": "^3.0.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "fs-extra": "^11.2.0",
+    "helmet": "^6.0.0",
+    "http-proxy-middleware": "^2.0.6",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
+    "stream-buffers": "^3.0.2",
+    "winston": "^3.2.1",
+    "yn": "^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-permission-backend": "workspace:^",
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
+    "@types/aws4": "^1.5.1",
+    "msw": "^1.0.0",
+    "supertest": "^7.0.0",
+    "ws": "^8.18.0"
+  },
+  "configSchema": "config.d.ts"
+}

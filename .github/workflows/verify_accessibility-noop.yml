@@ -1,0 +1,33 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Accessibility
+on:
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - 'lighthouserc.js'
+      - '.github/workflows/verify_accessibility.yml'
+      - 'plugins/catalog/src/**'
+      - 'plugins/catalog-react/src/**'
+      - 'plugins/techdocs/src/**'
+      - 'plugins/techdocs-react/src/**'
+      - 'plugins/scaffolder/src/**'
+      - 'plugins/scaffolder-react/src/**'
+      - 'plugins/search/src/**'
+      - 'plugins/search-react/src/**'
+
+permissions:
+  contents: read
+
+jobs:
+  noop:
+    name: Accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - run: echo NOOP

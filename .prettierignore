@@ -1,0 +1,22 @@
+.yarn
+dist
+microsite
+coverage
+*.hbs
+templates
+# old reports
+api-report.md
+api-report-*.md
+# new reports
+report.api.md
+report-*.api.md
+
+knip-report.md
+cli-report.md
+plugins/scaffolder-backend/sample-templates
+.vscode
+dist-types
+.eslintrc.js
+
+# reduce the barrier for adopters to add themselves
+ADOPTERS.md

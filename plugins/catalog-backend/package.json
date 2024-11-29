@@ -1,0 +1,119 @@
+{
+  "name": "@backstage/plugin-catalog-backend",
+  "version": "1.28.1-next.0",
+  "description": "The Backstage backend plugin that provides the Backstage catalog",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "catalog",
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-common",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "migrations/**/*.{js,d.ts}",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "diff": "backstage-repo-tools package schema openapi diff",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
+    "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/catalog-client",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-openapi-utils": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@opentelemetry/api": "^1.3.0",
+    "@types/express": "^4.17.6",
+    "codeowners-utils": "^1.0.2",
+    "core-js": "^3.6.5",
+    "express": "^4.17.1",
+    "fast-json-stable-stringify": "^2.1.0",
+    "fs-extra": "^11.2.0",
+    "git-url-parse": "^15.0.0",
+    "glob": "^7.1.6",
+    "knex": "^3.0.0",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "minimatch": "^9.0.0",
+    "node-fetch": "^2.7.0",
+    "p-limit": "^3.0.2",
+    "prom-client": "^15.0.0",
+    "uuid": "^11.0.0",
+    "yaml": "^2.0.0",
+    "yn": "^4.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/repo-tools": "workspace:^",
+    "@types/core-js": "^2.5.4",
+    "@types/git-url-parse": "^9.0.0",
+    "@types/glob": "^8.0.0",
+    "@types/lodash": "^4.14.151",
+    "@types/supertest": "^2.0.8",
+    "better-sqlite3": "^11.0.0",
+    "luxon": "^3.0.0",
+    "msw": "^1.0.0",
+    "supertest": "^7.0.0",
+    "wait-for-expect": "^3.0.2",
+    "winston": "^3.13.0"
+  },
+  "configSchema": "config.d.ts"
+}

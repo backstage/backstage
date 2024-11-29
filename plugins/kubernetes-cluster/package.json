@@ -1,0 +1,84 @@
+{
+  "name": "@backstage/plugin-kubernetes-cluster",
+  "version": "0.0.20-next.0",
+  "description": "A Backstage plugin that shows details of Kubernetes clusters",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "kubernetes-cluster",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes-cluster"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "backstage",
+    "kubernetes"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/kubernetes-cluster"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/plugin-kubernetes-react": "workspace:^",
+    "@kubernetes-models/apimachinery": "^2.0.0",
+    "@kubernetes-models/base": "^5.0.0",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "cronstrue": "^2.2.0",
+    "js-yaml": "^4.0.0",
+    "kubernetes-models": "^4.1.0",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "react-use": "^17.2.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^20.16.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

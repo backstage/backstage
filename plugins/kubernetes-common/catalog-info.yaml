@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kubernetes-common
+  title: '@backstage/plugin-kubernetes-common'
+  description: >-
+    Common functionalities for kubernetes, to be shared between kubernetes and
+    kubernetes-backend plugin
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: kubernetes-maintainers

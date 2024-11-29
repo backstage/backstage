@@ -1,0 +1,6 @@
+site_name: Test site name
+site_description: Test site description
+docs_dir: docs/
+plugins:
+  - not-techdocs-core
+  - also-not-techdocs-core

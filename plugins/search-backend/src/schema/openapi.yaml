@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: search
+  version: '1'
+  description: The Backstage backend plugin that provides search functionality.
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
+servers:
+  - url: /
+components:
+  examples: {}
+  headers: {}
+  parameters: {}
+  requestBodies: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - request
+        - response
+
+    JsonObject:
+      type: object
+      properties: {}
+      # Free form object.
+      additionalProperties: {}
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /query:
+    get:
+      operationId: Query
+      description: Query documents with a given filter.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: The "type" of the given document.
+                        document:
+                          type: object
+                          description: The raw value of the document, as indexed.
+                          properties:
+                            title:
+                              type: string
+                              description: The primary name of the document (e.g. name, title, identifier, etc).
+                            text:
+                              type: string
+                              description: Free-form text of the document (e.g. description, content, etc).
+                            location:
+                              type: string
+                              description: The relative or absolute URL of the document (target when a search result is clicked).
+                        highlight:
+                          type: object
+                          description: |-
+                            Optional result highlight. Useful for improving the search result
+                            display/experience.
+                        rank:
+                          type: integer
+                          description: |-
+                            Optional result rank, where 1 is the first/top result returned. 
+                            Useful for understanding search effectiveness in analytics.
+                      required:
+                        - type
+                        - document
+                      additionalProperties: false
+                  nextPageCursor:
+                    type: string
+                  previousPageCursor:
+                    type: string
+                  numberOfResults:
+                    type: integer
+                required:
+                  - results
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - name: term
+          in: query
+          required: false
+          allowReserved: true
+          schema:
+            type: string
+            default: ''
+        - name: filters
+          in: query
+          required: false
+          style: deepObject
+          allowReserved: true
+          schema:
+            # JsonObject is used here instead of the full ZOD schema definition as
+            #   resolution of recursive schemas isn't possible with the library we're using
+            #   and it causes a performance hit when _trying_ to resolve them.
+            $ref: '#/components/schemas/JsonObject'
+        - name: types
+          in: query
+          required: false
+          allowReserved: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: pageCursor
+          in: query
+          required: false
+          allowReserved: true
+          schema:
+            type: string
+        - name: pageLimit
+          in: query
+          required: false
+          allowReserved: true
+          schema:
+            type: integer
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: true

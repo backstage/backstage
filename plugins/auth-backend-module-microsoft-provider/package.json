@@ -1,0 +1,55 @@
+{
+  "name": "@backstage/plugin-auth-backend-module-microsoft-provider",
+  "version": "0.2.3-next.0",
+  "description": "The microsoft-provider backend module for the auth plugin.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "auth",
+    "pluginPackage": "@backstage/plugin-auth-backend"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/auth-backend-module-microsoft-provider"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "express": "^4.18.2",
+    "jose": "^5.0.0",
+    "node-fetch": "^2.7.0",
+    "passport-microsoft": "^1.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-auth-backend": "workspace:^",
+    "@types/passport-microsoft": "^1.0.0",
+    "msw": "^1.0.0",
+    "supertest": "^7.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

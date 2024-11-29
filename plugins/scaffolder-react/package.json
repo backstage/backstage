@@ -1,0 +1,126 @@
+{
+  "name": "@backstage/plugin-scaffolder-react",
+  "version": "1.14.2-next.0",
+  "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
+  "backstage": {
+    "role": "web-library",
+    "pluginId": "scaffolder",
+    "pluginPackages": [
+      "@backstage/plugin-scaffolder",
+      "@backstage/plugin-scaffolder-backend",
+      "@backstage/plugin-scaffolder-common",
+      "@backstage/plugin-scaffolder-node",
+      "@backstage/plugin-scaffolder-node-test-utils",
+      "@backstage/plugin-scaffolder-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-react"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/plugin-scaffolder-common": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "@react-hookz/web": "^24.0.0",
+    "@rjsf/core": "5.23.1",
+    "@rjsf/material-ui": "5.23.1",
+    "@rjsf/utils": "5.23.1",
+    "@rjsf/validator-ajv8": "5.23.1",
+    "@types/json-schema": "^7.0.9",
+    "ajv-errors": "^3.0.0",
+    "classnames": "^2.2.6",
+    "flatted": "3.3.2",
+    "humanize-duration": "^3.25.1",
+    "json-schema": "^0.4.0",
+    "json-schema-library": "^9.0.0",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "qs": "^6.9.4",
+    "react-use": "^17.2.4",
+    "use-immer": "^0.10.0",
+    "zen-observable": "^0.10.0",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.20.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/humanize-duration": "^3.18.1",
+    "@types/luxon": "^3.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
+    "swr": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

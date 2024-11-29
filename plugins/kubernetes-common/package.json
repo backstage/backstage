@@ -1,0 +1,66 @@
+{
+  "name": "@backstage/plugin-kubernetes-common",
+  "version": "0.9.0",
+  "description": "Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "kubernetes"
+  ],
+  "homepage": "https://backstage.io",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/kubernetes-common"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "jest": {
+    "roots": [
+      ".."
+    ]
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@kubernetes/client-node": "1.0.0-rc7",
+    "kubernetes-models": "^4.3.1",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

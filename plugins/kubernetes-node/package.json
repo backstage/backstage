@@ -1,0 +1,59 @@
+{
+  "name": "@backstage/plugin-kubernetes-node",
+  "version": "0.2.1-next.0",
+  "description": "Node.js library for the kubernetes plugin",
+  "backstage": {
+    "role": "node-library",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/kubernetes-node"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@kubernetes/client-node": "1.0.0-rc7",
+    "node-fetch": "^2.7.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "msw": "^1.3.1",
+    "supertest": "^7.0.0"
+  }
+}

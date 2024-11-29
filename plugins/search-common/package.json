@@ -1,0 +1,61 @@
+{
+  "name": "@backstage/plugin-search-common",
+  "version": "1.2.15",
+  "description": "Common functionalities for Search, to be shared between various search-enabled plugins",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "search",
+    "pluginPackages": [
+      "@backstage/plugin-search",
+      "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-backend-node",
+      "@backstage/plugin-search-common",
+      "@backstage/plugin-search-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "backstage",
+    "search"
+  ],
+  "homepage": "https://backstage.io",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/search-common"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "jest": {
+    "roots": [
+      ".."
+    ]
+  },
+  "dependencies": {
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

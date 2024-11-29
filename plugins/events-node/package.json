@@ -1,0 +1,67 @@
+{
+  "name": "@backstage/plugin-events-node",
+  "version": "0.4.6-next.0",
+  "description": "The plugin-events-node module for @backstage/plugin-events-backend",
+  "backstage": {
+    "role": "node-library",
+    "pluginId": "events",
+    "pluginPackages": [
+      "@backstage/plugin-events-backend",
+      "@backstage/plugin-events-backend-test-utils",
+      "@backstage/plugin-events-node"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/events-node"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "cross-fetch": "^4.0.0",
+    "uri-template": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "msw": "^1.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

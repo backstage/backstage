@@ -1,0 +1,102 @@
+{
+  "name": "@backstage/repo-tools",
+  "version": "0.12.0-next.0",
+  "description": "CLI for Backstage repo tooling ",
+  "backstage": {
+    "role": "cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/repo-tools"
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "bin": {
+    "backstage-repo-tools": "bin/backstage-repo-tools"
+  },
+  "files": [
+    "bin",
+    "dist/**/*.js",
+    "templates",
+    "openapitools.json"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "bin/backstage-repo-tools",
+    "ext": "ts",
+    "watch": "./src"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "@apisyouwonthate/style-guide": "^1.4.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@manypkg/get-packages": "^1.1.3",
+    "@microsoft/api-documenter": "^7.25.7",
+    "@microsoft/api-extractor": "^7.47.2",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@stoplight/spectral-core": "^1.18.0",
+    "@stoplight/spectral-formatters": "^1.1.0",
+    "@stoplight/spectral-functions": "^1.7.2",
+    "@stoplight/spectral-parsers": "^1.0.2",
+    "@stoplight/spectral-rulesets": "^1.18.0",
+    "@stoplight/spectral-runtime": "^1.1.2",
+    "@stoplight/types": "^14.0.0",
+    "@useoptic/openapi-utilities": "^0.55.0",
+    "chalk": "^4.0.0",
+    "chokidar": "^3.5.3",
+    "codeowners-utils": "^1.0.2",
+    "command-exists": "^1.2.9",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^8.0.3",
+    "is-glob": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "minimatch": "^9.0.0",
+    "p-limit": "^3.0.2",
+    "portfinder": "^1.0.32",
+    "tar": "^6.1.12",
+    "ts-morph": "^24.0.0",
+    "yaml-diff-patch": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@types/is-glob": "^4.0.2",
+    "@types/node": "^20.16.0",
+    "@types/prettier": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@microsoft/api-extractor-model": "*",
+    "@microsoft/tsdoc": "*",
+    "@microsoft/tsdoc-config": "*",
+    "@useoptic/optic": "^1.0.0",
+    "prettier": "^2.8.1",
+    "typescript": "> 3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
+  }
+}

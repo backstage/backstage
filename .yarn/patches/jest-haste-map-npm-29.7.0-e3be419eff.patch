@@ -1,0 +1,13 @@
+diff --git a/build/watchers/FSEventsWatcher.js b/build/watchers/FSEventsWatcher.js
+index a8b59d7f382b290ed9e09593c439c17137d8fb3e..07549f187257fd568add4fcff3a6d7646c2915c1 100644
+--- a/build/watchers/FSEventsWatcher.js
++++ b/build/watchers/FSEventsWatcher.js
+@@ -103,7 +103,7 @@ function _interopRequireWildcard(obj, nodeInterop) {
+ // @ts-ignore: this is for CI which runs linux and might not have this
+ let fsevents = null;
+ try {
+-  fsevents = require('fsevents');
++  // fsevents = require('fsevents');
+ } catch {
+   // Optional dependency, only supported on Darwin.
+ }

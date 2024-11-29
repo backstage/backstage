@@ -1,0 +1,146 @@
+:root {
+  --ifm-color-primary-lightest: #66d2bf;
+  --ifm-color-primary-lighter: #4acab3;
+  --ifm-color-primary-light: #40c8af;
+  --ifm-color-primary: #36baa2;
+  --ifm-color-primary-dark: #31a792;
+  --ifm-color-primary-darker: #2e9e8a;
+  --ifm-color-primary-darkest: #268271;
+}
+// for docs and releases
+#__docusaurus {
+  .theme-doc-markdown {
+    a {
+      text-decoration: underline;
+    }
+  }
+}
+// for blog
+#__docusaurus {
+  .row {
+    .col {
+      &--7 {
+        a {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+// for community page
+#__docusaurus {
+  div[class^='communityPage'],
+  div[class*='communityPage'] {
+    a:not([class]) {
+      text-decoration: underline;
+    }
+  }
+}
+// for plugin page
+#__docusaurus {
+  div[class^='pluginsPage'],
+  div[class*='pluginsPage'] {
+    a:not([class]) {
+      text-decoration: underline;
+    }
+  }
+}
+.footerLogo {
+  background-image: url(/img/logo.svg);
+  background-repeat: no-repeat;
+  height: 40px;
+  width: 180px;
+  margin-top: 0px;
+}
+
+.copyright {
+  font-size: 10pt;
+}
+
+/* logo.md */
+.logoWhite {
+  background-color: white;
+}
+
+/* #region Utility API Styling */
+.textGreen {
+  color: #82b366;
+}
+.textBlue {
+  color: #6c8ebf;
+}
+.textPurple {
+  color: #9673a6;
+}
+.textYellow {
+  color: #d6b656;
+}
+.textRed {
+  color: #b85450;
+}
+.textAlignCenter {
+  text-align: center;
+}
+/* #endregion */
+
+/* #region Utility component styles */
+.bulletLine {
+  height: 3px;
+  background: linear-gradient(
+    89.75deg,
+    #9bf0e1 -1.5%,
+    rgba(155, 240, 225, 0) 111.48%
+  );
+}
+/* #endregion */
+
+/* prism magic comments https://docusaurus.io/docs/markdown-features/code-blocks#custom-magic-comments */
+
+.code-block-add-line {
+  background-color: rgba(0, 255, 0, 0.125);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid rgba(0, 255, 0, 0.5);
+}
+
+.code-block-remove-line {
+  background-color: rgba(255, 0, 0, 0.125);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid rgba(255, 0, 0, 0.5);
+}
+
+.code-block-highlight-line {
+  background-color: rgba(255, 255, 255, 0.08);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid rgb(255, 255, 255, 0.5);
+}
+
+/* #endregion */
+
+/* For the docusaurus-pushfeedback plugin */
+:root {
+  --feedback-primary-color: var(--ifm-color-primary);
+  --feedback-button-dark-text-color: var(--ifm-color-black);
+
+  --feedback-modal-button-submit-bg-color: var(--ifm-color-primary);
+  --feedback-modal-button-submit-bg-color-hover: var(--ifm-color-primary-dark);
+
+  --feedback-modal-button-submit-text-color: var(--ifm-color-black);
+  --feedback-modal-button-submit-text-color-hover: var(--ifm-color-black);
+
+  --feedback-button-text-font-size: 1rem;
+  --feedback-button-text-font-weight: 600;
+}
+
+/* Hide feedback button unless we're in docs */
+feedback-button {
+  display: none;
+}
+html.plugin-docs feedback-button {
+  display: initial;
+}

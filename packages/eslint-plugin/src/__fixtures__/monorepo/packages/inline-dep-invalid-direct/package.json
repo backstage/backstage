@@ -1,0 +1,12 @@
+{
+  "name": "@internal/inline-dep-direct",
+  "files": [
+    "dist",
+    "type-utils"
+  ],
+  "dependencies": {
+    "@internal/inline": "workspace:^",
+    "@internal/inline-dep-valid": "workspace:^",
+    "react": "*"
+  }
+}

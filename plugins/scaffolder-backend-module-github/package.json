@@ -1,0 +1,67 @@
+{
+  "name": "@backstage/plugin-scaffolder-backend-module-github",
+  "version": "0.5.3-next.0",
+  "description": "The github module for @backstage/plugin-scaffolder-backend",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-backend-module-github"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@octokit/webhooks": "^10.9.2",
+    "libsodium-wrappers": "^0.7.11",
+    "octokit": "^3.0.0",
+    "octokit-plugin-create-pull-request": "^5.0.0",
+    "yaml": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
+    "@types/libsodium-wrappers": "^0.7.10",
+    "fs-extra": "^11.2.0",
+    "jsonschema": "^1.2.6"
+  }
+}

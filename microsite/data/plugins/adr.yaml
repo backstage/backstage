@@ -1,0 +1,10 @@
+---
+title: Architecture Decision Records
+author: Phil Kuang
+authorUrl: https://github.com/kuangp
+category: Discovery
+description: Browse your project's ADRs.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/adr
+iconUrl: /img/adr-logo.png
+npmPackageName: '@backstage-community/plugin-adr'
+addedDate: '2022-04-13'

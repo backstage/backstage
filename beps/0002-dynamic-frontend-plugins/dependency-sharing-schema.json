@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "shareModules": {
+      "type": "object",
+      "patternProperties": {
+        "^(@[^/]+/)?[^/]+$": {
+          "$ref": "#/definitions/sharedModule"
+        }
+      },
+      "additionalProperties": false
+    },
+    "excludeModules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "definitions": {
+    "sharedModule": {
+      "type": "object",
+      "required": ["requiredVersion"],
+      "properties": {
+        "requiredVersion": {
+          "$ref": "#/definitions/semverString"
+        },
+        "version": {
+          "$ref": "#/definitions/semverString"
+        },
+        "singleton": {
+          "type": "boolean"
+        }
+      }
+    },
+    "semverString": {
+      "type": "string",
+      "pattern": "^(\\^|\\~)?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    }
+  }
+}

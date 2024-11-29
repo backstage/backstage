@@ -1,0 +1,104 @@
+{
+  "name": "@backstage/plugin-kubernetes-react",
+  "version": "0.5.2-next.0",
+  "description": "Web library for the kubernetes-react plugin",
+  "backstage": {
+    "role": "web-library",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/kubernetes-react"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@kubernetes-models/apimachinery": "^2.0.0",
+    "@kubernetes-models/base": "^5.0.0",
+    "@kubernetes/client-node": "1.0.0-rc7",
+    "@material-ui/core": "^4.9.13",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.61",
+    "cronstrue": "^2.32.0",
+    "js-yaml": "^4.1.0",
+    "kubernetes-models": "^4.3.1",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "react-use": "^17.4.0",
+    "xterm": "^5.3.0",
+    "xterm-addon-attach": "^0.9.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0",
+    "jest-websocket-mock": "^2.5.0",
+    "msw": "^1.3.1",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "configSchema": "config.d.ts"
+}

@@ -1,0 +1,10 @@
+---
+title: Jira Dashboard
+author: AxisCommunications
+authorUrl: https://github.com/AxisCommunications
+category: Agile Planning
+description: Allows you to fetch and display Jira issues for your entity. You get quickly access to issue summaries to achieve better task visibility and more efficient project management.
+documentation: https://github.com/AxisCommunications/backstage-plugins/blob/main/plugins/jira-dashboard/README.md
+iconUrl: https://raw.githubusercontent.com/AxisCommunications/backstage-plugins/main/plugins/jira-dashboard/media/jira-logo.png
+npmPackageName: '@axis-backstage/plugin-jira-dashboard'
+addedDate: '2023-12-07'

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-module-addons-contrib
+  title: '@backstage/plugin-techdocs-module-addons-contrib'
+  description: Plugin module for contributed TechDocs Addons
+spec:
+  lifecycle: production
+  type: backstage-frontend-plugin-module
+  owner: techdocs-maintainers

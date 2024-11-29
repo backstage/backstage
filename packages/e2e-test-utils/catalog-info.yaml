@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-e2e-test-utils
+  title: '@backstage/e2e-test-utils'
+  description: Shared end-to-end test utilities Backstage
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

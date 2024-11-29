@@ -1,0 +1,53 @@
+# This file registers ownership for certain parts of the backstage code.
+# Review from a member of the corresponding code owner is required to merge pull requests.
+#
+# The last matching pattern takes precedence.
+# https://help.github.com/articles/about-codeowners/
+
+*                                                 @backstage/maintainers @backstage/reviewers
+yarn.lock                                         @backstage/maintainers @backstage-service
+*/yarn.lock                                       @backstage/maintainers @backstage-service
+/.changeset/*.md
+/beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
+/docs                                             @backstage/maintainers @backstage/documentation-maintainers
+/docs/assets/search                               @backstage/search-maintainers
+/docs/features/search                             @backstage/search-maintainers
+/docs/features/techdocs                           @backstage/techdocs-maintainers
+/docs/plugins/integrating-search-into-plugins.md  @backstage/search-maintainers
+/packages/cli/src/commands/onboard                @backstage/sharks
+/packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
+/packages/techdocs-cli                            @backstage/techdocs-maintainers
+/packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
+/plugins/api-docs                                 @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/bitbucket-cloud-common                   @backstage/maintainers @backstage/reviewers @pjungermann
+/plugins/catalog                                  @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-*                                @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-backend-module-aws               @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-bitbucket-cloud   @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-backstage-openapi      @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
+/plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers
+/plugins/devtools                                 @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/devtools-backend                         @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/devtools-common                          @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/events-*                                 @backstage/maintainers @backstage/reviewers @backstage/events-maintainers
+/plugins/home                                     @backstage/home-maintainers
+/plugins/home-*                                   @backstage/home-maintainers
+/plugins/kubernetes                               @backstage/kubernetes-maintainers
+/plugins/kubernetes-*                             @backstage/kubernetes-maintainers
+/plugins/notifications                            @backstage/maintainers @backstage/notifications-maintainers
+/plugins/notifications-*                          @backstage/maintainers @backstage/notifications-maintainers
+/plugins/scaffolder-backend-module-notifications  @backstage/maintainers @backstage/notifications-maintainers
+/plugins/permission-*                             @backstage/permission-maintainers
+/plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/search                                   @backstage/search-maintainers
+/plugins/search-*                                 @backstage/search-maintainers
+/plugins/signals                                  @backstage/maintainers @backstage/notifications-maintainers
+/plugins/signals-*                                @backstage/maintainers @backstage/notifications-maintainers
+/plugins/techdocs                                 @backstage/techdocs-maintainers
+/plugins/techdocs-*                               @backstage/techdocs-maintainers
+/plugins/user-settings                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/user-settings-common                     @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers

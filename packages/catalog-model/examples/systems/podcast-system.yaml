@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: podcast
+  description: Podcast playback
+spec:
+  owner: team-b
+  domain: playback
+  type: feature-set

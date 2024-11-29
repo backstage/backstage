@@ -1,0 +1,10 @@
+---
+title: Scaffolder AWS CLI actions
+author: roadie.io
+authorUrl: https://roadie.io/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=scaffolder-aws
+category: Scaffolder
+description: Scaffolder actions you can trigger for Amazon Web Services.
+documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/plugins/scaffolder-actions/scaffolder-backend-module-aws/README.md
+iconUrl: https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
+npmPackageName: '@roadiehq/scaffolder-backend-module-aws'
+addedDate: '2022-03-07'

@@ -1,0 +1,73 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "private": true,
+  "bundled": true,
+  "backstage": {
+    "role": "frontend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint"
+  },
+  "dependencies": {
+    "@backstage/app-defaults": "^{{version '@backstage/app-defaults'}}",
+    "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
+    "@backstage/cli": "^{{version '@backstage/cli'}}",
+    "@backstage/core-app-api": "^{{version '@backstage/core-app-api'}}",
+    "@backstage/core-components": "^{{version '@backstage/core-components'}}",
+    "@backstage/core-plugin-api": "^{{version '@backstage/core-plugin-api'}}",
+    "@backstage/integration-react": "^{{version '@backstage/integration-react'}}",
+    "@backstage/plugin-api-docs": "^{{version '@backstage/plugin-api-docs'}}",
+    "@backstage/plugin-catalog": "^{{version '@backstage/plugin-catalog'}}",
+    "@backstage/plugin-catalog-common": "^{{version '@backstage/plugin-catalog-common'}}",
+    "@backstage/plugin-catalog-graph": "^{{version '@backstage/plugin-catalog-graph'}}",
+    "@backstage/plugin-catalog-import": "^{{version '@backstage/plugin-catalog-import'}}",
+    "@backstage/plugin-catalog-react": "^{{version '@backstage/plugin-catalog-react'}}",
+    "@backstage/plugin-kubernetes": "^{{version '@backstage/plugin-kubernetes'}}",
+    "@backstage/plugin-org": "^{{version '@backstage/plugin-org'}}",
+    "@backstage/plugin-permission-react": "^{{version '@backstage/plugin-permission-react'}}",
+    "@backstage/plugin-scaffolder": "^{{version '@backstage/plugin-scaffolder'}}",
+    "@backstage/plugin-search": "^{{version '@backstage/plugin-search'}}",
+    "@backstage/plugin-search-react": "^{{version '@backstage/plugin-search-react'}}",
+    "@backstage/plugin-techdocs": "^{{version '@backstage/plugin-techdocs'}}",
+    "@backstage/plugin-techdocs-module-addons-contrib": "^{{version '@backstage/plugin-techdocs-module-addons-contrib'}}",
+    "@backstage/plugin-techdocs-react": "^{{version '@backstage/plugin-techdocs-react'}}",
+    "@backstage/plugin-user-settings": "^{{version '@backstage/plugin-user-settings'}}",
+    "@backstage/theme": "^{{version '@backstage/theme'}}",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "devDependencies": {
+    "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
+    "@playwright/test": "^1.32.3",
+    "@testing-library/dom": "^9.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react-dom": "*",
+    "cross-env": "^7.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist"
+  ]
+}

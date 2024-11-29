@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-catalog-client
+  title: '@backstage/catalog-client'
+  description: An isomorphic client for the catalog backend
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

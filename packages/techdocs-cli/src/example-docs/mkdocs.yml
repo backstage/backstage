@@ -1,0 +1,10 @@
+site_name: docs-test-fixture
+site_description: Documentation site test fixture
+
+nav:
+  - Home: index.md
+  - SubDocs: '!include ./sub-docs/mkdocs.yml'
+  - Plugins: '*include ./plugins/*/mkdocs.yml'
+
+plugins:
+  - techdocs-core

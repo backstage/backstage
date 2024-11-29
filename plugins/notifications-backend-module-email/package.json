@@ -1,0 +1,58 @@
+{
+  "name": "@backstage/plugin-notifications-backend-module-email",
+  "version": "0.3.4-next.0",
+  "description": "The email backend module for the notifications plugin.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "notifications",
+    "pluginPackage": "@backstage/plugin-notifications-backend"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/notifications-backend-module-email"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.550.0",
+    "@aws-sdk/types": "^3.347.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-notifications-common": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "lodash": "^4.17.21",
+    "nodemailer": "^6.9.13",
+    "p-throttle": "^4.1.1"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/nodemailer": "^6.4.14"
+  },
+  "configSchema": "config.d.ts"
+}

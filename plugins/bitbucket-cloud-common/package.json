@@ -1,0 +1,53 @@
+{
+  "name": "@backstage/plugin-bitbucket-cloud-common",
+  "version": "0.2.26-next.0",
+  "description": "Common functionalities for bitbucket-cloud plugins",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "bitbucket-cloud",
+    "pluginPackages": [
+      "@backstage/plugin-bitbucket-cloud-common"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/bitbucket-cloud-common"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "generate-models": "scripts/generate-models.sh",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "reduce-models": "scripts/reduce-models.js",
+    "refresh-schema": "scripts/prepare-schema.js && yarn run -T prettier --check bitbucket-cloud.oas.json -w",
+    "test": "backstage-cli package test",
+    "update-models": "yarn refresh-schema && yarn generate-models && yarn reduce-models"
+  },
+  "dependencies": {
+    "@backstage/integration": "workspace:^",
+    "cross-fetch": "^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@openapitools/openapi-generator-cli": "^2.4.26",
+    "msw": "^1.0.0",
+    "ts-morph": "^24.0.0"
+  }
+}

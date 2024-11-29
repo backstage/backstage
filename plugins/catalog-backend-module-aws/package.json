@@ -1,0 +1,84 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-aws",
+  "version": "0.4.6-next.0",
+  "description": "A Backstage catalog backend module that helps integrate towards AWS",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-aws"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "config.d.ts",
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-eks": "^3.350.0",
+    "@aws-sdk/client-organizations": "^3.350.0",
+    "@aws-sdk/client-s3": "^3.350.0",
+    "@aws-sdk/credential-providers": "^3.350.0",
+    "@aws-sdk/middleware-endpoint": "^3.347.0",
+    "@aws-sdk/types": "^3.347.0",
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "p-limit": "^3.0.2",
+    "uuid": "^11.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@aws-sdk/util-stream-node": "^3.350.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "aws-sdk-client-mock": "^4.0.0",
+    "aws-sdk-client-mock-jest": "^4.0.0",
+    "luxon": "^3.0.0",
+    "yaml": "^2.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

@@ -1,0 +1,280 @@
+---
+# prettier-ignore
+title: "Introducing the Backstage Community Plugins Repository"
+author: Ben Lambert, Spotify
+authorURL: https://github.com/benjdlambert
+authorImageURL: https://avatars.githubusercontent.com/u/3645856?v=4
+---
+
+**tl;dr**: We've set up the new [community plugins repository](https://github.com/backstage/community-plugins), and have migrated most of the packages in the `plugins` directory of the main Backstage repository to their new home!
+
+For those who depended on these plugins, migrating is as simple as `yarn backstage-cli versions:bump` then `yarn backstage-cli versions:migrate`. If you're already on `1.26.1`, then be sure to run `yarn backstage-cli versions:bump --skip-migrate` then `yarn backstage-cli versions:migrate` to take advantage of the code reference replacement helpers.
+
+{/* truncate */}
+
+## The community plugins repo
+
+Some of you who have been around a while, or have seen our [Maintainer Track talks](https://www.youtube.com/watch?v=ONMBYnhxnNU) at KubeCon, might have seen [this RFC](https://github.com/backstage/backstage/issues/20266) which outlines some issues with the scale of the `backstage/backstage` monorepo, and us as maintainers being the de facto owners of all plugins without a [project area](https://github.com/backstage/community/blob/main/GOVERNANCE.md#project-area) or [plugin maintainer](https://github.com/backstage/community/blob/main/GOVERNANCE.md#project-area-maintainer).
+
+There was some great discussion in this issue, and some great ideas. One of the ideas was to create a dedicated home for community plugins, with all the burden of release tooling and workspace tooling already set up, which is a pretty big barrier for people wanting to create plugins for Backstage in their own organization or personal account. These plugins would then have the ability to release independently of the main monorepo, and have their own release cadence, which is something that we've been looking at exploring for a while.
+
+With Red Hat wanting to join forces and help get this set up, this is the path that we picked, and the last few months have been a lot of hard work from both sides getting this repository in shape and coming up with a deprecation plan for these plugins in the main repository.
+
+Would also like to give a shoutout to all the [Community Plugins project area](https://github.com/backstage/backstage/blob/master/OWNERS.md#community-plugins) maintainers, who have been helping get us to this state! [@vinzscam](https://github.com/vinzscam) [@tudi2d](https://github.com/tudi2d) [@bethgriggs](https://github.com/BethGriggs) [@kadel](https://github.com/kadel) [@awanlin](https://github.com/awanlin) 👏
+
+And now with the release of `1.26.3` there's a large amount of plugins from the main monorepo that have been migrated over to the new [community plugins repository](https://github.com/backstage/community-plugins). :tada:
+
+## The migration
+
+With the moving of these plugins, we thought it would also be a good time to move the `npm` scope, so that end users can differentiate between Backstage packages, and community-maintained packages. So the `@backstage-community` namespace was born!
+
+This makes migration a little tricky for end users, as there's going to be code references and `package.json` dependencies pointing to the older packages which are no longer going to be published.
+
+We've added some tooling into the `@backstage/cli` which is going to smooth the transition here. The last versions which are published under the `@backstage/` scope from the monorepo, will have a special field in the `package.json` with a hint to the CLI as to what this package is now called.
+
+The CLI will then be able to replace these references inside the `./src` folder of your codebase, and update your `package.json` dependencies to the new `@backstage-community` scope.
+
+You can migrate today by running the following:
+
+```bash
+# < 1.26.1
+yarn backstage-cli versions:bump
+yarn backstage-cli versions:migrate
+
+# 1.26.1
+yarn backstage-cli versions:bump --skip-migrate
+yarn backstage-cli versions:migrate
+```
+
+From this latest `1.26.3` release and onwards, the `backstage-cli versions:bump` command will automatically check for moved packages, so you shouldn't have to worry about running this every time.
+
+## Help! My plugin has been moved!
+
+No stress! If you were a `CODEOWNER` of the code in the monorepo, these permissions will be migrated over to the [community plugins repository](https://github.com/backstage/community-plugins) so you should still have access to the code. And now you're in charge of releasing your own plugin! 🚀 You can do that by following the same flow from the monorepo, with changesets and merging the `Version Packages (My Plugin)` PR.
+
+Please reach out to us on [Discord](https://discord.com/invite/backstage-687207715902193673) if you have any issues! We're looking forward to working together in the new space!
+
+## What's moved?
+
+We've taken a pretty big chunk of the plugins from the main monorepo and moved them over to the new repository. There could be more plugins over time that are moved, or even ones that we promote back to the main monorepo.
+
+<details>
+  <summary>
+    Here's a list of plugins that have been moved with this release
+  </summary>
+
+- `@backstage/plugin-adr-backend`
+
+- `@backstage/plugin-adr-common`
+
+- `@backstage/plugin-adr`
+
+- `@backstage/plugin-airbrake-backend`
+
+- `@backstage/plugin-airbrake`
+
+- `@backstage/plugin-allure`
+
+- `@backstage/plugin-analytics-module-ga`
+
+- `@backstage/plugin-analytics-module-ga4`
+
+- `@backstage/plugin-analytics-module-newrelic-browser`
+
+- `@backstage/plugin-apache-airflow`
+
+- `@backstage/plugin-apollo-explorer`
+
+- `@backstage/plugin-azure-devops-backend`
+
+- `@backstage/plugin-azure-devops-common`
+
+- `@backstage/plugin-azure-devops`
+
+- `@backstage/plugin-azure-sites-backend`
+
+- `@backstage/plugin-azure-sites-common`
+
+- `@backstage/plugin-azure-sites`
+
+- `@backstage/plugin-badges-backend`
+
+- `@backstage/plugin-badges`
+
+- `@backstage/plugin-bazaar-backend`
+
+- `@backstage/plugin-bazaar`
+
+- `@backstage/plugin-bitrise`
+
+- `@backstage/plugin-cicd-statistics-module-gitlab`
+
+- `@backstage/plugin-cicd-statistics`
+
+- `@backstage/plugin-circleci`
+
+- `@backstage/plugin-cloudbuild`
+
+- `@backstage/plugin-code-climate`
+
+- `@backstage/plugin-code-coverage-backend`
+
+- `@backstage/plugin-code-coverage`
+
+- `@backstage/plugin-codescene`
+
+- `@backstage/plugin-cost-insights-common`
+
+- `@backstage/plugin-cost-insights`
+
+- `@backstage/plugin-dynatrace`
+
+- `@backstage/plugin-entity-feedback-backend`
+
+- `@backstage/plugin-entity-feedback-common`
+
+- `@backstage/plugin-entity-feedback`
+
+- `@backstage/plugin-entity-validation`
+
+- `@backstage/plugin-explore-backend`
+
+- `@backstage/plugin-explore-common`
+
+- `@backstage/plugin-explore-react`
+
+- `@backstage/plugin-explore`
+
+- `@backstage/plugin-firehydrant`
+
+- `@backstage/plugin-fossa`
+
+- `@backstage/plugin-gcalendar`
+
+- `@backstage/plugin-gcp-projects`
+
+- `@backstage/plugin-git-release-manager`
+
+- `@backstage/plugin-github-actions`
+
+- `@backstage/plugin-github-deployments`
+
+- `@backstage/plugin-github-issues`
+
+- `@backstage/plugin-github-pull-requests-board`
+
+- `@backstage/plugin-gitops-profiles`
+
+- `@backstage/plugin-gocd`
+
+- `@backstage/plugin-graphiql`
+
+- `@backstage/plugin-graphql-voyager`
+
+- `@backstage/plugin-ilert`
+
+- `@backstage/plugin-jenkins-backend`
+
+- `@backstage/plugin-jenkins-common`
+
+- `@backstage/plugin-jenkins`
+
+- `@backstage/plugin-kafka-backend`
+
+- `@backstage/plugin-kafka`
+
+- `@backstage/plugin-lighthouse-backend`
+
+- `@backstage/plugin-lighthouse-common`
+
+- `@backstage/plugin-lighthouse`
+
+- `@backstage/plugin-linguist`
+
+- `@backstage/plugin-linguist-common`
+
+- `@backstage/plugin-linguist-backend`
+
+- `@backstage/plugin-microsoft-calendar`
+
+- `@backstage/plugin-newrelic-dashboard`
+
+- `@backstage/plugin-newrelic`
+
+- `@backstage/plugin-nomad`
+
+- `@backstage/plugin-nomad-backend`
+
+- `@backstage/plugin-octopus-deploy`
+
+- `@backstage/plugin-opencost`
+
+- `@backstage/plugin-periskop-backend`
+
+- `@backstage/plugin-periskop`
+
+- `@backstage/plugin-playlist-backend`
+
+- `@backstage/plugin-playlist-common`
+
+- `@backstage/plugin-playlist`
+
+- `@backstage/plugin-puppetdb`
+
+- `@backstage/plugin-rollbar-backend`
+
+- `@backstage/plugin-rollbar`
+
+- `@backstage/plugin-sentry`
+
+- `@backstage/plugin-shortcuts`
+
+- `@backstage/plugin-sonarqube-backend`
+
+- `@backstage/plugin-sonarqube-react`
+
+- `@backstage/plugin-sonarqube`
+
+- `@backstage/plugin-splunk-on-call`
+
+- `@backstage/plugin-stack-overflow-backend`
+
+- `@backstage/plugin-stack-overflow`
+
+- `@backstage/plugin-stackstorm`
+
+- `@backstage/plugin-tech-insights-backend-module-jsonfc`
+
+- `@backstage/plugin-tech-insights-backend`
+
+- `@backstage/plugin-tech-insights-common`
+
+- `@backstage/plugin-tech-insights-node`
+
+- `@backstage/plugin-tech-insights`
+
+- `@backstage/plugin-tech-radar`
+
+- `@backstage/plugin-vault-backend`
+
+- `@backstage/plugin-vault-node`
+
+- `@backstage/plugin-vault`
+
+- `@backstage/plugin-xcmetrics`
+
+</details>
+
+## What's next?
+
+There's going to be a little bit of time now in this migration period where there's going to be issues and pull requests not in the right place, and we're going to do our best to transfer issues to the community plugins repository instead. We will shortly be removing the code for these plugins from the main monorepo as it now has a new home in the community plugins repository.
+
+We're also going to be looking at bringing in some more of the great tooling from the `backstage/backstage` monorepo into the community plugins repository to help out with more automation for dependency bumps, etc.
+
+## How can I get involved?
+
+If you're interested in getting involved with the community and helping us maintain this repository, please reach out either on [Discord](https://discord.com/invite/backstage-687207715902193673) or in an issue on the [community repository](https://github.com/backstage/community).
+
+If you're wanting to contribute some plugins to Backstage, the community plugin repository is open for business :tada: and we're looking forward to seeing what you come up with! Head over to the [community plugins docs](https://github.com/backstage/community-plugins/tree/main/README.md) to get started creating your own workspace!
+
+Thanks!

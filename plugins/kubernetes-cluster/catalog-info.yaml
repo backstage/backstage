@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kubernetes-cluster
+  title: '@backstage/plugin-kubernetes-cluster'
+  description: A Backstage plugin that integrates towards Kubernetes clusters
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: kubernetes-maintainers

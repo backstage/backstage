@@ -1,0 +1,10 @@
+---
+title: Feedback
+author: Red Hat
+authorUrl: https://redhat.com
+category: Quality
+description: A plugin for collecting user feedbacks for your application. # Max 170 characters
+documentation: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/feedback#readme
+iconUrl: /img/plugin-feedback-logo.svg
+npmPackageName: '@janus-idp/backstage-plugin-feedback'
+addedDate: '2024-04-09'

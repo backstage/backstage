@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-common
+  title: '@backstage/plugin-catalog-common'
+  description: Common functionalities for the catalog plugin
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: catalog-maintainers

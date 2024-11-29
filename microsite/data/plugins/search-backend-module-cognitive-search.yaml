@@ -1,0 +1,9 @@
+---
+title: Search extension for Azure Cognitive Search
+author: AP Communications
+authorUrl: https://www.ap-com.co.jp/en/
+category: Search
+description: Search extension plugin to create backstage search indexes into Azure Cognitive Search.
+documentation: https://github.com/ap-communications/platt-backstage-plugin/tree/main/plugins/search-backend-module-cognitive-search
+npmPackageName: '@platt/plugin-search-backend-module-cognitive-search'
+addedDate: '2023-09-13'

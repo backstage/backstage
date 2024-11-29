@@ -1,0 +1,91 @@
+{
+  "name": "@backstage/test-utils",
+  "version": "1.7.3-next.0",
+  "description": "Utilities to test Backstage plugins and apps.",
+  "backstage": {
+    "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/test-utils"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/config": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "cross-fetch": "^4.0.0",
+    "i18next": "^22.4.15",
+    "zen-observable": "^0.10.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/jest": "*",
+    "@types/react": "^18.0.0",
+    "msw": "^1.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@testing-library/react": "^16.0.0",
+    "@types/jest": "*",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/jest": {
+      "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

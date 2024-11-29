@@ -1,0 +1,65 @@
+{
+  "name": "@backstage/plugin-events-backend-module-aws-sqs",
+  "version": "0.4.6-next.0",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "events",
+    "pluginPackage": "@backstage/plugin-events-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/events-backend-module-aws-sqs"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "config.d.ts",
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.350.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "luxon": "^3.0.0"
+  },
+  "devDependencies": {
+    "@aws-sdk/types": "^3.347.0",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend-test-utils": "workspace:^",
+    "aws-sdk-client-mock": "^4.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

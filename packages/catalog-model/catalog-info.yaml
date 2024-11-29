@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-catalog-model
+  title: '@backstage/catalog-model'
+  description: Types and validators that help describe the model of a Backstage Catalog
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

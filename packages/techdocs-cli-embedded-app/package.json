@@ -1,0 +1,67 @@
+{
+  "name": "techdocs-cli-embedded-app",
+  "version": "0.2.103-next.0",
+  "backstage": {
+    "role": "frontend"
+  },
+  "private": true,
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/techdocs-cli-embedded-app"
+  },
+  "scripts": {
+    "build": "backstage-cli package build --config ./app-config.yaml",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "backstage-cli package start --config ./app-config.yaml",
+    "test": "backstage-cli package test"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "prettier": "@backstage/cli/config/prettier",
+  "dependencies": {
+    "@backstage/app-defaults": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-techdocs": "workspace:^",
+    "@backstage/plugin-techdocs-react": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "history": "^5.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
+    "react-use": "^17.2.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "cross-env": "^7.0.0"
+  },
+  "bundled": true
+}

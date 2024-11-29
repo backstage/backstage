@@ -1,0 +1,189 @@
+app:
+  experimental:
+    packages: 'all' # ✨
+
+  routes:
+    bindings:
+      catalog.viewTechDoc: techdocs.docRoot
+      catalog.createComponent: catalog-import.importPage
+      org.catalogIndex: catalog.catalogIndex
+
+  extensions:
+    # - apis.plugin.graphiql.browse.gitlab: true
+    # - graphiql-endpoint:graphiql/gitlab: true
+
+    # Entity page cards
+    - entity-card:catalog/about
+    - entity-card:catalog/labels
+    - entity-card:catalog/links:
+        config:
+          filter: kind:component has:links
+    # - entity-card:linguist/languages
+    - entity-card:catalog-graph/relations:
+        config:
+          height: 300
+    - entity-card:api-docs/has-apis
+    - entity-card:api-docs/consumed-apis
+    - entity-card:api-docs/provided-apis
+    - entity-card:api-docs/providing-components
+    - entity-card:api-docs/consuming-components
+
+    # - entity-card:azure-devops/readme
+    # Entity page content
+    - entity-content:api-docs/definition
+    - entity-content:api-docs/apis
+    - entity-content:techdocs
+    # - entity-content:azure-devops/pipelines
+    # - entity-content:azure-devops/pull-requests
+    # - entity-content:azure-devops/git-tags
+
+    # Org Plugin
+    - entity-card:org/group-profile
+    - entity-card:org/members-list
+    - entity-card:org/ownership
+    - entity-card:org/user-profile
+
+    - entity-content:kubernetes/kubernetes
+
+  # scmAuthExtension: >-
+  #   createScmAuthExtension({
+  #     id: 'apis.scmAuth.addons.ghe',
+  #     factory({ bind }) {
+  #       bind.scmAuthAddon({
+  #         baseUrl: 'https://github.spotify.net',
+  #         api: githubAuthApiRef,
+  #       })
+  #     }
+  #   })
+
+  # externalRouteRefs:
+  # bind(catalogPlugin.externalRoutes, {
+  #   createComponent: scaffolderPlugin.routes.root,
+  #   viewTechDoc: techdocsPlugin.routes.docRoot,
+  #   createFromTemplate: scaffolderPlugin.routes.selectedTemplate,
+  # });
+  # bind(apiDocsPlugin.externalRoutes, {
+  #   registerApi: catalogImportPlugin.routes.importPage,
+  # });
+  # bind(scaffolderPlugin.externalRoutes, {
+  #   registerComponent: catalogImportPlugin.routes.importPage,
+  #   viewTechDoc: techdocsPlugin.routes.docRoot,
+  # });
+  # bind(orgPlugin.externalRoutes, {
+  #   catalogIndex: catalogPlugin.routes.catalogIndex,
+  # });
+
+  # extensions:
+  # - plugin.catalog:
+  #     config:
+  #       externalRoutes:
+  #         createComponent: plugin.scaffolder.page
+  #         viewTechDoc: plugin.techdocs.docRootPage
+  #         createFromTemplate: plugin.scaffolder.templatePage
+  # - graphiql.page:
+  #     config:
+  #       path: /
+  # - apis.auth.providers.github:
+  #     config:
+  #       provider: ghe
+
+  # - core.signInPage:
+  #     props:
+  #       provider:
+  #         id: google
+  #         title: Google
+  #         message: Sign In using Google
+  #         apiRef: googleAuthApiRef # ???
+
+  # - core.nav:
+  #     config:
+  #       logo: assets/logo.png
+  #       layout:
+  #       - label: Search
+  #         icon: search
+  #         to: /search
+  #         items:
+  #         - point: search
+  #       - type: divider
+  #       - label: Menu
+  #         icon: menu
+  #         items:
+  #         - label: Home
+  #           icon: home
+  #           to: /catalog
+  #         - label: Create...
+  #           icon: create
+  #           to: /create
+  #         - type: divider
+  #         - type: scroll-wrapper
+  #           items:
+  #           - label: Tech Radar
+  #             icon: map
+  #             to: /tech-radar
+  #           - label: GraphiQL
+  #             icon: graphiql
+  #             to: /graphiql
+  #         - type: divider
+  #         - point: shortcuts
+  #       - type: space
+  #       - type: divider
+  #       - label: Settings
+  #         icon: avatar
+  #         to: /settings
+  #         items:
+  #         - point: settings
+  # - core.nav/search: '@backstage/plugin-search#SidebarSearchModal'
+  # - core.nav/shortcuts:
+  #     use: '@backstage/plugin-shortcuts#Shortcuts'
+  #     config:
+  #       allowExternalLinks: true
+  # - core.nav/settings: '@backstage/plugin-user-settings#SidebarSettings'
+
+  # - core.pages.index:
+  #     at:
+  #       point: core.routes
+  #       config:
+  #         path: /
+  #     use: 'react-router-dom#Navigate'
+  #     config:
+  #       to: /catalog
+
+  # - scaffolder.page:
+  #     config:
+  #       groups:
+  #       - title: Recommended
+  #         filter:
+  #           entity.metadata.tags: recommended
+  # - scaffolder.page/fields: '@backstage/plugin-scaffolder#LowerCaseValuePickerFieldExtension'
+  # - scaffolder.page/layout: '@backstage/plugin-scaffolder#TwoColumnLayout'
+
+  # - search.page/content: 'app#customSearchPage' # custom search page from somewhere
+
+  # - user-settings.page.routes.advanced:
+  #     at:
+  #       point: user-settings.page/routes
+  #       config:
+  #         title: Advanced
+  #         path: /advanced
+  #       use: '@backstage/plugin-user-settings#AdvancedSettings'
+
+  # - entity.card.orphanWarning
+  # - entity.card.processingErrors
+  # - entity.card.about
+  # - entity.card.catalogGraph
+  # - entity.card.pagerDuty
+  # - entity.card.links
+  # - entity.card.labels
+  # - entity.card.githubInsightsLanguages
+  # - entity.card.githubInsightsReleases
+  # - entity.card.githubInsightsReadme:
+  #     config:
+  #       maxHeight: 350 # Throwing this config in to have an example, but in practice rely on default
+  # - entity.card.subcomponentsCard
+  # - entity.card.userProfile
+  # - entity.card.ownership
+  # - entity.card.likeDislikeRatings
+  # - entity.content.dependsOnComponents
+  # - entity.content.codeInsights
+  # - entity.content.todo
+  # - entity.content.feedbackResponse

@@ -1,0 +1,29 @@
+{
+  "name": "@backstage/eslint-plugin",
+  "version": "0.1.10",
+  "description": "Backstage ESLint plugin",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/eslint-plugin"
+  },
+  "license": "Apache-2.0",
+  "main": "./index.js",
+  "scripts": {
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@manypkg/get-packages": "^1.1.3",
+    "minimatch": "^9.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/estree": "^1.0.5",
+    "eslint": "^8.33.0"
+  }
+}

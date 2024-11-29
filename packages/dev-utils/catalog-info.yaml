@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-dev-utils
+  title: '@backstage/dev-utils'
+  description: Utilities for developing Backstage plugins.
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: maintainers
