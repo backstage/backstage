@@ -47,6 +47,8 @@ export class GkeEntityProvider implements EntityProvider {
   private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private readonly gkeParents: string[];
+  private readonly gkeAuthProvider: string | undefined;
+  private readonly gkeOwner: string | undefined;
   private readonly clusterManagerClient: container.v1.ClusterManagerClient;
   private connection?: EntityProviderConnection;
 
@@ -54,11 +56,15 @@ export class GkeEntityProvider implements EntityProvider {
     logger: LoggerService,
     taskRunner: SchedulerServiceTaskRunner,
     gkeParents: string[],
+    gkeAuthProvider: string | undefined,
+    gkeOwner: string | undefined,
     clusterManagerClient: container.v1.ClusterManagerClient,
   ) {
     this.logger = logger;
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.gkeParents = gkeParents;
+    this.gkeAuthProvider = gkeAuthProvider;
+    this.gkeOwner = gkeOwner;
     this.clusterManagerClient = clusterManagerClient;
   }
 
@@ -98,6 +104,8 @@ export class GkeEntityProvider implements EntityProvider {
       logger,
       scheduler.createScheduledTaskRunner(schedule),
       gkeProviderConfig.getStringArray('parents'),
+      gkeProviderConfig.getOptionalString('authProvider'),
+      gkeProviderConfig.getOptionalString('owner'),
       clusterManagerClient,
     );
   }
@@ -152,7 +160,8 @@ export class GkeEntityProvider implements EntityProvider {
             [ANNOTATION_KUBERNETES_API_SERVER]: `https://${cluster.endpoint}`,
             [ANNOTATION_KUBERNETES_API_SERVER_CA]:
               cluster.masterAuth?.clusterCaCertificate || '',
-            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]:
+              this.gkeAuthProvider || 'google',
             [ANNOTATION_KUBERNETES_DASHBOARD_APP]: 'gke',
             [ANNOTATION_LOCATION]: location,
             [ANNOTATION_ORIGIN_LOCATION]: location,
@@ -167,7 +176,7 @@ export class GkeEntityProvider implements EntityProvider {
         },
         spec: {
           type: 'kubernetes-cluster',
-          owner: 'unknown',
+          owner: this.gkeOwner || 'unknown',
         },
       },
     };

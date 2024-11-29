@@ -189,6 +189,54 @@ describe('GkeEntityProvider', () => {
     },
   );
 
+  it('should use configured values for authProvider and owner', async () => {
+    const customGkeEntityProvider = GkeEntityProvider.fromConfigWithClient({
+      logger: logger as any,
+      config: new ConfigReader({
+        catalog: {
+          providers: {
+            gcp: {
+              gke: {
+                parents: ['projects/parent1/locations/-'],
+                authProvider: 'googleServiceAccount',
+                owner: 'sre',
+                schedule: {
+                  frequency: {
+                    minutes: 3,
+                  },
+                  timeout: {
+                    minutes: 3,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      scheduler: schedulerMock,
+      clusterManagerClient: clusterManagerClientMock as any,
+    });
+
+    clusterManagerClientMock.listClusters.mockImplementation(() => [
+      {
+        clusters: [
+          {
+            name: 'some-cluster',
+            endpoint: '127.0.0.1',
+            location: 'some-location',
+            selfLink: 'https://127.0.0.1/some-link',
+            masterAuth: {
+              clusterCaCertificate: 'abcdefg',
+            },
+          },
+        ],
+      },
+    ]);
+    await customGkeEntityProvider.connect(connectionMock);
+    await customGkeEntityProvider.refresh();
+    expect(connectionMock.applyMutation).toMatchSnapshot();
+  });
+
   it('should log GKE API errors', async () => {
     clusterManagerClientMock.listClusters.mockRejectedValue(
       new Error('some-error'),
