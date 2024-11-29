@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch, { Request, Response } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,

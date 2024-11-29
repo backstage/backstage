@@ -47,7 +47,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "node-fetch": "^2.7.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

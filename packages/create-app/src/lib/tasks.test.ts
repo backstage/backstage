@@ -33,7 +33,7 @@ import {
   createMockDirectory,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse, delay } from 'msw';
 import { setupServer } from 'msw/node';
 
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
@@ -402,12 +402,10 @@ describe('tasks', () => {
 
     it('should fetch the yarn.lock seed file', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.text(`# the-lockfile-header
+          () =>
+            HttpResponse.text(`# the-lockfile-header
 
 // some comments
 // in the file
@@ -418,7 +416,6 @@ describe('tasks', () => {
 "@backstage/cli@1.0.0":
   some info
 `),
-            ),
         ),
       );
 
@@ -438,9 +435,9 @@ describe('tasks', () => {
 
     it('should fail gracefully', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
-          (_, res, ctx) => res(ctx.status(404)),
+          () => new HttpResponse(null, { status: 404 }),
         ),
       );
 
@@ -453,9 +450,9 @@ describe('tasks', () => {
 
     it('should time out if it takes too long to fetch', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
-          (_, res, ctx) => res(ctx.delay(5000)),
+          () => delay(5000),
         ),
       );
 

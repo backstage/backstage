@@ -89,7 +89,6 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "minimatch": "^9.0.0",
-    "node-fetch": "^2.7.0",
     "p-limit": "^3.0.2",
     "prom-client": "^15.0.0",
     "uuid": "^11.0.0",
