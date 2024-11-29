@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend-module-azure
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.1
+
 ## 0.2.1
 
 ### Patch Changes
