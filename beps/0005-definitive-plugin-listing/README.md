@@ -154,7 +154,7 @@ paths:
                         moduleId: { type: string }
 ```
 
-### New `DeploymentMetadataService`
+### New `SystemMetadataService`
 
 This will be a new core service. The idea is that it will show information about your whole Backstage deployment, which can have multiple instances. Initially, this will host aggregate information around instances in the deployment, like their internal and external URLs.
 
@@ -166,25 +166,48 @@ interface BackstageInstance {
   };
 }
 
-interface DeploymentMetadataService {
+interface SystemMetadataService {
   listInstances: () => BackstageInstance[];
 }
 ```
 
 By default, this will
 a. be the exact same as `InstanceMetadataService` if we are not using `HostDiscovery` static config, or
-b. use the `HostDiscovery` static config to fetch other instance's base URLs.
+b. use the `HostDiscovery` static config to fetch other instance's base URLs. This would require an additional set of config to provide the instance base URL instead of the plugin-specific routing that currently exists.
 
-TODO: How will users define their endpoints statically such that we can access other instance's `InstanceMetadataService` HTTP APIs?
+#### New config value example
 
-### `DeploymentMetadataService` HTTP API
+```yaml
+discovery:
+  endpoints:
+    - target: https://internal.example.com/internal-catalog
+      # New value to hold the Backstage base URL.
+      # For targets that point directly to a URL with no plugin templating, there may be no good value here
+      #  and it will require users to update their routing to expose this.
+      rootUrl: https://internal.example.com/
+      plugins: [catalog]
+    - target: https://internal.example.com/secure/api/{{pluginId}}
+      # New value to hold the Backstage base URL.
+      rootUrl: https://internal.example.com/secure/
+      plugins: [auth, permission]
+    - target:
+        internal: https://internal.example.com/backstage/api/search
+        external: https://example.com/backstage/api/search
+      # New value to hold the Backstage base URL.
+      rootUrl:
+        internal: https://internal.example.com/backstage
+        external: https://example.com/backstage
+      plugins: [search]
+```
+
+### `SystemMetadataService` HTTP API
 
 ```yaml
 paths:
-  /.backstage/deploymentInfo/features/installed:
+  /.backstage/systemInfo/features/installed:
     get:
-      summary: Get a list of installed features for this deployment.
-      operationId: GetInstalledFeaturesByDeployment
+      summary: Get a list of installed features for this system.
+      operationId: GetInstalledFeaturesBySystem
       responses:
         '200':
           description: Successful operation
