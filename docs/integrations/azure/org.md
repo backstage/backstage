@@ -306,7 +306,7 @@ export async function myProviderConfigTransformer(
 }
 
 // Wrapping these functions in a Module allows us to inject them into the Catalog plugin easily
-export const myMsgraphTransformersModule = createBackendModule({
+export default createBackendModule({
   pluginId: 'catalog',
   moduleId: 'msgraph-org',
   register(reg) {
@@ -336,7 +336,7 @@ export default myMsgraphTransformersModule;
 
 Now lets customize each of the providers to suit our needs.
 
-The Group Transformer will have the default logic completely removed and replaced with our custom logic:
+This Group Transformer example will have the default logic completely removed and replaced with our custom logic:
 
 ```ts
 export async function myGroupTransformer(
@@ -364,7 +364,7 @@ export async function myGroupTransformer(
 }
 ```
 
-The User Transformer makes use of the built-in logic, but also modifies the username and sets a description
+This User Transformer example makes use of the built-in logic, but also modifies the username and sets a description
 
 ```ts
 export async function myUserTransformer(
@@ -394,7 +394,7 @@ export async function myUserTransformer(
 }
 ```
 
-The Organization Transformer removes the organization group completely by returning undefined
+This Organization Transformer example removes the organization group completely by returning undefined
 
 ```ts
 export async function myOrganizationTransformer(
@@ -410,7 +410,7 @@ export async function myOrganizationTransformer(
 }
 ```
 
-The Config Transformer expands the group filter to also include 'azure-group-a'
+This Config Transformer example expands the group filter to also include 'azure-group-a'
 
 ```ts
 export async function myProviderConfigTransformer(
@@ -436,7 +436,7 @@ const backend = createBackend();
 ...
 
 // highlight-add-start
-backend.add(import('./transformers'));
+backend.add(import('./extensions/transformers'));
 // highlight-add-end
 
 ...
