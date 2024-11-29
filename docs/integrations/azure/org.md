@@ -260,7 +260,7 @@ The following provides an example of each kind of transformer. We recommend crea
 
 First, lets set up the basic structure of the file, with functions for each kind of transformer that simply passes through the default transformer unchanged.
 
-```ts title="packages/backend/src/transformers.ts"
+```ts title="packages/backend/src/extensions/transformers.ts"
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import {
   defaultGroupTransformer,
