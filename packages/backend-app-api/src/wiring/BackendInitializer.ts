@@ -97,6 +97,7 @@ const instanceRegistry = new (class InstanceRegistry {
   };
 })();
 
+// Duplicating from `@backstage/backend-plugin-api` to avoid a deep import.
 type BackendFeatureMeta =
   | {
       type: 'plugin';
@@ -126,6 +127,7 @@ function createInstanceMetadataServiceFactory(
                 moduleId: feature.moduleId,
               };
             }
+            // Ignore unknown feature types.
             return undefined;
           })
           .filter(Boolean) as BackendFeatureMeta[];

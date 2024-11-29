@@ -18,15 +18,19 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 
+// Example usage of the instance metadata service to log the installed features.
 export default createBackendPlugin({
   pluginId: 'instance-metadata-logging',
   register(env) {
     env.registerInit({
       deps: {
         instanceMetadata: coreServices.EXPERIMENTAL_instanceMetadata,
+        logger: coreServices.logger,
       },
-      async init({ instanceMetadata }) {
-        console.log('metadata', instanceMetadata.getInstalledFeatures());
+      async init({ instanceMetadata, logger }) {
+        logger.info(
+          `Installed features on this instance: ${instanceMetadata.getInstalledFeatures()}`,
+        );
       },
     });
   },
