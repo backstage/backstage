@@ -1,5 +1,15 @@
 # example-backend-legacy
 
+## 0.2.108
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.27.2
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.3.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.5.3
+
 ## 0.2.107
 
 ### Patch Changes
