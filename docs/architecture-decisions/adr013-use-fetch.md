@@ -12,8 +12,8 @@ support burden of keeping said package up to date.
 
 ## Decision
 
-Backend (node) packages should use the native `fetch` for HTTP data fetching,
-and importing `undici` where necessary. Example:
+All code that is executed in Node.js (including backend and CLIs) should use the
+native `fetch` for HTTP data fetching. Example:
 
 ```ts
 import { ResponseError } from '@backstage/errors';
@@ -67,5 +67,5 @@ export class MyClient {
 
 ## Consequences
 
-We will gradually transition away from third party packages such as `axios`,
-`got`, `node-fetch` and others.
+We will gradually transition away from third party `fetch` replacement packages
+such as `node-fetch` and others on the Node.js platform.
