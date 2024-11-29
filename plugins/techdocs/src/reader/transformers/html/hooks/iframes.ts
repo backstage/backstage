@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TechDocsStorageApi } from '@backstage/plugin-techdocs-react';
+
 /**
  * Checks whether a node is iframe or not.
  * @param node - can be any element.
@@ -21,19 +23,40 @@
  */
 const isIframe = (node: Element) => node.nodeName === 'IFRAME';
 
+const parseRelativeUrl = (resource: string, baseApiUrl: string) => {
+  try {
+    // Extract the frontend base path from document.baseURI (e.g., '/docs/default/Resource/simple-docs/')
+    const frontendBaseUrl = new URL(document.baseURI).pathname;
+
+    let updatedResource = resource;
+
+    if (resource.startsWith('.')) {
+      updatedResource = resource.slice(1);
+    }
+
+    const constructedUrl = `${baseApiUrl}/static${frontendBaseUrl}${updatedResource}`;
+    const parsedUrl = new URL(constructedUrl);
+
+    return parsedUrl.href;
+  } catch (error) {
+    return null;
+  }
+};
+
 /**
  * Checks whether a iframe is safe or not.
  * @param node - is an iframe element.
  * @param hosts - list of allowed hosts.
  * @returns true when iframe is included in hosts.
  */
-const isSafe = (node: Element, hosts: string[]) => {
+const isSafe = (node: Element, hosts: string[], baseApiUrl: string) => {
   const src = node.getAttribute('src') || '';
   try {
     const { host } = new URL(src);
     return hosts.includes(host);
   } catch {
-    return false;
+    node.setAttribute('src', parseRelativeUrl(src, baseApiUrl) || '');
+    return true;
   }
 };
 
@@ -42,9 +65,16 @@ const isSafe = (node: Element, hosts: string[]) => {
  * @param node - can be any element.
  * @param hosts - list of allowed hosts.
  */
-export const removeUnsafeIframes = (hosts: string[]) => (node: Element) => {
-  if (isIframe(node) && !isSafe(node, hosts)) {
-    node.remove();
-  }
-  return node;
-};
+export const removeUnsafeIframes =
+  (hosts: string[], techdocsStorageApi: TechDocsStorageApi) =>
+  async (node: Element) => {
+    const baseApiUrl = await techdocsStorageApi.getApiOrigin();
+    if (!isIframe(node)) {
+      return node;
+    }
+
+    if (!isSafe(node, hosts, baseApiUrl)) {
+      node.remove();
+    }
+    return node;
+  };

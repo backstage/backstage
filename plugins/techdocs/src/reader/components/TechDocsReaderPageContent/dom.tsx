@@ -62,12 +62,12 @@ export const useTechDocsReaderDom = (
   const navigate = useNavigateUrl();
   const theme = useTheme();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
-  const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
   const analytics = useAnalytics();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const sanitizerTransformer = useSanitizerTransformer(techdocsStorageApi);
 
   const { state, path, content: rawPage } = useTechDocsReader();
   const { '*': currPath = '' } = useParams();
