@@ -132,7 +132,7 @@
     "shx": "^0.3.2",
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.7.0"
   },
   "jest": {
     "rejectFrontendNetworkRequests": true

@@ -42,7 +42,7 @@
     "@types/webpack-env": "^1.18.0",
     "js-yaml": "^4.1.0",
     "prettier": "^2.6.2",
-    "typescript": "~5.2.0",
+    "typescript": "~5.7.0",
     "yaml-loader": "^0.8.0"
   }
 }
