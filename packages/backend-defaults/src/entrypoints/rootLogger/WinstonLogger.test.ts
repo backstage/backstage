@@ -93,4 +93,28 @@ describe('WinstonLogger', () => {
       expect.any(Function),
     );
   });
+
+  it('gracefully handles fields that are not castable to a string', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const logger = WinstonLogger.create({
+      transports: [mockTransport],
+    });
+
+    logger.error('something went wrong', {
+      field: Object.create(null),
+    });
+
+    expect(mockTransport.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        [MESSAGE]: expect.stringContaining(
+          '[field value not castable to string]',
+        ),
+      }),
+      expect.any(Function),
+    );
+  });
 });
