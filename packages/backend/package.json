@@ -1,30 +1,33 @@
 {
   "name": "example-backend",
-  "version": "0.0.32",
-  "main": "dist/index.cjs.js",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "private": true,
+  "version": "0.0.33",
   "backstage": {
     "role": "backend"
   },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend"
   },
-  "keywords": [
-    "backstage"
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",
+    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "start": "backstage-cli package start --require ./src/instrumentation.js",
-    "test": "backstage-cli package test",
-    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
-    "start:prometheus": "docker run --mount type=bind,source=./prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus"
+    "start:prometheus": "docker run --mount type=bind,source=./prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -64,8 +67,5 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
