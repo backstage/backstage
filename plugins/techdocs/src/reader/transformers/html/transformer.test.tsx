@@ -27,7 +27,7 @@ import { TechDocsStorageApi } from '@backstage/plugin-techdocs-react';
 const configApiMock: ConfigApi = new ConfigReader({
   techdocs: {
     sanitizer: {
-      allowedIframeHosts: ['docs.google.com'],
+      allowedIframeHosts: ['docs.google.com', 'localhost:7000'],
     },
   },
 });
@@ -83,7 +83,6 @@ describe('Transformers > Html', () => {
     const dirtyDom = document.createElement('html');
     dirtyDom.innerHTML = `
         <body>
-          <iframe src="invalid"></iframe>
           <iframe src="http://unsafe-host.com"></iframe>
           <iframe src="https://docs.google.com/document/d/1fQ7SayGdQ7Sa"></iframe>
         </body>
@@ -96,6 +95,31 @@ describe('Transformers > Html', () => {
 
     expect(iframes).toHaveLength(1);
     expect(iframes[0].src).toMatch('docs.google.com');
+  });
+
+  it('should return a function that resolves relative src in iframes to absolute urls', async () => {
+    const { result } = renderHook(
+      () => useSanitizerTransformer(techdocsStorageApiMock),
+      { wrapper },
+    );
+
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `
+        <body>
+          <iframe src="./relative"></iframe>
+          <iframe src="http://unsafe-host.com"></iframe>
+          <iframe src="https://docs.google.com/document/d/1fQ7SayGdQ7Sa"></iframe>
+        </body>
+      `;
+    const clearDom = await result.current(dirtyDom); // calling html transformer
+
+    const iframes = Array.from(
+      clearDom.querySelectorAll<HTMLIFrameElement>('body > iframe'),
+    );
+
+    expect(iframes).toHaveLength(2);
+    expect(iframes[0].src).toMatch('http://localhost:7000/static/relative');
+    expect(iframes[1].src).toMatch('docs.google.com');
   });
 
   it('should return a function that allows refresh meta tags', async () => {
