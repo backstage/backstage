@@ -76,3 +76,5 @@ export class MyClient {
 
 We will gradually transition away from third party `fetch` replacement packages
 such as `node-fetch` and others on the Node.js platform.
+
+The `@mswjs/interceptors` library as used by `msw` version 1.x [does not support native fetch properly](https://github.com/mswjs/msw/issues/1563#issuecomment-1694249010) and likely never will. When you switch to using native fetch, you may see `msw` based tests start to fail to both capture and block traffic. Certain tests may need to be rewritten to use `msw` 2.x or newer instead, which uses a newer version of the interceptors.
