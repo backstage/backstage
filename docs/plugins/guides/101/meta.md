@@ -8,7 +8,7 @@ The goal of this section is to take the reader from zero-to-situated. Docs shoul
 
 ### Why build plugins?
 
-This section should answer definitely why you should build a new plugin instead of adding code to existing packages or using an NPM package. The Backstage framework is deeply empowered by plugins and plugins are core to the project's success. Users should walk away from reading this section with a conviction that plugins are the right path for new functionality.
+This section should answer definitely why you should build a new plugin. The Backstage framework is deeply empowered by plugins and plugins are core to the project's success. Users should walk away from reading this section with a conviction that plugins are the right path for new functionality.
 
 ### Creating a plugin
 
