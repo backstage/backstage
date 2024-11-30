@@ -12,7 +12,7 @@ This section should answer definitely why you should build a new plugin instead 
 
 ### Creating a plugin
 
-This section should be extremely deliberate in showing readers every step of the way to create a plugin. A reader that finishes this section should feel extremely comfortable adding and installing new plugins regardless of their experience with JS/TS.
+This section should be extremely deliberate in showing readers every step of the way to create a plugin using Backstage's best practises. A reader that finishes this section should feel extremely comfortable adding and installing new plugins regardless of their experience with JS/TS and Backstage.
 
 - Setting up your environment
 - Scaffolding a new plugin
