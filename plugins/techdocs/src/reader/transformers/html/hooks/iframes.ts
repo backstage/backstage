@@ -25,19 +25,15 @@ const isIframe = (node: Element) => node.nodeName === 'IFRAME';
 
 const parseRelativeUrl = (resource: string, baseApiUrl: string) => {
   try {
-    // Extract the frontend base path from document.baseURI (e.g., '/docs/default/Resource/simple-docs/')
-    const frontendBaseUrl = new URL(document.baseURI).pathname;
+    const frontendBaseUrl = new URL(document.baseURI).pathname.replace(
+      /\/$/,
+      '',
+    );
+    const updatedResource = resource.replace(/^\./, '').replace(/^\//, '');
 
-    let updatedResource = resource;
-
-    if (resource.startsWith('.')) {
-      updatedResource = resource.slice(1);
-    }
-
-    const constructedUrl = `${baseApiUrl}/static${frontendBaseUrl}${updatedResource}`;
-    const parsedUrl = new URL(constructedUrl);
-
-    return parsedUrl.href;
+    const sanitizedBaseApiUrl = baseApiUrl.replace(/\/$/, '');
+    const constructedUrl = `${sanitizedBaseApiUrl}/static${frontendBaseUrl}/${updatedResource}`;
+    return new URL(constructedUrl).href;
   } catch (error) {
     return null;
   }
