@@ -9,9 +9,9 @@
 
 ## Writing Guidelines
 
-The goal of these docs is to provide a comprehensive set of guides that developers + admins can use to initially get quickly up to speed with plugin development, and then refer to as they're developing their own plugins.
+The goal of these docs is to provide a comprehensive set of guides that developers + admins can use to quickly get up to speed with plugin development, and then refer to as they're developing their own plugins.
 
-A user that finishes all of these guides will feel comfortable implementing plugins on their own for 90% of cases. For the remaining 10%, they will know where to find help (Discord, Github, source code). The user will also understand why/when to build their own plugins, inner-sourcing their developer portal and contributing internal plugins back to the open-source project.
+A user that finishes all of these guides will feel comfortable implementing plugins on their own. If additional assistance is required, they should be referred to other sources of information such as Discord, GitHub, source code, or documentation for further support. The user will also understand why/when to build their own plugins, inner-sourcing their developer portal and contributing internal plugins back to the open-source project.
 
 At the same time, not all users will finish the docs or they may come back to them as required. Individual guides should have strong "abstracts" (what will I learn by reading this guide), table of contents, and "next steps" (what do I need to do next) to guide users to read the most important pieces for their work.
 
