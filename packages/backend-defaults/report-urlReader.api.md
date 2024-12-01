@@ -415,17 +415,29 @@ export interface ReadTreeResponseFactory {
 }
 
 // @public
-export type ReadTreeResponseFactoryOptions = {
-  stream: Readable;
-  subpath?: string;
-  etag: string;
-  filter?: (
-    path: string,
-    info?: {
-      size: number;
-    },
-  ) => boolean;
-};
+export type ReadTreeResponseFactoryOptions =
+  | {
+      stream: Readable;
+      subpath?: string;
+      etag: string;
+      filter?: (
+        path: string,
+        info?: {
+          size: number;
+        },
+      ) => boolean;
+    }
+  | {
+      response: Response;
+      subpath?: string;
+      etag?: string;
+      filter?: (
+        path: string,
+        info?: {
+          size: number;
+        },
+      ) => boolean;
+    };
 
 // @public
 export class ReadUrlResponseFactory {
@@ -436,6 +448,9 @@ export class ReadUrlResponseFactory {
   static fromReadable(
     stream: Readable,
     options?: ReadUrlResponseFactoryFromStreamOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse>;
+  static fromResponse(
+    response: Response,
   ): Promise<UrlReaderServiceReadUrlResponse>;
 }
 

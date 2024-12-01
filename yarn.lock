@@ -5921,8 +5921,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^9.0.0
-    msw: ^1.0.0
-    node-fetch: ^2.7.0
+    msw: ^2.0.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -7483,7 +7482,6 @@ __metadata:
     fs-extra: ^11.2.0
     git-url-parse: ^15.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     node-html-markdown: ^1.3.0
     yaml: ^2.0.0
   languageName: unknown

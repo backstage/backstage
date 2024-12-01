@@ -33,6 +33,9 @@
 '@backstage/plugin-app-backend': patch
 '@backstage/plugin-auth-node': patch
 '@backstage/cli': patch
+'@backstage/backend-defaults': patch
+'@backstage/plugin-catalog-backend-module-github': patch
+'@backstage/plugin-scaffolder-backend-module-confluence-to-markdown': patch
 ---
 
 Use native fetch instead of node-fetch
