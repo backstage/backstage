@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
 import { z } from 'zod';
 import {
   AuthorizeResult,

@@ -25,7 +25,6 @@ import {
   getRepoSourceDirectory,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import fetch, { Response, RequestInit } from 'node-fetch';
 
 import { Config } from '@backstage/config';
 import { examples } from './bitbucketServer.examples';

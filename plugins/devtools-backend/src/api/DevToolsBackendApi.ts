@@ -24,9 +24,7 @@ import {
   ExternalDependencyStatus,
   PackageDependency,
 } from '@backstage/plugin-devtools-common';
-
 import { JsonObject } from '@backstage/types';
-import fetch from 'node-fetch';
 import { findPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import ping from 'ping';
