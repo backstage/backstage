@@ -27,7 +27,7 @@ import {
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { EXPERIMENTAL_instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 class MockLogger {
   debug() {}
@@ -743,7 +743,7 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: EXPERIMENTAL_instanceMetadataServiceRef,
+            instanceMetadata: instanceMetadataServiceRef,
           },
           async init({ instanceMetadata }) {
             expect(instanceMetadata.getInstalledFeatures()).toEqual([

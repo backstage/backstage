@@ -40,10 +40,10 @@ export const featureDiscoveryServiceRef =
  *
  * @alpha
  */
-export const EXPERIMENTAL_instanceMetadataServiceRef = createServiceRef<
+export const instanceMetadataServiceRef = createServiceRef<
   import('./services/definitions/InstanceMetadataService').InstanceMetadataService
 >({
-  id: 'experimental.instanceMetadata',
+  id: 'core.instanceMetadata',
 });
 
 export type {
