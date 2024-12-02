@@ -514,8 +514,10 @@ components:
           type: object
           properties:
             entity:
-              $ref: '../../../catalog-backend/src/schema/openapi.yaml#/components/schemas/UserEntity'
+              type: object
+              properties: {}
               description: The decorated entity from the Catalog
+              additionalProperties: {}
             ref:
               type: string
               description: An entity ref for the author of the task
