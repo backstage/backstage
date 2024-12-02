@@ -815,42 +815,6 @@ components:
         - totalItems
         - pageInfo
       additionalProperties: false
-    UserEntity:
-      $ref: '#/components/schemas/UserEntityV1alpha1'
-    UserEntityV1alpha1:
-      allOf:
-        - $ref: '#/components/schemas/Entity'
-        - type: object
-          properties:
-            apiVersion:
-              type: string
-              enum:
-                - 'backstage.io/v1alpha1'
-                - 'backstage.io/v1beta1'
-            kind:
-              type: string
-              enum:
-                - 'User'
-            spec:
-              type: object
-              properties:
-                profile:
-                  type: object
-                  properties:
-                    displayName:
-                      type: string
-                    email:
-                      type: string
-                    picture:
-                      type: string
-                memberOf:
-                  type: array
-                  items:
-                    type: string
-          required:
-            - apiVersion
-            - kind
-      description: Backstage catalog User kind Entity.
   securitySchemes:
     JWT:
       type: http
