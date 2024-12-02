@@ -379,11 +379,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const [prevItemOrderFieldValue, prevItemUid] =
       cursor.orderFieldValues || [];
 
-    const dbQuery = db('final_entities').leftOuterJoin('search', qb =>
-      qb
-        .on('search.entity_id', 'final_entities.entity_id')
-        .andOnVal('search.key', sortField.field),
-    );
+    const dbQuery = db('final_entities')
+      .leftOuterJoin('search', qb =>
+        qb
+          .on('search.entity_id', 'final_entities.entity_id')
+          .andOnVal('search.key', sortField.field),
+      )
+      .whereNotNull('final_entities.final_entity');
 
     if (cursor.filter) {
       parseFilter(
