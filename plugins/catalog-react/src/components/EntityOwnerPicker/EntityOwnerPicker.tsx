@@ -42,6 +42,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { PopperProps } from '@material-ui/core/Popper';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -188,9 +189,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
       <Typography className={classes.label} variant="button" component="label">
         {t('entityOwnerPicker.title')}
         <Autocomplete
-          PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children as ReactNode}</div>
-          )}
+          PopperComponent={Popper}
           multiple
           disableCloseOnSelect
           loading={loading}
@@ -264,3 +263,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     </Box>
   );
 };
+
+function Popper({ children }: PopperProps) {
+  return <div>{children as ReactNode}</div>;
+}
