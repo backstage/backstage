@@ -386,6 +386,16 @@ export interface Config {
         | string
         | {
             /**
+             * The specific config for cloudsql connections
+             */
+            type: 'cloudsql';
+            /**
+             * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+             */
+            instance: string;
+          }
+        | {
+            /**
              * Password that belongs to the client User
              * @visibility secret
              */
@@ -441,7 +451,30 @@ export interface Config {
            * Database connection string or Knex object override
            * @visibility secret
            */
-          connection?: string | object;
+          connection?:
+            | string
+            | {
+                /**
+                 * The specific config for cloudsql connections
+                 */
+                type: 'cloudsql';
+                /**
+                 * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+                 */
+                instance: string;
+              }
+            | {
+                /**
+                 * Password that belongs to the client User
+                 * @visibility secret
+                 */
+                password?: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
+
           /**
            * Whether to ensure the given database exists by creating it if it does not.
            * Defaults to base config if unspecified.
