@@ -329,9 +329,6 @@ export default createBackendModule({
     });
   },
 });
-
-// Export a default to make importing into the backend simpler
-export default myMsgraphTransformersModule;
 ```
 
 Now lets customize each of the providers to suit our needs.
@@ -348,15 +345,26 @@ export async function myGroupTransformer(
   return backstageGroup;
   // highlight-remove-end
   // highlight-add-start
+  // All of our groups are prefixed with the organisational unit: 'Engineering - Team A'
+  // We want to drop the org unit from the group name and use it for the namespace instead
+  const groupNameArr = group.displayName.split(' - ');
+  const displayName = groupNameArr[1];
+  // Standardise name and namespace by replacing spaces with hyphens and converting to lowercase
+  const namespace = groupNameArr[0].replace(' ', '-').toLowerCase();
+  const groupName = groupNameArr[1].replace(' ', '-').toLowerCase();
+
   return {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
-      name: group.id!,
+      name: groupName,
+      description: group.description,
       annotations: {},
     },
     spec: {
-      type: 'Microsoft Entra ID',
+      type: 'team',
+      displayName: displayName,
+      email: group.mail,
       children: [],
     },
   };
@@ -405,6 +413,8 @@ export async function myOrganizationTransformer(
   return backstageOrg;
   // highlight-remove-end
   // highlight-add-start
+  // The org transformer creates a group to be used as the base of the relationship tree for groups
+  // We don't need this to be created, so return undefined instead of an entity
   return undefined;
   // highlight-add-end
 }
@@ -417,6 +427,8 @@ export async function myProviderConfigTransformer(
   provider: MicrosoftGraphProviderConfig,
 ): Promise<MicrosoftGraphProviderConfig> {
   // highlight-add-start
+  // The filter in our config file relies on a property that has been intermittantly causing this important group to fail ingestion
+  // Ensure the group is always discovered by the filter
   if (!provider.groupFilter?.includes('azure-group-a')) {
     provider.groupFilter = `${provider.groupFilter} or displayName eq 'azure-group-a'`;
   }
