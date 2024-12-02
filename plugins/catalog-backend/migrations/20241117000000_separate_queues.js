@@ -21,30 +21,31 @@
  * @returns { Promise<void> }
  */
 exports.up = async function up(knex) {
+  const query = knex.schema.createTable('refresh_state_queues', table => {
+    table
+      .string('entity_id')
+      .primary()
+      .notNullable()
+      .references('entity_id')
+      .inTable('refresh_state')
+      .onDelete('CASCADE')
+      .comment('The entity that the queues target');
+    table
+      .timestamp('next_update_at')
+      .notNullable()
+      .comment('Timestamp of when entity should be updated');
+  });
+
   if (knex.client.config.client === 'pg') {
-    await knex.schema.raw(`
-      CREATE UNLOGGED TABLE refresh_state_queues (
-        entity_id TEXT PRIMARY KEY NOT NULL REFERENCES refresh_state(entity_id) ON DELETE CASCADE,
-        next_update_at TIMESTAMPTZ NOT NULL
-      );
-      COMMENT ON TABLE refresh_state_queues IS 'Tracks the queues for entities processing';
-      COMMENT ON COLUMN refresh_state_queues.next_update_at IS 'Timestamp of when entity should be updated';
-    `);
+    // Make the table UNLOGGED on postgres. It's so much more work to recreate
+    // the whole table creation and indices etc by hand in a single raw
+    // statement, just to get the unlogged bit in there - so we cheat with
+    // string manipulation, to ensure that we get consistent results.
+    await knex.schema.raw(
+      query.toString().replace(/create table/i, 'create unlogged table'),
+    );
   } else {
-    await knex.schema.createTable('refresh_state_queues', table => {
-      table
-        .string('entity_id')
-        .primary()
-        .notNullable()
-        .references('entity_id')
-        .inTable('refresh_state')
-        .onDelete('CASCADE')
-        .comment('The entity that the queues target');
-      table
-        .timestamp('next_update_at')
-        .notNullable()
-        .comment('Timestamp of when entity should be updated');
-    });
+    await query;
   }
 
   await knex('refresh_state_queues').insert(
@@ -52,9 +53,7 @@ exports.up = async function up(knex) {
   );
 
   await knex.schema.alterTable('refresh_state_queues', table => {
-    table.index('next_update_at', 'refresh_state_queues_next_update_at_idx', {
-      predicate: knex.whereNotNull('next_update_at'),
-    });
+    table.index('next_update_at', 'refresh_state_queues_next_update_at_idx');
   });
 
   await knex.schema.alterTable('refresh_state', table => {

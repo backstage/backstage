@@ -572,8 +572,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
-    const dbConfig = this.database.client.config;
-
     // Clear the hashed state of the immediate parents of the deleted entity.
     // This makes sure that when they get reprocessed, their output is written
     // down again. The reason for wanting to do this, is that if the user

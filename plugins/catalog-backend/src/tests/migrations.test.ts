@@ -538,33 +538,29 @@ describe('migrations', () => {
 
       await migrateUntilBefore(knex, '20241117000000_separate_queues.js');
 
-      await knex('refresh_state').insert([
-        {
-          entity_id: 'id1',
-          entity_ref: 'k:ns/n1',
-          unprocessed_entity: '{}',
-          processed_entity: '{}',
-          errors: '[]',
-          last_discovery_at: knex.fn.now(),
-          next_update_at: knex.fn.now(),
-          next_stitch_at: knex.fn.now(),
-          next_stitch_ticket: 't1',
-        },
-        {
-          entity_id: 'id2',
-          entity_ref: 'k:ns/n2',
-          unprocessed_entity: '{}',
-          processed_entity: '{}',
-          errors: '[]',
-          last_discovery_at: knex.fn.now(),
-          next_update_at: knex.fn.now(),
-          next_stitch_at: null,
-          next_stitch_ticket: null,
-        },
-      ]);
+      const iterations = 100;
+      for (let i = 0; i < iterations; i++) {
+        await knex.batchInsert(
+          'refresh_state',
+          Array.from({ length: 100 }, (_, j) => {
+            const n = i * 100 + j + 3;
+            return {
+              entity_id: `id${n}`,
+              entity_ref: `k:ns/n${n}`,
+              unprocessed_entity: '{}',
+              processed_entity: '{}',
+              errors: '[]',
+              last_discovery_at: knex.fn.now(),
+              next_update_at: knex.fn.now(),
+              next_stitch_at: null,
+              next_stitch_ticket: null,
+            };
+          }),
+        );
+      }
 
       const before = await knex('refresh_state').orderBy('entity_id');
-      expect(before.length).toBe(2);
+      expect(before.length).toBe(iterations * 100);
       expect(before[0].next_update_at).not.toBeNull();
       expect(before[1].next_update_at).not.toBeNull();
 
@@ -580,14 +576,14 @@ describe('migrations', () => {
       ).resolves.toBeTruthy();
 
       const q = await knex('refresh_state_queues').orderBy('entity_id');
-      expect(q.length).toBe(2);
+      expect(q.length).toBe(iterations * 100);
       expect(q[0].next_update_at).toEqual(before[0].next_update_at);
       expect(q[1].next_update_at).toEqual(before[1].next_update_at);
 
       await migrateDownOnce(knex);
 
       const after = await knex('refresh_state').orderBy('entity_id');
-      expect(after.length).toBe(2);
+      expect(after.length).toBe(iterations * 100);
       expect(after[0].next_update_at).toEqual(before[0].next_update_at);
       expect(after[1].next_update_at).toEqual(before[1].next_update_at);
 

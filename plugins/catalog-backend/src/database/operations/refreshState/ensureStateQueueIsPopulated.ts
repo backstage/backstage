@@ -53,6 +53,10 @@ export async function ensureStateQueueIsPopulated(
     INSERT INTO refresh_state_queues (entity_id, next_update_at)
     SELECT entity_id, ${interval}
     FROM refresh_state
-    WHERE entity_id NOT IN (SELECT entity_id FROM refresh_state_queues);
+    WHERE NOT EXISTS (
+      SELECT entity_id
+      FROM refresh_state_queues
+      WHERE refresh_state_queues.entity_id = refresh_state.entity_id
+    );
   `);
 }

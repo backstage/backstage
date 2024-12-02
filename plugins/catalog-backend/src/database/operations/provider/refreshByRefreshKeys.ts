@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbRefreshStateQueuesRow } from '../../tables';
 import { generateTargetKey } from '../../util';
 
 /**
@@ -33,7 +33,7 @@ export async function refreshByRefreshKeys(options: {
 
   const hashedKeys = keys.map(k => generateTargetKey(k));
 
-  await tx<DbRefreshStateRow>('refresh_state')
+  await tx<DbRefreshStateQueuesRow>('refresh_state_queues')
     .whereIn('entity_id', function selectEntityRefs(inner) {
       inner
         .whereIn('key', hashedKeys)
