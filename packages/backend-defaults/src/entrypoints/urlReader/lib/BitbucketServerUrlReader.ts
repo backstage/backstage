@@ -40,6 +40,20 @@ import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
 
+import pThrottle from 'p-throttle';
+
+// 1 per second
+const throttle = pThrottle({
+  limit: 1,
+  interval: 1000,
+});
+
+const throttledFetch = throttle(
+  async (url: fetch.RequestInfo, options?: fetch.RequestInit) => {
+    return await fetch(url, options);
+  },
+);
+
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
  *
@@ -82,7 +96,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
+      response = await throttledFetch(bitbucketUrl.toString(), {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
@@ -137,7 +151,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const archiveResponse = await fetch(
+    const archiveResponse = await throttledFetch(
       downloadUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
@@ -206,7 +220,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
     const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
-    const branchListResponse = await fetch(
+    const branchListResponse = await throttledFetch(
       branchListUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
