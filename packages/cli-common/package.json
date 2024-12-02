@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-common",
-  "version": "0.1.15-next.0",
+  "version": "0.1.15",
   "description": "Common functionality used by cli, backend, and create-app",
   "backstage": {
     "role": "node-library"

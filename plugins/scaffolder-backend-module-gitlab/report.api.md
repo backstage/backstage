@@ -76,11 +76,11 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
+    scopes: string[];
     repoUrl: string;
     projectId: string | number;
     username?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
   },
   {
     user: string;
@@ -149,11 +149,16 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_off'
             | 'default_on'
+            | 'default_off'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
+          only_allow_merge_if_all_discussions_are_resolved?:
+            | boolean
+            | undefined;
+          only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
+          allow_merge_on_skipped_pipeline?: boolean | undefined;
         }
       | undefined;
     branches?:

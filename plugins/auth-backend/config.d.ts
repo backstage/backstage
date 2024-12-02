@@ -143,7 +143,7 @@ export interface Config {
       /**
        * The backstage token expiration.
        */
-      backstageTokenExpiration?: HumanDuration;
+      backstageTokenExpiration?: HumanDuration | string;
     };
     /**
      * Additional app origins to allow for authenticating

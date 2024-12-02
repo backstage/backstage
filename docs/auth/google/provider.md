@@ -89,6 +89,6 @@ backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
 
 ## Adding the provider to the Backstage frontend
 
-To add the provider to the frontend, add the `googleAuthApi` reference and
+To add the provider to the frontend, add the `googleAuthApiRef` reference and
 `SignInPage` component as shown in
 [Adding the provider to the sign-in page](../index.md#sign-in-configuration).

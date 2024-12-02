@@ -204,7 +204,8 @@ It can be configured with the `stitchingStrategy` app-config parameter.
 
 ```yaml title="app-config.yaml"
 catalog:
-  stitchingStrategy: immediate
+  stitchingStrategy:
+    mode: immediate
 ```
 
 For the `deferred` mode you can set up additional parameters to further tune the process,
@@ -217,9 +218,10 @@ These parameters accept a duration object, similar to the `processingInterval` p
 
 ```yaml title="app-config.yaml"
 catalog:
-  stitchingStrategy: deferred
-  pollingInterval: { seconds: 1 }
-  stitchTimeout: { minutes: 1 };
+  stitchingStrategy:
+    mode: deferred
+    pollingInterval: { seconds: 1 }
+    stitchTimeout: { minutes: 1 };
 ```
 
 ## Subscribing to Catalog Errors

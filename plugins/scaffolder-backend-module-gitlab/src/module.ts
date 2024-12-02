@@ -18,7 +18,10 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  scaffolderActionsExtensionPoint,
+  scaffolderAutocompleteExtensionPoint,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGitlabGroupEnsureExistsAction,
   createGitlabIssueAction,
@@ -31,6 +34,7 @@ import {
   createTriggerGitlabPipelineAction,
   editGitlabIssueAction,
 } from './actions';
+import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 
 /**
  * @public
@@ -43,9 +47,10 @@ export const gitlabModule = createBackendModule({
     registerInit({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
+        autocomplete: scaffolderAutocompleteExtensionPoint,
         config: coreServices.rootConfig,
       },
-      async init({ scaffolder, config }) {
+      async init({ scaffolder, autocomplete, config }) {
         const integrations = ScmIntegrations.fromConfig(config);
 
         scaffolder.addActions(
@@ -60,6 +65,11 @@ export const gitlabModule = createBackendModule({
           createPublishGitlabMergeRequestAction({ integrations }),
           createTriggerGitlabPipelineAction({ integrations }),
         );
+
+        autocomplete.addAutocompleteProvider({
+          id: 'gitlab',
+          handler: createHandleAutocompleteRequest({ integrations }),
+        });
       },
     });
   },

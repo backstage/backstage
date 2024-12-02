@@ -115,10 +115,16 @@ export async function makeRollupConfigs(
     const output = new Array<OutputOptions>();
     const mainFields = ['module', 'main'];
 
+    // Avoid using node_modules as a directory name, since it's trimmed from published packages.
+    // This can happen when inlining dependencies such as style-inject added for css injection.
+    const rewriteNodeModules = (name: string) =>
+      name.replaceAll('node_modules', 'node_modules_dist');
+
     if (options.outputs.has(Output.cjs)) {
       output.push({
         dir: distDir,
-        entryFileNames: `[name].cjs.js`,
+        entryFileNames: chunkInfo =>
+          `${rewriteNodeModules(chunkInfo.name)}.cjs.js`,
         chunkFileNames: `cjs/[name]-[hash].cjs.js`,
         format: 'commonjs',
         interop: 'compat',
@@ -131,7 +137,8 @@ export async function makeRollupConfigs(
     if (options.outputs.has(Output.esm)) {
       output.push({
         dir: distDir,
-        entryFileNames: `[name].esm.js`,
+        entryFileNames: chunkInfo =>
+          `${rewriteNodeModules(chunkInfo.name)}.esm.js`,
         chunkFileNames: `esm/[name]-[hash].esm.js`,
         format: 'module',
         sourcemap: true,

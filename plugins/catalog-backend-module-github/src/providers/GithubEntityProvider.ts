@@ -126,12 +126,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         );
       }
 
-      if (!options.schedule && !providerConfig.schedule) {
-        throw new Error(
-          `No schedule provided neither via code nor config for github-provider:${providerConfig.id}.`,
-        );
-      }
-
       const taskRunner =
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);

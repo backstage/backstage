@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
+import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 
 describe('BitbucketRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
     autocomplete: jest.fn().mockImplementation(opts =>
       Promise.resolve({
-        results: [{ title: `${opts.resource}_example` }],
+        results: [{ id: `${opts.resource}_example` }],
       }),
     ),
   };
@@ -266,7 +266,7 @@ describe('BitbucketRepoPicker', () => {
       // Verify that the available repos are updated
       await waitFor(() =>
         expect(onChange).toHaveBeenCalledWith({
-          availableRepos: ['repositories_example'],
+          availableRepos: [{ name: 'repositories_example' }],
         }),
       );
     });

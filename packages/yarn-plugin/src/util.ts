@@ -16,7 +16,7 @@
 
 import { ppath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
-import { memoize } from 'lodash';
+import memoize from 'lodash/memoize';
 import { getManifestByVersion as getManifestByVersionBase } from '@backstage/release-manifests';
 import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { Descriptor, structUtils } from '@yarnpkg/core';
@@ -43,20 +43,43 @@ export const getCurrentBackstageVersion = () => {
   return backstageVersion;
 };
 
+export const bindBackstageVersion = (
+  descriptor: Descriptor,
+  backstageVersion: string,
+) => {
+  return structUtils.bindDescriptor(descriptor, { v: backstageVersion });
+};
+
 export const getPackageVersion = async (descriptor: Descriptor) => {
   const ident = structUtils.stringifyIdent(descriptor);
   const range = structUtils.parseRange(descriptor.range);
 
   if (range.protocol !== PROTOCOL) {
-    throw new Error(`Unexpected ${range.protocol} range when packing`);
+    throw new Error(
+      `Unsupported version protocol in version range "${descriptor.range}" for package ${ident}`,
+    );
   }
 
-  if (!semverValid(range.selector)) {
-    throw new Error(`Missing backstage version in range ${descriptor.range}`);
+  if (range.selector !== '^') {
+    throw new Error(
+      `Unexpected version selector "${range.selector}" for package ${ident}`,
+    );
+  }
+
+  if (!range.params?.v) {
+    throw new Error(
+      `Missing Backstage version parameter in range "${descriptor.range}" for package ${ident}`,
+    );
+  }
+
+  if (Array.isArray(range.params.v)) {
+    throw new Error(
+      `Multiple Backstage versions specified in range "${descriptor.range}" for package ${ident}`,
+    );
   }
 
   const manifest = await getManifestByVersion({
-    version: range.selector,
+    version: range.params.v,
   });
 
   const manifestEntry = manifest.packages.find(

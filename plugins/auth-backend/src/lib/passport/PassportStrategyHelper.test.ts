@@ -272,28 +272,63 @@ describe('PassportStrategyHelper', () => {
       );
     });
 
-    it('should reject with an error if refresh failed', async () => {
-      class MyCustomOAuth2Error {
-        getOAuthAccessToken(
-          _refreshToken: string,
-          _options: any,
-          callback: Function,
-        ) {
-          callback(new Error('Unknown error'));
-        }
-      }
+    it('should forward simple errors', async () => {
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        _oauth2 = new MyCustomOAuth2Error();
+        _oauth2 = new (class {
+          getOAuthAccessToken(_r: string, _o: any, cb: Function) {
+            cb(new Error('Unknown error'));
+          }
+        })();
       }
 
-      const mockStrategy = new MyCustomRefreshTokenSuccess();
-      const refreshTokenPromise = executeRefreshTokenStrategy(
-        mockStrategy,
-        'REFRESH_TOKEN',
-        'a',
+      await expect(
+        executeRefreshTokenStrategy(
+          new MyCustomRefreshTokenSuccess(),
+          'REFRESH_TOKEN',
+          'a',
+        ),
+      ).rejects.toThrow(
+        'Failed to refresh access token; caused by Error: Unknown error',
       );
-      await expect(refreshTokenPromise).rejects.toThrow(
-        'Failed to refresh access token Error: Unknown error',
+    });
+
+    it('should forward string errors', async () => {
+      class MyCustomRefreshTokenSuccess extends passport.Strategy {
+        _oauth2 = new (class {
+          getOAuthAccessToken(_r: string, _o: any, cb: Function) {
+            cb('some silly string error');
+          }
+        })();
+      }
+
+      await expect(
+        executeRefreshTokenStrategy(
+          new MyCustomRefreshTokenSuccess(),
+          'REFRESH_TOKEN',
+          'a',
+        ),
+      ).rejects.toThrow(
+        "Failed to refresh access token; caused by unknown error 'some silly string error'",
+      );
+    });
+
+    it('should forward object errors', async () => {
+      class MyCustomRefreshTokenSuccess extends passport.Strategy {
+        _oauth2 = new (class {
+          getOAuthAccessToken(_r: string, _o: any, cb: Function) {
+            cb({ name: 'SomeError', message: 'some message' });
+          }
+        })();
+      }
+
+      await expect(
+        executeRefreshTokenStrategy(
+          new MyCustomRefreshTokenSuccess(),
+          'REFRESH_TOKEN',
+          'a',
+        ),
+      ).rejects.toThrow(
+        'Failed to refresh access token; caused by SomeError: some message',
       );
     });
 

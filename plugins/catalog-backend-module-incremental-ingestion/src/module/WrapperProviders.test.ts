@@ -68,6 +68,7 @@ describe('WrapperProviders', () => {
         client,
         scheduler: scheduler as Partial<SchedulerService> as SchedulerService,
         applyDatabaseMigrations,
+        events: mockServices.events.mock(),
       });
       const wrapped1 = providers.wrap(provider1, {
         burstInterval: { seconds: 1 },

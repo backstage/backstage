@@ -30,14 +30,7 @@ At Spotify, we deploy software generally by:
 This method is covered in [Building a Docker image](docker.md) and
 [Deploying with Kubernetes](k8s.md).
 
-There is also an example of deploying on [Heroku](heroku.md), which only
-requires the first two steps.
-
-There is also a contrib guide to deploying Backstage with
-[AWS Fargate and Aurora PostgreSQL](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-fargate-deployment.md).
-
-Please consider contributing other deployment guides if you get Backstage set up
-on common infrastructure, it would be a great benefit to the community.
+There are many ways to deploy Backstage! You can find more examples in the community contributed guides found [here](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/).
 
 If you need to run Backstage behind a corporate proxy, this
 [contributed guide](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/help-im-behind-a-corporate-proxy.md)

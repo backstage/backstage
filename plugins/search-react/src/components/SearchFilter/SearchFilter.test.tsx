@@ -289,12 +289,14 @@ describe('SearchFilter', () => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      expect(
-        screen.getByRole('option', { name: values[0] }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('option', { name: values[1] }),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: values[0] }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: values[1] }),
+        ).toBeInTheDocument();
+      });
     });
 
     it('Renders correctly based on filter state', async () => {

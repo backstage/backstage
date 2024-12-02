@@ -19,7 +19,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const mockDir = createMockDirectory();
 
-jest.mock('../paths', () => ({
+jest.mock('../util', () => ({
   paths: { resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args) },
 }));
 

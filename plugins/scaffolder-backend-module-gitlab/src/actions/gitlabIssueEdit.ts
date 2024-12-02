@@ -25,6 +25,7 @@ import { examples } from './gitlabIssueEdit.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { IssueSchema, EditIssueOptions } from '@gitbeaker/rest';
+import { getErrorMessage } from './helpers';
 
 const editIssueInputProperties = z.object({
   projectId: z
@@ -237,7 +238,7 @@ export const editGitlabIssueAction = (options: {
         }
         // Handling other errors
         throw new InputError(
-          `Failed to edit/modify GitLab issue: ${error.message}`,
+          `Failed to edit/modify GitLab issue: ${getErrorMessage(error)}`,
         );
       }
     },

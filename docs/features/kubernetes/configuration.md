@@ -17,6 +17,9 @@ The following is a full example entry in `app-config.yaml`:
 
 ```yaml
 kubernetes:
+  frontend:
+    podDelete:
+      enabled: true
   serviceLocatorMethod:
     type: 'multiTenant'
   clusterLocatorMethods:
@@ -46,6 +49,55 @@ kubernetes:
       skipTLSVerify: true
       skipMetricsLookup: true
       exposeDashboard: true
+```
+
+### `frontend` (optional)
+
+This is an array used to configure some frontend features.
+
+Valid values are:
+
+- `podDelete`
+
+#### `podDelete` (optional)
+
+This configures the behavior of the delete pod button in the container panel.
+
+Valid configurations are:
+
+- `enabled`
+
+##### `enabled`
+
+This configuration controls the visibility of this feature.
+
+Valid values are:
+
+- `true`
+- `false`
+
+The default value is `false`.
+
+#### Internationalization
+
+To customize or translate the **Delete Pod** text, use the following approach:
+
+```js
+import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '@backstage/plugin-kubernetes-react/alpha';
+
+const app = createApp({
+  __experimentalTranslations: {
+    resources: [
+      createTranslationMessages({
+        ref: kubernetesReactTranslationRef,
+        messages: {
+          "podDrawer.buttons.delete": 'Restart Pod'
+        }
+      })
+    ]
+  },
+  ...
 ```
 
 ### `serviceLocatorMethod`

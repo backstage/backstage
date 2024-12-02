@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import {
   AsyncConfigSourceGenerator,
   ConfigSource,
   ReadConfigDataOptions,
 } from './types';
-import { simpleDefer } from './utils';
 
 /**
  * Options for {@link StaticConfigSource.create}.
@@ -47,13 +46,13 @@ class StaticObservableConfigSource implements ConfigSource {
     options?: ReadConfigDataOptions | undefined,
   ): AsyncConfigSourceGenerator {
     const queue = new Array<JsonObject>();
-    let deferred = simpleDefer<void>();
+    let deferred = createDeferred();
 
     const sub = this.data.subscribe({
       next(value) {
         queue.push(value);
         deferred.resolve();
-        deferred = simpleDefer();
+        deferred = createDeferred();
       },
       complete() {
         deferred.resolve();
@@ -73,7 +72,7 @@ class StaticObservableConfigSource implements ConfigSource {
     }
 
     for (;;) {
-      await deferred.promise;
+      await deferred;
       if (queue.length === 0) {
         return;
       }

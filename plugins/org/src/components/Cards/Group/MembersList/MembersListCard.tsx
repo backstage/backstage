@@ -112,7 +112,9 @@ const MemberComponent = (props: { member: UserEntity }) => {
             </Link>
           )}
           {description && (
-            <Typography variant="subtitle2">{description}</Typography>
+            <Typography variant="subtitle2">
+              <OverflowTooltip text={description} line={5} />
+            </Typography>
           )}
         </Box>
       </Box>

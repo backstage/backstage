@@ -22,15 +22,21 @@ import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 /**
  * @alpha
  */
-export const useTemplateParameterSchema = (templateRef: string) => {
+export const useTemplateParameterSchema = (
+  templateRef: string,
+): { manifest?: TemplateParameterSchema; loading: boolean; error?: Error } => {
   const scaffolderApi = useApi(scaffolderApiRef);
-  const { value, loading, error } = useAsync(
+  const {
+    value: manifest,
+    loading,
+    error,
+  } = useAsync(
     () => scaffolderApi.getTemplateParameterSchema(templateRef),
     [scaffolderApi, templateRef],
   );
 
   return {
-    manifest: value as TemplateParameterSchema | undefined,
+    manifest,
     loading,
     error,
   };

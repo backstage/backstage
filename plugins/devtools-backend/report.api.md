@@ -7,16 +7,8 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigInfo } from '@backstage/plugin-devtools-common';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
-import express from 'express';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PermissionsService } from '@backstage/backend-plugin-api';
-import { RootConfigService } from '@backstage/backend-plugin-api';
-
-// @public @deprecated (undocumented)
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export class DevToolsBackendApi {
@@ -32,20 +24,4 @@ export class DevToolsBackendApi {
 // @public
 const devtoolsPlugin: BackendFeature;
 export default devtoolsPlugin;
-
-// @public @deprecated (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  devToolsBackendApi?: DevToolsBackendApi;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  httpAuth?: HttpAuthService;
-  // (undocumented)
-  logger: LoggerService;
-  // (undocumented)
-  permissions: PermissionsService;
-}
 ```

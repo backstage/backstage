@@ -32,11 +32,6 @@ export type LdapVendor = {
   uuidAttributeName: string;
 
   /**
-   * The attribute that determines behaviour of the (dn,members,memberOf) for entries.
-   */
-  dnCaseSensitive?: boolean;
-
-  /**
    * Decode ldap entry values for a given attribute name to their string representation.
    *
    * @param entry - The ldap entry
@@ -94,6 +89,16 @@ export const GoogleLdapVendor: LdapVendor = {
   uuidAttributeName: 'uid',
   decodeStringAttribute: (entry, name) => {
     return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
+export const LLDAPVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'entryuuid',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name.toLocaleLowerCase('en-US'), value => {
       return value.toString();
     });
   },

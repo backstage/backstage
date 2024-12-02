@@ -5,6 +5,10 @@ sidebar_label: Docker
 description: How to build a Backstage Docker image for deployment
 ---
 
+:::note Note
+Before you start this section, it would be good to have a basic understanding of Docker and how it works. If you are new to Docker, you can start with the [Docker overview](https://docs.docker.com/get-started/overview/) guide.
+:::
+
 This section describes how to build a Backstage App into a deployable Docker
 image. It is split into three sections, first covering the host build approach,
 which is recommended due to its speed and more efficient and often simpler
@@ -46,8 +50,7 @@ yarn install --immutable
 yarn tsc
 
 # Build the backend, which bundles it all up into the packages/backend/dist folder.
-# The configuration files here should match the one you use inside the Dockerfile below.
-yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
+yarn build:backend
 ```
 
 Once the host build is complete, we are ready to build our image. The following
@@ -85,6 +88,7 @@ WORKDIR /app
 # Copy files needed by Yarn
 COPY --chown=node:node .yarn ./.yarn
 COPY --chown=node:node .yarnrc.yml ./
+COPY --chown=node:node backstage.json ./
 
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV=production
@@ -181,7 +185,7 @@ the repo root:
 FROM node:20-bookworm-slim AS packages
 
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY backstage.json package.json yarn.lock ./
 COPY .yarn ./.yarn
 COPY .yarnrc.yml ./
 
@@ -219,6 +223,7 @@ WORKDIR /app
 COPY --from=packages --chown=node:node /app .
 COPY --from=packages --chown=node:node /app/.yarn ./.yarn
 COPY --from=packages --chown=node:node /app/.yarnrc.yml  ./
+COPY --from=packages --chown=node:node /app/backstage.json ./
 
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
     yarn install --immutable
@@ -266,7 +271,9 @@ WORKDIR /app
 # Copy the install dependencies from the build stage and context
 COPY --from=build --chown=node:node /app/.yarn ./.yarn
 COPY --from=build --chown=node:node /app/.yarnrc.yml  ./
+COPY --from=build --chown=node:node /app/backstage.json ./
 COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
+
 # Note: The skeleton bundle only includes package.json files -- if your app has
 # plugins that define a `bin` export, the bin files need to be copied as well to
 # be linked in node_modules/.bin during yarn install.

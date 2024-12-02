@@ -16,7 +16,7 @@
 
 import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
-import { paths } from '../paths';
+import { paths } from '../util';
 import { PackageRole } from '../roles';
 import { GitUtils } from '../git';
 import { Lockfile } from './Lockfile';

@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.0
+
+### Minor Changes
+
+- 71b8704: Bumping @kubernetes/client-node to 1.0.0-rc7 to mitigate CVEs related to the request and tough-cookie packages
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+
 ## 0.9.0-next.0
 
 ### Minor Changes

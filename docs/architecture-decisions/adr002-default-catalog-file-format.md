@@ -7,9 +7,9 @@ description: Architecture Decision Record (ADR) log on Default Software Catalog 
 
 ## Background
 
-Backstage comes with a software catalog functionality, that you can use to track
+Backstage comes with software catalog functionality that you can use to track
 all your software components and more. It can be powered by data from various
-sources, and one of them that is included with the package, is a custom database
+sources, and one of them that is included with the package is a custom database
 backed catalog. It has the ability to keep itself updated automatically based on
 the contents of little descriptor files in your version control system of
 choice. Developers create these files and maintain them side by side with their
@@ -21,15 +21,15 @@ This ADR describes the default format of these descriptor files.
 
 Internally at Spotify, a homegrown software catalog system is used heavily and
 forms a core part of Backstage and other important pieces of the infrastructure.
-The user experience, learnings and certain pieces of metadata from that catalog
+The user experience, learnings, and certain pieces of metadata from that catalog
 are being carried over to the open source effort.
 
-The file format described herein, also draws heavy inspiration from the
+The file format described herein also draws heavy inspiration from the
 [kubernetes object format](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/).
 
 ### Core Concepts
 
-There are a number of descriptor files, all of whose locations (e.g. within a
+There are a number of descriptor files, all of whose locations (e.g., within a
 version control system) are registered with the software catalog. The method of
 registration is not covered in this document; it could happen either manually
 inside Backstage, or by push events from a CI/CD pipelines, or by webhook
@@ -45,7 +45,7 @@ Entities have distinct names, and they may reference each other by those names.
 ## Format
 
 Descriptor files use the [YAML](https://yaml.org/spec/1.2/spec.html) format.
-They may be written by hand, or created using automated tools. Each file may
+They may be written by hand or created using automated tools. Each file may
 consist of several YAML documents (separated by `---`), where each document
 describes a single entity.
 
@@ -71,7 +71,7 @@ spec:
 ```
 
 The root fields `apiVersion`, `kind`, `metadata`, and `spec` are part of the
-_envelope_, defining the overall structure of all kinds of entity. Likewise, the
+_envelope_, defining the overall structure of all kinds of entities. Likewise, the
 `name`, `namespace`, `labels`, and `annotations` metadata fields are of special
 significance and have reserved purposes and distinct shapes.
 
@@ -87,23 +87,23 @@ The `kind` is the high level entity type being described, typically from the
 [Backstage system model](https://github.com/backstage/backstage/issues/390). The
 first versions of the catalog will focus on the `Component` kind.
 
-The `apiVersion`is the version of specification format for that particular
+The `apiVersion` is the version of the specification format for that particular
 entity that this file is written against. The version is used for being able to
 evolve the format, and the tuple of `apiVersion` and `kind` should be enough for
 a parser to know how to interpret the contents of the rest of the document.
 
 Backstage specific entities have an `apiVersion` that is prefixed with
-`backstage.io/`, to distinguish them from other types of object that share the
+`backstage.io/`, to distinguish them from other types of objects that share the
 same type of structure. This may be relevant when co-hosting these
-specifications with e.g. kubernetes object manifests.
+specifications with, e.g., Kubernetes object manifests.
 
-Early versions of the catalog will be using alpha/beta versions, e.g.
-`backstage.io/v1alpha1`, to signal that the format may still change. After that,
+Early versions of the catalog will be using alpha/beta versions, e.g.,
+`backstage.io/v1alpha1` to signal that the format may still change. After that,
 we will be using `backstage.io/v1` and up.
 
 ### `metadata`
 
-A structure that contains metadata about the entity, i.e. things that aren't
+A structure that contains metadata about the entity, i.e., things that aren't
 directly part of the entity specification itself. See below for more details
 about this structure.
 
@@ -142,40 +142,40 @@ Example: `visits-tracking-service`, `CircleciBuildsDs_avro_gcs`
 
 ### `namespace`
 
-The `name` of a namespace that the entity belongs to. This field is optional,
+The `name` of a namespace that the entity belongs to. This field is optional
 and currently has no special semantics apart from bounding the name uniqueness
 constraint if specified. It is reserved for future use and may get broader
 semantic implication.
 
-Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
-i.e. not Backstage specific but the same as in Kubernetes.
+Namespaces may also be part of the catalog and are `v1` / `Namespace` entities,
+i.e., not Backstage specific but the same as in Kubernetes.
 
 ### `description`
 
-A human readable description of the entity, to be shown in Backstage. Should be
+A human readable description of the entity to be shown in Backstage. Should be
 kept short and informative, suitable to give an overview of the entity's purpose
 at a glance. More detailed explanations and documentation should be placed
 elsewhere.
 
 ### `labels`
 
-Labels are optional key/value pairs of that are attached to the entity, and
+Labels are optional key/value pairs that are attached to the entity, and
 their use is identical to
 [kubernetes object labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/).
 
-Their main purpose is for references to other entities, and for information that
+Their main purpose is for references to other entities and for information that
 is in one way or another classifying for the current entity. They are often used
 as values in queries or filters.
 
 Both the key and the value are strings, subject to the following restrictions.
 
-Keys have an optional prefix followed by a slash, and then the name part which
+Keys have an optional prefix followed by a slash, and then the name part, which
 is required. The prefix must be a valid lowercase domain name, at most 253
 characters in total. The name part must be sequences of `[a-zA-Z0-9]` separated
 by any of `[-_.]`, at most 63 characters in total.
 
 The `backstage.io/` prefix is reserved for use by Backstage core components.
-Some keys such as `system` also have predefined semantics.
+Some keys, such as `system` also have predefined semantics.
 
 Values are strings that follow the same restrictions as `name` above.
 
@@ -186,19 +186,19 @@ identical in use to
 [kubernetes object annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/).
 
 Their purpose is mainly, but not limited, to reference into external systems.
-This could for example be a reference to the git ref the entity was ingested
+This could, for example, be a reference to the git ref the entity was ingested
 from, to monitoring and logging systems, to pagerduty schedules, etc.
 
 Both the key and the value are strings, subject to the following restrictions.
 
-Keys have an optional prefix followed by a slash, and then the name part which
+Keys have an optional prefix followed by a slash, and then the name part, which
 is required. The prefix must be a valid lowercase domain name, at most 253
 characters in total. The name part must be sequences of `[a-zA-Z0-9]` separated
 by any of `[-_.]`, at most 63 characters in total.
 
 The `backstage.io/` prefix is reserved for use by Backstage core components.
 
-Values can be of any length, but are limited to being strings.
+Values can be of any length but are limited to being strings.
 
 ## Component
 

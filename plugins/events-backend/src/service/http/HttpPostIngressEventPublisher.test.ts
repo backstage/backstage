@@ -50,22 +50,25 @@ describe('HttpPostIngressEventPublisher', () => {
 
     const notFoundResponse = await request(app)
       .post('/http/unknown')
+      .type('application/json')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(notFoundResponse.status).toBe(404);
 
     const response1 = await request(app)
       .post('/http/testA')
+      .type('application/json')
       .set('X-Custom-Header', 'test-value')
       .timeout(1000)
-      .send({ testA: 'data' });
+      .send(JSON.stringify({ testA: 'data' }));
     expect(response1.status).toBe(202);
 
     const response2 = await request(app)
       .post('/http/testB')
+      .type('application/json')
       .set('X-Custom-Header', 'test-value')
       .timeout(1000)
-      .send({ testB: 'data' });
+      .send(JSON.stringify({ testB: 'data' }));
     expect(response2.status).toBe(202);
 
     expect(events.published).toHaveLength(2);
@@ -83,6 +86,124 @@ describe('HttpPostIngressEventPublisher', () => {
       expect.objectContaining({
         'content-type': 'application/json',
         'x-custom-header': 'test-value',
+      }),
+    );
+  });
+
+  it('no raw body', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    router.use(express.json()); // will prevent the raw body from being available
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json; charset=utf-8')
+      .timeout(1000)
+      .send(JSON.stringify({ testA: 'data' }));
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: {
+          message:
+            'Failed to retrieve raw body from incoming event for topic testA; not a buffer: object',
+          name: 'Error',
+        },
+        request: { method: 'POST', url: '/testA' },
+        response: { statusCode: 500 },
+      }),
+    );
+  });
+
+  it('invalid charset', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json; charset=invalid')
+      .timeout(1000)
+      .send(JSON.stringify({ testA: 'data' }));
+    expect(response.status).toBe(415);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: {
+          message: 'Unsupported charset: invalid',
+          name: 'UnsupportedCharsetError',
+          statusCode: 415,
+        },
+        request: { method: 'POST', url: '/testA' },
+        response: { statusCode: 415 },
+      }),
+    );
+  });
+
+  it('non-JSON media type', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Textual information');
+    expect(response.status).toBe(415);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: {
+          message: 'Unsupported media type: text/plain',
+          name: 'UnsupportedMediaTypeError',
+          statusCode: 415,
+        },
+        request: { method: 'POST', url: '/testA' },
+        response: { statusCode: 415 },
       }),
     );
   });
@@ -149,43 +270,49 @@ describe('HttpPostIngressEventPublisher', () => {
 
     const response1 = await request(app)
       .post('/http/testA')
+      .type('application/json')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(response1.status).toBe(202);
 
     const response2 = await request(app)
       .post('/http/testB')
+      .type('application/json')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(response2.status).toBe(400);
     expect(response2.body).toEqual({ message: 'wrong signature' });
 
     const response3 = await request(app)
       .post('/http/testB')
+      .type('application/json')
       .set('X-Test-Signature', 'wrong')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(response3.status).toBe(400);
     expect(response3.body).toEqual({ message: 'wrong signature' });
 
     const response4 = await request(app)
       .post('/http/testB')
+      .type('application/json')
       .set('X-Test-Signature', 'testB-signature')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(response4.status).toBe(202);
 
     const response5 = await request(app)
       .post('/http/testC')
+      .type('application/json')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(response5.status).toBe(404);
     expect(response5.body).toEqual({});
 
     const response6 = await request(app)
       .post('/http/testD')
+      .type('application/json')
       .timeout(1000)
-      .send({ test: 'data' });
+      .send(JSON.stringify({ test: 'data' }));
     expect(response6.status).toBe(403);
     expect(response6.body).toEqual({});
 

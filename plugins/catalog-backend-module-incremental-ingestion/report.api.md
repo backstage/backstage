@@ -39,7 +39,7 @@ export type EntityIteratorResult<T> =
       cursor?: T;
     };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class IncrementalCatalogBuilder {
   // (undocumented)
   addIncrementalEntityProvider<TCursor, TContext>(

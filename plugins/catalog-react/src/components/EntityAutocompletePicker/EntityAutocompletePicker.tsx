@@ -63,7 +63,10 @@ export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
 const useStyles = makeStyles(
   {
     root: {},
-    label: {},
+    label: {
+      textTransform: 'none',
+      fontWeight: 'bold',
+    },
   },
   { name: 'CatalogReactEntityAutocompletePicker' },
 );

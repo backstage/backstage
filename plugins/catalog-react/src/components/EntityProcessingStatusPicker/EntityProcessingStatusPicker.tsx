@@ -20,7 +20,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -34,11 +34,17 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 const useStyles = makeStyles(
-  {
-    root: {},
-    input: {},
-    label: {},
-  },
+  (theme: Theme) =>
+    createStyles({
+      root: {},
+      input: {
+        backgroundColor: theme.palette.background.paper,
+      },
+      label: {
+        textTransform: 'none',
+        fontWeight: 'bold',
+      },
+    }),
   { name: 'CatalogReactEntityProcessingStatusPickerPicker' },
 );
 

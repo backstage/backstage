@@ -30,11 +30,13 @@ export default async (directories: string[], opts: OptionValues) => {
   );
 
   const maxWarnings = opts.maxWarnings ?? 0;
+  const ignoreWarnings = +maxWarnings === -1;
 
   const failed =
     results.some(r => r.errorCount > 0) ||
-    results.reduce((current, next) => current + next.warningCount, 0) >
-      maxWarnings;
+    (!ignoreWarnings &&
+      results.reduce((current, next) => current + next.warningCount, 0) >
+        maxWarnings);
 
   if (opts.fix) {
     await ESLint.outputFixes(results);

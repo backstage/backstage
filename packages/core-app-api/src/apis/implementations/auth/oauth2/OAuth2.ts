@@ -148,7 +148,7 @@ export default class OAuth2
             (session.backstageIdentity.expiresAt.getTime() - Date.now()) / 1000,
           );
         }
-        return min < 60 * 5;
+        return min < 60 * 3;
       },
     });
 

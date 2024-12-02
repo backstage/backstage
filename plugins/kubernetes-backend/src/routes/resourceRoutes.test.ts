@@ -108,7 +108,7 @@ describe('resourcesRoutes', () => {
             },
           },
         }),
-        import('@backstage/plugin-kubernetes-backend/alpha'),
+        import('@backstage/plugin-kubernetes-backend'),
         createBackendModule({
           pluginId: 'kubernetes',
           moduleId: 'test-objects-provider',

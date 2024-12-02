@@ -57,7 +57,7 @@ After making local changes to a package in an external workspace you might often
 For example, if you've made changes to the `@backstage/backend-app-api` package in a local clone of the main `backstage` repository, you can generate a patch for your internal project as follows:
 
 ```bash title="Run in the cloned backstage repository"
-yarn backstage-repo-tools generate patch @backstage/backend-app-api --target ../our-developer-portal
+yarn backstage-repo-tools generate-patch @backstage/backend-app-api --target ../our-developer-portal
 ```
 
 This will generate a patch file in your `our-developer-portal` workspace. The patch will be based on the most recently released version of the source package, with the additional changes on top.

@@ -96,7 +96,7 @@ describe('BackstageResolver', () => {
 
   describe('bindDescriptor', () => {
     describe('with range "backstage:^"', () => {
-      it('returns a descriptor basedwith a version range for the current Backstage version', () => {
+      it('returns a descriptor with a version range for the current Backstage version', () => {
         expect(
           backstageResolver.bindDescriptor(
             structUtils.makeDescriptor(
@@ -107,25 +107,25 @@ describe('BackstageResolver', () => {
         ).toEqual(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
         );
       });
     });
 
-    describe('with range "backstage:1.23.45"', () => {
+    describe('with range "backstage:^::v=1.23.45"', () => {
       it('returns the correct descriptor', () => {
         expect(
           backstageResolver.bindDescriptor(
             structUtils.makeDescriptor(
               structUtils.makeIdent('backstage', 'core'),
-              'backstage:1.23.45',
+              'backstage:^::v=1.23.45',
             ),
           ),
         ).toEqual(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
         );
       });
@@ -136,7 +136,7 @@ describe('BackstageResolver', () => {
     it('returns an npm: descriptor based on the manifest for the appropriate backstage version', async () => {
       const descriptor = structUtils.makeDescriptor(
         structUtils.makeIdent('backstage', 'core'),
-        'backstage:1.23.45',
+        'backstage:^::v=1.23.45',
       );
 
       await expect(
@@ -155,7 +155,7 @@ describe('BackstageResolver', () => {
       ).rejects.toThrow(/unsupported version protocol/i);
     });
 
-    it('rejects backstage: ranges with a ^ shorthand version', async () => {
+    it('rejects backstage: ranges missing a version parameter', async () => {
       await expect(
         backstageResolver.getCandidates(
           structUtils.makeDescriptor(
@@ -163,35 +163,42 @@ describe('BackstageResolver', () => {
             'backstage:^',
           ),
         ),
-      ).rejects.toThrow(/invalid backstage version/i);
+      ).rejects.toThrow(/missing Backstage version/i);
     });
 
-    it('rejects backstage: ranges with a * shorthand version', async () => {
+    it('rejects backstage: ranges with multiple version parameters', async () => {
       await expect(
         backstageResolver.getCandidates(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:*',
+            'backstage:^::v=1&v=2',
           ),
         ),
-      ).rejects.toThrow(/invalid backstage version/i);
+      ).rejects.toThrow(/multiple Backstage versions/i);
     });
 
-    it('rejects backstage: ranges with an invalid version specified', async () => {
-      await expect(
-        backstageResolver.getCandidates(
-          structUtils.makeDescriptor(
-            structUtils.makeIdent('backstage', 'core'),
-            'backstage:latest',
+    it.each`
+      selector
+      ${'*'}
+      ${'latest'}
+    `(
+      'rejects backstage: ranges with invalid selector "$selector"',
+      async ({ selector }) => {
+        await expect(
+          backstageResolver.getCandidates(
+            structUtils.makeDescriptor(
+              structUtils.makeIdent('backstage', 'core'),
+              `backstage:${selector}`,
+            ),
           ),
-        ),
-      ).rejects.toThrow(/invalid backstage version/i);
-    });
+        ).rejects.toThrow(/unexpected version selector/i);
+      },
+    );
 
     it('memoizes manifest retrieval', async () => {
       const descriptor1 = structUtils.makeDescriptor(
         structUtils.makeIdent('backstage', 'core'),
-        'backstage:1.23.45',
+        'backstage:^::v=1.23.45',
       );
 
       for (let i = 0; i < 5; i++) {
@@ -202,7 +209,7 @@ describe('BackstageResolver', () => {
 
       const descriptor2 = structUtils.makeDescriptor(
         structUtils.makeIdent('backstage', 'core'),
-        'backstage:6.78.90',
+        'backstage:^::v=6.78.90',
       );
 
       for (let i = 0; i < 5; i++) {
@@ -219,7 +226,7 @@ describe('BackstageResolver', () => {
         backstageResolver.getSatisfying(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
           {},
           [
@@ -253,7 +260,7 @@ describe('BackstageResolver', () => {
         backstageResolver.getSatisfying(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
           {},
           [
@@ -292,7 +299,7 @@ describe('BackstageResolver', () => {
           {},
           [],
         ),
-      ).rejects.toThrow(/unexpected npm: range/i);
+      ).rejects.toThrow(/unsupported version protocol/i);
     });
   });
 });

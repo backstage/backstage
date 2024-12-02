@@ -323,6 +323,24 @@ describe('buildApiReports', () => {
 
       expect(buildDocs).not.toHaveBeenCalled();
     });
+    it('should throw an error if a path does not exist', async () => {
+      const paths = ['packages/package-a', 'packages/package-c'];
+      const opts = {};
+
+      await expect(buildApiReports(paths, opts)).rejects.toThrow(
+        'Invalid paths provided: packages/package-c',
+      );
+    });
+    it('should throw an error if an option is malformed', async () => {
+      const paths = ['ae-undocumented'];
+      const opts = {
+        omitMessages: 'ae-wrong-input-file-type,',
+      };
+
+      await expect(buildApiReports(paths, opts)).rejects.toThrow(
+        'Invalid paths provided: ae-undocumented',
+      );
+    });
   });
   describe('allowWarnings', () => {
     it('should accept single path value', async () => {

@@ -51,6 +51,7 @@ describe('createRouter', () => {
       }),
       discovery: mockServices.discovery(),
       permissions: permissionEvaluator,
+      httpAuth: mockServices.httpAuth(),
     });
     app = express().use(router);
   });

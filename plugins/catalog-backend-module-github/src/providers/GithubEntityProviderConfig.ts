@@ -23,6 +23,15 @@ import { Config } from '@backstage/config';
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
 
+export const DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE = {
+  frequency: {
+    hours: 3,
+  },
+  timeout: {
+    hours: 1,
+  },
+};
+
 export type GithubEntityProviderConfig = {
   id: string;
   catalogPath: string;
@@ -99,7 +108,7 @@ function readProviderConfig(
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
         config.getConfig('schedule'),
       )
-    : undefined;
+    : DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE;
 
   return {
     id,

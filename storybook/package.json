@@ -34,7 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^9.11.1",
-    "eslint-plugin-storybook": "^0.9.0",
+    "eslint-plugin-storybook": "^0.11.0",
     "globals": "^15.9.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

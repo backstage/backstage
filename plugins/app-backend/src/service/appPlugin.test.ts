@@ -34,7 +34,11 @@ overridePackagePathResolution({
 createRootLogger();
 
 describe('appPlugin', () => {
-  beforeEach(() => {
+  afterEach(() => {
+    mockDir.clear();
+  });
+
+  it('boots', async () => {
     mockDir.setContent({
       'package.json': '{}',
       dist: {
@@ -42,9 +46,7 @@ describe('appPlugin', () => {
         'index.html': 'winning',
       },
     });
-  });
 
-  it('boots', async () => {
     const { server } = await startTestBackend({
       features: [
         appPlugin,
@@ -66,5 +68,62 @@ describe('appPlugin', () => {
     await expect(
       fetch(`http://localhost:${server.port()}`).then(res => res.text()),
     ).resolves.toBe('winning');
+  });
+
+  it('injects config into index.html', async () => {
+    mockDir.setContent({
+      'package.json': '{}',
+      dist: {
+        static: {},
+        'index.html': '<html><head></head></html>',
+        'index.html.tmpl': '<html><head></head></html>',
+      },
+    });
+
+    const { server } = await startTestBackend({
+      features: [
+        appPlugin,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              disableStaticFallbackCache: true,
+            },
+          },
+        }),
+      ],
+    });
+
+    const baseUrl = `http://localhost:${server.port()}`;
+    const withInjectedConfig = `<html><head>
+<script type="backstage.io/config">
+[]
+</script>
+</head></html>`;
+
+    await expect(fetch(`${baseUrl}`).then(res => res.text())).resolves.toBe(
+      withInjectedConfig,
+    );
+
+    await expect(
+      fetch(`${baseUrl}?foo=bar`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/index.html`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/index.html?foo=bar`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/api/app/some/html5/route`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/api/app/some/html5/route?foo=bar`).then(res =>
+        res.text(),
+      ),
+    ).resolves.toBe(withInjectedConfig);
   });
 });

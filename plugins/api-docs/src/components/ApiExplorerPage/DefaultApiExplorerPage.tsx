@@ -29,6 +29,7 @@ import {
   EntityKindPicker,
   EntityLifecyclePicker,
   EntityListProvider,
+  EntityListPagination,
   EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
@@ -62,6 +63,7 @@ export type DefaultApiExplorerPageProps = {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
 };
 
 /**
@@ -74,6 +76,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
     columns,
     actions,
     ownerPickerMode,
+    pagination,
   } = props;
 
   const configApi = useApi(configApiRef);
@@ -102,7 +105,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
           )}
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
-        <EntityListProvider>
+        <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntityKindPicker initialFilter="api" hidden />

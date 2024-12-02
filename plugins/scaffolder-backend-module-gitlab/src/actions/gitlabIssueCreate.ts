@@ -22,6 +22,7 @@ import { examples } from './gitlabIssueCreate.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
+import { getErrorMessage } from './helpers';
 
 const issueInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
@@ -189,7 +190,9 @@ export const createGitlabIssueAction = (options: {
           });
         }
         // Handling other errors
-        throw new InputError(`Failed to create GitLab issue: ${error.message}`);
+        throw new InputError(
+          `Failed to create GitLab issue: ${getErrorMessage(error)}`,
+        );
       }
     },
   });

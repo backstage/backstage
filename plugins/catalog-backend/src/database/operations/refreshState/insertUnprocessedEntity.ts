@@ -28,7 +28,7 @@ import {
  * true if successful and false if there was a conflict.
  */
 export async function insertUnprocessedEntity(options: {
-  tx: Knex.Transaction;
+  tx: Knex | Knex.Transaction;
   entity: Entity;
   hash: string;
   locationKey?: string;

@@ -20,7 +20,7 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Gitlab, Types } from '@gitbeaker/core';
+import { Gitlab, RepositoryTreeSchema, CommitAction } from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
@@ -28,7 +28,7 @@ import {
   LoggerService,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
-import { createGitlabApi } from './helpers';
+import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 import { createHash } from 'crypto';
 
@@ -41,9 +41,9 @@ function computeSha256(file: SerializedFile): string {
 async function getFileAction(
   fileInfo: { file: SerializedFile; targetPath?: string },
   target: { repoID: string; branch: string },
-  api: Gitlab,
+  api: InstanceType<typeof Gitlab>,
   logger: LoggerService,
-  remoteFiles: Types.RepositoryTreeSchema[],
+  remoteFiles: RepositoryTreeSchema[],
   defaultCommitAction:
     | 'create'
     | 'delete'
@@ -231,11 +231,13 @@ which uses additional API calls in order to detect whether to 'create', 'update'
 
       if (assignee !== undefined) {
         try {
-          const assigneeUser = await api.Users.username(assignee);
+          const assigneeUser = await api.Users.all({ username: assignee });
           assigneeId = assigneeUser[0].id;
         } catch (e) {
           ctx.logger.warn(
-            `Failed to find gitlab user id for ${assignee}: ${e}. Proceeding with MR creation without an assignee.`,
+            `Failed to find gitlab user id for ${assignee}: ${getErrorMessage(
+              e,
+            )}. Proceeding with MR creation without an assignee.`,
           );
         }
       }
@@ -257,26 +259,34 @@ which uses additional API calls in order to detect whether to 'create', 'update'
       let targetBranch = targetBranchName;
       if (!targetBranch) {
         const projects = await api.Projects.show(repoID);
-
-        const { default_branch: defaultBranch } = projects;
-        targetBranch = defaultBranch!;
+        const defaultBranch = projects.default_branch ?? projects.defaultBranch;
+        if (typeof defaultBranch !== 'string' || !defaultBranch) {
+          throw new InputError(
+            `The branch creation failed. Target branch was not provided, and could not find default branch from project settings. Project: ${JSON.stringify(
+              project,
+            )}`,
+          );
+        }
+        targetBranch = defaultBranch;
       }
 
-      let remoteFiles: Types.RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
-          remoteFiles = await api.Repositories.tree(repoID, {
+          remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
             ref: targetBranch,
             recursive: true,
             path: targetPath ?? undefined,
           });
         } catch (e) {
           ctx.logger.warn(
-            `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${e}`,
+            `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
-      const actions: Types.CommitAction[] =
+      const actions: CommitAction[] =
         ctx.input.commitAction === 'skip'
           ? []
           : (
@@ -296,7 +306,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
                 )
               ).filter(o => o.action !== 'skip') as {
                 file: SerializedFile;
-                action: Types.CommitAction['action'];
+                action: CommitAction['action'];
               }[]
             ).map(({ file, action }) => ({
               action,
@@ -327,7 +337,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           await api.Branches.create(repoID, branchName, String(targetBranch));
         } catch (e) {
           throw new InputError(
-            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${e}`,
+            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -336,7 +348,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           await api.Commits.create(repoID, branchName, title, actions);
         } catch (e) {
           throw new InputError(
-            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${e}`,
+            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -351,15 +365,15 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
             assigneeId,
           },
-        ).then((mergeRequest: { web_url: string }) => {
-          return mergeRequest.web_url;
-        });
+        ).then(mergeRequest => mergeRequest.web_url ?? mergeRequest.webUrl);
         ctx.output('projectid', repoID);
         ctx.output('targetBranchName', targetBranch);
         ctx.output('projectPath', repoID);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
-        throw new InputError(`Merge request creation failed${e}`);
+        throw new InputError(
+          `Merge request creation failed. ${getErrorMessage(e)}`,
+        );
       }
     },
   });

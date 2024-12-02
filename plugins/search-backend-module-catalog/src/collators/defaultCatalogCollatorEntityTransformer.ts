@@ -19,7 +19,9 @@ import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransfo
 
 const getDocumentText = (entity: Entity): string => {
   const documentTexts: string[] = [];
-  documentTexts.push(entity.metadata.description || '');
+  if (entity.metadata.description) {
+    documentTexts.push(entity.metadata.description);
+  }
 
   if (isUserEntity(entity) || isGroupEntity(entity)) {
     if (entity.spec?.profile?.displayName) {

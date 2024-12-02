@@ -73,7 +73,7 @@ const SearchPage = () => {
           {!isMobile && (
             <Grid item xs={3}>
               <SearchType.Accordion
-                name="Result Type"
+                name="Result type"
                 defaultValue="software-catalog"
                 showCounts
                 types={[
@@ -117,7 +117,7 @@ const SearchPage = () => {
                   name="kind"
                   values={['Component', 'Template']}
                 />
-                <SearchFilter.Checkbox
+                <SearchFilter.Select
                   className={classes.filter}
                   label="Lifecycle"
                   name="lifecycle"

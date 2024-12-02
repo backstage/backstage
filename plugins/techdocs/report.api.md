@@ -371,6 +371,7 @@ export const TechDocsReaderPageContent: (
 export type TechDocsReaderPageContentProps = {
   entityRef?: CompoundEntityRef;
   withSearch?: boolean;
+  searchResultUrlMapper?: (url: string) => string;
   onReady?: () => void;
 };
 
@@ -431,6 +432,7 @@ export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
   entityTitle?: string;
   debounceTime?: number;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 // @public

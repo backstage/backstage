@@ -16,6 +16,9 @@
 
 import { default as feature } from './module';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Please import from `@backstage/plugin-catalog-backend-module-incremental-ingestion` instead
+ */
 const _feature = feature;
 export default _feature;

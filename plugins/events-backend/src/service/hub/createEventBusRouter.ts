@@ -26,7 +26,10 @@ import { createOpenApiRouter } from '../../schema/openapi.generated';
 import { MemoryEventBusStore } from './MemoryEventBusStore';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 import { EventBusStore } from './types';
-import { EventParams } from '@backstage/plugin-events-node';
+import {
+  EVENTS_NOTIFY_TIMEOUT_HEADER,
+  EventParams,
+} from '@backstage/plugin-events-node';
 
 const DEFAULT_NOTIFY_TIMEOUT_MS = 55_000; // Just below 60s, which is a common HTTP timeout
 
@@ -229,6 +232,10 @@ export async function createEventBusRouter(options: {
             })),
           });
         } else {
+          res.setHeader(
+            EVENTS_NOTIFY_TIMEOUT_HEADER,
+            notifyTimeoutMs.toString(),
+          );
           res.status(202);
           res.flushHeaders();
 

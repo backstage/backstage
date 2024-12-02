@@ -65,15 +65,11 @@ export async function initRepoAndPush(input: {
     author: authorInfo,
     committer: authorInfo,
   });
-  await git.addRemote({
-    dir,
-    url: remoteUrl,
-    remote: 'origin',
-  });
 
   await git.push({
     dir,
     remote: 'origin',
+    url: remoteUrl,
   });
 
   return { commitHash };

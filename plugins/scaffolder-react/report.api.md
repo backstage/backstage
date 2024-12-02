@@ -214,7 +214,8 @@ export interface ScaffolderApi {
     context?: Record<string, string>;
   }): Promise<{
     results: {
-      title: string;
+      title?: string;
+      id: string;
     }[];
   }>;
   cancelTask(taskId: string): Promise<void>;
@@ -538,6 +539,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  EXPERIMENTAL_formDecorators?: {
+    id: string;
+    input?: JsonObject;
+  }[];
 };
 
 // @public

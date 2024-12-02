@@ -1,0 +1,10 @@
+---
+title: Catalog Webhook
+author: Forged Apps
+authorUrl: https://forgedapps.com
+category: Catalog
+description: Send catalog entity changes to a remote endpoint to keep an external system in sync with Backstage.
+documentation: https://github.com/ForgedApps/backstage-catalog-webhook-plugin/blob/main/README.md
+iconUrl: /img/forgedapps.jpg
+npmPackageName: '@forgedapps/backstage-catalog-webhook-plugin'
+addedDate: '2024-10-28'

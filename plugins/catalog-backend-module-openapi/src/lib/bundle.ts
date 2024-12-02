@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import $RefParser from '@apidevtools/json-schema-ref-parser';
+import {
+  $RefParser,
+  ParserOptions,
+  ResolverOptions,
+} from '@apidevtools/json-schema-ref-parser';
 import { parse, stringify } from 'yaml';
 import * as path from 'path';
 
@@ -36,7 +40,7 @@ export async function bundleFileWithRefs(
   read: BundlerRead,
   resolveUrl: BundlerResolveUrl,
 ): Promise<string> {
-  const fileUrlReaderResolver: $RefParser.ResolverOptions = {
+  const fileUrlReaderResolver: ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
       return protocol === undefined || protocol === 'file';
@@ -47,7 +51,7 @@ export async function bundleFileWithRefs(
       return await read(url);
     },
   };
-  const httpUrlReaderResolver: $RefParser.ResolverOptions = {
+  const httpUrlReaderResolver: ResolverOptions = {
     canRead: ref => {
       const protocol = getProtocol(ref.url);
       return protocol === 'http' || protocol === 'https';
@@ -58,7 +62,7 @@ export async function bundleFileWithRefs(
     },
   };
 
-  const options: $RefParser.Options = {
+  const options: ParserOptions = {
     resolve: {
       file: fileUrlReaderResolver,
       http: httpUrlReaderResolver,

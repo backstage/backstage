@@ -9,14 +9,14 @@ export interface IPluginData {
   category: string;
   description: string;
   documentation: string;
-  iconUrl: string;
+  iconUrl?: string;
   title: string;
   addedDate: string;
   isNew: boolean;
   order?: number;
 }
 
-const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
+const defaultIconUrl = '/img/logo-gradient-on-dark.svg';
 
 export const PluginCard = ({
   author,

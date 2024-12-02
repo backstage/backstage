@@ -1,5 +1,21 @@
 # yarn-plugin-backstage
 
+## 0.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/release-manifests@0.0.12-next.0
+  - @backstage/cli-common@0.1.15
+
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/release-manifests@0.0.11
+
 ## 0.0.3-next.0
 
 ### Patch Changes

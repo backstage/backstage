@@ -10,7 +10,7 @@ import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
-import { Handler } from 'express';
+import type { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
@@ -21,8 +21,8 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
-import { Request as Request_2 } from 'express';
-import { Response as Response_2 } from 'express';
+import type { Request as Request_2 } from 'express';
+import type { Response as Response_2 } from 'express';
 
 // @public
 export interface AuthService {

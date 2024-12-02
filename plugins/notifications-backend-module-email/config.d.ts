@@ -99,7 +99,7 @@ export interface Config {
         /**
          * Throttle duration between email sending, defaults to 100ms
          */
-        throttleInterval?: HumanDuration;
+        throttleInterval?: HumanDuration | string;
         /**
          * Configuration for broadcast notifications
          */
@@ -120,7 +120,7 @@ export interface Config {
           /**
            * Email cache TTL, defaults to 1 hour
            */
-          ttl?: HumanDuration;
+          ttl?: HumanDuration | string;
         };
         filter?: {
           /**

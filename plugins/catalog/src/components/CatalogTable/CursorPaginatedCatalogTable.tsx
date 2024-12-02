@@ -39,9 +39,9 @@ export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       columns={columns}
       data={data}
       options={{
+        paginationPosition: 'both',
         ...options,
         // These settings are configured to force server side pagination
-        paginationPosition: 'both',
         pageSizeOptions: [],
         showFirstLastPageButtons: false,
         pageSize: Number.MAX_SAFE_INTEGER,

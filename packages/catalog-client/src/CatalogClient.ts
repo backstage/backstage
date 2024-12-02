@@ -237,9 +237,9 @@ export class CatalogClient implements CatalogApi {
       }
     }
 
-    return this.apiClient
-      .getEntitiesByQuery({ query: params }, options)
-      .then(r => r.json());
+    return this.requestRequired(
+      await this.apiClient.getEntitiesByQuery({ query: params }, options),
+    );
   }
 
   /**

@@ -21,11 +21,19 @@ import {
 import {
   NavItemBlueprint,
   PageBlueprint,
+  ApiBlueprint,
+  createApiFactory,
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
 } from '@backstage/frontend-plugin-api';
 import React from 'react';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderClient } from '../api';
 
 export const scaffolderPage = PageBlueprint.make({
   params: {
@@ -48,5 +56,26 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
   name: 'repo-url-picker',
   params: {
     field: () => import('./fields/RepoUrlPicker').then(m => m.RepoUrlPicker),
+  },
+});
+
+export const scaffolderApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+        fetchApi: fetchApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ discoveryApi, scmIntegrationsApi, fetchApi, identityApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          scmIntegrationsApi,
+          fetchApi,
+          identityApi,
+        }),
+    }),
   },
 });

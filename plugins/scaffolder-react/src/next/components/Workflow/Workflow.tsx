@@ -121,6 +121,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           subheader={
             <MarkdownContent
               className={styles.markdown}
+              linkTarget="_blank"
               content={
                 description ?? sortedManifest.description ?? 'No description'
               }

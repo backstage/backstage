@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
@@ -36,9 +36,12 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
-import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  Workflow,
+  useTemplateParameterSchema,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
-import { Header, Page } from '@backstage/core-components';
+import { Header, Page, Progress } from '@backstage/core-components';
 
 import {
   rootRouteRef,
@@ -49,6 +52,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
+import { useFormDecorators } from '../../hooks';
 
 /**
  * @alpha
@@ -70,9 +74,10 @@ export type TemplateWizardPageProps = {
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const rootRef = useRouteRef(rootRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
-  const { secrets } = useTemplateSecrets();
+  const { secrets: contextSecrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
@@ -85,12 +90,26 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     name: templateName,
   });
 
+  const { manifest } = useTemplateParameterSchema(templateRef);
+  const decorators = useFormDecorators({ manifest });
+
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
     return data?.metadata.annotations?.[ANNOTATION_EDIT_URL];
   }, [templateRef, catalogApi]);
 
-  const onCreate = async (values: Record<string, JsonValue>) => {
+  const onCreate = async (initialValues: Record<string, JsonValue>) => {
+    if (isCreating) {
+      return;
+    }
+
+    setIsCreating(true);
+
+    const { formState: values, secrets } = await decorators.run({
+      formState: initialValues,
+      secrets: contextSecrets,
+    });
+
     const { taskId } = await scaffolderApi.scaffold({
       templateRef,
       values,
@@ -113,6 +132,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         >
           <TemplateWizardPageContextMenu editUrl={editUrl} />
         </Header>
+        {isCreating && <Progress />}
         <Workflow
           namespace={namespace}
           templateName={templateName}

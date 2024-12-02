@@ -22,11 +22,11 @@ import { createGitlabProjectDeployTokenAction } from './gitlabProjectDeployToken
 import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
 const mockGitlabClient = {
-  ProjectDeployTokens: {
-    add: jest.fn(),
+  DeployTokens: {
+    create: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -68,7 +68,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it(`Should ${examples[0].description}`, async () => {
-    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
@@ -78,11 +78,13 @@ describe('gitlab:create-deploy-token', () => {
       input: yaml.parse(examples[0].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.ProjectDeployTokens.add).toHaveBeenCalledWith(
-      '456',
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
       'tokenname',
-      undefined,
-      { username: undefined },
+      ['read_registry'],
+      {
+        projectId: '456',
+        username: undefined,
+      },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
@@ -90,7 +92,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it(`Should ${examples[1].description}`, async () => {
-    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
@@ -100,11 +102,13 @@ describe('gitlab:create-deploy-token', () => {
       input: yaml.parse(examples[1].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.ProjectDeployTokens.add).toHaveBeenCalledWith(
-      '789',
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
       'tokenname',
       ['read_registry', 'write_repository'],
-      { username: undefined },
+      {
+        projectId: '789',
+        username: undefined,
+      },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
@@ -112,7 +116,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it(`Should ${examples[2].description}`, async () => {
-    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
@@ -122,11 +126,13 @@ describe('gitlab:create-deploy-token', () => {
       input: yaml.parse(examples[2].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.ProjectDeployTokens.add).toHaveBeenCalledWith(
-      '101112',
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
       'my-custom-token',
-      undefined,
-      { username: undefined },
+      ['read_registry'],
+      {
+        projectId: '101112',
+        username: undefined,
+      },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
@@ -134,7 +140,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it(`Should ${examples[3].description}`, async () => {
-    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
@@ -144,11 +150,13 @@ describe('gitlab:create-deploy-token', () => {
       input: yaml.parse(examples[3].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.ProjectDeployTokens.add).toHaveBeenCalledWith(
-      42,
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
       'tokenname',
-      undefined,
-      { username: undefined },
+      ['read_registry'],
+      {
+        projectId: 42,
+        username: undefined,
+      },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
@@ -156,7 +164,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it(`Should ${examples[4].description}`, async () => {
-    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
@@ -166,11 +174,13 @@ describe('gitlab:create-deploy-token', () => {
       input: yaml.parse(examples[4].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.ProjectDeployTokens.add).toHaveBeenCalledWith(
-      42,
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
       'tokenname',
-      undefined,
-      { username: 'tokenuser' },
+      ['read_registry'],
+      {
+        projectId: 42,
+        username: 'tokenuser',
+      },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');

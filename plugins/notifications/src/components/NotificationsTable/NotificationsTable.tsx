@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
 /** @public */
 export type NotificationsTableProps = Pick<
   TableProps,
-  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
+  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount' | 'title'
 > & {
   markAsReadOnLinkOpen?: boolean;
   isLoading?: boolean;
@@ -74,6 +74,7 @@ export type NotificationsTableProps = Pick<
 
 /** @public */
 export const NotificationsTable = ({
+  title,
   markAsReadOnLinkOpen,
   isLoading,
   notifications = [],
@@ -222,7 +223,7 @@ export const NotificationsTable = ({
               </Grid>
               <Grid item xs={11}>
                 <Box>
-                  <Typography variant="subtitle2">
+                  <Typography variant="subtitle1">
                     {notification.payload.link ? (
                       <Link
                         to={notification.payload.link}
@@ -334,6 +335,7 @@ export const NotificationsTable = ({
         header: true,
         sorting: false,
       }}
+      title={title}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
       page={page}

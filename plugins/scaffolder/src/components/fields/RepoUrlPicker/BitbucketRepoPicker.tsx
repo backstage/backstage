@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import { Select, SelectItem } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import { Select, SelectItem } from '@backstage/core-components';
-import { BaseRepoUrlPickerProps } from './types';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useCallback, useEffect, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
-import { useApi } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { BaseRepoUrlPickerProps } from './types';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -89,7 +89,7 @@ export const BitbucketRepoPicker = (
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        setAvailableWorkspaces(results.map(r => r.title));
+        setAvailableWorkspaces(results.map(r => r.id));
       })
       .catch(() => {
         setAvailableWorkspaces([]);
@@ -118,7 +118,7 @@ export const BitbucketRepoPicker = (
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        setAvailableProjects(results.map(r => r.title));
+        setAvailableProjects(results.map(r => r.id));
       })
       .catch(() => {
         setAvailableProjects([]);
@@ -148,7 +148,11 @@ export const BitbucketRepoPicker = (
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        onChange({ availableRepos: results.map(r => r.title) });
+        onChange({
+          availableRepos: results.map(r => {
+            return { name: r.id };
+          }),
+        });
       })
       .catch(() => {
         onChange({ availableRepos: [] });

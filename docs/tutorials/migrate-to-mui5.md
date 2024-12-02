@@ -4,6 +4,12 @@ title: Migrating from Material UI v4 to v5
 description: Additional resources for the Material UI v5 migration guide specifically for Backstage
 ---
 
+:::info
+
+We are in the process of determining the path forward regarding a New Design System for Backstage, for the time being we recommend pausing any migrations to MUI v5 until this has been settled. More details can be found in ["RFC: New design system for Backstage"](https://github.com/backstage/backstage/issues/27726).
+
+:::
+
 Backstage supports developing new plugins or components using Material UI v5. At the same time, large parts of the application as well as existing plugins will still be using Material UI v4. To support Material UI v4 and v5 at the same time, we have introduced a new concept called the `UnifiedTheme`. The goal of the `UnifiedTheme` is to allow gradual migration by running both versions in parallel, applying theme options similarly & supporting potential future versions of Material UI.
 
 By default, the `UnifiedThemeProvider` is already used. If you add a custom theme in your `createApp` function, you would need to replace the Material UI `ThemeProvider` with the `UnifiedThemeProvider`:

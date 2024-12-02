@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-common
 
+## 0.8.2
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/errors@1.2.5
+
 ## 0.8.1
 
 ### Patch Changes

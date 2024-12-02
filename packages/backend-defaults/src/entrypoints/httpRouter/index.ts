@@ -15,3 +15,4 @@
  */
 
 export { httpRouterServiceFactory } from './httpRouterServiceFactory';
+export * from './http';

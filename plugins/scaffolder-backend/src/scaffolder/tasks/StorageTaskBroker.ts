@@ -16,7 +16,12 @@
 
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, JsonValue, Observable } from '@backstage/types';
+import {
+  JsonObject,
+  JsonValue,
+  Observable,
+  createDeferred,
+} from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import {
@@ -260,14 +265,6 @@ export interface CurrentClaimedTask {
   workspace?: Promise<Buffer>;
 }
 
-function defer() {
-  let resolve = () => {};
-  const promise = new Promise<void>(_resolve => {
-    resolve = _resolve;
-  });
-  return { promise, resolve };
-}
-
 export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
@@ -301,7 +298,7 @@ export class StorageTaskBroker implements TaskBroker {
     return await this.storage.list(options ?? {});
   }
 
-  private deferredDispatch = defer();
+  private deferredDispatch = createDeferred();
 
   private async registerCancellable(
     taskId: string,
@@ -469,12 +466,12 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   private waitForDispatch() {
-    return this.deferredDispatch.promise;
+    return this.deferredDispatch;
   }
 
   private signalDispatch() {
     this.deferredDispatch.resolve();
-    this.deferredDispatch = defer();
+    this.deferredDispatch = createDeferred();
   }
 
   async cancel(taskId: string) {

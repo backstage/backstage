@@ -21,9 +21,12 @@ import {
   Package,
   Resolver,
 } from '@yarnpkg/core';
-import semver from 'semver';
 import { PROTOCOL } from '../constants';
-import { getCurrentBackstageVersion, getPackageVersion } from '../util';
+import {
+  bindBackstageVersion,
+  getCurrentBackstageVersion,
+  getPackageVersion,
+} from '../util';
 
 export class BackstageResolver implements Resolver {
   static protocol = PROTOCOL;
@@ -45,10 +48,7 @@ export class BackstageResolver implements Resolver {
    */
   bindDescriptor(descriptor: Descriptor): Descriptor {
     if (descriptor.range === 'backstage:^') {
-      return structUtils.makeDescriptor(
-        descriptor,
-        `${PROTOCOL}${getCurrentBackstageVersion()}`,
-      );
+      return bindBackstageVersion(descriptor, getCurrentBackstageVersion());
     }
 
     return descriptor;
@@ -61,23 +61,6 @@ export class BackstageResolver implements Resolver {
    * backstage release.
    */
   async getCandidates(descriptor: Descriptor): Promise<Locator[]> {
-    const range = structUtils.parseRange(descriptor.range);
-    if (range.protocol !== BackstageResolver.protocol) {
-      throw new Error(
-        `Unsupported version protocol in version range "${
-          descriptor.range
-        }" for package ${structUtils.stringifyIdent(descriptor)}`,
-      );
-    }
-
-    if (!semver.valid(range.selector)) {
-      throw new Error(
-        `Invalid Backstage version string when resolving version for ${structUtils.stringifyIdent(
-          descriptor,
-        )}`,
-      );
-    }
-
     return [
       structUtils.makeLocator(
         descriptor,

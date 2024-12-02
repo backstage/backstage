@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Handler } from 'express';
+import type { Handler } from 'express';
 
 /**
  * HTTP route registration for root services.

@@ -49,11 +49,7 @@ export async function productionPack(options: ProductionPackOptions) {
   }
 
   // This mutates pkg to fill in index exports, so call it before applying publishConfig
-  const writeCompatibilityEntryPoints = await prepareExportsEntryPoints(
-    pkg,
-    packageDir,
-    options.featureDetectionProject,
-  );
+  await rewriteEntryPoints(pkg, packageDir, options.featureDetectionProject);
 
   // TODO(Rugvip): Once exports are rolled out more broadly we should deprecate and remove this behavior
   const publishConfig = pkg.publishConfig ?? {};
@@ -62,9 +58,6 @@ export async function productionPack(options: ProductionPackOptions) {
       (pkg as any)[key] = publishConfig[key as keyof typeof publishConfig];
     }
   }
-
-  // For published packages we rely on compatibility entry points rather than this
-  delete pkg.typesVersions;
 
   // We remove the dependencies from package.json of packages that are marked
   // as bundled, so that yarn doesn't try to install them.
@@ -96,10 +89,6 @@ export async function productionPack(options: ProductionPackOptions) {
     }
   } else {
     await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
-  }
-
-  if (writeCompatibilityEntryPoints) {
-    await writeCompatibilityEntryPoints(targetDir ?? packageDir);
   }
 }
 
@@ -138,7 +127,7 @@ const EXPORT_MAP = {
  * well as returning a function that creates backwards compatibility
  * entry points for importers that don't support exports.
  */
-async function prepareExportsEntryPoints(
+async function rewriteEntryPoints(
   pkg: BackstagePackageJson,
   packageDir: string,
   featureDetectionProject?: Project,
@@ -150,11 +139,12 @@ async function prepareExportsEntryPoints(
   const distFiles = await fs.readdir(distPath);
   const outputExports = {} as Record<string, string | Record<string, string>>;
 
-  const compatibilityWriters = new Array<
-    (targetDir: string) => Promise<void>
-  >();
-
   const entryPoints = readEntryPoints(pkg);
+
+  // Clear to ensure a clean slate before adding entries back in further down
+  if (pkg.typesVersions) {
+    pkg.typesVersions = { '*': {} };
+  }
 
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
@@ -169,6 +159,16 @@ async function prepareExportsEntryPoints(
       if (distFiles.includes(name)) {
         exp[key] = `./${posixPath.join(`dist`, name)}`;
       }
+    }
+
+    // Our current tooling relies on the typesVersions field rather than export.*.types
+    if (exp.types) {
+      if (!pkg.typesVersions) {
+        pkg.typesVersions = { '*': {} };
+      }
+      pkg.typesVersions['*'][entryPoint.name] = [
+        `dist/${entryPoint.name}.d.ts`,
+      ];
     }
 
     exp.default = exp.require ?? exp.import;
@@ -192,7 +192,6 @@ async function prepareExportsEntryPoints(
       }
     }
 
-    // This creates a directory with a lone package.json for backwards compatibility
     if (entryPoint.mount === '.') {
       if (exp.default) {
         pkg.main = exp.default;
@@ -202,28 +201,6 @@ async function prepareExportsEntryPoints(
       }
       if (exp.types) {
         pkg.types = exp.types;
-      }
-    } else {
-      // This is deferred until after we have created the target directory
-      compatibilityWriters.push(async targetDir => {
-        const entryPointDir = resolvePath(targetDir, entryPoint.name);
-        await fs.ensureDir(entryPointDir);
-        await fs.writeJson(
-          resolvePath(entryPointDir, PKG_PATH),
-          {
-            // Need a temporary name, as sharing the same name causes some typescript issues with caching of packages names
-            // And their defined `types` field.
-            name: `${pkg.name}__${entryPoint.name.toLocaleLowerCase('en-US')}`,
-            version: pkg.version,
-            ...(exp.default ? { main: posixPath.join('..', exp.default) } : {}),
-            ...(exp.import ? { module: posixPath.join('..', exp.import) } : {}),
-            ...(exp.types ? { types: posixPath.join('..', exp.types) } : {}),
-          },
-          { encoding: 'utf8', spaces: 2 },
-        );
-      });
-      if (Array.isArray(pkg.files) && !pkg.files.includes(entryPoint.name)) {
-        pkg.files.push(entryPoint.name);
       }
     }
 
@@ -238,10 +215,5 @@ async function prepareExportsEntryPoints(
     pkg.exports['./package.json'] = './package.json';
   }
 
-  if (compatibilityWriters.length > 0) {
-    return async (targetDir: string) => {
-      await Promise.all(compatibilityWriters.map(writer => writer(targetDir)));
-    };
-  }
   return undefined;
 }

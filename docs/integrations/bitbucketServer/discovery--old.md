@@ -1,5 +1,5 @@
 ---
-id: discovery
+id: discovery--old
 title: Bitbucket Server Discovery
 sidebar_label: Discovery
 # prettier-ignore

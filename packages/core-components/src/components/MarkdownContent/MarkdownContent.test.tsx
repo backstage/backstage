@@ -120,6 +120,23 @@ describe('<MarkdownContent />', () => {
     );
   });
 
+  it('render MarkdownContent component with link target set to _blank', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content="Take a look at the [README](https://github.com/backstage/backstage/blob/master/README.md) file."
+        linkTarget="_blank"
+      />,
+    );
+    const readme = screen.getByText('README', {
+      selector: 'a',
+    });
+    expect(readme).toBeInTheDocument();
+    expect(readme.getAttribute('href')).toEqual(
+      'https://github.com/backstage/backstage/blob/master/README.md',
+    );
+    expect(readme.getAttribute('target')).toEqual('_blank');
+  });
+
   it('render MarkdownContent component with headings given proper ids', async () => {
     await renderInTestApp(
       <MarkdownContent

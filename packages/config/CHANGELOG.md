@@ -1,5 +1,17 @@
 # @backstage/config
 
+## 1.3.0
+
+### Minor Changes
+
+- d52d7f9: Make `readDurationFromConfig` support both ISO and ms formats as well, to make it easier to enter time as an end user
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/errors@1.2.5
+
 ## 1.2.0
 
 ### Minor Changes

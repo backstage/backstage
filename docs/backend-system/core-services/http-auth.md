@@ -102,6 +102,45 @@ or [contribute](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.
 
 :::
 
+### Custom token extraction logic
+
+In some cases, you might want to customize how tokens are extracted from incoming requests. It might be that you want to extract tokens from a different location in the request. To support this you can supply your own slightly modified httpAuth service. The `DefaultHttpAuthService` class is exported from `@backstage/backend-defaults/httpAuth` and it's static `create` method can be used to pass in a custom `getTokenFromRequest` extraction function.
+
+```ts
+import { DefaultHttpAuthService } from '@backstage/backend-defaults/httpAuth';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+
+export const customizedAuthServiceFactory = createServiceFactory({
+  service: coreServices.httpAuth,
+  deps: {
+    auth: coreServices.auth,
+    discovery: coreServices.discovery,
+    plugin: coreServices.pluginMetadata,
+  },
+  async factory({ auth, discovery, plugin }) {
+    return DefaultHttpAuthService.create({
+      auth,
+      discovery,
+      pluginId: plugin.getId(),
+      getTokenFromRequest: req => {
+        let token: string | undefined;
+        const header = req.headers.some_random_header;
+        if (typeof header === 'string') {
+          const parts = header.split(' ');
+          if (parts.length === 2 && parts[0] === 'Bearer') {
+            token = parts[1];
+          }
+        }
+        return { token };
+      },
+    });
+  },
+});
+```
+
 This service has no configuration options, but it abides by the policies you
 have set up using [the `httpRouter` service](./http-router.md) for your routes,
 if any.

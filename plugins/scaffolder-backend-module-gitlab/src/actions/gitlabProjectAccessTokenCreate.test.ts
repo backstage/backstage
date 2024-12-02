@@ -84,9 +84,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '987',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -115,9 +115,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '987',
       'tokenname',
       ['read_registry', 'write_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -146,9 +146,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '2110',
       'token',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -176,9 +176,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       23,
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -207,9 +207,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '123',
       'tokenname',
       ['read_repository'],
+      '1999-07-14',
       {
         accessLevel: 40,
-        expiresAt: '1999-07-14',
       },
     );
 

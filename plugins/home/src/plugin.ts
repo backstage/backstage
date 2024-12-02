@@ -27,6 +27,7 @@ import {
   ToolkitContentProps,
   VisitedByTypeProps,
   FeaturedDocsCardProps,
+  QuickStartCardProps,
 } from './homePageComponents';
 import { rootRouteRef } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
@@ -228,5 +229,18 @@ export const FeaturedDocsCard = homePlugin.provide(
     name: 'FeaturedDocsCard',
     title: 'Featured Docs',
     components: () => import('./homePageComponents/FeaturedDocsCard'),
+  }),
+);
+
+/**
+ * A component to display Quick Start information.
+ *
+ * @public
+ */
+export const QuickStartCard = homePlugin.provide(
+  createCardExtension<QuickStartCardProps>({
+    name: 'QuickStartCard',
+    title: 'Quick Start',
+    components: () => import('./homePageComponents/QuickStart'),
   }),
 );

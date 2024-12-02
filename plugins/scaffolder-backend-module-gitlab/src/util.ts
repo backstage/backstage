@@ -22,7 +22,6 @@ import {
 import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from './commonGitlabConfig';
-import * as util from './util';
 
 export const parseRepoHost = (repoUrl: string): string => {
   let parsed;
@@ -138,10 +137,7 @@ export async function getTopLevelParentGroup(
   try {
     const topParentGroup = await client.Groups.show(groupId);
     if (topParentGroup.parent_id) {
-      return util.getTopLevelParentGroup(
-        client,
-        topParentGroup.parent_id as number,
-      );
+      return getTopLevelParentGroup(client, topParentGroup.parent_id as number);
     }
     return topParentGroup as GroupSchema;
   } catch (error: any) {

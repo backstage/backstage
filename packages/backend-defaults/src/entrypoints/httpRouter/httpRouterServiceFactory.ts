@@ -21,10 +21,12 @@ import {
   createServiceFactory,
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
-import { createLifecycleMiddleware } from './createLifecycleMiddleware';
-import { createCredentialsBarrier } from './createCredentialsBarrier';
-import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
-import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
+import {
+  createLifecycleMiddleware,
+  createCookieAuthRefreshMiddleware,
+  createCredentialsBarrier,
+  createAuthIntegrationRouter,
+} from './http';
 
 /**
  * HTTP route registration for plugins.

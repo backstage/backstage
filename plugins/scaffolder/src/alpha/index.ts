@@ -23,5 +23,6 @@ export {
 } from './components';
 
 export { scaffolderTranslationRef } from '../translation';
+export * from './api';
 
 export { default } from './plugin';

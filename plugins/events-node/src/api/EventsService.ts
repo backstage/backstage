@@ -44,7 +44,7 @@ export interface EventsService {
  */
 export type EventsServiceSubscribeOptions = {
   /**
-   * Identifier for the subscription. E.g., used as part of log messages.
+   * Subscriber ID that is scoped to the calling plugin. Subscribers with the same ID will have events distributed between them.
    */
   id: string;
   topics: string[];
@@ -55,3 +55,8 @@ export type EventsServiceSubscribeOptions = {
  * @public
  */
 export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;
+
+/**
+ * @public
+ */
+export const EVENTS_NOTIFY_TIMEOUT_HEADER = 'backstage-events-notify-timeout';

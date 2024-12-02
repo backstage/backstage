@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
+import { DeferredPromise, JsonObject, createDeferred } from '@backstage/types';
 import {
   AsyncConfigSourceGenerator,
   ConfigSource,
   ReadConfigDataOptions,
 } from './types';
-import { simpleDefer, SimpleDeferred, waitOrAbort } from './utils';
+import { waitOrAbort } from './utils';
 
 /**
  * Options for {@link MutableConfigSource.create}.
@@ -52,20 +52,20 @@ export class MutableConfigSource implements ConfigSource {
   }
 
   #currentData?: JsonObject;
-  #deferred: SimpleDeferred<void>;
+  #deferred: DeferredPromise<void>;
   readonly #context: string;
   readonly #abortController = new AbortController();
 
   private constructor(context: string, initialData?: JsonObject) {
     this.#currentData = initialData;
     this.#context = context;
-    this.#deferred = simpleDefer();
+    this.#deferred = createDeferred();
   }
 
   async *readConfigData(
     options?: ReadConfigDataOptions | undefined,
   ): AsyncConfigSourceGenerator {
-    let deferredPromise = this.#deferred.promise;
+    let deferredPromise = this.#deferred;
 
     if (this.#currentData !== undefined) {
       yield { configs: [{ data: this.#currentData, context: this.#context }] };
@@ -79,7 +79,7 @@ export class MutableConfigSource implements ConfigSource {
       if (!ok) {
         return;
       }
-      deferredPromise = this.#deferred.promise;
+      deferredPromise = this.#deferred;
 
       if (this.#currentData !== undefined) {
         yield {
@@ -98,7 +98,7 @@ export class MutableConfigSource implements ConfigSource {
     if (!this.#abortController.signal.aborted) {
       this.#currentData = data;
       const oldDeferred = this.#deferred;
-      this.#deferred = simpleDefer();
+      this.#deferred = createDeferred();
       oldDeferred.resolve();
     }
   }

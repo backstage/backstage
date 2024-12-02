@@ -41,6 +41,9 @@ export const taskCreatePermission: BasicPermission;
 export const taskReadPermission: BasicPermission;
 
 // @alpha
+export const templateManagementPermission: BasicPermission;
+
+// @alpha
 export const templateParameterReadPermission: ResourcePermission<'scaffolder-template'>;
 
 // @alpha

@@ -86,7 +86,7 @@ export type OptionalAppOptions = {
   /**
    * A set of components to override the default components with.
    *
-   * The override is applied for each icon individually.
+   * The override is applied for each app component individually.
    *
    * @public
    */

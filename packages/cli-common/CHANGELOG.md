@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.15
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+
 ## 0.1.15-next.0
 
 ### Patch Changes

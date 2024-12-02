@@ -15,6 +15,7 @@
  */
 
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import { createDeferred } from '@backstage/types';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import ObservableImpl from 'zen-observable';
@@ -24,14 +25,6 @@ import {
   entityPresentationApiRef,
 } from '../../apis';
 import { EntityDisplayName } from './EntityDisplayName';
-
-function defer<T>() {
-  let resolve = (_value: T) => {};
-  const promise = new Promise<T>(_resolve => {
-    resolve = _resolve;
-  });
-  return { promise, resolve };
-}
 
 describe('<EntityDisplayName />', () => {
   const entityPresentationApi = {
@@ -63,7 +56,7 @@ describe('<EntityDisplayName />', () => {
   });
 
   it('works with the async the happy path', async () => {
-    const { promise, resolve } = defer<EntityRefPresentationSnapshot>();
+    const promise = createDeferred<EntityRefPresentationSnapshot>();
 
     entityPresentationApi.forEntity.mockReturnValue({
       snapshot: {
@@ -89,7 +82,7 @@ describe('<EntityDisplayName />', () => {
 
     expect(screen.getByText('foo')).toBeInTheDocument();
 
-    resolve({
+    promise.resolve({
       entityRef: 'component:default/foo',
       primaryTitle: 'bar',
     });

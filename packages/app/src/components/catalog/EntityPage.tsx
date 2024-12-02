@@ -85,15 +85,14 @@ const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   return (
-    <>
-      <EntityLayout
-        UNSTABLE_contextMenuOptions={{
-          disableUnregister: 'visible',
-        }}
-      >
-        {props.children}
-      </EntityLayout>
-    </>
+    <EntityLayout
+      parentEntityRelations={['partOf', 'memberOf', 'childOf']}
+      UNSTABLE_contextMenuOptions={{
+        disableUnregister: 'visible',
+      }}
+    >
+      {props.children}
+    </EntityLayout>
   );
 };
 

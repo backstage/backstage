@@ -21,7 +21,9 @@ import {
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { createDeferred } from '@backstage/types';
 import { Knex } from 'knex';
+import { default as catalogPlugin } from '../..';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEntitiesProcessor,
@@ -33,16 +35,6 @@ import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 
 jest.setTimeout(600_000);
 
-function defer<T>() {
-  let resolve: (value: T | PromiseLike<T>) => void;
-  let reject: (error?: unknown) => void;
-  const promise = new Promise<T>((_resolve, _reject) => {
-    resolve = _resolve;
-    reject = _reject;
-  });
-  return { promise, resolve: resolve!, reject: reject! };
-}
-
 const traceLog: typeof console.log = performanceTraceEnabled
   ? console.log
   : () => {};
@@ -50,7 +42,7 @@ const traceLog: typeof console.log = performanceTraceEnabled
 class Tracker {
   private insertBaseEntitiesStart: number | undefined;
   private insertBaseEntitiesEnd: number | undefined;
-  private readonly deferred = defer<void>();
+  private readonly deferred = createDeferred();
 
   constructor(
     private readonly knex: Knex,
@@ -93,7 +85,7 @@ class Tracker {
   }
 
   async completion(): Promise<void> {
-    return this.deferred.promise;
+    return this.deferred;
   }
 
   private completionPolling() {
@@ -176,7 +168,7 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          catalogPlugin,
           mockServices.rootConfig.factory({ data: config }),
           mockServices.database.factory({ knex }),
           createBackendModule({
@@ -229,7 +221,7 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          import('@backstage/plugin-catalog-backend'),
           mockServices.rootConfig.factory({ data: config }),
           mockServices.database.factory({ knex }),
           createBackendModule({

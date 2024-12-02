@@ -41,6 +41,7 @@ import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Edit from '@material-ui/icons/Edit';
 import FilterList from '@material-ui/icons/FilterList';
+import Search from '@material-ui/icons/Search';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
@@ -103,7 +104,7 @@ const tableIcons: Icons = {
     <Clear {...props} ref={ref} />
   )),
   Search: forwardRef<SVGSVGElement>((props, ref) => (
-    <FilterList {...props} ref={ref} />
+    <Search {...props} ref={ref} />
   )),
   SortArrow: forwardRef<SVGSVGElement>((props, ref) => (
     <ArrowUpward {...props} ref={ref} />
@@ -486,7 +487,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         data={tableData}
         style={{ width: '100%', ...style }}
         localization={{
-          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+          toolbar: { searchPlaceholder: 'Search', searchTooltip: 'Search' },
           ...localization,
         }}
         {...restProps}
