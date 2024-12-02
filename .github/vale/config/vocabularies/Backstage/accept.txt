@@ -460,6 +460,7 @@ ui
 unbreak
 Unconference
 unicode
+unlogged
 unmanaged
 unmount
 unregister
