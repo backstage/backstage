@@ -220,6 +220,41 @@ describe('postgres', () => {
         useNullAsDefault: true,
       });
     });
+
+    it('throws an error when the connection type is not supported', async () => {
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'not-supported',
+            },
+          }),
+        ),
+      ).rejects.toThrow('Unknown connection type: not-supported');
+    });
+
+    it('supports default as the default connection type', async () => {
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'default',
+              port: '5432',
+              database: 'other_db',
+            },
+          }),
+        ),
+      ).resolves.toEqual({
+        client: 'pg',
+        connection: {
+          port: '5432',
+          database: 'other_db',
+        },
+        useNullAsDefault: true,
+      });
+    });
   });
 
   describe('getPgConnectionConfig', () => {
