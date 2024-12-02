@@ -48,7 +48,6 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "fs-extra": "^11.2.0",
-    "node-fetch": "^2.7.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

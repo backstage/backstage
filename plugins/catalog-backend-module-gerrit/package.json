@@ -53,7 +53,6 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "fs-extra": "^11.2.0",
-    "node-fetch": "^2.7.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

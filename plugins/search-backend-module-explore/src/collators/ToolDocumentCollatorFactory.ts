@@ -29,7 +29,6 @@ import {
   DocumentCollatorFactory,
   IndexableDocument,
 } from '@backstage/plugin-search-common';
-import fetch from 'node-fetch';
 import { Readable } from 'stream';
 
 /**

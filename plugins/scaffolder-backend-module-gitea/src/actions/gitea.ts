@@ -30,7 +30,6 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './gitea.examples';
 import crypto from 'crypto';
-import fetch, { Response, RequestInit } from 'node-fetch';
 
 const checkGiteaContentUrl = async (
   config: GiteaIntegrationConfig,

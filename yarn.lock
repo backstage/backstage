@@ -297,7 +297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.3.0":
+"@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.3.0, @asyncapi/parser@npm:^3.4.0":
   version: 3.4.0
   resolution: "@asyncapi/parser@npm:3.4.0"
   dependencies:
@@ -324,25 +324,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/protobuf-schema-parser@npm:^3.2.14":
-  version: 3.2.14
-  resolution: "@asyncapi/protobuf-schema-parser@npm:3.2.14"
+"@asyncapi/protobuf-schema-parser@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@asyncapi/protobuf-schema-parser@npm:3.3.0"
   dependencies:
-    "@asyncapi/parser": ^3.1.0
-    "@types/protocol-buffers-schema": ^3.4.1
-    protobufjs: ^7.2.6
-  checksum: b00a50ea806c5e92961d98e51d3c6b61f61377e18f7fe93ccfce5bb47df208c9bdd635b15a6ce3345bb2c33048ed17a1d422b6bd536c8e332c98a29dc1c37ae9
+    "@asyncapi/parser": ^3.4.0
+    "@types/protocol-buffers-schema": ^3.4.3
+    protobufjs: ^7.4.0
+  checksum: abe9f09f289c20eb93de450f8106380142ce3aed115060939f90f3826030be56d24759ff3d9c63a2476d22888bb56df5da37222d2eca3e9596f9e0ad6461e93f
   languageName: node
   linkType: hard
 
 "@asyncapi/react-component@npm:^2.3.3":
-  version: 2.4.3
-  resolution: "@asyncapi/react-component@npm:2.4.3"
+  version: 2.4.5
+  resolution: "@asyncapi/react-component@npm:2.4.5"
   dependencies:
     "@asyncapi/avro-schema-parser": ^3.0.24
     "@asyncapi/openapi-schema-parser": ^3.0.24
     "@asyncapi/parser": ^3.3.0
-    "@asyncapi/protobuf-schema-parser": ^3.2.14
+    "@asyncapi/protobuf-schema-parser": ^3.3.0
     highlight.js: ^10.7.2
     isomorphic-dompurify: ^2.14.0
     marked: ^4.0.14
@@ -351,7 +351,7 @@ __metadata:
   peerDependencies:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: a302bb0afac4952d77da6558fede68aecedd55096a322ad5b8ca0653aa6e001d21fe681914abea2656c14fb79e1dc6ef8e18ecefce44f877677f0f15fbf6c3c4
+  checksum: 681eb6eb3fe2f9874725b368c298b7069373b7fb706437d15449ad747552ee515c0677ed7334c1826776b786fab57363817fd737d31f9f1d116fea3b58eef742
   languageName: node
   linkType: hard
 
@@ -3481,7 +3481,6 @@ __metadata:
     minimist: ^1.2.5
     morgan: ^1.10.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     node-forge: ^1.3.1
     path-to-regexp: ^8.0.0
     selfsigned: ^2.0.0
@@ -3599,6 +3598,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@google-cloud/cloud-sql-connector": ^1.4.0
     "@google-cloud/storage": ^7.0.0
     "@keyv/memcache": ^2.0.1
     "@keyv/redis": ^4.0.1
@@ -3662,6 +3662,11 @@ __metadata:
     yauzl: ^3.0.0
     yn: ^4.0.0
     zod: ^3.22.4
+  peerDependencies:
+    "@google-cloud/cloud-sql-connector": ^1.4.0
+  peerDependenciesMeta:
+    "@google-cloud/cloud-sql-connector":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -4048,7 +4053,6 @@ __metadata:
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^9.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     node-libs-browser: ^2.2.1
     nodemon: ^3.0.1
     npm-packlist: ^5.0.0
@@ -4155,7 +4159,6 @@ __metadata:
     lodash: ^4.17.21
     minimist: ^1.2.5
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     typescript-json-schema: ^0.65.0
     yaml: ^2.0.0
     zen-observable: ^0.10.0
@@ -4584,8 +4587,7 @@ __metadata:
     fs-extra: ^11.2.0
     handlebars: ^4.7.3
     inquirer: ^8.2.0
-    msw: ^1.0.0
-    node-fetch: ^2.7.0
+    msw: ^2.0.0
     nodemon: ^3.0.1
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
@@ -5101,7 +5103,6 @@ __metadata:
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    node-fetch: ^2.7.0
     supertest: ^7.0.0
     yn: ^4.0.0
   languageName: unknown
@@ -5259,7 +5260,6 @@ __metadata:
     jose: ^5.0.0
     msw: ^2.0.8
     node-cache: ^5.1.2
-    node-fetch: ^2.7.0
   languageName: unknown
   linkType: soft
 
@@ -5309,7 +5309,6 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/passport-oauth2": ^1.4.15
-    node-fetch: ^2.7.0
     passport: ^0.7.0
     passport-oauth2: ^1.6.1
     supertest: ^7.0.0
@@ -5332,7 +5331,6 @@ __metadata:
     express: ^4.18.2
     jose: ^5.0.0
     msw: ^2.0.0
-    node-fetch: ^2.7.0
     node-mocks-http: ^1.0.0
     uuid: ^11.0.0
   languageName: unknown
@@ -5432,7 +5430,6 @@ __metadata:
     express: ^4.18.2
     jose: ^5.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     passport-microsoft: ^1.0.0
     supertest: ^7.0.0
   languageName: unknown
@@ -5632,7 +5629,6 @@ __metadata:
     morgan: ^1.10.0
     msw: ^1.0.0
     node-cache: ^5.1.2
-    node-fetch: ^2.7.0
     openid-client: ^5.2.1
     passport: ^0.7.0
     passport-auth0: ^1.4.3
@@ -5695,7 +5691,6 @@ __metadata:
     jose: ^5.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     passport: ^0.7.0
     supertest: ^7.0.0
     uuid: ^11.0.0
@@ -5797,7 +5792,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -5855,10 +5849,8 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -5893,7 +5885,6 @@ __metadata:
     fs-extra: ^11.2.0
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -5936,8 +5927,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^9.0.0
-    msw: ^1.0.0
-    node-fetch: ^2.7.0
+    msw: ^2.0.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -5978,7 +5968,6 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -6058,11 +6047,9 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@microsoft/microsoft-graph-types": ^2.6.0
     "@types/lodash": ^4.14.151
-    "@types/node-fetch": ^2.5.12
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     p-limit: ^3.0.2
     qs: ^6.9.4
     uuid: ^11.0.0
@@ -6107,7 +6094,6 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -6188,7 +6174,6 @@ __metadata:
     luxon: ^3.0.0
     minimatch: ^9.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     p-limit: ^3.0.2
     prom-client: ^15.0.0
     supertest: ^7.0.0
@@ -6556,7 +6541,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-devtools-backend@workspace:plugins/devtools-backend"
   dependencies:
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -6580,7 +6564,6 @@ __metadata:
     express-promise-router: ^4.1.0
     fs-extra: ^11.0.0
     lodash: ^4.17.21
-    node-fetch: ^2.7.0
     ping: ^0.4.1
     semver: ^7.5.3
     supertest: ^7.0.0
@@ -7120,7 +7103,6 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     supertest: ^7.0.0
     uuid: ^11.0.0
     winston: ^3.2.1
@@ -7152,7 +7134,6 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     knex: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
@@ -7316,7 +7297,6 @@ __metadata:
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     supertest: ^7.0.0
     yn: ^4.0.0
     zod: ^3.22.4
@@ -7411,7 +7391,6 @@ __metadata:
     http-proxy-middleware: ^2.0.0
     morgan: ^1.10.0
     msw: ^2.0.0
-    node-fetch: ^2.7.0
     uuid: ^11.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -7451,7 +7430,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7470,7 +7448,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7491,7 +7468,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7512,7 +7488,6 @@ __metadata:
     fs-extra: ^11.2.0
     git-url-parse: ^15.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     node-html-markdown: ^1.3.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7572,7 +7547,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7590,7 +7564,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7695,7 +7668,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     msw: ^2.0.0
-    node-fetch: ^2.7.0
     yaml: ^2.3.3
   languageName: unknown
   linkType: soft
@@ -8054,7 +8026,6 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.2.1
-    node-fetch: ^2.7.0
   languageName: unknown
   linkType: soft
 
@@ -8086,7 +8057,6 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.2.1
-    node-fetch: ^2.7.0
     qs: ^6.9.4
   languageName: unknown
   linkType: soft
@@ -8110,7 +8080,6 @@ __metadata:
     "@backstage/plugin-techdocs-node": "workspace:^"
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     p-limit: ^3.1.0
   languageName: unknown
   linkType: soft
@@ -8285,7 +8254,6 @@ __metadata:
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     supertest: ^7.0.0
     uuid: ^11.0.0
     winston: ^3.2.1
@@ -8434,8 +8402,7 @@ __metadata:
     fs-extra: ^11.2.0
     knex: ^3.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
-    node-fetch: ^2.7.0
+    msw: ^2.0.0
     p-limit: ^3.1.0
     supertest: ^7.0.0
     winston: ^3.2.1
@@ -9288,8 +9255,8 @@ __metadata:
   linkType: hard
 
 "@codemirror/language@npm:^6.0.0":
-  version: 6.10.5
-  resolution: "@codemirror/language@npm:6.10.5"
+  version: 6.10.6
+  resolution: "@codemirror/language@npm:6.10.6"
   dependencies:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.23.0
@@ -9297,7 +9264,7 @@ __metadata:
     "@lezer/highlight": ^1.0.0
     "@lezer/lr": ^1.0.0
     style-mod: ^4.0.0
-  checksum: 8b84d1750ac4913c25a87bc356d8828615d9bb826eef362eed990240ff10ec4e5bebfc8367d4b72fa16ec4e2aff9a95325aa1cd5850a9cc8ef91b1247f7299d4
+  checksum: 0bd5e4da0c714b4d2aad2e2ad19bb803d9992e5f0d56da3fb2534e63b03b8a562bd8b9ac4439509c687b589e3eaa5a33339eda13d91e54a5d5a99e032d1be981
   languageName: node
   linkType: hard
 
@@ -10341,6 +10308,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@google-cloud/cloud-sql-connector@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@google-cloud/cloud-sql-connector@npm:1.4.0"
+  dependencies:
+    "@googleapis/sqladmin": ^24.0.0
+    gaxios: ^6.1.1
+    google-auth-library: ^9.2.0
+    p-throttle: ^5.1.0
+  checksum: c4ac2cc8cc24cc5966f146fe5686493fdb0bb4fc43a27ec086bd116f5ce475ca88f5e5e5fb79d17e6c31fb1a752d2f7e94433db17eea787696556c45415a31a1
+  languageName: node
+  linkType: hard
+
 "@google-cloud/container@npm:^5.0.0":
   version: 5.19.0
   resolution: "@google-cloud/container@npm:5.19.0"
@@ -10407,6 +10386,15 @@ __metadata:
     teeny-request: ^9.0.0
     uuid: ^8.0.0
   checksum: c239b0961bb4dfb36fe67fc35b933bf65259bb4ebcdffeb48cdee5e2d838626daef47ba78417d33eb47fda5c2536d89ad1feb33cd59ecc887d47ab992fc80a1b
+  languageName: node
+  linkType: hard
+
+"@googleapis/sqladmin@npm:^24.0.0":
+  version: 24.0.0
+  resolution: "@googleapis/sqladmin@npm:24.0.0"
+  dependencies:
+    googleapis-common: ^7.0.0
+  checksum: b1c93d18b800ecd5af79dc6728e6b030f6918a1c5e2094d2dd7b460e3b2033cb9ce4f4ffe5b6155ecc2f699b8e4bdf0a94999786671b8fa05e1d8f3ce90cf466
   languageName: node
   linkType: hard
 
@@ -12313,22 +12301,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/core-downloads-tracker@npm:^5.16.7":
-  version: 5.16.7
-  resolution: "@mui/core-downloads-tracker@npm:5.16.7"
-  checksum: b65c48ba2bf6bba6435ba9f2d6c33db0c8a85b3ff7599136a9682b72205bec76470ab5ed5e6e625d5bd012ed9bcbc641ed677548be80d217c9fb5d0435567062
+"@mui/core-downloads-tracker@npm:^5.16.8":
+  version: 5.16.8
+  resolution: "@mui/core-downloads-tracker@npm:5.16.8"
+  checksum: 1d099442aabf0a17ae0045d370565fca9c8654a654f88a08595542e6566d159aa632cc7d73aefa247f2ae3ab853709ea2e37118a080891bfbd200c58212202ca
   languageName: node
   linkType: hard
 
 "@mui/material@npm:^5.12.2":
-  version: 5.16.7
-  resolution: "@mui/material@npm:5.16.7"
+  version: 5.16.8
+  resolution: "@mui/material@npm:5.16.8"
   dependencies:
     "@babel/runtime": ^7.23.9
-    "@mui/core-downloads-tracker": ^5.16.7
-    "@mui/system": ^5.16.7
+    "@mui/core-downloads-tracker": ^5.16.8
+    "@mui/system": ^5.16.8
     "@mui/types": ^7.2.15
-    "@mui/utils": ^5.16.6
+    "@mui/utils": ^5.16.8
     "@popperjs/core": ^2.11.8
     "@types/react-transition-group": ^4.4.10
     clsx: ^2.1.0
@@ -12339,9 +12327,9 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@emotion/react":
       optional: true
@@ -12349,30 +12337,30 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 5057b48c3ce554247de9a8f675bda9bbda079bc83a696c500525f3ebbd63315a44f1c2a7c83c2025dbd02d2722892e397a0af10c1219d45f6534e41d91a43cc0
+  checksum: 37aa0bba0d64feb46b6c7ef71ed44010c0799c5ebb57b345cf364e43be748a5229abfe3f4b573de225369b9cac13b35f6d32ad9e3015ad152645296f52096584
   languageName: node
   linkType: hard
 
-"@mui/private-theming@npm:^5.16.6":
-  version: 5.16.6
-  resolution: "@mui/private-theming@npm:5.16.6"
+"@mui/private-theming@npm:^5.16.8":
+  version: 5.16.8
+  resolution: "@mui/private-theming@npm:5.16.8"
   dependencies:
     "@babel/runtime": ^7.23.9
-    "@mui/utils": ^5.16.6
+    "@mui/utils": ^5.16.8
     prop-types: ^15.8.1
   peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 314ba598ab17cd425a36e4cab677ed26fe0939b23e53120da77cfbc3be6dada5428fa8e2a55cb697417599a4e3abfee6d4711de0a7318b9fb2c3a822b2d5b5a8
+  checksum: 576cf19188c236482a8a698978d3061c7e8d76ba9d891d323ce96d92d6b80d88e1aa2a67fe4698d76b8a43221ef0f8ed21be74971fc684ce1279dc73fd34316b
   languageName: node
   linkType: hard
 
-"@mui/styled-engine@npm:^5.16.6":
-  version: 5.16.6
-  resolution: "@mui/styled-engine@npm:5.16.6"
+"@mui/styled-engine@npm:^5.16.8":
+  version: 5.16.8
+  resolution: "@mui/styled-engine@npm:5.16.8"
   dependencies:
     "@babel/runtime": ^7.23.9
     "@emotion/cache": ^11.11.0
@@ -12381,25 +12369,25 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.4.1
     "@emotion/styled": ^11.3.0
-    react: ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@emotion/react":
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 604f83b91801945336db211a8273061132668d01e9f456c30bb811a3b49cc5786b8b7dd8e0b5b89de15f6209abc900d9e679d3ae7a4651a6df45e323b6ed95c5
+  checksum: 8eab246e985bbe2707af4620a3193166bacefb029df65ac846cfc0ac5d7996fcb72c50327241f60913538f58a2ad9aa6de3ef12b72eb7750c71f8d3c284a420b
   languageName: node
   linkType: hard
 
 "@mui/styles@npm:^5.14.18":
-  version: 5.16.7
-  resolution: "@mui/styles@npm:5.16.7"
+  version: 5.16.8
+  resolution: "@mui/styles@npm:5.16.8"
   dependencies:
     "@babel/runtime": ^7.23.9
     "@emotion/hash": ^0.9.1
-    "@mui/private-theming": ^5.16.6
+    "@mui/private-theming": ^5.16.8
     "@mui/types": ^7.2.15
-    "@mui/utils": ^5.16.6
+    "@mui/utils": ^5.16.8
     clsx: ^2.1.0
     csstype: ^3.1.3
     hoist-non-react-statics: ^3.3.2
@@ -12413,32 +12401,32 @@ __metadata:
     jss-plugin-vendor-prefixer: ^10.10.0
     prop-types: ^15.8.1
   peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 1109eb150cf40782a6f24bebf6d22d55ea8c36bbf43893664c303e679b7d235a6578b2f2e1d9ee64132aa24496a15fd32f80278cb641208c3a372bd53679e1c0
+  checksum: 05d6e5cec3492d26f0c0880a9881b05d520e90f69d74a814bd68d28e7eaed6a12af8e566c7cb8b58e9137fca59cf2ec9cf22445e0aa08515e5d3bc2c0bb5d778
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^5.16.7":
-  version: 5.16.7
-  resolution: "@mui/system@npm:5.16.7"
+"@mui/system@npm:^5.16.8":
+  version: 5.16.8
+  resolution: "@mui/system@npm:5.16.8"
   dependencies:
     "@babel/runtime": ^7.23.9
-    "@mui/private-theming": ^5.16.6
-    "@mui/styled-engine": ^5.16.6
+    "@mui/private-theming": ^5.16.8
+    "@mui/styled-engine": ^5.16.8
     "@mui/types": ^7.2.15
-    "@mui/utils": ^5.16.6
+    "@mui/utils": ^5.16.8
     clsx: ^2.1.0
     csstype: ^3.1.3
     prop-types: ^15.8.1
   peerDependencies:
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@emotion/react":
       optional: true
@@ -12446,7 +12434,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 86cc11d062645b6742328178ca3a9e2aa2c6d064a559e4fb8c6c6bb8251794959b9dad385f9508fdcab2ae2764503c80f7c3d4f6eb1e0e8aa649f28d4f59133b
+  checksum: 8082b176009fa907cdb0391db59db6cd3589659ad92497caec998c01e1683978ab2eda4ece4d12e523d233b062aa5946d4a438d9a22bf172f0568be1db773e9c
   languageName: node
   linkType: hard
 
@@ -12462,9 +12450,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.14.15, @mui/utils@npm:^5.16.6":
-  version: 5.16.6
-  resolution: "@mui/utils@npm:5.16.6"
+"@mui/utils@npm:^5.14.15, @mui/utils@npm:^5.16.8":
+  version: 5.16.8
+  resolution: "@mui/utils@npm:5.16.8"
   dependencies:
     "@babel/runtime": ^7.23.9
     "@mui/types": ^7.2.15
@@ -12473,18 +12461,18 @@ __metadata:
     prop-types: ^15.8.1
     react-is: ^18.3.1
   peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 6f8068f07f60a842fcb2e2540eecbd9c5f04df695bcc427184720e8ae138ae689fefd3c20147ab7c76e809ede6e10f5e08d1c34cd3a8b09bd22d2020a666a96f
+  checksum: ed714c6aa583bdf17af9f523c9b9ba3789a47677aa6408bc2afd842fa9eaa6d111361c1309435d481ea03b8c695e22ead98c43dc13239c63a3da481c95e5ad72
   languageName: node
   linkType: hard
 
 "@mui/utils@npm:^6.1.1":
-  version: 6.1.8
-  resolution: "@mui/utils@npm:6.1.8"
+  version: 6.1.9
+  resolution: "@mui/utils@npm:6.1.9"
   dependencies:
     "@babel/runtime": ^7.26.0
     "@mui/types": ^7.2.19
@@ -12498,7 +12486,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 68409ea7463a5961ee6ef2f87fc794f194d3711f23e8fec8651e78c28cfdb07b244abe46c8c45415eeaf244a479c10c5472fcea28c3500bdd6db7fae1c4f42a6
+  checksum: a2c61c0537b312ab0faeb3f13e7f3b0736e11f29e7907ccd77b0643afc0dca3a0dceb3817371666f35ca8df723ddeac9b2bbb6b759206bde99e03514cfd4ebb9
   languageName: node
   linkType: hard
 
@@ -19686,7 +19674,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.5.12, @types/node-fetch@npm:^2.6.4, @types/node-fetch@npm:^2.6.9":
+"@types/node-fetch@npm:^2.6.4, @types/node-fetch@npm:^2.6.9":
   version: 2.6.12
   resolution: "@types/node-fetch@npm:2.6.12"
   dependencies:
@@ -19706,11 +19694,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^22.0.0":
-  version: 22.10.0
-  resolution: "@types/node@npm:22.10.0"
+  version: 22.10.1
+  resolution: "@types/node@npm:22.10.1"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 72b1314ba9dfbabaf1ba01480086399ff3831c8fc30ce82be4755d87cfc25f2ef17ec43d528e655797bbe4de4dd7d3eb7fa7ce2f91dccb8d434865a72870a149
+  checksum: 5a9b81500f288a8fb757b61bd939f99f72b6cb59347a5bae52dd1c2c87100ebbaa9da4256ef3cb9add2090e8704cda1d9a1ffc14ccd5db47a6466c8bae10ebcb
   languageName: node
   linkType: hard
 
@@ -19736,20 +19724,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^18.11.18, @types/node@npm:^18.11.9, @types/node@npm:^18.17.15":
-  version: 18.19.66
-  resolution: "@types/node@npm:18.19.66"
+  version: 18.19.67
+  resolution: "@types/node@npm:18.19.67"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 77e08fee993d91a94f13c2f2251f0282a9175b8fe13585a0e8514ecfa9ac67a648ba9c76ee03f166babda71a3043a2c49effdae4392024089108fcd0cdb3e263
+  checksum: 700f92c6a0b63352ce6327286392adab30bb17623c2a788811e9cf092c4dc2fb5e36ca4727247a981b3f44185fdceef20950a3b7a8ab72721e514ac037022a08
   languageName: node
   linkType: hard
 
 "@types/node@npm:^20.1.1, @types/node@npm:^20.16.0":
-  version: 20.17.8
-  resolution: "@types/node@npm:20.17.8"
+  version: 20.17.9
+  resolution: "@types/node@npm:20.17.9"
   dependencies:
     undici-types: ~6.19.2
-  checksum: c963c363bda5ade3d60b66eaeb1cf809e6a333fdd08cc40120bb86d112b58a667893d23b02cb9876ba69619214384c08e60b7dd0718ca404e954cf2ce6b24840
+  checksum: 2fc67ba937d2c4e7a52f0ccf71b8b4c616dcfa1ad6cd5a726582fd3cbf4f409c2eb44595592580f782c2ade05f8130df072dd04ac064fe150cfcd7849e643500
   languageName: node
   linkType: hard
 
@@ -19939,7 +19927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/protocol-buffers-schema@npm:^3.4.1":
+"@types/protocol-buffers-schema@npm:^3.4.3":
   version: 3.4.3
   resolution: "@types/protocol-buffers-schema@npm:3.4.3"
   dependencies:
@@ -28756,7 +28744,6 @@ __metadata:
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
@@ -30114,15 +30101,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2, gaxios@npm:^6.1.1":
-  version: 6.3.0
-  resolution: "gaxios@npm:6.3.0"
+"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2, gaxios@npm:^6.0.3, gaxios@npm:^6.1.1":
+  version: 6.7.1
+  resolution: "gaxios@npm:6.7.1"
   dependencies:
     extend: ^3.0.2
     https-proxy-agent: ^7.0.1
     is-stream: ^2.0.0
     node-fetch: ^2.6.9
-  checksum: 4d4a8db32d833f8012435e2016cb0c919cac288e821bf81f877504e4284ef12b444cd903448e738c4031cd5219adf1e8d68e7df2b3dba774db9fde27f71109d4
+    uuid: ^9.0.1
+  checksum: ed5952655339918e0868c6f4e079d6e9e55b20a242ddb1be25076cdfb0dd1ca5a2cb233da7352baa972c19f898a78fa6ba67e7d848717c9ca9877c269b5b02f7
   languageName: node
   linkType: hard
 
@@ -30595,7 +30583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3":
+"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.2.0, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3, google-auth-library@npm:^9.7.0":
   version: 9.15.0
   resolution: "google-auth-library@npm:9.15.0"
   dependencies:
@@ -30633,6 +30621,20 @@ __metadata:
   version: 3.21.2
   resolution: "google-protobuf@npm:3.21.2"
   checksum: 3caa2e1e2654714cc1a201ac5e5faabcaa48f5fba3d8ff9b64ca66fe19e4e0506b94053f32eddc77bf3a7a47ac1660315c6744185c1e2bb27654fd76fe91b988
+  languageName: node
+  linkType: hard
+
+"googleapis-common@npm:^7.0.0":
+  version: 7.2.0
+  resolution: "googleapis-common@npm:7.2.0"
+  dependencies:
+    extend: ^3.0.2
+    gaxios: ^6.0.3
+    google-auth-library: ^9.7.0
+    qs: ^6.7.0
+    url-template: ^2.0.8
+    uuid: ^9.0.0
+  checksum: 58f520134c9d6f439ef81919471689f0278ef0ffdbd50c693a59282d95141be74df3a5614c25347c140fc44201e0ef998300389f4cbf51502f2351e67c758ab6
   languageName: node
   linkType: hard
 
@@ -36884,8 +36886,8 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.0.0":
-  version: 3.11.4
-  resolution: "mysql2@npm:3.11.4"
+  version: 3.11.5
+  resolution: "mysql2@npm:3.11.5"
   dependencies:
     aws-ssl-profiles: ^1.1.1
     denque: ^2.1.0
@@ -36896,7 +36898,7 @@ __metadata:
     named-placeholders: ^1.1.3
     seq-queue: ^0.0.5
     sqlstring: ^2.3.2
-  checksum: b4415028fad374b5bd5303968c28fc95feee60c1c946ef47f3581e0303c0e5978a306f44d6f665e3fdada5d6a0dd6c55515427a195700b90943d188f6db2f7ed
+  checksum: 19b184b5b9aafb5d0fd8a8e37f74f20b13631ad888669d6e563060f77b0293fdc80e72459b4090dbbb6307327c243c03dfe5e3760fd5b896fc4fd8f89551bc06
   languageName: node
   linkType: hard
 
@@ -38303,6 +38305,13 @@ __metadata:
   version: 4.1.1
   resolution: "p-throttle@npm:4.1.1"
   checksum: fe8709f3c3b1da7c033479375c2c302e80c1a5d86449013afa7cd46d1dc210bc824a7e4a9d088e66d31987d00878c2b5491bb2fe76246d4d2fc9a1636f5f8298
+  languageName: node
+  linkType: hard
+
+"p-throttle@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "p-throttle@npm:5.1.0"
+  checksum: c412429cbb759a0772a083200a556e5866d4a7cb5383a9cc85880f47f07f4b1787fc33d2c824ab659fff0fc4a34a56e1d0712e88808f0c0ae0ffbe93b54f46c1
   languageName: node
   linkType: hard
 
@@ -40110,7 +40119,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^7.2.5, protobufjs@npm:^7.2.6, protobufjs@npm:^7.3.0, protobufjs@npm:^7.3.2":
+"protobufjs@npm:^7.2.5, protobufjs@npm:^7.2.6, protobufjs@npm:^7.3.0, protobufjs@npm:^7.3.2, protobufjs@npm:^7.4.0":
   version: 7.4.0
   resolution: "protobufjs@npm:7.4.0"
   dependencies:
@@ -40268,7 +40277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.12.2, qs@npm:^6.9.4":
+"qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.12.2, qs@npm:^6.7.0, qs@npm:^6.9.4":
   version: 6.13.1
   resolution: "qs@npm:6.13.1"
   dependencies:
@@ -46113,6 +46122,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"url-template@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "url-template@npm:2.0.8"
+  checksum: 4183fccd74e3591e4154134d4443dccecba9c455c15c7df774f1f1e3fa340fd9bffb903b5beec347196d15ce49c34edf6dec0634a95d170ad6e78c0467d6e13e
+  languageName: node
+  linkType: hard
+
 "url-value-parser@npm:^2.0.0":
   version: 2.0.3
   resolution: "url-value-parser@npm:2.0.3"
@@ -47617,7 +47633,6 @@ __metadata:
     "@yarnpkg/core": ^4.0.3
     "@yarnpkg/fslib": ^3.0.2
     "@yarnpkg/plugin-pack": ^4.0.0
-    lodash: ^4.17.21
     nodemon: ^3.0.1
     semver: ^7.6.0
   languageName: unknown

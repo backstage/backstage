@@ -31,14 +31,11 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { parseLastModified } from './util';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
@@ -107,12 +104,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
@@ -150,7 +142,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(archiveResponse.body),
+      response: archiveResponse,
       subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
