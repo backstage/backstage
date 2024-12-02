@@ -17,7 +17,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { EXPERIMENTAL_instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 // Example usage of the instance metadata service to log the installed features.
 export default createBackendPlugin({
@@ -25,7 +25,7 @@ export default createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        instanceMetadata: EXPERIMENTAL_instanceMetadataServiceRef,
+        instanceMetadata: instanceMetadataServiceRef,
         logger: coreServices.logger,
       },
       async init({ instanceMetadata, logger }) {
