@@ -17,6 +17,7 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
+import { DbRefreshStateRow } from '../../tables';
 
 jest.setTimeout(60_000);
 
@@ -29,54 +30,48 @@ describe('getDeferredStitchableEntities', () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
-      await knex
-        .insert([
-          {
-            entity_id: '1',
-            entity_ref: 'k:ns/no_stitch_time',
-            unprocessed_entity: '{}',
-            processed_entity: '{}',
-            errors: '[]',
-            next_update_at: knex.fn.now(),
-            last_discovery_at: knex.fn.now(),
-            next_stitch_at: null,
-            next_stitch_ticket: null,
-          },
-          {
-            entity_id: '2',
-            entity_ref: 'k:ns/future_stitch_time',
-            unprocessed_entity: '{}',
-            processed_entity: '{}',
-            errors: '[]',
-            next_update_at: knex.fn.now(),
-            last_discovery_at: knex.fn.now(),
-            next_stitch_at: '2037-01-01T00:00:00.000',
-            next_stitch_ticket: 't1',
-          },
-          {
-            entity_id: '3',
-            entity_ref: 'k:ns/past_stitch_time',
-            unprocessed_entity: '{}',
-            processed_entity: '{}',
-            errors: '[]',
-            next_update_at: knex.fn.now(),
-            last_discovery_at: knex.fn.now(),
-            next_stitch_at: '1971-01-01T00:00:00.000',
-            next_stitch_ticket: 't3',
-          },
-          {
-            entity_id: '4',
-            entity_ref: 'k:ns/past_stitch_time_again',
-            unprocessed_entity: '{}',
-            processed_entity: '{}',
-            errors: '[]',
-            next_update_at: knex.fn.now(),
-            last_discovery_at: knex.fn.now(),
-            next_stitch_at: '1972-01-01T00:00:00.000',
-            next_stitch_ticket: 't4',
-          },
-        ])
-        .into('refresh_state');
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: '1',
+          entity_ref: 'k:ns/no_stitch_time',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: null,
+          next_stitch_ticket: null,
+        },
+        {
+          entity_id: '2',
+          entity_ref: 'k:ns/future_stitch_time',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: '2037-01-01T00:00:00.000',
+          next_stitch_ticket: 't1',
+        },
+        {
+          entity_id: '3',
+          entity_ref: 'k:ns/past_stitch_time',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: '1971-01-01T00:00:00.000',
+          next_stitch_ticket: 't3',
+        },
+        {
+          entity_id: '4',
+          entity_ref: 'k:ns/past_stitch_time_again',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: '1972-01-01T00:00:00.000',
+          next_stitch_ticket: 't4',
+        },
+      ]);
 
       const rowsBefore = await knex('refresh_state');
 

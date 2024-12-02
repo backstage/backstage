@@ -41,6 +41,7 @@ import {
 import {
   DbFinalEntitiesRow,
   DbPageInfo,
+  DbRefreshStateQueuesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
@@ -581,53 +582,34 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // means it'll never try to write down the children again (it assumes that
     // they already exist). This means that without the code below, the database
     // never "heals" from accidental deletes.
-    if (dbConfig.client.includes('mysql')) {
-      // MySQL doesn't support the syntax we need to do this in a single query,
-      // http://dev.mysql.com/doc/refman/5.6/en/update.html
-      const results = await this.database<DbRefreshStateRow>('refresh_state')
-        .select('entity_id')
-        .whereIn('entity_ref', function parents(builder) {
-          return builder
-            .from<DbRefreshStateRow>('refresh_state')
-            .innerJoin<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-              {
-                'refresh_state_references.target_entity_ref':
-                  'refresh_state.entity_ref',
-              },
-            )
-            .where('refresh_state.entity_id', '=', uid)
-            .select('refresh_state_references.source_entity_ref');
-        });
-      await this.database<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'child-was-deleted',
-          next_update_at: this.database.fn.now(),
-        })
-        .whereIn(
-          'entity_id',
-          results.map(key => key.entity_id),
-        );
-    } else {
-      await this.database<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'child-was-deleted',
-          next_update_at: this.database.fn.now(),
-        })
-        .whereIn('entity_ref', function parents(builder) {
-          return builder
-            .from<DbRefreshStateRow>('refresh_state')
-            .innerJoin<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-              {
-                'refresh_state_references.target_entity_ref':
-                  'refresh_state.entity_ref',
-              },
-            )
-            .where('refresh_state.entity_id', '=', uid)
-            .select('refresh_state_references.source_entity_ref');
-        });
-    }
+    const results = await this.database<DbRefreshStateRow>('refresh_state')
+      .select('entity_id')
+      .whereIn('entity_ref', function parents(builder) {
+        return builder
+          .from<DbRefreshStateRow>('refresh_state')
+          .innerJoin<DbRefreshStateReferencesRow>('refresh_state_references', {
+            'refresh_state_references.target_entity_ref':
+              'refresh_state.entity_ref',
+          })
+          .where('refresh_state.entity_id', '=', uid)
+          .select('refresh_state_references.source_entity_ref');
+      });
+    await this.database<DbRefreshStateRow>('refresh_state')
+      .update({
+        result_hash: 'child-was-deleted',
+      })
+      .whereIn(
+        'entity_id',
+        results.map(key => key.entity_id),
+      );
+    await this.database<DbRefreshStateQueuesRow>('refresh_state_queues')
+      .update({
+        next_update_at: this.database.fn.now(),
+      })
+      .whereIn(
+        'entity_id',
+        results.map(key => key.entity_id),
+      );
 
     // Stitch the entities that the deleted one had relations to. If we do not
     // do this, the entities in the other end of the relations will still look

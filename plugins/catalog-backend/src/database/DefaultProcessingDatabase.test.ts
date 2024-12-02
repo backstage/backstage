@@ -660,7 +660,7 @@ describe('DefaultProcessingDatabase', () => {
         });
         await knex<DbRefreshStateQueuesRow>('refresh_state_queues').insert({
           entity_id: '2',
-          next_update_at: '2019-01-01 23:00:00',
+          next_update_at: '2019-04-01 13:37:00',
         });
 
         await knex<DbRefreshStateRow>('refresh_state').insert({
@@ -672,7 +672,7 @@ describe('DefaultProcessingDatabase', () => {
         });
         await knex<DbRefreshStateQueuesRow>('refresh_state_queues').insert({
           entity_id: '1',
-          next_update_at: '2042-01-01 23:00:00',
+          next_update_at: '2036-04-01 13:37:00',
         });
 
         await db.transaction(async tx => {

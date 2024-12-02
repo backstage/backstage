@@ -17,7 +17,11 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { markForStitching } from './markForStitching';
-import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import {
+  DbFinalEntitiesRow,
+  DbRefreshStateQueuesRow,
+  DbRefreshStateRow,
+} from '../../tables';
 
 jest.setTimeout(60_000);
 
@@ -270,6 +274,24 @@ describe('markForStitching', () => {
           stitch_ticket: 'old',
         },
       ]);
+      await knex<DbRefreshStateQueuesRow>('refresh_state_queues').insert([
+        {
+          entity_id: '1',
+          next_update_at: knex.fn.now(),
+        },
+        {
+          entity_id: '2',
+          next_update_at: knex.fn.now(),
+        },
+        {
+          entity_id: '3',
+          next_update_at: knex.fn.now(),
+        },
+        {
+          entity_id: '4',
+          next_update_at: knex.fn.now(),
+        },
+      ]);
 
       async function result() {
         return knex<DbRefreshStateRow>('refresh_state')
@@ -278,9 +300,14 @@ describe('markForStitching', () => {
             'final_entities.entity_id',
             'refresh_state.entity_id',
           )
+          .leftJoin(
+            'refresh_state_queues',
+            'refresh_state_queues.entity_id',
+            'refresh_state.entity_id',
+          )
           .select({
             entity_id: 'refresh_state.entity_id',
-            next_update_at: 'refresh_state.next_update_at',
+            next_update_at: 'refresh_state_queues.next_update_at',
             refresh_state_hash: 'refresh_state.result_hash',
             final_entities_hash: 'final_entities.hash',
           })
