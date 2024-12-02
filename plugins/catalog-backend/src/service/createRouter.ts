@@ -19,7 +19,6 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  parseEntityRef,
   parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -42,8 +41,10 @@ import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { LocationService, RefreshService } from './types';
 import {
+  createEntityArrayJsonStream,
   disallowReadonlyMode,
   encodeCursor,
+  expandLegacyCompoundRelationRefsInResponse,
   locationInput,
   validateRequestBody,
 } from './util';
@@ -170,17 +171,15 @@ export async function createRouter(
         // For other read-the-entire-world cases, use queryEntities and stream
         // out results.
 
-        // Imitate the httpRouter behavior of pretty-printing in development
-        const prettyPrint = process.env.NODE_ENV === 'development';
-
         // The write lock is used for back pressure, preventing slow readers
         // from forcing our read loop to pile up response data in userspace
         // buffers faster than the kernel buffer is emptied.
         // https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback
         let writeLock: DeferredPromise | undefined;
         const controller = new AbortController();
+        const signal = controller.signal;
         req.on('end', () => {
-          controller.abort();
+          controller.abort(new Error('Client closed connection'));
           writeLock?.resolve();
           writeLock = undefined;
         });
@@ -189,87 +188,44 @@ export async function createRouter(
           writeLock = undefined;
         });
 
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.status(200);
-        res.flushHeaders();
-        res.write(prettyPrint ? '[\n' : '[');
-
+        const responseStream = createEntityArrayJsonStream(res);
         const limit = 10000;
         let cursor: Cursor | undefined;
-        let firstSend = true;
-        do {
-          const result = await entitiesCatalog.queryEntities(
-            !cursor
-              ? { credentials, fields, limit, filter, orderFields: order }
-              : { credentials, fields, limit, cursor },
-          );
 
-          if (result.items.length) {
-            // TODO(freben): This is added as a compatibility guarantee, until we can be
-            // sure that all adopters have re-stitched their entities so that the new
-            // targetRef field is present on them, and that they have stopped consuming
-            // the now-removed old field
-            // TODO(jhaals): Remove this in April 2022
-            for (const entity of result.items) {
-              if (entity.relations) {
-                for (const relation of entity.relations as any) {
-                  if (!relation.targetRef && relation.target) {
-                    // This is the case where an old-form entity, not yet stitched with
-                    // the updated code, was in the database
-                    relation.targetRef = stringifyEntityRef(relation.target);
-                  } else if (!relation.target && relation.targetRef) {
-                    // This is the case where a new-form entity, stitched with the
-                    // updated code, was in the database but we still want to produce
-                    // the old data shape as well for compatibility reasons
-                    relation.target = parseEntityRef(relation.targetRef);
-                  }
-                }
+        try {
+          do {
+            const result = await entitiesCatalog.queryEntities(
+              !cursor
+                ? { credentials, fields, limit, filter, orderFields: order }
+                : { credentials, fields, limit, cursor },
+            );
+
+            if (result.items.length) {
+              if (writeLock) {
+                await writeLock;
+              }
+
+              signal.throwIfAborted();
+
+              expandLegacyCompoundRelationRefsInResponse(result.items);
+              if (!responseStream.send(result.items)) {
+                // The kernel buffer is full. Create the lock but do not await it
+                // yet - we can better spend our time going to the next round of
+                // the loop and read from the database while we wait for it to
+                // drain.
+                writeLock = createDeferred();
               }
             }
 
-            // Stringify
-            let data: string;
-            if (prettyPrint) {
-              data = JSON.stringify(result.items, null, 2).slice(2, -2);
-              if (!firstSend) {
-                data = `,\n${data}`;
-              }
-            } else {
-              data = JSON.stringify(result.items).slice(1, -1);
-              if (!firstSend) {
-                data = `,${data}`;
-              }
-            }
+            signal.throwIfAborted();
 
-            if (writeLock) {
-              await writeLock;
-            }
+            cursor = result.pageInfo?.nextCursor;
+          } while (cursor);
 
-            if (controller.signal.aborted) {
-              res.end();
-              return;
-            }
-
-            if (!res.write(data)) {
-              // The kernel buffer is full. Create the lock but do not await it
-              // yet - we can better spend our time going to the next round of
-              // the loop and read from the database while we wait for it to
-              // drain.
-              writeLock = createDeferred();
-            }
-
-            firstSend = false;
-          }
-
-          if (controller.signal.aborted) {
-            res.end();
-            return;
-          }
-
-          cursor = result.pageInfo?.nextCursor;
-        } while (cursor);
-
-        res.end(prettyPrint && !firstSend ? '\n]' : ']');
+          responseStream.complete();
+        } finally {
+          responseStream.close();
+        }
       })
       .get('/entities/by-query', async (req, res) => {
         const { items, pageInfo, totalItems } =
