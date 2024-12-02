@@ -18,13 +18,6 @@ export type BackendFeatureMeta =
       moduleId: string;
     };
 
-// @alpha
-export const EXPERIMENTAL_instanceMetadataServiceRef: ServiceRef<
-  InstanceMetadataService,
-  'plugin',
-  'singleton'
->;
-
 // @alpha (undocumented)
 export interface FeatureDiscoveryService {
   // (undocumented)
@@ -45,6 +38,13 @@ export interface InstanceMetadataService {
   // (undocumented)
   getInstalledFeatures: () => BackendFeatureMeta[];
 }
+
+// @alpha
+export const instanceMetadataServiceRef: ServiceRef<
+  InstanceMetadataService,
+  'plugin',
+  'singleton'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
