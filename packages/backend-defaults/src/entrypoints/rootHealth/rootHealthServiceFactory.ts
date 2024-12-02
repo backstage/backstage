@@ -39,7 +39,8 @@ export class DefaultRootHealthService implements RootHealthService {
   }
 
   async getReadiness(): Promise<{ status: number; payload?: any }> {
-    if (!this.#isRunning) {
+    // If the process has been told to exit, or if the backend has not started yet
+    if (process.exitCode !== undefined || !this.#isRunning) {
       return {
         status: 503,
         payload: { message: 'Backend has not started yet', status: 'error' },

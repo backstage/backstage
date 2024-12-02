@@ -65,9 +65,18 @@ const instanceRegistry = new (class InstanceRegistry {
     if (!this.#registered) {
       this.#registered = true;
 
-      process.addListener('SIGTERM', this.#exitHandler);
-      process.addListener('SIGINT', this.#exitHandler);
-      process.addListener('beforeExit', this.#exitHandler);
+      process.addListener('SIGTERM', () => {
+        this.#exitHandler();
+      });
+      process.addListener('SIGINT', () => {
+        this.#exitHandler();
+      });
+      process.addListener('SIGQUIT', () => {
+        process.exit(0);
+      });
+      process.addListener('beforeExit', () => {
+        this.#exitHandler();
+      });
     }
 
     this.#instances.add(instance);
@@ -79,12 +88,18 @@ const instanceRegistry = new (class InstanceRegistry {
 
   #exitHandler = async () => {
     try {
-      const results = await Promise.allSettled(
-        Array.from(this.#instances).map(b => b.stop()),
-      );
-      const errors = results.flatMap(r =>
-        r.status === 'rejected' ? [r.reason] : [],
-      );
+      // This signals to the healthcheck service that the process is shutting down
+      process.exitCode = 0;
+
+      const results = await Promise.race([
+        // Give the backend 30 seconds to shut down, then force exit
+        new Promise(resolve => setTimeout(resolve, 30000)),
+        Promise.allSettled(Array.from(this.#instances).map(b => b.stop())),
+      ]);
+
+      const errors = Array.isArray(results)
+        ? results.flatMap(r => (r.status === 'rejected' ? [r.reason] : []))
+        : [];
 
       if (errors.length > 0) {
         for (const error of errors) {

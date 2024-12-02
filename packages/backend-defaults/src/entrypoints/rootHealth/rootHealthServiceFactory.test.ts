@@ -51,6 +51,24 @@ describe('DefaultRootHealthService', () => {
       });
     });
 
+    it(`should return a 503 response if the server is stopping`, async () => {
+      const service = new DefaultRootHealthService({
+        lifecycle: mockServices.rootLifecycle.mock(),
+      });
+
+      process.exitCode = 1;
+
+      await expect(service.getReadiness()).resolves.toEqual({
+        status: 503,
+        payload: {
+          message: 'Backend has not started yet',
+          status: 'error',
+        },
+      });
+
+      process.exitCode = undefined; // Reset exitCode for other tests
+    });
+
     it(`should return a 500 response if the server has stopped`, async () => {
       let mockServerStartedFn = () => {};
       let mockServerStoppedFn = () => {};
