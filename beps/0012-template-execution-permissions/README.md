@@ -11,10 +11,6 @@ project-areas:
 creation-date: 2024-12-02
 ---
 
-<!--
-**Note:** When your BEP is complete, all these pre-existing comments should be removed
--->
-
 # BEP: Template Execution Permissions
 
 - [Summary](#summary)
@@ -28,10 +24,6 @@ creation-date: 2024-12-02
 - [Alternatives](#alternatives)
 
 ## Summary
-
-<!--
-The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
--->
 
 Companies are able to create custom actions and fields for their templates, and will want to restrict who can execute a
 template action to specific groups of users.
@@ -52,17 +44,7 @@ provide a dedicated section to provide data to built in or custom permission rul
 
 ## Motivation
 
-<!--
-This section is for explicitly listing the motivation, goals, and non-goals of
-this BEP. Describe why the change is important and the benefits to users.
--->
-
 ### Goals
-
-<!--
-List the specific goals of the BEP. What is it trying to achieve? How will we
-know that this has succeeded?
--->
 
 - Add `templateExecutePermission` that can be targeted to restrict execution of templates
   - eg. restrict custom actions to a specific set of users
@@ -79,30 +61,12 @@ know that this has succeeded?
 
 ### Non-Goals
 
-<!--
-What is out of scope for this BEP? Listing non-goals helps to focus discussion
-and make progress.
--->
-
 - Changes to the scaffolder tasks permissions
 - Changes to the core permissions framework
 
 ## Proposal
 
-<!--
-This is where we get down to the specifics of what the proposal actually is.
-This should have enough detail that reviewers can understand exactly what
-you're proposing, but should not include things like API designs or
-implementation.
--->
-
 ## Design Details
-
-<!--
-This section should contain enough information that the specifics of your
-change are understandable. This may include API specs or even code snippets.
-If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
--->
 
 Initial implementation: https://github.com/backstage/backstage/pull/27748
 
@@ -163,6 +127,7 @@ const canExecActionRule = createScaffolderTemplateEntityPermissionRule({
   toQuery: () => ({}),
 });
 
+// Namespace for custom conditions
 export const customScaffolderTemplateEntityConditions = {
   userInTaggedGroup: createConditionFactory(userInTaggedGroupRule),
   canExecAction: createConditionFactory(canExecActionRule),
@@ -225,37 +190,22 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 ```
 
 In the "create..." template index page, templates that fail the permission check would be hidden in the listing.
-Alternately, a the template could be disabled with a notice saying that the user does not have permission to run the
-template. A future update to permissions could provide a space for a reason to be provided to the user on why a
-permission was denied, but that is outside the scope of this BEP.
+Alternately, the template could be displayed, but disabled, with a notice saying that the user does not have permission
+to run the template. A future update to permissions could provide a space for a reason to be provided to the user on why
+a permission was denied, but that is outside the scope of this BEP.
 
 ## Release Plan
 
-<!--
-This section should describe the rollout process for any new features. It must take our version policies into account and plan for a phased rollout if this change affects any existing stable APIs.
-
-If there is any particular feedback to be gathered during the rollout, this should be described here as well.
--->
-
-- Introduction of the new permission, and a permissionRulesExtensionPoint
+- Add experimental permission `templateExecutePermission` (#27748)
+- Add `permissionRulesExtensionPoint` to support custom actions (#27748)
 - Gather feedback on common conditions used for restricting templates
 - If decided, deprecation of of the `stepRead` and `parameterRead` permission
 
 ## Dependencies
 
-<!--
-List any dependencies that this work has on other BEPs or features.
--->
-
 - None currently
 
 ## Alternatives
-
-<!--
-What other approaches did you consider, and why did you rule them out? These do
-not need to be as detailed as the proposal, but should include enough
-information to express the idea and why it was not acceptable.
--->
 
 - using `catalogEntityReadPermission` to restrict template visibility
   - Also removes the template from the catalog for the user. Viewing a
