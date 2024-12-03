@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { PluginDatabaseManager } from '@backstage/backend-common';
 import type { Config } from '@backstage/config';
 import type {
   DeferredEntity,
@@ -29,6 +28,7 @@ import {
   UrlReaderService,
   SchedulerService,
   SchedulerServiceTaskFunction,
+  DatabaseService,
 } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 
@@ -187,7 +187,7 @@ export interface IncrementalEntityProviderOptions {
 /** @public */
 export type PluginEnvironment = {
   logger: Logger;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   scheduler: SchedulerService;
   config: Config;
   reader: UrlReaderService;
