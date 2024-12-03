@@ -33,11 +33,11 @@ export const themes = {
 /** @public */
 export const space = {
   none: 0,
-  xxs: 'var(--canon-space-xxs)',
-  xs: 'var(--canon-space-xs)',
-  sm: 'var(--canon-space-sm)',
-  md: 'var(--canon-space-md)',
-  lg: 'var(--canon-space-lg)',
-  xl: 'var(--canon-space-xl)',
-  xxl: 'var(--canon-space-xxl)',
+  '2xs': 'var(--canon-spacing-2xs)',
+  xs: 'var(--canon-spacing-xs)',
+  sm: 'var(--canon-spacing-sm)',
+  md: 'var(--canon-spacing-md)',
+  lg: 'var(--canon-spacing-lg)',
+  xl: 'var(--canon-spacing-xl)',
+  '2xl': 'var(--canon-spacing-2xl)',
 };

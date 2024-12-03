@@ -16,42 +16,74 @@
 
 /* Light theme */
 :root {
-  --canon-accent: #1ed760;
+  /* Colors */
+  --canon-accent: #000;
   --canon-background: #f8f8f8;
   --canon-surface-1: #fff;
   --canon-surface-2: #f4f4f4;
-  --canon-outline: #666;
-  --canon-outline-focus: #ccc;
+
+  /* Outlines */
+  --canon-outline: rgba(0, 0, 0, 0.1);
+  --canon-outline-hover: rgba(0, 0, 0, 0.2);
+  --canon-outline-focus: #000;
+
+  /* States - Add more states */
   --canon-error: #f50000;
+
+  /* Text colors */
   --canon-text-primary: #000;
+  --canon-text-primary-on-accent: #fff;
   --canon-text-secondary: #646464;
+
+  /* Box shadows */
   --canon-box-shadow-small: 0 0 0 1px rgba(0, 0, 0, 0.05);
   --canon-box-shadow-medium: 0 0 0 1px rgba(0, 0, 0, 0.1);
   --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2);
 
+  /* Font families */
   --canon-font-sans: 'Geist', serif;
   --canon-font-monospace: 'Monospace', monospace;
   --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
 
-  --canon-space-unit: 1em;
-  --canon-space-xxs: calc(0.25 * var(--canon-space-unit));
-  --canon-space-xs: calc(0.5 * var(--canon-space-unit));
-  --canon-space-sm: calc(0.75 * var(--canon-space-unit));
-  --canon-space-md: calc(1.25 * var(--canon-space-unit));
-  --canon-space-lg: calc(2 * var(--canon-space-unit));
-  --canon-space-xl: calc(3.25 * var(--canon-space-unit));
-  --canon-space-xxl: calc(5.25 * var(--canon-space-unit));
+  /* Font weights */
+  --canon-font-regular: 400;
+  --canon-font-bold: 600;
+
+  /* Font sizes */
+  --canon-font-sizes-2xs: 0.625rem;
+  --canon-font-sizes-xs: 0.75rem;
+  --canon-font-sizes-sm: 0.875rem;
+  --canon-font-sizes-md: 1rem;
+  --canon-font-sizes-lg: 1.125rem;
+  --canon-font-sizes-xl: 1.25rem;
+  --canon-font-sizes-2xl: 1.5rem;
+  --canon-font-sizes-3xl: 1.875rem;
+  --canon-font-sizes-4xl: 2.25rem;
+  --canon-font-sizes-5xl: 3rem;
+  --canon-font-sizes-6xl: 3.75rem;
+  --canon-font-sizes-7xl: 4.5rem;
+  --canon-font-sizes-8xl: 6rem;
+  --canon-font-sizes-9xl: 8rem;
+
+  /* Spacing */
+  --canon-spacing-2xs: 0.25rem;
+  --canon-spacing-xs: 0.5rem;
+  --canon-spacing-sm: 0.75rem;
+  --canon-spacing-md: 1.25rem;
+  --canon-spacing-lg: 2rem;
+  --canon-spacing-xl: 3.25rem;
+  --canon-spacing-2xl: 5.25rem;
 }
 
 /* Dark theme */
 [data-theme='dark'] {
-  --canon-accent: #1ed760;
+  --canon-accent: #fff;
   --canon-background: #000;
   --canon-surface-1: #121212;
   --canon-surface-2: #292929;
   --canon-outline: #666;
   --canon-outline-focus: #ccc;
-  --canon-text-primary: #f0f0f0;
+  --canon-text-primary: #000;
   --canon-text-secondary: #666;
 }
