@@ -115,15 +115,9 @@ export const breakpoints: {
 };
 
 // @public (undocumented)
-export const Button: ({
-  size,
-  variant,
-  children,
-  disabled,
-  iconStart,
-  iconEnd,
-  ...props
-}: ButtonProps) => React_2.JSX.Element;
+export const Button: React_2.ForwardRefExoticComponent<
+  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+>;
 
 // @public
 export interface ButtonProps {
@@ -138,7 +132,7 @@ export interface ButtonProps {
   // (undocumented)
   size?: 'small' | 'medium';
   // (undocumented)
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'tertiary';
 }
 
 // @public (undocumented)
@@ -191,6 +185,14 @@ export type IconNames =
   | 'arrowLeft'
   | 'arrowRight'
   | 'arrowUp'
+  | 'arrowDownCircle'
+  | 'arrowLeftCircle'
+  | 'arrowRightCircle'
+  | 'arrowUpCircle'
+  | 'chevronDown'
+  | 'chevronLeft'
+  | 'chevronRight'
+  | 'chevronUp'
   | 'cloud'
   | 'heart'
   | 'plus'
@@ -264,13 +266,13 @@ export type Space = keyof typeof space;
 // @public (undocumented)
 export const space: {
   none: number;
-  xxs: string;
+  '2xs': string;
   xs: string;
   sm: string;
   md: string;
   lg: string;
   xl: string;
-  xxl: string;
+  '2xl': string;
 };
 
 // @public (undocumented)
