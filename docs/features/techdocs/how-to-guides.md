@@ -149,7 +149,7 @@ const techDocsTabsConfig = [
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
-        panelProps: { showHeader: false, hideSupport: true },
+        panelProps: { showHeader: false, showSupport: false },
         filterPredicate: entity =>
           entity?.metadata?.tags?.includes('golden-path') ?? false,
       },
@@ -159,7 +159,7 @@ const techDocsTabsConfig = [
         panelType: 'InfoCardGrid',
         panelProps: {
           showHeader: false,
-          hideSupport: true,
+          showSupport: false,
           linkDestination: linkDestination,
         },
         filterPredicate: entity =>
@@ -175,7 +175,7 @@ const techDocsTabsConfig = [
         filterPredicate: filterEntity,
         panelType: 'TechDocsIndexPage',
         title: 'All',
-        panelProps: { showHeader: false, hideSupport: true, options: options },
+        panelProps: { showHeader: false, showSupport: false, options: options },
       },
     ],
   },
@@ -189,7 +189,7 @@ const AppRoutes = () => {
         <TechDocsCustomHome
           tabsConfig={techDocsTabsConfig}
           title="Docs"
-          hideSubtitle
+          showSubtitle={false}
           filter={{
             kind: ['Location', 'Resource', 'Component'],
             'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,

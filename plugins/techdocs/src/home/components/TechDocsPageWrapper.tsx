@@ -28,7 +28,7 @@ export type TechDocsPageWrapperProps = {
   children?: React.ReactNode;
   title?: string;
   subtitle?: string;
-  hideSubtitle?: boolean;
+  showSubtitle?: boolean;
 };
 
 /**
@@ -37,7 +37,7 @@ export type TechDocsPageWrapperProps = {
  * @public
  */
 export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
-  const { children, title, subtitle, hideSubtitle } = props;
+  const { children, title, subtitle, showSubtitle = true } = props;
   const configApi = useApi(configApiRef);
   const generatedSubtitle =
     subtitle ||
@@ -48,7 +48,7 @@ export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
   return (
     <PageWithHeader
       title={title || 'Documentation'}
-      subtitle={hideSubtitle ? undefined : generatedSubtitle}
+      subtitle={showSubtitle ? generatedSubtitle : undefined}
       themeId="documentation"
     >
       {children}

@@ -127,7 +127,7 @@ describe('TechDocsCustomHome', () => {
       screen.queryByText('Discover documentation in your ecosystem.'),
     ).not.toBeInTheDocument();
   });
-  it('should render SupportButton based on hideSupport prop', async () => {
+  it('should render SupportButton based on showSupport prop', async () => {
     const tabsConfig = [
       {
         label: 'First Tab',
@@ -137,7 +137,7 @@ describe('TechDocsCustomHome', () => {
             description: 'First Tab Description',
             panelType: 'DocsCardGrid' as PanelType,
             filterPredicate: () => true,
-            panelProps: { hideSupport: true },
+            panelProps: { showSupport: false },
           },
         ],
       },
@@ -158,7 +158,7 @@ describe('TechDocsCustomHome', () => {
       screen.queryByText('Discover documentation in your ecosystem.'),
     ).not.toBeInTheDocument();
   });
-  it('should hide subtitle when hideSubtitle is true', async () => {
+  it('should hide subtitle when showSubtitle is false', async () => {
     const tabsConfig = [
       {
         label: 'First Tab',
@@ -179,7 +179,7 @@ describe('TechDocsCustomHome', () => {
           tabsConfig={tabsConfig}
           title="Custom Title"
           subtitle="Custom Subtitle"
-          hideSubtitle
+          showSubtitle={false}
         />
       </ApiProvider>,
       {

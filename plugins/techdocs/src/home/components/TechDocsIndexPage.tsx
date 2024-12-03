@@ -39,7 +39,7 @@ export type TechDocsIndexPageProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   showHeader?: boolean;
-  hideSupport?: boolean;
+  showSupport?: boolean;
   options?: TableOptions<DocsTableRow>;
   title?: string;
   subtitle?: string;

@@ -25,7 +25,7 @@ import {
   useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
-import { DocsTable } from './Tables';
+import { DocsTable, DocsTableRow } from './Tables';
 import { DocsCardGrid, InfoCardGrid } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsIndexPage } from './TechDocsIndexPage';
@@ -38,6 +38,7 @@ import {
   WarningPanel,
   SupportButton,
   ContentHeader,
+  TableOptions,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
@@ -62,6 +63,19 @@ export type PanelType =
   | 'InfoCardGrid';
 
 /**
+ * Type representing Panel props
+ *
+ * @public
+ */
+export interface PanelProps {
+  showHeader?: boolean;
+  showSupport?: boolean;
+  options?: TableOptions<DocsTableRow>;
+  linkContent?: string | JSX.Element;
+  linkDestination?: (entity: Entity) => string;
+}
+
+/**
  * Type representing a TechDocsCustomHome panel.
  *
  * @public
@@ -72,7 +86,7 @@ export interface PanelConfig {
   panelType: PanelType;
   panelCSS?: CSSProperties;
   filterPredicate: ((entity: Entity) => boolean) | string;
-  panelProps?: Record<string, any>;
+  panelProps?: PanelProps;
 }
 
 /**
@@ -135,7 +149,7 @@ export const CustomDocsPanel = ({
     <>
       {config.panelProps?.showHeader !== false && (
         <ContentHeader title={config.title} description={config.description}>
-          {index === 0 && config.panelProps?.hideSupport !== true && (
+          {index === 0 && config.panelProps?.showSupport !== false && (
             <SupportButton>
               Discover documentation in your ecosystem.
             </SupportButton>
@@ -163,11 +177,11 @@ export type TechDocsCustomHomeProps = {
   filter?: EntityFilterQuery;
   title?: string;
   subtitle?: string;
-  hideSubtitle?: boolean;
+  showSubtitle?: boolean;
 };
 
 export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
-  const { tabsConfig, filter, title, subtitle, hideSubtitle } = props;
+  const { tabsConfig, filter, title, subtitle, showSubtitle = true } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 
@@ -202,7 +216,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
       <TechDocsPageWrapper
         title={title}
         subtitle={subtitle}
-        hideSubtitle={hideSubtitle}
+        showSubtitle={showSubtitle}
       >
         <Content>
           <Progress />
@@ -216,7 +230,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
       <TechDocsPageWrapper
         title={title}
         subtitle={subtitle}
-        hideSubtitle={hideSubtitle}
+        showSubtitle={showSubtitle}
       >
         <Content>
           <WarningPanel
@@ -234,7 +248,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
     <TechDocsPageWrapper
       title={title}
       subtitle={subtitle}
-      hideSubtitle={hideSubtitle}
+      showSubtitle={showSubtitle}
     >
       <HeaderTabs
         selectedIndex={selectedTab}

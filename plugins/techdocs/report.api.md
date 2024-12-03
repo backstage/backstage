@@ -232,8 +232,10 @@ export interface PanelConfig {
   filterPredicate: ((entity: Entity) => boolean) | string;
   // (undocumented)
   panelCSS?: CSSProperties;
+  // Warning: (ae-forgotten-export) The symbol "PanelProps" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  panelProps?: Record<string, any>;
+  panelProps?: PanelProps;
   // (undocumented)
   panelType: PanelType;
   // (undocumented)
@@ -329,7 +331,7 @@ export type TechDocsCustomHomeProps = {
   filter?: EntityFilterQuery;
   title?: string;
   subtitle?: string;
-  hideSubtitle?: boolean;
+  showSubtitle?: boolean;
 };
 
 // @public @deprecated (undocumented)
@@ -347,7 +349,7 @@ export type TechDocsIndexPageProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   showHeader?: boolean;
-  hideSupport?: boolean;
+  showSupport?: boolean;
   options?: TableOptions<DocsTableRow>;
   title?: string;
   subtitle?: string;
@@ -369,7 +371,7 @@ export type TechDocsPageWrapperProps = {
   children?: React_2.ReactNode;
   title?: string;
   subtitle?: string;
-  hideSubtitle?: boolean;
+  showSubtitle?: boolean;
 };
 
 // @public

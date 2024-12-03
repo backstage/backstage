@@ -51,17 +51,17 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     columns,
     actions,
     ownerPickerMode,
-    showHeader,
+    showHeader = true,
     options,
     title,
     subtitle,
-    hideSupport,
+    showSupport = true,
   } = props;
-  const Wrapper = showHeader !== false ? TechDocsPageWrapper : React.Fragment;
+  const Wrapper = showHeader ? TechDocsPageWrapper : React.Fragment;
   return (
     <Wrapper title={title} subtitle={subtitle}>
       <Content>
-        {hideSupport !== true && (
+        {showSupport && (
           <ContentHeader title="">
             <SupportButton>
               Discover documentation in your ecosystem.
