@@ -69,7 +69,6 @@ export async function buildPgDatabaseConfig(
   overrides?: Knex.Config,
 ) {
   const config = mergeDatabaseConfig(
-    { connection: { type: 'default' } },
     dbConfig.get(),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
@@ -78,48 +77,48 @@ export async function buildPgDatabaseConfig(
     overrides,
   );
 
-  let transformedConfig = config;
+  const sanitizedConfig = JSON.parse(JSON.stringify(config));
 
-  if (config.connection.type) {
-    if (config.connection.type === 'cloudsql') {
-      if (config.client !== 'pg') {
-        throw new Error('Cloud SQL only supports the pg client');
-      }
+  // Trim additional properties from the connection object passed to knex
+  delete sanitizedConfig.connection.type;
+  delete sanitizedConfig.connection.instance;
 
-      if (!config.connection.instance) {
-        throw new Error('Missing instance connection name for Cloud SQL');
-      }
-
-      const {
-        Connector: CloudSqlConnector,
-        IpAddressTypes,
-        AuthTypes,
-      } = await import('@google-cloud/cloud-sql-connector');
-      const connector = new CloudSqlConnector();
-      const clientOpts = await connector.getOptions({
-        instanceConnectionName: config.connection.instance,
-        ipType: IpAddressTypes.PUBLIC,
-        authType: AuthTypes.IAM,
-      });
-
-      transformedConfig = {
-        ...config,
-        client: 'pg',
-        connection: {
-          ...config.connection,
-          ...clientOpts,
-        },
-      };
-    } else if (config.connection.type !== 'default') {
-      throw new Error(`Unknown connection type: ${config.connection.type}`);
-    }
+  if (config.connection.type === 'default' || !config.connection.type) {
+    return sanitizedConfig;
   }
 
-  // Remove the connection type and instance from the config
-  delete transformedConfig.connection.type;
-  delete transformedConfig.connection.instance;
+  if (config.connection.type !== 'cloudsql') {
+    throw new Error(`Unknown connection type: ${config.connection.type}`);
+  }
 
-  return transformedConfig;
+  if (config.client !== 'pg') {
+    throw new Error('Cloud SQL only supports the pg client');
+  }
+
+  if (!config.connection.instance) {
+    throw new Error('Missing instance connection name for Cloud SQL');
+  }
+
+  const {
+    Connector: CloudSqlConnector,
+    IpAddressTypes,
+    AuthTypes,
+  } = await import('@google-cloud/cloud-sql-connector');
+  const connector = new CloudSqlConnector();
+  const clientOpts = await connector.getOptions({
+    instanceConnectionName: config.connection.instance,
+    ipType: IpAddressTypes.PUBLIC,
+    authType: AuthTypes.IAM,
+  });
+
+  return {
+    ...sanitizedConfig,
+    client: 'pg',
+    connection: {
+      ...sanitizedConfig.connection,
+      ...clientOpts,
+    },
+  };
 }
 
 /**
