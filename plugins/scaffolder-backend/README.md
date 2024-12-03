@@ -66,15 +66,26 @@ catalog locations from the [create-app template](https://github.com/backstage/ba
 
 ## Audit Events
 
-- **`parameter-schema-fetch`**: Tracks`GET` requests to the `/v2/templates/:namespace/:kind/:name/parameter-schema` endpoint which return template parameter schemas
-- **`installed-actions-fetch`**: Tracks`GET` requests to the `/v2/actions` endpoint which grabs the list of installed actions
-- **`task-creation`**: Tracks`POST` requests to the `/v2/tasks` endpoint which creates tasks that the scaffolder executes
-- **`task-list-fetch`**: Tracks`GET` requests to the `/v2/tasks` endpoint which fetches details of all tasks in the scaffolder.
-- **`task-fetch`**: Tracks`GET` requests to the `/v2/tasks/:taskId` endpoint which fetches details of a specified task `:taskId`
-- **`task-cancellation`**: Tracks`POST` requests to the `/v2/tasks/:taskId/cancel` endpoint which cancels a running task
-- **`task-retry`**: Tracks`POST` requests to the `/v2/tasks/:taskId/retry` endpoint which retries a failed task
-- **`task-stream`**: Tracks`GET` requests to the `/v2/tasks/:taskId/eventstream` endpoint which returns an event stream of the task logs of task `:taskId`
-- **`task-event-fetch`**: Tracks`GET` requests to the `/v2/tasks/:taskId/events` endpoint which returns a snapshot of the task logs of task `:taskId`
-- **`task-dry-run`**: Tracks`POST` requests to the `/v2/dry-run` endpoint which creates a dry-run task. All audit logs for events associated with dry runs have the `meta.isDryLog` flag set to `true`.
-- **`stale-task-cancellation`**: Tracks automated cancellation of stale tasks
-- **`task-execution`**: Tracks the`initiation` and `completion` of a real scaffolder task execution (will not occur during dry runs)
+The Scaffolder backend emits audit events for various operations. Events are grouped logically by `eventId`, with `subEventId` providing further distinction when needed.
+
+**Template Events:**
+
+- **`template-parameter-schema`**: Retrieves template parameter schemas. (GET `/v2/templates/:namespace/:kind/:name/parameter-schema`)
+
+**Action Events:**
+
+- **`action-fetch`**: Retrieves installed actions. (GET `/v2/actions`)
+
+**Task Events:**
+
+- **`task`**: Operations related to Scaffolder tasks.
+  - **`create`**: Creates a new task. (POST `/v2/tasks`)
+  - **`list`**: Fetches details of all tasks. (GET `/v2/tasks`)
+  - **`get`**: Fetches details of a specific task. (GET `/v2/tasks/:taskId`)
+  - **`cancel`**: Cancels a running task. (POST `/v2/tasks/:taskId/cancel`)
+  - **`retry`**: Retries a failed task. (POST `/v2/tasks/:taskId/retry`)
+  - **`stream`**: Retrieves a stream of task logs. (GET `/v2/tasks/:taskId/eventstream`)
+  - **`events`**: Retrieves a snapshot of task logs. (GET `/v2/tasks/:taskId/events`)
+  - **`dry-run`**: Creates a dry-run task. (POST `/v2/dry-run`) All audit logs for events associated with dry runs have the `meta.isDryLog` flag set to `true`.
+  - **`stale-cancel`**: Automated cancellation of stale tasks.
+  - **`execute`**: Tracks the initiation and completion of a real scaffolder task execution. This event will not occur during dry runs.

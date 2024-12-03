@@ -7,7 +7,7 @@
 '@backstage/plugin-scaffolder-node': minor
 ---
 
-feat: add auditor to coreServices
+feat: add auditor to `coreServices`
 
 This change introduces a new `auditor` service to the `coreServices` in Backstage.
 The auditor service enables plugins to emit audit events for security-relevant actions.

@@ -18,8 +18,6 @@ import type { JsonObject } from '@backstage/types';
 import type { Request } from 'express';
 
 /**
- * TODO: Rigorously define each level
- *
  * low (default): normal usage
  * medium: accessing write endpoints
  * high: non-root permission changes
@@ -31,12 +29,20 @@ export type AuditorEventSeverityLevel = 'low' | 'medium' | 'high' | 'critical';
 /** @public */
 export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
   /**
-   * Use kebab-case to name audit events (e.g., "user-login", "file-download").
+   * Use kebab-case to name audit events (e.g., "user-login", "file-download", "fetch"). Represents a logical group of similar events or operations. For example, "fetch" could be used as an eventId encompassing various fetch methods like "by-id" or "by-location".
    *
    * The `pluginId` already provides plugin/module context, so avoid redundant prefixes in the `eventId`.
    */
   eventId: string;
 
+  /**
+   * Use kebab-case to name sub-events (e.g., "by-id", "by-user").
+   *
+   * (Optional) The ID for a sub-event or related action within the main event.  This allows further categorization of events within a logical group. For example, if the `eventId` is "fetch", the `subEventId` could be "by-id" or "by-location" to specify the method used for fetching.
+   */
+  subEventId?: string;
+
+  /** (Optional) The severity level for the audit event. */
   severityLevel?: AuditorEventSeverityLevel;
 
   /** (Optional) The associated HTTP request, if applicable. */
