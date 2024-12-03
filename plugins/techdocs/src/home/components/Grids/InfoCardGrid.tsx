@@ -38,11 +38,11 @@ const useStyles = makeStyles(
 );
 
 /**
- * Props for {@link InfoCardGird}
+ * Props for {@link InfoCardGrid}
  *
  * @public
  */
-export type InfoCardGirdProps = {
+export type InfoCardGridProps = {
   entities: Entity[] | undefined;
   linkContent?: string | JSX.Element;
   linkDest?: (entity: Entity) => string;
@@ -53,37 +53,40 @@ export type InfoCardGirdProps = {
  *
  * @public
  */
-export const InfoCardGird = (props: InfoCardGirdProps) => {
+export const InfoCardGrid = (props: InfoCardGridProps) => {
   const { entities, linkContent, linkDest } = props;
   const classes = useStyles();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const linkDestination = (entity: Entity) =>
+    typeof linkDest === 'function'
+      ? linkDest(entity)
+      : getRouteToReaderPageFor({
+          namespace: toLowerMaybe(
+            entity.metadata.namespace ?? 'default',
+            config,
+          ),
+          kind: toLowerMaybe(entity.kind, config),
+          name: toLowerMaybe(entity.metadata.name, config),
+        });
+
   if (!entities) return null;
   return (
-    <ItemCardGrid data-testid="docs-card-container">
+    <ItemCardGrid data-testid="info-card-container">
       {!entities?.length
         ? null
         : entities.map(entity => (
             <InfoCard
-              data-cy={entity?.metadata?.title}
-              title={entity?.metadata?.title}
+              key={entity.metadata.name}
+              data-testid={entity?.metadata?.title}
+              title={entity?.metadata?.title || entity?.metadata?.name}
             >
               <div>{entity?.metadata?.description}</div>
               <div className={classes.linkSpacer} />
               <Link
-                to={
-                  typeof linkDest === 'function'
-                    ? linkDest(entity)
-                    : getRouteToReaderPageFor({
-                        namespace: toLowerMaybe(
-                          entity.metadata.namespace ?? 'default',
-                          config,
-                        ),
-                        kind: toLowerMaybe(entity.kind, config),
-                        name: toLowerMaybe(entity.metadata.name, config),
-                      })
-                }
+                to={linkDestination(entity)}
                 className={classes.readMoreLink}
+                data-testid="read-docs-link"
               >
                 {linkContent || 'Read Docs'}
               </Link>

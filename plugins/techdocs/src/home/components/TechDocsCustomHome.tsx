@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTable } from './Tables';
-import { DocsCardGrid, InfoCardGird } from './Grids';
+import { DocsCardGrid, InfoCardGrid } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsIndexPage } from './TechDocsIndexPage';
 
@@ -47,7 +47,7 @@ const panels = {
   DocsTable: DocsTable,
   DocsCardGrid: DocsCardGrid,
   TechDocsIndexPage: TechDocsIndexPage,
-  InfoCardGird: InfoCardGird,
+  InfoCardGrid: InfoCardGrid,
 };
 
 /**
@@ -59,7 +59,7 @@ export type PanelType =
   | 'DocsCardGrid'
   | 'DocsTable'
   | 'TechDocsIndexPage'
-  | 'InfoCardGird';
+  | 'InfoCardGrid';
 
 /**
  * Type representing a TechDocsCustomHome panel.
@@ -172,7 +172,8 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
     error,
   } = useAsync(async () => {
     const response = await catalogApi.getEntities({
-      filter: filter || {
+      filter: {
+        ...filter,
         [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: CATALOG_FILTER_EXISTS,
       },
       fields: [
@@ -184,7 +185,9 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
         'spec.type',
       ],
     });
-    return response.items;
+    return response.items.filter((entity: Entity) => {
+      return !!entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
+    });
   });
 
   const currentTabConfig = tabsConfig[selectedTab];
