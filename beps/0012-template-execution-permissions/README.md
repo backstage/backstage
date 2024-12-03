@@ -199,7 +199,7 @@ a permission was denied, but that is outside the scope of this BEP.
 - Add experimental permission `templateExecutePermission` (#27748)
 - Add `permissionRulesExtensionPoint` to support custom actions (#27748)
 - Gather feedback on common conditions used for restricting templates
-- If decided, deprecation of of the `stepRead` and `parameterRead` permission
+- If decided, deprecation of the `stepRead` and `parameterRead` permission
 
 ## Dependencies
 
