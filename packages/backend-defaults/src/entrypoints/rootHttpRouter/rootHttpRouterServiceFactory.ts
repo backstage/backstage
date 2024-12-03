@@ -120,7 +120,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
         },
       });
 
-      lifecycle.addShutdownHook(() => server.stop());
+      lifecycle.addPreShutdownHook(() => server.stop());
 
       await server.start();
 

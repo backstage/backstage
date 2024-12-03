@@ -65,18 +65,9 @@ const instanceRegistry = new (class InstanceRegistry {
     if (!this.#registered) {
       this.#registered = true;
 
-      process.addListener('SIGTERM', () => {
-        this.#exitHandler();
-      });
-      process.addListener('SIGINT', () => {
-        this.#exitHandler();
-      });
-      process.addListener('SIGQUIT', () => {
-        process.exit(0);
-      });
-      process.addListener('beforeExit', () => {
-        this.#exitHandler();
-      });
+      process.addListener('SIGTERM', this.#exitHandler);
+      process.addListener('SIGINT', this.#exitHandler);
+      process.addListener('beforeExit', this.#exitHandler);
     }
 
     this.#instances.add(instance);
@@ -88,18 +79,12 @@ const instanceRegistry = new (class InstanceRegistry {
 
   #exitHandler = async () => {
     try {
-      // This signals to the healthcheck service that the process is shutting down
-      process.exitCode = 0;
-
-      const results = await Promise.race([
-        // Give the backend 30 seconds to shut down, then force exit
-        new Promise(resolve => setTimeout(resolve, 30000)),
-        Promise.allSettled(Array.from(this.#instances).map(b => b.stop())),
-      ]);
-
-      const errors = Array.isArray(results)
-        ? results.flatMap(r => (r.status === 'rejected' ? [r.reason] : []))
-        : [];
+      const results = await Promise.allSettled(
+        Array.from(this.#instances).map(b => b.stop()),
+      );
+      const errors = results.flatMap(r =>
+        r.status === 'rejected' ? [r.reason] : [],
+      );
 
       if (errors.length > 0) {
         for (const error of errors) {
@@ -464,6 +449,11 @@ export class BackendInitializer {
       // The startup failed, but we may still want to do cleanup so we continue silently
     }
 
+    const rootLifecycleService = await this.#getRootLifecycleImpl();
+
+    // Root services like the health one need to immediatelly be notified of the shutdown
+    await rootLifecycleService.preShutdown();
+
     // Get all plugins.
     const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
@@ -483,14 +473,14 @@ export class BackendInitializer {
     );
 
     // Once all plugin shutdown hooks are done, run root shutdown hooks.
-    const lifecycleService = await this.#getRootLifecycleImpl();
-    await lifecycleService.shutdown();
+    await rootLifecycleService.shutdown();
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
   async #getRootLifecycleImpl(): Promise<
     RootLifecycleService & {
       startup(): Promise<void>;
+      preShutdown(): Promise<void>;
       shutdown(): Promise<void>;
     }
   > {

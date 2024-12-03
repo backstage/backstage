@@ -29,7 +29,7 @@ export class DefaultRootHealthService implements RootHealthService {
     options.lifecycle.addStartupHook(() => {
       this.#isRunning = true;
     });
-    options.lifecycle.addShutdownHook(() => {
+    options.lifecycle.addPreShutdownHook(() => {
       this.#isRunning = false;
     });
   }
@@ -39,8 +39,7 @@ export class DefaultRootHealthService implements RootHealthService {
   }
 
   async getReadiness(): Promise<{ status: number; payload?: any }> {
-    // If the process has been told to exit, or if the backend has not started yet
-    if (process.exitCode !== undefined || !this.#isRunning) {
+    if (!this.#isRunning) {
       return {
         status: 503,
         payload: { message: 'Backend has not started yet', status: 'error' },
