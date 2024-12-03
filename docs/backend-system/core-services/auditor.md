@@ -78,11 +78,13 @@ In this example, an audit event is created for each request to `/my-endpoint`. T
 
 ## Naming Conventions
 
-When defining `eventId` for your audit events, follow these guidelines:
+When defining `eventId` and `subEventId` for your audit events, follow these guidelines:
 
-- Use kebab-case (e.g., `user-login`, `file-download`).
+- Use kebab-case (e.g., `user-login`, `file-download`, `fetch`, `entity-create`, `entity-update`).
+- The `eventId` represents a logical group of similar events or operations. For example, "fetch" could be used as an `eventId` encompassing various fetch methods like `by-id` or `by-location`.
+- Use `subEventId` to further categorize events within a logical group. For example, if the `eventId` is "fetch", the `subEventId` could be "by-id" or "by-location" to specify the method used for fetching.
 - Avoid redundant prefixes related to the plugin ID, as that context is already provided.
-- Choose names that clearly describe the event being audited.
+- Choose names that clearly and concisely describe the event being audited.
 
 ## Configuring the service
 
