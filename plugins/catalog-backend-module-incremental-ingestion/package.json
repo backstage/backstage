@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -70,7 +71,6 @@
     "uuid": "^11.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/luxon": "^3.0.0"
