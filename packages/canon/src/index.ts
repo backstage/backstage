@@ -24,3 +24,6 @@ export * from './components/Button';
 export * from './components/Box';
 export * from './components/Icon';
 export * from './layout/types';
+export * from './components/Grid';
+export * from './components/Stack';
+export * from './components/Inline';
