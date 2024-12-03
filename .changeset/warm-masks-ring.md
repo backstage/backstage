@@ -83,3 +83,35 @@ Add new Grid option called `InfoCardGrid` which is a more customizable card opti
 ```
 
 Expose existing `CustomDocsPanel` so that it can be used independently if desired.
+
+```tsx
+const panels: PanelConfig[] = [
+  {
+    description: '',
+    filterPredicate: entity => {},
+    panelType: 'InfoCardGrid',
+    title: 'Standards',
+    panelProps: {
+      hideSupport: true,
+      linkContent: 'Read more',
+      linkDestination: entity => {},
+    },
+  },
+  {
+    description: '',
+    filterPredicate: entity => {},
+    panelType: 'DocsCardGrid',
+    title: 'Contribute',
+  },
+];
+{
+  panels.map((config, index) => (
+    <CustomDocsPanel
+      key={index}
+      config={config}
+      entities={!!entities ? entities : []}
+      index={index}
+    />
+  ));
+}
+```
