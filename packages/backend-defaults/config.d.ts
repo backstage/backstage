@@ -582,13 +582,11 @@ export interface Config {
     auditor?: {
       /**
        * Configuration for the auditing to the console
-       * @visibility frontend
        */
       console: {
         /**
          * Enables auditing to console
          * @default true
-         * @visibility frontend
          */
         enabled: boolean;
       };

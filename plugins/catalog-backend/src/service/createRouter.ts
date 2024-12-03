@@ -122,7 +122,9 @@ export async function createRouter(
       const { authorizationToken, ...restBody } = req.body;
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'refresh',
+        eventId: 'entity-mutate',
+        subEventId: 'refresh',
+        severityLevel: 'medium',
         meta: {
           entityRef: restBody.entityRef,
         },
@@ -156,7 +158,8 @@ export async function createRouter(
     router
       .get('/entities', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'CatalogEntityFetch',
+          eventId: 'entity-fetch',
+          subEventId: 'all',
           request: req,
         });
 
@@ -191,7 +194,8 @@ export async function createRouter(
       })
       .get('/entities/by-query', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'fetch-by-query',
+          eventId: 'entity-fetch',
+          subEventId: 'by-query',
           request: req,
         });
 
@@ -242,7 +246,8 @@ export async function createRouter(
         const { uid } = req.params;
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'fetch-by-uid',
+          eventId: 'entity-fetch',
+          subEventId: 'by-uid',
           request: req,
           meta: {
             uid: uid,
@@ -276,7 +281,8 @@ export async function createRouter(
         const { uid } = req.params;
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'delete',
+          eventId: 'entity-mutate',
+          subEventId: 'delete',
           severityLevel: 'medium',
           request: req,
           meta: {
@@ -304,7 +310,8 @@ export async function createRouter(
         const entityRef = stringifyEntityRef({ kind, namespace, name });
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'fetch-by-name',
+          eventId: 'entity-fetch',
+          subEventId: 'by-name',
           request: req,
           meta: {
             entityRef: entityRef,
@@ -343,7 +350,8 @@ export async function createRouter(
           const entityRef = stringifyEntityRef({ kind, namespace, name });
 
           const auditorEvent = await auditor?.createEvent({
-            eventId: 'ancestry-fetch',
+            eventId: 'entity-fetch',
+            subEventId: 'ancestry',
             request: req,
             meta: {
               entityRef: entityRef,
@@ -378,7 +386,8 @@ export async function createRouter(
       )
       .post('/entities/by-refs', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'batch-fetch',
+          eventId: 'entity-fetch',
+          subEventId: 'by-refs',
           request: req,
         });
 
@@ -407,7 +416,7 @@ export async function createRouter(
       })
       .get('/entity-facets', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'facet-fetch',
+          eventId: 'entity-facets',
           request: req,
         });
 
@@ -437,7 +446,8 @@ export async function createRouter(
         const dryRun = yn(req.query.dryRun, { default: false });
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'location-create',
+          eventId: 'location-mutate',
+          subEventId: 'create',
           severityLevel: dryRun ? 'low' : 'medium',
           request: req,
           meta: {
@@ -482,6 +492,7 @@ export async function createRouter(
       .get('/locations', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'location-fetch',
+          subEventId: 'all',
           request: req,
         });
 
@@ -505,7 +516,8 @@ export async function createRouter(
         const { id } = req.params;
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'location-fetch-by-id',
+          eventId: 'location-fetch',
+          subEventId: 'by-id',
           request: req,
           meta: {
             id: id,
@@ -535,7 +547,8 @@ export async function createRouter(
         const { id } = req.params;
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'location-delete',
+          eventId: 'location-mutate',
+          subEventId: 'delete',
           severityLevel: 'medium',
           request: req,
           meta: {
@@ -565,7 +578,8 @@ export async function createRouter(
         const locationRef = `${kind}:${namespace}/${name}`;
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'location-fetch-by-entity-ref',
+          eventId: 'location-fetch',
+          subEventId: 'by-entity',
           request: req,
           meta: {
             locationRef: locationRef,
@@ -650,7 +664,7 @@ export async function createRouter(
   if (orchestrator) {
     router.post('/validate-entity', async (req, res) => {
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'validate',
+        eventId: 'entity-validate',
         request: req,
       });
 

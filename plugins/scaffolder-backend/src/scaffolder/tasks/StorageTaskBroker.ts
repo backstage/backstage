@@ -40,9 +40,9 @@ import {
 } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
+import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
-import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 
 type TaskState = {
   checkpoints: {
@@ -206,7 +206,8 @@ export class TaskManager implements TaskContext {
     }
 
     const auditorEvent = await this.auditor?.createEvent({
-      eventId: 'task-execution',
+      eventId: 'task',
+      subEventId: 'execution',
       severityLevel: 'medium',
       meta: {
         taskId: this.task.taskId,
@@ -472,7 +473,8 @@ export class StorageTaskBroker implements TaskBroker {
     await Promise.all(
       tasks.map(async task => {
         const auditorEvent = await this.auditor?.createEvent({
-          eventId: 'stale-task-cancellation',
+          eventId: 'task',
+          subEventId: 'stale-cancel',
           severityLevel: 'medium',
           meta: {
             taskId: task.taskId,

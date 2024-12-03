@@ -462,7 +462,7 @@ export async function createRouter(
         const requestedTemplateRef = `${req.params.kind}:${req.params.namespace}/${req.params.name}`;
 
         const auditorEvent = await auditor?.createEvent({
-          eventId: 'parameter-schema-fetch',
+          eventId: 'template-parameter-schema',
           request: req,
           meta: { templateRef: requestedTemplateRef },
         });
@@ -512,7 +512,7 @@ export async function createRouter(
     )
     .get('/v2/actions', async (req, res) => {
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'installed-actions-fetch',
+        eventId: 'action-fetch',
         request: req,
       });
 
@@ -541,7 +541,8 @@ export async function createRouter(
       });
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'installed-actions-fetch',
+        eventId: 'task',
+        subEventId: 'create',
         severityLevel: 'medium',
         request: req,
         meta: {
@@ -646,7 +647,8 @@ export async function createRouter(
     })
     .get('/v2/tasks', async (req, res) => {
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-list-fetch',
+        eventId: 'task',
+        subEventId: 'list',
         request: req,
       });
 
@@ -708,7 +710,8 @@ export async function createRouter(
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-fetch',
+        eventId: 'task',
+        subEventId: 'get',
         request: req,
         meta: {
           taskId: taskId,
@@ -742,7 +745,8 @@ export async function createRouter(
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-cancellation',
+        eventId: 'task',
+        subEventId: 'cancel',
         severityLevel: 'medium',
         request: req,
         meta: { taskId: taskId },
@@ -771,7 +775,8 @@ export async function createRouter(
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-retry',
+        eventId: 'task',
+        subEventId: 'retry',
         severityLevel: 'medium',
         request: req,
         meta: { taskId: taskId },
@@ -799,7 +804,8 @@ export async function createRouter(
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-stream',
+        eventId: 'task',
+        subEventId: 'stream',
         request: req,
         meta: { taskId: taskId },
       });
@@ -868,7 +874,8 @@ export async function createRouter(
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-event-fetch',
+        eventId: 'task',
+        subEventId: 'events',
         request: req,
         meta: {
           taskId: taskId,
@@ -919,7 +926,8 @@ export async function createRouter(
     })
     .post('/v2/dry-run', async (req, res) => {
       const auditorEvent = await auditor?.createEvent({
-        eventId: 'task-dry-run',
+        eventId: 'task',
+        subEventId: 'dry-run',
         request: req,
       });
 
