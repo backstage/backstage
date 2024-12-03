@@ -53,6 +53,17 @@ export type ContentStateTypes =
   | 'CONTENT_FRESH';
 
 // @public
+export const CustomDocsPanel: ({
+  config,
+  entities,
+  index,
+}: {
+  config: PanelConfig;
+  entities: Entity[];
+  index: number;
+}) => React_2.JSX.Element;
+
+// @public
 export const DefaultTechDocsHome: (
   props: TechDocsIndexPageProps,
 ) => React_2.JSX.Element;
@@ -207,7 +218,7 @@ export type InfoCardGridClassKey = 'linkSpacer' | 'readMoreLink';
 export type InfoCardGridProps = {
   entities: Entity[] | undefined;
   linkContent?: string | JSX.Element;
-  linkDest?: (entity: Entity) => string;
+  linkDestination?: (entity: Entity) => string;
 };
 
 // @public

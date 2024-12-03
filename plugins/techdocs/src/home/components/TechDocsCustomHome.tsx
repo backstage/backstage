@@ -92,7 +92,12 @@ export interface TabConfig {
  */
 export type TabsConfig = TabConfig[];
 
-const CustomPanel = ({
+/**
+ * Component which can be used to render entities in a custom way.
+ *
+ * @public
+ */
+export const CustomDocsPanel = ({
   config,
   entities,
   index,
@@ -241,7 +246,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
       />
       <Content data-testid="techdocs-content">
         {currentTabConfig.panels.map((config, index) => (
-          <CustomPanel
+          <CustomDocsPanel
             key={index}
             config={config}
             entities={!!entities ? entities : []}

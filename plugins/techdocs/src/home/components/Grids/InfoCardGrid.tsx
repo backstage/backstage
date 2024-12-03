@@ -45,7 +45,7 @@ const useStyles = makeStyles(
 export type InfoCardGridProps = {
   entities: Entity[] | undefined;
   linkContent?: string | JSX.Element;
-  linkDest?: (entity: Entity) => string;
+  linkDestination?: (entity: Entity) => string;
 };
 
 /**
@@ -54,13 +54,13 @@ export type InfoCardGridProps = {
  * @public
  */
 export const InfoCardGrid = (props: InfoCardGridProps) => {
-  const { entities, linkContent, linkDest } = props;
+  const { entities, linkContent, linkDestination } = props;
   const classes = useStyles();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
-  const linkDestination = (entity: Entity) =>
-    typeof linkDest === 'function'
-      ? linkDest(entity)
+  const linkRoute = (entity: Entity) =>
+    typeof linkDestination === 'function'
+      ? linkDestination(entity)
       : getRouteToReaderPageFor({
           namespace: toLowerMaybe(
             entity.metadata.namespace ?? 'default',
@@ -84,7 +84,7 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
               <div>{entity?.metadata?.description}</div>
               <div className={classes.linkSpacer} />
               <Link
-                to={linkDestination(entity)}
+                to={linkRoute(entity)}
                 className={classes.readMoreLink}
                 data-testid="read-docs-link"
               >
