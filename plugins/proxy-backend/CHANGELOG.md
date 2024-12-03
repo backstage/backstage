@@ -1,5 +1,15 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.9-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+
 ## 0.5.9-next.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.10-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-signals-node@0.1.15-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/plugin-notifications-common@0.0.6
+
 ## 0.2.10-next.0
 
 ### Patch Changes

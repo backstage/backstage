@@ -1,6 +1,6 @@
 {
   "name": "@backstage/release-manifests",
-  "version": "0.0.12-next.0",
+  "version": "0.0.12-next.1",
   "description": "Helper library for receiving release manifests",
   "backstage": {
     "role": "common-library"

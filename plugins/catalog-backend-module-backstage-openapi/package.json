@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-backstage-openapi",
-  "version": "0.4.3-next.0",
+  "version": "0.4.3-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",

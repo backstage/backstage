@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.29.3-next.1
+
+### Patch Changes
+
+- a49030a: Add support for `--output-file` option from ESLint to `package lint` and `repo lint` commands.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/release-manifests@0.0.12-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+
 ## 0.29.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.5-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-common@1.1.1
+
 ## 0.6.5-next.0
 
 ### Patch Changes

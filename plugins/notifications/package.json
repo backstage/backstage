@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications",
-  "version": "0.4.2-next.0",
+  "version": "0.4.2-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "notifications",

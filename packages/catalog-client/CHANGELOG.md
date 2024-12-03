@@ -1,5 +1,17 @@
 # @backstage/catalog-client
 
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 1.8.1-next.0
 
 ### Patch Changes

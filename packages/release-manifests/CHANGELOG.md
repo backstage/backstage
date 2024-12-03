@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.12-next.1
+
+### Patch Changes
+
+- b29eaea: Allow overriding the fetch function used inside getManifestByVersion
+
 ## 0.0.12-next.0
 
 ### Patch Changes
