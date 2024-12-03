@@ -89,22 +89,42 @@ some example entities.
 
 ## Audit Events
 
-- **`ancestry-fetch`**: Tracks `GET` requests to the `/entities/by-name/:kind/:namespace/:name/ancestry` endpoint which return the ancestry of an entity.
-- **`batch-fetch`**: Tracks `POST` requests to the `/entities/by-refs` endpoint which return a batch of entities.
-- **`delete`**: Tracks `DELETE` requests to the `/entities/by-uid/:uid` endpoint which delete an entity. Note: this will not be a permanent deletion and the entity will be restored if the parent location is still present in the catalog.
-- **`facet-fetch`**: Tracks `GET` requests to the `/entity-facets` endpoint which return the facets of an entity.
-- **`fetch`**: Tracks `GET` requests to the `/entities` endpoint which returns a list of entities.
-- **`fetch-by-name`**: Tracks `GET` requests to the `/entities/by-name/:kind/:namespace/:name` endpoint which return an entity matching the specified entity ref.
-- **`fetch-by-uid`**: Tracks `GET` requests to the `/entities/by-uid/:uid` endpoint which return an entity matching the specified entity uid.
-- **`fetch-by-query`**: Tracks `GET` requests to the `/entities/by-query` endpoint which returns a list of entities matching the specified query.
-- **`refresh`**: Tracks `POST` requests to the `/entities/refresh` endpoint which schedules the specified entity to be refreshed.
-- **`validate`**: Tracks `POST` requests to the `/entities/validate` endpoint which validates the specified entity.
-- **`location-analyze`**: Tracks `POST` requests to the `/locations/analyze` endpoint which analyzes the specified location.
-- **`location-create`**: Tracks `POST` requests to the `/locations` endpoint which creates a location.
-- **`location-delete`**: Tracks `DELETE` requests to the `/locations/:id` endpoint which deletes a location as well as all child entities associated with it.
-- **`location-fetch`**: Tracks `GET` requests to the `/locations` endpoint which returns a list of locations.
-- **`location-fetch-by-entity-ref`**: Tracks `GET` requests to the `/locations/by-entity` endpoint which returns a list of locations associated with the specified entity ref.
-- **`location-fetch-by-id`**: Tracks `GET` requests to the `/locations/:id` endpoint which returns a location matching the specified location id.
+The Catalog backend emits audit events for various operations. Events are grouped logically by `eventId`, with `subEventId` providing further distinction within an operation group.
+
+**Entity Events:**
+
+- **`entity-fetch`**: Retrieves entities.
+
+  - **`all`**: Fetching all entities. (GET `/entities`)
+  - **`by-id`**: Fetching a single entity using its UID. (GET `/entities/by-uid/:uid`)
+  - **`by-name`**: Fetching a single entity using its kind, namespace, and name. (GET `/entities/by-name/:kind/:namespace/:name`)
+  - **`by-query`**: Fetching multiple entities using a filter query. (GET `/entities/by-query`)
+  - **`by-refs`**: Fetching a batch of entities by their entity refs. (POST `/entities/by-refs`)
+  - **`ancestry`**: Fetching the ancestry of an entity. (GET `/entities/by-name/:kind/:namespace/:name/ancestry`)
+
+- **`entity-mutate`**: Modifies entities.
+
+  - **`delete`**: Deleting a single entity. Note: this will not be a permanent deletion and the entity will be restored if the parent location is still present in the catalog. (DELETE `/entities/by-uid/:uid`)
+  - **`refresh`**: Scheduling an entity refresh. (POST `/entities/refresh`)
+
+- **`entity-validate`**: Validates an entity. (POST `/entities/validate`)
+
+- **`entity-facets`**: Retrieves entity facets. (GET `/entity-facets`)
+
+**Location Events:**
+
+- **`location-fetch`**: Retrieves locations.
+
+  - **`all`**: Fetching all locations. (GET `/locations`)
+  - **`by-id`**: Fetching a single location by ID. (GET `/locations/:id`)
+  - **`by-entity`**: Fetching locations associated with an entity ref. (GET `/locations/by-entity`)
+
+- **`location-mutate`**: Modifies locations.
+
+  - **`create`**: Creating a new location. (POST `/locations`)
+  - **`delete`**: Deleting a location and its associated entities. (DELETE `/locations/:id`)
+
+- **`location-analyze`**: Analyzes a location. (POST `/locations/analyze`)
 
 ## Links
 
