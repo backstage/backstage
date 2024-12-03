@@ -29,7 +29,7 @@ export class DefaultRootHealthService implements RootHealthService {
     options.lifecycle.addStartupHook(() => {
       this.#isRunning = true;
     });
-    options.lifecycle.addPreShutdownHook(() => {
+    options.lifecycle.addBeforeShutdownHook(() => {
       this.#isRunning = false;
     });
   }

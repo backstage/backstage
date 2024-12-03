@@ -24,5 +24,5 @@ import { LifecycleService } from './LifecycleService';
  * @public
  */
 export interface RootLifecycleService extends LifecycleService {
-  addPreShutdownHook(hook: () => void): void;
+  addBeforeShutdownHook(hook: () => void): void;
 }

@@ -65,32 +65,34 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     );
   }
 
-  #hasPreShutdown = false;
-  #preShutdownTasks: Array<{ hook: () => void }> = [];
+  #hasBeforeShutdown = false;
+  #beforeShutdownTasks: Array<{ hook: () => void }> = [];
 
-  addPreShutdownHook(hook: () => void): void {
-    if (this.#hasPreShutdown) {
-      throw new Error('Attempted to add pre shutdown hook after pre shutdown');
+  addBeforeShutdownHook(hook: () => void): void {
+    if (this.#hasBeforeShutdown) {
+      throw new Error(
+        'Attempt to add before shutdown hook after shutdown has started',
+      );
     }
-    this.#preShutdownTasks.push({ hook });
+    this.#beforeShutdownTasks.push({ hook });
   }
 
-  async preShutdown(): Promise<void> {
-    if (this.#hasPreShutdown) {
+  async beforeShutdown(): Promise<void> {
+    if (this.#hasBeforeShutdown) {
       return;
     }
-    this.#hasPreShutdown = true;
+    this.#hasBeforeShutdown = true;
 
     this.logger.debug(
-      `Running ${this.#preShutdownTasks.length} pre shutdown tasks...`,
+      `Running ${this.#beforeShutdownTasks.length} before shutdown tasks...`,
     );
     await Promise.all(
-      this.#preShutdownTasks.map(async ({ hook }) => {
+      this.#beforeShutdownTasks.map(async ({ hook }) => {
         try {
           await hook();
-          this.logger.debug(`Pre shutdown hook succeeded`);
+          this.logger.debug(`Before shutdown hook succeeded`);
         } catch (error) {
-          this.logger.error(`Pre shutdown hook failed, ${error}`);
+          this.logger.error(`Before shutdown hook failed, ${error}`);
         }
       }),
     );
