@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 1a23421: Make sure that isomorphic git push commands are not proxied.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+
 ## 0.6.1-next.0
 
 ### Patch Changes

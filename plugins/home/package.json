@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home",
-  "version": "0.8.3-next.0",
+  "version": "0.8.3-next.1",
   "description": "A Backstage plugin that helps you build a home page",
   "backstage": {
     "role": "frontend-plugin",

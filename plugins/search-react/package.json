@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-react",
-  "version": "1.8.4-next.0",
+  "version": "1.8.4-next.1",
   "backstage": {
     "role": "web-library",
     "pluginId": "search",

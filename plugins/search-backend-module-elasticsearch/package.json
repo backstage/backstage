@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-elasticsearch",
-  "version": "1.6.3-next.0",
+  "version": "1.6.3-next.1",
   "description": "A module for the search backend that implements search using ElasticSearch",
   "backstage": {
     "role": "backend-plugin-module",
