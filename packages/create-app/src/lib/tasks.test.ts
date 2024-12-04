@@ -91,6 +91,7 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-kubernetes-backend': '1.0.0',
     '@backstage/plugin-org': '1.0.0',
     '@backstage/plugin-scaffolder': '1.0.0',
+    '@backstage/plugin-scaffolder-backend-module-github': '1.0.0',
     '@backstage/plugin-permission-react': '1.0.0',
     '@backstage/plugin-search': '1.0.0',
     '@backstage/plugin-search-react': '1.0.0',
