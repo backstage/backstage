@@ -8,6 +8,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
@@ -17,7 +18,6 @@ import { IncrementalEntityProvider as IncrementalEntityProvider_2 } from '@backs
 import { IncrementalEntityProviderOptions as IncrementalEntityProviderOptions_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import type { PluginDatabaseManager } from '@backstage/backend-common';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -107,7 +107,7 @@ export const incrementalIngestionProvidersExtensionPoint: ExtensionPoint<Increme
 // @public (undocumented)
 export type PluginEnvironment = {
   logger: Logger;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   scheduler: SchedulerService;
   config: Config;
   reader: UrlReaderService;
