@@ -36,7 +36,7 @@ export class IncrementalProviderRouter {
     this.config = config;
   }
 
-  async createRouter() {
+  createRouter(): express.Router {
     const router = Router();
     router.use(express.json());
 
