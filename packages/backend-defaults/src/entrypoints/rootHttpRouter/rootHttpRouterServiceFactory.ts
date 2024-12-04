@@ -21,6 +21,8 @@ import {
   LifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { HumanDuration } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
 import {
@@ -30,6 +32,7 @@ import {
 } from './http';
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 import { createHealthRouter } from './createHealthRouter';
+import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 
 /**
  * @public
@@ -43,6 +46,7 @@ export interface RootHttpRouterConfigureContext {
   logger: LoggerService;
   lifecycle: LifecycleService;
   healthRouter: RequestHandler;
+  lifecycleMiddleware: RequestHandler;
   applyDefaults: () => void;
 }
 
@@ -90,6 +94,27 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const routes = router.handler();
 
       const healthRouter = createHealthRouter({ config, health });
+
+      let startupRequestPauseTimeout: HumanDuration | undefined;
+      if (config.has('backend.lifecycle.startupRequestPauseTimeout')) {
+        startupRequestPauseTimeout = readDurationFromConfig(config, {
+          key: 'backend.lifecycle.startupRequestPauseTimeout',
+        });
+      }
+
+      let shutdownRequestPauseTimeout: HumanDuration | undefined;
+      if (config.has('backend.lifecycle.shutdownRequestPauseTimeout')) {
+        shutdownRequestPauseTimeout = readDurationFromConfig(config, {
+          key: 'backend.lifecycle.shutdownRequestPauseTimeout',
+        });
+      }
+
+      const lifecycleMiddleware = createLifecycleMiddleware({
+        lifecycle,
+        startupRequestPauseTimeout,
+        shutdownRequestPauseTimeout,
+      });
+
       const server = await createHttpServer(
         app,
         readHttpServerOptions(config.getOptionalConfig('backend')),
@@ -105,6 +130,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
         logger,
         lifecycle,
         healthRouter,
+        lifecycleMiddleware,
         applyDefaults() {
           if (process.env.NODE_ENV === 'development') {
             app.set('json spaces', 2);
@@ -114,13 +140,14 @@ const rootHttpRouterServiceFactoryWithOptions = (
           app.use(middleware.compression());
           app.use(middleware.logging());
           app.use(healthRouter);
+          app.use(lifecycleMiddleware);
           app.use(routes);
           app.use(middleware.notFound());
           app.use(middleware.error());
         },
       });
 
-      lifecycle.addBeforeShutdownHook(() => server.stop());
+      lifecycle.addShutdownHook(() => server.stop());
 
       await server.start();
 

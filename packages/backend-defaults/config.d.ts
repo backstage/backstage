@@ -28,6 +28,19 @@ export interface Config {
      */
     baseUrl: string;
 
+    lifecycle?: {
+      /**
+       * The maximum time that paused requests will wait for the service to start, before returning an error.
+       * Defaults to 5 seconds.
+       */
+      startupRequestPauseTimeout?: HumanDuration;
+      /**
+       * The maximum time that the server will wait for stop accepting traffic, before returning an error.
+       * Defaults to 30 seconds.
+       */
+      shutdownRequestPauseTimeout?: HumanDuration;
+    };
+
     /** Address that the backend should listen to. */
     listen?:
       | string
