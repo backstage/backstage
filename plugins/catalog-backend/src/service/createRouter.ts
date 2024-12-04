@@ -175,17 +175,13 @@ export async function createRouter(
         // from forcing our read loop to pile up response data in userspace
         // buffers faster than the kernel buffer is emptied.
         // https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback
-        let writeLock: DeferredPromise | undefined;
+        const locks: { writeLock?: DeferredPromise } = {};
         const controller = new AbortController();
         const signal = controller.signal;
         req.on('end', () => {
           controller.abort(new Error('Client closed connection'));
-          writeLock?.resolve();
-          writeLock = undefined;
-        });
-        res.on('drain', () => {
-          writeLock?.resolve();
-          writeLock = undefined;
+          locks.writeLock?.resolve();
+          delete locks.writeLock;
         });
 
         const responseStream = createEntityArrayJsonStream(res);
@@ -201,9 +197,7 @@ export async function createRouter(
             );
 
             if (result.items.length) {
-              if (writeLock) {
-                await writeLock;
-              }
+              await locks?.writeLock;
 
               signal.throwIfAborted();
 
@@ -213,7 +207,11 @@ export async function createRouter(
                 // yet - we can better spend our time going to the next round of
                 // the loop and read from the database while we wait for it to
                 // drain.
-                writeLock = createDeferred();
+                locks.writeLock = createDeferred();
+                res.once('drain', () => {
+                  locks.writeLock?.resolve();
+                  delete locks.writeLock;
+                });
               }
             }
 
