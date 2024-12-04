@@ -3604,7 +3604,7 @@ __metadata:
     "@keyv/redis": ^4.0.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
-    "@opentelemetry/api": ^1.3.0
+    "@opentelemetry/api": ^1.9.0
     "@types/archiver": ^6.0.0
     "@types/base64-stream": ^1.0.2
     "@types/concat-stream": ^2.0.0
@@ -4138,7 +4138,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config-loader@^1.9.1, @backstage/config-loader@workspace:^, @backstage/config-loader@workspace:packages/config-loader":
+"@backstage/config-loader@npm:^1.9.1":
+  version: 1.9.2
+  resolution: "@backstage/config-loader@npm:1.9.2"
+  dependencies:
+    "@backstage/cli-common": ^0.1.15
+    "@backstage/config": ^1.3.0
+    "@backstage/errors": ^1.2.5
+    "@backstage/types": ^1.2.0
+    "@types/json-schema": ^7.0.6
+    ajv: ^8.10.0
+    chokidar: ^3.5.2
+    fs-extra: ^11.2.0
+    json-schema: ^0.4.0
+    json-schema-merge-allof: ^0.8.1
+    json-schema-traverse: ^1.0.0
+    lodash: ^4.17.21
+    minimist: ^1.2.5
+    node-fetch: ^2.7.0
+    typescript-json-schema: ^0.65.0
+    yaml: ^2.0.0
+  checksum: 92d0be7ccb05879d6a095adca144f3e9a330072282a9fddd1300f908d9292cc8531f248309df687c241b22825d63116e1b56f334cfac399e9b93dca22fe77e29
+  languageName: node
+  linkType: hard
+
+"@backstage/config-loader@workspace:^, @backstage/config-loader@workspace:packages/config-loader":
   version: 0.0.0-use.local
   resolution: "@backstage/config-loader@workspace:packages/config-loader"
   dependencies:
@@ -5989,7 +6013,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@opentelemetry/api": ^1.3.0
+    "@opentelemetry/api": ^1.9.0
     "@types/express": ^4.17.6
     "@types/luxon": ^3.0.0
     express: ^4.17.1
@@ -6154,7 +6178,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
     "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@opentelemetry/api": ^1.3.0
+    "@opentelemetry/api": ^1.9.0
     "@types/core-js": ^2.5.4
     "@types/express": ^4.17.6
     "@types/git-url-parse": ^9.0.0
@@ -7721,7 +7745,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@opentelemetry/api": ^1.3.0
+    "@opentelemetry/api": ^1.9.0
     "@types/express": ^4.17.6
     "@types/fs-extra": ^11.0.0
     "@types/luxon": ^3.0.0
@@ -13634,7 +13658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.0":
+"@opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.0, @opentelemetry/api@npm:^1.9.0":
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
   checksum: 9e88e59d53ced668f3daaecfd721071c5b85a67dd386f1c6f051d1be54375d850016c881f656ffbe9a03bedae85f7e89c2f2b635313f9c9b195ad033cdc31020
@@ -15755,82 +15779,82 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-darwin-arm64@npm:1.1.4"
+"@rspack/binding-darwin-arm64@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-darwin-arm64@npm:1.1.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-darwin-x64@npm:1.1.4"
+"@rspack/binding-darwin-x64@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-darwin-x64@npm:1.1.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.1.4"
+"@rspack/binding-linux-arm64-gnu@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.1.5"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.1.4"
+"@rspack/binding-linux-arm64-musl@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-linux-arm64-musl@npm:1.1.5"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.1.4"
+"@rspack/binding-linux-x64-gnu@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-linux-x64-gnu@npm:1.1.5"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.1.4"
+"@rspack/binding-linux-x64-musl@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-linux-x64-musl@npm:1.1.5"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.1.4"
+"@rspack/binding-win32-arm64-msvc@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.1.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.1.4"
+"@rspack/binding-win32-ia32-msvc@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.1.5"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.1.4"
+"@rspack/binding-win32-x64-msvc@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding-win32-x64-msvc@npm:1.1.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/binding@npm:1.1.4"
+"@rspack/binding@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@rspack/binding@npm:1.1.5"
   dependencies:
-    "@rspack/binding-darwin-arm64": 1.1.4
-    "@rspack/binding-darwin-x64": 1.1.4
-    "@rspack/binding-linux-arm64-gnu": 1.1.4
-    "@rspack/binding-linux-arm64-musl": 1.1.4
-    "@rspack/binding-linux-x64-gnu": 1.1.4
-    "@rspack/binding-linux-x64-musl": 1.1.4
-    "@rspack/binding-win32-arm64-msvc": 1.1.4
-    "@rspack/binding-win32-ia32-msvc": 1.1.4
-    "@rspack/binding-win32-x64-msvc": 1.1.4
+    "@rspack/binding-darwin-arm64": 1.1.5
+    "@rspack/binding-darwin-x64": 1.1.5
+    "@rspack/binding-linux-arm64-gnu": 1.1.5
+    "@rspack/binding-linux-arm64-musl": 1.1.5
+    "@rspack/binding-linux-x64-gnu": 1.1.5
+    "@rspack/binding-linux-x64-musl": 1.1.5
+    "@rspack/binding-win32-arm64-msvc": 1.1.5
+    "@rspack/binding-win32-ia32-msvc": 1.1.5
+    "@rspack/binding-win32-x64-msvc": 1.1.5
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -15850,16 +15874,16 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 1748c2ed914fe66213fb6abe8dfe96faa62be622864216b472003463ef59d7b431f60cb020b2ee3cd445e9d4a028f802408d4d27cbb5d335ca4f74f2cbf1f2ec
+  checksum: 6fe7d4cd04613c8c25d1e5eabf97abd82c721ec68f787150eab3026ef01830043e9c062851a286618106cadca759fc55929ec39b85b12e21025cffd39655dfc6
   languageName: node
   linkType: hard
 
 "@rspack/core@npm:^1.0.10":
-  version: 1.1.4
-  resolution: "@rspack/core@npm:1.1.4"
+  version: 1.1.5
+  resolution: "@rspack/core@npm:1.1.5"
   dependencies:
     "@module-federation/runtime-tools": 0.5.1
-    "@rspack/binding": 1.1.4
+    "@rspack/binding": 1.1.5
     "@rspack/lite-tapable": 1.0.1
     caniuse-lite: ^1.0.30001616
   peerDependencies:
@@ -15867,7 +15891,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 0ffa351abd5c67d8e0f56bf72c1e662fa3977cc8aae2451befe3424f3f4934b2e03c9fd5d5a7cbb71c82600e1bba9620c8255f8c57eecfcbc17c80b8a01ee9c6
+  checksum: 795da019b01555f7f3035ee1c80f39d808ddd1a6043aa2ab8caa3c42e3f73f966fb581bcb9c959852fd31d52ea8f89e2a135c8fa29c31cb7effa7d237a854520
   languageName: node
   linkType: hard
 

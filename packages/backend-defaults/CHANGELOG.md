@@ -1,5 +1,29 @@
 # @backstage/backend-defaults
 
+## 0.6.0-next.1
+
+### Patch Changes
+
+- fe87fbf: Add task metrics as two gauges that track the last start and end timestamps as epoch seconds.
+- 1ac6b72: Support `connection.type: cloudsql` in database client for usage with `@google-cloud/cloud-sql-connector` and `iam` auth
+- 5c9cc05: Use native fetch instead of node-fetch
+- cf627c6: Fixed an issue in the WinstonLogger where Errors thrown and given to logger.error with field values that could not be cast to a string would throw a TypeError
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-app-api@1.1.0-next.1
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+
 ## 0.6.0-next.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.12.0-next.0",
+  "version": "0.12.0-next.1",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"

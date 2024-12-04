@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-node
 
+## 0.5.5-next.1
+
+### Patch Changes
+
+- c907440: Improved error forwarding for OAuth refresh endpoints
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 0.5.5-next.0
 
 ### Patch Changes
