@@ -232,14 +232,26 @@ export interface PanelConfig {
   filterPredicate: ((entity: Entity) => boolean) | string;
   // (undocumented)
   panelCSS?: CSSProperties;
-  // Warning: (ae-forgotten-export) The symbol "PanelProps" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   panelProps?: PanelProps;
   // (undocumented)
   panelType: PanelType;
   // (undocumented)
   title: string;
+}
+
+// @public
+export interface PanelProps {
+  // (undocumented)
+  linkContent?: string | JSX.Element;
+  // (undocumented)
+  linkDestination?: (entity: Entity) => string;
+  // (undocumented)
+  options?: TableOptions<DocsTableRow>;
+  // (undocumented)
+  showHeader?: boolean;
+  // (undocumented)
+  showSupport?: boolean;
 }
 
 // @public

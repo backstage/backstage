@@ -20,6 +20,7 @@ export * from './DefaultTechDocsHome';
 export type {
   PanelType,
   PanelConfig,
+  PanelProps,
   TabConfig,
   TabsConfig,
   TechDocsCustomHomeProps,
