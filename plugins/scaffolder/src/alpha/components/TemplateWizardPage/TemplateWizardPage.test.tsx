@@ -33,6 +33,8 @@ import { rootRouteRef } from '../../../routes';
 import { ANNOTATION_EDIT_URL } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { ScaffolderFormDecoratorsApi } from '../../api/types';
+import { formDecoratorsApiRef } from '../../api/ref';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -55,11 +57,16 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   autocomplete: jest.fn(),
 };
 
+const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
+  getFormDecorators: jest.fn().mockResolvedValue([]),
+};
+
 const catalogApi = catalogApiMock.mock();
 const analyticsApi = mockApis.analytics();
 
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
+  [formDecoratorsApiRef, scaffolderDecoratorsMock],
   [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsApi],
   [catalogApiRef, catalogApi],

@@ -1,6 +1,6 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.102",
+  "version": "0.2.103-next.1",
   "backstage": {
     "role": "frontend"
   },
@@ -30,7 +30,7 @@
       "last 1 safari version"
     ]
   },
-  "prettier": "@spotify/prettier-config",
+  "prettier": "@backstage/cli/config/prettier",
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

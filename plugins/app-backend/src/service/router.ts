@@ -302,7 +302,17 @@ async function createEntryPointRouter({
   staticRouter.use(notFoundHandler());
 
   router.use('/static', staticRouter);
-  router.use(
+
+  const rootRouter = Router();
+  rootRouter.use((req, _res, next) => {
+    // Make sure / and /index.html are handled by the HTML5 route below
+    if (req.path === '/' || req.path === '/index.html') {
+      next('router');
+    } else {
+      next();
+    }
+  });
+  rootRouter.use(
     express.static(rootDir, {
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
@@ -315,7 +325,9 @@ async function createEntryPointRouter({
       },
     }),
   );
+  router.use(rootRouter);
 
+  // HTML5 routing
   router.get('/*', (_req, res) => {
     if (injectResult?.indexHtmlContent) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');

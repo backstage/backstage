@@ -56,6 +56,6 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
 }
 
 // @public
-const catalogModuleAzureDevOpsEntityProvider: BackendFeature;
-export default catalogModuleAzureDevOpsEntityProvider;
+const catalogModuleAzureEntityProvider: BackendFeature;
+export default catalogModuleAzureEntityProvider;
 ```

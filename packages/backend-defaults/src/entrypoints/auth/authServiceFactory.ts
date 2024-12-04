@@ -17,12 +17,34 @@
 import {
   coreServices,
   createServiceFactory,
+  createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
-import { PluginTokenHandler } from './plugin/PluginTokenHandler';
+import {
+  DefaultPluginTokenHandler,
+  PluginTokenHandler,
+} from './plugin/PluginTokenHandler';
 import { createPluginKeySource } from './plugin/keys/createPluginKeySource';
 import { UserTokenHandler } from './user/UserTokenHandler';
+
+/**
+ * @public
+ * This service is used to decorate the default plugin token handler with custom logic.
+ */
+export const pluginTokenHandlerDecoratorServiceRef = createServiceRef<
+  (defaultImplementation: PluginTokenHandler) => PluginTokenHandler
+>({
+  id: 'core.auth.pluginTokenHandlerDecorator',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {},
+      factory: async () => {
+        return impl => impl;
+      },
+    }),
+});
 
 /**
  * Handles token authentication and credentials management.
@@ -41,8 +63,16 @@ export const authServiceFactory = createServiceFactory({
     discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
+    pluginTokenHandlerDecorator: pluginTokenHandlerDecoratorServiceRef,
   },
-  async factory({ config, discovery, plugin, logger, database }) {
+  async factory({
+    config,
+    discovery,
+    plugin,
+    logger,
+    database,
+    pluginTokenHandlerDecorator,
+  }) {
     const disableDefaultAuthPolicy =
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -61,13 +91,15 @@ export const authServiceFactory = createServiceFactory({
       discovery,
     });
 
-    const pluginTokens = PluginTokenHandler.create({
-      ownPluginId: plugin.getId(),
-      logger,
-      keySource,
-      keyDuration,
-      discovery,
-    });
+    const pluginTokens = pluginTokenHandlerDecorator(
+      DefaultPluginTokenHandler.create({
+        ownPluginId: plugin.getId(),
+        logger,
+        keySource,
+        keyDuration,
+        discovery,
+      }),
+    );
 
     const externalTokens = ExternalTokenHandler.create({
       ownPluginId: plugin.getId(),

@@ -29,7 +29,10 @@ import { IncrementalIngestionDatabaseManager } from '../database/IncrementalInge
 import { IncrementalProviderRouter } from '../router/routes';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system and import `@backstage/plugin-catalog-backend-module-incremental-ingestion` as a module, and add providers to the `incrementalIngestionProvidersExtensionPoint` instead
+ */
 export class IncrementalCatalogBuilder {
   /**
    * Creates the incremental catalog builder, which extends the regular catalog builder.
@@ -63,6 +66,7 @@ export class IncrementalCatalogBuilder {
     const incrementalAdminRouter = await new IncrementalProviderRouter(
       this.manager,
       routerLogger,
+      this.env.config,
     ).createRouter();
 
     return { incrementalAdminRouter };
@@ -97,12 +101,17 @@ export class IncrementalCatalogBuilder {
           connection,
         });
 
-        const frequency = Duration.isDuration(burstInterval)
+        let frequency = Duration.isDuration(burstInterval)
           ? burstInterval
           : Duration.fromObject(burstInterval);
-        const length = Duration.isDuration(burstLength)
+        if (frequency.as('milliseconds') < 5000) {
+          frequency = Duration.fromObject({ seconds: 5 }); // don't let it be silly low, to not overload the scheduler
+        }
+
+        let length = Duration.isDuration(burstLength)
           ? burstLength
           : Duration.fromObject(burstLength);
+        length = length.plus(Duration.fromObject({ minutes: 1 })); // some margin from the actual completion
 
         await scheduler.scheduleTask({
           id: provider.getProviderName(),

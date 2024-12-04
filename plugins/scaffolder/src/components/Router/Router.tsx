@@ -60,8 +60,10 @@ import {
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  taskReadPermission,
+  templateManagementPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * The Props for the Scaffolder Router

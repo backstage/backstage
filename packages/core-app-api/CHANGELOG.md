@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.15.3-next.0
+
+### Patch Changes
+
+- e5fa018: The OAuth 2 client implementations will now attempt to refresh the session when the existing session doesn't have the required scopes. The previous behavior was to only try to refresh the session of it was missing, and otherwise directly request a new session. This fixes an issue where some auth providers will not return access tokens with certain scopes unless explicitly requested, leading to an auth popup even if the underlying session already had been granted the requested scopes.
+- 2830689: Decrease OAuth2 token refresh grace period
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
 ## 1.15.2
 
 ### Patch Changes

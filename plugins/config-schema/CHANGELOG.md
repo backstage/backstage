@@ -1,5 +1,25 @@
 # @backstage/plugin-config-schema
 
+## 0.1.63-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.1.63-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 0.1.61
 
 ### Patch Changes

@@ -108,9 +108,8 @@ export const createGitlabProjectAccessTokenAction = (options: {
         projectId,
         name,
         scopes as AccessTokenScopes[],
+        expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
         {
-          expiresAt:
-            expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
           accessLevel,
         },
       );

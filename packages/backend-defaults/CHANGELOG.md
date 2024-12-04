@@ -1,5 +1,72 @@
 # @backstage/backend-defaults
 
+## 0.6.0-next.1
+
+### Patch Changes
+
+- fe87fbf: Add task metrics as two gauges that track the last start and end timestamps as epoch seconds.
+- 1ac6b72: Support `connection.type: cloudsql` in database client for usage with `@google-cloud/cloud-sql-connector` and `iam` auth
+- 5c9cc05: Use native fetch instead of node-fetch
+- cf627c6: Fixed an issue in the WinstonLogger where Errors thrown and given to logger.error with field values that could not be cast to a string would throw a TypeError
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-app-api@1.1.0-next.1
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+
+## 0.6.0-next.0
+
+### Minor Changes
+
+- de6f280: **BREAKING** Upgraded @keyv/redis and keyv packages to resolve a bug related to incorrect resolution of cache keys.
+
+  This is a breaking change for clients using the `redis` store for cache with `useRedisSets` option set to false since cache keys will be calculated differently (without the sets:namespace: prefix). For clients with default configuration (or useRedisSets set to false) the cache keys will stay the same, but since @keyv/redis library no longer supports redis sets they won't be utilised anymore.
+
+  If you were using `useRedisSets` option in configuration make sure to remove it from `app-config.yaml`:
+
+  ```diff
+  backend:
+    cache:
+      store: redis
+      connection: redis://user:pass@cache.example.com:6379
+  -   useRedisSets: false
+  ```
+
+- 277092a: Implemented `AzureBlobStorageUrlReader` to read from the url of committed location from the entity provider
+- 18a2c00: All middleware used by the default `coreServices.http` is now exported for use by custom implementations.
+
+### Patch Changes
+
+- 8863b38: Export `PluginTokenHandler` and `pluginTokenHandlerDecoratorServiceRef` to allow for custom decoration of the plugin token handler without having to re-implement the entire handler.
+- 97c6837: Export `DefaultHttpAuthService` to allow for custom token extraction logic.
+- e5255f1: Log request and response metadata so it can be used for filtering log messages.
+  The format of the request date was also changed from `clf` to `utc`.
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/backend-app-api@1.0.3-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-node@0.8.6-next.0
+
 ## 0.5.3
 
 ### Patch Changes

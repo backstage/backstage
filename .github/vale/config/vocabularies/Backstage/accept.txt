@@ -101,6 +101,8 @@ Deutsche
 dev
 devops
 devs
+dequeue
+dequeueing
 dialogs
 discoverability
 Discoverability

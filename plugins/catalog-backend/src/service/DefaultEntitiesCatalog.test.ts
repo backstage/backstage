@@ -1797,6 +1797,51 @@ describe('DefaultEntitiesCatalog', () => {
         ).resolves.toEqual(['BB', 'CC', 'AA']); // 'AA' has no title, ends up last
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should silently skip over entities that are not yet stitched, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const entity1 = entityFrom('AA', { uid: 'id1' });
+        const entity2 = entityFrom('BB', { uid: 'id2' });
+        await Promise.all([
+          addEntityToSearch(entity1),
+          addEntityToSearch(entity2),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog
+            .queryEntities({
+              orderFields: [{ field: 'metadata.uid', order: 'asc' }],
+              limit: 10,
+              credentials: mockCredentials.none(),
+            })
+            .then(r => r.items.map(e => e.metadata.name)),
+        ).resolves.toEqual(['AA', 'BB']);
+
+        // simulate a situation where stitching is not yet complete
+        await knex('final_entities')
+          .update({ final_entity: null })
+          .where({ entity_ref: stringifyEntityRef(entity1) });
+
+        await expect(
+          catalog
+            .queryEntities({
+              orderFields: [{ field: 'metadata.uid', order: 'asc' }],
+              limit: 10,
+              credentials: mockCredentials.none(),
+            })
+            .then(r => r.items.map(e => e.metadata.name)),
+        ).resolves.toEqual(['BB']);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {
@@ -2056,6 +2101,50 @@ describe('DefaultEntitiesCatalog', () => {
               { value: 'node', count: 1 },
               { value: 'rust', count: 1 },
             ]),
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'works with a mixture of present and missing facets, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+          },
+          spec: {},
+        });
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'two',
+          },
+          spec: {},
+        });
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name', 'missing'],
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': expect.arrayContaining([
+              { value: 'one', count: 1 },
+              { value: 'two', count: 1 },
+            ]),
+            missing: [],
           },
         });
       },

@@ -26,11 +26,11 @@ import {
   selectedTemplateRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
-import { scaffolderApi } from './api';
 import {
   repoUrlPickerFormField,
   scaffolderNavItem,
   scaffolderPage,
+  scaffolderApi,
 } from './extensions';
 import { formFieldsApi } from './api/FormFieldsApi';
 

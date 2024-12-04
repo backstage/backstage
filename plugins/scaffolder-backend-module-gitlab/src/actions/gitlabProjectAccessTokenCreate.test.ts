@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabProjectAccessTokenAction } from './gitlabProjectAccessTokenCreate'; // Adjust the import based on your project structure
-
 import { DateTime } from 'luxon';
-
-jest.mock('node-fetch');
 
 const mockGitlabClient = {
   ProjectAccessTokens: {
@@ -84,9 +82,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '987',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -115,9 +113,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '987',
       'tokenname',
       ['read_registry', 'write_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -146,9 +144,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '2110',
       'token',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -176,9 +174,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       23,
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -207,9 +205,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '123',
       'tokenname',
       ['read_repository'],
+      '1999-07-14',
       {
         accessLevel: 40,
-        expiresAt: '1999-07-14',
       },
     );
 

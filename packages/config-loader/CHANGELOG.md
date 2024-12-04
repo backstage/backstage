@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.9.3-next.0
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 1.9.2
 
 ### Patch Changes

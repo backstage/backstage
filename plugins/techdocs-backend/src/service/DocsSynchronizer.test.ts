@@ -27,28 +27,23 @@ import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
-import { mockServices } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 
 jest.mock('../DocsBuilder');
 jest.useFakeTimers();
 
-jest.mock('node-fetch', () => ({
-  __esModule: true,
-  default: async () => {
-    return {
-      json: async () => {
-        return {
-          build_timestamp: 123,
-        };
-      },
-    };
-  },
-}));
-
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
 describe('DocsSynchronizer', () => {
+  const worker = setupServer();
+  registerMswTestHooks(worker);
+
   const preparers: jest.Mocked<PreparerBuilder> = {
     register: jest.fn(),
     get: jest.fn(),
@@ -101,6 +96,13 @@ describe('DocsSynchronizer', () => {
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
       cache,
     });
+
+    worker.use(
+      http.get(
+        'http://backstage.local/api/techdocs/static/docs/default/component/test/techdocs_metadata.json',
+        () => HttpResponse.json({ build_timestamp: 123 }),
+      ),
+    );
   });
 
   afterEach(() => {

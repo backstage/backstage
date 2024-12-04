@@ -8,6 +8,8 @@ on:
       - 'docs/**'
       - 'microsite/**'
       - 'beps/**'
+  push:
+    branches: [master]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

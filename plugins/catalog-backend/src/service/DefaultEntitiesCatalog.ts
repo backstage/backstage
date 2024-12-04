@@ -379,11 +379,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const [prevItemOrderFieldValue, prevItemUid] =
       cursor.orderFieldValues || [];
 
-    const dbQuery = db('final_entities').leftOuterJoin('search', qb =>
-      qb
-        .on('search.entity_id', 'final_entities.entity_id')
-        .andOnVal('search.key', sortField.field),
-    );
+    const dbQuery = db('final_entities')
+      .leftOuterJoin('search', qb =>
+        qb
+          .on('search.entity_id', 'final_entities.entity_id')
+          .andOnVal('search.key', sortField.field),
+      )
+      .whereNotNull('final_entities.final_entity');
 
     if (cursor.filter) {
       parseFilter(
@@ -720,26 +722,40 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
+    const query = this.database<DbSearchRow>('search')
+      .whereIn(
+        'search.key',
+        request.facets.map(f => f.toLocaleLowerCase('en-US')),
+      )
+      .whereNotNull('search.original_value')
+      .select({
+        facet: 'search.key',
+        value: 'search.original_value',
+        count: this.database.raw('count(*)'),
+      })
+      .groupBy(['search.key', 'search.original_value']);
+
+    if (request.filter) {
+      parseFilter(
+        request.filter,
+        query,
+        this.database,
+        false,
+        'search.entity_id',
+      );
+    }
+
+    const rows = await query;
+
     const facets: EntityFacetsResponse['facets'] = {};
-    const db = this.database;
-
     for (const facet of request.facets) {
-      const dbQuery = db<DbSearchRow>('search')
-        .where('search.key', facet.toLocaleLowerCase('en-US'))
-        .whereNotNull('search.original_value')
-        .select({ value: 'search.original_value', count: db.raw('count(*)') })
-        .groupBy('search.original_value');
-
-      if (request?.filter) {
-        parseFilter(request.filter, dbQuery, db, false, 'search.entity_id');
-      }
-
-      const result = await dbQuery;
-
-      facets[facet] = result.map(data => ({
-        value: String(data.value),
-        count: Number(data.count),
-      }));
+      const facetLowercase = facet.toLocaleLowerCase('en-US');
+      facets[facet] = rows
+        .filter(row => row.facet === facetLowercase)
+        .map(row => ({
+          value: String(row.value),
+          count: Number(row.count),
+        }));
     }
 
     return { facets };

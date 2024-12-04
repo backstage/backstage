@@ -22,7 +22,11 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { EventParams } from './EventParams';
-import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
+import {
+  EVENTS_NOTIFY_TIMEOUT_HEADER,
+  EventsService,
+  EventsServiceSubscribeOptions,
+} from './EventsService';
 import { DefaultApiClient } from '../generated';
 import { ResponseError } from '@backstage/errors';
 
@@ -214,10 +218,28 @@ class PluginEventsService implements EventsService {
             // immediately again
 
             lock.release();
-            // We don't actually expect any response body here, but waiting for
-            // an empty body to be returned has been more reliable that waiting
-            // for the response body stream to close.
-            await res.text();
+
+            const notifyTimeoutHeader = res.headers.get(
+              EVENTS_NOTIFY_TIMEOUT_HEADER,
+            );
+
+            // Add 1s to the timeout to allow the server to potentially timeout first
+            const notifyTimeoutMs =
+              notifyTimeoutHeader && !isNaN(parseInt(notifyTimeoutHeader, 10))
+                ? Number(notifyTimeoutHeader) + 1_000
+                : null;
+
+            await Promise.race(
+              [
+                // We don't actually expect any response body here, but waiting for
+                // an empty body to be returned has been more reliable that waiting
+                // for the response body stream to close.
+                res.text(),
+                notifyTimeoutMs
+                  ? new Promise(resolve => setTimeout(resolve, notifyTimeoutMs))
+                  : null,
+              ].filter(Boolean),
+            );
           } else if (res.status === 200) {
             const data = await res.json();
             if (data) {

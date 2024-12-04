@@ -386,6 +386,16 @@ export interface Config {
         | string
         | {
             /**
+             * The specific config for cloudsql connections
+             */
+            type: 'cloudsql';
+            /**
+             * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+             */
+            instance: string;
+          }
+        | {
+            /**
              * Password that belongs to the client User
              * @visibility secret
              */
@@ -441,7 +451,30 @@ export interface Config {
            * Database connection string or Knex object override
            * @visibility secret
            */
-          connection?: string | object;
+          connection?:
+            | string
+            | {
+                /**
+                 * The specific config for cloudsql connections
+                 */
+                type: 'cloudsql';
+                /**
+                 * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+                 */
+                instance: string;
+              }
+            | {
+                /**
+                 * Password that belongs to the client User
+                 * @visibility secret
+                 */
+                password?: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
+
           /**
            * Whether to ensure the given database exists by creating it if it does not.
            * Defaults to base config if unspecified.
@@ -486,11 +519,6 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds, if given as a number). */
           defaultTtl?: number | HumanDuration | string;
-          /**
-           * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
-           * Defaults to true if unspecified.
-           */
-          useRedisSets?: boolean;
         }
       | {
           store: 'memcache';
