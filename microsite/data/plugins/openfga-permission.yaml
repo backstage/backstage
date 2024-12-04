@@ -1,0 +1,10 @@
+---
+title: OpenFGA Permission
+author: Infosys
+authorUrl: https://github.com/Infosys
+category: Authentication/Authorization
+description: Manage your Backstage permissions with OpenFGA
+documentation: https://github.com/Infosys/openfga-plugin-backstage/blob/main/plugins/openfga/README.md
+iconUrl: https://github.com/Infosys/openfga-plugin-backstage/blob/main/plugins/openfga/src/docs/openfgalogo.png
+npmPackageName: '@infosys_ltd/openfga-plugin-backstage'
+addedDate: '2024-12-04'
