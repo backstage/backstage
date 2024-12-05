@@ -34,18 +34,16 @@ export interface ButtonProps {
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
+  (props: ButtonProps, ref) => {
+    const {
       size = 'medium',
       variant = 'primary',
-      children,
       disabled,
       iconStart,
       iconEnd,
-      ...props
-    }: ButtonProps,
-    ref,
-  ) => {
+      children,
+    } = props;
+
     return (
       <button
         {...props}
