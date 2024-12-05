@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-common': patch
+'@backstage/plugin-scaffolder-backend': patch
 ---
 
-Added `templateManagementPermission` to `scaffolderTemplatePermissions` array so it will get pickup by the `permissionIntegrationRouter`
+Resolved an issue where the `templateManagementPermission` was not being exposed through the `/permissions/metadata` endpoint.
