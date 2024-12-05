@@ -51,20 +51,25 @@ const FakeBox = () => (
 );
 
 export const Default: Story = {
+  args: {},
+  render: args => (
+    <Grid {...args}>
+      <FakeBox />
+      <FakeBox />
+      <FakeBox />
+    </Grid>
+  ),
+};
+
+export const LargeGap: Story = {
   args: {
-    columns: 3,
+    gap: 'lg',
   },
   render: args => (
     <Grid {...args}>
-      <Grid.Item>
-        <FakeBox />
-      </Grid.Item>
-      <Grid.Item>
-        <FakeBox />
-      </Grid.Item>
-      <Grid.Item>
-        <FakeBox />
-      </Grid.Item>
+      <FakeBox />
+      <FakeBox />
+      <FakeBox />
     </Grid>
   ),
 };
@@ -78,14 +83,39 @@ export const ColumnSizes: Story = {
     <Stack gap="md">
       {Array.from({ length: 11 }, (_, i) => (
         <Grid {...args} key={i}>
-          <Grid.Item span={(i + 1) as GridItemProps['span']}>
+          <Grid.Item colSpan={(i + 1) as GridItemProps['colSpan']}>
             <FakeBox />
           </Grid.Item>
-          <Grid.Item span={(11 - i) as GridItemProps['span']}>
+          <Grid.Item colSpan={(11 - i) as GridItemProps['colSpan']}>
             <FakeBox />
           </Grid.Item>
         </Grid>
       ))}
+    </Stack>
+  ),
+};
+
+export const RowAndColumns: Story = {
+  args: {
+    columns: 12,
+    gap: 'md',
+  },
+  render: args => (
+    <Stack gap="md">
+      <Grid {...args} columns={3}>
+        <Grid.Item colSpan={1} rowSpan={2}>
+          <Box
+            borderRadius="small"
+            style={{ background: '#1f47ff', color: 'white', height: '100%' }}
+          />
+        </Grid.Item>
+        <Grid.Item colSpan={2}>
+          <FakeBox />
+        </Grid.Item>
+        <Grid.Item colSpan={2}>
+          <FakeBox />
+        </Grid.Item>
+      </Grid>
     </Stack>
   ),
 };

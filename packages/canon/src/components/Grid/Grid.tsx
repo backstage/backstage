@@ -20,7 +20,7 @@ import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
 
 export const Grid = ({
   children,
-  columns = 1,
+  columns,
   gap = 'xs',
   className,
   style,
@@ -29,7 +29,7 @@ export const Grid = ({
   const sprinklesClassName = gridSprinkles({
     ...restProps,
     gap,
-    gridTemplateColumns: columns,
+    gridTemplateColumns: columns ? columns : 'auto',
   });
 
   const classNames = ['grid', sprinklesClassName, className]
@@ -48,14 +48,16 @@ export const Grid = ({
 
 const GridItem = ({
   children,
-  span = 1,
+  rowSpan,
+  colSpan,
   start,
   end,
   className,
   style,
 }: GridItemProps) => {
   const sprinklesClassName = gridItemSprinkles({
-    span,
+    rowSpan,
+    colSpan,
     start,
     end,
   });

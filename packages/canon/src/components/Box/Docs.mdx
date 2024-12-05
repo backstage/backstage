@@ -2,8 +2,9 @@ import { Canvas, Meta, Unstyled } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
 import { Padding } from './docs/padding';
-import { PropsTable } from './docs/props-table';
-import { SpacingTable } from './docs/spacing-table';
+import { PropsTable, getBoxProps } from '../../../docs/components/PropsTable';
+import { boxProperties } from './sprinkles.css';
+import { spacingProperties } from '../../layout/sprinkles.css';
 
 <Meta of={BoxStories} />
 
@@ -16,7 +17,23 @@ import { SpacingTable } from './docs/spacing-table';
   provides a consistent API for styling and layout. You'll find below a list of all the available properties.
 </Text>
 
-<PropsTable />
+<PropsTable
+  data={{
+    ...getBoxProps(boxProperties.styles),
+    children: {
+      type: 'ReactNode',
+      required: false,
+    },
+    className: {
+      type: 'string',
+      required: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      required: false,
+    },
+  }}
+/>
 
 <Title type="h2">Padding & Margin</Title>
 <Text>
@@ -27,6 +44,6 @@ import { SpacingTable } from './docs/spacing-table';
 
 <Padding />
 
-<SpacingTable />
+<PropsTable data={getBoxProps(spacingProperties.styles)} />
 
 </Unstyled>

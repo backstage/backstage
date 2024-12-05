@@ -24,6 +24,11 @@ export const listResponsiveValues = (
 ) => {
   const values = boxProperties.styles[value];
 
+  if (!values) {
+    console.warn(`Value "${value}" not found in boxProperties.styles`);
+    return [];
+  }
+
   if ('values' in values) {
     return Object.keys(values.values);
   }
