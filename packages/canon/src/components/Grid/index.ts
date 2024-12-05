@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Inline } from './Inline';
-export type { InlineProps } from './types';
+export { Grid } from './Grid';
+export type { GridProps, GridItemProps, Columns } from './types';

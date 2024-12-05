@@ -20,7 +20,15 @@
  * @packageDocumentation
  */
 
-export * from './components/Button';
-export * from './components/Box';
-export * from './components/Icon';
+// Layout types
 export * from './layout/types';
+
+// Layout components
+export * from './components/Box';
+export * from './components/Grid';
+export * from './components/Stack';
+export * from './components/Inline';
+
+// UI components
+export * from './components/Button';
+export * from './components/Icon';

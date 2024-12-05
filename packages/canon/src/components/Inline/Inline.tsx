@@ -32,16 +32,19 @@ const alignToFlexAlignY = (align: InlineProps['align']) => {
   return undefined;
 };
 
-export const Inline = ({
-  as = 'div',
-  children,
-  align = 'left',
-  alignY = 'top',
-  gap = 'xs',
-  className,
-  style,
-  ...restProps
-}: InlineProps) => {
+/** @public */
+export const Inline = (props: InlineProps) => {
+  const {
+    as = 'div',
+    children,
+    align = 'left',
+    alignY = 'top',
+    gap = 'xs',
+    className,
+    style,
+    ...restProps
+  } = props;
+
   // Generate the list of class names
   const sprinklesClassName = inlineSprinkles({
     ...restProps,

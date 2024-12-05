@@ -22,7 +22,7 @@ export const textStyles = style({
   lineHeight: '28px',
   margin: '0',
   fontWeight: 300,
-  paddingBottom: '16px',
+  marginBottom: '16px',
 });
 
 globalStyle(`${textStyles} p`, {

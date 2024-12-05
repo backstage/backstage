@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { Stack } from './Stack';
+export type { StackProps } from './types';

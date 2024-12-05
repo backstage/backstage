@@ -18,7 +18,7 @@ import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
 import { breakpoints } from '../../layout/properties';
 import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
 
-const inlineProperties = defineProperties({
+export const inlineProperties = defineProperties({
   conditions: breakpoints,
   defaultCondition: 'xs',
   properties: {
