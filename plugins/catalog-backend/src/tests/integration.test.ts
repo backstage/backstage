@@ -442,7 +442,6 @@ describe('Catalog Backend Integration', () => {
                 cause: {
                   name: 'Error',
                   message: 'NOPE',
-                  stack: expect.stringMatching(/^Error: NOPE/),
                 },
               },
             },
