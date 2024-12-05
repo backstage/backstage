@@ -44,6 +44,7 @@ interface CustomHomepageButtonsProps {
   changeEditMode: (mode: boolean) => void;
   defaultConfigAvailable: boolean;
   restoreDefault: () => void;
+  discardChanges: () => void;
 }
 export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
   const {
@@ -54,6 +55,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
     changeEditMode,
     defaultConfigAvailable,
     restoreDefault,
+    discardChanges,
   } = props;
   const styles = useStyles();
 
@@ -113,6 +115,18 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               startIcon={<SaveIcon />}
             >
               Save
+            </Button>
+          )}
+          {numWidgets > 0 && (
+            <Button
+              className={styles.contentHeaderBtn}
+              variant="contained"
+              color="secondary"
+              onClick={() => discardChanges()}
+              size="small"
+              startIcon={<CancelIcon />}
+            >
+              Cancel
             </Button>
           )}
         </>

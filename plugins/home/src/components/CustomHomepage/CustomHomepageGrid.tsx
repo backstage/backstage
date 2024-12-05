@@ -88,8 +88,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function useHomeStorage(
   defaultWidgets: GridWidget[],
+  key: string,
 ): [GridWidget[], (value: GridWidget[]) => void] {
-  const key = 'home';
   const storageApi = useApi(storageApiRef).forBucket('home.customHomepage');
   // TODO: Support multiple home pages
   const setWidgets = useCallback(
@@ -211,7 +211,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
-  const [widgets, setWidgets] = useHomeStorage(defaultLayout);
+  const [widgets, setWidgets] = useHomeStorage(defaultLayout, 'home');
+  const [lastStoredWidgets, setLastStoredWidgets] = useHomeStorage(
+    defaultLayout,
+    'lastStoredWidgets',
+  );
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = React.useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = React.useState(editModeOn);
@@ -277,6 +281,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
 
   const changeEditMode = (mode: boolean) => {
     setEditMode(mode);
+    if (mode) {
+      setLastStoredWidgets(widgets);
+    }
     setWidgets(
       widgets.map(w => {
         const resizable = w.resizable === false ? false : mode;
@@ -287,6 +294,12 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         };
       }),
     );
+  };
+
+  const discardChanges = () => {
+    setWidgets(lastStoredWidgets);
+    setEditMode(false);
+    setLastStoredWidgets([]);
   };
 
   const handleLayoutChange = (newLayout: Layout[], _: Layouts) => {
@@ -330,6 +343,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           changeEditMode={changeEditMode}
           defaultConfigAvailable={props.config !== undefined}
           restoreDefault={handleRestoreDefaultConfig}
+          discardChanges={discardChanges}
         />
       </ContentHeader>
       <Dialog
