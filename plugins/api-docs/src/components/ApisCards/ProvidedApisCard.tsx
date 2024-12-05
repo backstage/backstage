@@ -41,7 +41,7 @@ export const ProvidedApisCard = (props: {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ApiEntity>;
 }) => {
   const {
     variant = 'gridItem',
