@@ -41,13 +41,13 @@
   --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2);
 
   /* Font families */
-  --canon-font-sans: 'Geist', serif;
+  --canon-font-regular: 'Geist', serif;
   --canon-font-monospace: 'Monospace', monospace;
   --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
 
   /* Font weights */
-  --canon-font-regular: 400;
+  --canon-font-normal: 400;
   --canon-font-bold: 600;
 
   /* Font sizes */
@@ -78,12 +78,22 @@
 
 /* Dark theme */
 [data-theme='dark'] {
+  /* Colors */
   --canon-accent: #fff;
   --canon-background: #000;
   --canon-surface-1: #121212;
-  --canon-surface-2: #292929;
-  --canon-outline: #666;
-  --canon-outline-focus: #ccc;
-  --canon-text-primary: #000;
-  --canon-text-secondary: #666;
+  --canon-surface-2: #1a1a1a;
+
+  /* Outlines */
+  --canon-outline: rgba(255, 255, 255, 0.1);
+  --canon-outline-hover: rgba(255, 255, 255, 0.2);
+  --canon-outline-focus: #fff;
+
+  /* States - Add more states */
+  --canon-error: #f50000;
+
+  /* Text colors */
+  --canon-text-primary: #fff;
+  --canon-text-primary-on-accent: #000;
+  --canon-text-secondary: #b3b3b3;
 }

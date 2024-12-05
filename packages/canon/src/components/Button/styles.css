@@ -20,7 +20,7 @@
   align-items: center;
   justify-content: center;
   user-select: none;
-  font-family: var(--canon-font-sans);
+  font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-bold);
   font-size: var(--canon-font-sizes-md);
   padding: 0;
@@ -47,7 +47,16 @@
 }
 
 .button.secondary:hover {
-  box-shadow: 0 0 0 1px var(--canon-outline-focus);
+  box-shadow: 0 0 0 1px var(--canon-outline-hover);
+}
+
+.button.tertiary {
+  background-color: transparent;
+  color: var(--canon-text-primary);
+}
+
+.button.tertiary:hover {
+  color: var(--canon-text-secondary);
 }
 
 .button.small {
