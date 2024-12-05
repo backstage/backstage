@@ -315,7 +315,7 @@ export interface DependencyOfComponentsCardProps {
   // (undocumented)
   columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -327,7 +327,7 @@ export interface DependsOnComponentsCardProps {
   // (undocumented)
   columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -339,7 +339,7 @@ export interface DependsOnResourcesCardProps {
   // (undocumented)
   columns?: TableColumn<ResourceEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ResourceEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -540,7 +540,7 @@ export interface HasComponentsCardProps {
   // (undocumented)
   columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -563,7 +563,7 @@ export interface HasResourcesCardProps {
   // (undocumented)
   columns?: TableColumn<ResourceEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ResourceEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -575,7 +575,7 @@ export interface HasSubcomponentsCardProps {
   // (undocumented)
   columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -585,7 +585,7 @@ export interface HasSubcomponentsCardProps {
 // @public (undocumented)
 export interface HasSubdomainsCardProps {
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -597,7 +597,7 @@ export interface HasSystemsCardProps {
   // (undocumented)
   columns?: TableColumn<SystemEntity>[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<SystemEntity>;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -660,7 +660,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   emptyMessage: string;
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<T>;
 };
 
 // @public (undocumented)
