@@ -64,13 +64,17 @@ async function createToken(options: {
 describe('UserTokenHandler', () => {
   let userTokenHandler: UserTokenHandler;
 
+  const logger = mockServices.logger.mock();
+
   registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.useRealTimers();
+    jest.resetAllMocks();
 
     userTokenHandler = UserTokenHandler.create({
       discovery: mockServices.discovery(),
+      logger,
     });
 
     server.use(
@@ -120,7 +124,7 @@ describe('UserTokenHandler', () => {
             signature: 'sig',
           }),
         ),
-      ).rejects.toThrow('signature verification failed');
+      ).rejects.toThrow('Failed user token verification');
 
       await expect(
         userTokenHandler.verifyToken(
@@ -130,7 +134,7 @@ describe('UserTokenHandler', () => {
             signature: 'sig',
           }),
         ),
-      ).rejects.toThrow('signature verification failed');
+      ).rejects.toThrow('Failed user token verification');
     });
 
     it('should fail to verify tokens that have a bad alg', async () => {
@@ -156,8 +160,13 @@ describe('UserTokenHandler', () => {
       });
       const token = `${header}.${payload}.`;
 
+      expect(logger.warn).not.toHaveBeenCalled();
       await expect(userTokenHandler.verifyToken(token)).rejects.toThrow(
-        /Unsupported "alg" value/,
+        'Failed user token verification',
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Failed to verify incoming user token',
+        expect.any(Error),
       );
     });
 
