@@ -19,14 +19,16 @@ import { GridItemProps, GridProps } from './types';
 import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
 
 /** @public */
-export const Grid = ({
-  children,
-  columns,
-  gap = 'xs',
-  className,
-  style,
-  ...restProps
-}: GridProps) => {
+export const Grid = (props: GridProps) => {
+  const {
+    children,
+    columns,
+    gap = 'xs',
+    className,
+    style,
+    ...restProps
+  } = props;
+
   const sprinklesClassName = gridSprinkles({
     ...restProps,
     gap,
@@ -47,15 +49,9 @@ export const Grid = ({
   );
 };
 
-const GridItem = ({
-  children,
-  rowSpan,
-  colSpan,
-  start,
-  end,
-  className,
-  style,
-}: GridItemProps) => {
+const GridItem = (props: GridItemProps) => {
+  const { children, rowSpan, colSpan, start, end, className, style } = props;
+
   const sprinklesClassName = gridItemSprinkles({
     rowSpan,
     colSpan,

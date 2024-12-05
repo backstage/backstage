@@ -26,15 +26,17 @@ const alignToFlexAlign = (align: StackProps['align']) => {
 };
 
 /** @public */
-export const Stack = ({
-  as = 'div',
-  children,
-  align = 'left',
-  gap = 'xs',
-  className,
-  style,
-  ...restProps
-}: StackProps) => {
+export const Stack = (props: StackProps) => {
+  const {
+    as = 'div',
+    children,
+    align = 'left',
+    gap = 'xs',
+    className,
+    style,
+    ...restProps
+  } = props;
+
   // Transform the align prop
   const flexAlign = alignToFlexAlign(align);
 

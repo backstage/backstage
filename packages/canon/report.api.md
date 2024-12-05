@@ -179,29 +179,14 @@ export type Gap = Space | Partial<Record<Breakpoint, Space>>;
 
 // @public (undocumented)
 export const Grid: {
-  ({
-    children,
-    columns,
-    gap,
-    className,
-    style,
-    ...restProps
-  }: GridProps): DetailedReactHTMLElement<
+  (props: GridProps): DetailedReactHTMLElement<
     {
       className: string;
       style: CSSProperties | undefined;
     },
     HTMLElement
   >;
-  Item: ({
-    children,
-    rowSpan,
-    colSpan,
-    start,
-    end,
-    className,
-    style,
-  }: GridItemProps) => DetailedReactHTMLElement<
+  Item: (props: GridItemProps) => DetailedReactHTMLElement<
     {
       className: string;
       style: CSSProperties | undefined;
@@ -266,16 +251,7 @@ export type IconNames =
   | 'trash';
 
 // @public (undocumented)
-export const Inline: ({
-  as,
-  children,
-  align,
-  alignY,
-  gap,
-  className,
-  style,
-  ...restProps
-}: InlineProps) => DetailedReactHTMLElement<
+export const Inline: (props: InlineProps) => DetailedReactHTMLElement<
   {
     className: string;
     style: CSSProperties | undefined;
@@ -420,15 +396,7 @@ export interface SpaceProps {
 }
 
 // @public (undocumented)
-export const Stack: ({
-  as,
-  children,
-  align,
-  gap,
-  className,
-  style,
-  ...restProps
-}: StackProps) => DetailedReactHTMLElement<
+export const Stack: (props: StackProps) => DetailedReactHTMLElement<
   {
     className: string;
     style: CSSProperties | undefined;
