@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import { InfoCardVariants, TableOptions } from '@backstage/core-components';
 import React from 'react';
 import {
@@ -28,7 +28,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 /** @public */
 export interface HasSubdomainsCardProps {
   variant?: InfoCardVariants;
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
   title?: string;
 }
 

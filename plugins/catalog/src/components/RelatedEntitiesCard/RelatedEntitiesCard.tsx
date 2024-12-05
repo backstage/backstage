@@ -55,7 +55,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   emptyMessage: string;
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<T>;
 };
 
 /**

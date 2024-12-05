@@ -35,7 +35,7 @@ export interface HasComponentsCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
 }
 
 export function HasComponentsCard(props: HasComponentsCardProps) {

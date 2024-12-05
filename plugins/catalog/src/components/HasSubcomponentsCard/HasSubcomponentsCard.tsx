@@ -34,7 +34,7 @@ export interface HasSubcomponentsCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
 }
 
 export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {

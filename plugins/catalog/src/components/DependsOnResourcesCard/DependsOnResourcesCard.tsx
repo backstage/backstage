@@ -35,7 +35,7 @@ export interface DependsOnResourcesCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ResourceEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ResourceEntity>;
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
