@@ -1,7 +1,8 @@
 import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as StackStories from './Stack.stories';
 import { Title, Text } from '../../../docs/components';
-import { PropsTable } from '../../../docs/components/PropsTable';
+import { PropsTable, getBoxProps } from '../../../docs/components/PropsTable';
+import { spacingProperties } from '../../layout/sprinkles.css';
 
 <Meta of={StackStories} />
 
@@ -15,24 +16,17 @@ import { PropsTable } from '../../../docs/components/PropsTable';
   columns. All values are responsive.
 </Text>
 
-<Source
-  code={`<Stack gap="md">
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-</Stack>`}
-  language="tsx"
-  dark
-/>
+<Title type="h2">Installation</Title>
+<Source code={`yarn install @backstage/canon/stack`} language="bash" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
 
 <PropsTable
   data={{
     align: {
       type: ['left', 'center', 'right'],
-      responsive: true,
-    },
-    gap: {
-      type: ['xs', 'sm', 'md', 'lg', 'xl'],
       responsive: true,
     },
     children: {
@@ -50,16 +44,76 @@ import { PropsTable } from '../../../docs/components/PropsTable';
   }}
 />
 
-<Title type="h2">How to stack horizontally?</Title>
+<Text style={{ marginTop: '16px' }}>
+  The grid component also accepts all the spacing props from the Box component.
+</Text>
+
+<PropsTable data={getBoxProps(spacingProperties.styles)} />
+
+<Title type="h2">Common questions</Title>
+
+<Title type="h3">Can I stack horizontally?</Title>
 <Text>
   The Stack component only allows for stacking elements vertically. If you want
   to create a column layout, please use the Grid component.
 </Text>
 
-<Title type="h2">Responsive</Title>
-<Text>TBD</Text>
+<Source
+  code={`<Grid columns={3} gap="md">
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Grid>
+`}
+  language="tsx"
+  dark
+/>
 
-<Title type="h2">Start and End</Title>
-<Text>TBD</Text>
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Simple</Title>
+<Text>
+  A simple example of how to use the Stack component with a medium gap.
+</Text>
+
+<Source
+  code={`<Stack gap="md">
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Stack>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive</Title>
+<Text>
+  The Stack component also supports responsive values, making it easy to create
+  responsive designs.
+</Text>
+<Source
+  code={`<Stack gap={{ xs: 'sm', md: 'md' }}>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Stack>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Align</Title>
+<Text>
+  The Stack component also supports responsive alignment, making it easy to
+  create responsive designs.
+</Text>
+<Source
+  code={`<Stack align={{ xs: 'left', md: 'center' }}>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Stack>`}
+  language="tsx"
+  dark
+/>
 
 </Unstyled>
