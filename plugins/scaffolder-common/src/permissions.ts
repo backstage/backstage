@@ -130,7 +130,6 @@ export const templateManagementPermission = createPermission({
 export const scaffolderTemplatePermissions = [
   templateParameterReadPermission,
   templateStepReadPermission,
-  templateManagementPermission,
 ];
 
 /**
@@ -157,4 +156,5 @@ export const scaffolderPermissions = [
   ...scaffolderTemplatePermissions,
   ...scaffolderActionPermissions,
   ...scaffolderTaskPermissions,
+  templateManagementPermission,
 ];
