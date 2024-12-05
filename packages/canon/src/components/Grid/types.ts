@@ -16,8 +16,10 @@
 import { Breakpoint, ColorProps } from '../../layout/types';
 import { SpaceProps } from '../../layout/types';
 
-type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+/** @public */
+export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
+/** @public */
 export interface GridProps extends SpaceProps, ColorProps {
   children?: React.ReactNode;
   columns?: Columns | Partial<Record<Breakpoint, Columns>>;
@@ -25,6 +27,7 @@ export interface GridProps extends SpaceProps, ColorProps {
   style?: React.CSSProperties;
 }
 
+/** @public */
 export interface GridItemProps {
   children: React.ReactNode;
   rowSpan?: Columns | 'full';

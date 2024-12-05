@@ -25,6 +25,7 @@ const alignToFlexAlign = (align: StackProps['align']) => {
   return undefined;
 };
 
+/** @public */
 export const Stack = ({
   as = 'div',
   children,

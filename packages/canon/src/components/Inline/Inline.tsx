@@ -32,6 +32,7 @@ const alignToFlexAlignY = (align: InlineProps['align']) => {
   return undefined;
 };
 
+/** @public */
 export const Inline = ({
   as = 'div',
   children,

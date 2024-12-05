@@ -1,4 +1,4 @@
-import { Canvas, Meta, Unstyled } from '@storybook/blocks';
+import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
 import { Padding } from './docs/padding';
@@ -13,8 +13,18 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 <Title type="h1">Box</Title>
 <Text>
   Box is the lowest-level component in Canon. We use it internally to build all
-  of our components. It is a wrapper around the HTML `<div>` element and
-  provides a consistent API for styling and layout. You'll find below a list of all the available properties.
+  of our components. It provides a consistent API for styling and layout.
+</Text>
+
+<Title type="h2">Installation</Title>
+<Source code={`yarn install @backstage/canon/box`} language="bash" dark />
+
+<Title type="h2">API reference</Title>
+
+<Title type="h3">Box</Title>
+<Text>
+  This is the Box component, our lowest-level component. Here are all the
+  available properties.
 </Text>
 
 <PropsTable
@@ -35,8 +45,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   }}
 />
 
-<Title type="h2">Padding & Margin</Title>
-<Text>
+<Text style={{ marginTop: '16px' }}>
   Padding and margin are used to create space around your component using our
   predefined spacing tokens. We would recommend to use padding over margin to
   avoid collapsing margins but both are available.
@@ -45,5 +54,27 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 <Padding />
 
 <PropsTable data={getBoxProps(spacingProperties.styles)} />
+
+<Title type="h2">Examples</Title>
+<Text>Here are some examples of how you can use the Box component.</Text>
+
+<Title type="h3">Simple example</Title>
+<Text>A simple example of how to use the Box component.</Text>
+<Source
+  code={`<Box padding="md" borderRadius="md">Hello World</Box>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive</Title>
+<Text>
+  Most of the values can be defined per breakpoint, making it easy to create
+  responsive designs.
+</Text>
+<Source
+  code={`<Box padding={{ xs: 'sm', md: 'md' }} borderRadius={{ xs: 'sm', md: 'md' }}>Hello World</Box>`}
+  language="tsx"
+  dark
+/>
 
 </Unstyled>

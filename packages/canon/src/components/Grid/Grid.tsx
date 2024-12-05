@@ -18,6 +18,7 @@ import { createElement } from 'react';
 import { GridItemProps, GridProps } from './types';
 import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
 
+/** @public */
 export const Grid = ({
   children,
   columns,
