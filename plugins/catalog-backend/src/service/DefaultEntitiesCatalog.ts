@@ -360,6 +360,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ...parseCursorFromRequest(request),
     };
 
+    // For performance reasons we invoke the count query only on the first
+    // request. The result is then embedded into the cursor for subsequent
+    // requests. Threfore this can be undefined here, but will then get
+    // populated further down.
+    const shouldComputeTotalItems = cursor.totalItems === undefined;
     const isFetchingBackwards = cursor.isPrevious;
 
     if (cursor.orderFields.length > 1) {
@@ -368,66 +373,101 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const sortField = cursor.orderFields.at(0);
 
-    // Base query that matches all entities, and join in the search table for
-    // ordering purposes if that's needed
-    const dbQuery = db('final_entities');
-    if (sortField) {
-      dbQuery.leftOuterJoin('search', qb =>
-        qb
-          .on('search.entity_id', 'final_entities.entity_id')
-          .andOnVal('search.key', sortField.field),
-      );
-    }
-    dbQuery.whereNotNull('final_entities.final_entity');
+    // The first part of the query builder is a subquery that applies all of the
+    // filtering.
+    const dbQuery = db.with(
+      'filtered',
+      ['entity_id', 'final_entity', ...(sortField ? ['value'] : [])],
+      inner => {
+        inner
+          .from<DbFinalEntitiesRow>('final_entities')
+          .whereNotNull('final_entity');
 
-    // Add regular filters, if given
-    if (cursor.filter) {
-      parseFilter(
-        cursor.filter,
-        dbQuery,
-        db,
-        false,
-        'final_entities.entity_id',
-      );
-    }
+        if (sortField) {
+          inner
+            .leftOuterJoin('search', qb =>
+              qb
+                .on('search.entity_id', 'final_entities.entity_id')
+                .andOnVal('search.key', sortField.field),
+            )
+            .select({
+              entity_id: 'final_entities.entity_id',
+              final_entity: 'final_entities.final_entity',
+              value: 'search.value',
+            });
+        } else {
+          inner.select({
+            entity_id: 'final_entities.entity_id',
+            final_entity: 'final_entities.final_entity',
+          });
+        }
 
-    // Add full text search filters, if given
-    const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
-    const textFilterFields = cursor.fullTextFilter?.fields ?? [
-      sortField?.field || 'metadata.uid',
-    ];
-    if (normalizedFullTextFilterTerm) {
-      if (
-        textFilterFields.length === 1 &&
-        textFilterFields[0] === sortField?.field
-      ) {
-        // If there is one item, apply the like query to the top level query which is already
-        //   filtered based on the singular sortField.
-        dbQuery.andWhereRaw(
-          'value like ?',
-          `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-        );
-      } else {
-        const matchQuery = db<DbSearchRow>('search')
-          .select('search.entity_id')
-          // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
-          .whereIn(
-            'key',
-            textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
-          )
-          .andWhere(function keyFilter() {
-            this.andWhereRaw(
+        // Add regular filters, if given
+        if (cursor.filter) {
+          parseFilter(
+            cursor.filter,
+            inner,
+            db,
+            false,
+            'final_entities.entity_id',
+          );
+        }
+
+        // Add full text search filters, if given
+        const normalizedFullTextFilterTerm =
+          cursor.fullTextFilter?.term?.trim();
+        const textFilterFields = cursor.fullTextFilter?.fields ?? [
+          sortField?.field || 'metadata.uid',
+        ];
+        if (normalizedFullTextFilterTerm) {
+          if (
+            textFilterFields.length === 1 &&
+            textFilterFields[0] === sortField?.field
+          ) {
+            // If there is one item, apply the like query to the top level query which is already
+            //   filtered based on the singular sortField.
+            inner.andWhereRaw(
               'value like ?',
               `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
             );
-          });
-        dbQuery.andWhere('final_entities.entity_id', 'in', matchQuery);
-      }
-    }
+          } else {
+            const matchQuery = db<DbSearchRow>('search')
+              .select('entity_id')
+              // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
+              .whereIn(
+                'key',
+                textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+              )
+              .andWhere(function keyFilter() {
+                this.andWhereRaw(
+                  'value like ?',
+                  `%${normalizedFullTextFilterTerm.toLocaleLowerCase(
+                    'en-US',
+                  )}%`,
+                );
+              });
+            inner.andWhere('final_entities.entity_id', 'in', matchQuery);
+          }
+        }
+      },
+    );
 
-    // Finalize the the count query shape now, since its result is unaffected by
-    // the page limits and (relatively expensive) ordering that gets added below
-    const countQuery = dbQuery.clone();
+    // Only pay the cost of counting the number of items if needed
+    if (shouldComputeTotalItems) {
+      // Note the intentional cross join here. The filtered_count dataset is
+      // always exactly one row, so it won't grow the result unnecessarily. But
+      // it's also important that there IS at least one row, because even if the
+      // filtered dataset is empty, we still want to know the total number of
+      // items.
+      dbQuery
+        .with('filtered_count', ['count'], inner =>
+          inner.from('filtered').count('*', { as: 'count' }),
+        )
+        .fromRaw('filtered_count, filtered')
+        .select('count', 'filtered.*');
+    } else {
+      dbQuery.from('filtered').select('*');
+    }
 
     const isOrderingDescending = sortField?.order === 'desc';
 
@@ -444,7 +484,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           )
             .orWhere('value', '=', first)
             .andWhere(
-              'final_entities.entity_id',
+              'entity_id',
               isFetchingBackwards !== isOrderingDescending ? '<' : '>',
               second,
             );
@@ -452,11 +492,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       } else if (cursor.orderFieldValues.length === 1) {
         // This will be the entity_id
         const [first] = cursor.orderFieldValues;
-        dbQuery.andWhere(
-          'final_entities.entity_id',
-          isFetchingBackwards ? '<' : '>',
-          first,
-        );
+        dbQuery.andWhere('entity_id', isFetchingBackwards ? '<' : '>', first);
       }
     }
 
@@ -471,14 +507,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ...(sortField
           ? [
               {
-                column: 'search.value',
+                column: 'value',
                 order,
                 nulls: 'last',
               },
             ]
           : []),
         {
-          column: 'final_entities.entity_id',
+          column: 'entity_id',
           order,
         },
       ]);
@@ -490,18 +526,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ...(sortField
           ? [
               {
-                column: 'search.value',
+                column: 'value',
                 order: undefined,
                 nulls: 'last',
               },
               {
-                column: 'search.value',
+                column: 'value',
                 order,
               },
             ]
           : []),
         {
-          column: 'final_entities.entity_id',
+          column: 'entity_id',
           order,
         },
       ]);
@@ -517,20 +553,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // fetch an extra item to check if there are more items.
     dbQuery.limit(isFetchingBackwards ? limit : limit + 1);
 
-    countQuery.count('final_entities.entity_id', { as: 'count' });
+    const rows = shouldComputeTotalItems || limit > 0 ? await dbQuery : [];
 
-    const [rows, [{ count }]] = await Promise.all([
-      limit > 0 ? dbQuery : [],
-      // for performance reasons we invoke the countQuery
-      // only on the first request.
-      // The result is then embedded into the cursor
-      // for subsequent requests.
-      typeof cursor.totalItems === 'undefined'
-        ? countQuery
-        : [{ count: cursor.totalItems }],
-    ]);
-
-    const totalItems = Number(count);
+    const totalItems =
+      cursor.totalItems ?? (rows.length ? Number(rows[0].count) : 0);
 
     if (isFetchingBackwards) {
       rows.reverse();
