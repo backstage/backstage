@@ -1416,7 +1416,7 @@ export function Table<T extends object = {}>(
 // @public (undocumented)
 export namespace Table {
   var // (undocumented)
-    icons: Readonly<Icons>;
+    icons: Readonly<Icons<any>>;
 }
 
 // Warning: (ae-missing-release-tag) "TableClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
