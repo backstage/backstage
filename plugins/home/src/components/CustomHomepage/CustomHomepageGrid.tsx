@@ -297,6 +297,13 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const discardChanges = () => {
+    // eslint-disable-next-line no-alert
+    const accepted = window.confirm(
+      'Are you sure? Unsaved changes will be lost',
+    );
+    if (!accepted) {
+      return;
+    }
     setWidgets(lastStoredWidgets);
     setEditMode(false);
     setLastStoredWidgets([]);
