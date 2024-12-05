@@ -117,18 +117,16 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               Save
             </Button>
           )}
-          {numWidgets > 0 && (
-            <Button
-              className={styles.contentHeaderBtn}
-              variant="contained"
-              color="secondary"
-              onClick={() => discardChanges()}
-              size="small"
-              startIcon={<CancelIcon />}
-            >
-              Cancel
-            </Button>
-          )}
+          <Button
+            className={styles.contentHeaderBtn}
+            variant="contained"
+            color="secondary"
+            onClick={() => discardChanges()}
+            size="small"
+            startIcon={<CancelIcon />}
+          >
+            Cancel
+          </Button>
         </>
       )}
     </>
