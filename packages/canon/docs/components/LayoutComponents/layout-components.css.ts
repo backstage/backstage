@@ -52,7 +52,7 @@ export const content = style({
 
 export const title = style({
   fontSize: '16px',
-  fontFamily: 'var(--canon-font-sans)',
+  fontFamily: 'var(--canon-font-regular)',
   transition: 'color 0.2s ease-in-out',
   marginBottom: '0.25rem',
   selectors: {
@@ -64,7 +64,7 @@ export const title = style({
 
 export const description = style({
   fontSize: '16px',
-  fontFamily: 'var(--canon-font-sans)',
+  fontFamily: 'var(--canon-font-regular)',
   color: '#9e9e9e',
 });
 
