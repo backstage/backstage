@@ -95,6 +95,7 @@ export class MiddlewareFactory {
   helmet(): RequestHandler;
   logging(): RequestHandler;
   notFound(): RequestHandler;
+  rateLimit(): RequestHandler;
 }
 
 // @public
