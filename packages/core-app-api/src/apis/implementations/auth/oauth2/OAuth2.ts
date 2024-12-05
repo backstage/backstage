@@ -15,6 +15,7 @@
  */
 
 import {
+  AuthConnector,
   DefaultAuthConnector,
   PopupOptions,
 } from '../../../../lib/AuthConnector';
@@ -43,6 +44,9 @@ import { OAuthApiCreateOptions } from '../types';
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
+  authConnectorFactory?: (
+    opts: OAuth2CreateOptions,
+  ) => AuthConnector<OAuth2Session>;
 };
 
 export type OAuth2Response = {
@@ -79,23 +83,22 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create(options: OAuth2CreateOptions) {
+  private static createDefaultAuthConnector(options: OAuth2CreateOptions) {
     const {
-      configApi,
-      discoveryApi,
-      environment = 'development',
-      provider = DEFAULT_PROVIDER,
-      oauthRequestApi,
-      defaultScopes = [],
-      scopeTransform = x => x,
-      popupOptions,
-    } = options;
-
-    const connector = new DefaultAuthConnector({
       configApi,
       discoveryApi,
       environment,
       provider,
+      oauthRequestApi,
+      scopeTransform,
+      popupOptions,
+    } = options;
+
+    return new DefaultAuthConnector({
+      configApi,
+      discoveryApi,
+      environment: environment!,
+      provider: provider!,
       oauthRequestApi: oauthRequestApi,
       sessionTransform({
         backstageIdentity,
@@ -107,7 +110,7 @@ export default class OAuth2
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
             scopes: OAuth2.normalizeScopes(
-              scopeTransform,
+              scopeTransform!,
               res.providerInfo.scope,
             ),
             expiresAt: res.providerInfo.expiresInSeconds
@@ -127,6 +130,24 @@ export default class OAuth2
         return session;
       },
       popupOptions,
+    });
+  }
+
+  static create(options: OAuth2CreateOptions) {
+    const {
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      defaultScopes = [],
+      scopeTransform = x => x,
+      authConnectorFactory = (opts: OAuth2CreateOptions) =>
+        OAuth2.createDefaultAuthConnector(opts),
+    } = options;
+
+    const connector = authConnectorFactory({
+      ...options,
+      scopeTransform,
+      environment,
+      provider,
     });
 
     const sessionManager = new RefreshingAuthSessionManager({
