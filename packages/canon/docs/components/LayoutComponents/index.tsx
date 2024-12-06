@@ -60,7 +60,7 @@ export const LayoutComponents = () => {
         <div className={description}>Arrange your components in a row</div>
       </div>
       <div className={box}>
-        <a className={content} href="/?path=/docs/components-tiles--docs">
+        <a className={content} href="/?path=/docs/components-container--docs">
           <ContainerSvg />
         </a>
         <div className={title}>Container</div>
