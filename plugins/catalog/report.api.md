@@ -156,7 +156,7 @@ export interface CatalogSearchResultListItemProps {
   result?: IndexableDocument;
 }
 
-// @public (undocumented)
+// @public
 export const CatalogTable: {
   (props: CatalogTableProps): React_2.JSX.Element;
   columns: Readonly<{
@@ -214,6 +214,7 @@ export interface CatalogTableProps {
   subtitle?: string;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  title?: string;
 }
 
 // @public (undocumented)
