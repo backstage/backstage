@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX } from 'react';
+import { JSX } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   ApiBlueprint,

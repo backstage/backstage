@@ -18,7 +18,6 @@ import { InfoCard } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { useUserProfile } from '../useUserProfileInfo';
 
 const Contents = () => {

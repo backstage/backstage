@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { createContext, useContext } from 'react';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
@@ -22,9 +22,9 @@ import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
  *
  * @public
  */
-export const PodMetricsContext = React.createContext<
-  Map<string, ClientPodStatus[]>
->(new Map());
+export const PodMetricsContext = createContext<Map<string, ClientPodStatus[]>>(
+  new Map(),
+);
 
 /**
  * @public

@@ -243,8 +243,11 @@ function createConfigForRole(dir, role, extraConfig = {}) {
           '@mui/*/*/*',
           ...(extraConfig.restrictedImportPatterns ?? []),
         ],
+        rules: {
+          'react/react-in-jsx-scope': 'off',
+        },
         tsRules: {
-          'react/prop-types': 0,
+          'react/prop-types': 'off',
           ...extraConfig.tsRules,
         },
       });

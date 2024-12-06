@@ -17,7 +17,6 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Schema } from 'jsonschema';
-import React from 'react';
 import { ChildView } from './ChildView';
 import { MetadataView } from './MetadataView';
 import { SchemaViewProps } from './types';

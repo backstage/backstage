@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ArrayView } from './ArrayView';
 import { MatchView } from './MatchView';
 import { ObjectView } from './ObjectView';

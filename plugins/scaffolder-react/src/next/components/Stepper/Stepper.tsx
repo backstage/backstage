@@ -22,13 +22,8 @@ import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  type ReactNode,
-  ComponentType,
-} from 'react';
+import type { ReactNode } from 'react';
+import { useCallback, useMemo, useState, ComponentType } from 'react';
 import {
   createAsyncValidators,
   type FormValidation,

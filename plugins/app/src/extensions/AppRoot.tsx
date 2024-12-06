@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import React, {
-  ComponentType,
-  PropsWithChildren,
-  ReactNode,
-  useState,
-} from 'react';
+import { ComponentType, PropsWithChildren, ReactNode, useState } from 'react';
+
 import {
   AppRootWrapperBlueprint,
   RouterBlueprint,
@@ -94,7 +90,7 @@ export const AppRoot = createExtension({
       });
     }
 
-    let content: React.ReactNode = inputs.children.get(
+    let content: ReactNode = inputs.children.get(
       coreExtensionData.reactElement,
     );
 
@@ -182,7 +178,7 @@ export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
   RouterComponent?: ComponentType<PropsWithChildren<{}>>;
-  extraElements?: Array<React.JSX.Element>;
+  extraElements?: Array<JSX.Element>;
 }
 
 function DefaultRouter(props: PropsWithChildren<{}>) {

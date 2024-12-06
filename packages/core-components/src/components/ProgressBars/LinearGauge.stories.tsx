@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { LinearGauge } from './LinearGauge';
 
 const containerStyle = { width: 300 };

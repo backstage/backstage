@@ -52,9 +52,6 @@ Inside `src/my-plugin.ts`:
 const _ = require('lodash');
 import _ from 'lodash';
 
-// React should be a peer dependency in frontend plugins
-import react from 'react';
-
 // Should be declared as a dependency, not a dev dependency
 import { useApi } from '@backstage/core-plugin-api';
 ```

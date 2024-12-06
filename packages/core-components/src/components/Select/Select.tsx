@@ -28,7 +28,7 @@ import {
   withStyles,
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
@@ -168,12 +168,12 @@ export function SelectComponent(props: SelectProps) {
     setValue(selected || (multiple ? [] : ''));
   }, [selected, multiple]);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleChange = (event: ChangeEvent<{ value: unknown }>) => {
     setValue(event.target.value as SelectedItems);
     onChange(event.target.value as SelectedItems);
   };
 
-  const handleOpen = (event: React.ChangeEvent<any>) => {
+  const handleOpen = (event: ChangeEvent<any>) => {
     if (disabled) {
       event.preventDefault();
       return;

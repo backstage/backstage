@@ -24,7 +24,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { fireEvent, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
 import { MultiEntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
@@ -54,10 +54,10 @@ describe('<MultiEntityPicker />', () => {
   const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
   });
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],

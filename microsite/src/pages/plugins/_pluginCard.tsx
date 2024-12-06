@@ -1,7 +1,6 @@
 import Link from '@docusaurus/Link';
 import { SimpleCard } from '@site/src/components/simpleCard/simpleCard';
 import clsx from 'clsx';
-import React from 'react';
 
 export interface IPluginData {
   author: string;

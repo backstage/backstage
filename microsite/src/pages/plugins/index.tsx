@@ -5,7 +5,7 @@ import { truncateDescription } from '@site/src/util/truncateDescription';
 import { ChipCategory } from '@site/src/util/types';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';

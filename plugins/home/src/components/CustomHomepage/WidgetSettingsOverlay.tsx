@@ -21,7 +21,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React from 'react';
+import { useState } from 'react';
 import { Widget } from './types';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
@@ -61,7 +61,7 @@ interface WidgetSettingsOverlayProps {
 export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
   const { id, widget, settings, handleRemove, handleSettingsSave, deletable } =
     props;
-  const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const styles = useStyles();
 
   return (

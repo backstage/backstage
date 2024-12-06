@@ -16,7 +16,6 @@
 
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { KubernetesContent } from '../KubernetesContent';
-import React from 'react';
 
 export function KubernetesContentPage() {
   const { entity } = useEntity();

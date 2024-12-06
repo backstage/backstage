@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { DeploymentsAccordions } from './DeploymentsAccordions';
 import * as twoDeployFixture from '../../__fixtures__/2-deployments.json';
