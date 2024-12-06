@@ -18,12 +18,6 @@ import { createElement, forwardRef } from 'react';
 import { GridItemProps, GridProps } from './types';
 import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
 
-type GridComponent = React.ForwardRefExoticComponent<
-  GridProps & React.RefAttributes<HTMLDivElement>
-> & {
-  Item: typeof GridItem;
-};
-
 /** @public */
 export const Grid = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const {
@@ -54,31 +48,32 @@ export const Grid = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     },
     children,
   );
-}) as GridComponent;
-
-const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { children, rowSpan, colSpan, start, end, className, style } = props;
-
-  const sprinklesClassName = gridItemSprinkles({
-    rowSpan,
-    colSpan,
-    start,
-    end,
-  });
-
-  const classNames = ['grid-item', sprinklesClassName, className]
-    .filter(Boolean)
-    .join(' ');
-
-  return createElement(
-    'div',
-    {
-      ref,
-      className: classNames,
-      style,
-    },
-    children,
-  );
 });
 
-Grid.Item = GridItem;
+/** @public */
+export const GridItem = forwardRef<HTMLDivElement, GridItemProps>(
+  (props, ref) => {
+    const { children, rowSpan, colSpan, start, end, className, style } = props;
+
+    const sprinklesClassName = gridItemSprinkles({
+      rowSpan,
+      colSpan,
+      start,
+      end,
+    });
+
+    const classNames = ['grid-item', sprinklesClassName, className]
+      .filter(Boolean)
+      .join(' ');
+
+    return createElement(
+      'div',
+      {
+        ref,
+        className: classNames,
+        style,
+      },
+      children,
+    );
+  },
+);

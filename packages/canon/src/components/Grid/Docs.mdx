@@ -22,11 +22,11 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   The grid component is made of two parts: the grid container and the grid item. Import all parts and piece them together.
 </Text>
 <Source
-  code={`import * as Grid from "@backstage/canon/grid";
+  code={`import { Grid, GridItem } from "@backstage/canon/grid";
 
 export default () => (
   <Grid>
-    <Grid.Item />
+    <GridItem />
   </Grid>
 );`}
   language="tsx"
@@ -137,12 +137,12 @@ export default () => (
 
 <Source
   code={`<Grid columns={3} gap="md">
-  <Grid.Item colSpan={1}>
+  <GridItem colSpan={1}>
     <Box>Hello World</Box>
-  </Grid.Item>
-  <Grid.Item colSpan={2}>
+  </GridItem>
+  <GridItem colSpan={2}>
     <Box>Hello World</Box>
-  </Grid.Item>
+  </GridItem>
 </Grid>
 `}
   language="tsx"
@@ -160,13 +160,13 @@ export default () => (
   code={`<Grid columns={3} gap="md">
   <Grid.Item colSpan={1} rowSpan={2}>
     <Box>Hello World</Box>
-  </Grid.Item>
-  <Grid.Item colSpan={2}>
+  </GridItem>
+  <GridItem colSpan={2}>
     <Box>Hello World</Box>
-  </Grid.Item>
-  <Grid.Item colSpan={2}>
+  </GridItem>
+  <GridItem colSpan={2}>
     <Box>Hello World</Box>
-  </Grid.Item>
+  </GridItem>
 </Grid>
 `}
   language="tsx"
@@ -199,9 +199,9 @@ export default () => (
 </Text>
 <Source
   code={`<Grid columns={3} gap="md">
-  <Grid.Item start={2} end={4}>
+  <GridItem start={2} end={4}>
     <Box>Hello World</Box>
-  </Grid.Item>
+  </GridItem>
 </Grid>
 `}
   language="tsx"
