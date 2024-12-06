@@ -7,7 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -42,9 +42,7 @@ export { kubernetesPlugin as plugin };
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (props: {
-  refreshIntervalMs?: number;
-}) => React_2.JSX.Element;
+export const Router: (props: { refreshIntervalMs?: number }) => JSX_2.Element;
 
 export * from '@backstage/plugin-kubernetes-react';
 ```
