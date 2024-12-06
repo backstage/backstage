@@ -331,6 +331,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const cursor: Omit<Cursor, 'orderFieldValues'> & {
       orderFieldValues?: (string | null)[];
+      skipTotalItems: boolean;
     } = {
       orderFields: [],
       isPrevious: false,
@@ -341,7 +342,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // request. The result is then embedded into the cursor for subsequent
     // requests. Threfore this can be undefined here, but will then get
     // populated further down.
-    const shouldComputeTotalItems = cursor.totalItems === undefined;
+    const shouldComputeTotalItems =
+      cursor.totalItems === undefined && !cursor.skipTotalItems;
     const isFetchingBackwards = cursor.isPrevious;
 
     if (cursor.orderFields.length > 1) {
@@ -532,8 +534,16 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const rows = shouldComputeTotalItems || limit > 0 ? await dbQuery : [];
 
-    const totalItems =
-      cursor.totalItems ?? (rows.length ? Number(rows[0].count) : 0);
+    let totalItems: number;
+    if (cursor.totalItems !== undefined) {
+      totalItems = cursor.totalItems;
+    } else if (cursor.skipTotalItems) {
+      totalItems = 0;
+    } else if (rows.length) {
+      totalItems = Number(rows[0].count);
+    } else {
+      totalItems = 0;
+    }
 
     if (isFetchingBackwards) {
       rows.reverse();
@@ -809,15 +819,26 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
 
 function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
-): Partial<Cursor> {
+): Partial<Cursor> & { skipTotalItems: boolean } {
   if (isQueryEntitiesInitialRequest(request)) {
-    const { filter, orderFields: sortFields = [], fullTextFilter } = request;
-    return { filter, orderFields: sortFields, fullTextFilter };
+    const {
+      filter,
+      orderFields: sortFields = [],
+      fullTextFilter,
+      skipTotalItems = false,
+    } = request;
+    return { filter, orderFields: sortFields, fullTextFilter, skipTotalItems };
   }
   if (isQueryEntitiesCursorRequest(request)) {
-    return request.cursor;
+    return {
+      ...request.cursor,
+      // Doesn't matter here
+      skipTotalItems: false,
+    };
   }
-  return {};
+  return {
+    skipTotalItems: false,
+  };
 }
 
 function invertOrder(order: EntityOrder['order']) {
