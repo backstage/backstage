@@ -74,6 +74,10 @@
   --canon-spacing-lg: 2rem;
   --canon-spacing-xl: 3.25rem;
   --canon-spacing-2xl: 5.25rem;
+
+  /* Container */
+  --canon-container-max-width: 1200px;
+  --canon-container-padding: 1rem;
 }
 
 /* Dark theme */

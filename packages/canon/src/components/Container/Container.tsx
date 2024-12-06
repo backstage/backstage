@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { forwardRef } from 'react';
+import { containerSprinkles } from './sprinkles.css';
+import { ContainerProps } from './types';
 
-/* Geist font */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+/** @public */
+export const Container = forwardRef<HTMLDivElement, ContainerProps>(
+  (props, ref) => {
+    const { children, className, style, ...restProps } = props;
 
-/* Theme */
-@import './theme.css';
+    const containerClassName = containerSprinkles(restProps);
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
+    return (
+      <div
+        ref={ref}
+        className={['container', containerClassName].filter(Boolean).join(' ')}
+        style={style}
+      >
+        {children}
+      </div>
+    );
+  },
+);
