@@ -1479,6 +1479,52 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'can skip totalItems, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await Promise.all(
+          Array(15)
+            .fill(0)
+            .map(() =>
+              addEntityToSearch({
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: v4() },
+              }),
+            ),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const request: QueryEntitiesInitialRequest = {
+          limit: 10,
+          credentials: mockCredentials.none(),
+          skipTotalItems: true,
+        };
+        let response = await catalog.queryEntities(request);
+        expect(response).toEqual({
+          totalItems: 0,
+          items: expect.objectContaining({ length: 10 }),
+          pageInfo: { nextCursor: expect.anything() },
+        });
+        response = await catalog.queryEntities({
+          ...request,
+          cursor: response.pageInfo.nextCursor!,
+        });
+        expect(response).toEqual({
+          totalItems: 0,
+          items: expect.objectContaining({ length: 5 }),
+          pageInfo: { prevCursor: expect.anything() },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should paginate results accordingly in case of clashing items, %p',
       async databaseId => {
         await createDatabase(databaseId);

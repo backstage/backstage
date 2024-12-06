@@ -173,6 +173,7 @@ describe('createRouter readonly disabled', () => {
         },
         limit: 10000,
         credentials: mockCredentials.user(),
+        skipTotalItems: true,
       });
     });
   });

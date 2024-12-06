@@ -192,7 +192,14 @@ export async function createRouter(
           do {
             const result = await entitiesCatalog.queryEntities(
               !cursor
-                ? { credentials, fields, limit, filter, orderFields: order }
+                ? {
+                    credentials,
+                    fields,
+                    limit,
+                    filter,
+                    orderFields: order,
+                    skipTotalItems: true,
+                  }
                 : { credentials, fields, limit, cursor },
             );
 
