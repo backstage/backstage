@@ -17,12 +17,16 @@
 import {
   ActionContext as ActionContextNode,
   createTemplateAction as createTemplateActionNode,
+  TaskSecrets as TaskSecretsNode,
+  TemplateAction as TemplateActionNode,
   executeShellCommand as executeShellCommandNode,
   ExecuteShellCommandOptions as ExecuteShellCommandOptionsNode,
   fetchContents as fetchContentsNode,
-  TaskSecrets as TaskSecretsNode,
-  TemplateAction as TemplateActionNode,
 } from '@backstage/plugin-scaffolder-node';
+import {
+  ActionPermissionRuleInput as ActionPermissionRuleInputNode,
+  TemplatePermissionRuleInput as TemplatePermissionRuleInputNode,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonObject } from '@backstage/types';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessorModule } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 
@@ -84,3 +88,15 @@ export const fetchContents = fetchContentsNode;
  * @deprecated Import from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead
  */
 export const ScaffolderEntitiesProcessor = ScaffolderEntitiesProcessorModule;
+
+/**
+ * @public
+ * @deprecated Use `ActionPermissionRuleInput` from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export type ActionPermissionRuleInput = ActionPermissionRuleInputNode;
+
+/**
+ * @public
+ * @deprecated Use `TemplatePermissionRuleInput` from `@backstage/plugin-scaffolder-node/alpha` instead
+ */
+export type TemplatePermissionRuleInput = TemplatePermissionRuleInputNode;
