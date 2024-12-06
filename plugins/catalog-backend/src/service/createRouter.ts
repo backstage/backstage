@@ -27,7 +27,7 @@ import { InputError, NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
-import { EntitiesCatalog } from '../catalog/types';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import {
@@ -41,8 +41,10 @@ import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { LocationService, RefreshService } from './types';
 import {
+  createEntityArrayJsonStream,
   disallowReadonlyMode,
   encodeCursor,
+  expandLegacyCompoundRelationRefsInResponse,
   locationInput,
   validateRequestBody,
 } from './util';
@@ -57,6 +59,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
+import { DeferredPromise, createDeferred } from '@backstage/types';
 
 /**
  * Options used by {@link createRouter}.
@@ -135,24 +138,99 @@ export async function createRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
-        const { entities, pageInfo } = await entitiesCatalog.entities({
-          filter: parseEntityFilterParams(req.query),
-          fields: parseEntityTransformParams(req.query),
-          order: parseEntityOrderParams(req.query),
-          pagination: parseEntityPaginationParams(req.query),
-          credentials: await httpAuth.credentials(req),
-        });
+        const filter = parseEntityFilterParams(req.query);
+        const fields = parseEntityTransformParams(req.query);
+        const order = parseEntityOrderParams(req.query);
+        const pagination = parseEntityPaginationParams(req.query);
+        const credentials = await httpAuth.credentials(req);
 
-        // Add a Link header to the next page
-        if (pageInfo.hasNextPage) {
-          const url = new URL(`http://ignored${req.url}`);
-          url.searchParams.delete('offset');
-          url.searchParams.set('after', pageInfo.endCursor);
-          res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+        // When pagination parameters are passed in, use the legacy slow path
+        // that loads all entities into memory
+
+        if (pagination) {
+          const { entities, pageInfo } = await entitiesCatalog.entities({
+            filter,
+            fields,
+            order,
+            pagination,
+            credentials,
+          });
+
+          // Add a Link header to the next page
+          if (pageInfo.hasNextPage) {
+            const url = new URL(`http://ignored${req.url}`);
+            url.searchParams.delete('offset');
+            url.searchParams.set('after', pageInfo.endCursor);
+            res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+          }
+
+          res.json(entities);
+          return;
         }
 
-        // TODO(freben): encode the pageInfo in the response
-        res.json(entities);
+        // For other read-the-entire-world cases, use queryEntities and stream
+        // out results.
+
+        // The write lock is used for back pressure, preventing slow readers
+        // from forcing our read loop to pile up response data in userspace
+        // buffers faster than the kernel buffer is emptied.
+        // https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback
+        const locks: { writeLock?: DeferredPromise } = {};
+        const controller = new AbortController();
+        const signal = controller.signal;
+        req.on('end', () => {
+          controller.abort(new Error('Client closed connection'));
+          locks.writeLock?.resolve();
+          delete locks.writeLock;
+        });
+
+        const responseStream = createEntityArrayJsonStream(res);
+        const limit = 10000;
+        let cursor: Cursor | undefined;
+
+        try {
+          do {
+            const result = await entitiesCatalog.queryEntities(
+              !cursor
+                ? {
+                    credentials,
+                    fields,
+                    limit,
+                    filter,
+                    orderFields: order,
+                    skipTotalItems: true,
+                  }
+                : { credentials, fields, limit, cursor },
+            );
+
+            if (result.items.length) {
+              await locks?.writeLock;
+
+              signal.throwIfAborted();
+
+              expandLegacyCompoundRelationRefsInResponse(result.items);
+              if (!responseStream.send(result.items)) {
+                // The kernel buffer is full. Create the lock but do not await it
+                // yet - we can better spend our time going to the next round of
+                // the loop and read from the database while we wait for it to
+                // drain.
+                locks.writeLock = createDeferred();
+                res.once('drain', () => {
+                  locks.writeLock?.resolve();
+                  delete locks.writeLock;
+                });
+              }
+            }
+
+            signal.throwIfAborted();
+
+            cursor = result.pageInfo?.nextCursor;
+          } while (cursor);
+
+          responseStream.complete();
+        } finally {
+          responseStream.close();
+        }
       })
       .get('/entities/by-query', async (req, res) => {
         const { items, pageInfo, totalItems } =

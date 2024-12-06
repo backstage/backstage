@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { chunk as lodashChunk, isEqual } from 'lodash';
@@ -49,6 +45,7 @@ import {
 import { Stitcher } from '../stitching/types';
 
 import {
+  expandLegacyCompoundRelationRefsInResponse,
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
@@ -280,27 +277,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       entities = entities.map(e => request.fields!(e));
     }
 
-    // TODO(freben): This is added as a compatibility guarantee, until we can be
-    // sure that all adopters have re-stitched their entities so that the new
-    // targetRef field is present on them, and that they have stopped consuming
-    // the now-removed old field
-    // TODO(jhaals): Remove this in April 2022
-    for (const entity of entities) {
-      if (entity.relations) {
-        for (const relation of entity.relations as any) {
-          if (!relation.targetRef && relation.target) {
-            // This is the case where an old-form entity, not yet stitched with
-            // the updated code, was in the database
-            relation.targetRef = stringifyEntityRef(relation.target);
-          } else if (!relation.target && relation.targetRef) {
-            // This is the case where a new-form entity, stitched with the
-            // updated code, was in the database but we still want to produce
-            // the old data shape as well for compatibility reasons
-            relation.target = parseEntityRef(relation.targetRef);
-          }
-        }
-      }
-    }
+    expandLegacyCompoundRelationRefsInResponse(entities);
 
     return {
       entities,
@@ -354,6 +331,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const cursor: Omit<Cursor, 'orderFieldValues'> & {
       orderFieldValues?: (string | null)[];
+      skipTotalItems: boolean;
     } = {
       orderFields: [],
       isPrevious: false,
@@ -364,7 +342,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // request. The result is then embedded into the cursor for subsequent
     // requests. Threfore this can be undefined here, but will then get
     // populated further down.
-    const shouldComputeTotalItems = cursor.totalItems === undefined;
+    const shouldComputeTotalItems =
+      cursor.totalItems === undefined && !cursor.skipTotalItems;
     const isFetchingBackwards = cursor.isPrevious;
 
     if (cursor.orderFields.length > 1) {
@@ -555,8 +534,16 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const rows = shouldComputeTotalItems || limit > 0 ? await dbQuery : [];
 
-    const totalItems =
-      cursor.totalItems ?? (rows.length ? Number(rows[0].count) : 0);
+    let totalItems: number;
+    if (cursor.totalItems !== undefined) {
+      totalItems = cursor.totalItems;
+    } else if (cursor.skipTotalItems) {
+      totalItems = 0;
+    } else if (rows.length) {
+      totalItems = Number(rows[0].count);
+    } else {
+      totalItems = 0;
+    }
 
     if (isFetchingBackwards) {
       rows.reverse();
@@ -832,15 +819,26 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
 
 function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
-): Partial<Cursor> {
+): Partial<Cursor> & { skipTotalItems: boolean } {
   if (isQueryEntitiesInitialRequest(request)) {
-    const { filter, orderFields: sortFields = [], fullTextFilter } = request;
-    return { filter, orderFields: sortFields, fullTextFilter };
+    const {
+      filter,
+      orderFields: sortFields = [],
+      fullTextFilter,
+      skipTotalItems = false,
+    } = request;
+    return { filter, orderFields: sortFields, fullTextFilter, skipTotalItems };
   }
   if (isQueryEntitiesCursorRequest(request)) {
-    return request.cursor;
+    return {
+      ...request.cursor,
+      // Doesn't matter here
+      skipTotalItems: false,
+    };
   }
-  return {};
+  return {
+    skipTotalItems: false,
+  };
 }
 
 function invertOrder(order: EntityOrder['order']) {

@@ -135,9 +135,10 @@ describe('createRouter readonly disabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [entities[0]],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [entities[0]],
+        pageInfo: {},
+        totalItems: 1,
       });
 
       const response = await request(app).get('/entities');
@@ -147,17 +148,18 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
       });
       const response = await request(app).get(
         '/entities?filter=a=1,a=2,b=3&filter=c=4',
       );
 
       expect(response.status).toEqual(200);
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         filter: {
           anyOf: [
             {
@@ -169,7 +171,9 @@ describe('createRouter readonly disabled', () => {
             { key: 'c', values: ['4'] },
           ],
         },
+        limit: 10000,
         credentials: mockCredentials.user(),
+        skipTotalItems: true,
       });
     });
   });
@@ -913,9 +917,10 @@ describe('createRouter readonly enabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [entities[0]],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [entities[0]],
+        pageInfo: {},
+        totalItems: 1,
       });
 
       const response = await request(app).get('/entities');
