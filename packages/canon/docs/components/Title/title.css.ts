@@ -28,7 +28,7 @@ export const titleStyles = recipe({
       h1: {
         fontSize: '36px',
         lineHeight: '44px',
-        marginBottom: '32px',
+        marginBottom: '8px',
         marginTop: '0px',
       },
       h2: {
@@ -41,7 +41,7 @@ export const titleStyles = recipe({
         fontSize: '20px',
         lineHeight: '28px',
         marginBottom: '12px',
-        marginTop: '52px',
+        marginTop: '40px',
       },
     },
   },

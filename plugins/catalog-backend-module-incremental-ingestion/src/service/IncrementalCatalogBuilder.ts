@@ -66,6 +66,7 @@ export class IncrementalCatalogBuilder {
     const incrementalAdminRouter = await new IncrementalProviderRouter(
       this.manager,
       routerLogger,
+      this.env.config,
     ).createRouter();
 
     return { incrementalAdminRouter };

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github",
-  "version": "0.7.8-next.0",
+  "version": "0.7.8-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards GitHub",
   "backstage": {
     "role": "backend-plugin-module",
@@ -66,7 +66,6 @@
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
-    "node-fetch": "^2.7.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {
@@ -74,7 +73,7 @@
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
     "luxon": "^3.0.0",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-react",
-  "version": "0.1.10-next.0",
+  "version": "0.1.10-next.1",
   "description": "Web library for the auth plugin",
   "backstage": {
     "role": "web-library",

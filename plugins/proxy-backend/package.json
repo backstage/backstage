@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
-  "version": "0.5.9-next.0",
+  "version": "0.5.9-next.1",
   "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "backstage": {
     "role": "backend-plugin",
@@ -77,8 +77,7 @@
     "@backstage/errors": "workspace:^",
     "@types/http-proxy-middleware": "^1.0.0",
     "@types/yup": "^0.32.0",
-    "msw": "^2.0.0",
-    "node-fetch": "^2.7.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -21,88 +21,50 @@ import {
   content,
   title,
   description,
-  whiteBox,
-  whiteBoxStack,
-  stack,
-  verticalDivider,
-  horizontalDivider,
-  columns,
-  inline,
-  tiles,
-  whiteBoxColumns,
-  whiteBoxInline,
-  whiteBoxTiles,
 } from './layout-components.css';
+import { BoxSvg } from './box';
+import { StackSvg } from './stack';
+import { GridSvg } from './grid';
+import { InlineSvg } from './inline';
+import { ContainerSvg } from './container';
 
 export const LayoutComponents = () => {
   return (
     <div className={container}>
       <div className={box}>
         <a className={content} href="/?path=/docs/components-box--docs">
-          <div className={whiteBox} />
+          <BoxSvg />
         </a>
         <div className={title}>Box</div>
-        <div className={description}>The most basic layout component.</div>
+        <div className={description}>The most basic layout component</div>
       </div>
       <div className={box}>
-        <a
-          className={`${content} ${stack}`}
-          href="/?path=/docs/components-stack--docs"
-        >
-          <div className={whiteBoxStack} />
-          <div className={verticalDivider} />
-          <div className={whiteBoxStack} />
+        <a className={content} href="/?path=/docs/components-stack--docs">
+          <StackSvg />
         </a>
         <div className={title}>Stack</div>
-        <div className={description}>Arrange your components vertically.</div>
+        <div className={description}>Arrange your components vertically</div>
       </div>
       <div className={box}>
-        <a
-          className={`${content} ${columns}`}
-          href="/?path=/docs/components-columns--docs"
-        >
-          <div className={whiteBoxColumns} />
-          <div className={horizontalDivider} />
-          <div className={whiteBoxColumns} />
+        <a className={content} href="/?path=/docs/components-grid--docs">
+          <GridSvg />
         </a>
-        <div className={title}>Columns</div>
-        <div className={description}>Arrange your components horizontally.</div>
+        <div className={title}>Grid</div>
+        <div className={description}>Arrange your components in a grid</div>
       </div>
       <div className={box}>
         <a className={content} href="/?path=/docs/components-inline--docs">
-          <div className={inline}>
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-            <div className={whiteBoxInline} />
-          </div>
+          <InlineSvg />
         </a>
         <div className={title}>Inline</div>
-        <div className={description}>Arrange your components in a row.</div>
+        <div className={description}>Arrange your components in a row</div>
       </div>
       <div className={box}>
         <a className={content} href="/?path=/docs/components-tiles--docs">
-          <div className={tiles}>
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-            <div className={whiteBoxTiles} />
-          </div>
+          <ContainerSvg />
         </a>
-        <div className={title}>Tiles</div>
-        <div className={description}>Arrange your components in a grid.</div>
+        <div className={title}>Container</div>
+        <div className={description}>A container for your components</div>
       </div>
     </div>
   );

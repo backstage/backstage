@@ -17,7 +17,7 @@
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql as graphqlOctokit } from '@octokit/graphql';
-import { graphql as graphqlMsw } from 'msw';
+import { graphql as graphqlMsw, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
 import {
@@ -33,13 +33,12 @@ import {
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
 } from './github';
-import fetch from 'node-fetch';
 
 describe('github', () => {
-  const graphql = graphqlOctokit.defaults({ request: { fetch } });
-
   const server = setupServer();
   registerMswTestHooks(server);
+
+  const graphql = graphqlOctokit.defaults({});
 
   describe('getOrganizationUsers using defaultUserMapper', () => {
     it('reads members', async () => {
@@ -73,7 +72,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('users', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
       await expect(
@@ -136,7 +135,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('users', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
       await expect(
@@ -180,7 +179,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('users', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
       const users = await getOrganizationUsers(
@@ -255,7 +254,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('teams', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('teams', () => HttpResponse.json({ data: input })),
       );
 
       await expect(getOrganizationTeams(graphql, 'a')).resolves.toEqual(output);
@@ -355,7 +354,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('teams', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('teams', () => HttpResponse.json({ data: input })),
       );
 
       await expect(
@@ -435,7 +434,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('teams', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('teams', () => HttpResponse.json({ data: input })),
       );
 
       const teams = await getOrganizationTeams(
@@ -471,7 +470,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('orgs', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('orgs', () => HttpResponse.json({ data: input })),
       );
 
       await expect(getOrganizationsFromUser(graphql, 'foo')).resolves.toEqual({
@@ -500,7 +499,7 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('members', (_req, res, ctx) => res(ctx.data(input))),
+        graphqlMsw.query('members', () => HttpResponse.json({ data: input })),
       );
 
       await expect(getTeamMembers(graphql, 'a', 'b')).resolves.toEqual(output);
@@ -587,8 +586,8 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('repositories', (_req, res, ctx) =>
-          res(ctx.data(input)),
+        graphqlMsw.query('repositories', () =>
+          HttpResponse.json({ data: input }),
         ),
       );
 

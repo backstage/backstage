@@ -1,5 +1,26 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- c781a9a: **BREAKING** Removed support for what is known as the legacy backend, please use the New Backend System.
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.1
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-devtools-common@0.1.13
+  - @backstage/plugin-permission-common@0.8.2
+
 ## 0.4.3-next.0
 
 ### Patch Changes

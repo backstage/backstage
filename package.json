@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.34.0-next.0",
+  "version": "1.34.0-next.1",
   "private": true,
   "repository": {
     "type": "git",
@@ -49,9 +49,9 @@
     "storybook": "yarn ./storybook run storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "test": "backstage-cli repo test",
-    "test:all": "backstage-cli repo test --coverage",
-    "test:e2e": "playwright test",
+    "test": "NODE_OPTIONS=--no-node-snapshot backstage-cli repo test",
+    "test:all": "NODE_OPTIONS=--no-node-snapshot backstage-cli repo test --coverage",
+    "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
     "tsc": "tsc",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
   },

@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import yaml from 'yaml';
 import { createGitlabProjectAccessTokenAction } from './gitlabProjectAccessTokenCreate'; // Adjust the import based on your project structure
 import { examples } from './gitlabProjectAccessTokenCreate.examples';
-
 import { DateTime } from 'luxon';
-
-jest.mock('node-fetch');
 
 const mockGitlabClient = {
   ProjectAccessTokens: {

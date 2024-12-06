@@ -110,7 +110,7 @@ export const ResponsiveGap: Story = {
     gap: {
       xs: 'xs',
       md: 'md',
-      lg: 'xxl',
+      lg: '2xl',
     },
   },
 };

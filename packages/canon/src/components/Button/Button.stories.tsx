@@ -17,7 +17,8 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
-import { Box } from '../Box/Box';
+import { Inline } from '../Inline';
+import { Stack } from '../Stack';
 
 const meta = {
   title: 'Components/Button',
@@ -53,15 +54,22 @@ export const Secondary: Story = {
   },
 };
 
+export const Tertiary: Story = {
+  args: {
+    children: 'Tertiary button',
+    variant: 'tertiary',
+  },
+};
+
 export const Sizes: Story = {
   args: {
     children: 'Button',
   },
   render: args => (
-    <div style={{ display: 'flex', gap: '10px' }}>
-      <Button {...args} size="small" />
+    <Inline alignY="center">
       <Button {...args} size="medium" />
-    </div>
+      <Button {...args} size="small" />
+    </Inline>
   ),
 };
 
@@ -70,11 +78,11 @@ export const WithIcons: Story = {
     children: 'Button',
   },
   render: args => (
-    <div style={{ display: 'flex', gap: '10px' }}>
+    <Inline alignY="center">
       <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="arrowRight" />
-      <Button {...args} iconStart="cloud" iconEnd="arrowRight" />
-    </div>
+      <Button {...args} iconEnd="chevronRight" />
+      <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
+    </Inline>
   ),
 };
 
@@ -83,11 +91,11 @@ export const FullWidth: Story = {
     children: 'Button',
   },
   render: args => (
-    <Box>
+    <Stack style={{ width: '300px' }}>
       <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="arrowRight" />
-      <Button {...args} iconStart="cloud" iconEnd="arrowRight" />
-    </Box>
+      <Button {...args} iconEnd="chevronRight" />
+      <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
+    </Stack>
   ),
 };
 
@@ -96,26 +104,4 @@ export const Disabled: Story = {
     children: 'Button',
     disabled: true,
   },
-};
-
-export const CustomTheme: Story = {
-  args: {
-    children: 'Custom Button',
-  },
-  decorators: [
-    Story => (
-      <div
-        style={
-          {
-            '--button-primary-background-color': 'blue',
-            '--button-primary-border-color': 'blue',
-            '--button-primary-text-color': 'white',
-            '--button-primary-border-radius': '8px',
-          } as React.CSSProperties
-        }
-      >
-        <Story />
-      </div>
-    ),
-  ],
 };

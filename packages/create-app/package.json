@@ -1,6 +1,6 @@
 {
   "name": "@backstage/create-app",
-  "version": "0.5.23-next.0",
+  "version": "0.5.23-next.1",
   "description": "A CLI that helps you create your own Backstage app",
   "backstage": {
     "role": "cli"
@@ -49,7 +49,6 @@
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",
-    "node-fetch": "^2.7.0",
     "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2"
   },
@@ -61,7 +60,7 @@
     "@types/inquirer": "^8.1.3",
     "@types/node": "^20.16.0",
     "@types/recursive-readdir": "^2.2.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "nodemon": "^3.0.1"
   }
 }

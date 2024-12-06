@@ -23,7 +23,6 @@ import {
 } from '@backstage/errors';
 import express from 'express';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
-import fetch, { Headers } from 'node-fetch';
 import {
   CACHE_PREFIX,
   CF_JWT_HEADER,
@@ -87,8 +86,7 @@ export class AuthHelper {
       // Only throw if both are not provided by Cloudflare Access since either
       // can be used.
       throw new AuthenticationError(
-        `Missing ${this.jwtHeaderName} and 
-          ${this.authorizationCookieName} from Cloudflare Access`,
+        `Missing ${this.jwtHeaderName} and ${this.authorizationCookieName} from Cloudflare Access`,
       );
     }
 

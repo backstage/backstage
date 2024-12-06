@@ -54,6 +54,10 @@ export function registerRepoCommand(program: Command) {
       'eslint-formatter-friendly',
     )
     .option(
+      '--output-file <path>',
+      'Write the lint report to a file instead of stdout',
+    )
+    .option(
       '--since <ref>',
       'Only lint packages that changed since the specified ref',
     )
@@ -167,6 +171,10 @@ export function registerScriptCommand(program: Command) {
       '--format <format>',
       'Lint report output format',
       'eslint-formatter-friendly',
+    )
+    .option(
+      '--output-file <path>',
+      'Write the lint report to a file instead of stdout',
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .option(

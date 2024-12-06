@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-aws-alb-provider",
-  "version": "0.3.1-next.0",
+  "version": "0.3.1-next.1",
   "description": "The aws-alb provider module for the Backstage auth backend.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -42,8 +42,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "jose": "^5.0.0",
-    "node-cache": "^5.1.2",
-    "node-fetch": "^2.7.0"
+    "node-cache": "^5.1.2"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

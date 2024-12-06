@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-azure",
-  "version": "0.3.0-next.0",
+  "version": "0.3.0-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards Azure",
   "backstage": {
     "role": "backend-plugin-module",
@@ -58,7 +58,6 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "node-fetch": "^2.7.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

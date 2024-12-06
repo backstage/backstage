@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { CSSProperties } from 'react';
+import { DetailedReactHTMLElement } from 'react';
 import { DOMElement } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -115,15 +116,9 @@ export const breakpoints: {
 };
 
 // @public (undocumented)
-export const Button: ({
-  size,
-  variant,
-  children,
-  disabled,
-  iconStart,
-  iconEnd,
-  ...props
-}: ButtonProps) => React_2.JSX.Element;
+export const Button: React_2.ForwardRefExoticComponent<
+  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+>;
 
 // @public
 export interface ButtonProps {
@@ -138,7 +133,7 @@ export interface ButtonProps {
   // (undocumented)
   size?: 'small' | 'medium';
   // (undocumented)
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'tertiary';
 }
 
 // @public (undocumented)
@@ -155,6 +150,9 @@ export interface ColorProps {
   // (undocumented)
   color?: Color;
 }
+
+// @public (undocumented)
+export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 // @public (undocumented)
 export type DisplayProps =
@@ -180,6 +178,54 @@ export type FlexWrapProps =
 export type Gap = Space | Partial<Record<Breakpoint, Space>>;
 
 // @public (undocumented)
+export const Grid: {
+  (props: GridProps): DetailedReactHTMLElement<
+    {
+      className: string;
+      style: CSSProperties | undefined;
+    },
+    HTMLElement
+  >;
+  Item: (props: GridItemProps) => DetailedReactHTMLElement<
+    {
+      className: string;
+      style: CSSProperties | undefined;
+    },
+    HTMLElement
+  >;
+};
+
+// @public (undocumented)
+export interface GridItemProps {
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  colSpan?: Columns | 'full';
+  // (undocumented)
+  end?: Columns | 'auto';
+  // (undocumented)
+  rowSpan?: Columns | 'full';
+  // (undocumented)
+  start?: Columns | 'auto';
+  // (undocumented)
+  style?: React.CSSProperties;
+}
+
+// @public (undocumented)
+export interface GridProps extends SpaceProps, ColorProps {
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
+  // (undocumented)
+  style?: React.CSSProperties;
+}
+
+// @public (undocumented)
 export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
 
 // @public (undocumented)
@@ -191,10 +237,52 @@ export type IconNames =
   | 'arrowLeft'
   | 'arrowRight'
   | 'arrowUp'
+  | 'arrowDownCircle'
+  | 'arrowLeftCircle'
+  | 'arrowRightCircle'
+  | 'arrowUpCircle'
+  | 'chevronDown'
+  | 'chevronLeft'
+  | 'chevronRight'
+  | 'chevronUp'
   | 'cloud'
   | 'heart'
   | 'plus'
   | 'trash';
+
+// @public (undocumented)
+export const Inline: (props: InlineProps) => DetailedReactHTMLElement<
+  {
+    className: string;
+    style: CSSProperties | undefined;
+    children: ReactNode;
+  },
+  HTMLElement
+>;
+
+// @public (undocumented)
+export interface InlineProps extends SpaceProps, ColorProps {
+  // (undocumented)
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  // (undocumented)
+  alignY?:
+    | 'top'
+    | 'center'
+    | 'bottom'
+    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
+  // (undocumented)
+  as?: AsProps;
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  style?: React.CSSProperties;
+}
 
 // @public (undocumented)
 export type JustifyContentProps =
@@ -264,13 +352,13 @@ export type Space = keyof typeof space;
 // @public (undocumented)
 export const space: {
   none: number;
-  xxs: string;
+  '2xs': string;
   xs: string;
   sm: string;
   md: string;
   lg: string;
   xl: string;
-  xxl: string;
+  '2xl': string;
 };
 
 // @public (undocumented)
@@ -305,6 +393,34 @@ export interface SpaceProps {
   paddingX?: PaddingX;
   // (undocumented)
   paddingY?: PaddingY;
+}
+
+// @public (undocumented)
+export const Stack: (props: StackProps) => DetailedReactHTMLElement<
+  {
+    className: string;
+    style: CSSProperties | undefined;
+    children: ReactNode;
+  },
+  HTMLElement
+>;
+
+// @public (undocumented)
+export interface StackProps extends SpaceProps, ColorProps {
+  // (undocumented)
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  // (undocumented)
+  as?: AsProps;
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  style?: React.CSSProperties;
 }
 
 // @public (undocumented)

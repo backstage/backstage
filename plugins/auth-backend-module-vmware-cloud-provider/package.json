@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-vmware-cloud-provider",
-  "version": "0.4.2-next.0",
+  "version": "0.4.2-next.1",
   "description": "The vmware-cloud-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",

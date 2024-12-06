@@ -386,6 +386,16 @@ export interface Config {
         | string
         | {
             /**
+             * The specific config for cloudsql connections
+             */
+            type: 'cloudsql';
+            /**
+             * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+             */
+            instance: string;
+          }
+        | {
+            /**
              * Password that belongs to the client User
              * @visibility secret
              */
@@ -441,7 +451,30 @@ export interface Config {
            * Database connection string or Knex object override
            * @visibility secret
            */
-          connection?: string | object;
+          connection?:
+            | string
+            | {
+                /**
+                 * The specific config for cloudsql connections
+                 */
+                type: 'cloudsql';
+                /**
+                 * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+                 */
+                instance: string;
+              }
+            | {
+                /**
+                 * Password that belongs to the client User
+                 * @visibility secret
+                 */
+                password?: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
+
           /**
            * Whether to ensure the given database exists by creating it if it does not.
            * Defaults to base config if unspecified.
@@ -518,6 +551,23 @@ export interface Config {
      * remove the default value that Backstage puts in place for that policy.
      */
     csp?: { [policyId: string]: string[] | false };
+
+    /**
+     * Options for the health check service and endpoint.
+     */
+    health?: {
+      /**
+       * Additional headers to always include in the health check response.
+       *
+       * It can be a good idea to set a header that uniquely identifies your service
+       * in a multi-service environment. This ensures that the health check that is
+       * configured for your service is actually hitting your service and not another.
+       *
+       * For example, if using Envoy you can use the `service_name_matcher` configuration
+       * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
+       */
+      headers?: { [name: string]: string };
+    };
 
     /**
      * Configuration related to URL reading, used for example for reading catalog info

@@ -1,5 +1,63 @@
 # @backstage/plugin-home
 
+## 0.8.3-next.1
+
+### Patch Changes
+
+- 7248f3b: Added a new Quick Start Card to `plugin-home`, which can display basic info to get users the info they need to onboard to the Catalog.
+
+  ```
+  import { QuickStartCard } from '@backstage/plugin-home';
+  <QuickStartCard
+    title="Onboarding to the Catalog"
+    modalTitle="Onboarding Quick Start"
+    docsLinkTitle="Learn more with getting started docs"
+    docsLink="https://backstage.io/docs/getting-started"
+    image={
+      <img
+        src={ContentImage}
+        alt="quick start"
+        width="100%"
+        height="100%"
+      />
+    }
+    cardDescription="Backstage system model will help you create new entities"
+    video={
+      <video
+        controls
+        preload="auto"
+        poster={"./videoPoster.png"}
+      >
+        <source src={"OnboardingDemo.mp4"} type="video/mp4" />
+      </video>
+    }
+    downloadImage={
+      <Button
+        href={QuickStartPDF}
+        target={'_blank'}
+        download={true}
+      >
+        Download infographic button
+      </Button>
+    }
+  />
+  ```
+
+  See the [storybook examples](https://backstage.io/storybook/?path=/story/plugins-home-components-quickstartcard--default)
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/core-app-api@1.15.3-next.0
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/plugin-home-react@0.1.21-next.1
+
 ## 0.8.3-next.0
 
 ### Patch Changes

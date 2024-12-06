@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.2.4-next.0",
+  "version": "0.2.4-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
@@ -48,7 +48,6 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "http-proxy-middleware": "^2.0.0",
-    "node-fetch": "^2.7.0",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "ws": "^8.18.0",

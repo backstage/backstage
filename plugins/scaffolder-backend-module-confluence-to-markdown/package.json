@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown",
-  "version": "0.3.3-next.0",
+  "version": "0.3.4-next.1",
   "description": "The confluence-to-markdown module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -53,7 +53,6 @@
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
-    "node-fetch": "^2.7.0",
     "node-html-markdown": "^1.3.0",
     "yaml": "^2.0.0"
   },

@@ -26,7 +26,6 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 import { ensureDir } from 'fs-extra';
 import { program } from 'commander';
-import fetch from 'node-fetch';
 import ora from 'ora';
 import readdir from 'recursive-readdir';
 import { parse } from 'yaml';

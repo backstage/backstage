@@ -1,6 +1,6 @@
 {
   "name": "yarn-plugin-backstage",
-  "version": "0.0.4-next.0",
+  "version": "0.0.4-next.1",
   "description": "Yarn plugin for working with Backstage monorepos",
   "backstage": {
     "role": "node-library"
@@ -35,7 +35,6 @@
     "@yarnpkg/core": "^4.0.3",
     "@yarnpkg/fslib": "^3.0.2",
     "@yarnpkg/plugin-pack": "^4.0.0",
-    "lodash": "^4.17.21",
     "semver": "^7.6.0"
   },
   "devDependencies": {

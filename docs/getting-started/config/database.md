@@ -6,13 +6,13 @@ description: How to set up PostgreSQL for your Backstage instance.
 
 Audience: Admins
 
-### Summary
+## Summary
 
-This guide walks through how to set up a PostgreSQL database to host your Backstage data. It assumes you've already have a scaffolded Backstage app from following the [Standalone Install](../index.md) guide.
+This guide walks through how to set up a PostgreSQL database to host your Backstage data. It assumes you've already have a scaffolded Backstage app from following the [Creating your Backstage App](../index.md) guide.
 
 By the end of this tutorial, you will have a working PostgreSQL database hooked up to your Backstage install.
 
-### Prerequisites
+## Prerequisites
 
 This guide assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `apt-get`, `psql`, `yarn`.
 
@@ -23,7 +23,7 @@ This guide assumes a basic understanding of working on a Linux based operating s
 - If the database is not hosted on the same server as the Backstage app, the
   PostgreSQL port needs to be accessible (the default is `5432` or `5433`)
 
-### 1. Install and configure PostgreSQL
+## 1. Install and Configure PostgreSQL
 
 :::tip Already configured your database?
 
@@ -68,17 +68,9 @@ That's enough database administration to get started. Type `\q`, followed by
 pressing the enter key. Then again type `exit` and press enter. Next, you need
 to install and configure the client.
 
-### 2. Configuring Backstage `pg` Client
+## 2. Configuring Backstage `pg` Client
 
-Go to the root directory of your freshly installed Backstage
-App. Run the following to install the PostgreSQL client into your backend:
-
-```bash title="From your Backstage root directory"
-yarn --cwd packages/backend add pg
-```
-
-Use your favorite editor to open `app-config.yaml` and add your PostgreSQL
-configuration in the root directory of your Backstage app using the credentials from the previous steps.
+Use your favorite editor to open `app-config.yaml` and add your PostgreSQL configuration in the root directory of your Backstage app using the credentials from the previous steps.
 
 ```yaml title="app-config.yaml"
 backend:
@@ -126,6 +118,47 @@ After the Backstage frontend launches, you should notice that nothing has change
 
 We've now made your data persist in your Backstage database.
 
+## Alternatives
+
+You may not want to install Postgres locally, the following sections outline alternatives.
+
+### Docker
+
+You can run Postgres in a Docker container, this is great for local development or getting a Backstage POC up and running quickly, here's how:
+
+First we need to pull down the container image, we'll use Postgres 17, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions are supported.
+
+```shell
+docker pull postgres:17.0-bookworm
+```
+
+Then we just need to start up the container.
+
+```shell
+docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-bookworm
+```
+
+This will run Postgres in the background for you, but remember to start it up again when you reboot your system.
+
+### Docker Compose
+
+Another way to run Postgres is to use Docker Compose, here's what that would look like:
+
+```yaml title="docker-compose.local.yaml"
+version: '4'
+
+services:
+  postgres:
+    image: postgres:17.0-bookworm
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: <secret>
+    ports:
+      - 5432:5432
+```
+
+Then you would just run `docker compose -f docker-compose.local.yaml up` to start Postgres.
+
 ## Next Steps
 
 We recommend you read [Setting up authentication](./authentication.md) next.
@@ -136,3 +169,4 @@ If you want to read more about the database configuration, here are some helpful
 
 - [Configuring Plugin Databases](../../tutorials/configuring-plugin-databases.md#privileges)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
+- [Install pgAdmin 4](https://www.pgadmin.org/), a helpful tool for querying your database.

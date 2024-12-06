@@ -75,10 +75,11 @@ export class WrapperProviders {
     };
   }
 
-  async adminRouter(): Promise<express.Router> {
-    return await new IncrementalProviderRouter(
+  adminRouter(): express.Router {
+    return new IncrementalProviderRouter(
       new IncrementalIngestionDatabaseManager({ client: this.options.client }),
       this.options.logger,
+      this.options.config,
     ).createRouter();
   }
 

@@ -227,6 +227,7 @@ nav:
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
       - ADR012 - Use Luxon Locale: 'architecture-decisions/adr012-use-luxon-locale-and-date-presets.md'
       - ADR013 - Use node-fetch: 'architecture-decisions/adr013-use-node-fetch.md'
+      - ADR014 - Use fetch: 'architecture-decisions/adr014-use-fetch.md'
   - FAQ:
       - Overview: 'faq/index.md'
       - Product FAQ: 'faq/product.md'

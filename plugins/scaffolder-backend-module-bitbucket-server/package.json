@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-bitbucket-server",
-  "version": "0.2.3-next.0",
+  "version": "0.2.4-next.1",
   "description": "The Bitbucket Server module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,7 +48,6 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "fs-extra": "^11.2.0",
-    "node-fetch": "^2.7.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

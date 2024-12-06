@@ -84,6 +84,19 @@ describe('CatalogTable component', () => {
     ).resolves.toBeInTheDocument();
   });
 
+  it('should a custom title and subtitle when passed in', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider>
+          <CatalogTable title="My Title" subtitle="My Subtitle" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(screen.queryByText('My Title')).toBeInTheDocument();
+    expect(screen.queryByText('My Subtitle')).toBeInTheDocument();
+  });
+
   it('should display entity names when loading has finished and no error occurred', async () => {
     await renderInTestApp(
       <ApiProvider apis={mockApis}>

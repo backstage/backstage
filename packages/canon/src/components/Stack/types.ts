@@ -16,6 +16,7 @@
 import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
 import { SpaceProps } from '../../layout/types';
 
+/** @public */
 export interface StackProps extends SpaceProps, ColorProps {
   children: React.ReactNode;
   as?: AsProps;

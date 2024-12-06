@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
-  "version": "1.11.4-next.0",
+  "version": "1.11.4-next.1",
   "description": "The Backstage backend plugin that renders technical documentation for your components",
   "backstage": {
     "role": "backend-plugin",
@@ -77,7 +77,6 @@
     "fs-extra": "^11.2.0",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.7.0",
     "p-limit": "^3.1.0",
     "winston": "^3.2.1"
   },
@@ -85,7 +84,7 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

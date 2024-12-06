@@ -1,6 +1,6 @@
 {
   "name": "example-backend-legacy",
-  "version": "0.2.105-next.0",
+  "version": "0.2.105-next.1",
   "backstage": {
     "role": "backend"
   },
@@ -42,7 +42,6 @@
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/plugin-devtools-backend": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",

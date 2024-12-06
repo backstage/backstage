@@ -58,11 +58,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
-const defaultSortField: EntityOrder = {
-  field: 'metadata.uid',
-  order: 'asc',
-};
-
 const DEFAULT_LIMIT = 20;
 
 function parsePagination(input?: EntityPagination): EntityPagination {
@@ -360,7 +355,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const cursor: Omit<Cursor, 'orderFieldValues'> & {
       orderFieldValues?: (string | null)[];
     } = {
-      orderFields: [defaultSortField],
+      orderFields: [],
       isPrevious: false,
       ...parseCursorFromRequest(request),
     };
@@ -371,20 +366,21 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       this.logger.warn(`Only one sort field is supported, ignoring the rest`);
     }
 
-    const sortField: EntityOrder = {
-      ...defaultSortField,
-      ...cursor.orderFields[0],
-    };
+    const sortField = cursor.orderFields.at(0);
 
-    const [prevItemOrderFieldValue, prevItemUid] =
-      cursor.orderFieldValues || [];
+    // Base query that matches all entities, and join in the search table for
+    // ordering purposes if that's needed
+    const dbQuery = db('final_entities');
+    if (sortField) {
+      dbQuery.leftOuterJoin('search', qb =>
+        qb
+          .on('search.entity_id', 'final_entities.entity_id')
+          .andOnVal('search.key', sortField.field),
+      );
+    }
+    dbQuery.whereNotNull('final_entities.final_entity');
 
-    const dbQuery = db('final_entities').leftOuterJoin('search', qb =>
-      qb
-        .on('search.entity_id', 'final_entities.entity_id')
-        .andOnVal('search.key', sortField.field),
-    );
-
+    // Add regular filters, if given
     if (cursor.filter) {
       parseFilter(
         cursor.filter,
@@ -395,12 +391,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       );
     }
 
+    // Add full text search filters, if given
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
-    const textFilterFields = cursor.fullTextFilter?.fields ?? [sortField.field];
+    const textFilterFields = cursor.fullTextFilter?.fields ?? [
+      sortField?.field || 'metadata.uid',
+    ];
     if (normalizedFullTextFilterTerm) {
       if (
         textFilterFields.length === 1 &&
-        textFilterFields[0] === sortField.field
+        textFilterFields[0] === sortField?.field
       ) {
         // If there is one item, apply the like query to the top level query which is already
         //   filtered based on the singular sortField.
@@ -426,41 +425,61 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       }
     }
 
+    // Finalize the the count query shape now, since its result is unaffected by
+    // the page limits and (relatively expensive) ordering that gets added below
     const countQuery = dbQuery.clone();
 
-    const isOrderingDescending = sortField.order === 'desc';
+    const isOrderingDescending = sortField?.order === 'desc';
 
-    if (prevItemOrderFieldValue) {
-      dbQuery.andWhere(function nested() {
-        this.where(
-          'value',
-          isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-          prevItemOrderFieldValue,
-        )
-          .orWhere('value', '=', prevItemOrderFieldValue)
-          .andWhere(
-            'final_entities.entity_id',
+    // Move forward (or backward) in the set to the correct cursor position
+    if (cursor.orderFieldValues) {
+      if (cursor.orderFieldValues.length === 2) {
+        // The first will be the sortField value, the second the entity_id
+        const [first, second] = cursor.orderFieldValues;
+        dbQuery.andWhere(function nested() {
+          this.where(
+            'value',
             isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-            prevItemUid,
-          );
-      });
+            first,
+          )
+            .orWhere('value', '=', first)
+            .andWhere(
+              'final_entities.entity_id',
+              isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+              second,
+            );
+        });
+      } else if (cursor.orderFieldValues.length === 1) {
+        // This will be the entity_id
+        const [first] = cursor.orderFieldValues;
+        dbQuery.andWhere(
+          'final_entities.entity_id',
+          isFetchingBackwards ? '<' : '>',
+          first,
+        );
+      }
     }
 
+    // Add the ordering
+    let order = sortField?.order ?? 'asc';
+    if (isFetchingBackwards) {
+      order = invertOrder(order);
+    }
     if (db.client.config.client === 'pg') {
       // pg correctly orders by the column value and handling nulls in one go
       dbQuery.orderBy([
-        {
-          column: 'search.value',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
-          nulls: 'last',
-        },
+        ...(sortField
+          ? [
+              {
+                column: 'search.value',
+                order,
+                nulls: 'last',
+              },
+            ]
+          : []),
         {
           column: 'final_entities.entity_id',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
+          order,
         },
       ]);
     } else {
@@ -468,26 +487,27 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       // no matter what the order is, for some reason, so we have to manually add back the statement
       // that translates to "order by value <order>" while avoiding to give an order
       dbQuery.orderBy([
-        {
-          column: 'search.value',
-          order: undefined,
-          nulls: 'last',
-        },
-        {
-          column: 'search.value',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
-        },
+        ...(sortField
+          ? [
+              {
+                column: 'search.value',
+                order: undefined,
+                nulls: 'last',
+              },
+              {
+                column: 'search.value',
+                order,
+              },
+            ]
+          : []),
         {
           column: 'final_entities.entity_id',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
+          order,
         },
       ]);
     }
 
+    // Apply a manually set initial offset
     if (
       isQueryEntitiesInitialRequest(request) &&
       request.offset !== undefined
@@ -528,15 +548,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const firstRow = rows[0];
     const lastRow = rows[rows.length - 1];
 
-    const firstSortFieldValues = cursor.firstSortFieldValues || [
-      firstRow?.value,
-      firstRow?.entity_id,
-    ];
+    const firstSortFieldValues =
+      cursor.firstSortFieldValues || sortFieldsFromRow(firstRow, sortField);
 
     const nextCursor: Cursor | undefined = hasMoreResults
       ? {
           ...cursor,
-          orderFieldValues: sortFieldsFromRow(lastRow),
+          orderFieldValues: sortFieldsFromRow(lastRow, sortField),
           firstSortFieldValues,
           isPrevious: false,
           totalItems,
@@ -546,10 +564,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const prevCursor: Cursor | undefined =
       !isInitialRequest &&
       rows.length > 0 &&
-      !isEqual(sortFieldsFromRow(firstRow), cursor.firstSortFieldValues)
+      !isEqual(
+        sortFieldsFromRow(firstRow, sortField),
+        cursor.firstSortFieldValues,
+      )
         ? {
             ...cursor,
-            orderFieldValues: sortFieldsFromRow(firstRow),
+            orderFieldValues: sortFieldsFromRow(firstRow, sortField),
             firstSortFieldValues: cursor.firstSortFieldValues,
             isPrevious: true,
             totalItems,
@@ -787,11 +808,7 @@ function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
 ): Partial<Cursor> {
   if (isQueryEntitiesInitialRequest(request)) {
-    const {
-      filter,
-      orderFields: sortFields = [defaultSortField],
-      fullTextFilter,
-    } = request;
+    const { filter, orderFields: sortFields = [], fullTextFilter } = request;
     return { filter, orderFields: sortFields, fullTextFilter };
   }
   if (isQueryEntitiesCursorRequest(request)) {
@@ -804,6 +821,9 @@ function invertOrder(order: EntityOrder['order']) {
   return order === 'asc' ? 'desc' : 'asc';
 }
 
-function sortFieldsFromRow(row: DbSearchRow) {
-  return [row.value, row.entity_id];
+function sortFieldsFromRow(
+  row: DbSearchRow & DbFinalEntitiesRow,
+  sortField?: EntityOrder | undefined,
+) {
+  return sortField ? [row?.value, row?.entity_id] : [row?.entity_id];
 }

@@ -22,7 +22,6 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
-
 import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
 import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
 import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
@@ -55,7 +54,6 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 export interface RequestOptions {
   token?: string;
 }
-
 /**
  * @public
  */
@@ -197,7 +195,6 @@ export type ValidateEntity = {
 };
 
 /**
- * no description
  * @public
  */
 export class DefaultApiClient {

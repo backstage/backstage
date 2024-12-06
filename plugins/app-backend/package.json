@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-backend",
-  "version": "0.4.3-next.0",
+  "version": "0.4.3-next.1",
   "description": "A Backstage backend plugin that serves the Backstage frontend app",
   "backstage": {
     "role": "backend-plugin",
@@ -83,7 +83,6 @@
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/supertest": "^2.0.8",
-    "node-fetch": "^2.7.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
