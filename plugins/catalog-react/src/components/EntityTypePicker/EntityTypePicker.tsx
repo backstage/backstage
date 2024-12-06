@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Box from '@material-ui/core/Box';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import { ComponentType, createContext, useContext, ReactNode } from 'react';
 import { IconMap, IconNames } from '../components/Icon/types';
 import { defaultIcons } from '../components/Icon/icons';
 
@@ -32,7 +32,7 @@ export const ThemeProvider = ({
   overrides,
 }: {
   children: ReactNode;
-  overrides: Partial<Record<IconNames, React.ComponentType>>;
+  overrides: Partial<Record<IconNames, ComponentType>>;
 }) => {
   // Merge provided overrides with default icons
   const combinedIcons = { ...defaultIcons, ...overrides };

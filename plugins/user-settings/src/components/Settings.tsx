@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from '../plugin';
 import { SidebarItem } from '@backstage/core-components';

@@ -18,7 +18,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { EntityIcon } from './EntityIcon';
 import { EntityNodeData } from './types';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { chipStyles } from './chip.css';
 
 export const Chip = ({
   children,
   head = false,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   head?: boolean;
 }) => {
   return <span className={chipStyles({ head })}>{children}</span>;

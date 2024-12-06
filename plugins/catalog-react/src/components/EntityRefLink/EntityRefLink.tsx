@@ -22,7 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import React, { forwardRef } from 'react';
+import { ReactNode, forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityDisplayName } from '../EntityDisplayName';
 
@@ -37,7 +37,7 @@ export type EntityRefLinkProps = {
   defaultNamespace?: string;
   /** @deprecated This option should no longer be used; presentation is requested through the {@link entityPresentationApiRef} instead */
   title?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   hideIcon?: boolean;
   disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;

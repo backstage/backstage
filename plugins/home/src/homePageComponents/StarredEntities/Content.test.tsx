@@ -22,7 +22,6 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import React from 'react';
 import { Content } from './Content';
 
 const entities = [

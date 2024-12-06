@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
 

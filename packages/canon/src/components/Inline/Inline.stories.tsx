@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Inline } from './Inline';
 import { Box } from '../Box/Box';

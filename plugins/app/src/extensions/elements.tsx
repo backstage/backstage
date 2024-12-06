@@ -16,7 +16,6 @@
 
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { AppRootElementBlueprint } from '@backstage/frontend-plugin-api';
-import React from 'react';
 
 export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
   name: 'oauth-request-dialog',

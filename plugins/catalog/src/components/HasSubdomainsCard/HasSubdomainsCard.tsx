@@ -16,7 +16,6 @@
 
 import { RELATION_HAS_PART } from '@backstage/catalog-model';
 import { InfoCardVariants, TableOptions } from '@backstage/core-components';
-import React from 'react';
 import {
   asComponentEntities,
   componentEntityColumns,

@@ -20,7 +20,6 @@ import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { makeStyles } from '@material-ui/core/styles';
 import { render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
-import React from 'react';
 import { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
 
 const useStyles = makeStyles({

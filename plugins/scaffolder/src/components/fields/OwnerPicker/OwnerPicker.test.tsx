@@ -23,7 +23,7 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 
@@ -58,10 +58,10 @@ describe('<OwnerPicker />', () => {
   const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
   });
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],

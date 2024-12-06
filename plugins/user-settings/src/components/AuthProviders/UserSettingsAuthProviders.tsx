@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import List from '@material-ui/core/List';
 import { EmptyProviders } from './EmptyProviders';
 import { DefaultProviderSettings } from './DefaultProviderSettings';

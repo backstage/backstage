@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { AppRootElementBlueprint } from './AppRootElementBlueprint';
 
 describe('AppRootElementBlueprint', () => {

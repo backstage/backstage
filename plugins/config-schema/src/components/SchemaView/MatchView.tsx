@@ -15,7 +15,6 @@
  */
 import Typography from '@material-ui/core/Typography';
 import { Schema } from 'jsonschema';
-import React from 'react';
 import { ChildView } from './ChildView';
 
 export function MatchView({

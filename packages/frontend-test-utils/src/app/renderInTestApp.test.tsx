@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import {
   MockAnalyticsApi,

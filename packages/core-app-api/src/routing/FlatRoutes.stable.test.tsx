@@ -15,7 +15,7 @@
  */
 
 import { render, RenderResult } from '@testing-library/react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { MemoryRouter, Route, useOutlet } from 'react-router-dom';
 import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';

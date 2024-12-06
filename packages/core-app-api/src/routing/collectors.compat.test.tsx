@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   RouteRef,

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ChangeEvent } from 'react';
 
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -131,13 +131,13 @@ export const NotificationsFilters = ({
   const sortByText = getSortByText(sorting);
 
   const handleOnCreatedAfterChanged = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+    event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
     onCreatedAfterChanged(event.target.value as string);
   };
 
   const handleOnViewChanged = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+    event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
     if (event.target.value === 'unread') {
       onUnreadOnlyChanged(true);
@@ -156,7 +156,7 @@ export const NotificationsFilters = ({
   };
 
   const handleOnSortByChanged = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+    event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
     const idx = (event.target.value as string) || 'newest';
     const option = SortByOptions[idx];
@@ -173,7 +173,7 @@ export const NotificationsFilters = ({
   }
 
   const handleOnSeverityChanged = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+    event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
     const value: NotificationSeverity =
       (event.target.value as NotificationSeverity) || 'normal';

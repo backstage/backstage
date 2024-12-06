@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { V1Deployment } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
@@ -41,7 +41,7 @@ export const DeploymentDrawer = ({
           .reduce((accum, next) => {
             accum[next[0]] = next[1];
             return accum;
-          }, {} as { [key: string]: React.ReactNode });
+          }, {} as { [key: string]: ReactNode });
 
         return {
           strategy: deploymentObj.spec?.strategy ?? '???',

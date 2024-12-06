@@ -16,7 +16,6 @@
 
 import IconButton from '@material-ui/core/IconButton';
 import EmailIcon from '@material-ui/icons/Email';
-import React from 'react';
 import { Link } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

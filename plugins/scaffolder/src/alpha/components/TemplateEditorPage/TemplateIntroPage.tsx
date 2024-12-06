@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 
 import { TemplateEditorIntro } from './TemplateEditorIntro';

@@ -26,7 +26,7 @@ import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
@@ -75,7 +75,7 @@ export function ScaffolderPageContextMenu(
     return null;
   }
 
-  const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
