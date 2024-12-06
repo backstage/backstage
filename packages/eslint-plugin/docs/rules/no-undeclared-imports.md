@@ -32,7 +32,7 @@ Given the following `package.json`:
     "role": "frontend-plugin"
   },
   "dependencies": {
-    "react": "^17.0.0"
+    "react": "^18.0.0"
   },
   "devDependencies": {
     "@backstage/core-plugin-api": "^1.0.0"
