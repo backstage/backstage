@@ -21,42 +21,50 @@ import {
 import { Express } from 'express';
 import request from 'supertest';
 import { rootHttpRouterServiceFactory } from './rootHttpRouterServiceFactory';
-import { coreServices } from '@backstage/backend-plugin-api';
+import { ServiceFactory, coreServices } from '@backstage/backend-plugin-api';
+
+async function createExpressApp(...dependencies: ServiceFactory[]) {
+  let app: Express | undefined = undefined;
+
+  const tester = ServiceFactoryTester.from(
+    rootHttpRouterServiceFactory({
+      configure(options) {
+        options.applyDefaults();
+        app = options.app;
+      },
+    }),
+    {
+      dependencies,
+    },
+  );
+
+  // Trigger creation of the http service, accessing the app instance through the configure callback
+  await tester.getSubject();
+
+  if (!app) {
+    throw new Error('App not yet created');
+  }
+
+  return { app, tester };
+}
 
 describe('rootHttpRouterServiceFactory', () => {
   it('should make the health endpoints available', async () => {
-    let app: Express | undefined = undefined;
-
-    const tester = ServiceFactoryTester.from(
-      rootHttpRouterServiceFactory({
-        configure(options) {
-          options.applyDefaults();
-          app = options.app;
+    const { app, tester } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+          },
         },
       }),
-      {
-        dependencies: [
-          mockServices.rootConfig.factory({
-            data: {
-              app: { baseUrl: 'http://localhost' },
-              backend: {
-                baseUrl: 'http://localhost',
-                listen: { host: '', port: 0 },
-              },
-            },
-          }),
-        ],
-      },
     );
 
-    // Trigger creation of the http service, accessing the app instance through the configure callback
-    await tester.getSubject();
-
-    await request(app!)
+    await request(app)
       .get('/.backstage/health/v1/liveness')
       .expect(200, { status: 'ok' });
 
-    await request(app!).get('/.backstage/health/v1/readiness').expect(503, {
+    await request(app).get('/.backstage/health/v1/readiness').expect(503, {
       message: 'Backend has not started yet',
       status: 'error',
     });
@@ -65,10 +73,129 @@ describe('rootHttpRouterServiceFactory', () => {
 
     await (lifecycle as any).startup(); // Trigger startup by calling the private startup method
 
-    await request(app!).get('/.backstage/health/v1/readiness').expect(200, {
+    await request(app).get('/.backstage/health/v1/readiness').expect(200, {
       status: 'ok',
     });
 
     expect('test').toBe('test');
+  });
+
+  it('should include custom headers for health endpoint', async () => {
+    const { app, tester } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+            health: {
+              headers: {
+                'x-test-header': 'test',
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    const lRes = await request(app).get('/.backstage/health/v1/liveness');
+
+    expect(lRes.status).toBe(200);
+    expect(lRes.get('x-test-header')).toBe('test');
+
+    const r1Res = await request(app).get('/.backstage/health/v1/readiness');
+
+    expect(r1Res.status).toBe(503);
+    expect(r1Res.get('x-test-header')).toBe('test');
+
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
+
+    await request(app).get('/.backstage/health/v1/readiness').expect(503, {
+      message: 'Backend has not started yet',
+      status: 'error',
+    });
+
+    const lifecycle = await tester.getService(coreServices.rootLifecycle);
+
+    await (lifecycle as any).startup(); // Trigger startup by calling the private startup method
+
+    const r2Res = await request(app).get('/.backstage/health/v1/readiness');
+
+    expect(r2Res.status).toBe(200);
+    expect(r2Res.get('x-test-header')).toBe('test');
+  });
+
+  it('should reject invalid health headers config', async () => {
+    await expect(
+      createExpressApp(
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              listen: { port: 0 },
+              health: {
+                headers: 'not-an-object',
+              },
+            },
+          },
+        }),
+      ),
+    ).rejects.toThrow(
+      "Invalid type in config for key 'backend.health.headers' in 'mock-config', got string, wanted object",
+    );
+
+    await expect(
+      createExpressApp(
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              listen: { port: 0 },
+              health: {
+                headers: [],
+              },
+            },
+          },
+        }),
+      ),
+    ).rejects.toThrow(
+      "Invalid type in config for key 'backend.health.headers' in 'mock-config', got array, wanted object",
+    );
+
+    await expect(
+      createExpressApp(
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              listen: { port: 0 },
+              health: {
+                headers: {
+                  'invalid-header': {},
+                },
+              },
+            },
+          },
+        }),
+      ),
+    ).rejects.toThrow(
+      'Invalid header value in at backend.health.headers, must be a non-empty string',
+    );
+
+    await expect(
+      createExpressApp(
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              listen: { port: 0 },
+              health: {
+                headers: {
+                  'invalid-header': '',
+                },
+              },
+            },
+          },
+        }),
+      ),
+    ).rejects.toThrow(
+      'Invalid header value in at backend.health.headers, must be a non-empty string',
+    );
   });
 });

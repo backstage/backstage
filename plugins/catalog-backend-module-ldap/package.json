@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-ldap",
-  "version": "0.11.0-next.0",
+  "version": "0.11.0-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards LDAP",
   "backstage": {
     "role": "backend-plugin-module",

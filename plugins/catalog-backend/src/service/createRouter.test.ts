@@ -166,7 +166,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         credentials: mockCredentials.user(),
@@ -218,7 +218,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         orderFields: [
@@ -258,7 +258,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         orderFields: [
@@ -554,13 +554,7 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: expect.any(Function),
         credentials: mockCredentials.user(),
-        filter: {
-          anyOf: [
-            {
-              allOf: [{ key: 'kind', values: ['Component'] }],
-            },
-          ],
-        },
+        filter: { key: 'kind', values: ['Component'] },
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });

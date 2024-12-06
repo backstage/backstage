@@ -553,6 +553,23 @@ export interface Config {
     csp?: { [policyId: string]: string[] | false };
 
     /**
+     * Options for the health check service and endpoint.
+     */
+    health?: {
+      /**
+       * Additional headers to always include in the health check response.
+       *
+       * It can be a good idea to set a header that uniquely identifies your service
+       * in a multi-service environment. This ensures that the health check that is
+       * configured for your service is actually hitting your service and not another.
+       *
+       * For example, if using Envoy you can use the `service_name_matcher` configuration
+       * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
+       */
+      headers?: { [name: string]: string };
+    };
+
+    /**
      * Configuration related to URL reading, used for example for reading catalog info
      * files, scaffolder templates, and techdocs content.
      */

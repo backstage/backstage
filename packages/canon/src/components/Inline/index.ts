@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { Inline } from './Inline';
+export type { InlineProps } from './types';

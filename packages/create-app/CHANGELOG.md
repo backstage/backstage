@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.23-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.23-next.0
 
 ### Patch Changes

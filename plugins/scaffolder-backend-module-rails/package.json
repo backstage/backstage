@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-rails",
-  "version": "0.5.3-next.0",
+  "version": "0.5.4-next.1",
   "description": "A module for the scaffolder backend that lets you template projects using Rails",
   "backstage": {
     "role": "backend-plugin-module",

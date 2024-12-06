@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-gcp-iap-provider",
-  "version": "0.3.3-next.0",
+  "version": "0.3.3-next.1",
   "description": "A GCP IAP auth provider module for the Backstage auth backend",
   "backstage": {
     "role": "backend-plugin-module",

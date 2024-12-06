@@ -1,5 +1,19 @@
 # @backstage/repo-tools
 
+## 0.12.0-next.1
+
+### Patch Changes
+
+- 860e3b5: Generated OpenAPI clients now support paths with tags.
+- 00058d0: The `generate-patch` command will now add a single resolution entry for all versions of the patched package, rather than separate entries for each version query.
+- Updated dependencies
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/errors@1.2.5
+
 ## 0.12.0-next.0
 
 ### Minor Changes

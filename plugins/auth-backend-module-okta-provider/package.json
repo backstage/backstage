@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-okta-provider",
-  "version": "0.1.3-next.0",
+  "version": "0.1.3-next.1",
   "description": "The okta-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",

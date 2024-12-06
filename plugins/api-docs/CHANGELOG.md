@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.12.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/plugin-catalog@1.25.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
 ## 0.12.2-next.0
 
 ### Patch Changes

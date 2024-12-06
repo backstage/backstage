@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-github",
-  "version": "0.5.3-next.0",
+  "version": "0.5.4-next.1",
   "description": "The github module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",

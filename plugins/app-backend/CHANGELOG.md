@@ -1,5 +1,19 @@
 # @backstage/plugin-app-backend
 
+## 0.4.3-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-app-node@0.1.28-next.1
+
 ## 0.4.3-next.0
 
 ### Patch Changes

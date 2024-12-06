@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { button } from './button.css';
-import { Icon } from '../Icon/Icon';
+import React, { forwardRef } from 'react';
+import { Icon } from '../Icon';
 import type { IconNames } from '../Icon/types';
 
 /**
@@ -26,7 +25,7 @@ import type { IconNames } from '../Icon/types';
  */
 export interface ButtonProps {
   size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'tertiary';
   children: React.ReactNode;
   disabled?: boolean;
   iconStart?: IconNames;
@@ -34,26 +33,36 @@ export interface ButtonProps {
 }
 
 /** @public */
-export const Button = ({
-  size = 'medium',
-  variant = 'primary',
-  children,
-  disabled,
-  iconStart,
-  iconEnd,
-  ...props
-}: ButtonProps) => {
-  return (
-    <button
-      {...props}
-      disabled={disabled}
-      className={button({ size, variant, disabled })}
-    >
-      {iconStart && <Icon name={iconStart} />}
-      {children}
-      {iconEnd && <Icon name={iconEnd} />}
-    </button>
-  );
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (props: ButtonProps, ref) => {
+    const {
+      size = 'medium',
+      variant = 'primary',
+      disabled,
+      iconStart,
+      iconEnd,
+      children,
+    } = props;
+
+    return (
+      <button
+        {...props}
+        ref={ref}
+        disabled={disabled}
+        className={`button ${variant} ${size}`}
+      >
+        <span
+          className={['button-content', iconStart && iconEnd ? 'icon-both' : '']
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {iconStart && <Icon name={iconStart} />}
+          {children}
+        </span>
+        {iconEnd && <Icon name={iconEnd} />}
+      </button>
+    );
+  },
+);
 
 export default Button;

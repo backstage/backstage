@@ -133,7 +133,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             catalog.addEntityProvider(wrapped);
           }
 
-          httpRouter.use(await providers.adminRouter());
+          httpRouter.use(providers.adminRouter());
         },
       });
     },

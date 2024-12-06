@@ -59,7 +59,7 @@ export const authServiceFactory = createServiceFactory({
   service: coreServices.auth,
   deps: {
     config: coreServices.rootConfig,
-    logger: coreServices.rootLogger,
+    logger: coreServices.logger,
     discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
@@ -89,6 +89,7 @@ export const authServiceFactory = createServiceFactory({
 
     const userTokens = UserTokenHandler.create({
       discovery,
+      logger,
     });
 
     const pluginTokens = pluginTokenHandlerDecorator(

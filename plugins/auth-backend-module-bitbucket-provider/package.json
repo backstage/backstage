@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-bitbucket-provider",
-  "version": "0.2.3-next.0",
+  "version": "0.2.3-next.1",
   "description": "The bitbucket-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
