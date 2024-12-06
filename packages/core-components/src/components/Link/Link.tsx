@@ -22,7 +22,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 import { trimEnd } from 'lodash';
-import React, { ElementType } from 'react';
+import {
+  ElementType,
+  ReactElement,
+  ReactNode,
+  forwardRef,
+  MouseEvent as RMouseEvent,
+} from 'react';
 import {
   createRoutesFromChildren,
   Link as RouterLink,
@@ -149,7 +155,7 @@ export const useResolvedPath = (uri: LinkProps['to']) => {
 /**
  * Given a react node, try to retrieve its text content.
  */
-const getNodeText = (node: React.ReactNode): string => {
+const getNodeText = (node: ReactNode): string => {
   // If the node is an array of children, recurse and join.
   if (node instanceof Array) {
     return node.map(getNodeText).join(' ').trim();
@@ -157,7 +163,7 @@ const getNodeText = (node: React.ReactNode): string => {
 
   // If the node is a react element, recurse on its children.
   if (typeof node === 'object' && node) {
-    return getNodeText((node as React.ReactElement)?.props?.children);
+    return getNodeText((node as ReactElement)?.props?.children);
   }
 
   // Base case: the node is just text. Return it.
@@ -174,7 +180,7 @@ const getNodeText = (node: React.ReactNode): string => {
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
  */
-export const Link = React.forwardRef<any, LinkProps>(
+export const Link = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
@@ -194,7 +200,7 @@ export const Link = React.forwardRef<any, LinkProps>(
       );
     }
 
-    const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
+    const handleClick = (event: RMouseEvent<any, MouseEvent>) => {
       onClick?.(event);
       if (!noTrack) {
         analytics.captureEvent('click', linkText, { attributes: { to } });

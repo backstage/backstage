@@ -17,7 +17,6 @@
 export { Actions } from './Actions';
 export { ContextProvider } from './Context';
 export type { VisitedByTypeProps, VisitedByTypeKind } from './Content';
-import React from 'react';
 import { Content, VisitedByTypeProps } from './Content';
 
 const RecentlyVisitedContent = (props: Partial<VisitedByTypeProps>) => (

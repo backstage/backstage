@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { BottomLink } from '../BottomLink';
 
 export default {

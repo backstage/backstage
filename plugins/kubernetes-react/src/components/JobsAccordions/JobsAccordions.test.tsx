@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { JobsAccordions } from './JobsAccordions';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';

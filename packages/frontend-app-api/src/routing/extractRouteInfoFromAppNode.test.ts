@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createElement } from 'react';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromAppNode } from './extractRouteInfoFromAppNode';
 import {
@@ -74,7 +74,7 @@ function createTestExtension(options: {
         yield coreExtensionData.routeRef(options.routeRef);
       }
 
-      yield coreExtensionData.reactElement(React.createElement('div'));
+      yield coreExtensionData.reactElement(createElement('div'));
     },
   });
 }

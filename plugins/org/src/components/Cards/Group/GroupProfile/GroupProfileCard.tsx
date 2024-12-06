@@ -42,7 +42,7 @@ import {
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 import AccountTreeIcon from '@material-ui/icons/AccountTree';

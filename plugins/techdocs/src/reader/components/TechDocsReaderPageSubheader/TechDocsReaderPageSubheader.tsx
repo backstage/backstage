@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, useState, useCallback } from 'react';
+import { MouseEvent, useState, useCallback } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';

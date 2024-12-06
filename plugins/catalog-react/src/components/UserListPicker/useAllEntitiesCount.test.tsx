@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';

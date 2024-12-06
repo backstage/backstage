@@ -22,7 +22,6 @@ import {
   findSearchResults,
   getModifierClasses,
 } from './LogLine';
-import React from 'react';
 
 describe('getModifierClasses', () => {
   const classes = {

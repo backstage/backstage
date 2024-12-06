@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText, {
   ListItemTextProps,

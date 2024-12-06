@@ -5,13 +5,13 @@ import { BannerSectionGrid } from '@site/src/components/bannerSection/bannerSect
 import { ContentBlock } from '@site/src/components/contentBlock/contentBlock';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
-import React from 'react';
+import { ReactNode } from 'react';
 
 import demosStyles from './demos.module.scss';
 
 interface IDemoItem {
   title: string;
-  content: React.ReactNode;
+  content: ReactNode;
   actionItemLink?: string;
   media: {
     type: 'image' | 'video';

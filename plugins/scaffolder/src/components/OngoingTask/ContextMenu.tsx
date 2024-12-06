@@ -28,7 +28,7 @@ import Replay from '@material-ui/icons/Replay';
 import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { usePermission } from '@backstage/plugin-permission-react';
@@ -108,7 +108,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
         aria-label="more"
         aria-controls="long-menu"
         aria-haspopup="true"
-        onClick={(event: React.SyntheticEvent<HTMLButtonElement>) => {
+        onClick={(event: SyntheticEvent<HTMLButtonElement>) => {
           setAnchorEl(event.currentTarget);
         }}
         data-testid="menu-button"

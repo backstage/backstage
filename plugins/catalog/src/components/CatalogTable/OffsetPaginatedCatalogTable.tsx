@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
@@ -30,7 +30,7 @@ export function OffsetPaginatedCatalogTable(
   const { columns, data, options, ...restProps } = props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
-  const [page, setPage] = React.useState(
+  const [page, setPage] = useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
 

@@ -22,7 +22,6 @@ jest.mock('../TemplateGroup/TemplateGroup', () => ({
   TemplateGroup: jest.fn(() => null),
 }));
 
-import React from 'react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
