@@ -8,8 +8,10 @@
 import { CSSProperties } from 'react';
 import { DetailedReactHTMLElement } from 'react';
 import { DOMElement } from 'react';
-import { default as React_2 } from 'react';
+import { ForwardRefExoticComponent } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
+import { RefAttributes } from 'react';
 
 // @public (undocumented)
 export type AlignItemsProps =
@@ -116,14 +118,14 @@ export const breakpoints: {
 };
 
 // @public (undocumented)
-export const Button: React_2.ForwardRefExoticComponent<
-  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+export const Button: ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public
 export interface ButtonProps {
   // (undocumented)
-  children: React_2.ReactNode;
+  children: ReactNode;
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
@@ -226,7 +228,7 @@ export interface GridProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
+export const Icon: ({ name }: { name: IconNames }) => JSX_2.Element;
 
 // @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;

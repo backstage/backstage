@@ -11,9 +11,9 @@ import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 
@@ -45,7 +45,7 @@ export const analyticsApiRef: ApiRef<AnalyticsApi>;
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public
 export type AnalyticsContextValue = CommonAnalyticsContext & {
@@ -789,11 +789,9 @@ export const vmwareCloudAuthApiRef: ApiRef<
 export function withApis<T extends {}>(
   apis: TypesToApiRefs<T>,
 ): <TProps extends T>(
-  WrappedComponent: React_2.ComponentType<TProps>,
+  WrappedComponent: ComponentType<TProps>,
 ) => {
-  (
-    props: React_2.PropsWithChildren<Omit<TProps, keyof T>>,
-  ): React_2.JSX.Element;
+  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_2.Element;
   displayName: string;
 };
 ```
