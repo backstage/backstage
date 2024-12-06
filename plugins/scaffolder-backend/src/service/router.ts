@@ -112,10 +112,7 @@ import {
   isActionPermissionRuleInput,
   isTemplateEntityPermissionRuleInput,
   isTemplatePermissionRuleInput,
-  scaffolderActionRules,
   ScaffolderPermissionRule,
-  scaffolderTemplateEntityRules,
-  scaffolderTemplateRules,
   TemplateEntityPermissionRuleInput,
   TemplatePermissionRuleInput,
   WorkspaceProvider,
@@ -124,6 +121,11 @@ import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { EventsService } from '@backstage/plugin-events-node';
 import { keyBy } from 'lodash';
+import {
+  scaffolderActionRules,
+  scaffolderTemplateEntityRules,
+  scaffolderTemplateRules,
+} from '../permissions';
 
 /**
  * RouterOptions

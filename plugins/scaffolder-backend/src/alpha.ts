@@ -19,4 +19,4 @@ import { scaffolderPlugin } from './ScaffolderPlugin';
 const _feature = scaffolderPlugin;
 export default _feature;
 
-export * from './alpha-deprecated';
+export * from './permissions';

@@ -6,7 +6,6 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
-import { ActionPermissionRuleInput as ActionPermissionRuleInput_2 } from '@backstage/plugin-scaffolder-node/alpha';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
@@ -37,7 +36,6 @@ import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
@@ -63,7 +61,6 @@ import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
-import { TemplatePermissionRuleInput as TemplatePermissionRuleInput_2 } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { ZodType } from 'zod';
@@ -71,11 +68,6 @@ import { ZodTypeDef } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
-
-// @public @deprecated (undocumented)
-export type ActionPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = ActionPermissionRuleInput_2<TParams>;
 
 // @public
 export const createBuiltinActions: (
@@ -849,9 +841,4 @@ export type TemplateFilter = TemplateFilter_2;
 
 // @public @deprecated (undocumented)
 export type TemplateGlobal = TemplateGlobal_2;
-
-// @public @deprecated (undocumented)
-export type TemplatePermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = TemplatePermissionRuleInput_2<TParams>;
 ```

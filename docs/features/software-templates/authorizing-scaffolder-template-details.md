@@ -16,7 +16,7 @@ import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/a
 import {
   createScaffolderTemplateEntityConditionalDecision,
   scaffolderTemplateEntityConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+} from '@backstage/plugin-scaffolder-backend/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -105,7 +105,7 @@ import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/a
 import {
   createScaffolderTemplateEntityConditionalDecision,
   scaffolderTemplateEntityConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+} from '@backstage/plugin-scaffolder-backend/alpha';
 
 /* highlight-add-end */
 
@@ -155,7 +155,7 @@ import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/a
 import {
   createScaffolderTemplateEntityConditionalDecision,
   scaffolderTemplateEntityConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+} from '@backstage/plugin-scaffolder-backend/alpha';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
@@ -189,7 +189,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 ### Define custom rule
 
-The scaffolder plugin exports `createScaffolderTemplateEntityPermissionRule` from `@backstage/plugin-scaffolder-node/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable.
+The scaffolder plugin exports `createScaffolderTemplateEntityPermissionRule` from `@backstage/plugin-scaffolder-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable.
 
 For this example, we'll define the rule and create a condition in `packages/backend/src/permissions/rules/scaffolder.ts`.
 
@@ -205,7 +205,7 @@ import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   templateExecutePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
-import { createScaffolderTemplateEntityPermissionRule } from '@backstage/plugin-scaffolder-node/alpha';
+import { createScaffolderTemplateEntityPermissionRule } from '@backstage/plugin-scaffolder-backend/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
 
 const isOwnedByRule = createScaffolderTemplateEntityPermissionRule({
@@ -241,7 +241,7 @@ After defining the new rule, we need to add it to the scaffolder plugin via the 
 ```ts title="packages/backend/src/extensions/scaffolderPermissionRules.ts"
 //... File as above
 
-import { scaffolderPermissionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderPermissionsExtensionPoint } from '@backstage/plugin-scaffolder-backend/alpha';
 
 export default createBackendModule({
   pluginId: 'scaffolder',
@@ -274,7 +274,7 @@ Once installed, the custom conditions can be imported and used in your policy:
 
 ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
 import { templateExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { createScaffolderTemplateEntityConditionalDecision } from '@backstage/plugin-scaffolder-node/alpha';
+import { createScaffolderTemplateEntityConditionalDecision } from '@backstage/plugin-scaffolder-backend/alpha';
 import { customScaffolderTemplateEntityConditions } from './extensions/scaffolderPermissionRules';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -354,7 +354,7 @@ import {
 import {
   createScaffolderActionConditionalDecision,
   scaffolderTemplateConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+} from '@backstage/plugin-scaffolder-backend/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -409,7 +409,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+} from '@backstage/plugin-scaffolder-backend/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -447,7 +447,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+} from '@backstage/plugin-scaffolder-backend/alpha';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {

@@ -56,7 +56,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
-import { scaffolderActionRules } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderActionRules } from '../../permissions';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
