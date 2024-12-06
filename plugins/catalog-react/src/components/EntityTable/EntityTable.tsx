@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { columnFactories } from './columns';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 import {
@@ -65,7 +65,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
   } = props;
 
   const classes = useStyles();
-  const tableStyle: React.CSSProperties = {
+  const tableStyle: CSSProperties = {
     minWidth: '0',
     width: '100%',
   };

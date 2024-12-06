@@ -17,7 +17,7 @@
 import Grid from '@material-ui/core/Grid';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { PropsWithChildren } from 'react';
+import { ReactNode, PropsWithChildren } from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
@@ -46,7 +46,7 @@ const useStyles = makeStyles(
 );
 
 type HeaderLabelContentProps = PropsWithChildren<{
-  value: React.ReactNode;
+  value: ReactNode;
   className: string;
   typographyRootComponent?: keyof JSX.IntrinsicElements;
 }>;

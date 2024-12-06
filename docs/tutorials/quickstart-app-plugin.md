@@ -119,7 +119,7 @@ If everything is saved, you should see your name, id, and email on the
 github-playground page. Our data accessed is synchronous. So we just grab and
 go.
 
-https://github.com/backstage/backstage/tree/master/contrib
+<https://github.com/backstage/backstage/tree/master/contrib>
 
 6. Here is the entire file for reference
    [ExampleComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
@@ -134,7 +134,6 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import Alert from '@material-ui/lab/Alert';
 import { Table, TableColumn, Progress } from '@backstage/core-components';
@@ -149,7 +148,7 @@ export const ExampleFetchComponent = () => {
 3. Save that and ensure you see no errors. Comment out the unused imports if
    your linter gets in the way.
 
-###### We will add a lot to this file for the sake of ease. Please don't do this in productional code!
+###### We will add a lot to this file for the sake of ease. Please don't do this in productional code
 
 # The Graph Model
 

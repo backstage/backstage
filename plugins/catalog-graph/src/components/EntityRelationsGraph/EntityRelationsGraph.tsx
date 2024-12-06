@@ -27,7 +27,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import React, { MouseEvent, useEffect, useMemo } from 'react';
+import { MouseEvent, useEffect, useMemo } from 'react';
 import { DefaultRenderLabel } from './DefaultRenderLabel';
 import { DefaultRenderNode } from './DefaultRenderNode';
 import { ALL_RELATION_PAIRS, RelationPairs } from './relations';

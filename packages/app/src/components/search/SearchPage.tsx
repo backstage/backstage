@@ -42,7 +42,6 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { Theme } from '@material-ui/core/styles/createTheme';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   filter: {

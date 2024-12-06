@@ -16,7 +16,6 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 type Props = {

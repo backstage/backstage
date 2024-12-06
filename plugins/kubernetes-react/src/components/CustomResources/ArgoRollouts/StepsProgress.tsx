@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
@@ -30,7 +30,7 @@ interface StepsProgressProps {
   currentStepIndex: number;
   aborted: boolean;
   steps: ArgoRolloutCanaryStep[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 const isSetWeightStep = (step: ArgoRolloutCanaryStep): step is SetWeightStep =>
@@ -42,7 +42,7 @@ const isPauseStep = (step: ArgoRolloutCanaryStep): step is PauseStep =>
 const isAnalysisStep = (step: ArgoRolloutCanaryStep): step is AnalysisStep =>
   step.hasOwnProperty('analysis');
 
-const createLabelForStep = (step: ArgoRolloutCanaryStep): React.ReactNode => {
+const createLabelForStep = (step: ArgoRolloutCanaryStep): ReactNode => {
   if (isSetWeightStep(step)) {
     return `setWeight ${step.setWeight}%`;
   } else if (isPauseStep(step)) {

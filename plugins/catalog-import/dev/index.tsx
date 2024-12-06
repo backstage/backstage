@@ -24,7 +24,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import React from 'react';
 import {
   AnalyzeResult,
   CatalogImportApi,

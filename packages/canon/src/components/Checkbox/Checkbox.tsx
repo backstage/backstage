@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { forwardRef } from 'react';
 
 import { CheckboxRoot, CheckboxIndicator } from '@base_ui/react';
 import { Icon } from '@backstage/canon';
 import type { CheckboxProps } from './types';
 
 /** @public */
-export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
   (props, ref) => {
     const {
       label,

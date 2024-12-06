@@ -16,7 +16,6 @@
 
 import { InfoCard, useSidebarPinState } from '@backstage/core-components';
 import List from '@material-ui/core/List';
-import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';

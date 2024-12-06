@@ -55,15 +55,15 @@ When using ALB authentication Backstage will only be loaded once the user has su
 - add the following definition just before the app is created (`const app = createApp`):
 
 ```ts
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { UserIdentity } from '@backstage/core-components';
 import { SignInPageProps } from '@backstage/core-app-api';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 const SampleSignInComponent: any = (props: SignInPageProps) => {
-  const [error, setError] = React.useState<string | undefined>();
+  const [error, setError] = useState<string | undefined>();
   const config = useApi(configApiRef);
-  React.useEffect(() => {
+  useEffect(() => {
     const shouldAuth = !!config.getOptionalConfig('auth.providers.awsalb');
     if (shouldAuth) {
       fetch(`${window.location.origin}/api/auth/awsalb/refresh`)
@@ -222,5 +222,3 @@ Replace `<TENANT_ID>` with the value of `Directory (tenant) ID` of the App Regis
 Once it's deployed, after going through the Entra ID authentication flow, Backstage should display the Entra user details.
 
 <!-- links -->
-
-[monorepo-app-setup-with-auth-ms]: https://backstage.io/docs/auth/microsoft/provider

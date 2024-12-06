@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 
 /** @public */

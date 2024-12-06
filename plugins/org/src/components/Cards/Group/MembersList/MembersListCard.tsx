@@ -27,7 +27,7 @@ import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
 import {
@@ -175,8 +175,8 @@ export const MembersListCard = (props: {
 
   const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
-  const [page, setPage] = React.useState(1);
-  const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
+  const [page, setPage] = useState(1);
+  const pageChange = (_: ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
 
@@ -245,7 +245,7 @@ export const MembersListCard = (props: {
     />
   );
 
-  let memberList: React.JSX.Element;
+  let memberList: JSX.Element;
   if (members && members.length > 0) {
     memberList = (
       <Box className={classes.memberList}>

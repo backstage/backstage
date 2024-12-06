@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 
 const RealLogViewer = lazy(() =>

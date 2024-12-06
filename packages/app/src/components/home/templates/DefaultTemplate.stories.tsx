@@ -39,7 +39,7 @@ import {
 } from '@backstage/plugin-search-react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 
 const entities = [
   {

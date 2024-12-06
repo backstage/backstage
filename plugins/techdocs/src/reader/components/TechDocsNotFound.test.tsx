@@ -15,7 +15,6 @@
  */
 
 import { TechDocsNotFound } from './TechDocsNotFound';
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import {
   mockApis,

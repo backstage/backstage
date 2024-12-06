@@ -20,7 +20,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { isError } from '@backstage/errors';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { coreComponentsTranslationRef } from '../../translation';

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, {
+import {
+  MouseEvent,
   ChangeEvent,
   PropsWithChildren,
   ReactNode,
@@ -391,7 +392,7 @@ export function SearchResultGroupLayout<FilterOption>(
     ...rest
   } = props;
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
   }, []);
 

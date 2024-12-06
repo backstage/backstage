@@ -16,7 +16,7 @@
 
 import { ErrorPanel } from '@backstage/core-components';
 import { useAsync, useRerender } from '@react-hookz/web';
-import React, { createContext, ReactNode, useContext, useEffect } from 'react';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
 import {
   TemplateDirectoryAccess,
   TemplateFileAccess,

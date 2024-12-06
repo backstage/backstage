@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import NormalIcon from '@material-ui/icons/CheckOutlined';
 import CriticalIcon from '@material-ui/icons/ErrorOutline';

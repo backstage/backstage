@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import { PodDrawer } from './PodDrawer';
 import {
   containersReady,
@@ -60,7 +60,7 @@ export type PodColumns = 'READY' | 'RESOURCE';
 export type PodsTablesProps = {
   pods: Pod | V1Pod[];
   extraColumns?: PodColumns[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const READY: TableColumn<Pod>[] = [

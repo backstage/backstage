@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -75,7 +75,7 @@ const wrapper = ({
 }: {
   entityRef?: CompoundEntityRef;
   config?: JsonObject;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider

@@ -18,7 +18,7 @@ import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
 import { StackstormPage } from '@backstage-community/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Route } from 'react-router-dom';
 import { convertLegacyApp } from './convertLegacyApp';
 

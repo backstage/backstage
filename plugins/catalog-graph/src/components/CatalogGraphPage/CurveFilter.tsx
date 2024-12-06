@@ -15,7 +15,7 @@
  */
 import { Select, SelectedItems } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 type Curve = 'curveStepBefore' | 'curveMonotoneX';
 const CURVE_DISPLAY_NAMES: Record<Curve, string> = {

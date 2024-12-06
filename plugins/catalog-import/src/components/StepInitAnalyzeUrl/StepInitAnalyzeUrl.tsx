@@ -18,7 +18,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { NextButton } from '../Buttons';
@@ -157,13 +157,10 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
         error={Boolean(errors.url)}
         required
       />
-
       {errors.url && (
         <FormHelperText error>{errors.url.message}</FormHelperText>
       )}
-
       {error && <FormHelperText error>{error}</FormHelperText>}
-
       <Grid container spacing={0}>
         <NextButton
           disabled={Boolean(errors.url) || !watch('url')}

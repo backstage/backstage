@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DateTime } from 'luxon';
-import React from 'react';
+import { FC } from 'react';
 import Typography from '@material-ui/core/Typography';
 
 interface CreatedAtColumnProps {
@@ -22,7 +22,7 @@ interface CreatedAtColumnProps {
   locale?: string;
 }
 
-export const CreatedAtColumn: React.FC<CreatedAtColumnProps> = ({
+export const CreatedAtColumn: FC<CreatedAtColumnProps> = ({
   createdAt,
   locale,
 }) => {

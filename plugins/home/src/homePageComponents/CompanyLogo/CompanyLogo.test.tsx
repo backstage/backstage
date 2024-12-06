@@ -18,7 +18,6 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 
 describe('<CompanyLogo>', () => {
   it('should have a fall back if logo is not provided', async () => {

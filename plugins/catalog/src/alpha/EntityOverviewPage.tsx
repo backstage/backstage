@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
+import { JSX } from 'react';
 import { FilterWrapper } from './filter/FilterWrapper';
 import { EntitySwitch } from '../components/EntitySwitch';
 import {
@@ -35,7 +35,7 @@ import {
 
 interface EntityOverviewPageProps {
   cards: Array<{
-    element: React.JSX.Element;
+    element: JSX.Element;
     filterFunction?: (entity: Entity) => boolean;
     filterExpression?: string;
   }>;

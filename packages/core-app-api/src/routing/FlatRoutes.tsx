@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
 import {
   attachComponentData,

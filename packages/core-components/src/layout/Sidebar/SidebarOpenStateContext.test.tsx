@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode, useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import { renderWithEffects } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';

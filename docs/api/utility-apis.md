@@ -37,7 +37,6 @@ components. For example, the
 [`ErrorApi`](../reference/core-plugin-api.errorapi.md) can be accessed like this:
 
 ```tsx
-import React from 'react';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export const MyComponent = () => {

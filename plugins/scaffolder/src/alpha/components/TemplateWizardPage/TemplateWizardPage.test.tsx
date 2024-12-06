@@ -22,7 +22,6 @@ import {
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
-import React from 'react';
 import {
   ScaffolderApi,
   scaffolderApiRef,

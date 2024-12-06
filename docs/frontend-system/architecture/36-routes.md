@@ -40,7 +40,6 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 The code snippet in the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
-import React from 'react';
 import {
   createFrontendPlugin,
   createPageExtension,
@@ -91,7 +90,6 @@ Route references can be used to link to page in the same plugin, or to pages in 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -125,7 +123,6 @@ We use the `useRouteRef` hook to create a link generator function that returns t
 Let's see how the details page can get the parameters from the URL:
 
 ```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
-import React from 'react';
 import { useRouteRefParams } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -169,7 +166,6 @@ export const createComponentExternalRouteRef = createExternalRouteRef();
 External routes are also used in a similar way as regular routes:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { createComponentExternalRouteRef } from '../routes';
 
@@ -194,7 +190,6 @@ Given the above binding, using `useRouteRef(createComponentExternalRouteRef)` wi
 Now the only thing left is to provide the page and external route via a plugin:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
-import React from 'react';
 import {
   createFrontendPlugin,
   createPageExtension,
@@ -333,7 +328,6 @@ export const detailsSubRouteRef = createSubRouteRef({
 Using subroutes in a page extension is as simple as this:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from '../routes';
@@ -381,7 +375,6 @@ export const IndexPage = () => {
 This is how you can get the parameters of a sub route URL:
 
 ```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
-import React from 'react';
 import { useParams } from 'react-router-dom';
 
 export const DetailsPage = () => {
@@ -405,7 +398,6 @@ export const DetailsPage = () => {
 Finally, see how a plugin can provide subroutes:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
-import React from 'react';
 import {
   createFrontendPlugin,
   createPageExtension,

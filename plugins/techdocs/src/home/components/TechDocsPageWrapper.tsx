@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { PageWithHeader } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
@@ -25,7 +25,7 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
  * @public
  */
 export type TechDocsPageWrapperProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

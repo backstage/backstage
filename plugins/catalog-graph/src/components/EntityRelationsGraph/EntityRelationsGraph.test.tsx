@@ -26,7 +26,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React, { FunctionComponent } from 'react';
+import { PropsWithChildren, FunctionComponent } from 'react';
 import { EntityRelationsGraph } from './EntityRelationsGraph';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
@@ -68,7 +68,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 // eslint-disable-next-line jest/no-disabled-tests
 describe.skip('<EntityRelationsGraph/>', () => {
-  let Wrapper: FunctionComponent<React.PropsWithChildren<{}>>;
+  let Wrapper: FunctionComponent<PropsWithChildren<{}>>;
   const entities: { [ref: string]: Entity } = {
     'b:d/c': {
       apiVersion: 'a',

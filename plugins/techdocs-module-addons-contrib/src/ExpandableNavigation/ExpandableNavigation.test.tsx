@@ -16,7 +16,6 @@
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
-import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { ExpandableNavigation } from '../plugin';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
 import {

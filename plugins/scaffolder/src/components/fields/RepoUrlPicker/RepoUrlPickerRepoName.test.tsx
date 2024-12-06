@@ -16,7 +16,6 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 

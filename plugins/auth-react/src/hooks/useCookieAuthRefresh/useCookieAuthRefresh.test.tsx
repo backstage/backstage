@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { fetchApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';

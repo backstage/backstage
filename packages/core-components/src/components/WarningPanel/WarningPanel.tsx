@@ -22,7 +22,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React from 'react';
+import { ReactNode } from 'react';
 import { MarkdownContent } from '../MarkdownContent';
 
 const getWarningTextColor = (
@@ -131,9 +131,9 @@ export type WarningProps = {
   title?: string;
   severity?: 'warning' | 'error' | 'info';
   titleFormat?: string;
-  message?: React.ReactNode;
+  message?: ReactNode;
   defaultExpanded?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const capitalize = (s: string) => {

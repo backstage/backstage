@@ -22,7 +22,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import AddIcon from '@material-ui/icons/Add';
 import ListItemText from '@material-ui/core/ListItemText';
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 interface AddWidgetDialogProps {

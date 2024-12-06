@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
@@ -69,7 +69,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
     return tagFacets;
   });
 
-  const setTags = (_: React.ChangeEvent<{}>, values: string[] | null) => {
+  const setTags = (_: ChangeEvent<{}>, values: string[] | null) => {
     // Reset error state in case all tags were removed
     let hasError = false;
     let addDuplicate = false;

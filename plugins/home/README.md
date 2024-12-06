@@ -20,7 +20,6 @@ yarn --cwd packages/app add @backstage/plugin-home
 `packages/app/src/components/home/HomePage.tsx`
 
 ```tsx
-import React from 'react';
 
 export const homePage = (
   /* TODO: Compose a Home Page here */
@@ -66,7 +65,6 @@ In summary: it is not necessary to use the `createCardExtension` extension creat
 Composing a Home Page is no different from creating a regular React Component, i.e. the App Integrator is free to include whatever content they like. However, there are components developed with the Home Page in mind, as described in the previous section. If created by the `createCardExtension` extension creator, they are rendered like so
 
 ```tsx
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { RandomJokeHomePageComponent } from '@backstage/plugin-home';
 
@@ -249,7 +247,6 @@ Being provided by the `<HomePageTopVisited/>` and `<HomePageRecentlyVisited/>` c
 
 ```tsx
 // packages/app/src/components/home/HomePage.tsx
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
   HomePageTopVisited,

@@ -1,9 +1,8 @@
-### Source repo: https://github.com/johnson-jesse/simple-backstage-app-plugin
+### Source repo: <https://github.com/johnson-jesse/simple-backstage-app-plugin>
 
 ExampleComponent.tsx reference
 
 ```tsx
-import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import {

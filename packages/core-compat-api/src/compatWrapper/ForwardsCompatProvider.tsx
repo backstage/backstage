@@ -40,7 +40,7 @@ import {
   iconsApiRef,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-import React, { ComponentType, useMemo } from 'react';
+import { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports

@@ -1,9 +1,9 @@
-import React from 'react';
+import { ReactNode } from 'react';
 
 export interface ICardData {
-  header: React.ReactNode;
-  body: React.ReactNode;
-  footer: React.ReactNode;
+  header: ReactNode;
+  body: ReactNode;
+  footer: ReactNode;
 }
 
 export const SimpleCard = ({ header, body, footer }: ICardData) => (

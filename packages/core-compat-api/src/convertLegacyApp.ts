@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, {
+import {
+  JSX,
+  cloneElement,
   Children,
   Fragment,
   ReactElement,
@@ -61,7 +63,7 @@ function selectChildren(
 
 /** @public */
 export function convertLegacyApp(
-  rootElement: React.JSX.Element,
+  rootElement: JSX.Element,
 ): (FrontendPlugin | FrontendModule | ExtensionOverrides)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
     return collectLegacyRoutes(rootElement);
@@ -117,7 +119,7 @@ export function convertLegacyApp(
       // Clone the root element, this replaces the FlatRoutes declared in the app with out content input
       return [
         coreExtensionData.reactElement(
-          React.cloneElement(
+          cloneElement(
             rootEl,
             undefined,
             inputs.content.get(coreExtensionData.reactElement),

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { BoxSvg } from './svgs/box';
 import { StackSvg } from './svgs/stack';
 import { GridSvg } from './svgs/grid';

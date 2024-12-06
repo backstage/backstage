@@ -33,7 +33,7 @@ import {
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { screen, waitFor } from '@testing-library/react';
-import React from 'react';
+import { ReactNode } from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
@@ -80,7 +80,7 @@ describe('DefaultApiExplorerPage', () => {
 
   const storageApi = mockApis.storage();
 
-  const renderWrapped = (children: React.ReactNode) =>
+  const renderWrapped = (children: ReactNode) =>
     renderInTestApp(
       <TestApiProvider
         apis={[

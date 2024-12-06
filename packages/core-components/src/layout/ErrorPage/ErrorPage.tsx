@@ -17,7 +17,7 @@
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
@@ -29,7 +29,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 interface IErrorPageProps {
   status?: string;
   statusMessage: string;
-  additionalInfo?: React.ReactNode;
+  additionalInfo?: ReactNode;
   supportUrl?: string;
   stack?: string;
 }

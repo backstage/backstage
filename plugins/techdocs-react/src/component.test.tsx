@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 import {
   SHADOW_DOM_STYLE_LOAD_EVENT,

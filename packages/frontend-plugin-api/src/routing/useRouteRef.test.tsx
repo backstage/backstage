@@ -15,7 +15,7 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { useRouteRef } from './useRouteRef';
@@ -37,7 +37,7 @@ describe('v1 consumer', () => {
     const routeRef = createRouteRef();
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
           <MemoryRouter initialEntries={['/my-page']} children={children} />
         </TestApiProvider>
@@ -58,7 +58,7 @@ describe('v1 consumer', () => {
     const routeRef = createRouteRef();
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider
           apis={[[routeResolutionApiRef, { resolve: () => undefined }]]}
         >
@@ -79,7 +79,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
           <Router
             location={history.location}
@@ -107,7 +107,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
           <Router
             location={history.location}
@@ -135,7 +135,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
           <Router
             location={history.location}
@@ -163,7 +163,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
           <Router
             location={history.location}

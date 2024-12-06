@@ -15,13 +15,13 @@
  */
 import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import { renderHook, waitFor } from '@testing-library/react';
-import React from 'react';
+import { ReactNode } from 'react';
 import { act } from 'react-dom/test-utils';
 import { BrowserRouter } from 'react-router-dom';
 import { Direction } from '../EntityRelationsGraph';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
-const wrapper = ({ children }: { children?: React.ReactNode }) => {
+const wrapper = ({ children }: { children?: ReactNode }) => {
   return <BrowserRouter>{children}</BrowserRouter>;
 };
 

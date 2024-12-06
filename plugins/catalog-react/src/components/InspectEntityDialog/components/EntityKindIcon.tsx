@@ -16,7 +16,6 @@
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useApp } from '@backstage/core-plugin-api';
-import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
 const DEFAULT_ICON = SvgIcon;

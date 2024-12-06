@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
 
 import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';

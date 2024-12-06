@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import * as oneIngressFixture from './__fixtures__/2-ingresses.json';
 import { renderInTestApp } from '@backstage/test-utils';

@@ -24,7 +24,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useState, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 import { useEntityList } from '../../hooks';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { catalogReactTranslationRef } from '../../translation';

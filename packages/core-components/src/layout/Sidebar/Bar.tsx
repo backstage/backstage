@@ -19,7 +19,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import React, { useContext, useRef, useState } from 'react';
+import { ReactNode, useContext, useRef, useState } from 'react';
 
 import {
   makeSidebarConfig,
@@ -104,14 +104,14 @@ export type SidebarProps = {
   sidebarOptions?: SidebarOptions;
   submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export type DesktopSidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
   disableExpandOnHover?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

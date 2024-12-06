@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useRef, useLayoutEffect } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DefaultNode } from './DefaultNode';
 import { DependencyGraphTypes as Types } from './types';
@@ -53,9 +53,9 @@ export function Node<T>({
   const { width, height, x = 0, y = 0 } = node;
   const nodeProps: Types.DependencyNode<T> = node;
   const classes = useStyles();
-  const nodeRef = React.useRef<SVGGElement | null>(null);
+  const nodeRef = useRef<SVGGElement | null>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     // set the node width to the actual rendered width to properly layout graph
     if (nodeRef.current) {
       let { height: renderedHeight, width: renderedWidth } =

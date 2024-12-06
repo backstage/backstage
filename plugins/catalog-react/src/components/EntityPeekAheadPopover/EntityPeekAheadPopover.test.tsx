@@ -16,7 +16,6 @@
 
 import { screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
-import React from 'react';
 import { EntityPeekAheadPopover } from './EntityPeekAheadPopover';
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';

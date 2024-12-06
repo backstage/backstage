@@ -15,7 +15,6 @@
  */
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
-import React from 'react';
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import { TextSize } from '../plugin';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';

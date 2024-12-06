@@ -30,7 +30,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useMemo, useState, ReactNode } from 'react';
+import { MouseEvent, useEffect, useMemo, useState, ReactNode } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
@@ -243,7 +243,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
             />
           )}
           ListboxProps={{
-            onScroll: (e: React.MouseEvent) => {
+            onScroll: (e: MouseEvent) => {
               const element = e.currentTarget;
               const hasReachedEnd =
                 Math.abs(

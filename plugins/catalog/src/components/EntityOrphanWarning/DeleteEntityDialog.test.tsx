@@ -15,7 +15,7 @@
  */
 
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -46,7 +46,7 @@ describe('DeleteEntityDialog', () => {
     spec: {},
   };
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogApiRef, catalogClient],

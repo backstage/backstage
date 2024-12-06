@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { JSX } from 'react';
 import { Link } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -28,19 +28,19 @@ import { useStyles } from './styles';
  */
 export type QuickStartCardProps = {
   /** The modal link title */
-  modalTitle?: string | React.JSX.Element;
+  modalTitle?: string | JSX.Element;
   /** The link to docs title */
   docsLinkTitle?: string;
   /** The link to docs */
   docsLink?: string;
   /** The video to play on the card */
-  video?: React.JSX.Element;
+  video?: JSX.Element;
   /** A quickstart image to display on the card */
-  image: React.JSX.Element;
+  image: JSX.Element;
   /** The card description*/
   cardDescription?: string;
   /** A component used to download a quickStart image*/
-  downloadImage?: React.JSX.Element;
+  downloadImage?: JSX.Element;
 };
 
 /**

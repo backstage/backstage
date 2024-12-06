@@ -19,7 +19,6 @@ This is the same [field](https://rjsf-team.github.io/react-jsonschema-form/docs/
 The [createScaffolderLayout](https://backstage.io/docs/reference/plugin-scaffolder.createscaffolderlayout) function is used to mark a component as a custom step layout:
 
 ```ts
-import React from 'react';
 import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   createScaffolderLayout,

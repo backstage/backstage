@@ -20,7 +20,6 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 

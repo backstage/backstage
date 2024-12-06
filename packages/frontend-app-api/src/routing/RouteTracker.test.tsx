@@ -15,7 +15,7 @@
  */
 
 import { TestApiProvider } from '@backstage/test-utils';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BackstageRouteObject } from './types';
 import { fireEvent, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';

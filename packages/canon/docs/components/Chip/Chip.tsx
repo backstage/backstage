@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 
 export const Chip = ({
   children,
   head = false,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   head?: boolean;
 }) => {
   return <span className={`chip ${head ? 'head' : ''}`}>{children}</span>;

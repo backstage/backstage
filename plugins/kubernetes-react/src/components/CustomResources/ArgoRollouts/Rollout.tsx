@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -43,7 +43,7 @@ import { READY_COLUMNS, RESOURCE_COLUMNS } from '../../Pods/PodsTable';
 type RolloutAccordionsProps = {
   rollouts: any[];
   defaultExpanded?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type RolloutAccordionProps = {
@@ -51,7 +51,7 @@ type RolloutAccordionProps = {
   ownedPods: V1Pod[];
   defaultExpanded?: boolean;
   matchingHpa?: V2HorizontalPodAutoscaler;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type RolloutSummaryProps = {
@@ -59,7 +59,7 @@ type RolloutSummaryProps = {
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
   hpa?: V2HorizontalPodAutoscaler;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const AbortedTitle = (

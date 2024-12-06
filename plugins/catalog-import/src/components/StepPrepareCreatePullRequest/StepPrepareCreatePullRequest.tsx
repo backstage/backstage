@@ -26,7 +26,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
 import useAsync from 'react-use/esm/useAsync';
 import YAML from 'yaml';
@@ -78,7 +78,7 @@ export interface StepPrepareCreatePullRequestProps {
       groups: string[];
       groupsLoading: boolean;
     },
-  ) => React.ReactNode;
+  ) => ReactNode;
 }
 
 export function generateEntities(

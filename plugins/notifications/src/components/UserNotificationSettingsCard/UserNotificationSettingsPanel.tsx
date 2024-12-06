@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ChangeEvent } from 'react';
 import {
   isNotificationsEnabledFor,
   NotificationSettings,
@@ -125,7 +125,7 @@ export const UserNotificationSettingsPanel = (props: {
                       channel.id,
                       origin,
                     )}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       handleChange(channel.id, origin, event.target.checked);
                     }}
                   />

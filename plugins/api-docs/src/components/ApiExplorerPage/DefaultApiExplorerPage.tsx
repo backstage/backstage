@@ -38,7 +38,6 @@ import {
   CatalogFilterLayout,
   EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';

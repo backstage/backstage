@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Table } from '../Table';
 import { TrendLine } from './TrendLine';
 import { InfoCard } from '../../layout/InfoCard';

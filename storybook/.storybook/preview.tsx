@@ -1,4 +1,3 @@
-import React from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { lightTheme, darkTheme } from '@backstage/theme';

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { featureFlagsApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 import { render, RenderResult } from '@testing-library/react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes, useOutlet } from 'react-router-dom';
 import { LocalStorageFeatureFlags } from '../apis';
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { AppContext } from '../app';
 import { AppContextProvider } from '../app/AppContext';
 import { FlatRoutes } from './FlatRoutes';
-import { TestApiProvider } from '@backstage/test-utils';
 
 jest.mock('react-router', () => jest.requireActual('react-router-beta'));
 jest.mock('react-router-dom', () =>

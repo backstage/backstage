@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { Icon } from '../Icon';
 import { ButtonProps } from './types';
 import { useCanon } from '../../contexts/canon';

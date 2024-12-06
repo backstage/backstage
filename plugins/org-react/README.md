@@ -12,7 +12,7 @@ To use the `GroupListPicker` component you'll need to import it and add it to yo
 
 ```diff
 + import { GroupListPicker } from '@backstage/plugin-org-react';
-+ import React, { useState } from 'react';
++ import { useState } from 'react';
 
 + const [group, setGroup] = useState<GroupEntity | undefined>();
 

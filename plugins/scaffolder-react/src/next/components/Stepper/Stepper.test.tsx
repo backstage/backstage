@@ -16,7 +16,7 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
 import { act, fireEvent, waitFor } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { LayoutTemplate } from '../../../layouts';
 import { SecretsContextProvider } from '../../../secrets';

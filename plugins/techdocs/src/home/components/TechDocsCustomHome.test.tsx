@@ -22,7 +22,6 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootDocsRouteRef } from '../../routes';

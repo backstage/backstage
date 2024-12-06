@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, SetStateAction, createContext, useMemo } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useMemo,
+  useState,
+  useContext as rUseContext,
+} from 'react';
+
 import { Visit } from '../../api/VisitsApi';
 import { VisitedByTypeKind } from './Content';
 
@@ -72,7 +80,7 @@ const getFilteredSet =
     }));
 
 export const ContextProvider = ({ children }: { children: JSX.Element }) => {
-  const [context, setContext] = React.useState<ContextValueOnly>(
+  const [context, setContext] = useState<ContextValueOnly>(
     defaultContextValueOnly,
   );
   const {
@@ -109,7 +117,7 @@ export const ContextProvider = ({ children }: { children: JSX.Element }) => {
 };
 
 export const useContext = () => {
-  const value = React.useContext(Context);
+  const value = rUseContext(Context);
 
   if (value === undefined)
     throw new Error(
