@@ -25,6 +25,7 @@ import {
   createBackendModule,
   createExtensionPoint,
   createBackendFeatureLoader,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
@@ -49,6 +50,18 @@ const baseFactories = [
   }),
   loggerServiceFactory,
 ];
+
+function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
+  const fn = jest.fn().mockReturnValue({});
+  return Object.assign(
+    fn,
+    createServiceFactory({
+      service: ref,
+      deps: {},
+      factory: fn,
+    }),
+  );
+}
 
 const testPlugin = createBackendPlugin({
   pluginId: 'test',
@@ -165,6 +178,109 @@ describe('BackendInitializer', () => {
     expect(factory2).toHaveBeenCalled();
     expect(pluginInit).toHaveBeenCalled();
     expect(moduleInit).toHaveBeenCalled();
+  });
+
+  it('should ignore services provided by feature loaders that have already been explicitly added', async () => {
+    const ref = createServiceRef<{}>({ id: '1' });
+    const factory1 = mkNoopFactory(ref);
+    const factory2 = mkNoopFactory(ref);
+    const factory3 = mkNoopFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(factory2);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    await init.start();
+
+    expect(factory1).not.toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).not.toHaveBeenCalled();
+  });
+
+  // Note: this is an important escape hatch in case to loaders conflict and you need to select the winning service factory
+  it('should allow duplicate service from feature loaders if overridden', async () => {
+    const ref = createServiceRef<{}>({ id: '1' });
+    const factory1 = mkNoopFactory(ref);
+    const factory2 = mkNoopFactory(ref);
+    const factory3 = mkNoopFactory(ref);
+    const factory4 = mkNoopFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(factory2);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+          yield factory4;
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    await init.start();
+
+    expect(factory1).not.toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).not.toHaveBeenCalled();
+    expect(factory4).not.toHaveBeenCalled();
+  });
+
+  it('should reject duplicate service factories from feature loader without an explicit override', async () => {
+    const ref = createServiceRef<{}>({ id: '1' });
+    const factory1 = mkNoopFactory(ref);
+    const factory2 = mkNoopFactory(ref);
+    const factory3 = mkNoopFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory2;
+        },
+      }),
+    );
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+        },
+      }),
+    );
+
+    await expect(init.start()).rejects.toThrow(
+      'Duplicate service implementations provided for 1 by both feature loader created at',
+    );
   });
 
   it('should refuse to override already initialized services through loaded features', async () => {
