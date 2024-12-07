@@ -1,5 +1,34 @@
 # @backstage/backend-defaults
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- fd5d337: Added a new `backend.health.headers` configuration that can be used to set additional headers to include in health check responses.
+
+  **BREAKING CONSUMERS**: As part of this change the `createHealthRouter` function exported from `@backstage/backend-defaults/rootHttpRouter` now requires the root config service to be passed through the `config` option.
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 57e0b11: The user and plugin token verification in the default `AuthService` implementation will no longer forward verification errors to the caller, and instead log them as warnings.
+- 57e0b11: The default `authServiceFactory` now correctly depends on the plugin scoped `Logger` services rather than the root scoped one.
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/backend-app-api@1.1.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/cli-node@0.2.11-next.1
+  - @backstage/config@1.3.1-next.0
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/integration-aws-node@0.1.14-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/types@1.2.0
+
 ## 0.6.0-next.1
 
 ### Patch Changes
