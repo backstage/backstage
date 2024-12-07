@@ -274,20 +274,16 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const { entities } = await entitiesCatalog.entities({
-          filter: basicEntityFilter({
-            kind: kind,
-            'metadata.namespace': namespace,
-            'metadata.name': name,
-          }),
+        const { items } = await entitiesCatalog.entitiesBatch({
+          entityRefs: [stringifyEntityRef({ kind, namespace, name })],
           credentials: await httpAuth.credentials(req),
         });
-        if (!entities.length) {
+        if (!items[0]) {
           throw new NotFoundError(
             `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
           );
         }
-        res.status(200).json(entities[0]);
+        res.status(200).json(items[0]);
       })
       .get(
         '/entities/by-name/:kind/:namespace/:name/ancestry',
