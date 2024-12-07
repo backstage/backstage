@@ -16,7 +16,7 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Grid, GridItem } from './Grid';
+import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
 import { argTypesSpacing, argTypesColor } from '../../../docs/utils/argTypes';
@@ -83,12 +83,12 @@ export const ColumnSizes: Story = {
     <Stack gap="md">
       {Array.from({ length: 11 }, (_, i) => (
         <Grid {...args} key={i}>
-          <GridItem colSpan={(i + 1) as GridItemProps['colSpan']}>
+          <Grid.Item colSpan={(i + 1) as GridItemProps['colSpan']}>
             <FakeBox />
-          </GridItem>
-          <GridItem colSpan={(11 - i) as GridItemProps['colSpan']}>
+          </Grid.Item>
+          <Grid.Item colSpan={(11 - i) as GridItemProps['colSpan']}>
             <FakeBox />
-          </GridItem>
+          </Grid.Item>
         </Grid>
       ))}
     </Stack>
@@ -103,18 +103,18 @@ export const RowAndColumns: Story = {
   render: args => (
     <Stack gap="md">
       <Grid {...args} columns={3}>
-        <GridItem colSpan={1} rowSpan={2}>
+        <Grid.Item colSpan={1} rowSpan={2}>
           <Box
             borderRadius="small"
             style={{ background: '#1f47ff', color: 'white', height: '100%' }}
           />
-        </GridItem>
-        <GridItem colSpan={2}>
+        </Grid.Item>
+        <Grid.Item colSpan={2}>
           <FakeBox />
-        </GridItem>
-        <GridItem colSpan={2}>
+        </Grid.Item>
+        <Grid.Item colSpan={2}>
           <FakeBox />
-        </GridItem>
+        </Grid.Item>
       </Grid>
     </Stack>
   ),

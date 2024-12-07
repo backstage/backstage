@@ -200,7 +200,11 @@ export type Gap = Space | Partial<Record<Breakpoint, Space>>;
 // @public (undocumented)
 export const Grid: ForwardRefExoticComponent<
   GridProps & RefAttributes<HTMLDivElement>
->;
+> & {
+  Item: ForwardRefExoticComponent<
+    GridItemProps & RefAttributes<HTMLDivElement>
+  >;
+};
 
 // @public (undocumented)
 export interface GridItemProps {

@@ -18,8 +18,7 @@ import { createElement, forwardRef } from 'react';
 import { GridItemProps, GridProps } from './types';
 import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
 
-/** @public */
-export const Grid = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
+const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const {
     children,
     columns,
@@ -50,30 +49,30 @@ export const Grid = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   );
 });
 
+const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
+  const { children, rowSpan, colSpan, start, end, className, style } = props;
+
+  const sprinklesClassName = gridItemSprinkles({
+    rowSpan,
+    colSpan,
+    start,
+    end,
+  });
+
+  const classNames = ['grid-item', sprinklesClassName, className]
+    .filter(Boolean)
+    .join(' ');
+
+  return createElement(
+    'div',
+    {
+      ref,
+      className: classNames,
+      style,
+    },
+    children,
+  );
+});
+
 /** @public */
-export const GridItem = forwardRef<HTMLDivElement, GridItemProps>(
-  (props, ref) => {
-    const { children, rowSpan, colSpan, start, end, className, style } = props;
-
-    const sprinklesClassName = gridItemSprinkles({
-      rowSpan,
-      colSpan,
-      start,
-      end,
-    });
-
-    const classNames = ['grid-item', sprinklesClassName, className]
-      .filter(Boolean)
-      .join(' ');
-
-    return createElement(
-      'div',
-      {
-        ref,
-        className: classNames,
-        style,
-      },
-      children,
-    );
-  },
-);
+export const Grid = Object.assign(GridBase, { Item: GridItem });
