@@ -445,20 +445,15 @@ describe('createRouter readonly disabled', () => {
           namespace: 'ns',
         },
       };
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: [entity],
       });
 
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({
-          kind: 'k',
-          'metadata.namespace': 'ns',
-          'metadata.name': 'n',
-        }),
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['k:ns/n'],
         credentials: mockCredentials.user(),
       });
       expect(response.status).toEqual(200);
@@ -466,20 +461,15 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('responds with a 404 for missing entities', async () => {
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: [null],
       });
 
       const response = await request(app).get('/entities/by-name/b/d/c');
 
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': 'c',
-        }),
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['b:d/c'],
         credentials: mockCredentials.user(),
       });
       expect(response.status).toEqual(404);
