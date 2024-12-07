@@ -33,7 +33,6 @@ import * as colors from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 import InputIcon from '@material-ui/icons/InputSharp';
 import DisabledIcon from '@material-ui/icons/NotInterestedSharp';
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 function createOutputColorGenerator(

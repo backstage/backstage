@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';

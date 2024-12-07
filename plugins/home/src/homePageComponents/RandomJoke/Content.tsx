@@ -15,7 +15,6 @@
  */
 
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { useRandomJoke } from './Context';
 
 export const Content = () => {

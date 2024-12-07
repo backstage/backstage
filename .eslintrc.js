@@ -20,6 +20,7 @@ module.exports = {
   root: true,
   plugins: ['@spotify', 'notice', 'react', 'testing-library'],
   rules: {
+    'react/react-in-jsx-scope': 'off',
     'notice/notice': [
       'error',
       {

@@ -21,7 +21,6 @@ import HomeIcon from '@material-ui/icons/Home';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
-import React from 'react';
 import { Sidebar } from './Bar';
 import { SidebarItem } from './Items';
 import { MobileSidebar } from './MobileSidebar';

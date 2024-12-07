@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { CSSProperties } from 'react';
 import { container, pill, title } from './component-status.css';
 
 export const ComponentStatus = ({
@@ -25,7 +25,7 @@ export const ComponentStatus = ({
 }: {
   name: string;
   status: 'notStarted' | 'inProgress' | 'alpha' | 'beta' | 'stable';
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   link?: string;
 }) => {
   return (

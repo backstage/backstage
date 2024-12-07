@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
 import { WarningPanel } from '@backstage/core-components';
 
 const clustersWithErrorsToErrorMessage = (
   clustersWithErrors: ClusterObjects[],
-): React.ReactNode => {
+): ReactNode => {
   return clustersWithErrors.map((c, i) => {
     return (
       <div key={i}>
@@ -52,7 +52,7 @@ export type ErrorPanelProps = {
   entityName: string;
   errorMessage?: string;
   clustersWithErrors?: ClusterObjects[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

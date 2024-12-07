@@ -16,7 +16,7 @@
 import MaterialAvatar from '@material-ui/core/Avatar';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 
 import { extractInitials, stringToColor } from './utils';
 import classNames from 'classnames';

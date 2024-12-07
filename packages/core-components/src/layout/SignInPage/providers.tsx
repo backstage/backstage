@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import { useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import {
   SignInPageProps,
   useApi,

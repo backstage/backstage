@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Fragment } from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
 import {
   createSpecializedApp,
@@ -169,7 +169,7 @@ export function renderInTestApp(
             coreExtensionData.routeRef,
           ],
           factory: () => [
-            coreExtensionData.reactElement(<React.Fragment />),
+            coreExtensionData.reactElement(<Fragment />),
             coreExtensionData.routePath(path),
             coreExtensionData.routeRef(routeRef),
           ],

@@ -24,7 +24,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { AncestryPage } from './components/AncestryPage';
 import { ColocatedPage } from './components/ColocatedPage';
 import { JsonPage } from './components/JsonPage';
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function TabPanel(props: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }) {
@@ -96,7 +96,7 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }) {
   const classes = useStyles();
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = useState(0);
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   useEffect(() => {

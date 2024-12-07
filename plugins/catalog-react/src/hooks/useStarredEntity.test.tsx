@@ -18,7 +18,7 @@ import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren, ComponentType } from 'react';
 import Observable from 'zen-observable';
 import { StarredEntitiesApi, starredEntitiesApiRef } from '../apis';
 import { useStarredEntity } from './useStarredEntity';
@@ -28,7 +28,7 @@ describe('useStarredEntity', () => {
     toggleStarred: jest.fn(),
     starredEntitie$: jest.fn(),
   };
-  let wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
     wrapper = (props: PropsWithChildren<{}>) => (

@@ -45,9 +45,9 @@ Important to keep in mind is that Material UI v5 is meant to be used with React 
 ```json
 ...
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0"
   },
 ...
 ```

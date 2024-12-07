@@ -17,7 +17,7 @@ import { CodeSnippet } from '@backstage/core-components';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import jsyaml from 'js-yaml';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Props of ManifestYaml

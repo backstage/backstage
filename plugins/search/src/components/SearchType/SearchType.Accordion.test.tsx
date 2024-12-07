@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { act, render, waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
@@ -67,7 +67,7 @@ describe('SearchType.Accordion', () => {
     });
   });
 
-  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const Wrapper = ({ children }: { children: ReactNode }) => {
     return (
       <TestApiProvider
         apis={[

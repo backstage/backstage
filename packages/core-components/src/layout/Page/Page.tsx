@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 
 export type PageClassKey = 'root';
@@ -44,7 +44,7 @@ const useStyles = makeStyles(
 
 type Props = {
   themeId: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export function Page(props: Props) {

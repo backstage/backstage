@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { ReactNode, forwardRef } from 'react';
 import { Icon } from '../Icon';
 import type { IconNames } from '../Icon/types';
 
@@ -26,7 +26,7 @@ import type { IconNames } from '../Icon/types';
 export interface ButtonProps {
   size?: 'small' | 'medium';
   variant?: 'primary' | 'secondary' | 'tertiary';
-  children: React.ReactNode;
+  children: ReactNode;
   disabled?: boolean;
   iconStart?: IconNames;
   iconEnd?: IconNames;

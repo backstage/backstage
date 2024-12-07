@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { NavLogoBlueprint } from './NavLogoBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 

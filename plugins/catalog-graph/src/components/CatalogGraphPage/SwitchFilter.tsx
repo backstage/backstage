@@ -17,7 +17,7 @@ import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 
 export type Props = {
   label: string;
@@ -42,7 +42,7 @@ export const SwitchFilter = ({ label, value, onChange }: Props) => {
   const classes = useStyles();
 
   const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.checked);
     },
     [onChange],

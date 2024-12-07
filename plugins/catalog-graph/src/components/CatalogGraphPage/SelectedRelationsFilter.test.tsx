@@ -21,7 +21,6 @@ import {
 } from '@backstage/catalog-model';
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 

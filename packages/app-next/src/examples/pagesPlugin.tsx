@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Link } from '@backstage/core-components';
 import {
   createFrontendPlugin,

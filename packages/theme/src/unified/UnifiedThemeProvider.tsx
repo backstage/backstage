@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   ThemeProvider,

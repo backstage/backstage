@@ -16,7 +16,6 @@
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';

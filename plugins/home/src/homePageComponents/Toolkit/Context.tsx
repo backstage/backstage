@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { createContext } from 'react';
+import { ReactNode, useState, useContext, createContext } from 'react';
 
 /** @public */
 export type Tool = {
   label: string;
   url: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 };
 
 type ToolkitContextValue = {
@@ -35,7 +35,7 @@ export const ContextProvider = (props: {
 }) => {
   const { children, tools } = props;
 
-  const [toolsValue, _setTools] = React.useState(tools);
+  const [toolsValue, _setTools] = useState(tools);
 
   const value: ToolkitContextValue = {
     tools: toolsValue,
@@ -45,7 +45,7 @@ export const ContextProvider = (props: {
 };
 
 export const useToolkit = () => {
-  const value = React.useContext(Context);
+  const value = useContext(Context);
   return value;
 };
 
