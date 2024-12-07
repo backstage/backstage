@@ -8,6 +8,9 @@ import '../docs/components/styles.css';
 // Canon specific styles
 import '../src/theme/styles.css';
 
+// Custom themes
+import './themes/backstage.css';
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -23,12 +26,14 @@ const preview: Preview = {
   decorators: [
     withThemeByDataAttribute<ReactRenderer>({
       themes: {
-        light: 'light',
-        dark: 'dark',
+        Light: 'light',
+        Dark: 'dark',
+        'Backstage Light': 'backstage-light',
+        'Backstage Dark': 'backstage-dark',
       },
-      defaultTheme: 'light',
+      defaultTheme: 'Light',
     }),
-    (Story, context) => {
+    Story => {
       document.body.style.backgroundColor = 'var(--canon-background)';
 
       const docsStoryElements = document.getElementsByClassName('docs-story');
