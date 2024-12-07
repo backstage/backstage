@@ -191,6 +191,16 @@ export class ServiceRegistry {
     }
   }
 
+  hasBeenAdded(ref: ServiceRef<any>) {
+    if (ref.id === coreServices.pluginMetadata.id) {
+      return true;
+    }
+    if (ref.multiton) {
+      return false;
+    }
+    return this.#addedFactoryIds.has(ref.id);
+  }
+
   add(factory: ServiceFactory) {
     const factoryId = factory.service.id;
     if (factoryId === coreServices.pluginMetadata.id) {
