@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
+import { createElement, forwardRef } from 'react';
 import { GridItemProps, GridProps } from './types';
 import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
 
-/** @public */
-export const Grid = (props: GridProps) => {
+const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const {
     children,
     columns,
@@ -42,14 +41,15 @@ export const Grid = (props: GridProps) => {
   return createElement(
     'div',
     {
+      ref,
       className: classNames,
       style,
     },
     children,
   );
-};
+});
 
-const GridItem = (props: GridItemProps) => {
+const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
   const { children, rowSpan, colSpan, start, end, className, style } = props;
 
   const sprinklesClassName = gridItemSprinkles({
@@ -63,7 +63,16 @@ const GridItem = (props: GridItemProps) => {
     .filter(Boolean)
     .join(' ');
 
-  return createElement('div', { className: classNames, style }, children);
-};
+  return createElement(
+    'div',
+    {
+      ref,
+      className: classNames,
+      style,
+    },
+    children,
+  );
+});
 
-Grid.Item = GridItem;
+/** @public */
+export const Grid = Object.assign(GridBase, { Item: GridItem });

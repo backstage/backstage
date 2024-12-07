@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { SpaceProps } from '../../layout/types';
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
-
-// Layout types
-export * from './layout/types';
-
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
-
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
+/** @public */
+export interface ContainerProps
+  extends Omit<
+    SpaceProps,
+    | 'padding'
+    | 'paddingLeft'
+    | 'paddingRight'
+    | 'paddingX'
+    | 'margin'
+    | 'marginLeft'
+    | 'marginRight'
+    | 'marginX'
+    | 'gap'
+  > {
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}

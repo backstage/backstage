@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { forwardRef } from 'react';
+import { containerSprinkles } from './sprinkles.css';
+import { ContainerProps } from './types';
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
+/** @public */
+export const Container = forwardRef<HTMLDivElement, ContainerProps>(
+  (props, ref) => {
+    const { children, className, style, ...restProps } = props;
 
-// Layout types
-export * from './layout/types';
+    const containerClassName = containerSprinkles(restProps);
 
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
-
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
+    return (
+      <div
+        ref={ref}
+        className={['container', containerClassName].filter(Boolean).join(' ')}
+        style={style}
+      >
+        {children}
+      </div>
+    );
+  },
+);

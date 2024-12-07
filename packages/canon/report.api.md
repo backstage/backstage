@@ -5,11 +5,9 @@
 ```ts
 /// <reference types="react" />
 
-import { CSSProperties } from 'react';
-import { DetailedReactHTMLElement } from 'react';
-import { DOMElement } from 'react';
+import { ForwardRefExoticComponent } from 'react';
 import { default as React_2 } from 'react';
-import { ReactNode } from 'react';
+import { RefAttributes } from 'react';
 
 // @public (undocumented)
 export type AlignItemsProps =
@@ -59,13 +57,8 @@ export type BorderRadiusProps =
   | Partial<Record<Breakpoint, 'none' | 'small' | 'medium' | 'full'>>;
 
 // @public (undocumented)
-export const Box: (props: BoxProps) => DOMElement<
-  {
-    className: string;
-    style: CSSProperties | undefined;
-    children: ReactNode;
-  },
-  Element
+export const Box: ForwardRefExoticComponent<
+  BoxProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -155,6 +148,33 @@ export interface ColorProps {
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 // @public (undocumented)
+export const Container: React_2.ForwardRefExoticComponent<
+  ContainerProps & React_2.RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface ContainerProps
+  extends Omit<
+    SpaceProps,
+    | 'padding'
+    | 'paddingLeft'
+    | 'paddingRight'
+    | 'paddingX'
+    | 'margin'
+    | 'marginLeft'
+    | 'marginRight'
+    | 'marginX'
+    | 'gap'
+  > {
+  // (undocumented)
+  children?: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  style?: React.CSSProperties;
+}
+
+// @public (undocumented)
 export type DisplayProps =
   | 'flex'
   | 'none'
@@ -178,20 +198,11 @@ export type FlexWrapProps =
 export type Gap = Space | Partial<Record<Breakpoint, Space>>;
 
 // @public (undocumented)
-export const Grid: {
-  (props: GridProps): DetailedReactHTMLElement<
-    {
-      className: string;
-      style: CSSProperties | undefined;
-    },
-    HTMLElement
-  >;
-  Item: (props: GridItemProps) => DetailedReactHTMLElement<
-    {
-      className: string;
-      style: CSSProperties | undefined;
-    },
-    HTMLElement
+export const Grid: ForwardRefExoticComponent<
+  GridProps & RefAttributes<HTMLDivElement>
+> & {
+  Item: ForwardRefExoticComponent<
+    GridItemProps & RefAttributes<HTMLDivElement>
   >;
 };
 
@@ -251,13 +262,8 @@ export type IconNames =
   | 'trash';
 
 // @public (undocumented)
-export const Inline: (props: InlineProps) => DetailedReactHTMLElement<
-  {
-    className: string;
-    style: CSSProperties | undefined;
-    children: ReactNode;
-  },
-  HTMLElement
+export const Inline: ForwardRefExoticComponent<
+  InlineProps & RefAttributes<HTMLElement>
 >;
 
 // @public (undocumented)
@@ -396,13 +402,8 @@ export interface SpaceProps {
 }
 
 // @public (undocumented)
-export const Stack: (props: StackProps) => DetailedReactHTMLElement<
-  {
-    className: string;
-    style: CSSProperties | undefined;
-    children: ReactNode;
-  },
-  HTMLElement
+export const Stack: ForwardRefExoticComponent<
+  StackProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)

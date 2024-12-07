@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
+import { createElement, forwardRef } from 'react';
 import { StackProps } from './types';
 import { stackSprinkles } from './sprinkles.css';
 
@@ -26,7 +26,7 @@ const alignToFlexAlign = (align: StackProps['align']) => {
 };
 
 /** @public */
-export const Stack = (props: StackProps) => {
+export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   const {
     as = 'div',
     children,
@@ -53,8 +53,9 @@ export const Stack = (props: StackProps) => {
     .join(' ');
 
   return createElement(as, {
+    ref,
     className: classNames,
     style,
     children,
   });
-};
+});

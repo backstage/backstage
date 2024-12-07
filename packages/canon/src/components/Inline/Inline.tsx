@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
+import { createElement, forwardRef } from 'react';
 import { inlineSprinkles } from './sprinkles.css';
 import type { InlineProps } from './types';
 
@@ -33,7 +33,7 @@ const alignToFlexAlignY = (align: InlineProps['align']) => {
 };
 
 /** @public */
-export const Inline = (props: InlineProps) => {
+export const Inline = forwardRef<HTMLElement, InlineProps>((props, ref) => {
   const {
     as = 'div',
     children,
@@ -59,8 +59,9 @@ export const Inline = (props: InlineProps) => {
     .join(' ');
 
   return createElement(as, {
+    ref,
     className: classNames,
     style,
     children,
   });
-};
+});

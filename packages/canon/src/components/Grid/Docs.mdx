@@ -15,14 +15,14 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 </Text>
 
 <Title type="h2">Installation</Title>
-<Source code={`yarn install @backstage/canon/grid`} language="bash" dark />
+<Source code={`import { Grid } from "@backstage/canon";`} language="tsx" dark />
 
 <Title type="h2">Anatomy</Title>
 <Text>
   The grid component is made of two parts: the grid container and the grid item. Import all parts and piece them together.
 </Text>
 <Source
-  code={`import * as Grid from "@backstage/canon/grid";
+  code={`import { Grid } from "@backstage/canon/grid";
 
 export default () => (
   <Grid>

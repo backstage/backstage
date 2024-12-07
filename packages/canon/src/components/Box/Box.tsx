@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
+import { createElement, forwardRef } from 'react';
 import { boxSprinkles } from './sprinkles.css';
 import { base } from './box.css';
 import { BoxProps } from './types';
 
 /** @public */
-export const Box = (props: BoxProps) => {
+export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { as = 'div', className, style, children, ...restProps } = props;
 
   // Generate the list of class names
@@ -32,8 +32,9 @@ export const Box = (props: BoxProps) => {
     .join(' ');
 
   return createElement(as, {
+    ref,
     className: classNames,
     style,
     children,
   });
-};
+});
