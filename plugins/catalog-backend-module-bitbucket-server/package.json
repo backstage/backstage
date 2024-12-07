@@ -60,7 +60,6 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "p-throttle": "^4.1.1",
     "@backstage/plugin-events-node": "workspace:^",
-    "@types/node-fetch": "^2.5.12",
     "node-fetch": "^2.7.0",
     "uuid": "^11.0.0"
   },
@@ -68,6 +67,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-events-backend-test-utils": "workspace:^",
+    "@types/node-fetch": "^2.5.12",
     "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
