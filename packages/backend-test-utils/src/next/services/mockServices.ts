@@ -472,6 +472,7 @@ export namespace mockServices {
     export const factory = () => rootLifecycleServiceFactory;
     export const mock = simpleMock(coreServices.rootLifecycle, () => ({
       addShutdownHook: jest.fn(),
+      addBeforeShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
     }));
   }

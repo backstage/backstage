@@ -21,7 +21,12 @@ import {
 import { Express } from 'express';
 import request from 'supertest';
 import { rootHttpRouterServiceFactory } from './rootHttpRouterServiceFactory';
-import { ServiceFactory, coreServices } from '@backstage/backend-plugin-api';
+import {
+  ServiceFactory,
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { BackendLifecycleImpl } from '../rootLifecycle/rootLifecycleServiceFactory';
 
 async function createExpressApp(...dependencies: ServiceFactory[]) {
   let app: Express | undefined = undefined;
@@ -197,5 +202,72 @@ describe('rootHttpRouterServiceFactory', () => {
     ).rejects.toThrow(
       'Invalid header value in at backend.health.headers, must be a non-empty string',
     );
+  });
+
+  it('should wait the server shutdown', async () => {
+    jest.useFakeTimers();
+
+    let app: Express | undefined = undefined;
+    const lifecycleMock = new BackendLifecycleImpl(mockServices.rootLogger());
+
+    const tester = ServiceFactoryTester.from(
+      rootHttpRouterServiceFactory({
+        configure(options) {
+          console.log('configure');
+          options.app.use(options.lifecycleMiddleware);
+          options.app.get('/test', (_req, res) => {
+            res.status(200).send({ status: 'ok' }).end();
+          });
+          app = options.app;
+        },
+      }),
+      {
+        dependencies: [
+          mockServices.rootConfig.factory({
+            data: {
+              app: { baseUrl: 'http://localhost' },
+              backend: {
+                baseUrl: 'http://localhost',
+                listen: { host: '', port: 0 },
+              },
+            },
+          }),
+          createServiceFactory({
+            service: coreServices.rootLifecycle,
+            deps: {},
+            factory() {
+              return lifecycleMock;
+            },
+          }),
+        ],
+      },
+    );
+
+    await tester.getSubject();
+
+    // Trigger creation of the http service, accessing the app instance through the configure callback
+    const lifecycle = await tester.getService(coreServices.rootLifecycle);
+
+    await (lifecycle as any).startup(); // Trigger startup by calling the private startup method
+
+    await request(app!).get('/test').expect(200, {
+      status: 'ok',
+    });
+
+    const beforeShutdownPromise = (lifecycle as any)
+      .beforeShutdown()
+      .then(() => {
+        return (lifecycle as any).shutdown();
+      });
+
+    await request(app!).get('/test').expect(200, {
+      status: 'ok',
+    });
+
+    jest.advanceTimersByTime(30000);
+
+    await request(app!).get('/test').expect(500, {});
+
+    return await expect(beforeShutdownPromise).resolves.toBeUndefined();
   });
 });

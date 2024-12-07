@@ -3651,7 +3651,6 @@ __metadata:
     pg-format: ^1.0.4
     raw-body: ^2.4.1
     selfsigned: ^2.0.0
-    stoppable: ^1.1.0
     supertest: ^7.0.0
     tar: ^6.1.12
     triple-beam: ^1.4.1
