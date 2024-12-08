@@ -30,7 +30,10 @@ import {
   some_endpoint,
   unhealthy_endpoint,
   userID,
+  retry_endpoint_recover,
+  retry_endpoint_forever,
 } from './mocks';
+import { maxRetry } from '../lib/client';
 
 const httpHandlers = [
   /**
@@ -132,6 +135,32 @@ const httpHandlers = [
   rest.get(`${apiBaseUrl}${some_endpoint}`, (req, res, ctx) => {
     return res(ctx.json([{ endpoint: req.url.toString() }]));
   }),
+
+  rest.get(`${apiBaseUrl}${retry_endpoint_forever}`, (_, res, ctx) => {
+    return res(
+      ctx.status(429),
+      ctx.set('Retry-After', '1'),
+      ctx.json({ message: 'Too Many Requests' }),
+    );
+  }),
+
+  (() => {
+    let count = 0;
+    return rest.get(
+      `${apiBaseUrl}${retry_endpoint_recover}`,
+      (req, res, ctx) => {
+        if (count < maxRetry) {
+          count++;
+          return res(
+            ctx.status(429),
+            ctx.set('Retry-After', '1'),
+            ctx.json({ message: 'Too Many Requests' }),
+          );
+        }
+        return res(ctx.json([{ endpoint: req.url.toString() }]));
+      },
+    );
+  })(),
 ];
 
 // dynamic handlers
