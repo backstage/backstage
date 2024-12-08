@@ -904,7 +904,7 @@ describe('createPermissionIntegrationRouter', () => {
     const response = await request(
       express().use(
         createPermissionIntegrationRouter({
-          permissions: [aPermission],
+          permissions: [aPermission, testPermission],
           resources: [
             {
               resourceType: 'test-resource',
