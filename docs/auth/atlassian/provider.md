@@ -28,7 +28,7 @@ Name your integration and click on the `Create` button.
 
 Settings for local development:
 
-- Callback URL: `http://localhost:7007/api/auth/atlassian`
+- Callback URL: `http://localhost:7007/api/auth/atlassian/handler/frame`
 - Use rotating refresh tokens
 - For permissions, you **must** enable `View user profile` for the currently
   logged-in user, under `User identity API`
@@ -46,18 +46,16 @@ auth:
       development:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
-        scope: ${AUTH_ATLASSIAN_SCOPES}
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/atlassian/provider#resolvers for more resolvers
             - resolver: usernameMatchingUserEntityName
 ```
 
-The Atlassian provider is a structure with three configuration keys:
+The Atlassian provider is a structure with two configuration keys:
 
 - `clientId`: The Key you generated in the developer console.
 - `clientSecret`: The Secret tied to the generated Key.
-- `scope`: List of scopes the app has permissions for, separated by spaces.
 
 **NOTE:** the scopes `offline_access`, `read:jira-work`, and `read:jira-user` are provided by default.
 
