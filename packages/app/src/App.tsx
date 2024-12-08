@@ -164,7 +164,10 @@ const routes = (
         />
       }
     />
-    <Route path="/docs" element={<TechDocsIndexPage />} />
+    <Route
+      path="/docs"
+      element={<TechDocsIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
+    />
     <Route
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
