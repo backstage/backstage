@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_21_57)">
+    <g clip-path="url(#clip1_21_57)" style="pointer-events: none;">
+      <circle cx="48" cy="48" r="48" fill="#009596"/>
+    </g>
+    <g style="" transform="matrix(1, 0, 0, 1, -1.193606, 2.705151)">
+      <circle cx="31.817" cy="46.689" r="16.045" stroke="white" stroke-width="3" style="fill: rgb(255, 255, 255);"/>
+      <path d="M 84.536 45.422 C 84.536 58.473 73.956 69.057 60.906 69.057 C 47.855 69.057 37.271 58.473 37.271 45.422 C 37.271 32.37 47.855 21.792 60.906 21.792 C 73.956 21.792 84.536 32.37 84.536 45.422 Z" stroke="white" stroke-width="3" style=""/>
+      <path style="stroke: rgb(255, 255, 255); fill: rgb(255, 255, 255); transform-origin: 57.739px 44.345px;" d="M 48.62 25.241 C 63.696 24.329 74.129 40.479 67.401 54.312 C 63.669 61.985 55.587 66.369 47.281 65.227"/>
+      <polygon style="fill: rgb(255, 255, 255); stroke: rgb(255, 255, 255);" points="47.436 25.227 40.924 35.156 44.259 63.09 52.519 62.586 49.342 24.554"/>
+    </g>
+  </g>
+  <defs>
+    <clipPath id="clip0_21_57">
+      <rect width="96" height="96" fill="white"/>
+    </clipPath>
+    <clipPath id="clip1_21_57">
+      <rect width="96" height="96" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>

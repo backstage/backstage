@@ -4,7 +4,7 @@ author: Red Hat
 authorUrl: https://redhat.com
 category: Kubernetes
 description: Visualize the deployment status and related resources of your applications deployed on any Kubernetes cluster.
-documentation: https://janus-idp.io/plugins/topology
-iconUrl: https://janus-idp.io/images/plugins/topology.svg
-npmPackageName: '@janus-idp/backstage-plugin-topology'
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/topology/plugins/topology/README.md
+iconUrl: /img/topology.svg
+npmPackageName: '@backstage-community/plugin-topology'
 addedDate: '2023-05-15'
