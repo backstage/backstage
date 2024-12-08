@@ -26,6 +26,7 @@ import {
   GithubMultiOrgEntityProvider,
   TeamTransformer,
   UserTransformer,
+  QueryOptions,
 } from '@backstage/plugin-catalog-backend-module-github';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
@@ -120,6 +121,8 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               teamTransformer,
               alwaysUseDefaultNamespace:
                 definitions.length === 1 && definition.orgs?.length === 1,
+              userQueryOptions: definition.userQueryOptions,
+              teamQueryOptions: definition.teamQueryOptions,
             }),
           );
         }
@@ -128,11 +131,21 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
   },
 });
 
+function readQueryOptionsFromConfig(config?: Config): QueryOptions | undefined {
+  if (!config) return undefined;
+  return {
+    pageSize: config.getOptionalNumber('pageSize'),
+    requestDelayMs: config.getOptionalNumber('requestDelayMs'),
+  };
+}
+
 function readDefinitionsFromConfig(rootConfig: Config): Array<{
   id: string;
   githubUrl: string;
   orgs?: string[];
   schedule: SchedulerServiceTaskScheduleDefinition;
+  userQueryOptions?: QueryOptions;
+  teamQueryOptions?: QueryOptions;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -150,6 +163,12 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     orgs: c.getOptionalStringArray('orgs'),
     schedule: readSchedulerServiceTaskScheduleDefinitionFromConfig(
       c.getConfig('schedule'),
+    ),
+    userQueryOptions: readQueryOptionsFromConfig(
+      c.getOptionalConfig('userQueryOptions'),
+    ),
+    teamQueryOptions: readQueryOptionsFromConfig(
+      c.getOptionalConfig('teamQueryOptions'),
     ),
   }));
 }

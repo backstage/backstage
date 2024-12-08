@@ -194,6 +194,103 @@ describe('github', () => {
     });
   });
 
+  describe('getOrganizationUsers using query options', () => {
+    const input: QueryResponse = {
+      organization: {
+        membersWithRole: {
+          pageInfo: { hasNextPage: false },
+          nodes: [
+            {
+              login: 'a',
+              name: 'b',
+              bio: 'c',
+              email: 'd',
+              avatarUrl: 'e',
+            },
+          ],
+        },
+      },
+    };
+
+    it('uses correct delay', async () => {
+      const pageOne: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: true },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+      const pageTwo: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a2',
+                name: 'b2',
+                bio: 'c2',
+                email: 'd2',
+                avatarUrl: 'e2',
+              },
+            ],
+          },
+        },
+      };
+      const start = Date.now();
+      let calls = 0;
+      server.use(
+        graphqlMsw.query('users', (_req, res, ctx) => {
+          if (calls === 0) {
+            calls += 1;
+            return res(ctx.data(pageOne));
+          }
+          return res(ctx.data(pageTwo));
+        }),
+      );
+      await getOrganizationUsers(graphql, 'a', 'token', undefined, {
+        pageSize: 1,
+        requestDelayMs: 1,
+      });
+      const end = Date.now();
+      expect(end - start).toBeLessThan(1000);
+    });
+
+    it('uses default page size', async () => {
+      server.use(
+        graphqlMsw.query('users', (req, res, ctx) => {
+          expect(req.variables).toEqual(
+            expect.objectContaining({ pageSize: 100 }),
+          );
+          return res(ctx.data(input));
+        }),
+      );
+      await getOrganizationUsers(graphql, 'a', 'token');
+    });
+
+    it('uses provided page size', async () => {
+      server.use(
+        graphqlMsw.query('users', (req, res, ctx) => {
+          expect(req.variables).toEqual(
+            expect.objectContaining({ pageSize: 1 }),
+          );
+          return res(ctx.data(input));
+        }),
+      );
+      await getOrganizationUsers(graphql, 'a', 'token', undefined, {
+        pageSize: 1,
+      });
+    });
+  });
+
   describe('getOrganizationTeams using default TeamTransformer', () => {
     let input: QueryResponse;
 
@@ -445,6 +542,135 @@ describe('github', () => {
 
       expect(teams.teams).toHaveLength(1);
       expect(teams).toEqual(output);
+    });
+  });
+
+  describe('getOrganizationTeams using query options', () => {
+    let input: QueryResponse;
+
+    beforeEach(() => {
+      input = {
+        organization: {
+          teams: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                slug: 'team',
+                combinedSlug: 'blah/team',
+                name: 'Team',
+                description: 'The one and only team',
+                avatarUrl: 'http://example.com/team.jpeg',
+                editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
+                parentTeam: {
+                  slug: 'parent',
+                  combinedSlug: '',
+                  members: [],
+                },
+                members: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [{ login: 'user' }],
+                },
+              },
+            ],
+          },
+        },
+      };
+    });
+
+    it('uses correct delay', async () => {
+      const pageOne: QueryResponse = {
+        organization: {
+          teams: {
+            pageInfo: { hasNextPage: true },
+            nodes: [
+              {
+                slug: 'team',
+                combinedSlug: 'blah/team',
+                name: 'Team',
+                description: 'The first team',
+                avatarUrl: 'http://example.com/team.jpeg',
+                editTeamUrl: 'http://example.com/orgs/blah/teams/team/edit',
+                parentTeam: {
+                  slug: 'parent',
+                  combinedSlug: '',
+                  members: [],
+                },
+                members: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [{ login: 'user' }],
+                },
+              },
+            ],
+          },
+        },
+      };
+      const pageTwo: QueryResponse = {
+        organization: {
+          teams: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                slug: 'team2',
+                combinedSlug: 'blah/team2',
+                name: 'Team2',
+                description: 'The second team',
+                avatarUrl: 'http://example.com/team2.jpeg',
+                editTeamUrl: 'http://example.com/orgs/blah/teams/team2/edit',
+                parentTeam: {
+                  slug: 'parent',
+                  combinedSlug: '',
+                  members: [],
+                },
+                members: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [{ login: 'user2' }],
+                },
+              },
+            ],
+          },
+        },
+      };
+      const start = Date.now();
+      let calls = 0;
+      server.use(
+        graphqlMsw.query('teams', (_req, res, ctx) => {
+          if (calls === 0) {
+            calls += 1;
+            return res(ctx.data(pageOne));
+          }
+          return res(ctx.data(pageTwo));
+        }),
+      );
+      await getOrganizationTeams(graphql, 'a', undefined, {
+        pageSize: 1,
+        requestDelayMs: 1,
+      });
+      const end = Date.now();
+      expect(end - start).toBeLessThan(1000);
+    });
+
+    it('uses default page size', async () => {
+      server.use(
+        graphqlMsw.query('teams', (req, res, ctx) => {
+          expect(req.variables).toEqual(
+            expect.objectContaining({ pageSize: 50 }),
+          );
+          return res(ctx.data(input));
+        }),
+      );
+      await getOrganizationTeams(graphql, 'a');
+    });
+
+    it('uses provided page size', async () => {
+      server.use(
+        graphqlMsw.query('teams', (req, res, ctx) => {
+          expect(req.variables).toEqual(
+            expect.objectContaining({ pageSize: 1 }),
+          );
+          return res(ctx.data(input));
+        }),
+      );
+      await getOrganizationTeams(graphql, 'a', undefined, { pageSize: 1 });
     });
   });
 
