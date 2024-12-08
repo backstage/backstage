@@ -24,8 +24,37 @@ export const kubernetesProxyPermission = createPermission({
   attributes: {},
 });
 
+/** This permission is used to check access to the /resources endpoints
+ * @public
+ */
+export const kubernetesResourcePermission = createPermission({
+  name: 'kubernetes.resource',
+  attributes: {},
+});
+
+/** This permission is used to check access to the /services endpoint
+ * @public
+ */
+export const kubernetesServicePermission = createPermission({
+  name: 'kubernetes.service',
+  attributes: {},
+});
+
+/** This permission is used to check access to the /clusters endpoint
+ * @public
+ */
+export const kubernetesClusterPermission = createPermission({
+  name: 'kubernetes.cluster',
+  attributes: {},
+});
+
 /**
  * List of all Kubernetes permissions.
  * @public
  */
-export const kubernetesPermissions = [kubernetesProxyPermission];
+export const kubernetesPermissions = [
+  kubernetesProxyPermission,
+  kubernetesResourcePermission,
+  kubernetesServicePermission,
+  kubernetesClusterPermission,
+];
