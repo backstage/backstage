@@ -186,8 +186,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  let title = '';
-  if (allKinds) {
+  let title = props.title;
+  if (!title && allKinds) {
     const currentKindValue = filters.kind?.value || '';
     const currentKindLabel = allKinds[currentKindValue] || currentKindValue;
     const currentType = filters.type?.value || '';
