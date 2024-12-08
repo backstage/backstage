@@ -31,13 +31,13 @@ import {
  *
  * @public
  */
-export interface EntityTableProps<T extends Entity> {
+export interface EntityTableProps<T extends Entity, RowData extends object> {
   title: string;
   variant?: InfoCardVariants;
   entities: T[];
   emptyContent?: ReactNode;
   columns: TableColumn<T>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<RowData>;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -54,7 +54,9 @@ const useStyles = makeStyles(theme => ({
  *
  * @public
  */
-export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
+export const EntityTable = <T extends Entity>(
+  props: EntityTableProps<T, T>,
+) => {
   const {
     entities,
     title,

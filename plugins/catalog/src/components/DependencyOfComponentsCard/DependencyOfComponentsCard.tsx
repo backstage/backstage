@@ -38,7 +38,7 @@ export interface DependencyOfComponentsCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ComponentEntity>;
 }
 
 export function DependencyOfComponentsCard(

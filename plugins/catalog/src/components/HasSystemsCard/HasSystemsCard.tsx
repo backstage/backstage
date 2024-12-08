@@ -35,7 +35,7 @@ export interface HasSystemsCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<SystemEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<SystemEntity>;
 }
 
 export function HasSystemsCard(props: HasSystemsCardProps) {
