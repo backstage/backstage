@@ -63,7 +63,87 @@ There are many options that can be set using `tableOptions`, the full list of se
 
 ## Customize Columns
 
-By default the columns you see in the `CatalogIndexPage` were selected to be a good starting point for most but there may be reasons that you would like to customize these with more or less columns. One primary use case for this customization is if you added a custom Kind. Support for this was added in v1.23.0 of Backstage, make sure you are on that version or newer to use this feature. Here's an example of how to make this customization:
+The columns you see in the `CatalogIndexPage` were selected to be a good starting point for most, but there may be cases where you would like to add or remove columns from existing or custom Kinds.
+
+### Adding a column to an existing Kind
+
+Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
+
+```tsx title="packages/app/src/App.tsx"
+{
+  /* highlight-add-start */
+}
+const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
+  if (entityListContext.filters.kind?.value === 'user') {
+    return [
+      // Render existing columns
+      ...CatalogTable.defaultColumnsFunc(entityListContext),
+      // Add new columns here
+    ];
+  }
+
+  return CatalogTable.defaultColumnsFunc(entityListContext);
+};
+{
+  /* highlight-add-end */
+}
+```
+
+Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
+
+```tsx title="packages/app/src/App.tsx"
+{/* highlight-add-start */}
+const createUserEmailColumn = (): TableColumn<CatalogTableRow> => ({
+  title: 'User Email',
+  field: 'entity.spec.profile.email',
+  render: ({ entity }) => (
+    <OverflowTooltip
+      text={entity.spec?.profile?.['email'] || 'N/A'}
+      placement="bottom-start"
+    />
+  ),
+});
+{/* highlight-add-end */}
+
+const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
+  if (entityListContext.filters.kind?.value === 'user') {
+    return [
+    return [
+      // Render existing columns
+      ...CatalogTable.defaultColumnsFunc(entityListContext),
+      // Add new columns here
+      {/* highlight-add-next-line */}
+      createUserEmailColumn(),
+    ];
+  }
+
+  return CatalogTable.defaultColumnsFunc(entityListContext);
+};
+```
+
+Finally, we can pass the `myColumnsFunc` to the `CatalogIndexPage` component:
+
+```tsx title="packages/app/src/App.tsx"
+const routes = (
+  <FlatRoutes>
+    <Route
+      path="/catalog"
+      element={
+        <CatalogIndexPage
+          pagination={{ mode: 'offset', limit: 20 }}
+          {/* highlight-add-next-line */}
+          columns={myColumnsFunc}
+        />
+      }
+    />
+    {/* Other routes */}
+  </FlatRoutes>
+)
+```
+
+### Adding columns to a custom or specific Kind
+
+Another use case for customization is when adding a custom `Kind`. This feature is available in Backstage >= `v1.23.0`. For example:
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -97,7 +177,7 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 
 :::note Note
 
-The above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+In the examples above, the contents of the files have been shortened for simplicity.
 
 :::
 
@@ -168,15 +248,15 @@ const customActions: TableProps<CatalogTableRow>['actions'] = [
 
 :::note Note
 
-The above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+In the example above, the contents of `App.tsx` has been shortened for simplicity.
 
 :::
 
-The above customization will override the existing actions. Currently the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
+The above customization will override the existing actions. Currently, the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
 
 ## Customize Filters
 
-There are three options you have for filters: adjusting the existing filters with props, adding or removing the default filters, or creating a brand new custom filter. The following sections cover these cases
+There are various ways to customize filters: adjusting the existing filters with props, adding or removing default filters, creating brand-new custom filters, etc. The following sections cover these cases:
 
 ### Default Filter Props
 
@@ -205,7 +285,7 @@ import { DefaultFilters } from '@backstage/plugin-catalog-react';
 
 ### Removing Default Filters
 
-You may have reasons not use the Lifecycle, Tag, and Processing Status filters, here's an example of how you would remove them:
+If you have reasons not to use the Lifecycle, Tag, and Processing Status filters, here's an example of how to remove them:
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -236,7 +316,7 @@ import {
 
 ### Custom Filters
 
-You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
+You can add custom filters. For example, suppose that we want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
 
 First we need to create a new filter that implements the `EntityFilter` interface:
 
