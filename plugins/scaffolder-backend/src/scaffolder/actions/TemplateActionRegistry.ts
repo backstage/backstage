@@ -37,7 +37,7 @@ export class TemplateActionRegistry {
     const action = this.actions.get(actionId);
     if (!action) {
       throw new NotFoundError(
-        `Template action with ID '${actionId}' is not registered.`,
+        `Template action with ID '${actionId}' is not registered. See https://backstage.io/docs/features/software-templates/builtin-actions/ on how to add a new action module.`,
       );
     }
     return action;
