@@ -165,6 +165,15 @@ export class GitLabClient {
     return this.pagedRequest(`/groups`, options);
   }
 
+  // https://docs.gitlab.com/ee/api/groups.html#list-group-details
+  // id can either be group id or encoded full path
+  async getGroupByPath(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    return this.nonPagedRequest(`/groups/${groupPath}`, options);
+  }
+
   async listDescendantGroups(
     groupPath: string,
   ): Promise<PagedResponse<GitLabGroup>> {
