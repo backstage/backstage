@@ -16,9 +16,14 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { GcpIapResult } from './types';
+
+export type GCPIapSignInResolver = GetSignInResolver<
+  typeof gcpIapSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the Google auth provider.

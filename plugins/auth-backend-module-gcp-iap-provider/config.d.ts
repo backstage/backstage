@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
+
+import type { GCPIapSignInResolver } from './src/resolvers';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -33,15 +37,7 @@ export interface Config {
         jwtHeader?: string;
 
         signIn?: {
-          resolvers: Array<
-            | { resolver: 'emailMatchingUserEntityAnnotation' }
-            | { resolver: 'idMatchingUserEntityAnnotation' }
-            | {
-                resolver: 'emailLocalPartMatchingUserEntityName';
-                allowedDomains?: string[];
-              }
-            | { resolver: 'emailMatchingUserEntityProfileEmail' }
-          >;
+          resolvers: Array<GCPIapSignInResolver | CommonSignInResolver>;
         };
       };
     };
