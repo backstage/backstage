@@ -49,13 +49,11 @@ import {
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
-import {
-  EntitiesSearchFilter,
-  EntityFilter,
-} from '@backstage/plugin-catalog-node';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
 
-const DEFAULT_LIMIT = 20;
+const DEFAULT_LIMIT = 200;
 
 function parsePagination(input?: EntityPagination): EntityPagination {
   if (!input) {
@@ -102,84 +100,6 @@ function stringifyPagination(
   return base64;
 }
 
-function addCondition(
-  queryBuilder: Knex.QueryBuilder,
-  db: Knex,
-  filter: EntitiesSearchFilter,
-  negate: boolean = false,
-  entityIdField = 'entity_id',
-): void {
-  const key = filter.key.toLowerCase();
-  const values = filter.values?.map(v => v.toLowerCase());
-
-  // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
-  // make a lot of sense. However, it had abysmal performance on sqlite
-  // when datasets grew large, so we're using IN instead.
-  const matchQuery = db<DbSearchRow>('search')
-    .select('search.entity_id')
-    .where({ key })
-    .andWhere(function keyFilter() {
-      if (values?.length === 1) {
-        this.where({ value: values.at(0) });
-      } else if (values) {
-        this.andWhere('value', 'in', values);
-      }
-    });
-  queryBuilder.andWhere(entityIdField, negate ? 'not in' : 'in', matchQuery);
-}
-
-function isEntitiesSearchFilter(
-  filter: EntitiesSearchFilter | EntityFilter,
-): filter is EntitiesSearchFilter {
-  return filter.hasOwnProperty('key');
-}
-
-function isOrEntityFilter(
-  filter: { anyOf: EntityFilter[] } | EntityFilter,
-): filter is { anyOf: EntityFilter[] } {
-  return filter.hasOwnProperty('anyOf');
-}
-
-function isNegationEntityFilter(
-  filter: { not: EntityFilter } | EntityFilter,
-): filter is { not: EntityFilter } {
-  return filter.hasOwnProperty('not');
-}
-
-function parseFilter(
-  filter: EntityFilter,
-  query: Knex.QueryBuilder,
-  db: Knex,
-  negate: boolean = false,
-  entityIdField = 'entity_id',
-): Knex.QueryBuilder {
-  if (isNegationEntityFilter(filter)) {
-    return parseFilter(filter.not, query, db, !negate, entityIdField);
-  }
-
-  if (isEntitiesSearchFilter(filter)) {
-    return query.andWhere(function filterFunction() {
-      addCondition(this, db, filter, negate, entityIdField);
-    });
-  }
-
-  return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
-    if (isOrEntityFilter(filter)) {
-      for (const subFilter of filter.anyOf ?? []) {
-        this.orWhere(subQuery =>
-          parseFilter(subFilter, subQuery, db, false, entityIdField),
-        );
-      }
-    } else {
-      for (const subFilter of filter.allOf ?? []) {
-        this.andWhere(subQuery =>
-          parseFilter(subFilter, subQuery, db, false, entityIdField),
-        );
-      }
-    }
-  });
-}
-
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
@@ -197,6 +117,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
+    const { limit, offset } = parsePagination(request?.pagination);
 
     let entitiesQuery =
       db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
@@ -216,13 +137,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
 
     if (request?.filter) {
-      entitiesQuery = parseFilter(
-        request.filter,
-        entitiesQuery,
-        db,
-        false,
-        'final_entities.entity_id',
-      );
+      entitiesQuery = applyEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: entitiesQuery,
+        onEntityIdField: 'final_entities.entity_id',
+        knex: db,
+        strategy: limit !== undefined && limit <= 500 ? 'join' : 'in',
+      });
     }
 
     request?.order?.forEach(({ order }, index) => {
@@ -248,7 +169,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
     }
 
-    const { limit, offset } = parsePagination(request?.pagination);
     if (limit !== undefined) {
       entitiesQuery = entitiesQuery.limit(limit + 1);
     }
@@ -299,13 +219,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         .whereIn('final_entities.entity_ref', chunk);
 
       if (request?.filter) {
-        query = parseFilter(
-          request.filter,
-          query,
-          this.database,
-          false,
-          'final_entities.entity_id',
-        );
+        query = applyEntityFilterToQuery({
+          filter: request.filter,
+          targetQuery: query,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: this.database,
+        });
       }
 
       for (const row of await query) {
@@ -325,8 +244,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async queryEntities(
     request: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
-    const db = this.database;
-
     const limit = request.limit ?? DEFAULT_LIMIT;
 
     const cursor: Omit<Cursor, 'orderFieldValues'> & {
@@ -354,7 +271,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     // The first part of the query builder is a subquery that applies all of the
     // filtering.
-    const dbQuery = db.with(
+    const dbQuery = this.database.with(
       'filtered',
       ['entity_id', 'final_entity', ...(sortField ? ['value'] : [])],
       inner => {
@@ -383,13 +300,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
         // Add regular filters, if given
         if (cursor.filter) {
-          parseFilter(
-            cursor.filter,
-            inner,
-            db,
-            false,
-            'final_entities.entity_id',
-          );
+          applyEntityFilterToQuery({
+            filter: cursor.filter,
+            targetQuery: inner,
+            onEntityIdField: 'final_entities.entity_id',
+            knex: this.database,
+            strategy: limit <= 500 ? 'join' : 'in',
+          });
         }
 
         // Add full text search filters, if given
@@ -406,20 +323,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             // If there is one item, apply the like query to the top level query which is already
             //   filtered based on the singular sortField.
             inner.andWhereRaw(
-              'value like ?',
+              'search.value like ?',
               `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
             );
           } else {
-            const matchQuery = db<DbSearchRow>('search')
-              .select('entity_id')
+            const matchQuery = this.database<DbSearchRow>('search')
+              .select('search.entity_id')
               // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
               .whereIn(
-                'key',
+                'search.key',
                 textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
               )
               .andWhere(function keyFilter() {
                 this.andWhereRaw(
-                  'value like ?',
+                  'search.value like ?',
                   `%${normalizedFullTextFilterTerm.toLocaleLowerCase(
                     'en-US',
                   )}%`,
@@ -457,13 +374,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         const [first, second] = cursor.orderFieldValues;
         dbQuery.andWhere(function nested() {
           this.where(
-            'value',
+            'filtered.value',
             isFetchingBackwards !== isOrderingDescending ? '<' : '>',
             first,
           )
-            .orWhere('value', '=', first)
+            .orWhere('filtered.value', '=', first)
             .andWhere(
-              'entity_id',
+              'filtered.entity_id',
               isFetchingBackwards !== isOrderingDescending ? '<' : '>',
               second,
             );
@@ -480,20 +397,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     if (isFetchingBackwards) {
       order = invertOrder(order);
     }
-    if (db.client.config.client === 'pg') {
+    if (this.database.client.config.client === 'pg') {
       // pg correctly orders by the column value and handling nulls in one go
       dbQuery.orderBy([
         ...(sortField
           ? [
               {
-                column: 'value',
+                column: 'filtered.value',
                 order,
                 nulls: 'last',
               },
             ]
           : []),
         {
-          column: 'entity_id',
+          column: 'filtered.entity_id',
           order,
         },
       ]);
@@ -505,18 +422,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ...(sortField
           ? [
               {
-                column: 'value',
+                column: 'filtered.value',
                 order: undefined,
                 nulls: 'last',
               },
               {
-                column: 'value',
+                column: 'filtered.value',
                 order,
               },
             ]
           : []),
         {
-          column: 'entity_id',
+          column: 'filtered.entity_id',
           order,
         },
       ]);
@@ -768,13 +685,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .groupBy(['search.key', 'search.original_value']);
 
     if (request.filter) {
-      parseFilter(
-        request.filter,
-        query,
-        this.database,
-        false,
-        'search.entity_id',
-      );
+      applyEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: query,
+        onEntityIdField: 'search.entity_id',
+        knex: this.database,
+      });
     }
 
     const rows = await query;
