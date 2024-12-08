@@ -57,7 +57,10 @@ export class AwsS3UrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -230,7 +233,10 @@ export class FetchUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -265,7 +271,10 @@ export class GerritUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -293,7 +302,10 @@ export class GiteaUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -384,7 +396,10 @@ export class HarnessUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
