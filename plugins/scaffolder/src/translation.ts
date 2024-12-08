@@ -192,6 +192,52 @@ export const scaffolderTranslationRef = createTranslationRef({
         emptyText: 'There are no spec parameters in the template to preview.',
       },
     },
+    renderSchema: {
+      tableCell: {
+        name: 'Name',
+        title: 'Title',
+        description: 'Description',
+        type: 'Type',
+      },
+      undefined: 'No schema defined',
+    },
+    templateExtensions: {
+      title: 'Template extensions',
+      pageTitle: 'Template extensions',
+      subtitle: 'This is the collection of available template extensions',
+      content: {
+        emptyState: {
+          title: 'No information to display',
+          description:
+            'There are no template extensions available or there was an issue communicating with the backend.',
+        },
+        searchFieldPlaceholder: 'Search for an extension',
+        filters: {
+          title: 'Filters',
+          notAvailable: 'There are no template filters defined.',
+          metadataAbsent: 'Filter metadata unavailable',
+          schema: {
+            input: 'Input',
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        functions: {
+          title: 'Functions',
+          notAvailable: 'There are no global template functions defined.',
+          schema: {
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        values: {
+          title: 'Values',
+          notAvailable: 'There are no global template values defined.',
+        },
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
     },
@@ -312,6 +358,8 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateEditorToolbar: {
       customFieldExplorerTooltip: 'Custom Fields Explorer',
       installedActionsDocumentationTooltip: 'Installed Actions Documentation',
+      templateExtensionsDocumentationTooltip:
+        'Template Extensions Documentation',
       addToCatalogButton: 'Publish',
       addToCatalogDialogTitle: 'Publish changes',
       addToCatalogDialogContent: {
