@@ -6,10 +6,28 @@
 /// <reference types="node" />
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+
+// @alpha (undocumented)
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;
 
 // @alpha
 export type AutocompleteHandler = ({
@@ -26,6 +44,21 @@ export type AutocompleteHandler = ({
     id: string;
   }[];
 }>;
+
+// @alpha (undocumented)
+export function isActionPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRule,
+): permissionRule is ActionPermissionRuleInput;
+
+// @alpha (undocumented)
+export function isTemplateEntityPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRule,
+): permissionRule is TemplateEntityPermissionRuleInput;
+
+// @alpha (undocumented)
+export function isTemplatePermissionRuleInput(
+  permissionRule: ScaffolderPermissionRule,
+): permissionRule is TemplatePermissionRuleInput;
 
 // @alpha
 export const restoreWorkspace: (opts: {
@@ -56,6 +89,23 @@ export interface ScaffolderAutocompleteExtensionPoint {
 
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
+
+// @alpha (undocumented)
+export type ScaffolderPermissionRule<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> =
+  | TemplateEntityPermissionRuleInput<TParams>
+  | TemplatePermissionRuleInput<TParams>
+  | ActionPermissionRuleInput<TParams>;
+
+// @alpha
+export interface ScaffolderPermissionsExtensionPoint {
+  // (undocumented)
+  addPermissionRule(...rules: ScaffolderPermissionRule[]): void;
+}
+
+// @alpha
+export const scaffolderPermissionsExtensionPoint: ExtensionPoint<ScaffolderPermissionsExtensionPoint>;
 
 // @alpha
 export interface ScaffolderTaskBrokerExtensionPoint {
@@ -90,6 +140,26 @@ export const scaffolderWorkspaceProviderExtensionPoint: ExtensionPoint<Scaffolde
 export const serializeWorkspace: (opts: { path: string }) => Promise<{
   contents: Buffer;
 }>;
+
+// @alpha (undocumented)
+export type TemplateEntityPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  TParams
+>;
+
+// @alpha (undocumented)
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 
 // @alpha
 export interface WorkspaceProvider {

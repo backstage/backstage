@@ -27,25 +27,32 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import {
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
+  isTemplateEntityV1beta3,
   TaskSpec,
-  TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
-  TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
+  scaffolderTemplateEntityPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateExecutePermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -76,13 +83,10 @@ import {
   parseNumberParam,
   parseStringsParam,
 } from './helpers';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
-  PermissionRule,
 } from '@backstage/plugin-permission-node';
-import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 import { Duration } from 'luxon';
 import {
   AuthService,
@@ -103,48 +107,25 @@ import {
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 import {
+  ActionPermissionRuleInput,
   AutocompleteHandler,
+  isActionPermissionRuleInput,
+  isTemplateEntityPermissionRuleInput,
+  isTemplatePermissionRuleInput,
+  ScaffolderPermissionRule,
+  TemplateEntityPermissionRuleInput,
+  TemplatePermissionRuleInput,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { EventsService } from '@backstage/plugin-events-node';
-
-/**
- *
- * @public
- */
-export type TemplatePermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TParams
->;
-function isTemplatePermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
-): permissionRule is TemplatePermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
-}
-
-/**
- *
- * @public
- */
-export type ActionPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  TParams
->;
-function isActionPermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
-): permissionRule is ActionPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
-}
+import { keyBy } from 'lodash';
+import {
+  scaffolderActionRules,
+  scaffolderTemplateEntityRules,
+  scaffolderTemplateRules,
+} from '../permissions';
 
 /**
  * RouterOptions
@@ -176,9 +157,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
+  permissionRules?: ScaffolderPermissionRule[];
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
@@ -416,6 +395,8 @@ export async function createRouter(
     permissions,
   });
 
+  const templateEntityRules: TemplateEntityPermissionRuleInput[] =
+    Object.values(scaffolderTemplateEntityRules);
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
     scaffolderTemplateRules,
   );
@@ -424,16 +405,60 @@ export async function createRouter(
   );
 
   if (permissionRules) {
+    templateEntityRules.push(
+      ...permissionRules.filter(isTemplateEntityPermissionRuleInput),
+    );
     templateRules.push(
       ...permissionRules.filter(isTemplatePermissionRuleInput),
     );
     actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
   }
 
-  const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
+  const isEntityAuthorized = createConditionAuthorizer(
+    Object.values(templateEntityRules),
+  );
+  const isParamAuthorized = createConditionAuthorizer(
+    Object.values(templateRules),
+  );
+  const isStepAuthorized = createConditionAuthorizer([
+    ...Object.values(templateRules), // Template rules support both steps and parameters
+    ...Object.values(actionRules),
+  ]);
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resources: [
+      {
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+        permissions: scaffolderTemplateEntityPermissions,
+        rules: templateEntityRules,
+        getResources: async (
+          resourceRefs: string[],
+        ): Promise<TemplateEntityV1beta3[]> => {
+          const credentials = await auth.getOwnServiceCredentials();
+
+          const { token } = await auth.getPluginRequestToken({
+            onBehalfOf: credentials,
+            targetPluginId: 'catalog',
+          });
+
+          const { items } = await catalogClient.getEntitiesByRefs(
+            { entityRefs: resourceRefs },
+            { token },
+          );
+
+          const templates = items.filter(
+            (item): item is TemplateEntityV1beta3 =>
+              !!item && isTemplateEntityV1beta3(item),
+          );
+
+          const templatesByRef = keyBy(templates, stringifyEntityRef);
+
+          return resourceRefs.map(
+            resourceRef =>
+              templatesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
+          );
+        },
+      },
       {
         resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
         permissions: scaffolderTemplatePermissions,
@@ -920,30 +945,35 @@ export async function createRouter(
       return template;
     }
 
-    const [parameterDecision, stepDecision] =
+    const [executeDecision, parameterDecision, stepDecision] =
       await permissions.authorizeConditional(
         [
+          { permission: templateExecutePermission },
           { permission: templateParameterReadPermission },
           { permission: templateStepReadPermission },
         ],
         { credentials },
       );
 
+    if (!isEntityAuthorized(executeDecision, template)) {
+      throw new NotAllowedError();
+    }
+
     // Authorize parameters
     if (Array.isArray(template.spec.parameters)) {
       template.spec.parameters = template.spec.parameters.filter(step =>
-        isAuthorized(parameterDecision, step),
+        isParamAuthorized(parameterDecision, step),
       );
     } else if (
       template.spec.parameters &&
-      !isAuthorized(parameterDecision, template.spec.parameters)
+      !isParamAuthorized(parameterDecision, template.spec.parameters)
     ) {
       template.spec.parameters = undefined;
     }
 
     // Authorize steps
     template.spec.steps = template.spec.steps.filter(step =>
-      isAuthorized(stepDecision, step),
+      isStepAuthorized(stepDecision, step),
     );
 
     return template;
