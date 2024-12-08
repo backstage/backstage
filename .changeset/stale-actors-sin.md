@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Pass title through to OffsetPaginatedCatalogTable and update title to use properly capitalized Kinds
+Update CatalogTable title to use properly capitalized Kind facets (eg 'Component' instead of 'component')
