@@ -301,11 +301,15 @@ indexBuilder.addCollator({
 });
 ```
 
-Note: if you are using the in-memory Lunr search engine, you probably want to
+:::note Note
+
+if you are using the in-memory Lunr search engine, you probably want to
 implement a non-distributed `SchedulerServiceTaskRunner` like the following to ensure consistency
 if you're running multiple search backend nodes (alternatively, you can configure
 the search plugin to use a non-distributed database such as
 [SQLite](../../tutorials/configuring-plugin-databases.md#postgresql-and-sqlite-3)):
+
+:::
 
 ```typescript
 import {
