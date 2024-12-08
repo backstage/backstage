@@ -18,7 +18,11 @@ import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { v4 as uuid } from 'uuid';
 import { StitchingStrategy } from '../../../stitching/types';
-import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import {
+  DbFinalEntitiesRow,
+  DbRefreshStateQueuesRow,
+  DbRefreshStateRow,
+} from '../../tables';
 
 /**
  * Marks a number of entities for stitching some time in the near
@@ -42,37 +46,35 @@ export async function markForStitching(options: {
     for (const chunk of entityRefs) {
       await knex
         .table<DbFinalEntitiesRow>('final_entities')
-        .update({
-          hash: 'force-stitching',
-        })
+        .update({ hash: 'force-stitching' })
+        .whereIn('entity_ref', chunk);
+      await knex
+        .table<DbRefreshStateRow>('refresh_state')
+        .update({ result_hash: 'force-stitching' })
+        .whereIn('entity_ref', chunk);
+      await knex
+        .table<DbRefreshStateQueuesRow>('refresh_state_queues')
+        .update({ next_update_at: knex.fn.now() })
         .whereIn(
           'entity_id',
           knex<DbRefreshStateRow>('refresh_state')
             .select('entity_id')
             .whereIn('entity_ref', chunk),
         );
-      await knex
-        .table<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'force-stitching',
-          next_update_at: knex.fn.now(),
-        })
-        .whereIn('entity_ref', chunk);
     }
 
     for (const chunk of entityIds) {
       await knex
         .table<DbFinalEntitiesRow>('final_entities')
-        .update({
-          hash: 'force-stitching',
-        })
+        .update({ hash: 'force-stitching' })
         .whereIn('entity_id', chunk);
       await knex
         .table<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'force-stitching',
-          next_update_at: knex.fn.now(),
-        })
+        .update({ result_hash: 'force-stitching' })
+        .whereIn('entity_id', chunk);
+      await knex
+        .table<DbRefreshStateQueuesRow>('refresh_state_queues')
+        .update({ next_update_at: knex.fn.now() })
         .whereIn('entity_id', chunk);
     }
   } else if (mode === 'deferred') {

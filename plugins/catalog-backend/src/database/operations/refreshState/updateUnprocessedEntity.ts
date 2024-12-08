@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbRefreshStateQueuesRow, DbRefreshStateRow } from '../../tables';
 
 /**
  * Attempts to update an existing refresh state row, returning true if it was
@@ -25,26 +25,23 @@ import { DbRefreshStateRow } from '../../tables';
  * Updating the entity will also cause it to be scheduled for immediate processing.
  */
 export async function updateUnprocessedEntity(options: {
-  tx: Knex | Knex.Transaction;
+  knex: Knex | Knex.Transaction;
   entity: Entity;
   hash: string;
   locationKey?: string;
 }): Promise<boolean> {
-  const { tx, entity, hash, locationKey } = options;
+  const { knex, entity, hash, locationKey } = options;
 
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
+  const configClient = knex.client.config.client;
 
-  const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
+  const query = knex<DbRefreshStateRow>('refresh_state')
     .update({
       unprocessed_entity: serializedEntity,
       unprocessed_hash: hash,
       location_key: locationKey,
-      last_discovery_at: tx.fn.now(),
-      // We only get to this point if a processed entity actually had any changes, or
-      // if an entity provider requested this mutation, meaning that we can safely
-      // bump the deferred entities to the front of the queue for immediate processing.
-      next_update_at: tx.fn.now(),
+      last_discovery_at: knex.fn.now(),
     })
     .where('entity_ref', entityRef)
     .andWhere(inner => {
@@ -56,5 +53,38 @@ export async function updateUnprocessedEntity(options: {
         .orWhereNull('location_key');
     });
 
-  return refreshResult === 1;
+  let entityId: string;
+  if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
+    const locateResult = await knex<DbRefreshStateRow>('refresh_state')
+      .select('entity_id')
+      .where('entity_ref', entityRef)
+      .first();
+    if (!locateResult) {
+      return false;
+    }
+    const refreshResult = await query;
+    if (refreshResult !== 1) {
+      return false;
+    }
+    entityId = locateResult.entity_id;
+  } else {
+    const refreshResult = await query.returning('entity_id');
+    if (refreshResult.length !== 1) {
+      return false;
+    }
+    entityId = refreshResult[0]?.entity_id;
+  }
+
+  // We only get to this point if a processed entity actually had any changes, or
+  // if an entity provider requested this mutation, meaning that we can safely
+  // bump the deferred entities to the front of the queue for immediate processing.
+  await knex<DbRefreshStateQueuesRow>('refresh_state_queues')
+    .insert({
+      entity_id: entityId,
+      next_update_at: knex.fn.now(),
+    })
+    .onConflict(['entity_id'])
+    .merge(['next_update_at']);
+
+  return true;
 }

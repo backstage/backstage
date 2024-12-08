@@ -59,7 +59,6 @@ describe('performStitching', () => {
             },
           }),
           errors: '[]',
-          next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
         },
       ]);

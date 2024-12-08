@@ -18,6 +18,7 @@ import { Knex } from 'knex';
 import lodash from 'lodash';
 import {
   DbFinalEntitiesRow,
+  DbRefreshStateQueuesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
 } from '../../tables';
@@ -252,16 +253,16 @@ async function markEntitiesAffectedByDeletionForStitching(options: {
   for (const ids of lodash.chunk(affectedIds, 1000)) {
     await knex
       .table<DbFinalEntitiesRow>('final_entities')
-      .update({
-        hash: 'force-stitching',
-      })
+      .update({ hash: 'force-stitching' })
       .whereIn('entity_id', ids);
     await knex
       .table<DbRefreshStateRow>('refresh_state')
-      .update({
-        result_hash: 'force-stitching',
-        next_update_at: knex.fn.now(),
-      })
+      .update({ result_hash: 'force-stitching' })
       .whereIn('entity_id', ids);
+    await knex
+      .table<DbRefreshStateQueuesRow>('refresh_state_queues')
+      .insert(ids.map(id => ({ entity_id: id, next_update_at: knex.fn.now() })))
+      .onConflict(['entity_id'])
+      .merge(['next_update_at']);
   }
 }
