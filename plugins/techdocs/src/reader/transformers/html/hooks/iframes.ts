@@ -38,6 +38,22 @@ const isSafe = (node: Element, hosts: string[]) => {
 };
 
 /**
+ * Checks whether a iframe is safe or not.
+ * @param node - is an iframe element.
+ * @param hosts - list of allowed hosts.
+ * @returns true when iframe is included in hosts.
+ */
+export const isHost = (node: Element, check: string) => {
+  const src = node.getAttribute('src') || '';
+  try {
+    const { host } = new URL(src);
+    return host.includes(check);
+  } catch {
+    return false;
+  }
+};
+
+/**
  * Returns a function that removes unsafe iframe nodes.
  * @param node - can be any element.
  * @param hosts - list of allowed hosts.
