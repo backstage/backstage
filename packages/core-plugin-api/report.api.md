@@ -516,11 +516,18 @@ export type IdentityApi = {
   getCredentials(): Promise<{
     token?: string;
   }>;
-  signOut(): Promise<void>;
+  signOut(): Promise<LogoutResponse> | Promise<void>;
 };
 
 // @public
 export const identityApiRef: ApiRef<IdentityApi>;
+
+// Warning: (ae-missing-release-tag) "LogoutResponse" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LogoutResponse = {
+  redirectUrl?: string;
+};
 
 // @public @deprecated
 export type MakeSubRouteRef<
@@ -687,7 +694,7 @@ export type RouteRef<Params extends AnyParams = any> = {
 // @public
 export type SessionApi = {
   signIn(): Promise<void>;
-  signOut(): Promise<void>;
+  signOut(): Promise<LogoutResponse> | Promise<void>;
   sessionState$(): Observable<SessionState>;
 };
 

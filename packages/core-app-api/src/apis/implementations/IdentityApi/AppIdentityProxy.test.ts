@@ -91,4 +91,22 @@ describe('AppIdentityProxy', () => {
     await proxy.signOut();
     expect(window.location.href).toBe('/foo');
   });
+
+  it('should navigate to redirect URL on sign out', async () => {
+    const proxy = new AppIdentityProxy();
+    const mockRedirectingIdentityApi = {
+      getBackstageIdentity: jest.fn(),
+      getProfileInfo: jest.fn(),
+      getCredentials: jest.fn(),
+      signOut: jest.fn().mockResolvedValue({ redirectUrl: '/bar' }),
+    };
+    proxy.setTarget(mockRedirectingIdentityApi, { signOutTargetUrl: '/foo' });
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {},
+    });
+
+    await proxy.signOut();
+    expect(window.location.href).toBe('/bar');
+  });
 });

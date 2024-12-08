@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiRef, createApiRef } from '../system';
-import { BackstageUserIdentity, ProfileInfo } from './auth';
+import { BackstageUserIdentity, LogoutResponse, ProfileInfo } from './auth';
 
 /**
  * The Identity API used to identify and get information about the signed in user.
@@ -43,7 +43,7 @@ export type IdentityApi = {
   /**
    * Sign out the current user
    */
-  signOut(): Promise<void>;
+  signOut(): Promise<LogoutResponse> | Promise<void>;
 };
 
 /**
