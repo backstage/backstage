@@ -396,13 +396,13 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
       const rootGroupSplit = this.config.group.split('/');
-      const rootGroup = this.config.restrictUsersToGroup
-        ? rootGroupSplit[rootGroupSplit.length - 1]
+      const groupPath = this.config.restrictUsersToGroup
+        ? this.config.group
         : rootGroupSplit[0];
       users = paginated<GitLabUser>(
         options =>
           this.gitLabClient.listSaaSUsers(
-            rootGroup,
+            groupPath,
             options,
             this.config.includeUsersWithoutSeat,
           ),
