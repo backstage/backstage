@@ -39063,9 +39063,9 @@ __metadata:
   linkType: hard
 
 "photoswipe@npm:^5.3.7":
-  version: 5.4.2
-  resolution: "photoswipe@npm:5.4.2"
-  checksum: 4d74b189ede377d17868cc3ebf066fb549642387b387dd922d7714d8cc0ede7e74f8313ded15def42c6ad3b15c6800e2ce92b4034cfc815655fa2bb6433037b4
+  version: 5.4.4
+  resolution: "photoswipe@npm:5.4.4"
+  checksum: 9e1ee1278d1472e390c486f6ef5d5e13a3e55f660fde15360ce266bd31dcdce8feb08d406f8ccc9c35277ddf67b6d5ca8f028977d02033261647c0a54e7a17ea
   languageName: node
   linkType: hard
 
