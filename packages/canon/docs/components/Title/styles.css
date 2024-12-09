@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { textStyles } from './text.css';
+.title {
+  font-family: 'Geist', sans-serif;
+  margin: 0;
+  font-weight: 500;
+  border: none;
 
-export const Text = ({
-  children,
-  style,
-}: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}) => {
-  return (
-    <div className={textStyles} style={style}>
-      {children}
-    </div>
-  );
-};
+  &.h1 {
+    font-size: 36px;
+    line-height: 44px;
+    margin-bottom: 8px;
+    margin-top: 0px;
+  }
+
+  &.h2 {
+    font-size: 24px;
+    line-height: 32px;
+    margin-bottom: 12px;
+    margin-top: 52px;
+  }
+
+  &.h3 {
+    font-size: 20px;
+    line-height: 28px;
+    margin-bottom: 12px;
+    margin-top: 40px;
+  }
+}

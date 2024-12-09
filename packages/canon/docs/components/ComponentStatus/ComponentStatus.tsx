@@ -15,18 +15,34 @@
  */
 
 import React from 'react';
-import { styles } from './columns.css';
 
-export const Columns = ({
-  children,
+export const ComponentStatus = ({
+  name,
+  status = 'notStarted',
   style,
+  link,
 }: {
-  children: React.ReactNode;
+  name: string;
+  status: 'notStarted' | 'inProgress' | 'alpha' | 'beta' | 'stable';
   style?: React.CSSProperties;
+  link?: string;
 }) => {
   return (
-    <div className={styles} style={style}>
-      {children}
+    <div className="component-status" style={style}>
+      {link ? (
+        <a href={link} className="title">
+          {name}
+        </a>
+      ) : (
+        <span className="title">{name}</span>
+      )}
+      <span className={`pill ${status}`}>
+        {status === 'notStarted' && 'Not Started'}
+        {status === 'inProgress' && 'In Progress'}
+        {status === 'alpha' && 'Alpha'}
+        {status === 'beta' && 'Beta'}
+        {status === 'stable' && 'Stable'}
+      </span>
     </div>
   );
 };

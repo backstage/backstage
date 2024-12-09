@@ -15,25 +15,17 @@
  */
 
 import React from 'react';
-import { titleStyles } from './title.css';
 
-export const Title = ({
+export const Columns = ({
   children,
   style,
-  type = 'h1',
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
-  type?: 'h1' | 'h2' | 'h3';
 }) => {
-  let Component = 'h1';
-  if (type === 'h1') Component = 'h1';
-  if (type === 'h2') Component = 'h2';
-  if (type === 'h3') Component = 'h3';
-
-  return React.createElement(Component, {
-    className: titleStyles({ type }),
-    style,
-    children,
-  });
+  return (
+    <div className="columns" style={style}>
+      {children}
+    </div>
+  );
 };

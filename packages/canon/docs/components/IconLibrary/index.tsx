@@ -17,7 +17,7 @@ import React from 'react';
 import { Icon } from '@backstage/canon';
 import type { IconNames } from '@backstage/canon';
 import { defaultIcons } from '../../../src/components/Icon/icons';
-import { Text } from '../Text';
+import { Text } from '../Text/Text';
 
 export const IconLibrary = () => {
   const icons = Object.keys(defaultIcons);

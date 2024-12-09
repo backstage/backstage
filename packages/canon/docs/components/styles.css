@@ -1,2 +1,7 @@
 @import './IconLibrary/styles.css';
 @import './Roadmap/styles.css';
+@import './Title/styles.css';
+@import './Text/styles.css';
+@import './Table/styles.css';
+@import './ComponentStatus/styles.css';
+@import './Columns/styles.css';

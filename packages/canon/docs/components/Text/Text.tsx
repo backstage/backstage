@@ -15,14 +15,17 @@
  */
 
 import React from 'react';
-import { chipStyles } from './chip.css';
 
-export const Chip = ({
+export const Text = ({
   children,
-  head = false,
+  style,
 }: {
   children: React.ReactNode;
-  head?: boolean;
+  style?: React.CSSProperties;
 }) => {
-  return <span className={chipStyles({ head })}>{children}</span>;
+  return (
+    <div className="text" style={style}>
+      {children}
+    </div>
+  );
 };

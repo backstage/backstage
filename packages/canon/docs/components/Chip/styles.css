@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-export * from './Chip/Chip';
-export * from './Table';
-export * from './Title/Title';
-export * from './Text/Text';
-export * from './Columns/Columns';
-export * from './ComponentStatus';
-export * from './LayoutComponents';
-export * from './Banner';
-export * from './IconLibrary';
-export * from './Roadmap';
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 0px 8px;
+  height: 24px;
+  margin-right: 4px;
+  background-color: #f0f0f0;
+  color: #5d5d5d;
+
+  &.head {
+    background-color: #eaf2fd;
+    color: #2563eb;
+  }
+}

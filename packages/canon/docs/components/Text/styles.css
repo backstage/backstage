@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-export * from './Chip/Chip';
-export * from './Table';
-export * from './Title/Title';
-export * from './Text/Text';
-export * from './Columns/Columns';
-export * from './ComponentStatus';
-export * from './LayoutComponents';
-export * from './Banner';
-export * from './IconLibrary';
-export * from './Roadmap';
+.text {
+  font-family: 'Geist', sans-serif;
+  font-size: 16px;
+  line-height: 28px;
+  margin: 0;
+  font-weight: 300;
+  margin-bottom: 16px;
+
+  & p {
+    font-family: 'Geist', sans-serif;
+    font-size: 16px;
+    line-height: 28px;
+    margin: 0;
+    font-weight: 300;
+  }
+}

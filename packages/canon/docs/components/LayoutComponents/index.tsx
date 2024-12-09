@@ -15,13 +15,6 @@
  */
 
 import React from 'react';
-import {
-  container,
-  box,
-  content,
-  title,
-  description,
-} from './layout-components.css';
 import { BoxSvg } from './box';
 import { StackSvg } from './stack';
 import { GridSvg } from './grid';
@@ -30,41 +23,41 @@ import { ContainerSvg } from './container';
 
 export const LayoutComponents = () => {
   return (
-    <div className={container}>
-      <div className={box}>
-        <a className={content} href="/?path=/docs/components-box--docs">
+    <div className="layout-components">
+      <div className="box">
+        <a className="content" href="/?path=/docs/components-box--docs">
           <BoxSvg />
         </a>
-        <div className={title}>Box</div>
-        <div className={description}>The most basic layout component</div>
+        <div className="title">Box</div>
+        <div className="description">The most basic layout component</div>
       </div>
-      <div className={box}>
-        <a className={content} href="/?path=/docs/components-stack--docs">
+      <div className="box">
+        <a className="content" href="/?path=/docs/components-stack--docs">
           <StackSvg />
         </a>
-        <div className={title}>Stack</div>
-        <div className={description}>Arrange your components vertically</div>
+        <div className="title">Stack</div>
+        <div className="description">Arrange your components vertically</div>
       </div>
-      <div className={box}>
-        <a className={content} href="/?path=/docs/components-grid--docs">
+      <div className="box">
+        <a className="content" href="/?path=/docs/components-grid--docs">
           <GridSvg />
         </a>
-        <div className={title}>Grid</div>
-        <div className={description}>Arrange your components in a grid</div>
+        <div className="title">Grid</div>
+        <div className="description">Arrange your components in a grid</div>
       </div>
-      <div className={box}>
-        <a className={content} href="/?path=/docs/components-inline--docs">
+      <div className="box">
+        <a className="content" href="/?path=/docs/components-inline--docs">
           <InlineSvg />
         </a>
-        <div className={title}>Inline</div>
-        <div className={description}>Arrange your components in a row</div>
+        <div className="title">Inline</div>
+        <div className="description">Arrange your components in a row</div>
       </div>
-      <div className={box}>
-        <a className={content} href="/?path=/docs/components-container--docs">
+      <div className="box">
+        <a className="content" href="/?path=/docs/components-container--docs">
           <ContainerSvg />
         </a>
-        <div className={title}>Container</div>
-        <div className={description}>A container for your components</div>
+        <div className="title">Container</div>
+        <div className="description">A container for your components</div>
       </div>
     </div>
   );

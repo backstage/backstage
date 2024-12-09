@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-import { globalStyle, style } from '@vanilla-extract/css';
-
-export const textStyles = style({
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '16px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: 300,
-  marginBottom: '16px',
-});
-
-globalStyle(`${textStyles} p`, {
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '16px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: 300,
-});
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 20px;
+  column-gap: 80px;
+}
