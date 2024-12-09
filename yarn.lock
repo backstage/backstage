@@ -32777,12 +32777,12 @@ __metadata:
   linkType: hard
 
 "isolated-vm@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "isolated-vm@npm:5.0.1"
+  version: 5.0.2
+  resolution: "isolated-vm@npm:5.0.2"
   dependencies:
     node-gyp: latest
-    prebuild-install: ^7.1.1
-  checksum: 33ca559797d8c20571015733309b313f55df667cbaf17f7c6445b707fcdfd8bef6896264a30e48eaaa5635ab1d33e826b4aa95a1ba0bf8d26b045a1226956956
+    prebuild-install: ^7.1.2
+  checksum: 065f19ecb2e43393e6833321105bfa5911d82d0165e25beeb779bb6a262e1401dd387c900bcc3ad706eb7e73f5c5d57ca16ef7e2ee710e62e86b2a5ef39ce76b
   languageName: node
   linkType: hard
 
@@ -39846,9 +39846,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prebuild-install@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "prebuild-install@npm:7.1.1"
+"prebuild-install@npm:^7.1.1, prebuild-install@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "prebuild-install@npm:7.1.2"
   dependencies:
     detect-libc: ^2.0.0
     expand-template: ^2.0.3
@@ -39864,7 +39864,7 @@ __metadata:
     tunnel-agent: ^0.6.0
   bin:
     prebuild-install: bin.js
-  checksum: dbf96d0146b6b5827fc8f67f72074d2e19c69628b9a7a0a17d0fad1bf37e9f06922896972e074197fc00a52eae912993e6ef5a0d471652f561df5cb516f3f467
+  checksum: 543dadf8c60e004ae9529e6013ca0cbeac8ef38b5f5ba5518cb0b622fe7f8758b34e4b5cb1a791db3cdc9d2281766302df6088bd1a225f206925d6fee17d6c5c
   languageName: node
   linkType: hard
 
