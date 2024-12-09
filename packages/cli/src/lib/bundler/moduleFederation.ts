@@ -18,11 +18,16 @@ import chalk from 'chalk';
 import { ModuleFederationOptions } from './types';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
+import {
+  createTypeDistProject,
+  getEntryPointDefaultFeatureType,
+} from '../typeDistProject';
 
-export function getModuleFederationOptions(
+export async function getModuleFederationOptions(
   packageJson: BackstagePackageJson,
+  packageDir: string,
   isModuleFederationRemote?: boolean,
-): ModuleFederationOptions | undefined {
+): Promise<ModuleFederationOptions | undefined> {
   if (
     !isModuleFederationRemote &&
     !process.env.EXPERIMENTAL_MODULE_FEDERATION
@@ -36,6 +41,34 @@ export function getModuleFederationOptions(
     ),
   );
 
+  let exposes: ModuleFederationOptions['exposes'];
+  const packageRole = packageJson.backstage?.role;
+  if (isModuleFederationRemote && packageJson.exports && packageRole) {
+    const project = await createTypeDistProject();
+    exposes = Object.fromEntries(
+      readEntryPoints(packageJson)
+        .filter(ep => {
+          if (ep.mount === './package.json') {
+            return false;
+          }
+          if (ep.mount === '.') {
+            return true;
+          }
+          // Include this additional entry point in the exposed modules
+          // if it exports a feature as default export.
+          return (
+            getEntryPointDefaultFeatureType(
+              packageRole,
+              packageDir,
+              project,
+              ep.path,
+            ) !== null
+          );
+        })
+        .map(ep => [ep.mount, ep.path]),
+    );
+  }
+
   return {
     mode: isModuleFederationRemote ? 'remote' : 'host',
     // The default output mode requires the name to be a usable as a code
@@ -45,13 +78,6 @@ export function getModuleFederationOptions(
       .replaceAll('@', '')
       .replaceAll('/', '__')
       .replaceAll('-', '_'),
-    exposes:
-      isModuleFederationRemote && packageJson.exports
-        ? Object.fromEntries(
-            readEntryPoints(packageJson)
-              .filter(ep => ep.mount !== './package.json')
-              .map(ep => [ep.mount, ep.path]),
-          )
-        : undefined,
+    exposes,
   };
 }

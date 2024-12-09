@@ -39,8 +39,9 @@ export async function buildFrontend(options: BuildAppOptions) {
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
-    moduleFederation: getModuleFederationOptions(
+    moduleFederation: await getModuleFederationOptions(
       packageJson,
+      resolvePath(targetDir),
       options.isModuleFederationRemote,
     ),
     ...(await loadCliConfig({

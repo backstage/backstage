@@ -15,6 +15,7 @@
  */
 
 import { readJson } from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { getModuleFederationOptions, serveBundle } from '../../lib/bundler';
 import { paths } from '../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
@@ -42,8 +43,9 @@ export async function startFrontend(options: StartAppOptions) {
     verifyVersions: options.verifyVersions,
     skipOpenBrowser: options.skipOpenBrowser,
     linkedWorkspace: options.linkedWorkspace,
-    moduleFederation: getModuleFederationOptions(
+    moduleFederation: await getModuleFederationOptions(
       packageJson,
+      resolvePath(paths.targetDir),
       options.isModuleFederationRemote,
     ),
   });
