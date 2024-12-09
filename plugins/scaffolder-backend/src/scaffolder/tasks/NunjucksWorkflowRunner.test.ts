@@ -707,6 +707,34 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(output.foo).toEqual('BACKSTAGE');
     });
+
+    it('should include task ID in the templated context', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              values: {
+                taskId: '${{context.task.id}}',
+              },
+            },
+          },
+        ],
+        output: {},
+        parameters: {},
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { values: { taskId: 'test-workspace' } },
+        }),
+      );
+    });
   });
 
   describe('redactions', () => {
