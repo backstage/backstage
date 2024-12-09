@@ -336,8 +336,8 @@ __metadata:
   linkType: hard
 
 "@asyncapi/react-component@npm:^2.3.3":
-  version: 2.4.5
-  resolution: "@asyncapi/react-component@npm:2.4.5"
+  version: 2.5.0
+  resolution: "@asyncapi/react-component@npm:2.5.0"
   dependencies:
     "@asyncapi/avro-schema-parser": ^3.0.24
     "@asyncapi/openapi-schema-parser": ^3.0.24
@@ -347,11 +347,12 @@ __metadata:
     isomorphic-dompurify: ^2.14.0
     marked: ^4.0.14
     openapi-sampler: ^1.2.1
+    react-error-boundary: ^4.1.2
     use-resize-observer: ^9.1.0
   peerDependencies:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: 681eb6eb3fe2f9874725b368c298b7069373b7fb706437d15449ad747552ee515c0677ed7334c1826776b786fab57363817fd737d31f9f1d116fea3b58eef742
+  checksum: d975f6182370f43aef9697e3e5b02d93b8ac8b8fcc43a0f8c4315681fdc3b6819078aa6ff963af1193fe7719c2cee78d55a57f188eb472b3e77494a90dbc75e5
   languageName: node
   linkType: hard
 
@@ -40754,6 +40755,17 @@ __metadata:
   peerDependencies:
     react: ">=16.13.1"
   checksum: 0a05af404aa054c54d7bc65a1814810093bf136c3ad4b3576a51d8509ee8fc302adfb66405da501fc01e839db557dd0d994b487e651897e36293907bb61458cf
+  languageName: node
+  linkType: hard
+
+"react-error-boundary@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "react-error-boundary@npm:4.1.2"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+  peerDependencies:
+    react: ">=16.13.1"
+  checksum: afe692f1bbbfb5998b49e1001d7682a3cbfdc623dca1318b408e738606f3450d925c28fbbfa5dc84d2cf285d17c2e7f079d59386a27da354dea9c902a935149b
   languageName: node
   linkType: hard
 
