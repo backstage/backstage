@@ -77,10 +77,36 @@ export type DbRefreshStateRow = {
    */
   cache?: string;
   /**
-   * The next point in time that this entity is due for processing. This
-   * continuously gets moved forward as items are picked up for processing.
+   * The last time that this entity was emitted by somebody (the entity provider
+   * or a parent entity).
+   *
+   * @remarks
+   *
+   * Don't rely on this column more than at most as being loosely informative.
+   * Its semantics aren't fully settled yet.
    */
-  next_update_at: string | Date;
+  last_discovery_at: string | Date;
+  /**
+   * A JSON serialized array of errors (if any) encountered during processing.
+   */
+  errors?: string;
+  /**
+   * A conflict detection/resolution key for the entity.
+   *
+   * @remarks
+   *
+   * The exact value semantics differs, but may for example be a URL pointing to
+   * where the entity was sourced from. If a "competing" provider or parent
+   * entity tries to emit an entity that has the same entity ref but a different
+   * location key, a conflict is detected (you aren't allowed to "trample" over
+   * a previously existing entity).
+   *
+   * Some providers may choose to emit entities with no location key set at all.
+   * This is a signal that it's only loosely claimed, and that any other
+   * competing provider/parent is allowed to overwrite and claim it as theirs
+   * instead.
+   */
+  location_key?: string;
   /**
    * If a stitch has been requested, this is the point in time that that last
    * happened.
@@ -122,37 +148,25 @@ export type DbRefreshStateRow = {
    * timestamp) get reset.
    */
   next_stitch_ticket?: string | null;
+};
+
+/**
+ * Represents the refresh_state_queues table.
+ *
+ * @remarks
+ *
+ * This table is created as `UNLOGGED` when possible.
+ */
+export type DbRefreshStateQueuesRow = {
   /**
-   * The last time that this entity was emitted by somebody (the entity provider
-   * or a parent entity).
-   *
-   * @remarks
-   *
-   * Don't rely on this column more than at most as being loosely informative.
-   * Its semantics aren't fully settled yet.
+   * The unique ID of the entity.
    */
-  last_discovery_at: string | Date;
+  entity_id: string;
   /**
-   * A JSON serialized array of errors (if any) encountered during processing.
+   * The next point in time that this entity is due for processing. This
+   * continuously gets moved forward as items are picked up for processing.
    */
-  errors?: string;
-  /**
-   * A conflict detection/resolution key for the entity.
-   *
-   * @remarks
-   *
-   * The exact value semantics differs, but may for example be a URL pointing to
-   * where the entity was sourced from. If a "competing" provider or parent
-   * entity tries to emit an entity that has the same entity ref but a different
-   * location key, a conflict is detected (you aren't allowed to "trample" over
-   * a previously existing entity).
-   *
-   * Some providers may choose to emit entities with no location key set at all.
-   * This is a signal that it's only loosely claimed, and that any other
-   * competing provider/parent is allowed to overwrite and claim it as theirs
-   * instead.
-   */
-  location_key?: string;
+  next_update_at: string | Date;
 };
 
 export type DbRefreshKeysRow = {

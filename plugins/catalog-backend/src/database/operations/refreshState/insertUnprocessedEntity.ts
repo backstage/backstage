@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbRefreshStateQueuesRow, DbRefreshStateRow } from '../../tables';
 import { v4 as uuid } from 'uuid';
 import {
   LoggerService,
@@ -28,40 +28,48 @@ import {
  * true if successful and false if there was a conflict.
  */
 export async function insertUnprocessedEntity(options: {
-  tx: Knex | Knex.Transaction;
+  knex: Knex | Knex.Transaction;
   entity: Entity;
   hash: string;
   locationKey?: string;
   logger: LoggerService;
 }): Promise<boolean> {
-  const { tx, entity, hash, logger, locationKey } = options;
+  const { knex, entity, hash, logger, locationKey } = options;
 
+  const entityId = uuid();
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
   try {
-    let query = tx<DbRefreshStateRow>('refresh_state').insert({
-      entity_id: uuid(),
+    let query = knex<DbRefreshStateRow>('refresh_state').insert({
+      entity_id: entityId,
       entity_ref: entityRef,
       unprocessed_entity: serializedEntity,
       unprocessed_hash: hash,
       errors: '',
       location_key: locationKey,
-      next_update_at: tx.fn.now(),
-      last_discovery_at: tx.fn.now(),
+      last_discovery_at: knex.fn.now(),
     });
 
     // TODO(Rugvip): only tested towards MySQL, Postgres and SQLite.
     // We have to do this because the only way to detect if there was a conflict with
     // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
     // break the ongoing transaction.
-    if (tx.client.config.client.includes('pg')) {
+    if (knex.client.config.client.includes('pg')) {
       query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
     }
 
     // Postgres gives as an object with rowCount, SQLite gives us an array
     const result: { rowCount?: number; length?: number } = await query;
-    return result.rowCount === 1 || result.length === 1;
+    if (result.rowCount === 1 || result.length === 1) {
+      await knex<DbRefreshStateQueuesRow>('refresh_state_queues')
+        .insert({ entity_id: entityId, next_update_at: knex.fn.now() })
+        .onConflict(['entity_id'])
+        .merge(['next_update_at']);
+      return true;
+    }
+
+    return false;
   } catch (error) {
     // SQLite, or MySQL reached this rather than the rowCount check above
     if (!isDatabaseConflictError(error)) {

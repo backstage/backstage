@@ -59,7 +59,6 @@ describe('DefaultCatalogDatabase', () => {
           },
         }),
         errors: '[]',
-        next_update_at: '2019-01-01 23:00:00',
         last_discovery_at: '2021-04-01 13:37:00',
       };
     }
