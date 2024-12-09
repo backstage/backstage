@@ -54,32 +54,6 @@ export type BackstageTemplateStepperClassKey =
   | 'footer'
   | 'formWrapper';
 
-// @alpha
-export const CardHeader: (props: CardHeaderProps) => React_2.JSX.Element;
-
-// @alpha
-export interface CardHeaderProps {
-  // (undocumented)
-  template: TemplateEntityV1beta3;
-}
-
-// @alpha
-export const CardLink: ({
-  icon: Icon,
-  text,
-  url,
-}: CardLinkProps) => React_2.JSX.Element;
-
-// @alpha
-export interface CardLinkProps {
-  // (undocumented)
-  icon: IconComponent;
-  // (undocumented)
-  text: string;
-  // (undocumented)
-  url: string;
-}
-
 // @alpha (undocumented)
 export const createAsyncValidators: (
   rootSchema: JsonObject,
@@ -293,74 +267,15 @@ export interface TaskStepsProps {
 export const TemplateCard: (props: TemplateCardProps) => React_2.JSX.Element;
 
 // @alpha
-export const TemplateCardActions: ({
-  canCreateTask,
-  handleChoose,
-  ownedByRelations,
-}: TemplateCardActionsProps) => React_2.JSX.Element;
-
-// @alpha
-export interface TemplateCardActionsProps {
-  // (undocumented)
-  canCreateTask: boolean;
-  // (undocumented)
-  handleChoose: () => void;
-  // (undocumented)
-  ownedByRelations: any;
-}
-
-// @alpha (undocumented)
-export interface TemplateCardAdditionalLink {
-  // (undocumented)
-  icon: IconComponent;
-  // (undocumented)
-  text: string;
-  // (undocumented)
-  url: string;
-}
-
-// @alpha
-export const TemplateCardContent: ({
-  template,
-}: TemplateCardContentProps) => React_2.JSX.Element;
-
-// @alpha
-export interface TemplateCardContentProps {
-  // (undocumented)
-  template: TemplateEntityV1beta3;
-}
-
-// @alpha
-export const TemplateCardLinks: ({
-  template,
-  additionalLinks,
-}: TemplateCardLinksProps) => React_2.JSX.Element;
-
-// @alpha
-export interface TemplateCardLinksProps {
-  // (undocumented)
-  additionalLinks?: TemplateCardAdditionalLink[];
-  // (undocumented)
-  template: TemplateEntityV1beta3;
-}
-
-// @alpha
 export interface TemplateCardProps {
   // (undocumented)
-  additionalLinks?: TemplateCardAdditionalLink[];
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
   // (undocumented)
   onSelected?: (template: TemplateEntityV1beta3) => void;
-  // (undocumented)
-  template: TemplateEntityV1beta3;
-}
-
-// @alpha
-export const TemplateCardTags: ({
-  template,
-}: TemplateCardTagsProps) => React_2.JSX.Element;
-
-// @alpha
-export interface TemplateCardTagsProps {
   // (undocumented)
   template: TemplateEntityV1beta3;
 }

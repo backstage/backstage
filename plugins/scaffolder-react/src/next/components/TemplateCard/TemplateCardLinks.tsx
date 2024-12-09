@@ -34,10 +34,6 @@ export interface TemplateCardLinksProps {
   template: TemplateEntityV1beta3;
   additionalLinks?: TemplateCardAdditionalLink[];
 }
-/**
- * The `TemplateCardLinks` component that is rendered at the Links-section of the TemplateCard
- * @alpha
- */
 export const TemplateCardLinks = ({
   template,
   additionalLinks,

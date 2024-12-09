@@ -39,7 +39,6 @@ const useStyles = makeStyles<
 
 /**
  * Props for the CardHeader component
- * @alpha
  */
 export interface CardHeaderProps {
   template: TemplateEntityV1beta3;
@@ -47,7 +46,6 @@ export interface CardHeaderProps {
 
 /**
  * The Card Header with the background for the TemplateCard.
- * @alpha
  */
 export const CardHeader = (props: CardHeaderProps) => {
   const {

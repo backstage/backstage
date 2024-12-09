@@ -44,10 +44,6 @@ const useStyles = makeStyles(() => ({
 export interface TemplateCardContentProps {
   template: TemplateEntityV1beta3;
 }
-/**
- * The `TemplateCardContent` component that is rendered at the Content-section of the TemplateCard
- * @alpha
- */
 export const TemplateCardContent = ({ template }: TemplateCardContentProps) => {
   const styles = useStyles();
   return (

@@ -37,7 +37,6 @@ const useStyles = makeStyles<Theme>(() => ({
   actionContainer: { padding: '16px', flex: 1, alignItems: 'flex-end' },
 }));
 
-/** @alpha */
 export interface TemplateCardAdditionalLink {
   icon: IconComponent;
   text: string;

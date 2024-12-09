@@ -45,10 +45,6 @@ export interface TemplateCardActionsProps {
   canCreateTask: boolean;
   handleChoose: () => void;
 }
-/**
- * The `TemplateCardActions` component that is rendered at the Actions-section of the TemplateCard
- * @alpha
- */
 export const TemplateCardActions = ({
   canCreateTask,
   handleChoose,

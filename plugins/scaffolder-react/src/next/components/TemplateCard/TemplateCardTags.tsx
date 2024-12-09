@@ -27,10 +27,6 @@ import React from 'react';
 export interface TemplateCardTagsProps {
   template: TemplateEntityV1beta3;
 }
-/**
- * The `TemplateCardTags` component that is rendered at the Tags-section of the TemplateCard
- * @alpha
- */
 export const TemplateCardTags = ({ template }: TemplateCardTagsProps) => (
   <>
     <Grid item xs={12}>

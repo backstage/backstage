@@ -19,10 +19,6 @@ import { Link } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
-/**
- * Props for the Card Links component
- * @alpha
- */
 export interface CardLinkProps {
   icon: IconComponent;
   text: string;
@@ -36,10 +32,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-/**
- * The Card Links used for the TemplateCard.
- * @alpha
- */
 export const CardLink = ({ icon: Icon, text, url }: CardLinkProps) => {
   const styles = useStyles();
 
