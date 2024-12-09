@@ -21,6 +21,8 @@ import {
   LifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { HumanDuration } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
 import {
@@ -30,6 +32,26 @@ import {
 } from './http';
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 import { createHealthRouter } from './createHealthRouter';
+import { createLifecycleMiddleware } from './createLifecycleMiddleware';
+
+export function getConfigInHumanDuration(
+  config: RootConfigService,
+  key: string,
+): HumanDuration | undefined {
+  const value = config.getOptional(key);
+  if (typeof value === 'undefined') {
+    return undefined;
+  }
+  if (typeof value === 'number') {
+    return { milliseconds: value };
+  }
+  if (typeof value === 'string') {
+    return {
+      milliseconds: parseInt(value, 10),
+    };
+  }
+  return readDurationFromConfig(config, { key });
+}
 
 /**
  * @public
@@ -43,6 +65,7 @@ export interface RootHttpRouterConfigureContext {
   logger: LoggerService;
   lifecycle: LifecycleService;
   healthRouter: RequestHandler;
+  lifecycleMiddleware: RequestHandler;
   applyDefaults: () => void;
 }
 
@@ -90,6 +113,23 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const routes = router.handler();
 
       const healthRouter = createHealthRouter({ config, health });
+
+      const startupRequestPauseTimeout = getConfigInHumanDuration(
+        config,
+        'backend.lifecycle.startupRequestPauseTimeout',
+      );
+
+      const shutdownRequestDelayTimeout = getConfigInHumanDuration(
+        config,
+        'backend.lifecycle.shutdownRequestDelayTimeout',
+      );
+
+      const lifecycleMiddleware = createLifecycleMiddleware({
+        lifecycle,
+        startupRequestPauseTimeout,
+        shutdownRequestDelayTimeout,
+      });
+
       const server = await createHttpServer(
         app,
         readHttpServerOptions(config.getOptionalConfig('backend')),
@@ -105,6 +145,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
         logger,
         lifecycle,
         healthRouter,
+        lifecycleMiddleware,
         applyDefaults() {
           if (process.env.NODE_ENV === 'development') {
             app.set('json spaces', 2);
@@ -114,6 +155,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
           app.use(middleware.compression());
           app.use(middleware.logging());
           app.use(healthRouter);
+          app.use(lifecycleMiddleware);
           app.use(routes);
           app.use(middleware.notFound());
           app.use(middleware.error());
