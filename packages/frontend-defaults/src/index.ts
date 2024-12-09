@@ -26,3 +26,4 @@ export {
   type CreateAppFeatureLoader,
 } from './createApp';
 export { createPublicSignInApp } from './createPublicSignInApp';
+export { isBackstageFeature } from './discovery';
