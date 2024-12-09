@@ -102,7 +102,7 @@ export const ConsumedApisCard: (props: {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ApiEntity>;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
@@ -136,7 +136,7 @@ export const EntityConsumedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
   title?: string | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
-  tableOptions?: TableOptions<{}> | undefined;
+  tableOptions?: TableOptions<ApiEntity> | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -150,7 +150,7 @@ export const EntityHasApisCard: (props: {
   variant?: InfoCardVariants | undefined;
   title?: string | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
-  tableOptions?: TableOptions<{}> | undefined;
+  tableOptions?: TableOptions<ApiEntity> | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -158,7 +158,7 @@ export const EntityProvidedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
   title?: string | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
-  tableOptions?: TableOptions<{}> | undefined;
+  tableOptions?: TableOptions<ApiEntity> | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -182,7 +182,7 @@ export const HasApisCard: (props: {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ApiEntity>;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
@@ -213,7 +213,7 @@ export const ProvidedApisCard: (props: {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ApiEntity>;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
