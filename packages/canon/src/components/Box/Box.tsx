@@ -26,7 +26,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const sprinklesClassName = boxSprinkles(restProps);
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['canon-box', sprinklesClassName, className]
+  const classNames = ['box', sprinklesClassName, className]
     .filter(Boolean)
     .join(' ');
 
