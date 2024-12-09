@@ -1,0 +1,13 @@
+# lib/new/factories/webLibraryPackage.ts
+description: A new web-library package, exporting shared functionality for frontend plugins
+template: ./web-library-package
+targetPath: packages
+prompts:
+  - id
+  - id: another-id
+    prompt: Provide another id
+    default: another-id-example
+    validate: backstage-id
+  - id: private
+    prompt: Would you like for this package to be private?
+    type: confirm
