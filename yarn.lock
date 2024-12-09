@@ -11500,24 +11500,24 @@ __metadata:
   linkType: hard
 
 "@kubernetes-models/apimachinery@npm:^2.0.0, @kubernetes-models/apimachinery@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@kubernetes-models/apimachinery@npm:2.0.1"
+  version: 2.0.2
+  resolution: "@kubernetes-models/apimachinery@npm:2.0.2"
   dependencies:
-    "@kubernetes-models/base": ^5.0.0
+    "@kubernetes-models/base": ^5.0.1
     "@kubernetes-models/validate": ^4.0.0
     "@swc/helpers": ^0.5.8
-  checksum: 4e9d8773e7e313b09d1a81f86cfaa65eefb52dd35fc84b4fbbe13ce02836797739c7c864f82de30f6d1eb8ea25cb2b1cd820be056cfd48fdb80bfa02aa302935
+  checksum: f99c50fc3c8446e6b525b74970c7dafe217fe3ffb944078c70b6c21ca0138040b44d094b57fb9218b1e52a5e4c802f1ea93d57c776b08eee59874be286f5545d
   languageName: node
   linkType: hard
 
-"@kubernetes-models/base@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@kubernetes-models/base@npm:5.0.0"
+"@kubernetes-models/base@npm:^5.0.0, @kubernetes-models/base@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@kubernetes-models/base@npm:5.0.1"
   dependencies:
     "@kubernetes-models/validate": ^4.0.0
     is-plain-object: ^5.0.0
     tslib: ^2.4.0
-  checksum: 3ac064e6c18d88f356b8e91d320e08ee31a12a3ecd47d6d86e23566203125640b88223bc9003d02d420b6a9a86f2990f65e4a26c32ed075ef0753d8599549c0b
+  checksum: 9d0506b9b4b4ac366feb97f574e84f59d957377bb5c4c929332c3db8bd58bb70bcb1045d007d89369a73521591f7d0d5f651c43fca0779ed65d157258b6fd59a
   languageName: node
   linkType: hard
 
