@@ -20,7 +20,6 @@ import {
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 import { oidcAuthenticator } from './authenticator';
-import { oidcSignInResolvers } from './resolvers';
 
 /** @public */
 export const authModuleOidcProvider = createBackendModule({
@@ -37,7 +36,6 @@ export const authModuleOidcProvider = createBackendModule({
           factory: createOAuthProviderFactory({
             authenticator: oidcAuthenticator,
             signInResolverFactories: {
-              ...oidcSignInResolvers,
               ...commonSignInResolvers,
             },
           }),

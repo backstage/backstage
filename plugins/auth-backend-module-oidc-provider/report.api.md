@@ -7,7 +7,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BaseClient } from 'openid-client';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
-import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 import { Strategy } from 'openid-client';
 import { TokenSet } from 'openid-client';
 import { UserinfoResponse } from 'openid-client';
@@ -34,19 +33,4 @@ export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;
 };
-
-// @public
-export namespace oidcSignInResolvers {
-  const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
-    unknown,
-    | {
-        allowedDomains?: string[] | undefined;
-      }
-    | undefined
-  >;
-  const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
-    unknown,
-    unknown
-  >;
-}
 ```

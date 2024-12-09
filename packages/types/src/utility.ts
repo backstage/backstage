@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import type { CommonSignInResolver } from '@backstage/plugin-auth-node';
-
-import type { BitbucketSignInResolver } from './src/resolvers';
-
-export interface Config {
-  auth?: {
-    providers?: {
-      /** @visibility frontend */
-      bitbucket?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          additionalScopes?: string | string[];
-          signIn?: {
-            resolvers: Array<BitbucketSignInResolver | CommonSignInResolver>;
-          };
-        };
-      };
-    };
-  };
-}
+/**
+ * A utility type that enhances the readability of hover overlays (type hints) for object types.
+ *
+ * @example Prettifying a basic object merge
+ *
+ * ### Basic object type
+ * ```ts
+ * type Example = { item1: string } & { item2: number }
+ *   // ?^ { item1: string } & { item2: number }
+ * ```
+ *
+ * ### Usage
+ * ```ts
+ * type Example = Prettify<{ item1: string } & { item2: number }>
+ *   // ?^ { item1: string, item2: number }
+ * ```
+ *
+ * @public
+ */
+export type Prettify<T extends Record<PropertyKey, unknown>> = {
+  [K in keyof T]: T[K];
+} & {};

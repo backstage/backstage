@@ -16,10 +16,15 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type OAuth2SignInResolver = GetSignInResolver<
+  typeof oauth2SignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the oauth2 auth provider.

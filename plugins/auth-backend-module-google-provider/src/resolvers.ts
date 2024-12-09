@@ -16,10 +16,15 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type GoogleSignInResolver = GetSignInResolver<
+  typeof googleSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the Google auth provider.

@@ -23,4 +23,5 @@
 export { createDeferred, type DeferredPromise } from './deferred';
 export type { JsonArray, JsonObject, JsonPrimitive, JsonValue } from './json';
 export type { Observable, Observer, Subscription } from './observable';
-export { type HumanDuration, durationToMilliseconds } from './time';
+export { durationToMilliseconds, type HumanDuration } from './time';
+export type { Prettify } from './utility';
