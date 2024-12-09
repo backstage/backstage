@@ -15,7 +15,10 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { FrontendFeature } from '@backstage/frontend-app-api';
+import {
+  FrontendFeature,
+  FrontendFeatureLoader,
+} from '@backstage/frontend-plugin-api';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
@@ -57,6 +60,7 @@ function readPackageDetectionConfig(config: Config) {
  */
 export function discoverAvailableFeatures(config: Config): {
   features: FrontendFeature[];
+  featureLoaders?: FrontendFeatureLoader[];
 } {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
@@ -67,20 +71,34 @@ export function discoverAvailableFeatures(config: Config): {
     return { features: [] };
   }
 
+  const detectedExports = discovered?.modules
+    .filter(({ name }) => {
+      if (detection.exclude?.includes(name)) {
+        return false;
+      }
+      if (detection.include && !detection.include.includes(name)) {
+        return false;
+      }
+      return true;
+    })
+    .map(m => m.default);
+
+  if (detectedExports === undefined) {
+    return {
+      features: [],
+    };
+  }
+
+  const features = detectedExports.filter(isBackstageFeature);
+  const detectedFeatureLoaders = detectedExports.filter(
+    isBackstageFeatureLoader,
+  );
+  const featureLoaders =
+    detectedFeatureLoaders.length > 0 ? detectedFeatureLoaders : undefined;
+
   return {
-    features:
-      discovered?.modules
-        .filter(({ name }) => {
-          if (detection.exclude?.includes(name)) {
-            return false;
-          }
-          if (detection.include && !detection.include.includes(name)) {
-            return false;
-          }
-          return true;
-        })
-        .map(m => m.default)
-        .filter(isBackstageFeature) ?? [],
+    features,
+    featureLoaders,
   };
 }
 
@@ -92,4 +110,15 @@ function isBackstageFeature(obj: unknown): obj is FrontendFeature {
     );
   }
   return false;
+}
+
+export function isBackstageFeatureLoader(
+  obj: unknown,
+): obj is FrontendFeatureLoader {
+  return (
+    obj !== null &&
+    typeof obj === 'object' &&
+    '$$type' in obj &&
+    obj.$$type === '@backstage/FrontendFeatureLoader'
+  );
 }

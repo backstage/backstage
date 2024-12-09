@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendModule, FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { FrontendFeature as PluginApiFrontendFeature } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from '../routing/types';
 
-/** @public  */
-export type FrontendFeature = FrontendPlugin | FrontendModule;
+/** @public
+ * @deprecated Use {@link @backstage/frontend-plugin-api#FrontendFeature} instead.
+ */
+export type FrontendFeature = PluginApiFrontendFeature;
 
 /** @internal */
 export type RouteInfo = {
