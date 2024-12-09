@@ -11511,13 +11511,13 @@ __metadata:
   linkType: hard
 
 "@kubernetes-models/base@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@kubernetes-models/base@npm:5.0.0"
+  version: 5.0.1
+  resolution: "@kubernetes-models/base@npm:5.0.1"
   dependencies:
     "@kubernetes-models/validate": ^4.0.0
     is-plain-object: ^5.0.0
     tslib: ^2.4.0
-  checksum: 3ac064e6c18d88f356b8e91d320e08ee31a12a3ecd47d6d86e23566203125640b88223bc9003d02d420b6a9a86f2990f65e4a26c32ed075ef0753d8599549c0b
+  checksum: 9d0506b9b4b4ac366feb97f574e84f59d957377bb5c4c929332c3db8bd58bb70bcb1045d007d89369a73521591f7d0d5f651c43fca0779ed65d157258b6fd59a
   languageName: node
   linkType: hard
 
