@@ -16,6 +16,8 @@
 
 /**
  * Options used to open a login popup.
+ *
+ * @public
  */
 export type LoginPopupOptions = {
   /**
@@ -65,6 +67,8 @@ type AuthResult =
  * to the app window. The message posted to the app must match the AuthResult type.
  *
  * The returned promise resolves to the response of the message that was posted from the auth popup.
+ *
+ * @public
  */
 export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
   return new Promise((resolve, reject) => {
