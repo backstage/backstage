@@ -215,6 +215,48 @@ describe('BackendInitializer', () => {
     expect(factory3).not.toHaveBeenCalled();
   });
 
+  it('should include all multiton service factories', async () => {
+    expect.assertions(5);
+
+    const ref = createServiceRef<number>({ id: '1', multiton: true });
+    const factory1 = mkNoopFactory(ref).mockResolvedValue(1);
+    const factory2 = mkNoopFactory(ref).mockResolvedValue(2);
+    const factory3 = mkNoopFactory(ref).mockResolvedValue(3);
+    const factory4 = mkNoopFactory(ref).mockResolvedValue(4);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(factory2);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+          yield factory4;
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ns: ref },
+            async init({ ns }) {
+              expect(ns).toEqual([1, 2, 3, 4]);
+            },
+          });
+        },
+      }),
+    );
+
+    await init.start();
+
+    expect(factory1).toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).toHaveBeenCalled();
+    expect(factory4).toHaveBeenCalled();
+  });
+
   // Note: this is an important escape hatch in case to loaders conflict and you need to select the winning service factory
   it('should allow duplicate service from feature loaders if overridden', async () => {
     const ref = createServiceRef<{}>({ id: '1' });

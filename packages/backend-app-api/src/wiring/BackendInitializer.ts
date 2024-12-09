@@ -576,7 +576,7 @@ export class BackendInitializer {
           //
           // If a factory has already been explicitly installed, the service
           // factory provided by the loader will simply be ignored.
-          if (isServiceFactory(feature)) {
+          if (isServiceFactory(feature) && !feature.service.multiton) {
             const conflictingLoader = servicesAddedByLoaders.get(
               feature.service.id,
             );

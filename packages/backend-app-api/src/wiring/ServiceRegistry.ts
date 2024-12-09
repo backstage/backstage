@@ -195,9 +195,6 @@ export class ServiceRegistry {
     if (ref.id === coreServices.pluginMetadata.id) {
       return true;
     }
-    if (ref.multiton) {
-      return false;
-    }
     return this.#addedFactoryIds.has(ref.id);
   }
 
