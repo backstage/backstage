@@ -97,7 +97,7 @@ describe('createLifecycleMiddleware', () => {
     const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
     createLifecycleMiddleware({
       lifecycle,
-      shutdownRequestPauseTimeout: { milliseconds: configuredTimeout },
+      shutdownRequestDelayTimeout: { milliseconds: configuredTimeout },
     });
     const beforeShutdownPromise = lifecycle.beforeShutdown().then(() => {
       jest.useRealTimers();

@@ -20,13 +20,55 @@ import {
 } from '@backstage/backend-test-utils';
 import { Express } from 'express';
 import request from 'supertest';
-import { rootHttpRouterServiceFactory } from './rootHttpRouterServiceFactory';
+import {
+  getConfigInHumanDuration,
+  rootHttpRouterServiceFactory,
+} from './rootHttpRouterServiceFactory';
 import {
   ServiceFactory,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../rootLifecycle/rootLifecycleServiceFactory';
+import { ConfigReader } from '@backstage/config';
+
+describe('getConfigInHumanDuration', () => {
+  const values = ['20000', 20000, { milliseconds: 20000 }];
+
+  it.each(values)(
+    'should parse the lifecycle startup request timeout from a %s config value',
+    async value => {
+      const key = 'backend.lifecycle.startupRequestPauseTimeout';
+      const config = new ConfigReader({
+        backend: {
+          lifecycle: {
+            startupRequestPauseTimeout: value,
+          },
+        },
+      });
+      expect(getConfigInHumanDuration(config, key)).toMatchObject({
+        milliseconds: 20000,
+      });
+    },
+  );
+
+  it.each(values)(
+    'should parse the lifecycle shutdown delay timeout from a %s config value',
+    async value => {
+      const key = 'backend.lifecycle.shutdownRequestDelayTimeout';
+      const config = new ConfigReader({
+        backend: {
+          lifecycle: {
+            shutdownRequestDelayTimeout: value,
+          },
+        },
+      });
+      expect(getConfigInHumanDuration(config, key)).toMatchObject({
+        milliseconds: 20000,
+      });
+    },
+  );
+});
 
 async function createExpressApp(...dependencies: ServiceFactory[]) {
   let app: Express | undefined = undefined;
@@ -204,7 +246,7 @@ describe('rootHttpRouterServiceFactory', () => {
     );
   });
 
-  it('should wait the server shutdown', async () => {
+  it('should wait the server to shutdown', async () => {
     jest.useFakeTimers();
 
     let app: Express | undefined = undefined;
@@ -214,10 +256,12 @@ describe('rootHttpRouterServiceFactory', () => {
       rootHttpRouterServiceFactory({
         configure(options) {
           console.log('configure');
+          options.app.use(options.healthRouter);
           options.app.use(options.lifecycleMiddleware);
           options.app.get('/test', (_req, res) => {
             res.status(200).send({ status: 'ok' }).end();
           });
+          options.app.use(options.middleware.error());
           app = options.app;
         },
       }),
@@ -254,19 +298,73 @@ describe('rootHttpRouterServiceFactory', () => {
       status: 'ok',
     });
 
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
+
+    await request(app).get('/.backstage/health/v1/readiness').expect(200, {
+      status: 'ok',
+    });
+
     const beforeShutdownPromise = (lifecycle as any)
       .beforeShutdown()
       .then(() => {
         return (lifecycle as any).shutdown();
       });
 
+    // Continue accepting requests
     await request(app!).get('/test').expect(200, {
       status: 'ok',
     });
 
-    jest.advanceTimersByTime(30000);
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
 
-    await request(app!).get('/test').expect(500, {});
+    // Immediately start failing the readiness health check
+    await request(app).get('/.backstage/health/v1/readiness').expect(503, {
+      message: 'Backend has not started yet',
+      status: 'error',
+    });
+
+    jest.advanceTimersByTime(29999);
+
+    // Still accepting requests 1 ms before shutdown
+    await request(app!).get('/test').expect(200, {
+      status: 'ok',
+    });
+
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
+
+    await request(app).get('/.backstage/health/v1/readiness').expect(503, {
+      message: 'Backend has not started yet',
+      status: 'error',
+    });
+
+    jest.advanceTimersByTime(1);
+
+    // No longer accepting requests after shutdown
+    await request(app!)
+      .get('/test')
+      .expect(503, {
+        error: {
+          name: 'ServiceUnavailableError',
+          message: 'Service is shutting down',
+        },
+        request: { method: 'GET', url: '/test' },
+        response: { statusCode: 503 },
+      });
+
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
+
+    await request(app).get('/.backstage/health/v1/readiness').expect(503, {
+      message: 'Backend has not started yet',
+      status: 'error',
+    });
 
     return await expect(beforeShutdownPromise).resolves.toBeUndefined();
   });
