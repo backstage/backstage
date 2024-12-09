@@ -266,14 +266,20 @@ export interface TaskStepsProps {
 // @alpha
 export const TemplateCard: (props: TemplateCardProps) => React_2.JSX.Element;
 
+// @alpha (undocumented)
+export interface TemplateCardAdditionalLink {
+  // (undocumented)
+  icon: IconComponent;
+  // (undocumented)
+  text: string;
+  // (undocumented)
+  url: string;
+}
+
 // @alpha
 export interface TemplateCardProps {
   // (undocumented)
-  additionalLinks?: {
-    icon: IconComponent;
-    text: string;
-    url: string;
-  }[];
+  additionalLinks?: TemplateCardAdditionalLink[];
   // (undocumented)
   onSelected?: (template: TemplateEntityV1beta3) => void;
   // (undocumented)
