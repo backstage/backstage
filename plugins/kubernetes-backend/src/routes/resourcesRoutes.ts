@@ -25,7 +25,7 @@ import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { requirePermission } from '../auth/requirePermission';
-import { kubernetesResourcePermission } from '@backstage/plugin-kubernetes-common';
+import { kubernetesResourcesPermission } from '@backstage/plugin-kubernetes-common';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
@@ -68,7 +68,7 @@ export const addResourceRoutesToRouter = (
   router.post('/resources/workloads/query', async (req, res) => {
     await requirePermission(
       permissionApi,
-      kubernetesResourcePermission,
+      kubernetesResourcesPermission,
       httpAuth,
       req,
     );
@@ -86,7 +86,7 @@ export const addResourceRoutesToRouter = (
   router.post('/resources/custom/query', async (req, res) => {
     await requirePermission(
       permissionApi,
-      kubernetesResourcePermission,
+      kubernetesResourcesPermission,
       httpAuth,
       req,
     );
