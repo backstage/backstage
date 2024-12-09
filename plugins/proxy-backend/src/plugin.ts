@@ -20,6 +20,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { createRouterInternal } from './service/router';
+import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
 /**
  * The proxy backend plugin.
@@ -29,6 +30,13 @@ import { createRouterInternal } from './service/router';
 export const proxyPlugin = createBackendPlugin({
   pluginId: 'proxy',
   register(env) {
+    const additionalEndpoints = {};
+
+    env.registerExtensionPoint(proxyEndpointsExtensionPoint, {
+      addProxyEndpoints(endpoints) {
+        Object.assign(additionalEndpoints, endpoints);
+      },
+    });
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -42,6 +50,7 @@ export const proxyPlugin = createBackendPlugin({
           discovery,
           logger: loggerToWinstonLogger(logger),
           httpRouterService: httpRouter,
+          additionalEndpoints,
         });
       },
     });
