@@ -70,6 +70,10 @@ export function registerRepoCommand(program: Command) {
       'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
     )
     .option('--fix', 'Attempt to automatically fix violations')
+    .option(
+      '--quiet',
+      'Report errors only. Rules marked as warnings are not logged out, unless max-warnings threshold is reached.',
+    )
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
