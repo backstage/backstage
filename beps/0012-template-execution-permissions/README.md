@@ -25,39 +25,23 @@ creation-date: 2024-12-02
 
 ## Summary
 
-Companies are able to create custom actions and fields for their templates, and will want to restrict who can execute a
-template action to specific groups of users.
+Companies are able to create custom actions and fields for their templates, and will want to restrict who can execute a template action to specific groups of users.
 
-With the existing permissions `stepReadPermission` and `parameterReadPermission`, the template sections can be
-restricted, but still allows the template to run. This can result in "successful" templates that silently fail. For
-example, a template could be written to scaffold out a Backstage plugin, but the user is not allowed to read the
-`publish:github` action. The template would succeed, but the push to github would be skipped.
+With the existing permissions `stepReadPermission`, `parameterReadPermission`, and `actionExecutePermission` the template sections can be restricted, but still allows the template to partially run. This can result in "successful" templates that silently fail. For example, a template could be written to scaffold out a Backstage plugin, but the user is not allowed to read the`publish:github` action. The template would succeed, but the push to github would be skipped.
 
-Using `catalogEntityReadPermission` can restrict execution, however this would also hide the entity from the catalog for
-the user. The entity page for templates can be used by companies to provide additional information about the template,
-and if a user doesn't have permission to run the template, information on why and how to get permission can be displayed
-on that page.
-
-Adding a `templateExecutePermission` will allow policy writers to explicitly restrict execution of a template based on
-built in rules, and any custom rules created by the writer. An additional entity `spec` section for permissions would
-provide a dedicated section to provide data to built in or custom permission rules.
+Using `catalogEntityReadPermission` can restrict execution, however this would also hide the entity from the catalog for the user. The entity page for templates can be used by companies to provide additional information about the template, and if a user doesn't have permission to run the template, information on why and how to get permission can be displayed on that page.
 
 ## Motivation
 
 ### Goals
 
-- Add `templateExecutePermission` that can be targeted to restrict execution of templates
-  - eg. restrict custom actions to a specific set of users
-- Allow policy writers to add custom rules
-  - eg. custom rule for `userInTaggedGroup`
+- Pull templates via the scaffolder API instead of directly from the Catalog API
+  - To allow for more performant permission checks
 - Filter the template list to only templates the user can execute
   - eg. if a user can't run one of the actions in the template, the template is not visible
-- Add section to the template spec for permission related data
-  - eg. `spec.permissions.groups`, `spec.permissions.tags`
-- (optimization) pull templates via the scaffolder API instead of directly from the Catalog API
-  - Will allow for more performant permission checks, and allow for additional Scaffolder specific processing
-- (optional) deprecation of the `stepRead` and `parameterRead` permissions
-  - Reduce complexity of permissions for template execution
+- update/rename section in the action spec for permissions related data
+  - Currently under `spec.step[].backstage:permissions`
+  - eg. `spec.step[].permissions.groups`, `spec.step[].permissions.tags`
 
 ### Non-Goals
 
@@ -66,14 +50,13 @@ provide a dedicated section to provide data to built in or custom permission rul
 
 ## Proposal
 
+This proposal is for enhancements to the Backstage Scaffolder permissions system to allow companies to have better access controls for custom actions and to improve UX around if a user is able to execute a template or not. Currently if a permission like `stepReadPermission` or `actionExecutePermission` evaluates to `DENY`, the user is still able to execute the template after filling in all the details for the template, which may result in the template failing. If permissions for actions and fields was able to be checked ahead of time (for statically given values) the index page can be filtered down to just the list of templates that the User could potentially execute.
+
 ## Design Details
 
-Initial implementation: https://github.com/backstage/backstage/pull/27748
+The bulk of this would be implemented via adding a `scaffolderPermissionsExtensionPoint` following prior work in the Catalog Plugin. This would allow for policy writers to easily craft their own rules instead of needing to rely on the existing group of permissions. (Note: options to add custom permission rules currently exists for the legacy backend plugin, but not for the new backend.)
 
-Following prior work in the Catalog Plugin, permission policy writers would be able to craft custom rules to restrict
-who is able to execute a permission based on the parameters, actions, or other fields from the entity object using
-custom
-rules.
+As an example, permission policy writers would be able to craft custom rules to restrict who is able to execute an action based on fields from the template action.
 
 ```ts title="packages/backend/src/extensions/scaffolderPermissionRules.ts"
 /**
@@ -82,7 +65,7 @@ rules.
  */
 const userInTaggedGroupRule = createScaffolderTemplateEntityPermissionRule({
   name: 'USER_IN_TAGGED_GROUP',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   description: `Check if the user is part of a tagged group`,
   paramsSchema: z.object({
     userGroupRefs: z
@@ -90,8 +73,8 @@ const userInTaggedGroupRule = createScaffolderTemplateEntityPermissionRule({
       .array()
       .describe('entityRefs of groups the user is part of'),
   }),
-  apply: (resource, { userGroupRefs }) => {
-    const taggedGroups = resource.spec?.permissions?.groups || [];
+  apply: (action, { userGroupRefs }) => {
+    const taggedGroups = action.permissions?.groups || [];
     if (taggedGroups.length === 0) return true; // Template is not restricted to any groups
 
     const matchedGroup = taggedGroups.find(ref => userGroupRefs.includes(ref));
@@ -107,8 +90,8 @@ const userInTaggedGroupRule = createScaffolderTemplateEntityPermissionRule({
  */
 const canExecActionRule = createScaffolderTemplateEntityPermissionRule({
   name: 'CAN_EXEC_ACTION',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE_ENTITY,
-  description: `Check if the user has a group required for an action`,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  description: `Check if the user is part of a group required for this action`,
   paramsSchema: z.object({
     actionId: z.string().describe('the id of the action to check'),
     requiredGroupRef: z
@@ -119,16 +102,15 @@ const canExecActionRule = createScaffolderTemplateEntityPermissionRule({
       .array()
       .describe('entityRefs of groups the user is part of'),
   }),
-  apply: (resource, { actionId, requiredGroupRef, userGroupRefs }) => {
-    const actionIds = resource.spec.steps.map(step => step.id);
-    if (!actionIds.include(actionId)) return true; // action is not included in template
+  apply: (action, { actionId, requiredGroupRef, userGroupRefs }) => {
+    if (action.id !== actionId) return true; // action is not restricted
     return userGroupsRef.includes(requiredGroupRef);
   },
   toQuery: () => ({}),
 });
 
 // Namespace for custom conditions
-export const customScaffolderTemplateEntityConditions = {
+export const customScaffolderActionConditions = {
   userInTaggedGroup: createConditionFactory(userInTaggedGroupRule),
   canExecAction: createConditionFactory(canExecActionRule),
 };
@@ -164,24 +146,21 @@ class ExamplePermissionPolicy implements PermissionPolicy {
   ): Promise<PolicyDecision> {
     //...
 
-    if (isPermission(request.permission, templateExecutePermission)) {
+    if (isPermission(request.permission, actionExecutePermission)) {
       const userGroupsRefs = getUserGroups(user);
 
-      return createScaffolderTemplateEntityConditionalDecision(
-        request.permission,
-        {
-          allOf: [
-            customScaffolderTemplateEntityConditions.userInTaggedGroup({
-              userGroupRefs: userGroupsRefs,
-            }),
-            customScaffolderTemplateEntityConditions.canExecActionRule({
-              actionId: 'action:restricted',
-              requiredUserGroup: 'group:default/special',
-              userGroupRefs: userGroupsRefs,
-            }),
-          ],
-        },
-      );
+      return createScaffolderActionConditionalDecision(request.permission, {
+        allOf: [
+          customScaffolderActionConditions.userInTaggedGroup({
+            userGroupRefs: userGroupsRefs,
+          }),
+          customScaffolderActionConditions.canExecAction({
+            actionId: 'action:restricted',
+            requiredUserGroup: 'group:default/special',
+            userGroupRefs: userGroupsRefs,
+          }),
+        ],
+      });
     }
 
     //...
@@ -189,17 +168,13 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 }
 ```
 
-In the "create..." template index page, templates that fail the permission check would be hidden in the listing.
-Alternately, the template could be displayed, but disabled, with a notice saying that the user does not have permission
-to run the template. A future update to permissions could provide a space for a reason to be provided to the user on why
-a permission was denied, but that is outside the scope of this BEP.
+In the "create..." template index page, templates that fail one or more of the action permission checks would be hidden in the listing. Alternately, the template could be displayed, but disabled, with a notice saying that the user does not have permission to run one or more actions.
 
 ## Release Plan
 
-- Add experimental permission `templateExecutePermission` (#27748)
-- Add `permissionRulesExtensionPoint` to support custom actions (#27748)
-- Gather feedback on common conditions used for restricting templates
-- If decided, deprecation of the `stepRead` and `parameterRead` permission
+- Add `permissionRulesExtensionPoint` to support custom actions (#28053)
+- Update scaffolder to pull templates via the scaffolder router
+- Update scaffolder router to check that the user can execute all template actions
 
 ## Dependencies
 
@@ -208,5 +183,7 @@ a permission was denied, but that is outside the scope of this BEP.
 ## Alternatives
 
 - using `catalogEntityReadPermission` to restrict template visibility
-  - Also removes the template from the catalog for the user. Viewing a
-    template and executing the template should be two separate permissions
+  - Also removes the template from the catalog for the user. Viewing a template and executing the template should be two separate permissions
+- adding a `templateExecutePermission` to restrict at a high level
+  - a high level permission would need to be re-evaluated for each action after template substitutions
+  - the template task worker does not have access to the full template object during execution
