@@ -42,12 +42,18 @@ export type ComponentParts = {
 /**
  * @public
  */
-export type RendererProps = { title?: string } & ComponentParts;
+export type RendererProps = {
+  title?: string;
+  description?: string;
+} & ComponentParts;
 
 /**
  * @public
  */
-export type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
+export type CardExtensionProps<T> = ComponentRenderer & {
+  title?: string;
+  description?: string;
+} & T;
 
 /**
  * @public
@@ -102,6 +108,7 @@ export function createCardExtension<T>(options: {
                 {...props}
                 {...componentParts}
                 title={props.title || title}
+                description={props.description || description}
                 isCustomizable={isCustomizable}
               />
             );
@@ -126,6 +133,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
     ContextProvider,
     isCustomizable,
     title,
+    description,
     ...childProps
   } = props;
   const app = useApp();
@@ -137,6 +145,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
       <Suspense fallback={<Progress />}>
         <Renderer
           {...(title && { title })}
+          {...(description && { description })}
           {...{
             Content,
             ...(Actions ? { Actions } : {}),
