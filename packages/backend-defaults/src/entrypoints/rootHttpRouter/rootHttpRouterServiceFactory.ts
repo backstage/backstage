@@ -34,6 +34,25 @@ import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 import { createHealthRouter } from './createHealthRouter';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 
+export function getConfigInHumanDuration(
+  config: RootConfigService,
+  key: string,
+): HumanDuration | undefined {
+  const value = config.getOptional(key);
+  if (typeof value === 'undefined') {
+    return undefined;
+  }
+  if (typeof value === 'number') {
+    return { milliseconds: value };
+  }
+  if (typeof value === 'string') {
+    return {
+      milliseconds: parseInt(value, 10),
+    };
+  }
+  return readDurationFromConfig(config, { key });
+}
+
 /**
  * @public
  */
@@ -95,24 +114,20 @@ const rootHttpRouterServiceFactoryWithOptions = (
 
       const healthRouter = createHealthRouter({ config, health });
 
-      let startupRequestPauseTimeout: HumanDuration | undefined;
-      if (config.has('backend.lifecycle.startupRequestPauseTimeout')) {
-        startupRequestPauseTimeout = readDurationFromConfig(config, {
-          key: 'backend.lifecycle.startupRequestPauseTimeout',
-        });
-      }
+      const startupRequestPauseTimeout = getConfigInHumanDuration(
+        config,
+        'backend.lifecycle.startupRequestPauseTimeout',
+      );
 
-      let shutdownRequestPauseTimeout: HumanDuration | undefined;
-      if (config.has('backend.lifecycle.shutdownRequestPauseTimeout')) {
-        shutdownRequestPauseTimeout = readDurationFromConfig(config, {
-          key: 'backend.lifecycle.shutdownRequestPauseTimeout',
-        });
-      }
+      const shutdownRequestDelayTimeout = getConfigInHumanDuration(
+        config,
+        'backend.lifecycle.shutdownRequestDelayTimeout',
+      );
 
       const lifecycleMiddleware = createLifecycleMiddleware({
         lifecycle,
         startupRequestPauseTimeout,
-        shutdownRequestPauseTimeout,
+        shutdownRequestDelayTimeout,
       });
 
       const server = await createHttpServer(
