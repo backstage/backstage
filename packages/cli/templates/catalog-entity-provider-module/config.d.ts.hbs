@@ -1,0 +1,20 @@
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+
+export interface Config {
+  catalog?: {
+    /**
+     * List of provider-specific options and attributes
+     */
+    providers?: {
+      /**
+       * {{pascalCaseId}}EntityProvider configuration
+       */
+      {{camelCaseId}}EntityProvider?: {
+        /**
+         * TaskScheduleDefinition for the refresh.
+         */
+        schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+      };
+    };
+  };
+}
