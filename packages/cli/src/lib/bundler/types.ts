@@ -23,6 +23,12 @@ export type ModuleFederationOptions = {
   name: string;
   // Whether this is a host or remote bundle
   mode: 'host' | 'remote';
+  exposes?: {
+    /**
+     * Modules that should be exposed by this container.
+     */
+    [k: string]: string;
+  };
 };
 
 export type BundlingOptions = {
