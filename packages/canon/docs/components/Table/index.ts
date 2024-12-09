@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { globalStyle, style } from '@vanilla-extract/css';
-
-export const textStyles = style({
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '16px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: 300,
-  marginBottom: '16px',
-});
-
-globalStyle(`${textStyles} p`, {
-  fontFamily: '"Geist", sans-serif',
-  fontSize: '16px',
-  lineHeight: '28px',
-  margin: '0',
-  fontWeight: 300,
-});
+export { Root, Header, Body, Row, Cell, HeaderRow, HeaderCell } from './Table';

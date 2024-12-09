@@ -13,12 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { style } from '@vanilla-extract/css';
-
-export const styles = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  rowGap: '20px',
-  columnGap: '80px',
-});
+export { Columns } from './Columns';

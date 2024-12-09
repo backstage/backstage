@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import { bannerIconStyles, bannerStyles } from './banner.css';
 
 export const Banner = ({
   children,
@@ -24,8 +23,8 @@ export const Banner = ({
   variant?: 'info' | 'warning';
 }) => {
   return (
-    <div className={bannerStyles({ variant })}>
-      <div className={bannerIconStyles}>
+    <div className={`banner ${variant}`}>
+      <div className="icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

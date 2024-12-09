@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export * from './Banner';
-export * from './Chip';
-export * from './Columns';
-export * from './ComponentStatus';
-export * from './IconLibrary';
-export * from './LayoutComponents';
-export * from './PropsTable';
-export * from './Roadmap';
-export * from './Table';
-export * from './Text';
-export * from './Title';
+import React from 'react';
+
+export const Chip = ({
+  children,
+  head = false,
+}: {
+  children: React.ReactNode;
+  head?: boolean;
+}) => {
+  return <span className={`chip ${head ? 'head' : ''}`}>{children}</span>;
+};
