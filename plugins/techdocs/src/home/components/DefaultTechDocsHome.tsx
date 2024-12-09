@@ -46,7 +46,13 @@ export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
  * @public
  */
 export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
-  const { initialFilter = 'owned', columns, actions, ownerPickerMode } = props;
+  const {
+    initialFilter = 'owned',
+    columns,
+    actions,
+    ownerPickerMode,
+    pagination,
+  } = props;
   return (
     <TechDocsPageWrapper>
       <Content>
@@ -55,7 +61,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
             Discover documentation in your ecosystem.
           </SupportButton>
         </ContentHeader>
-        <EntityListProvider>
+        <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <TechDocsPicker />
