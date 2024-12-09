@@ -48,3 +48,11 @@ export type ProxiedSession = {
   profile: ProfileInfo;
   backstageIdentity: Omit<BackstageIdentityResponse, 'id'>;
 };
+
+export const logoutResponseSchema = z.object({
+  redirectUrl: z.string().optional(),
+});
+
+export type LogoutResponse = {
+  redirectUrl?: string;
+};
