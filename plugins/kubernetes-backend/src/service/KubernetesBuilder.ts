@@ -18,9 +18,9 @@ import { Config } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
-  kubernetesClusterPermission,
+  kubernetesClustersPermission,
   kubernetesPermissions,
-  kubernetesServicePermission,
+  kubernetesServicesPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
@@ -397,7 +397,7 @@ export class KubernetesBuilder {
     router.post('/services/:serviceId', async (req, res) => {
       await requirePermission(
         permissionApi,
-        kubernetesServicePermission,
+        kubernetesServicesPermission,
         httpAuth,
         req,
       );
@@ -423,7 +423,7 @@ export class KubernetesBuilder {
     router.get('/clusters', async (req, res) => {
       await requirePermission(
         permissionApi,
-        kubernetesClusterPermission,
+        kubernetesClustersPermission,
         httpAuth,
         req,
       );
