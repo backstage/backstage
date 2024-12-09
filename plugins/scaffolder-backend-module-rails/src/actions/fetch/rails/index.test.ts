@@ -28,15 +28,15 @@ jest.mock('./railsNewRunner', () => {
 });
 
 import { ContainerRunner } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { resolve as resolvePath } from 'path';
-import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
-import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { createFetchRailsAction } from './index';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();
