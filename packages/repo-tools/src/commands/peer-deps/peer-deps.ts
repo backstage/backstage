@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { writeFileSync } from 'fs';
+import { resolve as resolvePath } from 'path';
 
 type ExtendedPackageJSON = Package['packageJson'] & {
   peerDependenciesMeta?: Record<string, { optional?: boolean }>;
@@ -26,26 +26,18 @@ type ExtendedPackageJSON = Package['packageJson'] & {
 };
 
 const desiredLocalVersionsOfDependencies = {
-  '@types/react': '^18.0.0',
-  react: '^18.0.2',
-  'react-dom': '^18.0.2',
-  'react-router-dom': '^6.3.0',
+  react: '^18.0.0',
+  'react-dom': '^18.0.0',
+  'react-router-dom': '^6.0.0',
 };
 
 const peerDependencies = {
-  '@types/react': '^16.13.1 || ^17.0.0 || ^18.0.0',
-  react: '^16.13.1 || ^17.0.0 || ^18.0.0',
-  'react-dom': '^16.13.1 || ^17.0.0 || ^18.0.0',
-  'react-router-dom': '6.0.0-beta.0 || ^6.3.0',
+  react: '^18.0.0',
+  'react-dom': '^18.0.0',
+  'react-router-dom': '^6.0.0',
 };
 
-const groupsOfPeerDependencies = [['@types/react', 'react', 'react-dom']];
-
-const optionalPeerDependencies = new Set(['@types/react']);
-
-const isOptional = (dep: string) => {
-  return optionalPeerDependencies.has(dep);
-};
+const groupsOfPeerDependencies = [['react', 'react-dom']];
 
 const isMarkedAsOptional = (dep: string, packageJson: ExtendedPackageJSON) => {
   return packageJson.peerDependenciesMeta?.[dep]?.optional;
@@ -128,16 +120,7 @@ export default async ({ fix }: { fix: boolean }) => {
     for (const dep of Object.keys(peerDependencies)) {
       // Validate that the peer dependencies are present.
       if (isPeerDependency(dep, packageJson)) {
-        if (isOptional(dep) && !isMarkedAsOptional(dep, packageJson)) {
-          console.error(
-            `Optional peer dependency ${dep} in ${pkg.packageJson.name} is not marked as optional`,
-          );
-          attemptToApplyFix(() => {
-            packageJson.peerDependenciesMeta =
-              packageJson.peerDependenciesMeta || {};
-            packageJson.peerDependenciesMeta[dep] = { optional: true };
-          });
-        } else if (!isOptional(dep) && isMarkedAsOptional(dep, packageJson)) {
+        if (isMarkedAsOptional(dep, packageJson)) {
           console.error(
             `Peer dependency ${dep} in ${pkg.packageJson.name} is marked as optional but should not be`,
           );

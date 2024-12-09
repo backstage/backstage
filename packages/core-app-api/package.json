@@ -70,10 +70,10 @@
     "@types/react": "^18.0.0",
     "@types/zen-observable": "^0.8.0",
     "msw": "^1.0.0",
-    "react": "^18.0.2",
-    "react-dom": "^18.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-beta": "npm:react-router@6.0.0-beta.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.0.0",
     "react-router-dom-beta": "npm:react-router-dom@6.0.0-beta.0",
     "react-router-dom-stable": "npm:react-router-dom@^6.3.0",
     "react-router-stable": "npm:react-router@^6.3.0"
@@ -82,11 +82,6 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
   },
   "configSchema": "config.d.ts"
 }

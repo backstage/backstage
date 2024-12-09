@@ -48,18 +48,13 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/react": "^18.0.0",
-    "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0"
   },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
   }
 }
