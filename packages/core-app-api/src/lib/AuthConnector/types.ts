@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ */
 export type CreateSessionOptions = {
   scopes: Set<string>;
   instantPopup?: boolean;
@@ -22,6 +25,8 @@ export type CreateSessionOptions = {
 /**
  * An AuthConnector is responsible for realizing auth session actions
  * by for example communicating with a backend or interacting with the user.
+ *
+ * @public
  */
 export type AuthConnector<AuthSession> = {
   createSession(options: CreateSessionOptions): Promise<AuthSession>;

@@ -549,6 +549,9 @@ export class OAuth2
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
+  authConnectorFactory?: (
+    opts: OAuth2CreateOptions,
+  ) => AuthConnector<OAuth2Session>;
 };
 
 // @public
