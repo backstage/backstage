@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { formFieldsApiRef } from './ref';
 import { ScaffolderFormFieldsApi } from './types';
-import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import { FormFieldBlueprint } from '../blueprints';
 import { FormField, OpaqueFormField } from '@internal/scaffolder';
 
 class DefaultScaffolderFormFieldsApi implements ScaffolderFormFieldsApi {
