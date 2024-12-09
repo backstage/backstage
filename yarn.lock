@@ -7439,6 +7439,8 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/types": "workspace:^"
     concat-stream: ^2.0.0
