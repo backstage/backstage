@@ -25,9 +25,9 @@ export * from './catalog-entity-constants';
 export * from './certificate-authority-constants';
 export {
   kubernetesProxyPermission,
-  kubernetesClusterPermission,
-  kubernetesResourcePermission,
-  kubernetesServicePermission,
+  kubernetesClustersPermission,
+  kubernetesResourcesPermission,
+  kubernetesServicesPermission,
   kubernetesPermissions,
 } from './permissions';
 export * from './error-detection';
