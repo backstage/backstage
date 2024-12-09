@@ -48,7 +48,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch notifications from correct endpoint', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/`, (_, res, ctx) =>
+        rest.get(`${mockBaseUrl}/notifications`, (_, res, ctx) =>
           res(ctx.json(expectedResp)),
         ),
       );
@@ -58,7 +58,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch notifications with options', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
+        rest.get(`${mockBaseUrl}/notifications`, (req, res, ctx) => {
           expect(req.url.search).toBe(
             '?limit=10&offset=0&search=find+me&read=true&createdAfter=1970-01-01T00%3A00%3A00.005Z',
           );
@@ -77,7 +77,7 @@ describe('NotificationsClient', () => {
 
     it('should omit unselected fetch options', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
+        rest.get(`${mockBaseUrl}/notifications`, (req, res, ctx) => {
           expect(req.url.search).toBe('?limit=10');
           return res(ctx.json(expectedResp));
         }),
@@ -91,7 +91,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch single notification', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/:id`, (req, res, ctx) => {
+        rest.get(`${mockBaseUrl}/notifications/:id`, (req, res, ctx) => {
           expect(req.params.id).toBe('acdaa8ca-262b-43c1-b74b-de06e5f3b3c7');
           return res(ctx.json(testNotification));
         }),
@@ -115,12 +115,15 @@ describe('NotificationsClient', () => {
 
     it('should update notifications', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/update`, async (req, res, ctx) => {
-          expect(await req.json()).toEqual({
-            ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
-          });
-          return res(ctx.json(expectedResp));
-        }),
+        rest.post(
+          `${mockBaseUrl}/notifications/update`,
+          async (req, res, ctx) => {
+            expect(await req.json()).toEqual({
+              ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
+            });
+            return res(ctx.json(expectedResp));
+          },
+        ),
       );
       const response = await client.updateNotifications({
         ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
