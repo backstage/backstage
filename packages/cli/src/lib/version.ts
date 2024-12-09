@@ -43,6 +43,8 @@ import { version as corePluginApi } from '../../../../packages/core-plugin-api/p
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
 import { version as errors } from '../../../../packages/errors/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
+import { version as permissionCommon } from '../../../../plugins/permission-common/package.json';
+import { version as permissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
 import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
@@ -65,6 +67,8 @@ export const packageVersions: Record<string, string> = {
   '@backstage/errors': errors,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
+  '@backstage/plugin-permission-common': permissionCommon,
+  '@backstage/plugin-permission-node': permissionNode,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
   '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
   '@backstage/plugin-auth-backend': authBackend,
