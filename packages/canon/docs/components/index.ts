@@ -20,6 +20,7 @@ export * from './Columns';
 export * from './ComponentStatus';
 export * from './IconLibrary';
 export * from './LayoutComponents';
+export * from './PropsTable';
 export * from './Roadmap';
 export * from './Table';
 export * from './Text';
