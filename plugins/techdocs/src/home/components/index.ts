@@ -20,10 +20,12 @@ export * from './DefaultTechDocsHome';
 export type {
   PanelType,
   PanelConfig,
+  PanelProps,
   TabConfig,
   TabsConfig,
   TechDocsCustomHomeProps,
 } from './TechDocsCustomHome';
+export { CustomDocsPanel } from './TechDocsCustomHome';
 export type { TechDocsIndexPageProps } from './TechDocsIndexPage';
 export * from './TechDocsPageWrapper';
 export * from './TechDocsPicker';
