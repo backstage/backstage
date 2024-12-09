@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useElementFilter } from '@backstage/core-plugin-api';
+import { useAsync, useMountEffect } from '@react-hookz/web';
+import { useApi, useElementFilter } from '@backstage/core-plugin-api';
+import { formFieldsApiRef } from '../next';
 import { FieldExtensionOptions } from '../extensions';
 import {
   FIELD_EXTENSION_KEY,
@@ -29,7 +31,16 @@ export const useCustomFieldExtensions = <
 >(
   outlet: React.ReactNode,
 ) => {
-  return useElementFilter(outlet, elements =>
+  // Get custom fields created with FormFieldBlueprint
+  const formFieldsApi = useApi(formFieldsApiRef);
+  const [{ result: blueprintFields }, methods] = useAsync(
+    formFieldsApi.getFormFields,
+    [],
+  );
+  useMountEffect(methods.execute);
+
+  // Get custom fields created with ScaffolderFieldExtensions
+  const outletFields = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
@@ -38,4 +49,6 @@ export const useCustomFieldExtensions = <
         key: FIELD_EXTENSION_KEY,
       }),
   );
+
+  return [...blueprintFields, ...outletFields];
 };

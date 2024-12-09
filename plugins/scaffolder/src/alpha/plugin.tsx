@@ -32,7 +32,7 @@ import {
   scaffolderPage,
   scaffolderApi,
 } from './extensions';
-import { formFieldsApi } from './api/FormFieldsApi';
+import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 
 /** @alpha */
 export default createFrontendPlugin({

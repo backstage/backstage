@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export { formDecoratorsApiRef } from './ref';
-export type { ScaffolderFormDecoratorsApi } from './types';
-export { DefaultScaffolderFormDecoratorsApi } from './FormDecoratorsApi';
+import { FormFieldExtensionData } from '../blueprints';
+
+/** @alpha */
+export interface ScaffolderFormFieldsApi {
+  getFormFields(): Promise<FormFieldExtensionData[]>;
+}
