@@ -83,10 +83,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         }
         return refreshedSession;
       } catch (error) {
-        if (options.optional) {
-          return undefined;
-        }
-        throw error;
+        // If the refresh attempt fails we assume we don't have a session, so continue to create one.
       }
     }
 
