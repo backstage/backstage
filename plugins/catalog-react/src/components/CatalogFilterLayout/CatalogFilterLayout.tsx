@@ -34,8 +34,10 @@ export const Filters = (props: {
     drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
   };
 }) => {
-  const isScreenSmallerThanBreakpoint = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
+  const isScreenSmallerThanBreakpoint = useMediaQuery(
+    (theme: Theme) =>
+      theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
+    { noSsr: true },
   );
   const theme = useTheme();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
