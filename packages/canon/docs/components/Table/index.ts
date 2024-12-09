@@ -13,14 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './Banner';
-export * from './Chip';
-export * from './Columns';
-export * from './ComponentStatus';
-export * from './IconLibrary';
-export * from './LayoutComponents';
-export * from './Roadmap';
-export * from './Table';
-export * from './Text';
-export * from './Title';
+export { Root, Header, Body, Row, Cell, HeaderRow, HeaderCell } from './Table';

@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { BoxSvg } from './box';
-import { StackSvg } from './stack';
-import { GridSvg } from './grid';
-import { InlineSvg } from './inline';
-import { ContainerSvg } from './container';
+import { BoxSvg } from './svgs/box';
+import { StackSvg } from './svgs/stack';
+import { GridSvg } from './svgs/grid';
+import { InlineSvg } from './svgs/inline';
+import { ContainerSvg } from './svgs/container';
 
 export const LayoutComponents = () => {
   return (
