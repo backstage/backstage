@@ -328,11 +328,16 @@ export function createPermissionIntegrationRouter<
         >
       ).rules || [],
   );
-  const allPermissions = [
-    ...((options as { permissions: Permission[] }).permissions || []),
-    ...(optionsWithResources.resources?.flatMap(o => o.permissions || []) ||
-      []),
-  ];
+
+  const allPermissions = Array.from(
+    new Map(
+      [
+        ...((options as { permissions: Permission[] }).permissions || []),
+        ...(optionsWithResources.resources?.flatMap(o => o.permissions || []) ||
+          []),
+      ].map(i => [i.name, i]),
+    ).values(),
+  );
 
   const allResourceTypes = allOptions.reduce((acc, option) => {
     if (
