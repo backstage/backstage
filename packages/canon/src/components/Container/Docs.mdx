@@ -1,10 +1,6 @@
 import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as ContainerStories from './Container.stories';
-import { Title, Text } from '../../../docs/components';
-import {
-  PropsTable,
-  getBoxProps,
-} from '../../../docs/components/PropsTable/PropsTable';
+import { Title, Text, PropsTable, getProps } from '../../../docs/components';
 import { spacingProperties } from '../../layout/sprinkles.css';
 import { containerProperties } from './sprinkles.css';
 
@@ -32,7 +28,7 @@ import { containerProperties } from './sprinkles.css';
 
 <PropsTable
   data={{
-    ...getBoxProps(containerProperties.styles),
+    ...getProps(containerProperties.styles),
     children: {
       type: 'ReactNode',
       required: false,
