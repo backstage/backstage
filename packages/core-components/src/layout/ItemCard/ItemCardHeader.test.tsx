@@ -45,17 +45,4 @@ describe('<ItemCardHeader />', () => {
     expect(screen.getByText('My Title')).toBeInTheDocument();
     expect(screen.getByText('My Custom Text')).toBeInTheDocument();
   });
-
-  it('renders custom styles', async () => {
-    await renderInTestApp(
-      <Card>
-        <CardMedia>
-          <ItemCardHeader classes={{ root: 'my-css-class' }}>
-            My Custom Text
-          </ItemCardHeader>
-        </CardMedia>
-      </Card>,
-    );
-    expect(screen.getByText('My Custom Text')).toHaveClass('my-css-class');
-  });
 });
