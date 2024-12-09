@@ -17,7 +17,7 @@
 export function isNoNodeSnapshotOptionProvided(): boolean {
   return (
     process.env.NODE_OPTIONS?.includes('--no-node-snapshot') ||
-    process.argv.includes('--no-node-snapshot')
+    process.execArgv.includes('--no-node-snapshot')
   );
 }
 

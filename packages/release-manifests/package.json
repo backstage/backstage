@@ -1,6 +1,6 @@
 {
   "name": "@backstage/release-manifests",
-  "version": "0.0.11",
+  "version": "0.0.12-next.1",
   "description": "Helper library for receiving release manifests",
   "backstage": {
     "role": "common-library"
@@ -34,9 +34,6 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
-  },
-  "dependencies": {
-    "cross-fetch": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

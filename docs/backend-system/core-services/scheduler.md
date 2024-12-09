@@ -16,7 +16,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { fetch } from 'node-fetch';
 
 createBackendPlugin({
   pluginId: 'example',

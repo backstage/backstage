@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
 } from '@backstage/integration';
-import fetch from 'node-fetch';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
 import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,

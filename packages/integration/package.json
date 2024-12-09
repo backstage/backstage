@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.15.1",
+  "version": "1.16.0-next.0",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
+    "@azure/storage-blob": "^12.5.0",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@octokit/auth-app": "^4.0.0",

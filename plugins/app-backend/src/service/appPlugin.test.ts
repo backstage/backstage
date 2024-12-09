@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
 import {
   createMockDirectory,
   mockServices,
@@ -75,6 +74,7 @@ describe('appPlugin', () => {
       'package.json': '{}',
       dist: {
         static: {},
+        'index.html': '<html><head></head></html>',
         'index.html.tmpl': '<html><head></head></html>',
       },
     });
@@ -92,14 +92,37 @@ describe('appPlugin', () => {
       ],
     });
 
-    const htmlContent = await fetch(
-      `http://localhost:${server.port()}/api/app/some/html5/route`,
-    ).then(res => res.text());
-
-    expect(htmlContent).toBe(`<html><head>
+    const baseUrl = `http://localhost:${server.port()}`;
+    const withInjectedConfig = `<html><head>
 <script type="backstage.io/config">
 []
 </script>
-</head></html>`);
+</head></html>`;
+
+    await expect(fetch(`${baseUrl}`).then(res => res.text())).resolves.toBe(
+      withInjectedConfig,
+    );
+
+    await expect(
+      fetch(`${baseUrl}?foo=bar`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/index.html`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/index.html?foo=bar`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/api/app/some/html5/route`).then(res => res.text()),
+    ).resolves.toBe(withInjectedConfig);
+
+    await expect(
+      fetch(`${baseUrl}/api/app/some/html5/route?foo=bar`).then(res =>
+        res.text(),
+      ),
+    ).resolves.toBe(withInjectedConfig);
   });
 });

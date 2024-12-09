@@ -19,6 +19,7 @@ import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 import getRawBody from 'raw-body';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactoryFromStreamOptions } from './types';
+import { parseLastModified, responseToReadable } from './util';
 
 /**
  * Utility class for UrlReader implementations to create valid ReadUrlResponse
@@ -28,7 +29,7 @@ import { ReadUrlResponseFactoryFromStreamOptions } from './types';
  */
 export class ReadUrlResponseFactory {
   /**
-   * Resolves a ReadUrlResponse from a Readable stream.
+   * Resolves a UrlReaderServiceReadUrlResponse from a Readable stream.
    */
   static async fromReadable(
     stream: Readable,
@@ -64,7 +65,7 @@ export class ReadUrlResponseFactory {
   }
 
   /**
-   * Resolves a ReadUrlResponse from an old-style NodeJS.ReadableStream.
+   * Resolves a UrlReaderServiceReadUrlResponse from an old-style NodeJS.ReadableStream.
    */
   static async fromNodeJSReadable(
     oldStyleStream: NodeJS.ReadableStream,
@@ -72,5 +73,22 @@ export class ReadUrlResponseFactory {
   ): Promise<UrlReaderServiceReadUrlResponse> {
     const readable = Readable.from(oldStyleStream);
     return ReadUrlResponseFactory.fromReadable(readable, options);
+  }
+
+  /**
+   * Resolves a UrlReaderServiceReadUrlResponse from a native fetch response body.
+   */
+  static async fromResponse(
+    response: Response,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
+    const etag = response.headers.get('etag') || undefined;
+    const lastModifiedAt = parseLastModified(
+      response.headers.get('last-modified'),
+    );
+
+    return ReadUrlResponseFactory.fromReadable(responseToReadable(response), {
+      etag,
+      lastModifiedAt,
+    });
   }
 }

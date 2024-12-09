@@ -17,8 +17,11 @@
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { catalogModuleAzureDevOpsEntityProvider } from './catalogModuleAzureDevOpsEntityProvider';
-import { AzureDevOpsEntityProvider } from '../providers';
+import { catalogModuleAzureEntityProvider } from './catalogModuleAzureDevOpsEntityProvider';
+import {
+  AzureBlobStorageEntityProvider,
+  AzureDevOpsEntityProvider,
+} from '../providers';
 
 describe('catalogModuleAzureDevOpsEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
@@ -58,7 +61,7 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleAzureDevOpsEntityProvider,
+        catalogModuleAzureEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
         scheduler.factory,
@@ -70,6 +73,65 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
     expect(addedProviders?.length).toEqual(1);
     expect(addedProviders?.pop()?.getProviderName()).toEqual(
       'AzureDevOpsEntityProvider:test',
+    );
+    expect(runner).not.toHaveBeenCalled();
+  });
+
+  it('should register azure blob storage provider at the catalog extension point', async () => {
+    let addedProviders: Array<AzureBlobStorageEntityProvider> | undefined;
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
+
+    const extensionPoint = {
+      addEntityProvider: (providers: any) => {
+        addedProviders = providers;
+      },
+    };
+    const runner = jest.fn();
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner(schedule) {
+        usedSchedule = schedule;
+        return { run: runner };
+      },
+    });
+
+    const config = {
+      integrations: {
+        azureBlobStorage: [
+          {
+            accountName: 'test',
+            accountKey: 'test',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          azureBlob: {
+            containerName: 'test',
+            accountName: 'test',
+            schedule: {
+              frequency: 'P1M',
+              timeout: 'PT3M',
+            },
+          },
+        },
+      },
+    };
+
+    await startTestBackend({
+      extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
+      features: [
+        catalogModuleAzureEntityProvider,
+        mockServices.rootConfig.factory({ data: config }),
+        mockServices.logger.factory(),
+        scheduler.factory,
+      ],
+    });
+
+    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
+    expect(addedProviders?.length).toEqual(1);
+    expect(addedProviders?.pop()?.getProviderName()).toEqual(
+      'azureBlobStorage-provider:default',
     );
     expect(runner).not.toHaveBeenCalled();
   });

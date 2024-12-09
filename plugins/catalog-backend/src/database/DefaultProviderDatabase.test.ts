@@ -19,13 +19,14 @@ import {
   TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
 import { DefaultProviderDatabase } from './DefaultProviderDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { generateStableHash } from './util';
 
 jest.setTimeout(60_000);
 
@@ -690,13 +691,8 @@ describe('DefaultProviderDatabase', () => {
     it.each(databases.eachSupportedId())(
       'should successfully fall back from batch to individual mode on conflicts, %p',
       async databaseId => {
-        const fakeLogger = {
-          debug: jest.fn(),
-        };
-        const { knex, db } = await createDatabase(
-          databaseId,
-          fakeLogger as any,
-        );
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(databaseId, fakeLogger);
 
         await createLocations(knex, ['component:default/a']);
 
@@ -744,11 +740,8 @@ describe('DefaultProviderDatabase', () => {
     it.each(databases.eachSupportedId())(
       'should gracefully handle accidental duplicate refresh state references when deletion happens during a full sync, %p',
       async databaseId => {
-        const fakeLogger = { debug: jest.fn() };
-        const { knex, db } = await createDatabase(
-          databaseId,
-          fakeLogger as any,
-        );
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(databaseId, fakeLogger);
 
         await createLocations(knex, ['component:default/a']);
 
@@ -771,6 +764,227 @@ describe('DefaultProviderDatabase', () => {
 
         const state = await knex<DbRefreshStateRow>('refresh_state').select();
         expect(state).toEqual([]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should properly translate deltas into add/update/remove, %p',
+      async databaseId => {
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+
+        const entity1Before: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n1' },
+        };
+        const entity1After: Entity = {
+          ...entity1Before,
+          apiVersion: '2',
+        };
+
+        const entity2Before: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n2' },
+        };
+        const entity2After: Entity = {
+          ...entity2Before,
+          apiVersion: '2',
+        };
+
+        const entity3: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n3' },
+        };
+
+        const entity4: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n4' },
+        };
+
+        const entity5: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n5' },
+        };
+
+        const entity6: Entity = {
+          apiVersion: '1',
+          kind: 'k',
+          metadata: { namespace: 'ns', name: 'n6' },
+        };
+
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id1',
+          entity_ref: stringifyEntityRef(entity1Before),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity1Before),
+          unprocessed_hash: generateStableHash(entity1Before),
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity1Before),
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id2',
+          entity_ref: stringifyEntityRef(entity2Before),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity2Before),
+          unprocessed_hash: generateStableHash(entity2After), // lie about the hash!
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity2Before),
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id4',
+          entity_ref: stringifyEntityRef(entity4),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity4),
+          unprocessed_hash: generateStableHash(entity4),
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity4),
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id5',
+          entity_ref: stringifyEntityRef(entity5),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity5),
+          unprocessed_hash: generateStableHash(entity5),
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity5),
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'id6',
+          entity_ref: stringifyEntityRef(entity6),
+          last_discovery_at: new Date(),
+          next_update_at: new Date(),
+          errors: '[]',
+          unprocessed_entity: JSON.stringify(entity6),
+          unprocessed_hash: generateStableHash(entity6),
+          location_key: 'old',
+        });
+        await insertRefRow(knex, {
+          source_key: 'my-provider',
+          target_entity_ref: stringifyEntityRef(entity6),
+        });
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'delta',
+            sourceKey: 'my-provider',
+            added: [
+              // we used the right hashes for entity1, so this will turn into an update
+              { entity: entity1After },
+              // we lied about the hash for entity2, so this will become a no-op
+              { entity: entity2After },
+              // this didn't exist, so will become an add
+              { entity: entity3 },
+              // only the location key changed, so this will become an update
+              { entity: entity5, locationKey: 'new' },
+              // only the location key changed, so this will become an update
+              { entity: entity6, locationKey: 'new' },
+            ],
+            removed: [{ entityRef: stringifyEntityRef(entity4) }],
+          });
+        });
+
+        const state = await knex<DbRefreshStateRow>('refresh_state')
+          .select([
+            'entity_ref',
+            'unprocessed_entity',
+            'unprocessed_hash',
+            'location_key',
+          ])
+          .orderBy('entity_ref');
+
+        expect(state).toEqual([
+          {
+            entity_ref: stringifyEntityRef(entity1After),
+            unprocessed_entity: JSON.stringify(entity1After),
+            unprocessed_hash: generateStableHash(entity1After),
+            location_key: null,
+          },
+          {
+            entity_ref: stringifyEntityRef(entity2After),
+            unprocessed_entity: JSON.stringify(entity2Before), // didn't change
+            unprocessed_hash: generateStableHash(entity2After),
+            location_key: null,
+          },
+          {
+            entity_ref: stringifyEntityRef(entity3),
+            unprocessed_entity: JSON.stringify(entity3),
+            unprocessed_hash: generateStableHash(entity3),
+            location_key: null,
+          },
+          // entity4 was deleted here
+          {
+            entity_ref: stringifyEntityRef(entity5),
+            unprocessed_entity: JSON.stringify(entity5),
+            unprocessed_hash: generateStableHash(entity5),
+            location_key: 'new', // permitted to change, because it was null before
+          },
+          {
+            entity_ref: stringifyEntityRef(entity6),
+            unprocessed_entity: JSON.stringify(entity6),
+            unprocessed_hash: generateStableHash(entity6),
+            location_key: 'new', // managed to update only the location key
+          },
+        ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can handle large deltas without exploding, %p',
+      async databaseId => {
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+
+        const count = 10000;
+        const padded = (n: number) => String(n).padStart(8, '0');
+
+        const entities = Array.from({ length: count }, (_, i) => ({
+          entity: {
+            apiVersion: '1',
+            kind: 'k',
+            metadata: { namespace: 'ns', name: padded(i) },
+          },
+        }));
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'delta',
+            sourceKey: 'my-provider',
+            added: entities,
+            removed: [],
+          });
+        });
+
+        const state = await knex<DbRefreshStateRow>('refresh_state')
+          .select(['entity_ref', 'unprocessed_entity', 'unprocessed_hash'])
+          .orderBy('entity_ref');
+
+        expect(state).toHaveLength(count);
+        expect(state[0]).toEqual({
+          entity_ref: stringifyEntityRef(entities[0].entity),
+          unprocessed_entity: JSON.stringify(entities[0].entity),
+          unprocessed_hash: generateStableHash(entities[0].entity),
+        });
       },
     );
   });

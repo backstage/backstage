@@ -27,7 +27,6 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
-import fetch from 'node-fetch';
 import pLimit, { Limit } from 'p-limit';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';

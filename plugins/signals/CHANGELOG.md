@@ -1,5 +1,39 @@
 # @backstage/plugin-signals
 
+## 0.0.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.7
+
+## 0.0.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.7
+
+## 0.0.12
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/theme@0.6.1
+  - @backstage/types@1.2.0
+  - @backstage/core-components@0.16.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/plugin-signals-react@0.0.7
+
 ## 0.0.12-next.2
 
 ### Patch Changes

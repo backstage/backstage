@@ -1,5 +1,14 @@
 # @backstage/integration-aws-node
 
+## 0.1.13
+
+### Patch Changes
+
+- 52ae92d: The `getDefaultCredentialsChain` function now accepts and applies a `region` parameter, preventing it from defaulting to `us-east-1` when no region is specified.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+
 ## 0.1.13-next.0
 
 ### Patch Changes

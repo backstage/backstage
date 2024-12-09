@@ -203,6 +203,7 @@ export interface QueryEntitiesInitialRequest {
     term: string;
     fields?: string[];
   };
+  skipTotalItems?: boolean;
 }
 
 /**

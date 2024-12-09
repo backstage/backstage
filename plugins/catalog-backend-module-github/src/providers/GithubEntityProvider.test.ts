@@ -621,22 +621,6 @@ describe('GithubEntityProvider', () => {
     ).toThrow('Either schedule or scheduler must be provided');
   });
 
-  it('fail with scheduler but no schedule config', () => {
-    const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as SchedulerService;
-    const config = createSingleProviderConfig();
-
-    expect(() =>
-      GithubEntityProvider.fromConfig(config, {
-        logger,
-        scheduler,
-      }),
-    ).toThrow(
-      'No schedule provided neither via code nor config for github-provider:myProvider',
-    );
-  });
-
   it('single simple provider config with schedule in config', async () => {
     const schedule = new PersistingTaskRunner();
     const scheduler = {

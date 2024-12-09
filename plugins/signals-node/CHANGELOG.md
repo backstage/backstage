@@ -1,5 +1,40 @@
 # @backstage/plugin-signals-node
 
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.0
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+
+## 0.1.14
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+
 ## 0.1.14-next.3
 
 ### Patch Changes
