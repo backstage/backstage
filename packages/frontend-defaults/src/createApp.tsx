@@ -19,6 +19,8 @@ import {
   ConfigApi,
   coreExtensionData,
   ExtensionFactoryMiddleware,
+  FrontendFeature,
+  FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
@@ -27,7 +29,6 @@ import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseU
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
-  FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
@@ -38,6 +39,7 @@ import { resolveAsyncFeatures } from './resolution';
  * A source of dynamically loaded frontend features.
  *
  * @public
+ * @deprecated Use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader} function instead.
  */
 export interface CreateAppFeatureLoader {
   /**
@@ -59,7 +61,11 @@ export interface CreateAppFeatureLoader {
  * @public
  */
 export interface CreateAppOptions {
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  features?: (
+    | FrontendFeature
+    | FrontendFeatureLoader
+    | CreateAppFeatureLoader
+  )[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   /**
@@ -94,15 +100,22 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const { features: discoveredFeatures } = discoverAvailableFeatures(config);
-    const { features: providedFeatures } = await resolveAsyncFeatures({
+    const {
+      features: discoveredFeatures,
+      featureLoaders: discoveredFeatureLoaders,
+    } = discoverAvailableFeatures(config);
+    const { features: loadedFeatures } = await resolveAsyncFeatures({
       config,
-      features: options?.features,
+      features: [
+        ...discoveredFeatures,
+        ...(discoveredFeatureLoaders ?? []),
+        ...(options?.features ?? []),
+      ],
     });
 
     const app = createSpecializedApp({
       config,
-      features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
+      features: [appPlugin, ...loadedFeatures],
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
     });
