@@ -40,4 +40,7 @@ export interface CreateAppOptions {
 export function createPublicSignInApp(options?: CreateAppOptions): {
   createRoot(): React_2.JSX.Element;
 };
+
+// @public
+export function isBackstageFeature(obj: unknown): obj is FrontendFeature;
 ```
