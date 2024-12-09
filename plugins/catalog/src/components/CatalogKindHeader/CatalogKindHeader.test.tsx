@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';

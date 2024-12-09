@@ -15,7 +15,8 @@
  */
 
 import tlr, { render, RenderResult } from '@testing-library/react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { AppContext } from '../app';

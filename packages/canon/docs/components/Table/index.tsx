@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import {
   cellStyles,
   headerCellStyles,
@@ -23,7 +23,7 @@ import {
   rowStyles,
 } from './table.css';
 
-export const Root = ({ children }: { children: React.ReactNode }) => {
+export const Root = ({ children }: { children: ReactNode }) => {
   return (
     <div className={wrapperStyles}>
       <table className={tableStyles}>{children}</table>
@@ -31,26 +31,26 @@ export const Root = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const Header = ({ children }: { children: React.ReactNode }) => {
+export const Header = ({ children }: { children: ReactNode }) => {
   return <thead>{children}</thead>;
 };
 
-export const Body = ({ children }: { children: React.ReactNode }) => {
+export const Body = ({ children }: { children: ReactNode }) => {
   return <tbody>{children}</tbody>;
 };
 
-export const HeaderRow = ({ children }: { children: React.ReactNode }) => {
+export const HeaderRow = ({ children }: { children: ReactNode }) => {
   return <tr>{children}</tr>;
 };
 
-export const HeaderCell = ({ children }: { children: React.ReactNode }) => {
+export const HeaderCell = ({ children }: { children: ReactNode }) => {
   return <th className={`${cellStyles} ${headerCellStyles}`}>{children}</th>;
 };
 
-export const Row = ({ children }: { children: React.ReactNode }) => {
+export const Row = ({ children }: { children: ReactNode }) => {
   return <tr className={rowStyles}>{children}</tr>;
 };
 
-export const Cell = ({ children }: { children: React.ReactNode }) => {
+export const Cell = ({ children }: { children: ReactNode }) => {
   return <td className={cellStyles}>{children}</td>;
 };

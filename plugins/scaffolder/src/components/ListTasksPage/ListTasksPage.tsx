@@ -26,7 +26,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   scaffolderApiRef,
   ScaffolderTask,

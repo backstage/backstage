@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { ComponentType, useCallback, useEffect } from 'react';
 import {
   Content,
   InfoCard,
@@ -53,7 +53,7 @@ export type WorkflowProps = {
   namespace: string;
   templateName: string;
   components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<

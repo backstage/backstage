@@ -6,7 +6,8 @@
 /// <reference types="react" />
 
 import { ForwardRefExoticComponent } from 'react';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 
 // @public (undocumented)
@@ -109,14 +110,14 @@ export const breakpoints: {
 };
 
 // @public (undocumented)
-export const Button: React_2.ForwardRefExoticComponent<
-  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+export const Button: ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public
 export interface ButtonProps {
   // (undocumented)
-  children: React_2.ReactNode;
+  children: ReactNode;
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
@@ -148,8 +149,8 @@ export interface ColorProps {
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 // @public (undocumented)
-export const Container: React_2.ForwardRefExoticComponent<
-  ContainerProps & React_2.RefAttributes<HTMLDivElement>
+export const Container: ForwardRefExoticComponent<
+  ContainerProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -237,7 +238,7 @@ export interface GridProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
+export const Icon: ({ name }: { name: IconNames }) => JSX_2.Element;
 
 // @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;

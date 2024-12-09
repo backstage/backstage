@@ -16,7 +16,6 @@
 
 import { Transformer } from './transformer';
 import { normalizeUrl } from './rewriteDocLinks';
-import React from 'react';
 import { renderReactElement } from './renderReactElement';
 import { TechDocsRedirectNotification } from '../components/TechDocsRedirectNotification';
 

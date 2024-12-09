@@ -19,7 +19,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BackButton, NextButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult, ReviewResult } from '../useImportState';

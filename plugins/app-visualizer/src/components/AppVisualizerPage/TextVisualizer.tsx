@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 function mkDiv(
   children: ReactNode,

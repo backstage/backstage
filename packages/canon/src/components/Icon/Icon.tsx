@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useTheme } from '../../theme/context';
 import type { IconNames } from './types';
 

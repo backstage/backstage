@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { DismissableBanner, Props } from './DismissableBanner';
 import Typography from '@material-ui/core/Typography';
 import { WebStorage } from '@backstage/core-app-api';

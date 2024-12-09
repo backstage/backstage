@@ -172,7 +172,7 @@ maintain such a component in a new directory at
 For example, you can define the following Custom home page component:
 
 ```tsx
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { Content } from '@backstage/core-components';
 import {
@@ -192,7 +192,7 @@ import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
 
 export type CustomTechDocsHomeProps = {
   groups?: Array<{
-    title: React.ReactNode;
+    title: ReactNode;
     filterPredicate: ((entity: Entity) => boolean) | string;
   }>;
 };

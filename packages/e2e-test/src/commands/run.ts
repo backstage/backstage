@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import fs from 'fs-extra';
 import fetch from 'cross-fetch';
+import fs from 'fs-extra';
 import handlebars from 'handlebars';
+import os from 'os';
+import path, { join as joinPath, resolve as resolvePath } from 'path';
 import killTree from 'tree-kill';
-import { resolve as resolvePath, join as joinPath } from 'path';
-import path from 'path';
 
 import {
-  spawnPiped,
+  print,
   runPlain,
+  spawnPiped,
   waitFor,
   waitForExit,
-  print,
 } from '../lib/helpers';
 
 import mysql from 'mysql2/promise';
@@ -434,7 +433,6 @@ async function switchToReact17(appDir: string) {
   await fs.writeFile(
     resolvePath(appDir, 'packages/app/src/index.tsx'),
     `import '@backstage/cli/asset-types';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 

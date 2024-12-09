@@ -25,7 +25,6 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-import React from 'react';
 import { EntityRefLink } from '../../EntityRefLink';
 import {
   Container,

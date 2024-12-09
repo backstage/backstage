@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
 import {
   MockErrorApi,
@@ -27,7 +27,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 
 type BombProps = {
   shouldThrow?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const Bomb = ({ shouldThrow }: BombProps) => {

@@ -15,7 +15,6 @@
  */
 
 import { fireEvent, render, within } from '@testing-library/react';
-import React from 'react';
 import { SelectComponent as Select } from './Select';
 
 const SELECT_ITEMS = [

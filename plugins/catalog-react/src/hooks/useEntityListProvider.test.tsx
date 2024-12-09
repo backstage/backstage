@@ -26,7 +26,7 @@ import {
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { catalogApiRef } from '../api';
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../apis';

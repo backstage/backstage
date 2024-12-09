@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
 import Grid from '@material-ui/core/Grid';
 import { StructuredMetadataTable } from './StructuredMetadataTable';

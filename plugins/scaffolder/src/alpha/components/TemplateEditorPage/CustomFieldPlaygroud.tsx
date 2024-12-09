@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
 import validator from '@rjsf/validator-ajv8';
 import CodeMirror from '@uiw/react-codemirror';

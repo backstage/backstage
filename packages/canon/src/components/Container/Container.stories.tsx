@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from '../Box/Box';
 import { argTypesSpacing } from '../../../docs/utils/argTypes';

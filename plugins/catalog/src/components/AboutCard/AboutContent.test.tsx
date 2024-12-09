@@ -22,7 +22,6 @@ import {
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { AboutContent } from './AboutContent';
 
 describe('<AboutContent />', () => {

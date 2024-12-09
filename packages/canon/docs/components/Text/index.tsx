@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode, CSSProperties } from 'react';
 import { textStyles } from './text.css';
 
 export const Text = ({
   children,
   style,
 }: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
+  children: ReactNode;
+  style?: CSSProperties;
 }) => {
   return (
     <div className={textStyles} style={style}>

@@ -26,7 +26,7 @@ import {
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import kebabCase from 'lodash/kebabCase';
 import startCase from 'lodash/startCase';
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EntityContentBlueprint } from '../blueprints';
 
 /** @alpha */

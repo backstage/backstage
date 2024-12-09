@@ -21,7 +21,6 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
-import React from 'react';
 import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
