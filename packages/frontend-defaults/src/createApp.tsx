@@ -15,7 +15,7 @@
  */
 
 import React, { JSX, ReactNode } from 'react';
-import { ConfigApi } from '@backstage/frontend-plugin-api';
+import { ConfigApi, FrontendFeature } from '@backstage/frontend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
@@ -26,14 +26,20 @@ import { ConfigReader } from '@backstage/config';
 import appPlugin from '@backstage/plugin-app';
 import {
   CreateAppRouteBinder,
-  FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
+
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  InternalFrontendFeatureLoader,
+  isInternalFrontendFeatureLoader,
+} from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
 
 /**
  * A source of dynamically loaded frontend features.
  *
  * @public
+ * @deprecated Please use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader function}
  */
 export interface CreateAppFeatureLoader {
   /**
@@ -87,29 +93,86 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures(config);
+    const loadedFeatures: FrontendFeature[] = [];
 
-    const providedFeatures: FrontendFeature[] = [];
-    for (const entry of options?.features ?? []) {
-      if ('load' in entry) {
-        try {
-          const result = await entry.load({ config });
-          providedFeatures.push(...result.features);
-        } catch (e) {
-          throw new Error(
-            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
-              e,
-            )}`,
-          );
+    // Separate deprecated CreateAppFeatureLoader elements from the frontend features,
+    // and manage the deprecated elements first.
+    const [providedFeatures, createAppFeatureLoaders] = (
+      options?.features ?? []
+    ).reduce<[FrontendFeature[], CreateAppFeatureLoader[]]>(
+      (acc, item) => {
+        if ('$$type' in item) {
+          acc[0].push(item);
+        } else {
+          acc[1].push(item);
         }
-      } else {
-        providedFeatures.push(entry);
+        return acc;
+      },
+      [[], []],
+    );
+    for (const entry of createAppFeatureLoaders) {
+      try {
+        const result = await entry.load({ config });
+        providedFeatures.push(...result.features);
+      } catch (e) {
+        throw new Error(
+          `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
+            e,
+          )}`,
+        );
       }
     }
 
+    const featureLoaderNames: string[] = [];
+
+    async function applyFeatureLoaders(features: FrontendFeature[]) {
+      if (features.length === 0) {
+        return;
+      }
+      const [featureLoaders, otherFeatures] = features.reduce<
+        [InternalFrontendFeatureLoader[], FrontendFeature[]]
+      >(
+        (acc, item) => {
+          if (isInternalFrontendFeatureLoader(item)) {
+            acc[0].push(item);
+          } else {
+            acc[1].push(item);
+          }
+          return acc;
+        },
+        [[], []],
+      );
+      loadedFeatures.push(...otherFeatures);
+      for (const featureLoader of featureLoaders) {
+        if (featureLoaderNames.includes(featureLoader.name)) {
+          throw new Error(
+            `Duplicate feature loaders with name: '${featureLoader.name}'`,
+          );
+        }
+        featureLoaderNames.push(featureLoader.name);
+        let result: {
+          features: FrontendFeature[];
+        };
+        try {
+          result = await featureLoader.load({ config });
+        } catch (e) {
+          throw new Error(
+            `Failed to read frontend features from loader '${
+              featureLoader.name
+            }', ${stringifyError(e)}`,
+          );
+        }
+        await applyFeatureLoaders(result.features);
+      }
+    }
+
+    const discoveredFeatures = getAvailableFeatures(config);
+
+    await applyFeatureLoaders([...discoveredFeatures, ...providedFeatures]);
+
     const app = createSpecializedApp({
       config,
-      features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
+      features: [appPlugin, ...loadedFeatures],
       bindRoutes: options?.bindRoutes,
     }).createRoot();
 

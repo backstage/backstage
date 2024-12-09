@@ -21,6 +21,8 @@ import {
   ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import { FrontendFeatureLoader } from './createFrontendFeatureLoader';
+import { FrontendModule } from './createFrontendModule';
 import { FrontendPlugin } from './createFrontendPlugin';
 
 /**
@@ -51,12 +53,6 @@ export interface ExtensionOverrides {
   readonly $$type: '@backstage/ExtensionOverrides';
 }
 
-/**
- * @public
- * @deprecated import from {@link @backstage/frontend-app-api#FrontendFeature} instead
- */
-export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
-
 /** @public */
 export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
   Iterable<
@@ -78,3 +74,12 @@ export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
         : IData
       : never;
   };
+
+/** @public  */
+export type FrontendFeature =
+  | FrontendPlugin
+  | FrontendModule
+  | FrontendFeatureLoader
+  // TODO(blam): This is just forwards backwards compatibility, remove after v1.31.0
+  | { $$type: '@backstage/ExtensionOverrides' }
+  | { $$type: '@backstage/BackstagePlugin' };
