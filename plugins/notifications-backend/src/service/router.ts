@@ -179,7 +179,7 @@ export async function createRouter(
   const processOptions = async (
     opts: NotificationSendOptions,
     origin: string,
-  ) => {
+  ): Promise<NotificationSendOptions> => {
     const filtered = await filterProcessors({ ...opts, origin, user: null });
     let ret = opts;
     for (const processor of filtered) {
@@ -525,8 +525,11 @@ export async function createRouter(
       let users = [];
 
       if (!recipients || !title) {
-        logger.error(`Invalid notification request received`);
-        throw new InputError(`Invalid notification request received`);
+        const err = `Invalid notification request received: missing ${
+          !title ? 'title' : ''
+        } ${!recipients ? 'recipients' : ''}`;
+        logger.error(err);
+        throw new InputError(err);
       }
 
       if (link) {
@@ -553,7 +556,7 @@ export async function createRouter(
           origin,
         );
         notifications.push(broadcast);
-      } else {
+      } else if (recipients.type === 'entity') {
         const entityRef = recipients.entityRef;
 
         try {
@@ -574,6 +577,8 @@ export async function createRouter(
           origin,
         );
         notifications.push(...userNotifications);
+      } else {
+        throw new InputError(`Invalid recipients type`);
       }
 
       res.json(notifications);
