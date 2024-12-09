@@ -19981,11 +19981,11 @@ __metadata:
   linkType: hard
 
 "@types/react-dom@npm:^18":
-  version: 18.3.2
-  resolution: "@types/react-dom@npm:18.3.2"
-  dependencies:
-    "@types/react": ^18
-  checksum: 7fd2bb31152c302febc8e18451f8351d6e48ee57dcf74f9b974a71f4f462945b9f1d8d96bed998c9e6aafa2b314fe64fdc210131c707539d3fdc9279ab73eb0e
+  version: 18.3.3
+  resolution: "@types/react-dom@npm:18.3.3"
+  peerDependencies:
+    "@types/react": ^18.0.0
+  checksum: d9d78c5541a223d696ead4ae5fd7e20334723b2c0ee9f7455f96c9fdb95aeb876dd5b29519fa2c6686e5000624290c5d0dbd2f1005e478172e07a42343857e8d
   languageName: node
   linkType: hard
 
