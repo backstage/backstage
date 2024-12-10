@@ -50,7 +50,6 @@ import {
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
-import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
@@ -69,6 +68,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { createOpenApiRouter } from '../schema/openapi';
 import {
   findTemplate,
   getEntityBaseUrl,
@@ -275,7 +275,7 @@ const readDuration = (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = Router();
+  const router = await createOpenApiRouter();
   // Be generous in upload size to support a wide range of templates in dry-run mode.
   router.use(express.json({ limit: '10MB' }));
 
