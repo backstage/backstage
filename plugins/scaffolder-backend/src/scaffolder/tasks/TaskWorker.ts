@@ -176,9 +176,9 @@ export class TaskWorker {
   async runOneTask(task: TaskContext) {
     await this.auditor?.createEvent({
       eventId: 'task',
-      subEventId: 'execution',
       severityLevel: 'medium',
       meta: {
+        actionType: 'execution',
         taskId: task.taskId,
         taskParameters: task.spec.parameters,
         templateRef: task.spec.templateInfo?.entityRef,

@@ -29,7 +29,6 @@ import type { Response as Response_2 } from 'express';
 // @public (undocumented)
 export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
   eventId: string;
-  subEventId?: string;
   severityLevel?: AuditorEventSeverityLevel;
   request?: Request_2<any, any, any, any, any>;
   meta?: TRootMeta;

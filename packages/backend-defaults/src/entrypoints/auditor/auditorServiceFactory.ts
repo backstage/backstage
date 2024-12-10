@@ -21,7 +21,11 @@ import {
 import type { Config } from '@backstage/config';
 import * as winston from 'winston';
 import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
-import { Auditor, auditorFieldFormat, defaultProdFormat } from './Auditor';
+import {
+  DefaultRootAuditorService,
+  auditorFieldFormat,
+  defaultProdFormat,
+} from './Auditor';
 
 const transports = {
   auditorConsole: (config?: Config) => {
@@ -33,20 +37,6 @@ const transports = {
 };
 
 /**
- * Access to static configuration.
- *
- * See {@link @backstage/code-plugin-api#AuditorService}
- * and {@link https://backstage.io/docs/backend-system/core-services/auditor | the service docs}
- * for more information.
- *
- * @public
- */
-export interface AuditorFactoryOptions {
-  transports: (config?: Config) => winston.transport[];
-  format: (config?: Config) => winston.Logform.Format;
-}
-
-/**
  * Plugin-level auditing.
  *
  * See {@link @backstage/code-plugin-api#AuditorService}
@@ -55,52 +45,33 @@ export interface AuditorFactoryOptions {
  *
  * @public
  */
-export const auditorServiceFactoryWithOptions = (
-  options?: AuditorFactoryOptions,
-) =>
-  createServiceFactory({
-    service: coreServices.auditor,
-    deps: {
-      config: coreServices.rootConfig,
-      auth: coreServices.auth,
-      httpAuth: coreServices.httpAuth,
-      plugin: coreServices.pluginMetadata,
-    },
-    async createRootContext({ config }) {
-      const auditorConfig = config.getOptionalConfig('backend.auditor');
+export const auditorServiceFactory = createServiceFactory({
+  service: coreServices.auditor,
+  deps: {
+    config: coreServices.rootConfig,
+    auth: coreServices.auth,
+    httpAuth: coreServices.httpAuth,
+    plugin: coreServices.pluginMetadata,
+  },
+  async createRootContext({ config }) {
+    const auditorConfig = config.getOptionalConfig('backend.auditor');
 
-      const auditor = Auditor.create({
-        meta: {
-          service: 'backstage',
-        },
-        format:
-          options?.format(auditorConfig) ??
-          winston.format.combine(
-            auditorFieldFormat,
-            process.env.NODE_ENV === 'production'
-              ? defaultProdFormat
-              : Auditor.colorFormat(),
-          ),
-        transports: [
-          ...transports.auditorConsole(auditorConfig),
-          ...(options?.transports?.(auditorConfig) ?? []),
-        ],
-      });
+    const auditor = DefaultRootAuditorService.create({
+      meta: {
+        service: 'backstage',
+      },
+      format: winston.format.combine(
+        auditorFieldFormat,
+        process.env.NODE_ENV === 'production'
+          ? defaultProdFormat
+          : DefaultRootAuditorService.colorFormat(),
+      ),
+      transports: [...transports.auditorConsole(auditorConfig)],
+    });
 
-      return auditor;
-    },
-    factory({ plugin, auth, httpAuth }, rootAuditor) {
-      return rootAuditor.child(
-        { plugin: plugin.getId() },
-        { auth, httpAuth, plugin },
-      );
-    },
-  });
-
-/**
- * @public
- */
-export const auditorServiceFactory = Object.assign(
-  auditorServiceFactoryWithOptions,
-  auditorServiceFactoryWithOptions(),
-);
+    return auditor;
+  },
+  factory({ plugin, auth, httpAuth }, rootAuditor) {
+    return rootAuditor.forPlugin({ auth, httpAuth, plugin });
+  },
+});

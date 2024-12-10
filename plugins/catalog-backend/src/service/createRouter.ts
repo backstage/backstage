@@ -35,7 +35,7 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
-import { Cursor, EntitiesCatalog } from '../catalog/types';
+import { EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
@@ -50,11 +50,7 @@ import {
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
-import {
-  createEntityArrayJsonStream,
-  writeEntitiesResponse,
-  writeSingleEntityResponse,
-} from './response';
+import { writeEntitiesResponse, writeSingleEntityResponse } from './response';
 import { LocationService, RefreshService } from './types';
 import {
   disallowReadonlyMode,
@@ -129,9 +125,9 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'entity-mutate',
-        subEventId: 'refresh',
         severityLevel: 'medium',
         meta: {
+          queryType: 'refresh',
           entityRef: restBody.entityRef,
         },
         request: req,
@@ -165,8 +161,11 @@ export async function createRouter(
       .get('/entities', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
-          subEventId: 'all',
           request: req,
+          meta: {
+            queryType: 'all',
+            query: req.query,
+          },
         });
 
         try {
@@ -260,8 +259,10 @@ export async function createRouter(
       .get('/entities/by-query', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
-          subEventId: 'by-query',
           request: req,
+          meta: {
+            queryType: 'by-query',
+          },
         });
 
         try {
@@ -311,9 +312,9 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
-          subEventId: 'by-uid',
           request: req,
           meta: {
+            queryType: 'by-uid',
             uid: uid,
           },
         });
@@ -343,10 +344,10 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-mutate',
-          subEventId: 'delete',
           severityLevel: 'medium',
           request: req,
           meta: {
+            actionType: 'delete',
             uid: uid,
           },
         });
@@ -372,9 +373,9 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
-          subEventId: 'by-name',
           request: req,
           meta: {
+            queryType: 'by-name',
             entityRef: entityRef,
           },
         });
@@ -407,9 +408,9 @@ export async function createRouter(
 
           const auditorEvent = await auditor?.createEvent({
             eventId: 'entity-fetch',
-            subEventId: 'ancestry',
             request: req,
             meta: {
+              actionType: 'ancestry',
               entityRef: entityRef,
             },
           });
@@ -443,8 +444,10 @@ export async function createRouter(
       .post('/entities/by-refs', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
-          subEventId: 'by-refs',
           request: req,
+          meta: {
+            queryType: 'by-refs',
+          },
         });
 
         try {
@@ -510,10 +513,10 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'location-mutate',
-          subEventId: 'create',
           severityLevel: dryRun ? 'low' : 'medium',
           request: req,
           meta: {
+            actionType: 'create',
             location: location,
             isDryRun: dryRun,
           },
@@ -555,8 +558,10 @@ export async function createRouter(
       .get('/locations', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'location-fetch',
-          subEventId: 'all',
           request: req,
+          meta: {
+            queryType: 'all',
+          },
         });
 
         try {
@@ -580,9 +585,9 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'location-fetch',
-          subEventId: 'by-id',
           request: req,
           meta: {
+            queryType: 'by-id',
             id: id,
           },
         });
@@ -611,10 +616,10 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'location-mutate',
-          subEventId: 'delete',
           severityLevel: 'medium',
           request: req,
           meta: {
+            actionType: 'delete',
             id: id,
           },
         });
@@ -642,9 +647,9 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'location-fetch',
-          subEventId: 'by-entity',
           request: req,
           meta: {
+            queryType: 'by-entity',
             locationRef: locationRef,
           },
         });

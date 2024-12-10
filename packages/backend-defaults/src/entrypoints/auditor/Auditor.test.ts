@@ -18,66 +18,24 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { format } from 'logform';
 import { MESSAGE } from 'triple-beam';
 import Transport from 'winston-transport';
-import { Auditor } from './Auditor';
+import { DefaultAuditorService, DefaultRootAuditorService } from './Auditor';
 
 describe('Auditor', () => {
   it('creates a auditor instance with default options', () => {
-    const auditor = Auditor.create();
-    expect(auditor).toBeInstanceOf(Auditor);
+    const auditor = DefaultRootAuditorService.create();
+    expect(auditor).toBeInstanceOf(DefaultRootAuditorService);
   });
 
   it('creates a child logger', () => {
-    const auditor = Auditor.create();
-    const childLogger = auditor.child({ plugin: 'test-plugin' });
-    expect(childLogger).toBeInstanceOf(Auditor);
-  });
-
-  it('should error without plugin service', async () => {
-    const auditor = Auditor.create();
-    await expect(
-      auditor.createEvent({
-        eventId: 'test-event',
-      }),
-    ).rejects.toThrow(
-      `The core service 'plugin' was not provided during the auditor's instantiation`,
-    );
-  });
-
-  it('should error without auth service', async () => {
-    const pluginId = 'test-plugin';
-
-    const auditor = Auditor.create({
-      plugin: {
-        getId: () => pluginId,
-      },
-    });
-
-    await expect(
-      auditor.createEvent({
-        eventId: 'test-event',
-      }),
-    ).rejects.toThrow(
-      `The core service 'auth' was not provided during the auditor's instantiation`,
-    );
-  });
-
-  it('should error without httpAuth service', async () => {
-    const pluginId = 'test-plugin';
-
-    const auditor = Auditor.create({
-      plugin: {
-        getId: () => pluginId,
-      },
+    const auditor = DefaultRootAuditorService.create();
+    const childLogger = auditor.forPlugin({
       auth: mockServices.auth.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
+      plugin: {
+        getId: () => 'test-plugin',
+      },
     });
-
-    await expect(
-      auditor.createEvent({
-        eventId: 'test-event',
-      }),
-    ).rejects.toThrow(
-      `The core service 'httpAuth' was not provided during the auditor's instantiation`,
-    );
+    expect(childLogger).toBeInstanceOf(DefaultAuditorService);
   });
 
   it('should log', async () => {
@@ -88,14 +46,15 @@ describe('Auditor', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
+    const auditor = DefaultRootAuditorService.create({
+      format: format.json(),
+      transports: [mockTransport],
+    }).forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
         getId: () => pluginId,
       },
-      format: format.json(),
-      transports: [mockTransport],
     });
 
     await auditor.createEvent({
@@ -109,59 +68,6 @@ describe('Auditor', () => {
           isAuditorEvent: true,
           level: 'info',
           message: 'test-plugin.test-event',
-          severityLevel: 'low',
-          status: 'initiated',
-        }),
-      }),
-      expect.any(Function),
-    );
-  });
-
-  it('should redact nested object', async () => {
-    const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
-    });
-
-    const pluginId = 'test-plugin';
-
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
-      },
-      format: format.json(),
-      transports: [mockTransport],
-    });
-
-    auditor.addRedactions(['hello']);
-
-    await auditor.createEvent({
-      eventId: 'test-event',
-      meta: {
-        null: null,
-        nested: 'hello (world) from nested object',
-        nullProto: Object.create(null, {
-          foo: { value: 'hello foo', enumerable: true },
-        }),
-      },
-    });
-
-    expect(mockTransport.log).toHaveBeenCalledWith(
-      expect.objectContaining({
-        [MESSAGE]: JSON.stringify({
-          actor: {},
-          isAuditorEvent: true,
-          level: 'info',
-          message: 'test-plugin.test-event',
-          meta: {
-            nested: '*** (world) from nested object',
-            null: null,
-            nullProto: {
-              foo: '*** foo',
-            },
-          },
           severityLevel: 'low',
           status: 'initiated',
         }),
@@ -173,7 +79,7 @@ describe('Auditor', () => {
   it('should log a status "initiated" using createEvent', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
+    const auditor = DefaultRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
@@ -196,7 +102,7 @@ describe('Auditor', () => {
   it('should log a status "succeeded" using createEvent', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
+    const auditor = DefaultRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
@@ -222,7 +128,7 @@ describe('Auditor', () => {
   it('should log a status "failed"', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
+    const auditor = DefaultRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
@@ -250,7 +156,7 @@ describe('Auditor', () => {
   it('should use root meta', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
+    const auditor = DefaultRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {

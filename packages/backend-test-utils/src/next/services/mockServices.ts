@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AuditorOptions } from '@backstage/backend-defaults/auditor';
+import type { RootAuditorOptions } from '@backstage/backend-defaults/auditor';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -234,15 +234,14 @@ export namespace mockServices {
   ): AuditorService {
     const service = 'backstage';
     const pluginId = options?.pluginId ?? 'test';
-    const mockAuth =
-      options?.auth ??
-      new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      });
-    const mockHttpAuth =
-      options?.httpAuth ??
-      new MockHttpAuthService(pluginId, mockCredentials.user());
+    const mockAuth = new MockAuthService({
+      pluginId,
+      disableDefaultAuthPolicy: false,
+    });
+    const mockHttpAuth = new MockHttpAuthService(
+      pluginId,
+      mockCredentials.user(),
+    );
 
     const mockPlugin = {
       getId: () => pluginId,
@@ -259,7 +258,7 @@ export namespace mockServices {
   }
 
   export namespace auditor {
-    export type Options = Omit<AuditorOptions, 'format' | 'transports'>;
+    export type Options = Omit<RootAuditorOptions, 'format' | 'transports'>;
 
     export const factory = (options?: auditor.Options) =>
       createServiceFactory({

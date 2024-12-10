@@ -30,10 +30,9 @@ The `auditorServiceFactory` creates an `Auditor` instance for the root context a
 
 The Auditor Service is designed for recording security-relevant events that require special attention or are subject to compliance regulations. These events often involve actions like:
 
-- User authentication and authorization
+- User session management
 - Data access and modification
 - System configuration changes
-- Security policy enforcement
 
 For general application logging that is not security-critical, you should use the standard `LoggerService` provided by Backstage. This helps to keep your audit logs focused and relevant.
 
@@ -63,10 +62,11 @@ export async function createRouter(
       // ... process the request
 
       await auditorEvent.success();
-      res.status(200).send('Success!');
+      res.status(200).json({ message: 'Succeeded!' });
     } catch (error) {
       await auditorEvent.fail({ error });
-      res.status(500).send('Error!');
+      res.status(500).json({ message: 'Failed!' });
+      throw error;
     }
   });
 
@@ -102,30 +102,3 @@ backend:
 ```
 
 By default, console logging is enabled. You can disable it by setting the `enabled` flag to `false`.
-
-## Advanced Usage
-
-### Customizing the Auditor Service Factory
-
-The `auditorServiceFactoryWithOptions` function allows you to create an auditor service factory with custom transports and formats. This is useful if you need to integrate with a different logging system or modify the default logging behavior.
-
-Here's an example of how to create a custom auditor service factory:
-
-```typescript
-import { auditorServiceFactoryWithOptions } from '@backstage/backend-defaults/auditor';
-import winston from 'winston';
-
-const myAuditorServiceFactory = auditorServiceFactoryWithOptions({
-  transports: () => {
-    return [new winston.transports.File({ filename: 'my-audit.log' })];
-  },
-  format: () => {
-    return winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json(),
-    );
-  },
-});
-```
-
-This example creates a factory that logs to a file named `my-audit.log` and uses a JSON format for the log messages. You can then use this factory in your plugin to create an auditor service with the desired configuration.

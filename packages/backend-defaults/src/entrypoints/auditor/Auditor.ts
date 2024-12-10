@@ -23,14 +23,13 @@ import type {
   HttpAuthService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
-import { ForwardedError, ServiceUnavailableError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import type { JsonObject } from '@backstage/types';
 import type { Request } from 'express';
 import type { Format } from 'logform';
 import * as winston from 'winston';
 import { colorFormat } from '../../lib/colorFormat';
 import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
-import { redacterFormat } from '../../lib/redacterFormat';
 
 /** @public */
 export type AuditorEventActorDetails = {
@@ -99,7 +98,6 @@ export const defaultProdFormat = winston.format.combine(
   winston.format.errors({ stack: true }),
   winston.format.splat(),
   winston.format.json(),
-  redacterFormat().format,
 );
 
 /**
@@ -112,10 +110,7 @@ export const auditorFieldFormat = winston.format(info => {
 })();
 
 /** @public */
-export interface AuditorOptions {
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  plugin?: PluginMetadataService;
+export interface RootAuditorOptions {
   meta?: JsonObject;
   format?: Format;
   transports?: winston.transport[];
@@ -126,85 +121,45 @@ export interface AuditorOptions {
  *
  * @public
  */
-export class Auditor implements AuditorService {
-  readonly #winstonLogger: winston.Logger;
-  readonly #auth?: AuthService;
-  readonly #httpAuth?: HttpAuthService;
-  readonly #plugin?: PluginMetadataService;
-  readonly #addRedactions?: (redactions: Iterable<string>) => void;
-
-  /**
-   * Creates a {@link Auditor} instance.
-   */
-  static create(options?: AuditorOptions): Auditor {
-    const redacter = Auditor.redacter();
-    const defaultFormatter =
-      process.env.NODE_ENV === 'production'
-        ? defaultProdFormat
-        : Auditor.colorFormat();
-
-    let auditor = winston.createLogger({
-      level: 'info',
-      format: winston.format.combine(
-        auditorFieldFormat,
-        options?.format ?? defaultFormatter,
-        redacter.format,
-      ),
-      transports: options?.transports ?? defaultConsoleTransport,
-    });
-
-    if (options?.meta) {
-      auditor = auditor.child(options.meta);
-    }
-    return new Auditor(
-      auditor,
-      {
-        auth: options?.auth,
-        httpAuth: options?.httpAuth,
-        plugin: options?.plugin,
-      },
-      redacter.add,
-    );
-  }
-
-  /**
-   * Creates a winston log formatter for redacting secrets.
-   */
-  static redacter(): {
-    format: Format;
-    add: (redactions: Iterable<string>) => void;
-  } {
-    return redacterFormat();
-  }
-
-  /**
-   * Creates a pretty printed winston log formatter.
-   */
-  static colorFormat(): Format {
-    return colorFormat();
-  }
+export class DefaultAuditorService implements AuditorService {
+  private readonly impl: DefaultRootAuditorService;
+  private readonly auth: AuthService;
+  private readonly httpAuth: HttpAuthService;
+  private readonly plugin: PluginMetadataService;
 
   private constructor(
-    winstonLogger: winston.Logger,
-    deps?: {
-      auth?: AuthService;
-      httpAuth?: HttpAuthService;
-      plugin?: PluginMetadataService;
+    impl: DefaultRootAuditorService,
+    deps: {
+      auth: AuthService;
+      httpAuth: HttpAuthService;
+      plugin: PluginMetadataService;
     },
-    addRedactions?: (redactions: Iterable<string>) => void,
   ) {
-    this.#winstonLogger = winstonLogger;
-    this.#auth = deps?.auth;
-    this.#httpAuth = deps?.httpAuth;
-    this.#plugin = deps?.plugin;
-    this.#addRedactions = addRedactions;
+    this.impl = impl;
+    this.auth = deps.auth;
+    this.httpAuth = deps.httpAuth;
+    this.plugin = deps.plugin;
+  }
+
+  /**
+   * Creates a {@link DefaultAuditorService} instance.
+   */
+  static create(
+    impl: DefaultRootAuditorService,
+    deps: {
+      auth: AuthService;
+      httpAuth: HttpAuthService;
+      plugin: PluginMetadataService;
+    },
+  ): DefaultAuditorService {
+    return new DefaultAuditorService(impl, deps);
   }
 
   private async log<TMeta extends JsonObject>(
     options: AuditorEventOptions<TMeta>,
   ): Promise<void> {
     const auditEvent = await this.reshapeAuditorEvent(options);
-    this.#winstonLogger.info(...auditEvent);
+    this.impl.log(auditEvent);
   }
 
   async createEvent<TMeta extends JsonObject>(
@@ -247,56 +202,25 @@ export class Auditor implements AuditorService {
     };
   }
 
-  child(
-    meta: JsonObject,
-    deps?: {
-      auth?: AuthService;
-      httpAuth?: HttpAuthService;
-      plugin?: PluginMetadataService;
-    },
-  ): AuditorService {
-    return new Auditor(this.#winstonLogger.child(meta), {
-      auth: deps?.auth ?? this.#auth,
-      httpAuth: deps?.httpAuth ?? this.#httpAuth,
-      plugin: deps?.plugin ?? this.#plugin,
-    });
-  }
-
-  addRedactions(redactions: Iterable<string>) {
-    this.#addRedactions?.(redactions);
-  }
-
   private async getActorId(
     request?: Request<any, any, any, any, any>,
   ): Promise<string | undefined> {
-    if (!this.#auth) {
-      throw new ServiceUnavailableError(
-        `The core service 'auth' was not provided during the auditor's instantiation`,
-      );
-    }
-
-    if (!this.#httpAuth) {
-      throw new ServiceUnavailableError(
-        `The core service 'httpAuth' was not provided during the auditor's instantiation`,
-      );
-    }
-
     let credentials: BackstageCredentials =
-      await this.#auth.getOwnServiceCredentials();
+      await this.auth.getOwnServiceCredentials();
 
     if (request) {
       try {
-        credentials = await this.#httpAuth.credentials(request);
+        credentials = await this.httpAuth.credentials(request);
       } catch (error) {
         throw new ForwardedError('Could not resolve credentials', error);
       }
     }
 
-    if (this.#auth.isPrincipal(credentials, 'user')) {
+    if (this.auth.isPrincipal(credentials, 'user')) {
       return credentials.principal.userEntityRef;
     }
 
-    if (this.#auth.isPrincipal(credentials, 'service')) {
+    if (this.auth.isPrincipal(credentials, 'service')) {
       return credentials.principal.subject;
     }
 
@@ -308,14 +232,8 @@ export class Auditor implements AuditorService {
   ): Promise<AuditorEvent> {
     const { eventId, severityLevel = 'low', request, ...rest } = options;
 
-    if (!this.#plugin) {
-      throw new ServiceUnavailableError(
-        `The core service 'plugin' was not provided during the auditor's instantiation`,
-      );
-    }
-
     const auditEvent: AuditorEvent = [
-      `${this.#plugin.getId()}.${eventId}`,
+      `${this.plugin.getId()}.${eventId}`,
       {
         severityLevel,
         actor: {
@@ -335,5 +253,58 @@ export class Auditor implements AuditorService {
     ];
 
     return auditEvent;
+  }
+}
+
+/** @public */
+export class DefaultRootAuditorService {
+  private readonly impl: winston.Logger;
+
+  private constructor(impl: winston.Logger) {
+    this.impl = impl;
+  }
+
+  /**
+   * Creates a {@link DefaultRootAuditorService} instance.
+   */
+  static create(options?: RootAuditorOptions): DefaultRootAuditorService {
+    const defaultFormatter =
+      process.env.NODE_ENV === 'production'
+        ? defaultProdFormat
+        : DefaultRootAuditorService.colorFormat();
+
+    let auditor = winston.createLogger({
+      level: 'info',
+      format: winston.format.combine(
+        auditorFieldFormat,
+        options?.format ?? defaultFormatter,
+      ),
+      transports: options?.transports ?? defaultConsoleTransport,
+    });
+
+    if (options?.meta) {
+      auditor = auditor.child(options.meta);
+    }
+    return new DefaultRootAuditorService(auditor);
+  }
+
+  /**
+   * Creates a pretty printed winston log formatter.
+   */
+  static colorFormat(): Format {
+    return colorFormat();
+  }
+
+  async log(auditEvent: AuditorEvent): Promise<void> {
+    this.impl.info(...auditEvent);
+  }
+
+  forPlugin(deps: {
+    auth: AuthService;
+    httpAuth: HttpAuthService;
+    plugin: PluginMetadataService;
+  }): AuditorService {
+    const impl = new DefaultRootAuditorService(this.impl.child({}));
+    return DefaultAuditorService.create(impl, deps);
   }
 }

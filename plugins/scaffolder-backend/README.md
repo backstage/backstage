@@ -79,6 +79,9 @@ The Scaffolder backend emits audit events for various operations. Events are gro
 **Task Events:**
 
 - **`task`**: Operations related to Scaffolder tasks.
+
+  Filter on `actionType`.
+
   - **`create`**: Creates a new task. (POST `/v2/tasks`)
   - **`list`**: Fetches details of all tasks. (GET `/v2/tasks`)
   - **`get`**: Fetches details of a specific task. (GET `/v2/tasks/:taskId`)

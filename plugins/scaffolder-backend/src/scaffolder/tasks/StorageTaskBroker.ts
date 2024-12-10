@@ -207,9 +207,9 @@ export class TaskManager implements TaskContext {
 
     const auditorEvent = await this.auditor?.createEvent({
       eventId: 'task',
-      subEventId: 'execution',
       severityLevel: 'medium',
       meta: {
+        actionType: 'execution',
         taskId: this.task.taskId,
         taskParameters: this.task.spec.parameters,
       },
@@ -474,9 +474,9 @@ export class StorageTaskBroker implements TaskBroker {
       tasks.map(async task => {
         const auditorEvent = await this.auditor?.createEvent({
           eventId: 'task',
-          subEventId: 'stale-cancel',
           severityLevel: 'medium',
           meta: {
+            actionType: 'stale-cancel',
             taskId: task.taskId,
           },
         });
