@@ -31,11 +31,12 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export interface EntityTypePickerProps {
   initialFilter?: string;
   hidden?: boolean;
+  sorted?: boolean;
 }
 
 /** @public */
 export const EntityTypePicker = (props: EntityTypePickerProps) => {
-  const { hidden, initialFilter } = props;
+  const { hidden, initialFilter, sorted } = props;
   const alertApi = useApi(alertApiRef);
   const { error, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
@@ -54,7 +55,11 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   }, [error, alertApi, initialFilter, setSelectedTypes, t]);
 
   if (availableTypes.length === 0 || error) return null;
-
+  if (sorted) {
+    availableTypes.sort((a, b) =>
+      a.toLocaleLowerCase('en-US').localeCompare(b.toLocaleLowerCase('en-US')),
+    );
+  }
   const items = [
     { value: 'all', label: t('entityTypePicker.optionAllTitle') },
     ...availableTypes.map((type: string) => ({
