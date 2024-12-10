@@ -16,9 +16,15 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
+
+export type AWSAlbSignInResolver = GetSignInResolver<
+  typeof awsAlbSignInResolvers
+>;
+
 /**
  * Available sign-in resolvers for the AWS ALB auth provider.
  *

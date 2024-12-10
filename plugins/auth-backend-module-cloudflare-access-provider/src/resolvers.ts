@@ -16,9 +16,14 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { CloudflareAccessResult } from './types';
+
+export type CloudflareAccessSignInResolver = GetSignInResolver<
+  typeof cloudflareAccessSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the Cloudflare Access auth provider.

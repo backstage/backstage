@@ -16,10 +16,15 @@
 
 import {
   createSignInResolverFactory,
+  GetSignInResolver,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+
+export type GitlabSignInResolver = GetSignInResolver<
+  typeof gitlabSignInResolvers
+>;
 
 /**
  * Available sign-in resolvers for the GitLab auth provider.
