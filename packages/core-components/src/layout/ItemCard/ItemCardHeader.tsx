@@ -80,7 +80,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
-  const classes = useStyles(props);
+  const classes = useStyles();
   return (
     <Box className={classes.root}>
       {subtitle && (
