@@ -3646,6 +3646,7 @@ __metadata:
     node-forge: ^1.3.1
     node-mocks-http: ^1.0.0
     p-limit: ^3.1.0
+    p-throttle: ^4.1.1
     path-to-regexp: ^8.0.0
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
@@ -5875,6 +5876,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     luxon: ^3.0.0
     msw: ^1.0.0
+    p-throttle: ^4.1.1
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
