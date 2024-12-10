@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import { InternalServiceFactory } from './factory';
-import { InternalPlugin } from './plugins/types';
+import { CommandGraph } from '../commands/CommandGraph';
+import { BackstageCommand } from '../types';
+import { createServiceRef } from './types';
 
-export interface BackstageCommand {
-  path: string[];
-  description: string;
-  execute: (options: { args: string[] }) => Promise<void>;
+export class DefaultCli {
+  constructor(graph: CommandGraph) {
+    this.commandGraph = graph;
+  }
+  commandGraph: CommandGraph = new CommandGraph();
+  command(command: BackstageCommand) {
+    this.commandGraph.add(command);
+  }
 }
 
-/** @internal */
-export type InternalFeature = InternalPlugin | InternalServiceFactory;
+export const cliServiceRef = createServiceRef<DefaultCli>({
+  id: 'core.cli',
+  scope: 'root',
+});
