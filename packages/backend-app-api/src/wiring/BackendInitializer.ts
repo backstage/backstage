@@ -449,6 +449,11 @@ export class BackendInitializer {
       // The startup failed, but we may still want to do cleanup so we continue silently
     }
 
+    const rootLifecycleService = await this.#getRootLifecycleImpl();
+
+    // Root services like the health one need to immediatelly be notified of the shutdown
+    await rootLifecycleService.beforeShutdown();
+
     // Get all plugins.
     const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
@@ -468,14 +473,14 @@ export class BackendInitializer {
     );
 
     // Once all plugin shutdown hooks are done, run root shutdown hooks.
-    const lifecycleService = await this.#getRootLifecycleImpl();
-    await lifecycleService.shutdown();
+    await rootLifecycleService.shutdown();
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
   async #getRootLifecycleImpl(): Promise<
     RootLifecycleService & {
       startup(): Promise<void>;
+      beforeShutdown(): Promise<void>;
       shutdown(): Promise<void>;
     }
   > {

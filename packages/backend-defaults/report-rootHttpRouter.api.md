@@ -134,6 +134,8 @@ export interface RootHttpRouterConfigureContext {
   // (undocumented)
   lifecycle: LifecycleService;
   // (undocumented)
+  lifecycleMiddleware: RequestHandler;
+  // (undocumented)
   logger: LoggerService;
   // (undocumented)
   middleware: MiddlewareFactory;
