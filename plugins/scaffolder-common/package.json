@@ -65,6 +65,8 @@
     "@backstage/types": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "cross-fetch": "^4.0.0",
+    "uri-template": "^2.0.0"
   }
 }

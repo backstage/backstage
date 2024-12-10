@@ -1443,6 +1443,24 @@ export const spec = {
       post: {
         operationId: 'Retry',
         description: 'Starts the task again from the point where it failed.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  secrets: {
+                    type: 'object',
+                    additionalProperties: {
+                      type: 'string',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
         responses: {
           '201': {
             description: 'Ok',
