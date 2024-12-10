@@ -27,6 +27,7 @@ export type CatalogReactEntityTagPickerClassKey = 'input';
 /** @public */
 export type EntityTagPickerProps = {
   showCounts?: boolean;
+  initialFilter?: string[];
 };
 
 const useStyles = makeStyles(
@@ -47,6 +48,7 @@ export const EntityTagPicker = (props: EntityTagPickerProps) => {
       Filter={EntityTagFilter}
       showCounts={props.showCounts}
       InputProps={{ className: classes.input }}
+      initialSelectedOptions={props.initialFilter ? props.initialFilter : []}
     />
   );
 };
