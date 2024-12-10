@@ -351,6 +351,17 @@ describe('AzureUrlReader', () => {
       );
     });
 
+    it('works for exact urls', async () => {
+      const result = await processor.search(
+        'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+      );
+      expect(result.etag).toBe('');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+      );
+    });
+
     it('works for the naive case', async () => {
       const result = await processor.search(
         'https://dev.azure.com/org-name/project-name/_git/repo-name?path=%2F**%2Findex.*&version=GBmaster',

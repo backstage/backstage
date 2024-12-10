@@ -192,5 +192,19 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
+
+    /**
+     * Defines if the UrlReaderProcessor should always call the search method of the
+     * different UrlReaders.
+     *
+     * If set to false, the UrlReaderProcessor will use the legacy behavior that tries to
+     * parse a Git URL and calls search if there's wildcard patterns and readUrl otherwise.
+     *
+     * If set to true, the UrlReaderProcessor always call the search method and lets each UrlReader
+     * determine if it's a search pattern or not.
+     *
+     * This flag is temporary and will be enabled by default in future releases.
+     */
+    useUrlReadersSearch?: boolean;
   };
 }
