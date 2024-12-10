@@ -7,8 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchBarBaseProps } from '@backstage/plugin-search-react';
@@ -25,10 +24,10 @@ export type HomePageSearchBarProps = Partial<
 >;
 
 // @public (undocumented)
-export const Router: () => React_2.JSX.Element;
+export const Router: () => JSX_2.Element;
 
 // @public (undocumented)
-export const SearchModal: (props: SearchModalProps) => React_2.JSX.Element;
+export const SearchModal: (props: SearchModalProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface SearchModalChildrenProps {
@@ -50,7 +49,7 @@ export interface SearchModalProps {
 // @public
 export const SearchModalProvider: (
   props: SearchModalProviderProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type SearchModalProviderProps = {
@@ -83,9 +82,9 @@ export { searchPlugin };
 
 // @public (undocumented)
 export const SearchType: {
-  (props: SearchTypeProps): React_2.JSX.Element;
-  Accordion(props: SearchTypeAccordionProps): React_2.JSX.Element;
-  Tabs(props: SearchTypeTabsProps): React_2.JSX.Element;
+  (props: SearchTypeProps): JSX_2.Element;
+  Accordion(props: SearchTypeAccordionProps): JSX_2.Element;
+  Tabs(props: SearchTypeTabsProps): JSX_2.Element;
 };
 
 // @public (undocumented)
@@ -118,7 +117,7 @@ export type SearchTypeTabsProps = {
 };
 
 // @public (undocumented)
-export const SidebarSearch: (props: SidebarSearchProps) => React_2.JSX.Element;
+export const SidebarSearch: (props: SidebarSearchProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const SidebarSearchModal: (

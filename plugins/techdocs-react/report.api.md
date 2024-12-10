@@ -11,8 +11,9 @@ import { Config } from '@backstage/config';
 import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { MemoExoticComponent } from 'react';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 
@@ -56,9 +57,7 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
 };
 
 // @public
-export const TechDocsAddons: React_2.ComponentType<
-  React_2.PropsWithChildren<{}>
->;
+export const TechDocsAddons: ComponentType<PropsWithChildren<{}>>;
 
 // @public
 export interface TechDocsApi {
@@ -94,8 +93,8 @@ export type TechDocsMetadata = {
 };
 
 // @public
-export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
-  (props: TechDocsReaderPageProviderProps) => React_2.JSX.Element
+export const TechDocsReaderPageProvider: MemoExoticComponent<
+  (props: TechDocsReaderPageProviderProps) => JSX_2.Element
 >;
 
 // @public
@@ -126,7 +125,7 @@ export type TechDocsReaderPageValue = {
 // @public
 export const TechDocsShadowDom: (
   props: TechDocsShadowDomProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type TechDocsShadowDomProps = PropsWithChildren<{

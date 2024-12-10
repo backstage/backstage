@@ -42,6 +42,7 @@ import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
@@ -56,7 +57,6 @@ import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -115,7 +115,7 @@ export type ApiFactoryScope = 'default' | 'app' | 'static';
 
 // @public
 export const ApiProvider: {
-  (props: PropsWithChildren<ApiProviderProps>): React_2.JSX.Element;
+  (props: PropsWithChildren<ApiProviderProps>): JSX_2.Element;
   propTypes: {
     apis: PropTypes.Validator<
       NonNullable<
@@ -257,7 +257,7 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
-export function AppRouter(props: AppRouterProps): React_2.JSX.Element;
+export function AppRouter(props: AppRouterProps): JSX_2.Element;
 
 // @public
 export interface AppRouterProps {
@@ -390,9 +390,7 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
 }>;
 
 // @public
-export const FeatureFlagged: (
-  props: FeatureFlaggedProps,
-) => React_2.JSX.Element;
+export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX_2.Element;
 
 // @public
 export type FeatureFlaggedProps = {

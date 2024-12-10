@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { Entity } from '@backstage/catalog-model';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public
 export const EntityKubernetesClusterContent: (
@@ -20,5 +20,5 @@ export type EntityKubernetesClusterContentProps = {};
 export const isKubernetesClusterAvailable: (entity: Entity) => boolean;
 
 // @public (undocumented)
-export const Router: () => React_2.JSX.Element;
+export const Router: () => JSX_2.Element;
 ```
