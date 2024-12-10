@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export { PropsTable } from './PropsTable';
-export { getBoxProps } from './getProps';
+export { getProps } from './getProps';

@@ -13,27 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { titleStyles } from './title.css';
-
-export const Title = ({
-  children,
-  style,
-  type = 'h1',
-}: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-  type?: 'h1' | 'h2' | 'h3';
-}) => {
-  let Component = 'h1';
-  if (type === 'h1') Component = 'h1';
-  if (type === 'h2') Component = 'h2';
-  if (type === 'h3') Component = 'h3';
-
-  return React.createElement(Component, {
-    className: titleStyles({ type }),
-    style,
-    children,
-  });
-};
+export { IconLibrary } from './IconLibrary';

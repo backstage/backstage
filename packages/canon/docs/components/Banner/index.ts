@@ -13,10 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { style } from '@vanilla-extract/css';
-
-export const base = style({
-  fontFamily: 'var(--canon-font-regular)',
-  color: 'var(--canon-text-primary)',
-});
+export { Banner } from './Banner';

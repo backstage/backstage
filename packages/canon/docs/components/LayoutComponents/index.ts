@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { textStyles } from './text.css';
-
-export const Text = ({
-  children,
-  style,
-}: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}) => {
-  return (
-    <div className={textStyles} style={style}>
-      {children}
-    </div>
-  );
-};
+export { LayoutComponents } from './LayoutComponents';

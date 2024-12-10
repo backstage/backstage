@@ -1,7 +1,6 @@
 import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
 import * as GridStories from './Grid.stories';
-import { Title, Text } from '../../../docs/components';
-import { PropsTable, getBoxProps } from '../../../docs/components/PropsTable';
+import { Title, Text, PropsTable, getProps } from '../../../docs/components';
 import { spacingProperties } from '../../layout/sprinkles.css';
 
 <Meta of={GridStories} />
@@ -71,7 +70,7 @@ export default () => (
   The grid component also accepts all the spacing props from the Box component.
 </Text>
 
-<PropsTable data={getBoxProps(spacingProperties.styles)} />
+<PropsTable data={getProps(spacingProperties.styles)} />
 
 <Title type="h3">Grid Item</Title>
 <Text>

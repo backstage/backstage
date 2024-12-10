@@ -3842,9 +3842,6 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^18.0.0
     "@types/react-dom": ^18.0.0
-    "@vanilla-extract/css": ^1.16.0
-    "@vanilla-extract/dynamic": ^2.1.2
-    "@vanilla-extract/recipes": ^0.5.5
     "@vanilla-extract/rollup-plugin": ^1.3.10
     "@vanilla-extract/sprinkles": ^1.6.3
     "@vanilla-extract/webpack-plugin": ^2.3.14
@@ -21548,7 +21545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.16.0, @vanilla-extract/css@npm:^1.16.1":
+"@vanilla-extract/css@npm:^1.16.1":
   version: 1.16.1
   resolution: "@vanilla-extract/css@npm:1.16.1"
   dependencies:
@@ -21565,15 +21562,6 @@ __metadata:
     modern-ahocorasick: ^1.0.0
     picocolors: ^1.0.0
   checksum: ff58f32778cbc15458aff951ad771ba46f772d78633ff99f849f590b83a22ce67e017af28351c68c32edcdaae4454146dd90f369842a627ee79dc9c3ab434e1e
-  languageName: node
-  linkType: hard
-
-"@vanilla-extract/dynamic@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@vanilla-extract/dynamic@npm:2.1.2"
-  dependencies:
-    "@vanilla-extract/private": ^1.0.6
-  checksum: ec6ec9b02c7ec8a9d60aebf63225fd3f930c06ad824321f03f683f1948eb6d4e554d934303da140b3230b4af2fa15bab494c6da2a3b9a172e4118c245b4f942a
   languageName: node
   linkType: hard
 
@@ -21601,15 +21589,6 @@ __metadata:
   version: 1.0.6
   resolution: "@vanilla-extract/private@npm:1.0.6"
   checksum: 2265b02af29d8cd40f6ddeeed197fb2df1a7695f5a9821d5e3597677179be8b83bcd8fe4df4a6178544f89123d745a3c6a13599d4fe4e5873b065a8ad329f690
-  languageName: node
-  linkType: hard
-
-"@vanilla-extract/recipes@npm:^0.5.5":
-  version: 0.5.5
-  resolution: "@vanilla-extract/recipes@npm:0.5.5"
-  peerDependencies:
-    "@vanilla-extract/css": ^1.0.0
-  checksum: 8d2b4f8163369424226ec9a47e754002b8a095bcf86c1a60a91b2183f59508519bd31ed41baefc950ad7ca225d75b3184c3b84d3c741c5c60d91618dd70452aa
   languageName: node
   linkType: hard
 

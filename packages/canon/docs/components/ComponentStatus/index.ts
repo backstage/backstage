@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { chipStyles } from './chip.css';
-
-export const Chip = ({
-  children,
-  head = false,
-}: {
-  children: React.ReactNode;
-  head?: boolean;
-}) => {
-  return <span className={chipStyles({ head })}>{children}</span>;
-};
+export { ComponentStatus } from './ComponentStatus';

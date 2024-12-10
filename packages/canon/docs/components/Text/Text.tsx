@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-export * from './Banner';
-export * from './Chip';
-export * from './Columns';
-export * from './ComponentStatus';
-export * from './IconLibrary';
-export * from './LayoutComponents';
-export * from './PropsTable';
-export * from './Roadmap';
-export * from './Table';
-export * from './Text';
-export * from './Title';
+import React from 'react';
+
+export const Text = ({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) => {
+  return (
+    <div className="text" style={style}>
+      {children}
+    </div>
+  );
+};

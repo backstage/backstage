@@ -15,18 +15,11 @@
  */
 
 import React from 'react';
-import {
-  cellStyles,
-  headerCellStyles,
-  tableStyles,
-  wrapperStyles,
-  rowStyles,
-} from './table.css';
 
 export const Root = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className={wrapperStyles}>
-      <table className={tableStyles}>{children}</table>
+    <div className="table-wrapper">
+      <table className="table">{children}</table>
     </div>
   );
 };
@@ -44,13 +37,13 @@ export const HeaderRow = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const HeaderCell = ({ children }: { children: React.ReactNode }) => {
-  return <th className={`${cellStyles} ${headerCellStyles}`}>{children}</th>;
+  return <th className="table-cell table-header-cell">{children}</th>;
 };
 
 export const Row = ({ children }: { children: React.ReactNode }) => {
-  return <tr className={rowStyles}>{children}</tr>;
+  return <tr className="table-row">{children}</tr>;
 };
 
 export const Cell = ({ children }: { children: React.ReactNode }) => {
-  return <td className={cellStyles}>{children}</td>;
+  return <td className="table-cell">{children}</td>;
 };
