@@ -25,6 +25,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
+import Functions from '@material-ui/icons/Functions';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
@@ -45,6 +46,7 @@ export type ScaffolderPageContextMenuProps = {
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
   onCreateClicked?: () => void;
+  onTemplateExtensionsClicked?: () => void;
 };
 
 /**
@@ -53,8 +55,13 @@ export type ScaffolderPageContextMenuProps = {
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {
-  const { onEditorClicked, onActionsClicked, onTasksClicked, onCreateClicked } =
-    props;
+  const {
+    onEditorClicked,
+    onActionsClicked,
+    onTasksClicked,
+    onCreateClicked,
+    onTemplateExtensionsClicked,
+  } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -67,14 +74,16 @@ export function ScaffolderPageContextMenu(
   });
 
   if (
-    !onEditorClicked &&
-    !onActionsClicked &&
-    !onTasksClicked &&
-    !onCreateClicked
+    !(
+      onEditorClicked ||
+      onActionsClicked ||
+      onTasksClicked ||
+      onCreateClicked ||
+      onTemplateExtensionsClicked
+    )
   ) {
     return null;
   }
-
   const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -122,6 +131,14 @@ export function ScaffolderPageContextMenu(
                 <Edit fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Manage Templates" />
+            </MenuItem>
+          )}
+          {onTemplateExtensionsClicked && (
+            <MenuItem onClick={onTemplateExtensionsClicked}>
+              <ListItemIcon>
+                <Functions fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Template Extensions" />
             </MenuItem>
           )}
           {onActionsClicked && (

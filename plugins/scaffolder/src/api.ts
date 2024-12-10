@@ -24,6 +24,7 @@ import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   ListActionsResponse,
+  ListTemplateExtensionsResponse,
   LogEvent,
   ScaffolderApi,
   ScaffolderDryRunOptions,
@@ -322,6 +323,17 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     return await response.json();
+  }
+
+  async listTemplateExtensions(): Promise<ListTemplateExtensionsResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/template-extensions`,
+    );
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+    return response.json();
   }
 
   async cancelTask(taskId: string): Promise<void> {
