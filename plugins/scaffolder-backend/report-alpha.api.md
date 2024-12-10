@@ -10,9 +10,33 @@ import { JsonObject } from '@backstage/types';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+
+// @public (undocumented)
+export const createActionPermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    TParams
+  >,
+) => PermissionRule<
+  {
+    action: string;
+    input: JsonObject | undefined;
+  },
+  {},
+  'scaffolder-action',
+  TParams
+>;
 
 // @alpha (undocumented)
 export const createScaffolderActionConditionalDecision: (
@@ -25,6 +49,23 @@ export const createScaffolderTemplateConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
 ) => ConditionalPolicyDecision;
+
+// @public (undocumented)
+export const createTemplatePermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    TParams
+  >,
+) => PermissionRule<
+  TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-template',
+  TParams
+>;
 
 // @alpha (undocumented)
 const _feature: BackendFeature;
@@ -41,6 +82,18 @@ export const scaffolderActionConditions: Conditions<{
     'scaffolder-action',
     {
       actionId: string;
+    }
+  >;
+  hasProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | number | boolean | null | undefined;
     }
   >;
   hasBooleanProperty: PermissionRule<
@@ -81,6 +134,69 @@ export const scaffolderActionConditions: Conditions<{
   >;
 }>;
 
+// @public (undocumented)
+export const scaffolderActionRules: {
+  hasActionId: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      actionId: string;
+    }
+  >;
+  hasProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | number | boolean | null | undefined;
+    }
+  >;
+  hasBooleanProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasNumberProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasStringProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+};
+
 // @alpha
 export const scaffolderTemplateConditions: Conditions<{
   hasTag: PermissionRule<
@@ -92,6 +208,18 @@ export const scaffolderTemplateConditions: Conditions<{
     }
   >;
 }>;
+
+// @public (undocumented)
+export const scaffolderTemplateRules: {
+  hasTag: PermissionRule<
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
