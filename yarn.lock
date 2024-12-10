@@ -4310,7 +4310,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@oriflame/backstage-plugin-score-card": ^0.8.0
+    "@oriflame/backstage-plugin-score-card": ^0.9.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@types/react": ^18.0.0
@@ -4941,7 +4941,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@npm:^1.2.1":
+"@backstage/integration-react@npm:^1.1.24, @backstage/integration-react@npm:^1.2.1":
   version: 1.2.1
   resolution: "@backstage/integration-react@npm:1.2.1"
   dependencies:
@@ -4993,7 +4993,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@npm:^1.15.0, @backstage/integration@npm:^1.15.2":
+"@backstage/integration@npm:^1.15.0, @backstage/integration@npm:^1.15.2, @backstage/integration@npm:^1.9.0":
   version: 1.15.2
   resolution: "@backstage/integration@npm:1.15.2"
   dependencies:
@@ -14642,14 +14642,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oriflame/backstage-plugin-score-card@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "@oriflame/backstage-plugin-score-card@npm:0.8.0"
+"@oriflame/backstage-plugin-score-card@npm:^0.9.0":
+  version: 0.9.1
+  resolution: "@oriflame/backstage-plugin-score-card@npm:0.9.1"
   dependencies:
     "@backstage/catalog-model": ^1.4.3
     "@backstage/config": ^1.1.1
     "@backstage/core-components": ^0.13.10
     "@backstage/core-plugin-api": ^1.8.2
+    "@backstage/integration": ^1.9.0
+    "@backstage/integration-react": ^1.1.24
     "@backstage/plugin-catalog-common": ^1.0.20
     "@backstage/plugin-catalog-react": ^1.9.3
     "@backstage/theme": ^0.5.0
@@ -14658,13 +14660,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.57
-    "@types/react": ^18.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-    react-router-dom: ^6.4.3
-  checksum: 4d1bf78b3fc6cce80b3cbc1abef5613bb609d2262e0d410aa57cc7e175eaf5cb727796ab61b44507f5c826b1f059f4ec03c280ce6cdbf7291d4461d745a9b5b6
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: cebd9fd9f7d31e1b96765a02eefa2c817e401654bc28a40fe40236e0d79589760188e460797dbaf23ab56478120a60604403339267fb9ae9a9d23fcdfdb674a1
   languageName: node
   linkType: hard
 
