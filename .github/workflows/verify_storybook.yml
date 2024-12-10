@@ -49,7 +49,10 @@ jobs:
         run: yarn install --immutable
         working-directory: storybook
 
+        # Only for verification, the canon one is what we upload to Chromatic
       - run: yarn build-storybook
+
+      - run: yarn --cwd packages/canon build-storybook
 
       - uses: chromaui/action@0efa3230f403b7848d5d65c6ce140b617fb68380 # v11
         with:
@@ -57,5 +60,5 @@ jobs:
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
-          workingDir: storybook
-          storybookBuildDir: dist
+          workingDir: packages/canon
+          storybookBuildDir: storybook-static
