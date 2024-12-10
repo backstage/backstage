@@ -103,26 +103,36 @@ export class DefaultProviderDatabase implements ProviderDatabase {
       // the drawback of super slow but more rare fallbacks. There's quickly
       // diminishing returns though with turning up this value way high.
       for (const chunk of lodash.chunk(toAdd, 50)) {
+        const entityIds = chunk.map(() => uuid());
+        const entityRefs = chunk.map(item =>
+          stringifyEntityRef(item.deferred.entity),
+        );
         try {
           await tx.batchInsert(
             'refresh_state',
-            chunk.map(item => ({
-              entity_id: uuid(),
-              entity_ref: stringifyEntityRef(item.deferred.entity),
+            chunk.map((item, i) => ({
+              entity_id: entityIds[i],
+              entity_ref: entityRefs[i],
               unprocessed_entity: JSON.stringify(item.deferred.entity),
               unprocessed_hash: item.hash,
               errors: '',
               location_key: item.deferred.locationKey,
-              next_update_at: tx.fn.now(),
               last_discovery_at: tx.fn.now(),
             })),
             BATCH_SIZE,
           );
           await tx.batchInsert(
+            'refresh_state_queues',
+            chunk.map((_, i) => ({
+              entity_id: entityIds[i],
+              next_update_at: tx.fn.now(),
+            })),
+          );
+          await tx.batchInsert(
             'refresh_state_references',
-            chunk.map(item => ({
+            chunk.map((_, i) => ({
               source_key: options.sourceKey,
-              target_entity_ref: stringifyEntityRef(item.deferred.entity),
+              target_entity_ref: entityRefs[i],
             })),
             BATCH_SIZE,
           );
@@ -148,14 +158,14 @@ export class DefaultProviderDatabase implements ProviderDatabase {
 
         try {
           let ok = await updateUnprocessedEntity({
-            tx,
+            knex: tx,
             entity,
             hash,
             locationKey,
           });
           if (!ok) {
             ok = await insertUnprocessedEntity({
-              tx,
+              knex: tx,
               entity,
               hash,
               locationKey,

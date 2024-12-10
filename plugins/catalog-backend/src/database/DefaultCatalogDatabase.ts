@@ -23,7 +23,11 @@ import {
   RefreshOptions,
   Transaction,
 } from './types';
-import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
+import {
+  DbRefreshStateQueuesRow,
+  DbRefreshStateReferencesRow,
+  DbRefreshStateRow,
+} from './tables';
 import { rethrowError } from './conversion';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -103,10 +107,23 @@ export class DefaultCatalogDatabase implements CatalogDatabase {
     const tx = txOpaque as Knex.Transaction;
     const { entityRef } = options;
 
-    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
-      .update({ next_update_at: tx.fn.now() });
-    if (updateResult === 0) {
+    const ids = await tx<DbRefreshStateRow>('refresh_state')
+      .select('entity_id')
+      .where({ entity_ref: entityRef });
+
+    // Annoying return type difference between database engines
+    const res: { rowCount?: number; length?: number } =
+      await tx<DbRefreshStateQueuesRow>('refresh_state_queues')
+        .insert(
+          ids.map(row => ({
+            entity_id: row.entity_id,
+            next_update_at: tx.fn.now(),
+          })),
+        )
+        .onConflict('entity_id')
+        .merge(['next_update_at']);
+
+    if ((res.rowCount ?? res.length) !== 1) {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
     }
   }

@@ -63,7 +63,6 @@ describe('Stitcher', () => {
             },
           }),
           errors: '[]',
-          next_update_at: db.fn.now(),
           last_discovery_at: db.fn.now(),
         },
       ]);

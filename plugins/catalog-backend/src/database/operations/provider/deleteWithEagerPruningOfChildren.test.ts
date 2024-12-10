@@ -69,7 +69,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
         unprocessed_entity: '{}',
         processed_entity: '{}',
         errors: '[]',
-        next_update_at: '2021-04-01 13:37:00',
         last_discovery_at: '2021-04-01 13:37:00',
       });
     }
