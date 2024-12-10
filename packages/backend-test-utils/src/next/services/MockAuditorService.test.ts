@@ -17,8 +17,8 @@
 import type { ErrorLike } from '@backstage/errors';
 import { MockAuditorService } from './MockAuditorService';
 import { MockAuthService } from './MockAuthService';
-import { mockCredentials } from './mockCredentials';
 import { MockHttpAuthService } from './MockHttpAuthService';
+import { mockCredentials } from './mockCredentials';
 
 describe('MockAuditorService', () => {
   afterEach(() => {
@@ -39,11 +39,14 @@ describe('MockAuditorService', () => {
   it('should error without auth service', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = MockAuditorService.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = MockAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
       },
-    });
+    );
 
     await expect(
       auditor.createEvent({
@@ -57,15 +60,18 @@ describe('MockAuditorService', () => {
   it('should error without httpAuth service', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = MockAuditorService.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = MockAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
+        auth: new MockAuthService({
+          pluginId,
+          disableDefaultAuthPolicy: false,
+        }),
       },
-      auth: new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      }),
-    });
+    );
 
     await expect(
       auditor.createEvent({
@@ -81,16 +87,19 @@ describe('MockAuditorService', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = MockAuditorService.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = MockAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
+        auth: new MockAuthService({
+          pluginId,
+          disableDefaultAuthPolicy: false,
+        }),
+        httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
       },
-      auth: new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      }),
-      httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
-    });
+    );
 
     await auditor.createEvent({
       eventId: 'test-event',
@@ -104,16 +113,19 @@ describe('MockAuditorService', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = MockAuditorService.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = MockAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
+        auth: new MockAuthService({
+          pluginId,
+          disableDefaultAuthPolicy: false,
+        }),
+        httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
       },
-      auth: new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      }),
-      httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
-    });
+    );
 
     await auditor.createEvent({
       eventId: 'test-event',
@@ -127,16 +139,19 @@ describe('MockAuditorService', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = MockAuditorService.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = MockAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
+        auth: new MockAuthService({
+          pluginId,
+          disableDefaultAuthPolicy: false,
+        }),
+        httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
       },
-      auth: new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      }),
-      httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
-    });
+    );
 
     const auditorEvent = await auditor.createEvent({
       eventId: 'test-event',
@@ -152,16 +167,19 @@ describe('MockAuditorService', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = MockAuditorService.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = MockAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
+        auth: new MockAuthService({
+          pluginId,
+          disableDefaultAuthPolicy: false,
+        }),
+        httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
       },
-      auth: new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      }),
-      httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
-    });
+    );
 
     const auditorEvent = await auditor.createEvent({
       eventId: 'test-event',

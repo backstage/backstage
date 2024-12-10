@@ -35,20 +35,17 @@ export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
    */
   eventId: string;
 
-  /**
-   * Use kebab-case to name sub-events (e.g., "by-id", "by-user").
-   *
-   * (Optional) The ID for a sub-event or related action within the main event.  This allows further categorization of events within a logical group. For example, if the `eventId` is "fetch", the `subEventId` could be "by-id" or "by-location" to specify the method used for fetching.
-   */
-  subEventId?: string;
-
   /** (Optional) The severity level for the audit event. */
   severityLevel?: AuditorEventSeverityLevel;
 
   /** (Optional) The associated HTTP request, if applicable. */
   request?: Request<any, any, any, any, any>;
 
-  /** (Optional) Additional metadata relevant to the event, structured as a JSON object. */
+  /**
+   * (Optional) Additional metadata relevant to the event, structured as a JSON object.
+   * This could include a `queryType` field, using kebab-case, for variations within the main event (e.g., "by-id", "by-user").
+   * For example, if the `eventId` is "fetch", the `queryType` in `meta` could be "by-id" or "by-location".
+   */
   meta?: TRootMeta;
 
   /** (Optional) Suppresses the automatic initial event. */

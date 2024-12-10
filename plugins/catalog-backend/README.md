@@ -95,6 +95,8 @@ The Catalog backend emits audit events for various operations. Events are groupe
 
 - **`entity-fetch`**: Retrieves entities.
 
+  Filter on `queryType`.
+
   - **`all`**: Fetching all entities. (GET `/entities`)
   - **`by-id`**: Fetching a single entity using its UID. (GET `/entities/by-uid/:uid`)
   - **`by-name`**: Fetching a single entity using its kind, namespace, and name. (GET `/entities/by-name/:kind/:namespace/:name`)
@@ -103,6 +105,8 @@ The Catalog backend emits audit events for various operations. Events are groupe
   - **`ancestry`**: Fetching the ancestry of an entity. (GET `/entities/by-name/:kind/:namespace/:name/ancestry`)
 
 - **`entity-mutate`**: Modifies entities.
+
+  Filter on `actionType`.
 
   - **`delete`**: Deleting a single entity. Note: this will not be a permanent deletion and the entity will be restored if the parent location is still present in the catalog. (DELETE `/entities/by-uid/:uid`)
   - **`refresh`**: Scheduling an entity refresh. (POST `/entities/refresh`)
@@ -114,6 +118,8 @@ The Catalog backend emits audit events for various operations. Events are groupe
 **Location Events:**
 
 - **`location-fetch`**: Retrieves locations.
+
+  Filter on `actionType`.
 
   - **`all`**: Fetching all locations. (GET `/locations`)
   - **`by-id`**: Fetching a single location by ID. (GET `/locations/:id`)

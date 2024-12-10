@@ -32,7 +32,11 @@ import type { Request } from 'express';
 import type { mockServices } from './mockServices';
 
 export class MockAuditorService implements AuditorService {
-  readonly #options: mockServices.auditor.Options;
+  readonly #options: mockServices.auditor.Options & {
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+    plugin?: PluginMetadataService;
+  };
 
   static create(options?: mockServices.auditor.Options): MockAuditorService {
     return new MockAuditorService(options ?? {});
@@ -54,17 +58,31 @@ export class MockAuditorService implements AuditorService {
 
     return {
       success: async params => {
+        // return undefined if both objects are empty; otherwise, merge the objects
+        const meta =
+          Object.keys(options.meta ?? {}).length === 0 &&
+          Object.keys(params?.meta ?? {}).length === 0
+            ? undefined
+            : { ...options.meta, ...params?.meta };
+
         await this.log({
           ...options,
-          meta: { ...options.meta, ...params?.meta },
+          meta,
           status: 'succeeded',
         });
       },
       fail: async params => {
+        // return undefined if both objects are empty; otherwise, merge the objects
+        const meta =
+          Object.keys(options.meta ?? {}).length === 0 &&
+          Object.keys(params.meta ?? {}).length === 0
+            ? undefined
+            : { ...options.meta, ...params.meta };
+
         await this.log({
           ...options,
           ...params,
-          meta: { ...options.meta, ...params.meta },
+          meta,
           status: 'failed',
         });
       },
@@ -76,14 +94,14 @@ export class MockAuditorService implements AuditorService {
     deps?: {
       auth?: AuthService;
       httpAuth?: HttpAuthService;
-      plugin: PluginMetadataService;
+      plugin?: PluginMetadataService;
     },
   ): AuditorService {
     return new MockAuditorService({
       ...this.#options,
-      auth: deps?.auth ?? this.#options.auth,
-      httpAuth: deps?.httpAuth ?? this.#options.httpAuth,
-      plugin: deps?.plugin ?? this.#options.plugin,
+      auth: deps?.auth,
+      httpAuth: deps?.httpAuth,
+      plugin: deps?.plugin,
       meta: {
         ...this.#options.meta,
         ...meta,
@@ -162,7 +180,13 @@ export class MockAuditorService implements AuditorService {
     return auditEvent;
   }
 
-  private constructor(options: mockServices.auditor.Options) {
+  private constructor(
+    options: mockServices.auditor.Options & {
+      auth?: AuthService;
+      httpAuth?: HttpAuthService;
+      plugin?: PluginMetadataService;
+    },
+  ) {
     this.#options = options;
   }
 

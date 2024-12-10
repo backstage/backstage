@@ -542,10 +542,10 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'create',
         severityLevel: 'medium',
         request: req,
         meta: {
+          actionType: 'create',
           templateRef: templateRef,
         },
       });
@@ -648,8 +648,10 @@ export async function createRouter(
     .get('/v2/tasks', async (req, res) => {
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'list',
         request: req,
+        meta: {
+          actionType: 'list',
+        },
       });
 
       try {
@@ -711,9 +713,9 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'get',
         request: req,
         meta: {
+          actionType: 'get',
           taskId: taskId,
         },
       });
@@ -746,10 +748,12 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'cancel',
         severityLevel: 'medium',
         request: req,
-        meta: { taskId: taskId },
+        meta: {
+          actionType: 'cancel',
+          taskId: taskId,
+        },
       });
 
       try {
@@ -776,10 +780,12 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'retry',
         severityLevel: 'medium',
         request: req,
-        meta: { taskId: taskId },
+        meta: {
+          actionType: 'retry',
+          taskId: taskId,
+        },
       });
 
       try {
@@ -805,9 +811,11 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'stream',
         request: req,
-        meta: { taskId: taskId },
+        meta: {
+          actionType: 'stream',
+          taskId: taskId,
+        },
       });
 
       try {
@@ -875,9 +883,9 @@ export async function createRouter(
 
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'events',
         request: req,
         meta: {
+          actionType: 'events',
           taskId: taskId,
         },
       });
@@ -927,8 +935,10 @@ export async function createRouter(
     .post('/v2/dry-run', async (req, res) => {
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
-        subEventId: 'dry-run',
         request: req,
+        meta: {
+          actionType: 'dry-run',
+        },
       });
 
       try {
