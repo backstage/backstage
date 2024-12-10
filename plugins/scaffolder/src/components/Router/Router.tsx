@@ -41,6 +41,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
   templateFormRouteRef,
+  templateExtensionsRouteRef,
 } from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
 
@@ -64,6 +65,7 @@ import {
   taskReadPermission,
   templateManagementPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import { TemplateExtensionsPage } from '../TemplateExtensionsPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -236,6 +238,10 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
             </SecretsContextProvider>
           </RequirePermission>
         }
+      />
+      <Route
+        path={templateExtensionsRouteRef.path}
+        element={<TemplateExtensionsPage />}
       />
       <Route
         path="*"

@@ -47,7 +47,7 @@ import {
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
-import { createDefaultFilters } from '../../lib/templating/filters';
+import createDefaultFilters from '../../lib/templating/filters';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -57,6 +57,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { templateFilterImpls } from '../../util/templating';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -142,9 +143,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
-    this.defaultTemplateFilters = createDefaultFilters({
-      integrations: this.options.integrations,
-    });
+    this.defaultTemplateFilters = templateFilterImpls(
+      createDefaultFilters({
+        integrations: this.options.integrations,
+      }),
+    );
   }
 
   private readonly tracker = scaffoldingTracker();
