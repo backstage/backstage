@@ -15,16 +15,16 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
-import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
-import { JsonObject } from '@backstage/types';
-import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path from 'path';
-import { Writable } from 'stream';
+import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
+import commandExists from 'command-exists';
 import {
   railsArgumentResolver,
   RailsRunOptions,
 } from './railsArgumentResolver';
+import { JsonObject } from '@backstage/types';
+import { Writable } from 'stream';
 
 export class RailsNewRunner {
   private readonly containerRunner?: ContainerRunner;

@@ -15,20 +15,20 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
+import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
+import fs from 'fs-extra';
 import {
   createTemplateAction,
   fetchContents,
 } from '@backstage/plugin-scaffolder-node';
-import { JsonObject } from '@backstage/types';
-import fs from 'fs-extra';
 
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolve as resolvePath } from 'path';
+import { RailsNewRunner } from './railsNewRunner';
 import { PassThrough } from 'stream';
 import { examples } from './index.examples';
-import { RailsNewRunner } from './railsNewRunner';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * Creates the `fetch:rails` Scaffolder action.

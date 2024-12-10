@@ -19,18 +19,18 @@ import {
   UrlReaderService,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  createTemplateAction,
-  executeShellCommand,
-  fetchContents,
-} from '@backstage/plugin-scaffolder-node';
-import { JsonObject, JsonValue } from '@backstage/types';
 import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
+import {
+  createTemplateAction,
+  fetchContents,
+  executeShellCommand,
+} from '@backstage/plugin-scaffolder-node';
 import { examples } from './cookiecutter.examples';
 
 export class CookiecutterRunner {
