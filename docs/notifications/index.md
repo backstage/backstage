@@ -385,7 +385,7 @@ Refer to the [service-to-service auth documentation](https://backstage.io/docs/a
 An example request for creating a broadcast notification might look like:
 
 ```bash
-curl -X POST https://[BACKSTAGE_BACKEND]/api/notifications -H "Content-Type: application/json" -H "Authorization: Bearer YOUR_BASE64_SHARED_KEY_TOKEN" -d '{"recipients":{"type":"broadcast"},"payload": {"title": "Title of broadcast message","link": "http://foo.com/bar","severity": "high","topic": "The topic"}}'
+curl -X POST https://[BACKSTAGE_BACKEND]/api/notifications/notifications -H "Content-Type: application/json" -H "Authorization: Bearer YOUR_BASE64_SHARED_KEY_TOKEN" -d '{"recipients":{"type":"broadcast"},"payload": {"title": "Title of broadcast message","link": "http://foo.com/bar","severity": "high","topic": "The topic"}}'
 ```
 
 ## Additional info
