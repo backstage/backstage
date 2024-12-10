@@ -22,7 +22,11 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { EventParams } from './EventParams';
-import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
+import {
+  EVENTS_NOTIFY_TIMEOUT_HEADER,
+  EventsService,
+  EventsServiceSubscribeOptions,
+} from './EventsService';
 import { DefaultApiClient } from '../generated';
 import { ResponseError } from '@backstage/errors';
 
@@ -207,28 +211,35 @@ class PluginEventsService implements EventsService {
             { token },
           );
 
-          if (!res.ok) {
-            if (res.status === 404) {
-              this.logger.info(
-                `Polling event subscription resulted in a 404, recreating subscription`,
-              );
-              hasSubscription = false;
-            } else {
-              throw await ResponseError.fromResponse(res);
-            }
-          }
-
-          // Successful response, reset backoff
-          backoffMs = POLL_BACKOFF_START_MS;
-
-          // 202 means there were no immediately available events, but the
-          // response will block until either new events are available or the
-          // request times out. In both cases we should should try to read events
-          // immediately again
           if (res.status === 202) {
+            // 202 means there were no immediately available events, but the
+            // response will block until either new events are available or the
+            // request times out. In both cases we should should try to read events
+            // immediately again
+
             lock.release();
-            await res.body?.getReader()?.closed;
-            process.nextTick(poll);
+
+            const notifyTimeoutHeader = res.headers.get(
+              EVENTS_NOTIFY_TIMEOUT_HEADER,
+            );
+
+            // Add 1s to the timeout to allow the server to potentially timeout first
+            const notifyTimeoutMs =
+              notifyTimeoutHeader && !isNaN(parseInt(notifyTimeoutHeader, 10))
+                ? Number(notifyTimeoutHeader) + 1_000
+                : null;
+
+            await Promise.race(
+              [
+                // We don't actually expect any response body here, but waiting for
+                // an empty body to be returned has been more reliable that waiting
+                // for the response body stream to close.
+                res.text(),
+                notifyTimeoutMs
+                  ? new Promise(resolve => setTimeout(resolve, notifyTimeoutMs))
+                  : null,
+              ].filter(Boolean),
+            );
           } else if (res.status === 200) {
             const data = await res.json();
             if (data) {
@@ -245,10 +256,15 @@ class PluginEventsService implements EventsService {
                   );
                 }
               }
-            } else {
-              this.logger.warn(
-                `Unexpected response status ${res.status} from events backend for subscription "${subscriptionId}"`,
+            }
+          } else {
+            if (res.status === 404) {
+              this.logger.info(
+                `Polling event subscription resulted in a 404, recreating subscription`,
               );
+              hasSubscription = false;
+            } else {
+              throw await ResponseError.fromResponse(res);
             }
           }
         }
@@ -275,6 +291,9 @@ class PluginEventsService implements EventsService {
             throw await ResponseError.fromResponse(res);
           }
         }
+
+        // No errors, reset backoff
+        backoffMs = POLL_BACKOFF_START_MS;
 
         process.nextTick(poll);
       } catch (error) {

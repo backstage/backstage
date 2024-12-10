@@ -30,6 +30,11 @@ export type {
   CookieParameters,
   PathParameters,
 } from './utility';
-export type { ApiRouter } from './router';
-export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
+export type { ApiRouter, TypedRouter } from './router';
+export type { PathTemplate } from './types/common';
 export { wrapInOpenApiTestServer, wrapServer } from './testUtils';
+export {
+  createValidatedOpenApiRouter,
+  getOpenApiSpecRoute,
+  createValidatedOpenApiRouterFromGeneratedEndpointMap,
+} from './stub';

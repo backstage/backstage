@@ -66,6 +66,14 @@ You can now start your Backstage instance as usual, using `yarn dev`.
 
 ## Production Setup
 
+In your `.dockerignore`, add this line:
+
+```
+!packages/backend/src/instrumentation.js
+```
+
+This ensures that Docker build will not ignore the instrumentation file if you are following the recommended `.dockerignore` setup.
+
 In your `Dockerfile`, copy `instrumentation.js` file into the root of the working directory.
 
 ```Dockerfile

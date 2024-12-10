@@ -27,6 +27,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 // @public (undocumented)
 export function createHealthRouter(options: {
   health: RootHealthService;
+  config: RootConfigService;
 }): Router;
 
 // @public
@@ -132,6 +133,8 @@ export interface RootHttpRouterConfigureContext {
   healthRouter: RequestHandler;
   // (undocumented)
   lifecycle: LifecycleService;
+  // (undocumented)
+  lifecycleMiddleware: RequestHandler;
   // (undocumented)
   logger: LoggerService;
   // (undocumented)

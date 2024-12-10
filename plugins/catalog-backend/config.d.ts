@@ -157,9 +157,9 @@ export interface Config {
           /** Defer stitching to be performed asynchronously */
           mode: 'deferred';
           /** Polling interval for tasks in seconds */
-          pollingInterval?: HumanDuration;
+          pollingInterval?: HumanDuration | string;
           /** How long to wait for a stitch to complete before giving up in seconds */
-          stitchTimeout?: HumanDuration;
+          stitchTimeout?: HumanDuration | string;
         };
 
     /**

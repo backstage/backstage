@@ -42,7 +42,7 @@ import {
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
-import { DefaultApiClient, TypedResponse } from './generated';
+import { DefaultApiClient, TypedResponse } from './schema/openapi';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -237,9 +237,9 @@ export class CatalogClient implements CatalogApi {
       }
     }
 
-    return this.apiClient
-      .getEntitiesByQuery({ query: params }, options)
-      .then(r => r.json());
+    return this.requestRequired(
+      await this.apiClient.getEntitiesByQuery({ query: params }, options),
+    );
   }
 
   /**

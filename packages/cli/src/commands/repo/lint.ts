@@ -15,6 +15,7 @@
  */
 
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import { Command, OptionValues } from 'commander';
 import { createHash } from 'crypto';
 import { relative as relativePath } from 'path';
@@ -125,8 +126,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const globby = require('globby') as typeof import('globby');
       const { readFile } =
         require('fs/promises') as typeof import('fs/promises');
-      const { relative: workerRelativePath } =
-        require('path') as typeof import('path');
+      const workerPath = require('path') as typeof import('path');
 
       return async ({
         fullDir,
@@ -163,15 +163,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           hash.update('\0');
 
           for (const path of result.sort()) {
-            if (await eslint.isPathIgnored(path)) {
+            const absPath = workerPath.resolve(rootDir, path);
+            const pathInPackage = workerPath.relative(fullDir, absPath);
+
+            if (await eslint.isPathIgnored(pathInPackage)) {
               continue;
             }
-            hash.update(workerRelativePath(fullDir, path));
+            hash.update(pathInPackage);
             hash.update('\0');
-            hash.update(await readFile(path));
+            hash.update(await readFile(absPath));
             hash.update('\0');
             hash.update(
-              JSON.stringify(await eslint.calculateConfigForFile(path)),
+              JSON.stringify(
+                await eslint.calculateConfigForFile(pathInPackage),
+              ).replaceAll(rootDir, ''),
             );
             hash.update('\0');
           }
@@ -195,11 +200,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         }
 
         const maxWarnings = lintOptions?.maxWarnings ?? 0;
+        const ignoreWarnings = +maxWarnings === -1;
+
         const resultText = formatter.format(results) as string;
         const failed =
           results.some(r => r.errorCount > 0) ||
-          results.reduce((current, next) => current + next.warningCount, 0) >
-            maxWarnings;
+          (!ignoreWarnings &&
+            results.reduce((current, next) => current + next.warningCount, 0) >
+              maxWarnings);
 
         return {
           relativeDir,
@@ -212,6 +220,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   });
 
   const outputSuccessCache = [];
+
+  let errorOutput = '';
 
   let failed = false;
   for (const {
@@ -227,12 +237,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       // When doing repo lint, only list the results if the lint failed to avoid a log
       // dump of all warnings that might be irrelevant
       if (resultText) {
-        console.log();
-        console.log(resultText.trimStart());
+        if (opts.outputFile) {
+          errorOutput += `${resultText}\n`;
+        } else {
+          console.log();
+          console.log(resultText.trimStart());
+        }
       }
     } else if (sha) {
       outputSuccessCache.push(sha);
     }
+  }
+
+  if (opts.outputFile && errorOutput) {
+    await fs.writeFile(paths.resolveTargetRoot(opts.outputFile), errorOutput);
   }
 
   if (cacheContext) {

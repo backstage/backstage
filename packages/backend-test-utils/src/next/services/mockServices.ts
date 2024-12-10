@@ -16,10 +16,7 @@
 
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
-import {
-  HostDiscovery,
-  discoveryServiceFactory,
-} from '@backstage/backend-defaults/discovery';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
@@ -33,6 +30,7 @@ import {
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -54,6 +52,7 @@ import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
+import { Knex } from 'knex';
 
 /** @internal */
 function createLoggerMock() {
@@ -273,7 +272,12 @@ export namespace mockServices {
     );
   }
   export namespace discovery {
-    export const factory = () => discoveryServiceFactory;
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.discovery,
+        deps: {},
+        factory: () => discovery(),
+      });
     export const mock = simpleMock(coreServices.discovery, () => ({
       getBaseUrl: jest.fn(),
       getExternalBaseUrl: jest.fn(),
@@ -374,8 +378,45 @@ export namespace mockServices {
     }));
   }
 
+  /**
+   * Creates a mock implementation of the
+   * {@link @backstage/backend-plugin-api#coreServices.database}. Just returns
+   * the given `knex` instance, which is useful in combination with the
+   * {@link TestDatabases} facility.
+   */
+  export function database(options: {
+    knex: Knex;
+    migrations?: { skip?: boolean };
+  }): DatabaseService {
+    return {
+      getClient: async () => options.knex,
+      migrations: options.migrations,
+    };
+  }
   export namespace database {
-    export const factory = () => databaseServiceFactory;
+    /**
+     * Creates a mock factory for the
+     * {@link @backstage/backend-plugin-api#coreServices.database}. Just returns
+     * the given `knex` instance if you supply one, which is useful in
+     * combination with the {@link TestDatabases} facility. Otherwise, it
+     * returns the regular default database factory which reads config settings.
+     */
+    export const factory = (options?: {
+      knex: Knex;
+      migrations?: { skip?: boolean };
+    }) =>
+      options
+        ? createServiceFactory({
+            service: coreServices.database,
+            deps: {},
+            factory: () => database(options),
+          })
+        : databaseServiceFactory;
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-plugin-api#coreServices.database}, optionally
+     * with some given method implementations.
+     */
     export const mock = simpleMock(coreServices.database, () => ({
       getClient: jest.fn(),
     }));
@@ -431,6 +472,7 @@ export namespace mockServices {
     export const factory = () => rootLifecycleServiceFactory;
     export const mock = simpleMock(coreServices.rootLifecycle, () => ({
       addShutdownHook: jest.fn(),
+      addBeforeShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
     }));
   }

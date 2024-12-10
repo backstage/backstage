@@ -25,7 +25,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -42,22 +42,29 @@ import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { PopperProps } from '@material-ui/core/Popper';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
 const useStyles = makeStyles(
-  {
-    root: {},
-    label: {},
-    input: {},
-    fullWidth: { width: '100%' },
-    boxLabel: {
-      width: '100%',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-    },
-  },
+  (theme: Theme) =>
+    createStyles({
+      root: {},
+      label: {
+        textTransform: 'none',
+        fontWeight: 'bold',
+      },
+      input: {
+        backgroundColor: theme.palette.background.paper,
+      },
+      fullWidth: { width: '100%' },
+      boxLabel: {
+        width: '100%',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+      },
+    }),
   { name: 'CatalogReactEntityOwnerPicker' },
 );
 
@@ -182,9 +189,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
       <Typography className={classes.label} variant="button" component="label">
         {t('entityOwnerPicker.title')}
         <Autocomplete
-          PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children as ReactNode}</div>
-          )}
+          PopperComponent={Popper}
           multiple
           disableCloseOnSelect
           loading={loading}
@@ -258,3 +263,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     </Box>
   );
 };
+
+function Popper({ children }: PopperProps) {
+  return <div>{children as ReactNode}</div>;
+}

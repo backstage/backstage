@@ -21,6 +21,12 @@ export function getManifestByVersion(
 // @public
 export type GetManifestByVersionOptions = {
   version: string;
+  fetch?: (
+    url: string,
+    options?: {
+      signal?: AbortSignal;
+    },
+  ) => Promise<Pick<Response, 'status' | 'json' | 'url'>>;
 };
 
 // @public

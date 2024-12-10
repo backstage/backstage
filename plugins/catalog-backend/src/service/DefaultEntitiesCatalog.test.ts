@@ -76,6 +76,7 @@ describe('DefaultEntitiesCatalog', () => {
 
     await knex<DbFinalEntitiesRow>('final_entities').insert({
       entity_id: id,
+      entity_ref: entityRef,
       final_entity: entityJson,
       hash: 'h',
       stitch_ticket: '',
@@ -113,6 +114,7 @@ describe('DefaultEntitiesCatalog', () => {
 
     await knex<DbFinalEntitiesRow>('final_entities').insert({
       entity_id: id,
+      entity_ref: entityRef,
       final_entity: entityJson,
       hash: 'h',
       stitch_ticket: '',
@@ -571,6 +573,63 @@ describe('DefaultEntitiesCatalog', () => {
             target: { kind: 'x', namespace: 'y', name: 'z' },
           },
         ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'handles inversion both for existing and missing keys, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n1' },
+          spec: { a: 'foo' },
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n2' },
+          spec: { a: 'bar', b: 'lonely' },
+        };
+        const entity3: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n3' },
+          spec: { a: 'baz', b: 'only' },
+        };
+        await addEntityToSearch(entity1);
+        await addEntityToSearch(entity2);
+        await addEntityToSearch(entity3);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        function f(
+          request: Omit<EntitiesRequest, 'credentials'>,
+        ): Promise<string[]> {
+          return catalog
+            .entities({ ...request, credentials: mockCredentials.none() })
+            .then(response =>
+              response.entities.map(e => e.metadata.name).toSorted(),
+            );
+        }
+
+        await expect(
+          f({
+            filter: { key: 'spec.b', values: ['lonely'] },
+          }),
+        ).resolves.toEqual(['n2']);
+
+        await expect(
+          f({
+            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+          }),
+        ).resolves.toEqual(['n1', 'n3']);
       },
     );
 
@@ -1124,7 +1183,6 @@ describe('DefaultEntitiesCatalog', () => {
         const request: QueryEntitiesInitialRequest = {
           filter,
           limit: 100,
-
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
           fullTextFilter: { term: 'cAt ' },
           credentials: mockCredentials.none(),
@@ -1138,6 +1196,60 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response.pageInfo.nextCursor).toBeUndefined();
         expect(response.pageInfo.prevCursor).toBeUndefined();
         expect(response.totalItems).toBe(3);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should filter the results when query is provided with fullTextFilter for camelCase fields, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const entities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'camelCase',
+            },
+            spec: {
+              shouldSearchCamelCase: 'searched',
+            },
+          },
+        ];
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const request: QueryEntitiesInitialRequest = {
+          limit: 100,
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+          fullTextFilter: {
+            term: 'sear',
+            fields: ['spec.shouldSearchCamelCase'],
+          },
+          credentials: mockCredentials.none(),
+        };
+        const response = await catalog.queryEntities(request);
+        expect(response.items).toEqual(entities);
+        expect(response.pageInfo.nextCursor).toBeUndefined();
+        expect(response.pageInfo.prevCursor).toBeUndefined();
+        expect(response.totalItems).toBe(1);
       },
     );
 
@@ -1363,6 +1475,52 @@ describe('DefaultEntitiesCatalog', () => {
         };
         const response = await catalog.queryEntities(request);
         expect(response).toEqual({ totalItems: 20, items: [], pageInfo: {} });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can skip totalItems, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await Promise.all(
+          Array(15)
+            .fill(0)
+            .map(() =>
+              addEntityToSearch({
+                apiVersion: 'a',
+                kind: 'k',
+                metadata: { name: v4() },
+              }),
+            ),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const request: QueryEntitiesInitialRequest = {
+          limit: 10,
+          credentials: mockCredentials.none(),
+          skipTotalItems: true,
+        };
+        let response = await catalog.queryEntities(request);
+        expect(response).toEqual({
+          totalItems: 0,
+          items: expect.objectContaining({ length: 10 }),
+          pageInfo: { nextCursor: expect.anything() },
+        });
+        response = await catalog.queryEntities({
+          ...request,
+          cursor: response.pageInfo.nextCursor!,
+        });
+        expect(response).toEqual({
+          totalItems: 0,
+          items: expect.objectContaining({ length: 5 }),
+          pageInfo: { prevCursor: expect.anything() },
+        });
       },
     );
 
@@ -1685,6 +1843,51 @@ describe('DefaultEntitiesCatalog', () => {
         ).resolves.toEqual(['BB', 'CC', 'AA']); // 'AA' has no title, ends up last
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should silently skip over entities that are not yet stitched, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const entity1 = entityFrom('AA', { uid: 'id1' });
+        const entity2 = entityFrom('BB', { uid: 'id2' });
+        await Promise.all([
+          addEntityToSearch(entity1),
+          addEntityToSearch(entity2),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog
+            .queryEntities({
+              orderFields: [{ field: 'metadata.uid', order: 'asc' }],
+              limit: 10,
+              credentials: mockCredentials.none(),
+            })
+            .then(r => r.items.map(e => e.metadata.name)),
+        ).resolves.toEqual(['AA', 'BB']);
+
+        // simulate a situation where stitching is not yet complete
+        await knex('final_entities')
+          .update({ final_entity: null })
+          .where({ entity_ref: stringifyEntityRef(entity1) });
+
+        await expect(
+          catalog
+            .queryEntities({
+              orderFields: [{ field: 'metadata.uid', order: 'asc' }],
+              limit: 10,
+              credentials: mockCredentials.none(),
+            })
+            .then(r => r.items.map(e => e.metadata.name)),
+        ).resolves.toEqual(['BB']);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {
@@ -1826,6 +2029,21 @@ describe('DefaultEntitiesCatalog', () => {
         await expect(
           catalog.facets({
             facets: ['kind'],
+            filter: { key: 'metadata.name', values: ['two'] },
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            kind: [
+              { value: 'k', count: 1 },
+              { value: 'k2', count: 1 },
+            ],
+          },
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['kind'],
             filter: { not: { key: 'metadata.name', values: ['two'] } },
             credentials: mockCredentials.none(),
           }),
@@ -1929,6 +2147,50 @@ describe('DefaultEntitiesCatalog', () => {
               { value: 'node', count: 1 },
               { value: 'rust', count: 1 },
             ]),
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'works with a mixture of present and missing facets, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+          },
+          spec: {},
+        });
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'two',
+          },
+          spec: {},
+        });
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name', 'missing'],
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': expect.arrayContaining([
+              { value: 'one', count: 1 },
+              { value: 'two', count: 1 },
+            ]),
+            missing: [],
           },
         });
       },

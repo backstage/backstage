@@ -1,5 +1,90 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/backend-openapi-utils@0.4.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/backend-openapi-utils@0.3.1-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/backend-openapi-utils@0.3.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/backend-openapi-utils@0.3.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
+## 0.4.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.2.1-next.1
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-node@1.14.0-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.14.0-next.0
+  - @backstage/backend-openapi-utils@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.1
 
 ### Patch Changes

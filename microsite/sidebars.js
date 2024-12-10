@@ -29,6 +29,16 @@ module.exports = {
       },
       {
         type: 'category',
+        label: 'Deploying Backstage',
+        items: [
+          'deployment/index',
+          'deployment/scaling',
+          'deployment/docker',
+          'deployment/k8s',
+        ],
+      },
+      {
+        type: 'category',
         label: 'Using Backstage',
         items: [
           'getting-started/logging-in',
@@ -37,7 +47,6 @@ module.exports = {
         ],
       },
       'getting-started/keeping-backstage-updated',
-      'getting-started/concepts',
     ],
     'Core Features': [
       {
@@ -92,6 +101,7 @@ module.exports = {
           'features/software-templates/migrating-to-rjsf-v5',
           'features/software-templates/migrating-from-v1beta2-to-v1beta3',
           'features/software-templates/dry-run-testing',
+          'features/software-templates/experimental',
         ],
       },
       {
@@ -136,6 +146,14 @@ module.exports = {
         items: [
           'integrations/aws-s3/locations',
           'integrations/aws-s3/discovery',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'Azure Blob Storage',
+        items: [
+          'integrations/azure-blobStorage/locations',
+          'integrations/azure-blobStorage/discovery',
         ],
       },
       {
@@ -340,20 +358,6 @@ module.exports = {
         ],
       },
       'tooling/package-metadata',
-    ],
-    Deployment: [
-      'deployment/index',
-      'deployment/scaling',
-      'deployment/docker',
-      'deployment/k8s',
-      'deployment/heroku',
-      'deployment/koyeb',
-      'deployment/flightcontrol',
-      {
-        type: 'category',
-        label: 'Using Backstage Deploy (alpha)',
-        items: ['deployment/backstage-deploy/aws-lightsail'],
-      },
     ],
     'New Backend System': [
       'backend-system/index',

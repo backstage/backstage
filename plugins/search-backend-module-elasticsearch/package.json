@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-elasticsearch",
-  "version": "1.6.0",
+  "version": "1.6.3-next.2",
   "description": "A module for the search backend that implements search using ElasticSearch",
   "backstage": {
     "role": "backend-plugin-module",
@@ -58,7 +58,7 @@
     "aws4": "^1.12.0",
     "elastic-builder": "^2.16.0",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

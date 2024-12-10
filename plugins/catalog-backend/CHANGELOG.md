@@ -1,5 +1,227 @@
 # @backstage/plugin-catalog-backend
 
+## 1.29.0-next.2
+
+### Minor Changes
+
+- c1307b4: Implement `/entities` in terms of `queryEntities` to not run into memory and performance problems on large catalogs
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 8013c9c: Perform the by-query count inlined with the main query
+- feba9ee: Use a join based strategy for filtering, when having small page sizes
+- 1fdb48e: Use a faster count method on pg when computing some metrics
+- 0c33465: Implement `/entities/by-name/:kind/:namespace/:name` using `getEntitiesByRefs`
+- d93390d: When parsing filters, do not make redundant `anyOf` and `allOf` nodes when there's only a single entry within them
+- 24ecea8: Avoid extra ordering in by-query when the user doesn't ask for it
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/backend-openapi-utils@0.4.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 1.29.0-next.1
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+- 1d0bc11: Fetch all facets in a single database query
+
+### Patch Changes
+
+- e4aab10: Fix a bug where sometimes the `by-query` endpoint could return nulls for entities that were not yet stitched.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.1
+  - @backstage/backend-openapi-utils@0.3.1-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-events-node@0.4.6-next.1
+  - @backstage/plugin-permission-common@0.8.2
+
+## 1.28.1-next.0
+
+### Patch Changes
+
+- f159b25: Compute deltas more efficiently, which generally leads to less wasted processing cycles
+- 56511ba: Be more aggressive in dequeueing entities for stitching
+- 71152e3: Correctly report stitching queue length
+- 3ab57c6: Support changing location keys on existing entities, in delta mutations
+- 2924ffe: Compute some metrics using search table facet aggregations instead of reading the full refresh state
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/backend-openapi-utils@0.3.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-node@0.8.6-next.0
+
+## 1.28.0
+
+### Minor Changes
+
+- 39fd704: Internal update to use the new generated server types from `backstage-cli package schema openapi generate --server`.
+- 76857da: Added `entity_ref` column to `final_entities` in order to move `refresh_state` away from the read path
+- 34d4360: Drop redundant indices from the database.
+
+  The following redundant indices are removed in this version:
+
+  - `final_entities_entity_id_idx` - overlaps with `final_entities_pkey`
+  - `refresh_state_entity_id_idx` - overlaps with `refresh_state_pkey`
+  - `refresh_state_entity_ref_idx` - overlaps with `refresh_state_entity_ref_uniq`
+  - `search_key_idx` and `search_value_idx` - these were replaced by the composite index `search_key_value_idx` in #22594
+
+  No negative end user impact is expected, but rather that performance should increase due to less index churn.
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- b89834b: Fixed an issue where entities would not be marked for restitching if only the target of a relationship changed.
+- 1bf02cc: Fixed bug when searching an entity by `spec.profile.displayName` in the catalog on the frontend. Text filter fields were not applied correctly to the database query resulting in empty results.
+- 4e58bc7: Upgrade to uuid v11 internally
+- 5efde17: Internal refactor to slightly speed up the processing loop
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.5
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/backend-openapi-utils@0.3.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-node@0.8.5
+
+## 1.28.0-next.3
+
+### Minor Changes
+
+- 76857da: Added `entity_ref` column to `final_entities` in order to move `refresh_state` away from the read path
+- 34d4360: Drop redundant indices from the database.
+
+  The following redundant indices are removed in this version:
+
+  - `final_entities_entity_id_idx` - overlaps with `final_entities_pkey`
+  - `refresh_state_entity_id_idx` - overlaps with `refresh_state_pkey`
+  - `refresh_state_entity_ref_idx` - overlaps with `refresh_state_entity_ref_uniq`
+  - `search_key_idx` and `search_value_idx` - these were replaced by the composite index `search_key_value_idx` in #22594
+
+  No negative end user impact is expected, but rather that performance should increase due to less index churn.
+
+### Patch Changes
+
+- b89834b: Fixed an issue where entities would not be marked for restitching if only the target of a relationship changed.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.3
+
+## 1.28.0-next.2
+
+### Minor Changes
+
+- 39fd704: Internal update to use the new generated server types from `backstage-cli package schema openapi generate --server`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/backend-openapi-utils@0.3.0-next.2
+  - @backstage/plugin-events-node@0.4.5-next.2
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+
+## 1.27.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.2.1-next.1
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.14.0-next.1
+  - @backstage/plugin-events-node@0.4.4-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.1
+
+## 1.27.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.5-next.0
+  - @backstage/plugin-catalog-node@1.14.0-next.0
+  - @backstage/backend-openapi-utils@0.2.1-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.0
+
 ## 1.27.0
 
 ### Minor Changes

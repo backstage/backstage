@@ -152,19 +152,37 @@ describe('NunjucksWorkflowRunner', () => {
       id: 'checkpoints-action',
       description: 'Mock action with checkpoints',
       handler: async ctx => {
-        const key1 = await ctx.checkpoint('key1', async () => {
-          return 'updated';
+        const key1 = await ctx.checkpoint({
+          key: 'key1',
+          fn: async () => 'updated',
         });
-        const key2 = await ctx.checkpoint('key2', async () => {
-          return 'updated';
+        const key2 = await ctx.checkpoint({
+          key: 'key2',
+          fn: async () => 'updated',
         });
-        const key3 = await ctx.checkpoint('key3', async () => {
-          return 'updated';
+        const key3 = await ctx.checkpoint({
+          key: 'key3',
+          fn: async () => 'updated',
+        });
+
+        const key4 = await ctx.checkpoint({
+          key: 'key4',
+          fn: () => {},
+        });
+
+        const key5 = await ctx.checkpoint({
+          key: 'key5',
+          fn: async () => {},
         });
 
         ctx.output('key1', key1);
         ctx.output('key2', key2);
         ctx.output('key3', key3);
+
+        // @ts-expect-error - this is void return
+        ctx.output('key4', key4);
+        // @ts-expect-error - this is void return
+        ctx.output('key5', key5);
       },
     });
 
@@ -190,7 +208,7 @@ describe('NunjucksWorkflowRunner', () => {
     });
 
     await expect(runner.execute(task)).rejects.toThrow(
-      "Template action with ID 'does-not-exist' is not registered.",
+      /Template action with ID 'does-not-exist' is not registered/,
     );
   });
 
@@ -632,6 +650,9 @@ describe('NunjucksWorkflowRunner', () => {
             key1: '${{steps.test.output.key1}}',
             key2: '${{steps.test.output.key2}}',
             key3: '${{steps.test.output.key3}}',
+            key4: '${{steps.test.output.key4}}',
+            key5: '${{steps.test.output.key5}}',
+            key6: '${{steps.test.output.key6}}',
           },
         }),
         getTaskState: (): Promise<
@@ -661,6 +682,8 @@ describe('NunjucksWorkflowRunner', () => {
       expect(result.output.key1).toEqual('initial');
       expect(result.output.key2).toEqual('updated');
       expect(result.output.key3).toEqual('updated');
+      expect(result.output.key4).toEqual(undefined);
+      expect(result.output.key5).toEqual(undefined);
     });
 
     it('should template the output from simple actions', async () => {
@@ -1330,6 +1353,39 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+    });
+
+    it('should have metadata in action context during dry run', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          templateInfo: {
+            entityRef: 'dryRun-Entity',
+            entity: { metadata: { name: 'test-template' } },
+          },
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: token,
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+      expect(
+        fakeActionHandler.mock.calls[0][0].templateInfo.entity.metadata.name,
+      ).toEqual('test-template');
     });
   });
 

@@ -1,5 +1,147 @@
 # @backstage/backend-test-utils
 
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 0e9c9fa: Mock the new `RootLifecycleService.addBeforeShutdownHook` method.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/backend-app-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
+## 1.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-defaults@0.6.0-next.1
+  - @backstage/backend-app-api@1.1.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+
+## 1.2.0-next.0
+
+### Minor Changes
+
+- de6f280: **BREAKING** Upgraded @keyv/redis and keyv packages to resolve a bug related to incorrect resolution of cache keys.
+
+  This is a breaking change for clients using the `redis` store for cache with `useRedisSets` option set to false since cache keys will be calculated differently (without the sets:namespace: prefix). For clients with default configuration (or useRedisSets set to false) the cache keys will stay the same, but since @keyv/redis library no longer supports redis sets they won't be utilised anymore.
+
+  If you were using `useRedisSets` option in configuration make sure to remove it from `app-config.yaml`:
+
+  ```diff
+  backend:
+    cache:
+      store: redis
+      connection: redis://user:pass@cache.example.com:6379
+  -   useRedisSets: false
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/backend-app-api@1.0.3-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 5064827: Made it possible to construct `mockServices.database` with a given knex instance
+
+### Patch Changes
+
+- 7aae8e3: The `mockServices.discovery.factory()` factory now uses the mocked discovery service as its implementation, avoid the need for configuration.
+- eb82994: Removed unused `msw` dependency.
+- 4e58bc7: Upgrade to uuid v11 internally
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/backend-app-api@1.0.2
+  - @backstage/errors@1.2.5
+
+## 1.1.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+  - @backstage/backend-defaults@0.5.3-next.3
+  - @backstage/backend-app-api@1.0.2-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.2
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 5064827: Made it possible to construct `mockServices.database` with a given knex instance
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.3-next.2
+  - @backstage/plugin-events-node@0.4.5-next.2
+  - @backstage/plugin-auth-node@0.5.4-next.2
+  - @backstage/backend-app-api@1.0.2-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.0.2-next.1
+  - @backstage/backend-defaults@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.1
+  - @backstage/plugin-events-node@0.4.4-next.1
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 7aae8e3: The `mockServices.discovery.factory()` factory now uses the mocked discovery service as its implementation, avoid the need for configuration.
+- eb82994: Removed unused `msw` dependency.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.5.4-next.0
+  - @backstage/backend-defaults@0.5.3-next.0
+  - @backstage/backend-app-api@1.0.2-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.0.1
 
 ### Patch Changes

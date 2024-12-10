@@ -16,6 +16,7 @@
 
 import { DefaultEventsService } from './DefaultEventsService';
 import { EventParams } from './EventParams';
+import { EVENTS_NOTIFY_TIMEOUT_HEADER } from './EventsService';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -158,6 +159,189 @@ describe('DefaultEventsService', () => {
 
       // Internal call to clean up subscriptions
       await (service as any).shutdown();
+    });
+
+    it('should wait an poll on timeout', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultEventsService.create({ logger }).forPlugin('a', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      let callCount = 0;
+
+      let blockingController: ReadableStreamDefaultController;
+      const blockingStream = new ReadableStream({
+        start(controller) {
+          blockingController = controller;
+        },
+      });
+
+      mswServer.use(
+        rest.put(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester',
+          (_req, res, ctx) => res(ctx.status(200)),
+        ),
+        // The first and third calls result in a blocking 202 that is resolved after 100ms
+        // The second and fourth calls result in a 200 with an event
+        // The fifth call blocks until the end of the test
+        // No more than 5 calls should be made
+        rest.get(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester/events',
+          (_req, res, ctx) => {
+            callCount += 1;
+            if (callCount === 1 || callCount === 3) {
+              return res(
+                ctx.status(202),
+                ctx.body(
+                  new ReadableStream({
+                    start(controller) {
+                      setTimeout(() => controller.close(), 100);
+                    },
+                  }),
+                ),
+              );
+            } else if (callCount === 2 || callCount === 4) {
+              return res(
+                ctx.status(200),
+                ctx.json({
+                  events: [{ topic: 'test', payload: { callCount } }],
+                }),
+              );
+            } else if (callCount === 5) {
+              return res(ctx.status(202), ctx.body(blockingStream));
+            }
+            throw new Error(`events endpoint called too many times`);
+          },
+        ),
+      );
+
+      const event = await new Promise(resolve => {
+        const events = new Array<EventParams>();
+        service.subscribe({
+          id: 'tester',
+          topics: ['test'],
+          async onEvent(newEvent) {
+            events.push(newEvent);
+            if (events.length === 2) {
+              resolve(events);
+            }
+          },
+        });
+      });
+
+      expect(event).toEqual([
+        { topic: 'test', eventPayload: { callCount: 2 } },
+        { topic: 'test', eventPayload: { callCount: 4 } },
+      ]);
+
+      // Wait to make sure no additional calls happen
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(callCount).toBe(5);
+
+      // Internal call to clean up subscriptions
+      await (service as any).shutdown();
+
+      // Close the stream for the 5th call so that we don't leave the request hanging
+      blockingController!.close();
+    });
+
+    it('should timeout polling if the response has a timeout header', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultEventsService.create({ logger }).forPlugin('a', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      let callCount = 0;
+
+      let blockingController: ReadableStreamDefaultController;
+      const blockingStream = new ReadableStream({
+        start(controller) {
+          blockingController = controller;
+        },
+      });
+
+      mswServer.use(
+        rest.put(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester',
+          (_req, res, ctx) => res(ctx.status(200)),
+        ),
+        // The first and third calls result in a blocking 202 that is resolved after 100ms
+        // The second and fourth calls result in a 200 with an event
+        // The fifth call blocks until the end of the test
+        // No more than 5 calls should be made
+        rest.get(
+          'http://localhost:0/api/events/bus/v1/subscriptions/a.tester/events',
+          (_req, res, ctx) => {
+            callCount += 1;
+            if (callCount === 1 || callCount === 3) {
+              return res(
+                ctx.status(202),
+                ctx.body(
+                  new ReadableStream({
+                    start(controller) {
+                      setTimeout(() => controller.close(), 100);
+                    },
+                  }),
+                ),
+              );
+            } else if (callCount === 2 || callCount === 4) {
+              return res(
+                ctx.status(200),
+                ctx.json({
+                  events: [{ topic: 'test', payload: { callCount } }],
+                }),
+              );
+            } else if (callCount === 5) {
+              // 5th call has a timeout header so polling should proceed to the next call
+              return res(
+                ctx.set(EVENTS_NOTIFY_TIMEOUT_HEADER, '100'),
+                ctx.status(202),
+                ctx.body(blockingStream),
+              );
+            } else if (callCount === 6) {
+              return res(ctx.status(202), ctx.body(blockingStream));
+            }
+            throw new Error(`events endpoint called too many times`);
+          },
+        ),
+      );
+
+      const event = await new Promise(resolve => {
+        const events = new Array<EventParams>();
+        service.subscribe({
+          id: 'tester',
+          topics: ['test'],
+          async onEvent(newEvent) {
+            events.push(newEvent);
+            if (events.length === 2) {
+              resolve(events);
+            }
+          },
+        });
+      });
+
+      expect(event).toEqual([
+        { topic: 'test', eventPayload: { callCount: 2 } },
+        { topic: 'test', eventPayload: { callCount: 4 } },
+      ]);
+
+      // Wait to allow timeout to trigger and make sure no additional calls happen
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      expect(callCount).toBe(6);
+
+      // Internal call to clean up subscriptions
+      await (service as any).shutdown();
+
+      // Close the stream for the 5th call so that we don't leave the request hanging
+      blockingController!.close();
     });
 
     it('should not read events from bus if disabled', async () => {

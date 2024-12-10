@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-openapi-utils",
-  "version": "0.2.0",
+  "version": "0.4.0-next.2",
   "description": "OpenAPI typescript support.",
   "backstage": {
     "role": "node-library"

@@ -1,5 +1,61 @@
 # @backstage/plugin-events-backend-test-utils
 
+## 0.1.39-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.6-next.2
+
+## 0.1.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.6-next.1
+
+## 0.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.6-next.0
+
+## 0.1.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5
+
+## 0.1.38-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.3
+
+## 0.1.38-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.5-next.2
+
+## 0.1.38-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.4-next.1
+
+## 0.1.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+
 ## 0.1.36
 
 ### Patch Changes

@@ -41,7 +41,7 @@ import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
-  scaffolderTaskPermissions,
+  scaffolderPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
@@ -92,6 +92,7 @@ import {
   HttpAuthService,
   LifecycleService,
   PermissionsService,
+  resolveSafeChildPath,
   SchedulerService,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
@@ -105,6 +106,9 @@ import {
   AutocompleteHandler,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { pathToFileURL } from 'url';
+import { v4 as uuid } from 'uuid';
+import { EventsService } from '@backstage/plugin-events-node';
 
 /**
  *
@@ -179,6 +183,7 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
   discovery?: DiscoveryService;
+  events?: EventsService;
 
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
@@ -291,6 +296,7 @@ export async function createRouter(
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
     autocompleteHandlers = {},
+    events: eventsService,
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -310,7 +316,10 @@ export async function createRouter(
 
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({ database });
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database,
+      events: eventsService,
+    });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,
       logger,
@@ -436,7 +445,7 @@ export async function createRouter(
         rules: actionRules,
       },
     ],
-    permissions: scaffolderTaskPermissions,
+    permissions: scaffolderPermissions,
   });
 
   router.use(permissionIntegrationRouter);
@@ -472,6 +481,8 @@ export async function createRouter(
             description: schema.description,
             schema,
           })),
+          EXPERIMENTAL_formDecorators:
+            template.spec.EXPERIMENTAL_formDecorators,
         });
       },
     )
@@ -814,6 +825,22 @@ export async function createRouter(
         name: step.name ?? step.action,
       }));
 
+      const dryRunId = uuid();
+      const contentsPath = resolveSafeChildPath(
+        workingDirectory,
+        `dry-run-content-${dryRunId}`,
+      );
+
+      const templateInfo = {
+        entityRef: stringifyEntityRef(template),
+        entity: {
+          metadata: template.metadata,
+        },
+        baseUrl: pathToFileURL(
+          resolveSafeChildPath(contentsPath, 'template.yaml'),
+        ).toString(),
+      };
+
       const result = await dryRunner({
         spec: {
           apiVersion: template.apiVersion,
@@ -825,6 +852,7 @@ export async function createRouter(
             ref: userEntityRef,
           },
         },
+        templateInfo: templateInfo,
         directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
           content: Buffer.from(file.base64Content, 'base64'),

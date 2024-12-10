@@ -367,6 +367,20 @@ function ensureItems(
 }
 
 /**
+ * Helper function which dual searches the user/group maps first for original value, then for lowercased value.
+ * @param map - The map of DN's user or group as the key usually multicased.
+ * @param searchValue - The DN/memberOf search criteria which could potentially not match the map DN by case.
+ * @returns The value/result of the search criteria dual searching.
+ */
+function getValueFromMapWithInsensitiveKey(
+  map: Map<string, any>,
+  searchValue: string,
+) {
+  const result = map.get(searchValue);
+  return result ? result : map.get(searchValue.toLocaleLowerCase('en-US'));
+}
+
+/**
  * Takes groups and entities with empty relations, and fills in the various
  * relations that were returned by the readers, and forms the org hierarchy.
  *
@@ -396,12 +410,24 @@ export function resolveRelations(
   for (const user of users) {
     userMap.set(stringifyEntityRef(user), user);
     userMap.set(user.metadata.annotations![LDAP_DN_ANNOTATION], user);
+    userMap.set(
+      user.metadata.annotations![LDAP_DN_ANNOTATION]?.toLocaleLowerCase(
+        'en-US',
+      ),
+      user,
+    );
     userMap.set(user.metadata.annotations![LDAP_RDN_ANNOTATION], user);
     userMap.set(user.metadata.annotations![LDAP_UUID_ANNOTATION], user);
   }
   for (const group of groups) {
     groupMap.set(stringifyEntityRef(group), group);
     groupMap.set(group.metadata.annotations![LDAP_DN_ANNOTATION], group);
+    groupMap.set(
+      group.metadata.annotations![LDAP_DN_ANNOTATION]?.toLocaleLowerCase(
+        'en-US',
+      ),
+      group,
+    );
     groupMap.set(group.metadata.annotations![LDAP_RDN_ANNOTATION], group);
     groupMap.set(group.metadata.annotations![LDAP_UUID_ANNOTATION], group);
   }
@@ -426,10 +452,10 @@ export function resolveRelations(
   // express relations in different directions. Some may have a user memberOf
   // overlay, some don't, for example.
   for (const [userN, groupsN] of userMemberOf.entries()) {
-    const user = userMap.get(userN);
+    const user = getValueFromMapWithInsensitiveKey(userMap, userN);
     if (user) {
       for (const groupN of groupsN) {
-        const group = groupMap.get(groupN);
+        const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
         if (group) {
           ensureItems(newUserMemberOf, stringifyEntityRef(user), [
             stringifyEntityRef(group),
@@ -439,10 +465,13 @@ export function resolveRelations(
     }
   }
   for (const [groupN, parentsN] of groupMemberOf.entries()) {
-    const group = groupMap.get(groupN);
+    const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
     if (group) {
       for (const parentN of parentsN) {
-        const parentGroup = groupMap.get(parentN);
+        const parentGroup = getValueFromMapWithInsensitiveKey(
+          groupMap,
+          parentN,
+        );
         if (parentGroup) {
           ensureItems(newGroupParents, stringifyEntityRef(group), [
             stringifyEntityRef(parentGroup),
@@ -455,18 +484,21 @@ export function resolveRelations(
     }
   }
   for (const [groupN, membersN] of groupMember.entries()) {
-    const group = groupMap.get(groupN);
+    const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
     if (group) {
       for (const memberN of membersN) {
         // Group members can be both users and groups in the input model, so
         // try both
-        const memberUser = userMap.get(memberN);
+        const memberUser = getValueFromMapWithInsensitiveKey(userMap, memberN);
         if (memberUser) {
           ensureItems(newUserMemberOf, stringifyEntityRef(memberUser), [
             stringifyEntityRef(group),
           ]);
         } else {
-          const memberGroup = groupMap.get(memberN);
+          const memberGroup = getValueFromMapWithInsensitiveKey(
+            groupMap,
+            memberN,
+          );
           if (memberGroup) {
             ensureItems(newGroupChildren, stringifyEntityRef(group), [
               stringifyEntityRef(memberGroup),
@@ -482,21 +514,21 @@ export function resolveRelations(
 
   // Write down the relations again into the actual entities
   for (const [userN, groupsN] of newUserMemberOf.entries()) {
-    const user = userMap.get(userN);
+    const user = getValueFromMapWithInsensitiveKey(userMap, userN);
     if (user) {
       user.spec.memberOf = Array.from(groupsN).sort();
     }
   }
   for (const [groupN, parentsN] of newGroupParents.entries()) {
     if (parentsN.size === 1) {
-      const group = groupMap.get(groupN);
+      const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
       if (group) {
         group.spec.parent = parentsN.values().next().value;
       }
     }
   }
   for (const [groupN, childrenN] of newGroupChildren.entries()) {
-    const group = groupMap.get(groupN);
+    const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
     if (group) {
       group.spec.children = Array.from(childrenN).sort();
     }

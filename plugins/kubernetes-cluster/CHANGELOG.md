@@ -1,5 +1,103 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.1-next.0
+  - @backstage/plugin-kubernetes-react@0.5.2-next.2
+
+## 0.0.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/plugin-kubernetes-common@0.9.0
+  - @backstage/plugin-kubernetes-react@0.5.2-next.1
+
+## 0.0.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/plugin-kubernetes-common@0.9.0
+  - @backstage/plugin-kubernetes-react@0.5.2-next.0
+
+## 0.0.18
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/plugin-kubernetes-common@0.9.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-plugin-api@1.10.1
+
+## 0.0.18-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.0-next.2
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/plugin-catalog-react@1.14.1-next.3
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-kubernetes-common@0.9.0-next.0
+
+## 0.0.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.1-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-kubernetes-common@0.9.0-next.0
+  - @backstage/plugin-kubernetes-react@0.5.0-next.1
+
+## 0.0.18-next.1
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.0-next.0
+  - @backstage/plugin-kubernetes-react@0.5.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-catalog-react@1.14.1-next.1
+
+## 0.0.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+  - @backstage/plugin-kubernetes-react@0.4.5-next.0
+
 ## 0.0.17
 
 ### Patch Changes

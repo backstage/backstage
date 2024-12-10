@@ -74,11 +74,14 @@ configmaps
 configs
 const
 cookiecutter
+corepack
 Corti
 cron
 cronjobs
 crontab
 css
+cve
+CVEs
 daemonsets
 Datadog
 dataflow
@@ -100,6 +103,8 @@ Deutsche
 dev
 devops
 devs
+dequeue
+dequeueing
 dialogs
 discoverability
 Discoverability
@@ -176,6 +181,7 @@ idempotency
 Iglesias
 iLert
 img
+impactful
 incentivised
 Indal
 indexable
@@ -335,6 +341,7 @@ rebase
 rebasing
 Recharts
 Redash
+redis
 renderer
 renderers
 replicasets
@@ -368,6 +375,8 @@ scaffolded
 scaffolder
 Scaffolder
 scrollbar
+SCM
+SCMs
 sdks
 seb
 semlas

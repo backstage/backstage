@@ -37,9 +37,18 @@ const httpHandlers = [
    * Project REST endpoint mocks
    */
 
-  // fetch all projects in an instance
-  rest.get(`${apiBaseUrl}/projects`, (_, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(all_projects_response));
+  // fetch all projects in an instance handling archived ones
+  rest.get(`${apiBaseUrl}/projects`, (req, res, ctx) => {
+    const archived = req.url.searchParams.get('archived');
+
+    return res(
+      ctx.set('x-next-page', ''),
+      ctx.json(
+        all_projects_response.filter(p =>
+          archived === 'false' ? !p.archived : true,
+        ),
+      ),
+    );
   }),
 
   rest.get(`${apiBaseUrl}/projects/42`, (_, res, ctx) => {
@@ -127,6 +136,22 @@ const httpHandlers = [
 
 // dynamic handlers
 
+// https://docs.gitlab.com/ee/api/groups.html#list-group-details supports encoded path and id
+const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
+  // Handler for apiBaseUrl
+  rest.get(`${apiBaseUrl}/groups/${group.full_path}`, (_, res, ctx) => {
+    return res(
+      ctx.json(all_groups_response.find(g => g.full_path === group.full_path)),
+    );
+  }),
+  // Handler for apiSaaSBaseUrl
+  rest.get(`${apiBaseUrlSaas}/groups/${group.full_path}`, (_, res, ctx) => {
+    return res(
+      ctx.json(all_groups_response.find(g => g.full_path === group.full_path)),
+    );
+  }),
+]);
+
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {
   return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
     return res(ctx.json(all_groups_response.find(g => g.id === group.id)));
@@ -136,9 +161,13 @@ const httpGroupFindByIdDynamic = all_groups_response.map(group => {
 const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
   return rest.get(
     `${apiBaseUrl}/groups/${group.id}/projects`,
-    (_, res, ctx) => {
-      const projectsInGroup = all_projects_response.filter(p =>
-        p.path_with_namespace?.includes(group.name),
+    (req, res, ctx) => {
+      const archived = req.url.searchParams.get('archived');
+
+      const projectsInGroup = all_projects_response.filter(
+        p =>
+          p.path_with_namespace?.includes(group.name) &&
+          (archived === 'false' ? !p.archived : true),
       );
 
       return res(ctx.json(projectsInGroup));
@@ -149,9 +178,13 @@ const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
 const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
   return rest.get(
     `${apiBaseUrl}/groups/${group.name}/projects`,
-    (_, res, ctx) => {
-      const projectsInGroup = all_projects_response.filter(p =>
-        p.path_with_namespace?.includes(group.name),
+    (req, res, ctx) => {
+      const archived = req.url.searchParams.get('archived');
+
+      const projectsInGroup = all_projects_response.filter(
+        p =>
+          p.path_with_namespace?.includes(group.name) &&
+          (archived === 'false' ? !p.archived : true),
       );
 
       return res(ctx.json(projectsInGroup));
@@ -601,4 +634,5 @@ export const handlers = [
   ...httpGroupListDescendantProjectsById,
   ...httpGroupListDescendantProjectsByName,
   ...graphqlHandlers,
+  ...httpGroupFindByEncodedPathDynamic,
 ];

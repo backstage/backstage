@@ -23,18 +23,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
           ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
-      - uses: backstage/actions/changeset-feedback@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+      - uses: backstage/actions/changeset-feedback@c5c3b91fe86c59a87cf9782de1f89e48e19d4492 # v0.6.16
         name: Generate feedback
         with:
           diff-ref: 'origin/master'

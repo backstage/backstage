@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
 import { Select, SelectItem } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useEffect } from 'react';
 import { scaffolderTranslationRef } from '../../../translation';
+import { AvailableRepositories } from './types';
 
 export const RepoUrlPickerRepoName = (props: {
   repoName?: string;
   allowedRepos?: string[];
-  onChange: (host: string) => void;
+  onChange: (chosenRepo: AvailableRepositories) => void;
   rawErrors: string[];
-  availableRepos?: string[];
+  availableRepos?: AvailableRepositories[];
 }) => {
   const { repoName, allowedRepos, onChange, rawErrors, availableRepos } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -37,7 +38,7 @@ export const RepoUrlPickerRepoName = (props: {
     if (!repoName) {
       // Set the first of the allowedRepos option if that available
       if (allowedRepos?.length) {
-        onChange(allowedRepos[0]);
+        onChange({ name: allowedRepos[0] });
       }
     }
   }, [allowedRepos, repoName, onChange]);
@@ -58,7 +59,9 @@ export const RepoUrlPickerRepoName = (props: {
             native
             label={t('fields.repoUrlPicker.repository.title')}
             onChange={selected =>
-              onChange(String(Array.isArray(selected) ? selected[0] : selected))
+              onChange({
+                name: String(Array.isArray(selected) ? selected[0] : selected),
+              })
             }
             disabled={allowedRepos.length === 1}
             selected={repoName}
@@ -67,10 +70,13 @@ export const RepoUrlPickerRepoName = (props: {
         ) : (
           <Autocomplete
             value={repoName}
-            onChange={(_, newValue) => {
-              onChange(newValue || '');
+            onInputChange={(_, newValue) => {
+              const selectedRepo = availableRepos?.find(
+                r => r.name === newValue,
+              );
+              onChange(selectedRepo || { name: newValue || '' });
             }}
-            options={availableRepos || []}
+            options={(availableRepos || []).map(r => r.name)}
             renderInput={params => (
               <TextField
                 {...params}

@@ -25,24 +25,29 @@ import path, { resolve as resolvePath } from 'path';
 import {
   BackendFeature,
   createBackendPlugin,
-  LoggerService,
 } from '@backstage/backend-plugin-api';
-import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
+import {
+  CommonJSModuleLoader,
+  CommonJSModuleLoaderOptions,
+} from '../loader/CommonJSModuleLoader';
 import * as winston from 'winston';
+import * as url from 'url';
 import { MESSAGE } from 'triple-beam';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
+import { ScannedPluginPackage } from '../scanner';
 
 // these can get a bit slow in CI
 jest.setTimeout(60_000);
 
 async function jestFreeTypescriptAwareModuleLoader(
-  logger: LoggerService,
-  dontBootstrap: boolean = false,
+  options: CommonJSModuleLoaderOptions & {
+    dontBootstrap?: boolean;
+  },
 ) {
-  const loader = new CommonJSModuleLoader(logger);
+  const loader = new CommonJSModuleLoader(options);
   (loader as any).module = await loader.load('node:module');
   loader.load(path.resolve(__dirname, '../../../cli/config/nodeTransform.cjs'));
-  if (dontBootstrap) {
+  if (options.dontBootstrap) {
     loader.bootstrap = async () => {};
   }
   return loader;
@@ -67,6 +72,8 @@ class MockedTransport extends winston.transports.Console {
 
 class DynamicPluginLister {
   readonly loadedPlugins: DynamicPlugin[] = [];
+  getScannedPackage?: (plugin: DynamicPlugin) => ScannedPluginPackage;
+
   feature(): BackendFeature {
     // eslint-disable-next-line consistent-this
     const that = this;
@@ -78,6 +85,8 @@ class DynamicPluginLister {
             dynamicPlugins: dynamicPluginsServiceRef,
           },
           async init({ dynamicPlugins }) {
+            that.getScannedPackage = plugin =>
+              dynamicPlugins.getScannedPackage(plugin);
             that.loadedPlugins.push(
               ...dynamicPlugins.plugins({ includeFailed: true }),
             );
@@ -112,9 +121,14 @@ describe('dynamicPluginsFeatureLoader', () => {
         }),
         dynamicPluginsFeatureLoader({
           moduleLoader: logger =>
-            jestFreeTypescriptAwareModuleLoader(logger, true),
-          transports: [mockedTransport],
-          format: winston.format.simple(),
+            jestFreeTypescriptAwareModuleLoader({
+              logger,
+              dontBootstrap: true,
+            }),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
         }),
         dynamicPLuginsLister.feature(),
       ],
@@ -137,6 +151,57 @@ describe('dynamicPluginsFeatureLoader', () => {
     ]);
   });
 
+  it('should fail on resolvePackagePath because -dynamic suffix is not allowed for dynamic plugin packages.', async () => {
+    const dynamicPLuginsLister = new DynamicPluginLister();
+    const mockedTransport = new MockedTransport();
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootDirectory,
+            },
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({
+              logger,
+              dynamicPluginPackageNameSuffixes: [],
+            }),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
+        }),
+        dynamicPLuginsLister.feature(),
+      ],
+    });
+    expect(mockedTransport.logs).toContainEqual(
+      expect.stringMatching(
+        "error: an error occurred while loading dynamic backend plugin 'plugin-test-backend-dynamic' from '.*/packages/backend-dynamic-feature-service/src/features/__fixtures__/dynamic-plugins-root/test-backend-dynamic",
+      ),
+    );
+    expect(dynamicPLuginsLister.loadedPlugins).toMatchObject([
+      {
+        name: 'plugin-test-backend-dynamic',
+        platform: 'node',
+        role: 'backend-plugin',
+        version: '0.0.0',
+        failure:
+          expect.stringMatching(`Error: Cannot find module 'plugin-test-backend/package.json'
+Require stack:
+- .*/packages/backend-plugin-api/src/paths.ts
+- .*/packages/backend-plugin-api/src/index.ts
+- .*/packages/backend-dynamic-feature-service/src/manager/plugin-manager.ts
+- .*/packages/backend-dynamic-feature-service/src/manager/index.ts
+- .*/packages/backend-dynamic-feature-service/src/features/__fixtures__/dynamic-plugins-root/test-backend-dynamic/dist/index.cjs.js
+`),
+      },
+      expect.anything(),
+    ]);
+  });
+
   it('should load and show the 2 dynamic plugins in a list of dynamic plugins returned by a static backend plugin', async () => {
     const dynamicPLuginsLister = new DynamicPluginLister();
     await startTestBackend({
@@ -149,7 +214,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
         dynamicPLuginsLister.feature(),
       ],
@@ -174,6 +240,43 @@ describe('dynamicPluginsFeatureLoader', () => {
     ]);
   });
 
+  it('should allow overriding logger options based on config', async () => {
+    const mockedTransport = new MockedTransport();
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootDirectory,
+            },
+            customLogLabel: 'a very nice label',
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
+          logger: config => {
+            const label = config?.getString('customLogLabel') ?? 'no-label';
+            return {
+              transports: [mockedTransport],
+              format: winston.format.combine(
+                winston.format.label({
+                  label,
+                  message: true,
+                }),
+                winston.format.simple(),
+              ),
+            };
+          },
+        }),
+      ],
+    });
+
+    expect(mockedTransport.logs).toContainEqual(
+      'info: [a very nice label] Found 0 new secrets in config that will be redacted {"service":"backstage"}',
+    );
+  });
+
   it('should redact the secret config values of dynamic plugin config schemas in logs', async () => {
     const mockedTransport = new MockedTransport();
     await startTestBackend({
@@ -189,9 +292,12 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
-          transports: [mockedTransport],
-          format: winston.format.simple(),
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
         }),
       ],
     });
@@ -239,7 +345,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
         import('@backstage/plugin-app-backend'),
       ],
@@ -275,7 +382,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
       ],
     });
@@ -305,6 +413,75 @@ describe('dynamicPluginsFeatureLoader', () => {
         name: 'backstage__plugin_test',
         pluginVersion: '0.0.0',
         publicPath: 'auto',
+      },
+    });
+  });
+
+  it('should load a backend plugin from the alpha package first', async () => {
+    const dynamicPLuginsLister = new DynamicPluginLister();
+    const mockedTransport = new MockedTransport();
+    const dynamicPluginsRootForAlpha = resolvePath(
+      __dirname,
+      '__fixtures__/dynamic-plugins-root-for-alpha',
+    );
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootForAlpha,
+            },
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
+        }),
+        dynamicPLuginsLister.feature(),
+      ],
+    });
+
+    expect(mockedTransport.logs).toContainEqual(
+      'info: This plugin has been loaded from the alpha package. {"service":"backstage"}',
+    );
+
+    const loadedPlugins = dynamicPLuginsLister.loadedPlugins;
+    expect(loadedPlugins).toMatchObject([
+      {
+        installer: {
+          kind: 'new',
+        },
+        name: 'plugin-test-backend-alpha-dynamic',
+        platform: 'node',
+        role: 'backend-plugin',
+        version: '0.0.0',
+      },
+    ]);
+    expect(
+      dynamicPLuginsLister.getScannedPackage?.(loadedPlugins[0]),
+    ).toMatchObject({
+      location: url.pathToFileURL(
+        path.resolve(dynamicPluginsRootForAlpha, 'test-backend-alpha-dynamic'),
+      ),
+      manifest: {
+        name: 'plugin-test-backend-alpha-dynamic',
+        version: '0.0.0',
+        description: 'A test dynamic backend module that exposes alpha API.',
+        backstage: {
+          role: 'backend-plugin',
+          pluginId: 'test-alpha',
+          pluginPackages: ['plugin-test-backend-alpha'],
+        },
+        keywords: ['backstage', 'dynamic'],
+      },
+      alphaManifest: {
+        name: 'plugin-test-backend-alpha-dynamic__alpha',
+        version: '0.0.0',
+        main: '../dist/alpha.cjs.js',
       },
     });
   });

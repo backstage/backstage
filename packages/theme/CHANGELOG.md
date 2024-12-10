@@ -1,5 +1,23 @@
 # @backstage/theme
 
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+
+## 0.6.1
+
+### Patch Changes
+
+- ea75c37: Internal refactor to avoid top-level imports from MUI.
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- ea75c37: Internal refactor to avoid top-level imports from MUI.
+
 ## 0.6.0
 
 ### Minor Changes

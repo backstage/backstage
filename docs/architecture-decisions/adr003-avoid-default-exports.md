@@ -16,7 +16,7 @@ thing well". The module would be consumed
 structure.
 
 Now, `ESModules` are the primary authoring format. They have numerous benefits,
-such as compile-time verification of exports, and standards-defined semantics.
+such as compile-time verification of exports and standards-defined semantics.
 They have a similar mechanism known as "default exports", which allows for a
 consumer to `import localName from 'the-module';`. This is implicitly the same
 as `import { default as localName } from 'the-module';`.
@@ -43,8 +43,8 @@ A summary:
 Using named exports helps prevent needing to rename symbols, which has myriad
 benefits. A few are:
 
-- IDE tools like "Find All References" and "Go To Definition" function
-- Manual codebase searching ("grep", etc) is easier with a unique symbol
+- IDE tools like "Find All References" and the "Go To Definition" function.
+- Manual codebase searching ("grep", etc) is easier with a unique symbol.
 
 ## Decision
 

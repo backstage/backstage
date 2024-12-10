@@ -49,7 +49,7 @@ export interface Config {
        *  this will allow all custom elements with tag name matching `^backstage-` like <backstage-custom-element /> etc.
        * @visibility frontend
        */
-      allowedCustomElementTagNameRegExp: string;
+      allowedCustomElementTagNameRegExp?: string;
       /**
        * Allows listed custom element attribute name regex
        * Example:
@@ -57,7 +57,7 @@ export interface Config {
        *  this will allow all custom element attributes matching `attribute1` or `attribute2` like <backstage-custom-element attribute1="yes" attribute2/>
        * @visibility frontend
        */
-      allowedCustomElementAttributeNameRegExp: string;
+      allowedCustomElementAttributeNameRegExp?: string;
     };
   };
 }

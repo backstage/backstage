@@ -18,6 +18,7 @@ export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
     providers?: {
+      /** @visibility frontend */
       google?: {
         [authEnv: string]: {
           clientId: string;

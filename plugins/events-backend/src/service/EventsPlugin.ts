@@ -76,21 +76,21 @@ export const eventsPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         events: eventsServiceRef,
         database: coreServices.database,
+        httpAuth: coreServices.httpAuth,
+        httpRouter: coreServices.httpRouter,
+        lifecycle: coreServices.lifecycle,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
-        lifecycle: coreServices.lifecycle,
-        httpAuth: coreServices.httpAuth,
-        router: coreServices.httpRouter,
       },
       async init({
         config,
         events,
         database,
+        httpAuth,
+        httpRouter,
+        lifecycle,
         logger,
         scheduler,
-        lifecycle,
-        httpAuth,
-        router,
       }) {
         const ingresses = Object.fromEntries(
           extensionPoint.httpPostIngresses.map(ingress => [
@@ -108,18 +108,27 @@ export const eventsPlugin = createBackendPlugin({
         const eventsRouter = Router();
         http.bind(eventsRouter);
 
-        router.use(
+        // MUST be registered *before* the event bus router.
+        // Otherwise, it would already make use of `express.json()`
+        // that is used there as part of the middleware stack.
+        httpRouter.use(eventsRouter);
+
+        const notifyTimeoutMs = config.getOptionalNumber(
+          'events.notifyTimeoutMs',
+        );
+
+        httpRouter.use(
           await createEventBusRouter({
             database,
+            lifecycle,
             logger,
             httpAuth,
             scheduler,
-            lifecycle,
+            notifyTimeoutMs,
           }),
         );
 
-        router.use(eventsRouter);
-        router.addAuthPolicy({
+        httpRouter.addAuthPolicy({
           allow: 'unauthenticated',
           path: '/http',
         });

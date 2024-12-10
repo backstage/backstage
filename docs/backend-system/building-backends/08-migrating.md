@@ -210,6 +210,25 @@ argument of `createBackend`.
 
 :::
 
+## Removing `@backstage/backend-common`
+
+The `@backstage/backend-common` package has been deprecated as part of moving to the new backend system, an you will need to replace existing usage of it. All exports from the package have been marked as deprecated in the last few releases of the package, and each export has its own deprecation message that explains how to replace that particular export.
+
+These are the deprecation messages for the most common replacements:
+
+- `createLegacyAuthAdapters` - Migrate to use the new backend system and auth services instead.
+- `errorHandler` - Use `MiddlewareFactory.create.error` from `@backstage/backend-defaults/rootHttpRouter` instead.
+- `getRootLogger` - This function will be removed in the future. If you need to get the root logger in the new system, please check out this documentation: https://backstage.io/docs/backend-system/core-services/logger
+- `getVoidLogger` - This function will be removed in the future. If you need to mock the root logger in the new system, please use `mockServices.logger.mock()` from `@backstage/backend-test-utils` instead.
+- `legacyPlugin` - Fully use the new backend system instead.
+- `loadBackendConfig` - Please migrate to the new backend system and use `coreServices.rootConfig` instead, or the [@backstage/config-loader#ConfigSources](https://backstage.io/docs/reference/config-loader.configsources) facilities if required.
+- `loggerToWinstonLogger` - Migrate to use the new `LoggerService` instead.
+- `resolveSafeChildPath` - This function is deprecated and will be removed in a future release, see [#24493](https://github.com/backstage/backstage/issues/24493). Please use the `resolveSafeChildPath` function from the `@backstage/backend-plugin-api` package instead.
+- `ServerTokenManager` - Please [migrate](https://backstage.io/docs/tutorials/auth-service-migration) to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+- `useHotMemoize` - Hot module reloading is no longer supported for backends.
+
+If you want to browse all of the deprecations in one place you can look at the `dist/index.d.ts` file in the package, either in `node_modules/@backstage/backend-common/dist/index.d.ts` in your own project, or it can found in the [code tab on npmjs.com](https://www.npmjs.com/package/@backstage/backend-common?activeTab=code).
+
 ## Cleaning Up the Plugins Folder
 
 For plugins that are private and your own, you can follow a [dedicated migration guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a

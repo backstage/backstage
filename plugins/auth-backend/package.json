@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.23.1",
+  "version": "0.24.1-next.2",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
     "role": "backend-plugin",
@@ -89,7 +89,6 @@
     "minimatch": "^9.0.0",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.7.0",
     "openid-client": "^5.2.1",
     "passport": "^0.7.0",
     "passport-auth0": "^1.4.3",
@@ -98,7 +97,7 @@
     "passport-microsoft": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "passport-onelogin-oauth": "^0.0.1",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

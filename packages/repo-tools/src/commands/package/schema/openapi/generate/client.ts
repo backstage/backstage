@@ -21,11 +21,13 @@ import {
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { paths as cliPaths } from '../../../../../lib/paths';
-import { mkdirpSync } from 'fs-extra';
 import fs from 'fs-extra';
 import { exec } from '../../../../../lib/exec';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
-import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
+import {
+  getPathToCurrentOpenApiSpec,
+  toGeneratorAdditionalProperties,
+} from '../../../../../lib/openapi/helpers';
 
 async function generate(
   outputDirectory: string,
@@ -37,12 +39,11 @@ async function generate(
     outputDirectory,
     OUTPUT_PATH,
   );
-  const additionalProperties = clientAdditionalProperties
-    ? `--additional-properties=${clientAdditionalProperties}`
-    : '';
-  mkdirpSync(resolvedOutputDirectory);
+  const additionalProperties = toGeneratorAdditionalProperties({
+    initialValue: clientAdditionalProperties,
+  });
 
-  await fs.mkdirp(resolvedOutputDirectory);
+  await fs.emptyDir(resolvedOutputDirectory);
 
   await fs.writeFile(
     resolve(resolvedOutputDirectory, '.openapi-generator-ignore'),
@@ -63,11 +64,13 @@ async function generate(
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.yaml',
+        'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
       'v3.0',
-      additionalProperties,
+      additionalProperties
+        ? `--additional-properties=${additionalProperties}`
+        : '',
     ],
     {
       signal: abortSignal?.signal,
@@ -79,15 +82,21 @@ async function generate(
     },
   );
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-    [],
-    { signal: abortSignal?.signal },
+  const parentDirectory = resolve(resolvedOutputDirectory, '..');
+
+  await fs.writeFile(
+    resolve(parentDirectory, 'index.ts'),
+    `// 
+    export * from './generated';`,
   );
+
+  await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
+    signal: abortSignal?.signal,
+  });
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
+    await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
   }

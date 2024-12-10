@@ -66,6 +66,10 @@ describe('createPackageVersionProvider', () => {
     expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
     expect(provider('c', '0.3.0')).toBe('^0.3.0');
     expect(provider('c', '0.3.6')).toBe('^0.3.4');
+
+    // No special handling for @types packages.
+    expect(provider('@types/t', '1.4.2')).toBe('^1.2.3');
+
     const cliVersion = packageVersions['@backstage/cli'];
     expect(provider('@backstage/cli')).toBe(
       // If we're currently in pre-release we expect that to be picked instead
@@ -74,6 +78,5 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/core-plugin-api')).toBe(
       `^${corePluginApiPkg.version}`,
     );
-    expect(provider('@types/t', '1.4.2')).toBe('*');
   });
 });

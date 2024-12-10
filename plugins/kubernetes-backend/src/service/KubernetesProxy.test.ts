@@ -39,7 +39,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
-import { Config } from '@kubernetes/client-node';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
@@ -1014,23 +1013,26 @@ describe('KubernetesProxy', () => {
   describe('Backstage running on k8s', () => {
     const initialHost = process.env.KUBERNETES_SERVICE_HOST;
     const initialPort = process.env.KUBERNETES_SERVICE_PORT;
-    const initialCaPath = Config.SERVICEACCOUNT_CA_PATH;
+    const initialCAPath = process.env.KUBERNETES_CA_FILE_PATH;
+
+    beforeEach(() => {
+      process.env.KUBERNETES_CA_FILE_PATH = mockCertDir.resolve('ca.crt');
+    });
 
     afterEach(() => {
       process.env.KUBERNETES_SERVICE_HOST = initialHost;
       process.env.KUBERNETES_SERVICE_PORT = initialPort;
-      Config.SERVICEACCOUNT_CA_PATH = initialCaPath;
+      process.env.KUBERNETES_CA_FILE_PATH = initialCAPath;
     });
 
     it('makes in-cluster requests when cluster details has no token', async () => {
       process.env.KUBERNETES_SERVICE_HOST = '10.10.10.10';
       process.env.KUBERNETES_SERVICE_PORT = '443';
-      Config.SERVICEACCOUNT_CA_PATH = mockCertDir.resolve('ca.crt');
 
       clusterSupplier.getClusters.mockResolvedValue([
         {
           name: 'cluster1',
-          url: 'http://ignored',
+          url: 'https://10.10.10.10',
           authMetadata: {
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
           },

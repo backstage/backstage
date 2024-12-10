@@ -40,14 +40,15 @@ export function defaultConfigLoaderSync(
   // It's a param so we can test it, but at runtime this will always fall back to default.
   runtimeConfigJson: string = '__APP_INJECTED_RUNTIME_CONFIG__',
 ) {
-  const appConfig = process.env.APP_CONFIG;
-  if (!appConfig) {
-    throw new Error('No static configuration provided');
+  const configs = new Array<AppConfig>();
+
+  const staticConfig = process.env.APP_CONFIG;
+  if (staticConfig) {
+    if (!Array.isArray(staticConfig)) {
+      throw new Error('Static configuration has invalid format');
+    }
+    configs.push(...staticConfig);
   }
-  if (!Array.isArray(appConfig)) {
-    throw new Error('Static configuration has invalid format');
-  }
-  const configs = appConfig.slice() as unknown as AppConfig[];
 
   // Check if we have any config script tags, otherwise fall back to injected config
   const configScripts = document.querySelectorAll(

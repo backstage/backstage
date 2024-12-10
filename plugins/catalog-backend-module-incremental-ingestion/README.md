@@ -311,7 +311,7 @@ export const catalogModuleCustomIncrementalIngestionProvider =
             burstInterval: { seconds: 3 },
 
             // How long should it rest before re-ingesting again?
-            restLength: { day: 1 },
+            restLength: { days: 1 },
 
             // Optional back-off configuration - how long should it wait to retry
             // in the event of an error?

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend-module-email",
-  "version": "0.3.1",
+  "version": "0.3.4-next.2",
   "description": "The email backend module for the notifications plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -36,7 +36,6 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.550.0",
     "@aws-sdk/types": "^3.347.0",
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

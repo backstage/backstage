@@ -1,6 +1,6 @@
 {
   "name": "@techdocs/cli",
-  "version": "1.8.20",
+  "version": "1.8.24-next.2",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
   "backstage": {
     "role": "cli"
@@ -62,7 +62,7 @@
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^11.0.0",
     "@types/http-proxy": "^1.17.4",
-    "@types/node": "^18.17.8",
+    "@types/node": "^20.16.0",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
     "find-process": "^1.4.5",

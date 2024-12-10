@@ -44,7 +44,7 @@ import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
-import { PackageRole } from '@backstage/cli-node';
+import { BackstagePackageJson, PackageRole } from '@backstage/cli-node';
 
 describe('backend-dynamic-feature-service', () => {
   const mockDir = createMockDirectory();
@@ -60,6 +60,13 @@ describe('backend-dynamic-feature-service', () => {
       indexFile?: {
         relativePath: string[];
         content: string;
+      };
+      alpha?: {
+        packageManifest: BackstagePackageJson;
+        indexFile: {
+          relativePath: string[];
+          content: string;
+        };
       };
       expectedLogs?(location: URL): {
         errors?: LogContent[];
@@ -127,13 +134,67 @@ describe('backend-dynamic-feature-service', () => {
         },
         indexFile: {
           relativePath: ['dist', 'index.cjs.js'],
-          content: `const alpha = { $$type: '@backstage/BackendFeature' }; exports["default"] = alpha;`,
+          content: `const feature = { $$type: '@backstage/BackendFeature' }; exports["default"] = feature;`,
         },
         expectedLogs(location) {
           return {
             infos: [
               {
                 message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+              },
+            ],
+          };
+        },
+        checkLoadedPlugins(plugins) {
+          expect(plugins).toMatchObject([
+            {
+              name: 'backend-dynamic-plugin-test',
+              version: '0.0.0',
+              role: 'backend-plugin',
+              platform: 'node',
+              installer: {
+                kind: 'new',
+              },
+            },
+          ]);
+          const installer: NewBackendPluginInstaller = (
+            plugins[0] as BackendDynamicPlugin
+          ).installer as NewBackendPluginInstaller;
+          expect((installer.install() as BackendFeature).$$type).toEqual(
+            '@backstage/BackendFeature',
+          );
+        },
+      },
+      {
+        name: 'should load the alpha variant of a backend plugin in priority',
+        packageManifest: {
+          name: 'backend-dynamic-plugin-test',
+          version: '0.0.0',
+          backstage: {
+            role: 'backend-plugin',
+          },
+          main: 'dist/index.cjs.js',
+        },
+        indexFile: {
+          relativePath: ['dist', 'index.cjs.js'],
+          content: `throw 'should not take this one';`,
+        },
+        alpha: {
+          packageManifest: {
+            name: 'backend-dynamic-plugin-test',
+            version: '0.0.0',
+            main: '../dist/alpha.cjs.js',
+          },
+          indexFile: {
+            relativePath: ['dist', 'alpha.cjs.js'],
+            content: `const alpha = { $$type: '@backstage/BackendFeature' }; exports["default"] = alpha;`,
+          },
+        },
+        expectedLogs(location) {
+          return {
+            infos: [
+              {
+                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}/alpha'`,
               },
             ],
           };
@@ -580,11 +641,12 @@ describe('backend-dynamic-feature-service', () => {
       const plugin: ScannedPluginPackage = {
         location: url.pathToFileURL(mockDir.resolve(randomUUID())),
         manifest: tc.packageManifest,
+        alphaManifest: tc.alpha?.packageManifest,
       };
 
       const mockedFiles = {
         [path.join(url.fileURLToPath(plugin.location), 'package.json')]:
-          JSON.stringify(plugin),
+          JSON.stringify(tc.packageManifest),
       };
       if (tc.indexFile) {
         mockedFiles[
@@ -594,6 +656,18 @@ describe('backend-dynamic-feature-service', () => {
           )
         ] = tc.indexFile.content;
       }
+      if (tc.alpha) {
+        mockedFiles[
+          path.join(url.fileURLToPath(plugin.location), 'alpha', 'package.json')
+        ] = JSON.stringify(tc.alpha.packageManifest);
+        mockedFiles[
+          path.join(
+            url.fileURLToPath(plugin.location),
+            ...tc.alpha.indexFile.relativePath,
+          )
+        ] = tc.alpha.indexFile.content;
+      }
+
       mockDir.setContent(mockedFiles);
 
       const logger = new MockedLogger();
@@ -1012,9 +1086,25 @@ describe('backend-dynamic-feature-service', () => {
       expect(fromConfigSpier).toHaveBeenCalled();
       expect(applyConfigSpier).toHaveBeenCalled();
       expect(scanRootSpier).toHaveBeenCalled();
+      const realPath = fs.realpathSync(
+        otherMockDir.resolve('a-dynamic-plugin'),
+      );
       expect(mockedModuleLoader.bootstrap).toHaveBeenCalledWith(
         findPaths(__dirname).targetRoot,
-        [fs.realpathSync(otherMockDir.resolve('a-dynamic-plugin'))],
+        [realPath],
+        new Map<string, ScannedPluginManifest>([
+          [
+            realPath,
+            {
+              name: 'test',
+              main: 'dist/index.cjs.js',
+              version: '0.0.0',
+              backstage: {
+                role: 'backend-plugin',
+              },
+            },
+          ],
+        ]),
       );
       expect(mockedModuleLoader.load).toHaveBeenCalledWith(
         mockDir.resolve(

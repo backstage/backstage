@@ -1,5 +1,196 @@
 # @backstage/plugin-scaffolder
 
+## 1.27.2-next.2
+
+### Patch Changes
+
+- 184161f: Scaffolder field extensions registered with `FormFieldBlueprint` are now collected in the `useCustomFieldExtensions` hook, enabling them for use in the scaffolder.
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/plugin-scaffolder-react@1.14.2-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/integration-react@1.2.2-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-react@0.4.29-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
+## 1.27.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/plugin-scaffolder-react@1.14.2-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+
+## 1.27.2-next.0
+
+### Patch Changes
+
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 9951ba4: Updated dependency `@rjsf/utils` to `5.23.1`.
+  Updated dependency `@rjsf/core` to `5.23.1`.
+  Updated dependency `@rjsf/material-ui` to `5.23.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.1`.
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+  - @backstage/plugin-scaffolder-react@1.14.2-next.0
+  - @backstage/plugin-catalog-react@1.14.3-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.27.0
+
+### Minor Changes
+
+- f61d4cc: Add scaffolder permission `scaffolder.template.management` for accessing the template management features
+- 69fb6e7: Fix `contextMenu` not being disabled bug in new scaffolder pages
+
+### Patch Changes
+
+- 99471cd: fix(scaffolder): use `onInputChange` in `RepoUrlPicker` to fix issue with the value not updating properly
+- 8e4bed4: Updated dependency `idb-keyval` to `5.1.5`.
+- 7669af3: Revert the change of the option label for `EntityPicker`
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-react@1.14.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/plugin-scaffolder-common@1.5.7
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/integration@1.15.2
+  - @backstage/integration-react@1.2.1
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.27.0-next.3
+
+### Minor Changes
+
+- f61d4cc: Add scaffolder permission `scaffolder.template.management` for accessing the template management features
+- 69fb6e7: Fix `contextMenu` not being disabled bug in new scaffolder pages
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.7-next.0
+  - @backstage/plugin-scaffolder-react@1.14.0-next.3
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/plugin-catalog-react@1.14.1-next.3
+  - @backstage/core-compat-api@0.3.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.2
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.26.3-next.2
+
+### Patch Changes
+
+- 8e4bed4: Updated dependency `idb-keyval` to `5.1.5`.
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/plugin-catalog-react@1.14.1-next.2
+  - @backstage/plugin-scaffolder-react@1.13.3-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.26.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-react@1.14.1-next.1
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-react@1.13.3-next.1
+
+## 1.26.2-next.0
+
+### Patch Changes
+
+- 99471cd: fix(scaffolder): use `onInputChange` in `RepoUrlPicker` to fix issue with the value not updating properly
+- 7669af3: Revert the change of the option label for `EntityPicker`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.13.2-next.0
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/integration@1.15.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.26.0
 
 ### Minor Changes

@@ -20,9 +20,7 @@ import { searchApiRef, useSearch } from '@backstage/plugin-search-react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -30,16 +28,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Typography from '@material-ui/core/Typography';
 import AllIcon from '@material-ui/icons/FontDownload';
 import useAsync from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(theme => ({
-  card: {
-    backgroundColor: 'rgba(0, 0, 0, .11)',
-  },
-  cardContent: {
-    paddingTop: theme.spacing(1),
-  },
   icon: {
     color: theme.palette.text.primary,
   },
@@ -149,61 +142,61 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   }, [filters, showCounts, term, types]);
 
   return (
-    <Card className={classes.card}>
-      <CardHeader title={name} titleTypographyProps={{ variant: 'overline' }} />
-      <CardContent className={classes.cardContent}>
-        <Accordion
-          className={classes.accordion}
-          expanded={expanded}
-          onChange={toggleExpanded}
+    <Box>
+      <Typography variant="body2" component="h2">
+        {name}
+      </Typography>
+      <Accordion
+        className={classes.accordion}
+        expanded={expanded}
+        onChange={toggleExpanded}
+      >
+        <AccordionSummary
+          classes={{
+            root: classes.accordionSummary,
+            content: classes.accordionSummaryContent,
+          }}
+          expandIcon={<ExpandMoreIcon className={classes.icon} />}
+          IconButtonProps={{ size: 'small' }}
         >
-          <AccordionSummary
-            classes={{
-              root: classes.accordionSummary,
-              content: classes.accordionSummaryContent,
-            }}
-            expandIcon={<ExpandMoreIcon className={classes.icon} />}
-            IconButtonProps={{ size: 'small' }}
+          {expanded
+            ? 'Collapse'
+            : definedTypes.filter(t => t.value === selected)[0]!.name}
+        </AccordionSummary>
+        <AccordionDetails classes={{ root: classes.accordionDetails }}>
+          <List
+            className={classes.list}
+            component="nav"
+            aria-label="filter by type"
+            disablePadding
+            dense
           >
-            {expanded
-              ? 'Collapse'
-              : definedTypes.filter(t => t.value === selected)[0]!.name}
-          </AccordionSummary>
-          <AccordionDetails classes={{ root: classes.accordionDetails }}>
-            <List
-              className={classes.list}
-              component="nav"
-              aria-label="filter by type"
-              disablePadding
-              dense
-            >
-              {definedTypes.map(type => (
-                <Fragment key={type.value}>
-                  <Divider />
-                  <ListItem
-                    selected={
-                      types[0] === type.value ||
-                      (types.length === 0 && type.value === '')
-                    }
-                    onClick={handleClick(type.value)}
-                    button
-                  >
-                    <ListItemIcon>
-                      {cloneElement(type.icon, {
-                        className: classes.listItemIcon,
-                      })}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={type.name}
-                      secondary={resultCounts && resultCounts[type.value]}
-                    />
-                  </ListItem>
-                </Fragment>
-              ))}
-            </List>
-          </AccordionDetails>
-        </Accordion>
-      </CardContent>
-    </Card>
+            {definedTypes.map(type => (
+              <Fragment key={type.value}>
+                <Divider />
+                <ListItem
+                  selected={
+                    types[0] === type.value ||
+                    (types.length === 0 && type.value === '')
+                  }
+                  onClick={handleClick(type.value)}
+                  button
+                >
+                  <ListItemIcon>
+                    {cloneElement(type.icon, {
+                      className: classes.listItemIcon,
+                    })}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={type.name}
+                    secondary={resultCounts && resultCounts[type.value]}
+                  />
+                </ListItem>
+              </Fragment>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
   );
 };

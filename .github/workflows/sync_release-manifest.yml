@@ -8,26 +8,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
         with:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
           ref: v${{ github.event.client_payload.version }}
 
-      - name: use node.js 18.x
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
-          node-version: 18.x
+          node-version: 20.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        uses: backstage/actions/yarn-install@c5c3b91fe86c59a87cf9782de1f89e48e19d4492 # v0.6.16
         with:
-          cache-prefix: ${{ runner.os }}-v18.x
+          cache-prefix: ${{ runner.os }}-v20.x
 
       - name: Build yarn plugin
         working-directory: packages/yarn-plugin
@@ -35,7 +35,7 @@ jobs:
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: backstage/versions
           path: versions

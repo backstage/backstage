@@ -167,7 +167,7 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: ['**/src/generated/**/*.ts'],
+        files: ['**/src/**/generated/**/*.ts'],
         rules: {
           ...tsRules,
           'no-unused-vars': 'off',

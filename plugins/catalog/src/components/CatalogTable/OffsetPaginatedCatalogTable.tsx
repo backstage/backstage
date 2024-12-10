@@ -18,10 +18,8 @@ import React, { useEffect } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
-import {
-  EntityTextFilter,
-  useEntityList,
-} from '@backstage/plugin-catalog-react';
+import { useEntityList } from '@backstage/plugin-catalog-react';
+import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * @internal
@@ -29,9 +27,9 @@ import {
 export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
-  const { columns, data, isLoading } = props;
-  const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
-    useEntityList();
+  const { columns, data, options, ...restProps } = props;
+  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
+
   const [page, setPage] = React.useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
@@ -53,12 +51,11 @@ export function OffsetPaginatedCatalogTable(
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
+        ...options,
       }}
-      onSearchChange={(searchText: string) =>
-        updateFilters({
-          text: searchText ? new EntityTextFilter(searchText) : undefined,
-        })
-      }
+      components={{
+        Toolbar: CatalogTableToolbar,
+      }}
       page={page}
       onPageChange={newPage => {
         setPage(newPage);
@@ -68,7 +65,7 @@ export function OffsetPaginatedCatalogTable(
       }}
       totalCount={totalItems}
       localization={{ pagination: { labelDisplayedRows: '' } }}
-      isLoading={isLoading}
+      {...restProps}
     />
   );
 }

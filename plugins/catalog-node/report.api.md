@@ -5,15 +5,30 @@
 ```ts
 /// <reference types="node" />
 
+import { AddLocationRequest } from '@backstage/catalog-client';
+import { AddLocationResponse } from '@backstage/catalog-client';
 import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
+import { GetEntitiesByRefsResponse } from '@backstage/catalog-client';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
+import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
+import { GetEntityFacetsRequest } from '@backstage/catalog-client';
+import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
+import { Location as Location_2 } from '@backstage/catalog-client';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
+import { QueryEntitiesRequest } from '@backstage/catalog-client';
+import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { ServiceRef } from '@backstage/backend-plugin-api';
+import { ValidateEntityResponse } from '@backstage/catalog-client';
 
 // @public (undocumented)
 export type AnalyzeOptions = {
@@ -101,6 +116,94 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult
   | CatalogProcessorRefreshKeysResult;
+
+// @public
+export interface CatalogService {
+  // (undocumented)
+  addLocation(
+    location: AddLocationRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<AddLocationResponse>;
+  // (undocumented)
+  getEntities(
+    request: GetEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<GetEntitiesResponse>;
+  // (undocumented)
+  getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse>;
+  // (undocumented)
+  getEntityAncestors(
+    request: GetEntityAncestorsRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<GetEntityAncestorsResponse>;
+  // (undocumented)
+  getEntityByRef(
+    entityRef: string | CompoundEntityRef,
+    options: CatalogServiceRequestOptions,
+  ): Promise<Entity | undefined>;
+  // (undocumented)
+  getEntityFacets(
+    request: GetEntityFacetsRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<GetEntityFacetsResponse>;
+  // (undocumented)
+  getLocationByEntity(
+    entityRef: string | CompoundEntityRef,
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  getLocationById(
+    id: string,
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  getLocationByRef(
+    locationRef: string,
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  queryEntities(
+    request: QueryEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<QueryEntitiesResponse>;
+  // (undocumented)
+  refreshEntity(
+    entityRef: string,
+    options: CatalogServiceRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
+  removeEntityByUid(
+    uid: string,
+    options: CatalogServiceRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
+  removeLocationById(
+    id: string,
+    options: CatalogServiceRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
+  validateEntity(
+    entity: Entity,
+    locationRef: string,
+    options: CatalogServiceRequestOptions,
+  ): Promise<ValidateEntityResponse>;
+}
+
+// @public
+export const catalogServiceRef: ServiceRef<
+  CatalogService,
+  'plugin',
+  'singleton'
+>;
+
+// @public (undocumented)
+export interface CatalogServiceRequestOptions {
+  // (undocumented)
+  credentials: BackstageCredentials;
+}
 
 // @public
 export type DeferredEntity = {

@@ -213,7 +213,7 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
           },
         },
       ],
-      '\\.(bmp|gif|jpg|jpeg|png|ico|frag|xml|svg|eot|woff|woff2|ttf)$':
+      '\\.(bmp|gif|jpg|jpeg|png|ico|webp|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('./jestYamlTransform'),
     },
@@ -264,7 +264,7 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
       .createHash('sha256')
       .update(version)
       .update(Buffer.alloc(1))
-      .update(JSON.stringify(config.transform))
+      .update(JSON.stringify(config.transform).replaceAll(paths.targetRoot, ''))
       .digest('hex');
     config.id = `backstage_cli_${configHash}`;
   }
@@ -326,7 +326,7 @@ async function getRootConfig() {
     ),
   ).then(_ => _.flat());
 
-  let configs = await Promise.all(
+  let projects = await Promise.all(
     projectPaths.flat().map(async projectPath => {
       const packagePath = path.resolve(projectPath, 'package.json');
       if (!(await fs.pathExists(packagePath))) {
@@ -357,12 +357,16 @@ async function getRootConfig() {
 
   const cache = global.__backstageCli_jestSuccessCache;
   if (cache) {
-    configs = await cache.filterConfigs(configs, globalRootConfig);
+    projects = await cache.filterConfigs(projects, globalRootConfig);
+  }
+  const watchProjectFilter = global.__backstageCli_watchProjectFilter;
+  if (watchProjectFilter) {
+    projects = await watchProjectFilter.filter(projects);
   }
 
   return {
     rootDir: paths.targetRoot,
-    projects: configs,
+    projects,
     testResultsProcessor: cache
       ? require.resolve('./jestCacheResultProcessor.cjs')
       : undefined,

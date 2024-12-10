@@ -16,7 +16,7 @@
 
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
+import { GroupSchema } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getClient, parseRepoUrl } from '../util';

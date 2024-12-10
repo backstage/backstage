@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-node",
-  "version": "0.8.4",
+  "version": "0.8.6-next.2",
   "description": "Common permission and authorization utilities for backend plugins",
   "backstage": {
     "role": "node-library",

@@ -17,14 +17,34 @@
 import { errorHandler } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { CustomErrorBase } from '@backstage/errors';
 import {
   EventsService,
   HttpPostIngressOptions,
   RequestValidator,
 } from '@backstage/plugin-events-node';
+import contentType from 'content-type';
 import express from 'express';
 import Router from 'express-promise-router';
 import { RequestValidationContextImpl } from './validation';
+
+class UnsupportedCharsetError extends CustomErrorBase {
+  name = 'UnsupportedCharsetError' as const;
+  statusCode = 415 as const;
+
+  constructor(charset: string) {
+    super(`Unsupported charset: ${charset}`);
+  }
+}
+
+class UnsupportedMediaTypeError extends CustomErrorBase {
+  name = 'UnsupportedMediaTypeError' as const;
+  statusCode = 415 as const;
+
+  constructor(mediaType?: string) {
+    super(`Unsupported media type: ${mediaType ?? 'unknown'}`);
+  }
+}
 
 /**
  * Publishes events received from their origin (e.g., webhook events from an SCM system)
@@ -71,7 +91,7 @@ export class HttpPostIngressEventPublisher {
     [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
   }): express.Router {
     const router = Router();
-    router.use(express.json());
+    router.use(express.raw({ type: '*/*' }));
 
     Object.keys(ingresses).forEach(topic =>
       this.addRouteForTopic(router, topic, ingresses[topic].validator),
@@ -87,25 +107,60 @@ export class HttpPostIngressEventPublisher {
     validator?: RequestValidator,
   ): void {
     const path = `/${topic}`;
+    const logger = this.logger;
 
     router.post(path, async (request, response) => {
-      const requestDetails = {
-        body: request.body,
-        headers: request.headers,
-      };
-      const context = new RequestValidationContextImpl();
-      await validator?.(requestDetails, context);
-      if (context.wasRejected()) {
-        response
-          .status(context.rejectionDetails!.status)
-          .json(context.rejectionDetails!.payload);
-        return;
+      const requestBody = request.body;
+      if (!Buffer.isBuffer(requestBody)) {
+        throw new Error(
+          `Failed to retrieve raw body from incoming event for topic ${topic}; not a buffer: ${typeof requestBody}`,
+        );
       }
 
-      const eventPayload = request.body;
+      const bodyBuffer: Buffer = requestBody;
+      const parsedContentType = contentType.parse(request);
+      if (
+        !parsedContentType.type ||
+        parsedContentType.type !== 'application/json'
+      ) {
+        throw new UnsupportedMediaTypeError(parsedContentType.type);
+      }
+
+      const encoding = parsedContentType.parameters.charset ?? 'utf-8';
+      if (!Buffer.isEncoding(encoding)) {
+        throw new UnsupportedCharsetError(encoding);
+      }
+
+      const bodyString = bodyBuffer.toString(encoding);
+      const bodyParsed =
+        parsedContentType.type === 'application/json'
+          ? JSON.parse(bodyString)
+          : bodyString;
+
+      if (validator) {
+        const requestDetails = {
+          body: bodyParsed,
+          headers: request.headers,
+          raw: {
+            body: bodyBuffer,
+            encoding: encoding as BufferEncoding,
+          },
+        };
+
+        const context = new RequestValidationContextImpl();
+        await validator(requestDetails, context);
+
+        if (context.wasRejected()) {
+          response
+            .status(context.rejectionDetails!.status)
+            .json(context.rejectionDetails!.payload);
+          return;
+        }
+      }
+
       await this.events.publish({
         topic,
-        eventPayload,
+        eventPayload: bodyParsed,
         metadata: request.headers,
       });
 
@@ -114,6 +169,6 @@ export class HttpPostIngressEventPublisher {
 
     // TODO(pjungermann): We don't really know the externally defined path prefix here,
     //  however it is more useful for users to have it. Is there a better way?
-    this.logger.info(`Registered /api/events/http${path} to receive events`);
+    logger.info(`Registered /api/events/http${path} to receive events`);
   }
 }

@@ -1,5 +1,86 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-notifications-node@0.2.10-next.2
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/plugin-notifications-common@0.0.7-next.0
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.2-next.1
+  - @backstage/plugin-notifications-node@0.2.10-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-notifications-common@0.0.6
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/plugin-notifications-common@0.0.6
+  - @backstage/plugin-notifications-node@0.2.10-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 5d74716: Remove unused backend-common dependency
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-notifications-common@0.0.6
+  - @backstage/plugin-notifications-node@0.2.9
+  - @backstage/plugin-scaffolder-node@0.6.0
+
+## 0.1.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/plugin-notifications-common@0.0.6-next.0
+  - @backstage/plugin-notifications-node@0.2.9-next.3
+  - @backstage/plugin-scaffolder-node@0.5.1-next.3
+
+## 0.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.9-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/plugin-notifications-common@0.0.6-next.0
+  - @backstage/plugin-scaffolder-node@0.5.1-next.2
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/plugin-notifications-common@0.0.6-next.0
+  - @backstage/plugin-notifications-node@0.2.9-next.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.1
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.0.6-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/plugin-notifications-node@0.2.9-next.0
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+
 ## 0.1.1
 
 ### Patch Changes

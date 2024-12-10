@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { DbRelationsRow } from './tables';
 import { RefreshKeyData } from '../processing/types';
+import { Knex } from 'knex';
 
 /**
  * An abstraction for transactions of the underlying database technology.
@@ -59,10 +60,8 @@ export type RefreshStateItem = {
   id: string;
   entityRef: string;
   unprocessedEntity: Entity;
-  processedEntity?: Entity;
   resultHash: string;
   nextUpdateAt: DateTime;
-  lastDiscoveryAt: DateTime; // remove?
   state?: JsonObject;
   errors?: string;
   locationKey?: string;
@@ -116,7 +115,7 @@ export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
   getProcessableEntities(
-    txOpaque: Transaction,
+    txOpaque: Transaction | Knex,
     request: { processBatchSize: number },
   ): Promise<GetProcessableEntitiesResult>;
 

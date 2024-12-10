@@ -1,5 +1,97 @@
 # @backstage/plugin-search-react
 
+## 1.8.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.16-next.0
+
+## 1.8.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.15
+
+## 1.8.4-next.0
+
+### Patch Changes
+
+- d311c84: Use Select from core-components and update Lifecycle filter to use Select instead checkboxes.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.15
+
+## 1.8.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.1
+  - @backstage/types@1.2.0
+  - @backstage/core-components@0.16.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.15
+
+## 1.8.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.2
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.8.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.1-next.0
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/theme@0.6.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.14
+
 ## 1.8.1
 
 ### Patch Changes

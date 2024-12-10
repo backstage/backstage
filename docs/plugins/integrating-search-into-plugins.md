@@ -106,15 +106,12 @@ Imagine your FAQs can be retrieved at the URL `https://backstage.example.biz/faq
 Below we provide an example implementation of how the FAQ collator factory could look like using our new document type, placed in the `plugins/search-backend-module-faq-snippets-collator/src/factory.ts` file:
 
 ```ts
-import fetch from 'node-fetch';
 import { Readable } from 'stream';
-
 import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-
 import { FaqSnippetDocument } from './types';
 
 const DEFAULT_BASE_URL = 'https://backstage.example.biz/faq-snippets';

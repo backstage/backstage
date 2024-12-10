@@ -18,89 +18,48 @@ together:
 For example, you might want to make modifications to `@backstage/core-plugin-api` and try them out in your company's
 instance of Backstage.
 
-## Linking in Backstage NPM Packages
+## External workspace linking
 
-To link in external packages, add them to your root `package.json` and `lerna.json`
-`"workspace"` paths. These can be either relative or absolute paths with or without
-globs.
+:::info
+Workspace linking is an experimental feature and may not work in all cases.
+:::
 
-For example:
+The `backstage-cli package start` command that is used for local development of all packages supports a `--link` flag that can be used to link a single external workspace to the current workspace. It hooks into the module resolution and will override all imports of packages in the linked workspace to be imported from there instead. The only exception are the `react` and `react-dom` packages, which will always be resolved from the target package.
 
-```json title="/lerna.json"
-...
-"packages": [
-  "packages/*",
-  "plugins/*",
-  "../backstage/packages/core-plugin-api", // New path added to work on @backstage/core-plugin-api
-],
-...
-```
+When linking an external workspace, make sure that dependencies are installed and up to date in both workspaces, and that the versions of `react` and `react-dom` are the same in both workspaces.
 
-```json title="/package.json"
-...
-"workspaces": {
-  "packages": [
-    "packages/*",
-    "plugins/*",
-    "../backstage/packages/core-plugin-api", // New path added to work on @backstage/core-plugin-api
-  ],
-}
-...
-```
-
-Now reinstall all packages from the root to make yarn set up symlinks from your application to the core Backstage clone:
+If you're within the `packages/app` folder inside your `my-backstage-application` workspace in the above example, you can link the `backstage` workspace using the following command:
 
 ```bash
-yarn install
+yarn start --link ../../../backstage
 ```
 
-## Making Backstage Changes
+The path provided to the `--link` option can be a relative or absolute path, and should point to the root of the external workspace.
 
-With this in place you can now modify the `@backstage/core-plugin-api` package
-within the main repo, and have those changes be reflected and tested in your
-app. Simply run your app using `yarn dev` (or `yarn start` for just frontend) as
-normal.
+With the `start` command up and running and serving the development version of your frontend app in the browser, you can now make changes to both workspaces and see the changes reflected in the browser.
+
+You can also link backend packages using the exact same process, simply start your backend package with the same `--link <workspace-path>` option.
 
 ## Common Problems
 
-### Backend Issues
+### React errors
 
-For backend packages you need to make sure that linked packages are
-not dependencies of any non-linked package. If you for example want to work on
-`@backstage/backend-common`, you need to also link in other backend plugins and
-packages that depend on `@backstage/backend-common`, or temporarily disable
-those plugins in your backend. This is because the transformation of backend
-module tree stops whenever a non-local package is encountered, and from that
-point node will `require` packages directly for that entire module subtree.
+If you are encountering errors related to React, it is likely that the versions of React in the two workspaces are different. Make sure that the versions of `react` and `react-dom` are the same in both workspaces, or at least that they are in sync between the package that you're serving the app from and the external workspace.
 
-### Typescript Issues
+## Generating temporary patches
 
-Type checking can also have issues when linking in external packages, since the
-linked in packages will use the types in the external project and dependency
-version mismatches between the two projects may cause errors. To fix any of
-those errors you need to sync versions of the dependencies in the two projects.
-A simple way to do this can be to copy over `yarn.lock` from the external
-project and run `yarn install`, although this is quite intrusive and can cause
-other issues in existing projects, so use this method with care. It can often be
-best to simply ignore the type errors, as app serving will work just fine
-anyway.
+!!!info
+This feature is experimental and currently only supports Yarn workspaces.
+!!!
 
-Another issue with type checking is that the incremental type cache doesn't
-invalidate correctly for the linked in packages, causing type checking to not
-reflect changes made to types. You can work around this by either setting
-`compilerOptions.incremental = false` in `tsconfig.json`, or by deleting the
-types cache folder `dist-types` before running `yarn tsc`.
+After making local changes to a package in an external workspace you might often want to merge and deploy these changes in your own project. You can use Yarn patches for this purpose, but it can be quite cumbersome to create these patches manually. To make this process easier, you can use `yarn backstage-repo-tools generate-patch` command from the `@backstage/repo-tools` package to generate a patch and resolution entries in the external workspace.
 
-### Version Issues
+For example, if you've made changes to the `@backstage/backend-app-api` package in a local clone of the main `backstage` repository, you can generate a patch for your internal project as follows:
 
-While `yarn install` might not error, it does not mean that the linking worked properly.
-You will know that linking worked properly when:
+```bash title="Run in the cloned backstage repository"
+yarn backstage-repo-tools generate-patch @backstage/backend-app-api --target ../our-developer-portal
+```
 
-1. Your Backstage application root `/node_modules/@backstage/[some package]` is a symlink
-2. Your Backstage application `/packages/app/node_modules` and `/packages/backend/node_modules` does
-   not contain the package you are attempting to link!
+This will generate a patch file in your `our-developer-portal` workspace. The patch will be based on the most recently released version of the source package, with the additional changes on top.
 
-If you see Yarn continuing to download the package you are trying to link from NPM, you might need to be
-explicit in your `package.json` version so that it exactly matches what you have in the cloned Backstage
-repository on your machine. For example, if you have cloned `/plugins/catalog` with version
-`"version": "1.19.1-next.1"` you will need to be explicit in your application to point to `"1.19.1-next.1"`.
+If you want to base the patch on a different version of the source package, you can specify the version using the `--base-version <version>` option, and if you want to only use the patch for a specific version query, you can specify that using the `--query <query>` option.

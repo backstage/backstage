@@ -26,6 +26,7 @@ import { GithubIntegration } from './github/GithubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { GiteaIntegration } from './gitea/GiteaIntegration';
 import { HarnessIntegration } from './harness/HarnessIntegration';
+import { AzureBlobStorageIntergation } from './azureBlobStorage';
 
 /**
  * Holds all registered SCM integrations, of all types.
@@ -36,6 +37,7 @@ export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   /**
    * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`

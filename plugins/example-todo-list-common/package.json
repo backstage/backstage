@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-common",
-  "version": "1.0.21",
+  "version": "1.0.23-next.0",
   "backstage": {
     "role": "common-library",
     "pluginId": "todo-list",

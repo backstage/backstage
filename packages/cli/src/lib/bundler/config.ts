@@ -25,13 +25,10 @@ import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
-import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { paths as cliPaths } from '../../lib/paths';
 import fs from 'fs-extra';
-import { getPackages } from '@manypkg/get-packages';
-import { isChildPath } from '@backstage/cli-common';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
 import { runPlain } from '../run';
@@ -39,6 +36,8 @@ import { transforms } from './transforms';
 import { version } from '../../lib/version';
 import yn from 'yn';
 import { hasReactDomClient } from './hasReactDomClient';
+import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
+import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -130,8 +129,6 @@ export async function createConfig(
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
   // separate resolution logic.
-  const { packages } = await getPackages(cliPaths.targetDir);
-  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const validBaseUrl = resolveBaseUrl(frontendConfig, moduleFederation);
   let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
@@ -186,19 +183,35 @@ export async function createConfig(
   );
 
   if (options.moduleFederation?.mode !== 'remote') {
-    plugins.push(
-      // `rspack.HtmlRspackPlugin` does not support object type `templateParameters` value, `frontendConfig` in this case
-      new HtmlWebpackPlugin({
-        meta: {
-          'backstage-app-mode': options?.appMode ?? 'public',
-        },
-        template: paths.targetHtml,
-        templateParameters: {
-          publicPath,
-          config: frontendConfig,
-        },
-      }),
-    );
+    const templateOptions = {
+      meta: {
+        'backstage-app-mode': options?.appMode ?? 'public',
+      },
+      template: paths.targetHtml,
+      templateParameters: {
+        publicPath,
+        config: frontendConfig,
+      },
+    };
+    if (rspack) {
+      // With Rspack we inject config via index.html, this is both because we
+      // can't use APP_CONFIG due to the lack of support for runtime values, but
+      // also because we are able to do it and it lines up better with what the
+      // app-backend is doing.
+      //
+      // We still use the html plugin from WebPack, since the Rspack one won't
+      // let us inject complex objects like the config.
+      plugins.push(
+        new ConfigInjectingHtmlWebpackPlugin(
+          templateOptions,
+          options.getFrontendAppConfigs,
+        ),
+      );
+    } else {
+      // Config injection via index.html doesn't work across reloads with
+      // WebPack, so we rely on the APP_CONFIG injection instead
+      plugins.push(new HtmlWebpackPlugin(templateOptions));
+    }
     plugins.push(
       new HtmlWebpackPlugin({
         meta: {
@@ -209,7 +222,7 @@ export async function createConfig(
         minify: false,
         publicPath: '<%= publicPath %>',
         filename: 'index.html.tmpl',
-        template: `raw-loader!${paths.targetHtml}`,
+        template: `${require.resolve('raw-loader')}!${paths.targetHtml}`,
       }),
     );
   }
@@ -288,8 +301,7 @@ export async function createConfig(
     new bundler.DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
       'process.env.APP_CONFIG': rspack
-        ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
-          JSON.stringify(options.getFrontendAppConfigs())
+        ? JSON.stringify([]) // Inject via index.html instead
         : bundler.DefinePlugin.runtimeValue(
             () => JSON.stringify(options.getFrontendAppConfigs()),
             true,
@@ -299,6 +311,15 @@ export async function createConfig(
       'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
     }),
   );
+
+  if (options.linkedWorkspace) {
+    plugins.push(
+      ...(await createWorkspaceLinkingPlugins(
+        bundler,
+        options.linkedWorkspace,
+      )),
+    );
+  }
 
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files
@@ -367,7 +388,7 @@ export async function createConfig(
     ...(isDev
       ? {
           watchOptions: {
-            ignored: /node_modules/,
+            ignored: /node_modules\/(?!__backstage-autodetected-plugins__)/,
           },
         }
       : {}),
@@ -406,7 +427,6 @@ export async function createConfig(
       // FIXME: see also https://github.com/web-infra-dev/rspack/issues/3408
       ...(!rspack && {
         plugins: [
-          new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
           new ModuleScopePlugin(
             [paths.targetSrc, paths.targetDev],
             [paths.targetPackageJson, ...reactRefreshFiles],

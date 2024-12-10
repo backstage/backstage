@@ -26,6 +26,7 @@ interface StartAppOptions {
   configPaths: string[];
   skipOpenBrowser?: boolean;
   isModuleFederationRemote?: boolean;
+  linkedWorkspace?: string;
 }
 
 export async function startFrontend(options: StartAppOptions) {
@@ -37,6 +38,7 @@ export async function startFrontend(options: StartAppOptions) {
     configPaths: options.configPaths,
     verifyVersions: options.verifyVersions,
     skipOpenBrowser: options.skipOpenBrowser,
+    linkedWorkspace: options.linkedWorkspace,
     moduleFederation: getModuleFederationOptions(
       name,
       options.isModuleFederationRemote,

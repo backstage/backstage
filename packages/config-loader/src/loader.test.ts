@@ -20,6 +20,7 @@ import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createDeferred } from '@backstage/types';
 
 describe('loadConfig', () => {
   const mockDir = createMockDirectory({
@@ -298,8 +299,8 @@ describe('loadConfig', () => {
   });
 
   it('watches config files', async () => {
-    const onChange = defer<AppConfig[]>();
-    const stopSignal = defer<void>();
+    const onChange = createDeferred<AppConfig[]>();
+    const stopSignal = createDeferred();
 
     await expect(
       loadConfig({
@@ -307,7 +308,7 @@ describe('loadConfig', () => {
         configTargets: [],
         watch: {
           onChange: onChange.resolve,
-          stopSignal: stopSignal.promise,
+          stopSignal,
         },
       }),
     ).resolves.toEqual({
@@ -331,7 +332,7 @@ describe('loadConfig', () => {
         title: 'New Title',
       },
     });
-    await expect(onChange.promise).resolves.toEqual([
+    await expect(onChange).resolves.toEqual([
       {
         context: 'app-config.yaml',
         data: {
@@ -347,8 +348,8 @@ describe('loadConfig', () => {
   });
 
   it('watches included files', async () => {
-    const onChange = defer<AppConfig[]>();
-    const stopSignal = defer<void>();
+    const onChange = createDeferred<AppConfig[]>();
+    const stopSignal = createDeferred();
 
     await expect(
       loadConfig({
@@ -358,7 +359,7 @@ describe('loadConfig', () => {
         ],
         watch: {
           onChange: onChange.resolve,
-          stopSignal: stopSignal.promise,
+          stopSignal,
         },
       }),
     ).resolves.toEqual({
@@ -387,7 +388,7 @@ describe('loadConfig', () => {
     // via included.yaml
     await fs.writeFile(mockDir.resolve('secrets/session-key.txt'), 'abc234');
 
-    await expect(onChange.promise).resolves.toEqual([
+    await expect(onChange).resolves.toEqual([
       {
         context: 'app-config.development.yaml',
         data: {
@@ -413,8 +414,8 @@ describe('loadConfig', () => {
   it('watches remote config urls', async () => {
     server.use(initialLoaderHandler);
 
-    const onChange = defer<AppConfig[]>();
-    const stopSignal = defer<void>();
+    const onChange = createDeferred<AppConfig[]>();
+    const stopSignal = createDeferred();
 
     const configUrl = 'https://some.domain.io/app-config.yaml';
     await expect(
@@ -423,7 +424,7 @@ describe('loadConfig', () => {
         configTargets: [{ url: configUrl }],
         watch: {
           onChange: onChange.resolve,
-          stopSignal: stopSignal.promise,
+          stopSignal,
         },
         remote: {
           reloadIntervalSeconds: 1,
@@ -446,7 +447,7 @@ describe('loadConfig', () => {
 
     server.use(reloadHandler);
 
-    await expect(onChange.promise).resolves.toEqual([
+    await expect(onChange).resolves.toEqual([
       {
         context: configUrl,
         data: {
@@ -463,7 +464,7 @@ describe('loadConfig', () => {
   });
 
   it('stops watching config files', async () => {
-    const stopSignal = defer<void>();
+    const stopSignal = createDeferred();
 
     await loadConfig({
       configRoot: mockDir.path,
@@ -472,7 +473,7 @@ describe('loadConfig', () => {
         onChange: () => {
           expect('not').toBe('called');
         },
-        stopSignal: stopSignal.promise,
+        stopSignal,
       },
     });
 
@@ -496,12 +497,4 @@ describe('loadConfig', () => {
       appConfigs: [],
     });
   });
-
-  function defer<T>() {
-    let resolve: (value: T) => void;
-    const promise = new Promise<T>(_resolve => {
-      resolve = _resolve;
-    });
-    return { promise, resolve: resolve! };
-  }
 });
