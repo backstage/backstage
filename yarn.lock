@@ -5244,6 +5244,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-atlassian-oauth2: ^2.1.0
@@ -5261,6 +5262,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-auth0": ^1.0.5
     "@types/passport-oauth2": ^1.4.15
     express: ^4.17.1
@@ -5281,6 +5283,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     jose: ^5.0.0
     msw: ^2.0.8
@@ -5316,6 +5319,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-bitbucket-oauth2: ^0.1.2
@@ -5333,6 +5337,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-oauth2": ^1.4.15
     passport: ^0.7.0
     passport-oauth2: ^1.6.1
@@ -5386,6 +5391,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     passport-github2: ^0.1.12
     supertest: ^7.0.0
   languageName: unknown
@@ -5401,6 +5407,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-gitlab2: ^5.0.0
@@ -5417,6 +5424,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-google-oauth20": ^2.0.3
     google-auth-library: ^9.0.0
     passport-google-oauth20: ^2.0.0
@@ -5451,6 +5459,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-microsoft": ^1.0.0
     express: ^4.18.2
     jose: ^5.0.0
@@ -5470,6 +5479,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     passport: ^0.7.0
     passport-oauth2: ^1.6.1
     supertest: ^7.0.0
@@ -5500,6 +5510,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     cookie-parser: ^1.4.6
     express: ^4.18.2
     express-promise-router: ^4.1.1
@@ -5522,6 +5533,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@davidzemon/passport-okta-oauth": ^0.0.5
     express: ^4.18.2
     passport: ^0.7.0
@@ -5539,6 +5551,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-onelogin-oauth: ^0.0.1
@@ -5557,6 +5570,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     cookie-parser: ^1.4.6
     express: ^4.18.2
     express-session: ^1.17.3
@@ -5582,6 +5596,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-oauth2": ^1.4.15
     jose: ^5.0.0
     msw: ^2.0.8
