@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+.icon-12 {
+  width: 12px;
+  height: 12px;
+}
 
-/** @public */
-export const Icon = (props: { name: IconNames; size?: number }) => {
-  const { name, size = 16 } = props;
-  const { icons } = useTheme();
+.icon-16 {
+  width: 16px;
+  height: 16px;
+}
 
-  const RemixIcon = icons[name] as React.ComponentType<{ className?: string }>;
-
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found or is not a valid component.`);
-    return <svg />; // Return a default icon or handle the error appropriately
-  }
-
-  return <RemixIcon className={`icon-${size}`} />;
-};
+.icon-24 {
+  width: 24px;
+  height: 24px;
+}

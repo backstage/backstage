@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
-
 /** @public */
-export const Icon = (props: { name: IconNames; size?: number }) => {
-  const { name, size = 16 } = props;
-  const { icons } = useTheme();
-
-  const RemixIcon = icons[name] as React.ComponentType<{ className?: string }>;
-
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found or is not a valid component.`);
-    return <svg />; // Return a default icon or handle the error appropriately
-  }
-
-  return <RemixIcon className={`icon-${size}`} />;
-};
+export interface CheckboxProps {
+  label?: string;
+  defaultChecked?: boolean;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
+  name?: string;
+  value?: string;
+  style?: React.CSSProperties;
+}
