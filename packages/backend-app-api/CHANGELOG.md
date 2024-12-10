@@ -1,5 +1,24 @@
 # @backstage/backend-app-api
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- ebf083d: Service factories added by feature loaders now have lower priority and will be ignored if a factory for the same service is added directly by `backend.add(serviceFactory)`.
+
+### Patch Changes
+
+- 0e9c9fa: As soon as a backend termination signal is received, call before shutting down root lifecycle hooks.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
 ## 1.1.0-next.1
 
 ### Minor Changes

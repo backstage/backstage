@@ -1,5 +1,22 @@
 # @backstage/cli
 
+## 0.29.3-next.2
+
+### Patch Changes
+
+- 62a9062: Updated dependency `@module-federation/enhanced` to `^0.8.0`.
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/cli-node@0.2.11-next.1
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/release-manifests@0.0.12-next.1
+  - @backstage/types@1.2.0
+
 ## 0.29.3-next.1
 
 ### Patch Changes
