@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export { formDecoratorsApiRef } from './ref';
-export type { ScaffolderFormDecoratorsApi } from './types';
-export { DefaultScaffolderFormDecoratorsApi } from './FormDecoratorsApi';
+import { createApiRef } from '@backstage/frontend-plugin-api';
+import { ScaffolderFormFieldsApi } from './types';
+
+/** @alpha */
+export const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
+  id: 'plugin.scaffolder.form-fields',
+});
