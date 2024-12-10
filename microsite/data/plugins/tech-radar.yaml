@@ -5,6 +5,6 @@ authorUrl: https://github.com/spotify
 category: Discovery
 description: Visualize the your company's official guidelines of different areas of software development.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar
-iconUrl: https://www.materialui.co/materialIcons/action/track_changes_white_192x192.png
+iconUrl: /img/tech-radar.svg
 npmPackageName: '@backstage-community/plugin-tech-radar'
 addedDate: '2020-11-03'
