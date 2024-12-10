@@ -169,4 +169,4 @@ If you want to read more about the database configuration, here are some helpful
 
 - [Configuring Plugin Databases](../../tutorials/configuring-plugin-databases.md#privileges)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
-- [Install pgAdmin 4](https://www.pgadmin.org/), a helpful tool for querying your database.
+- [Install `pgAdmin` 4](https://www.pgadmin.org/), a helpful tool for querying your database.

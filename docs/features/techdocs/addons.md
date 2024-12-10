@@ -186,7 +186,7 @@ import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 // difference is that you'd set `location` to `TechDocsAddonLocations.Content`.
 export const MakeAllImagesCatGifsAddon = () => {
   // This hook can be used to get references to specific elements. If you need
-  // access to the whole shadow DOM, use the the underlying useShadowRoot()
+  // access to the whole shadow DOM, use the underlying useShadowRoot()
   // hook instead.
   const images = useShadowRootElements<HTMLImageElement>(['img']);
 
