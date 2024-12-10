@@ -122,11 +122,18 @@ function getFilterGroups(
 export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
+  hidden?: boolean;
+  resetFiltersWhenNoResultsFound?: boolean;
 };
 
 /** @public */
 export const UserListPicker = (props: UserListPickerProps) => {
-  const { initialFilter, availableFilters } = props;
+  const {
+    initialFilter,
+    availableFilters,
+    hidden,
+    resetFiltersWhenNoResultsFound,
+  } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(catalogReactTranslationRef);
@@ -198,11 +205,18 @@ export const UserListPicker = (props: UserListPickerProps) => {
       !loading &&
       !!selectedUserFilter &&
       selectedUserFilter !== 'all' &&
-      filterCounts[selectedUserFilter] === 0
+      filterCounts[selectedUserFilter] === 0 &&
+      resetFiltersWhenNoResultsFound
     ) {
       setSelectedUserFilter('all');
     }
-  }, [loading, filterCounts, selectedUserFilter, setSelectedUserFilter]);
+  }, [
+    loading,
+    filterCounts,
+    selectedUserFilter,
+    setSelectedUserFilter,
+    resetFiltersWhenNoResultsFound,
+  ]);
 
   useEffect(() => {
     if (!selectedUserFilter) {
@@ -232,7 +246,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
     loading,
   ]);
 
-  return (
+  return hidden ? null : (
     <Card className={classes.root}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
