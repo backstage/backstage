@@ -40,6 +40,7 @@ class DefaultScaffolderFormFieldsApi implements ScaffolderFormFieldsApi {
   }
 }
 
+/** @alpha */
 export const formFieldsApi = ApiBlueprint.makeWithOverrides({
   name: 'form-fields',
   inputs: {

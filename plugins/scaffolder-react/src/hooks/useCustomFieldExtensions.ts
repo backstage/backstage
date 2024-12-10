@@ -50,5 +50,17 @@ export const useCustomFieldExtensions = <
       }),
   );
 
-  return [...blueprintFields, ...outletFields];
+  // This should really be a different type moving foward, but we do this to keep type compatibility.
+  // should probably also move the defaults into the API eventually too, but that will come with the move
+  // to the new frontend system.
+  const blueprintsToLegacy: FieldExtensionOptions[] = blueprintFields?.map(
+    field => ({
+      component: field.component,
+      name: field.name,
+      validation: field.validation,
+      schema: field.schema?.schema,
+    }),
+  );
+
+  return [...blueprintsToLegacy, ...outletFields];
 };
