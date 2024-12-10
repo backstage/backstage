@@ -20,7 +20,7 @@ import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
 
 export const DEFAULT_STARTUP_REQUEST_PAUSE_TIMEOUT = { seconds: 5 };
-export const DEFAULT_SERVER_SHUTDOWN_TIMEOUT = { seconds: 30 };
+export const DEFAULT_SERVER_SHUTDOWN_TIMEOUT = { seconds: 0 };
 
 /**
  * Options for {@link createLifecycleMiddleware}.
@@ -37,7 +37,7 @@ export interface LifecycleMiddlewareOptions {
   /**
    * The maximum time that the server will wait for stop accepting traffic, before returning an error.
    *
-   * Defaults to 30 seconds.
+   * Defaults to 0 seconds.
    */
   serverShutdownDelay?: HumanDuration;
 }

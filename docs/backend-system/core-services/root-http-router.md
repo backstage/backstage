@@ -55,12 +55,12 @@ backend:
     # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
     # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
     startupRequestPauseTimeout: { seconds: 10 }
-    # (Optional) The maximum time that the server will wait for stop accepting traffic, before returning an error (defaults to 30 seconds).
+    # (Optional) The minimum time that the HTTP server will delay the shutdown of the backend. During this delay health checks will be set to failing, allowing traffic to drain (defaults to 0 seconds).
     # Supported formats:
     # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
     # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
     # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
-    shutdownRequestPauseTimeout: { seconds: 20 }
+    serverShutdownTimeout: { seconds: 20 }
 ```
 
 ### Via Code

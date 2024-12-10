@@ -509,7 +509,7 @@ export interface RootHttpRouterService {
 // @public
 export interface RootLifecycleService extends LifecycleService {
   // (undocumented)
-  addBeforeShutdownHook(hook: () => void): void;
+  addBeforeShutdownHook(hook: () => void | Promise<void>): void;
 }
 
 // @public

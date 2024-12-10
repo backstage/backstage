@@ -66,7 +66,7 @@ export class BackendLifecycleImpl implements RootLifecycleService {
   }
 
   #hasBeforeShutdown = false;
-  #beforeShutdownTasks: Array<{ hook: () => void }> = [];
+  #beforeShutdownTasks: Array<{ hook: () => void | Promise<void> }> = [];
 
   addBeforeShutdownHook(hook: () => void): void {
     if (this.#hasBeforeShutdown) {

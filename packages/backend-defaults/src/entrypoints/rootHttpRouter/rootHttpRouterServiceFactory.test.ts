@@ -231,6 +231,9 @@ describe('rootHttpRouterServiceFactory', () => {
               backend: {
                 baseUrl: 'http://localhost',
                 listen: { host: '', port: 0 },
+                lifecycle: {
+                  serverShutdownDelay: '30s',
+                },
               },
             },
           }),
@@ -281,7 +284,7 @@ describe('rootHttpRouterServiceFactory', () => {
 
     // Immediately start failing the readiness health check
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend has not started yet',
+      message: 'Backend is shuttting down',
       status: 'error',
     });
 
@@ -297,7 +300,7 @@ describe('rootHttpRouterServiceFactory', () => {
       .expect(200, { status: 'ok' });
 
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend has not started yet',
+      message: 'Backend is shuttting down',
       status: 'error',
     });
 
@@ -320,7 +323,7 @@ describe('rootHttpRouterServiceFactory', () => {
       .expect(200, { status: 'ok' });
 
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend has not started yet',
+      message: 'Backend is shuttting down',
       status: 'error',
     });
 

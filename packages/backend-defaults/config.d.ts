@@ -40,8 +40,8 @@ export interface Config {
        */
       startupRequestPauseTimeout?: string | HumanDuration;
       /**
-       * The maximum time that the server will wait for stop accepting traffic, before returning an error.
-       * Defaults to 30 seconds.
+       * The minimum time that the HTTP server will delay the shutdown of the backend. During this delay health checks will be set to failing, allowing traffic to drain.
+       * Defaults to 0 seconds.
        * Supported formats:
        * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
        *   library.
