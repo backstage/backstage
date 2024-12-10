@@ -33,6 +33,10 @@ catalog:
           - 'projects/some-project/locations/-'
           # list all clusters in the region, in the project
           - 'projects/some-other-project/locations/some-region'
+        # optional; authentication provider to be used, default 'google'
+        authProvider: 'googleServiceAccount'
+        # optional, owner of the resource, default 'unknown'
+        owner: 'SRE'
         schedule: # optional; same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
