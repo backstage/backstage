@@ -7323,6 +7323,7 @@ __metadata:
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -7359,7 +7360,6 @@ __metadata:
     concat-stream: "npm:^2.0.0"
     esbuild: "npm:^0.25.0"
     express: "npm:^4.17.1"
-    express-promise-router: "npm:^4.1.0"
     fs-extra: "npm:^11.2.0"
     globby: "npm:^11.0.0"
     isbinaryfile: "npm:^5.0.0"
