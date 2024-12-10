@@ -78,10 +78,10 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
     "history": "^5.0.0",
-    "react": "^18.0.2",
-    "react-dom": "^18.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.0.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0"
   },
