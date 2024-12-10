@@ -34,7 +34,8 @@ import { EntityFilterQuery } from '@backstage/catalog-client';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 /**
  * Props customizing the <FeaturedDocsCard/> component.
  *
@@ -89,7 +90,9 @@ const useStyles = makeStyles(
 export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
   const { emptyState, filter, linkDestination, responseLimit, subLinkText } =
     props;
-  const linkText = subLinkText || 'LEARN MORE';
+  const { t } = useTranslationRef(homePageTranslationRef);
+  const linkText =
+    subLinkText || t('homePageComponents.featuredDocsCard.defaultLinkText');
   const styles = useStyles();
   const catalogApi: CatalogApi = useApi(catalogApiRef);
   const {
@@ -154,14 +157,16 @@ export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
     emptyState || (
       <EmptyState
         missing="data"
-        title="No documents to show"
-        description="Create your own document. Check out our Getting Started Information"
+        title={t('homePageComponents.featuredDocsCard.emptyState.title')}
+        description={t(
+          'homePageComponents.featuredDocsCard.emptyState.description',
+        )}
         action={
           <LinkButton
             to="https://backstage.io/docs/features/techdocs/getting-started"
             variant="contained"
           >
-            DOCS
+            {t('homePageComponents.featuredDocsCard.emptyState.buttonTitle')}
           </LinkButton>
         }
       />

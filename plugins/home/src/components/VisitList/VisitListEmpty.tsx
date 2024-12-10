@@ -16,15 +16,20 @@
 
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
-export const VisitListEmpty = () => (
-  <>
-    <Typography variant="body2" color="textSecondary">
-      There are no visits to show yet.
-    </Typography>
-    <Typography variant="body2" color="textSecondary">
-      Once you start using Backstage, your visits will appear here as a quick
-      link to carry on where you left off.
-    </Typography>
-  </>
-);
+export const VisitListEmpty = () => {
+  const { t } = useTranslationRef(homePageTranslationRef);
+
+  return (
+    <>
+      <Typography variant="body2" color="textSecondary">
+        {t('components.visitList.visitListEmpty.notice')}
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        {t('components.visitList.visitListEmpty.description')}
+      </Typography>
+    </>
+  );
+};

@@ -17,15 +17,22 @@
 import React, { useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 import { useContext } from './Context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 export const Actions = () => {
   const { collapsed, setCollapsed, visits, numVisitsOpen, loading } =
     useContext();
+
   const onClick = useCallback(
     () => setCollapsed(prevCollapsed => !prevCollapsed),
     [setCollapsed],
   );
-  const label = collapsed ? 'View More' : 'View Less';
+  const { t } = useTranslationRef(homePageTranslationRef);
+
+  const label = collapsed
+    ? t('homePageComponents.visitedByType.actions.viewMore.label')
+    : t('homePageComponents.visitedByType.actions.viewLess.label');
 
   if (!loading && visits.length <= numVisitsOpen) return <></>;
 

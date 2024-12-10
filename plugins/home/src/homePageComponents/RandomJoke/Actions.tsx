@@ -18,12 +18,16 @@ import React from 'react';
 
 import Button from '@material-ui/core/Button';
 import { useRandomJoke } from './Context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 export const Actions = () => {
   const { rerollJoke } = useRandomJoke();
+  const { t } = useTranslationRef(homePageTranslationRef);
+
   return (
     <Button variant="contained" color="primary" onClick={() => rerollJoke()}>
-      Reroll
+      {t('homePageComponents.randomJoke.rerollButton.title')}
     </Button>
   );
 };
