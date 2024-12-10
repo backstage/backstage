@@ -21,8 +21,6 @@ import {
   LifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { HumanDuration } from '@backstage/types';
-import { readDurationFromConfig } from '@backstage/config';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
 import {
@@ -33,25 +31,8 @@ import {
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 import { createHealthRouter } from './createHealthRouter';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
-
-export function getConfigInHumanDuration(
-  config: RootConfigService,
-  key: string,
-): HumanDuration | undefined {
-  const value = config.getOptional(key);
-  if (typeof value === 'undefined') {
-    return undefined;
-  }
-  if (typeof value === 'number') {
-    return { milliseconds: value };
-  }
-  if (typeof value === 'string') {
-    return {
-      milliseconds: parseInt(value, 10),
-    };
-  }
-  return readDurationFromConfig(config, { key });
-}
+import { readDurationFromConfig } from '@backstage/config';
+import { HumanDuration } from '@backstage/types';
 
 /**
  * @public
@@ -114,20 +95,24 @@ const rootHttpRouterServiceFactoryWithOptions = (
 
       const healthRouter = createHealthRouter({ config, health });
 
-      const startupRequestPauseTimeout = getConfigInHumanDuration(
-        config,
-        'backend.lifecycle.startupRequestPauseTimeout',
-      );
+      let startupRequestPauseTimeout: HumanDuration | undefined;
+      if (config.has('backend.lifecycle.startupRequestPauseTimeout')) {
+        startupRequestPauseTimeout = readDurationFromConfig(config, {
+          key: 'backend.lifecycle.startupRequestPauseTimeout',
+        });
+      }
 
-      const shutdownRequestDelayTimeout = getConfigInHumanDuration(
-        config,
-        'backend.lifecycle.shutdownRequestDelayTimeout',
-      );
+      let serverShutdownDelay: HumanDuration | undefined;
+      if (config.has('backend.lifecycle.serverShutdownDelay')) {
+        serverShutdownDelay = readDurationFromConfig(config, {
+          key: 'backend.lifecycle.serverShutdownDelay',
+        });
+      }
 
       const lifecycleMiddleware = createLifecycleMiddleware({
         lifecycle,
         startupRequestPauseTimeout,
-        shutdownRequestDelayTimeout,
+        serverShutdownDelay,
       });
 
       const server = await createHttpServer(

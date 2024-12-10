@@ -20,55 +20,13 @@ import {
 } from '@backstage/backend-test-utils';
 import { Express } from 'express';
 import request from 'supertest';
-import {
-  getConfigInHumanDuration,
-  rootHttpRouterServiceFactory,
-} from './rootHttpRouterServiceFactory';
+import { rootHttpRouterServiceFactory } from './rootHttpRouterServiceFactory';
 import {
   ServiceFactory,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../rootLifecycle/rootLifecycleServiceFactory';
-import { ConfigReader } from '@backstage/config';
-
-describe('getConfigInHumanDuration', () => {
-  const values = ['20000', 20000, { milliseconds: 20000 }];
-
-  it.each(values)(
-    'should parse the lifecycle startup request timeout from a %s config value',
-    async value => {
-      const key = 'backend.lifecycle.startupRequestPauseTimeout';
-      const config = new ConfigReader({
-        backend: {
-          lifecycle: {
-            startupRequestPauseTimeout: value,
-          },
-        },
-      });
-      expect(getConfigInHumanDuration(config, key)).toMatchObject({
-        milliseconds: 20000,
-      });
-    },
-  );
-
-  it.each(values)(
-    'should parse the lifecycle shutdown delay timeout from a %s config value',
-    async value => {
-      const key = 'backend.lifecycle.shutdownRequestDelayTimeout';
-      const config = new ConfigReader({
-        backend: {
-          lifecycle: {
-            shutdownRequestDelayTimeout: value,
-          },
-        },
-      });
-      expect(getConfigInHumanDuration(config, key)).toMatchObject({
-        milliseconds: 20000,
-      });
-    },
-  );
-});
 
 async function createExpressApp(...dependencies: ServiceFactory[]) {
   let app: Express | undefined = undefined;

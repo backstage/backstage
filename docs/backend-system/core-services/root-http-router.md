@@ -50,8 +50,16 @@ The `app-config.yaml` file provides configurable options that can be adjusted to
 backend:
   lifecycle:
     # (Optional) The maximum time that paused requests will wait for the service to start, before returning an error (defaults to 5 seconds).
+    # Supported formats:
+    # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
+    # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+    # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
     startupRequestPauseTimeout: { seconds: 10 }
     # (Optional) The maximum time that the server will wait for stop accepting traffic, before returning an error (defaults to 30 seconds).
+    # Supported formats:
+    # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
+    # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+    # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
     shutdownRequestPauseTimeout: { seconds: 20 }
 ```
 

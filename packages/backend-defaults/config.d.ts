@@ -31,16 +31,24 @@ export interface Config {
     lifecycle?: {
       /**
        * The maximum time that paused requests will wait for the service to start, before returning an error.
-       * If you pass a number or string, it will be interpreted as milliseconds.
-       * Defaults to 5 seconds.
+       * Defaults to 5 seconds
+       * Supported formats:
+       * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+       *   library.
+       * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+       * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
        */
-      startupRequestPauseTimeout?: number | string | HumanDuration;
+      startupRequestPauseTimeout?: string | HumanDuration;
       /**
        * The maximum time that the server will wait for stop accepting traffic, before returning an error.
-       * If you pass a number or string, it will be interpreted as milliseconds.
        * Defaults to 30 seconds.
+       * Supported formats:
+       * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+       *   library.
+       * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+       * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
        */
-      shutdownRequestDelayTimeout?: number | string | HumanDuration;
+      serverShutdownDelay?: string | HumanDuration;
     };
 
     /** Address that the backend should listen to. */

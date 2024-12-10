@@ -20,7 +20,7 @@ import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
 
 export const DEFAULT_STARTUP_REQUEST_PAUSE_TIMEOUT = { seconds: 5 };
-export const DEFAULT_SHUTDOWN_REQUEST_DELAY_TIMEOUT = { seconds: 30 };
+export const DEFAULT_SERVER_SHUTDOWN_TIMEOUT = { seconds: 30 };
 
 /**
  * Options for {@link createLifecycleMiddleware}.
@@ -39,7 +39,7 @@ export interface LifecycleMiddlewareOptions {
    *
    * Defaults to 30 seconds.
    */
-  shutdownRequestDelayTimeout?: HumanDuration;
+  serverShutdownDelay?: HumanDuration;
 }
 
 /**
@@ -59,7 +59,7 @@ export interface LifecycleMiddlewareOptions {
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
-  const { lifecycle, startupRequestPauseTimeout, shutdownRequestDelayTimeout } =
+  const { lifecycle, startupRequestPauseTimeout, serverShutdownDelay } =
     options;
 
   let state: 'init' | 'up' | 'down' = 'init';
@@ -81,7 +81,7 @@ export function createLifecycleMiddleware(
 
   lifecycle.addBeforeShutdownHook(async () => {
     const timeoutMs = durationToMilliseconds(
-      shutdownRequestDelayTimeout ?? DEFAULT_SHUTDOWN_REQUEST_DELAY_TIMEOUT,
+      serverShutdownDelay ?? DEFAULT_SERVER_SHUTDOWN_TIMEOUT,
     );
     return await new Promise(resolve => {
       setTimeout(resolve, timeoutMs);
