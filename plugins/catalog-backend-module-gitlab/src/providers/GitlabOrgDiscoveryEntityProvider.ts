@@ -400,14 +400,14 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groups.push(await this.gitLabClient.getGroupByPath(this.config.group)); // adds the parent group for #26554
 
       const rootGroupSplit = this.config.group.split('/');
-      const rootGroup = this.config.restrictUsersToGroup
-        ? rootGroupSplit[rootGroupSplit.length - 1]
+      const groupPath = this.config.restrictUsersToGroup
+        ? this.config.group
         : rootGroupSplit[0];
 
       users = paginated<GitLabUser>(
         options =>
           this.gitLabClient.listSaaSUsers(
-            rootGroup,
+            groupPath,
             options,
             this.config.includeUsersWithoutSeat,
           ),
