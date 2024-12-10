@@ -18,7 +18,9 @@ import { Config } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  kubernetesClustersPermission,
   kubernetesPermissions,
+  kubernetesServicesPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
@@ -72,6 +74,7 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
+import { requirePermission } from '../auth/requirePermission';
 
 /**
  * @deprecated Please migrate to the new backend system as this will be removed in the future.
@@ -392,6 +395,12 @@ export class KubernetesBuilder {
     );
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
+      await requirePermission(
+        permissionApi,
+        kubernetesServicesPermission,
+        httpAuth,
+        req,
+      );
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
@@ -412,6 +421,12 @@ export class KubernetesBuilder {
     });
 
     router.get('/clusters', async (req, res) => {
+      await requirePermission(
+        permissionApi,
+        kubernetesClustersPermission,
+        httpAuth,
+        req,
+      );
       const credentials = await httpAuth.credentials(req);
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
         credentials,
@@ -446,6 +461,7 @@ export class KubernetesBuilder {
       objectsProvider,
       authService,
       httpAuth,
+      permissionApi,
     );
 
     return router;
