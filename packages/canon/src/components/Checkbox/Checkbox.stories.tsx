@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Checkbox } from './Checkbox';
 
-/** @public */
-export const Icon = (props: { name: IconNames; size?: number }) => {
-  const { name, size = 16 } = props;
-  const { icons } = useTheme();
+const meta = {
+  title: 'Components/Checkbox',
+  component: Checkbox,
+  parameters: {
+    layout: 'centered',
+  },
+} satisfies Meta<typeof Checkbox>;
 
-  const RemixIcon = icons[name] as React.ComponentType<{ className?: string }>;
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found or is not a valid component.`);
-    return <svg />; // Return a default icon or handle the error appropriately
-  }
-
-  return <RemixIcon className={`icon-${size}`} />;
+export const Primary: Story = {
+  args: {
+    children: 'Primary button',
+  },
 };

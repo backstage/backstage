@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
-
-/** @public */
-export const Icon = (props: { name: IconNames; size?: number }) => {
-  const { name, size = 16 } = props;
-  const { icons } = useTheme();
-
-  const RemixIcon = icons[name] as React.ComponentType<{ className?: string }>;
-
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found or is not a valid component.`);
-    return <svg />; // Return a default icon or handle the error appropriately
-  }
-
-  return <RemixIcon className={`icon-${size}`} />;
-};
+export { Checkbox } from './Checkbox';

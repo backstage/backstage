@@ -24,6 +24,7 @@ export type IconNames =
   | 'arrowLeftCircle'
   | 'arrowRightCircle'
   | 'arrowUpCircle'
+  | 'check'
   | 'chevronDown'
   | 'chevronLeft'
   | 'chevronRight'
