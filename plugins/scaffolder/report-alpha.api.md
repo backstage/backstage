@@ -14,7 +14,7 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FormField } from '@internal/scaffolder';
-import { FormFieldExtensionData } from '@backstage/plugin-scaffolder-react/alpha';
+import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -26,6 +26,7 @@ import { default as React_2 } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -52,6 +53,33 @@ const _default: FrontendPlugin<
     }>;
   },
   {
+    'api:scaffolder/form-fields': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
+        formFields: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<FormField>,
+            'scaffolder.form-field-loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'form-fields';
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'page:scaffolder': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -129,33 +157,6 @@ const _default: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
-    'api:scaffolder/form-fields': ExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {
-        formFields: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            () => Promise<FormField>,
-            'scaffolder.form-field-loader',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'form-fields';
-      params: {
-        factory: AnyApiFactory;
-      };
-    }>;
   }
 >;
 export default _default;
@@ -175,8 +176,7 @@ export class DefaultScaffolderFormDecoratorsApi
 // @alpha (undocumented)
 export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;
 
-// @alpha (undocumented)
-export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+export { formFieldsApiRef };
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -197,11 +197,7 @@ export interface ScaffolderFormDecoratorsApi {
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }
 
-// @alpha (undocumented)
-export interface ScaffolderFormFieldsApi {
-  // (undocumented)
-  getFormFields(): Promise<FormFieldExtensionData[]>;
-}
+export { ScaffolderFormFieldsApi };
 
 // @public (undocumented)
 export type ScaffolderTemplateEditorClassKey =

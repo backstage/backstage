@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- 99dce5c: Implemented discovery for top-level groups defined in config.group or if undefined global top-level group in Gitlab
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+
 ## 0.5.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.23-next.2
+
+### Patch Changes
+
+- e913fdf: Add github backend module to create-app and improve error messages
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.23-next.1
 
 ### Patch Changes

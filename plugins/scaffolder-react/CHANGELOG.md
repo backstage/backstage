@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.2-next.2
+
+### Patch Changes
+
+- 184161f: Scaffolder field extensions registered with `FormFieldBlueprint` are now collected in the `useCustomFieldExtensions` hook, enabling them for use in the scaffolder.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.29-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
 ## 1.14.2-next.1
 
 ### Patch Changes

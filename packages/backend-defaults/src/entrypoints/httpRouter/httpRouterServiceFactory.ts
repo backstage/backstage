@@ -22,7 +22,6 @@ import {
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
 import {
-  createLifecycleMiddleware,
   createCookieAuthRefreshMiddleware,
   createCredentialsBarrier,
   createAuthIntegrationRouter,
@@ -43,12 +42,11 @@ export const httpRouterServiceFactory = createServiceFactory({
   deps: {
     plugin: coreServices.pluginMetadata,
     config: coreServices.rootConfig,
-    lifecycle: coreServices.lifecycle,
     rootHttpRouter: coreServices.rootHttpRouter,
     auth: coreServices.auth,
     httpAuth: coreServices.httpAuth,
   },
-  async factory({ auth, httpAuth, config, plugin, rootHttpRouter, lifecycle }) {
+  async factory({ auth, httpAuth, config, plugin, rootHttpRouter }) {
     const router = PromiseRouter();
 
     rootHttpRouter.use(`/api/${plugin.getId()}`, router);
@@ -59,7 +57,6 @@ export const httpRouterServiceFactory = createServiceFactory({
     });
 
     router.use(createAuthIntegrationRouter({ auth }));
-    router.use(createLifecycleMiddleware({ lifecycle }));
     router.use(credentialsBarrier.middleware);
     router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 

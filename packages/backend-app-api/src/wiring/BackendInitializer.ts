@@ -449,6 +449,11 @@ export class BackendInitializer {
       // The startup failed, but we may still want to do cleanup so we continue silently
     }
 
+    const rootLifecycleService = await this.#getRootLifecycleImpl();
+
+    // Root services like the health one need to immediatelly be notified of the shutdown
+    await rootLifecycleService.beforeShutdown();
+
     // Get all plugins.
     const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
@@ -468,14 +473,14 @@ export class BackendInitializer {
     );
 
     // Once all plugin shutdown hooks are done, run root shutdown hooks.
-    const lifecycleService = await this.#getRootLifecycleImpl();
-    await lifecycleService.shutdown();
+    await rootLifecycleService.shutdown();
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
   async #getRootLifecycleImpl(): Promise<
     RootLifecycleService & {
       startup(): Promise<void>;
+      beforeShutdown(): Promise<void>;
       shutdown(): Promise<void>;
     }
   > {
@@ -519,6 +524,11 @@ export class BackendInitializer {
   }
 
   async #applyBackendFeatureLoaders(loaders: InternalBackendFeatureLoader[]) {
+    const servicesAddedByLoaders = new Map<
+      string,
+      InternalBackendFeatureLoader
+    >();
+
     for (const loader of loaders) {
       const deps = new Map<string, unknown>();
       const missingRefs = new Set<ServiceOrExtensionPoint>();
@@ -564,8 +574,32 @@ export class BackendInitializer {
         if (isBackendFeatureLoader(feature)) {
           newLoaders.push(feature);
         } else {
-          didAddServiceFactory ||= isServiceFactory(feature);
-          this.#addFeature(feature);
+          // This block makes sure that feature loaders do not provide duplicate
+          // implementations for the same service, but at the same time allows
+          // service factories provided by feature loaders to be overridden by
+          // ones that are explicitly installed with backend.add(serviceFactory).
+          //
+          // If a factory has already been explicitly installed, the service
+          // factory provided by the loader will simply be ignored.
+          if (isServiceFactory(feature) && !feature.service.multiton) {
+            const conflictingLoader = servicesAddedByLoaders.get(
+              feature.service.id,
+            );
+            if (conflictingLoader) {
+              throw new Error(
+                `Duplicate service implementations provided for ${feature.service.id} by both feature loader ${loader.description} and feature loader ${conflictingLoader.description}`,
+              );
+            }
+
+            // Check that this service wasn't already explicitly added by backend.add(serviceFactory)
+            if (!this.#serviceRegistry.hasBeenAdded(feature.service)) {
+              didAddServiceFactory = true;
+              servicesAddedByLoaders.set(feature.service.id, loader);
+              this.#addFeature(feature);
+            }
+          } else {
+            this.#addFeature(feature);
+          }
         }
       }
 

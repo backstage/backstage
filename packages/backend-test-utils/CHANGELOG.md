@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 0e9c9fa: Mock the new `RootLifecycleService.addBeforeShutdownHook` method.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/backend-app-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
 ## 1.2.0-next.1
 
 ### Patch Changes
