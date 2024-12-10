@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-/* Light theme */
+/* Normalize */
+@import './normalize.css';
+
+/* Geist font */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+
+*,
+html,
+body {
+  font-family: var(--canon-font-regular);
+}
+
+/* Light theme tokens */
 :root {
   /* Colors */
   --canon-accent: #000;
@@ -51,20 +64,20 @@
   --canon-font-bold: 600;
 
   /* Font sizes */
-  --canon-font-sizes-2xs: 0.625rem;
-  --canon-font-sizes-xs: 0.75rem;
-  --canon-font-sizes-sm: 0.875rem;
-  --canon-font-sizes-md: 1rem;
-  --canon-font-sizes-lg: 1.125rem;
-  --canon-font-sizes-xl: 1.25rem;
-  --canon-font-sizes-2xl: 1.5rem;
-  --canon-font-sizes-3xl: 1.875rem;
-  --canon-font-sizes-4xl: 2.25rem;
-  --canon-font-sizes-5xl: 3rem;
-  --canon-font-sizes-6xl: 3.75rem;
-  --canon-font-sizes-7xl: 4.5rem;
-  --canon-font-sizes-8xl: 6rem;
-  --canon-font-sizes-9xl: 8rem;
+  --canon-font-size-2xs: 0.625rem;
+  --canon-font-size-xs: 0.75rem;
+  --canon-font-size-sm: 0.875rem;
+  --canon-font-size-md: 1rem;
+  --canon-font-size-lg: 1.125rem;
+  --canon-font-size-xl: 1.25rem;
+  --canon-font-size-2xl: 1.5rem;
+  --canon-font-size-3xl: 1.875rem;
+  --canon-font-size-4xl: 2.25rem;
+  --canon-font-size-5xl: 3rem;
+  --canon-font-size-6xl: 3.75rem;
+  --canon-font-size-7xl: 4.5rem;
+  --canon-font-size-8xl: 6rem;
+  --canon-font-size-9xl: 8rem;
 
   /* Spacing */
   --canon-spacing-2xs: 0.25rem;
@@ -80,7 +93,7 @@
   --canon-container-padding: 1rem;
 }
 
-/* Dark theme */
+/* Dark theme tokens */
 [data-theme='dark'] {
   /* Colors */
   --canon-accent: #fff;

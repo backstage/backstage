@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-/* Geist font */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+import type { Meta, StoryObj } from '@storybook/react';
+import { Table } from '../Table';
 
-/* Theme */
-@import './theme.css';
+const meta = {
+  title: 'Components/Table/Table',
+  component: Table,
+} satisfies Meta<typeof Table>;
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    children: "Hello World! I'm a basic table",
+  },
+};
