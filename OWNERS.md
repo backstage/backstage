@@ -30,6 +30,17 @@ Scope: The catalog plugin and catalog model
 | Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
 | Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
+### Design System
+
+Team: @backstage/design-system-maintainers
+
+Scope: The Backstage design system, component library, as well as surrounding tooling such as Storybook.
+
+| Name                | Organization | Team          | GitHub                                        | Discord       |
+| ------------------- | ------------ | ------------- | --------------------------------------------- | ------------- |
+| Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
+| Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
+
 ### Home
 
 Team: @backstage/home-maintainers
