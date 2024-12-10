@@ -75,7 +75,7 @@ export default createBackendFeatureLoader({
 
 ### Overriding service factories
 
-Service factories registered by feature loaders have lower priority by ones added directly via `backend.add`. This allows you to use a feature loader for a larger number of service implementations, but still override individual services.
+Service factories registered by feature loaders have lower priority than ones added directly via `backend.add`. This allows you to use a feature loader for a larger number of service implementations, but still override individual services.
 
 The ordering in which different feature loaders or service factories are added does not matter. There is also no priority between feature loaders, if two different feature loaders add a factory for the same service, the backend will fail to start.
 
