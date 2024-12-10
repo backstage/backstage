@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
-
-// Layout types
-export * from './layout/types';
-
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
-
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
-export * from './components/Checkbox';
+/** @public */
+export interface CheckboxProps {
+  label?: string;
+  defaultChecked?: boolean;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
+  name?: string;
+  value?: string;
+  style?: React.CSSProperties;
+}

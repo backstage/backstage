@@ -17,16 +17,48 @@ import React from 'react';
 
 import { CheckboxRoot, CheckboxIndicator } from '@base_ui/react';
 import { Icon } from '@backstage/canon';
+import type { CheckboxProps } from './types';
 
-export const Checkbox = () => {
-  return (
-    <label className="checkbox-label">
-      <CheckboxRoot className="checkbox">
+/** @public */
+export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+  (props, ref) => {
+    const {
+      label,
+      checked,
+      onChange,
+      disabled,
+      required,
+      className,
+      name,
+      value,
+      style,
+    } = props;
+
+    const checkboxElement = (
+      <CheckboxRoot
+        ref={ref}
+        className={`checkbox ${className}`}
+        checked={checked}
+        onCheckedChange={onChange}
+        disabled={disabled}
+        required={required}
+        name={name}
+        value={value}
+        style={style}
+      >
         <CheckboxIndicator className="checkbox-indicator">
           <Icon name="check" size={12} />
         </CheckboxIndicator>
       </CheckboxRoot>
-      Label
-    </label>
-  );
-};
+    );
+
+    return label ? (
+      <label className="checkbox-label">
+        {checkboxElement}
+        {label}
+      </label>
+    ) : (
+      checkboxElement
+    );
+  },
+);

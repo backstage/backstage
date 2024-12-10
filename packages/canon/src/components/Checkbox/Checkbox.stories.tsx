@@ -30,6 +30,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    children: 'Primary button',
+    label: 'Accept terms and conditions',
   },
 };

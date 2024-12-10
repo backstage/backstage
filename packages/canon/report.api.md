@@ -130,6 +130,35 @@ export interface ButtonProps {
 }
 
 // @public (undocumented)
+export const Checkbox: React_2.ForwardRefExoticComponent<
+  CheckboxProps & React_2.RefAttributes<HTMLButtonElement>
+>;
+
+// @public (undocumented)
+export interface CheckboxProps {
+  // (undocumented)
+  checked?: boolean;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  defaultChecked?: boolean;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  label?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  onChange?: (checked: boolean) => void;
+  // (undocumented)
+  required?: boolean;
+  // (undocumented)
+  style?: React.CSSProperties;
+  // (undocumented)
+  value?: string;
+}
+
+// @public (undocumented)
 export type Color =
   | 'primary'
   | 'secondary'
@@ -237,7 +266,10 @@ export interface GridProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export const Icon: ({ name }: { name: IconNames }) => React_2.JSX.Element;
+export const Icon: (props: {
+  name: IconNames;
+  size?: number;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
@@ -252,6 +284,7 @@ export type IconNames =
   | 'arrowLeftCircle'
   | 'arrowRightCircle'
   | 'arrowUpCircle'
+  | 'check'
   | 'chevronDown'
   | 'chevronLeft'
   | 'chevronRight'
