@@ -372,6 +372,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
         await action.handler({
           input: iteration.input,
+          task: {
+            id: await task.getWorkspaceName(),
+          },
           secrets: task.secrets ?? {},
           // TODO(blam): move to LoggerService and away from Winston
           logger: loggerToWinstonLogger(taskLogger),
