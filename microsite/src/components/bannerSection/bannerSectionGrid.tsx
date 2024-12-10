@@ -14,7 +14,7 @@ export const BannerSectionGrid = ({
   className,
 }: IBannerSectionColumnsProps) => {
   return (
-    (<div className={clsx(bannerGridStyles.sectionGridContainer, className)}>
+    <div className={clsx(bannerGridStyles.sectionGridContainer, className)}>
       {header && <div className="gridHeader">{header}</div>}
       <div className={bannerGridStyles.gridContainer}>
         {Array.isArray(children)
@@ -26,6 +26,6 @@ export const BannerSectionGrid = ({
             )
           : children}
       </div>
-    </div>)
+    </div>
   );
 };
