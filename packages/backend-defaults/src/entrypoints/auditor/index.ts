@@ -17,6 +17,5 @@
 export * from './Auditor';
 export {
   auditorServiceFactory,
-  auditorServiceFactoryWithOptions,
   type AuditorFactoryOptions,
 } from './auditorServiceFactory';

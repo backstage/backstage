@@ -18,22 +18,22 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { format } from 'logform';
 import { MESSAGE } from 'triple-beam';
 import Transport from 'winston-transport';
-import { Auditor } from './Auditor';
+import { DefaultAuditorService } from './Auditor';
 
 describe('Auditor', () => {
   it('creates a auditor instance with default options', () => {
-    const auditor = Auditor.create();
-    expect(auditor).toBeInstanceOf(Auditor);
+    const auditor = DefaultAuditorService.create();
+    expect(auditor).toBeInstanceOf(DefaultAuditorService);
   });
 
   it('creates a child logger', () => {
-    const auditor = Auditor.create();
+    const auditor = DefaultAuditorService.create();
     const childLogger = auditor.child({ plugin: 'test-plugin' });
-    expect(childLogger).toBeInstanceOf(Auditor);
+    expect(childLogger).toBeInstanceOf(DefaultAuditorService);
   });
 
   it('should error without plugin service', async () => {
-    const auditor = Auditor.create();
+    const auditor = DefaultAuditorService.create();
     await expect(
       auditor.createEvent({
         eventId: 'test-event',
@@ -46,11 +46,14 @@ describe('Auditor', () => {
   it('should error without auth service', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = DefaultAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
       },
-    });
+    );
 
     await expect(
       auditor.createEvent({
@@ -64,12 +67,15 @@ describe('Auditor', () => {
   it('should error without httpAuth service', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      plugin: {
-        getId: () => pluginId,
+    const auditor = DefaultAuditorService.create().child(
+      {},
+      {
+        plugin: {
+          getId: () => pluginId,
+        },
+        auth: mockServices.auth.mock(),
       },
-      auth: mockServices.auth.mock(),
-    });
+    );
 
     await expect(
       auditor.createEvent({
@@ -88,15 +94,19 @@ describe('Auditor', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
-      },
+    const auditor = DefaultAuditorService.create({
       format: format.json(),
       transports: [mockTransport],
-    });
+    }).child(
+      {},
+      {
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        plugin: {
+          getId: () => pluginId,
+        },
+      },
+    );
 
     await auditor.createEvent({
       eventId: 'test-event',
@@ -125,17 +135,21 @@ describe('Auditor', () => {
 
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
-      },
+    const auditor = DefaultAuditorService.create({
       format: format.json(),
       transports: [mockTransport],
-    });
+    }).child(
+      {},
+      {
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        plugin: {
+          getId: () => pluginId,
+        },
+      },
+    );
 
-    auditor.addRedactions(['hello']);
+    (auditor as DefaultAuditorService).addRedactions(['hello']);
 
     await auditor.createEvent({
       eventId: 'test-event',
@@ -173,13 +187,16 @@ describe('Auditor', () => {
   it('should log a status "initiated" using createEvent', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
+    const auditor = DefaultAuditorService.create().child(
+      {},
+      {
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        plugin: {
+          getId: () => pluginId,
+        },
       },
-    });
+    );
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
 
@@ -196,13 +213,16 @@ describe('Auditor', () => {
   it('should log a status "succeeded" using createEvent', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
+    const auditor = DefaultAuditorService.create().child(
+      {},
+      {
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        plugin: {
+          getId: () => pluginId,
+        },
       },
-    });
+    );
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
 
@@ -222,13 +242,16 @@ describe('Auditor', () => {
   it('should log a status "failed"', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
+    const auditor = DefaultAuditorService.create().child(
+      {},
+      {
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        plugin: {
+          getId: () => pluginId,
+        },
       },
-    });
+    );
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
 
@@ -250,13 +273,16 @@ describe('Auditor', () => {
   it('should use root meta', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = Auditor.create({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
+    const auditor = DefaultAuditorService.create().child(
+      {},
+      {
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        plugin: {
+          getId: () => pluginId,
+        },
       },
-    });
+    );
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
 

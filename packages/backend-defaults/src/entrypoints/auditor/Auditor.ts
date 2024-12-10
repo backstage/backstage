@@ -113,9 +113,6 @@ export const auditorFieldFormat = winston.format(info => {
 
 /** @public */
 export interface AuditorOptions {
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  plugin?: PluginMetadataService;
   meta?: JsonObject;
   format?: Format;
   transports?: winston.transport[];
@@ -126,7 +123,7 @@ export interface AuditorOptions {
  *
  * @public
  */
-export class Auditor implements AuditorService {
+export class DefaultAuditorService implements AuditorService {
   readonly #winstonLogger: winston.Logger;
   readonly #auth?: AuthService;
   readonly #httpAuth?: HttpAuthService;
@@ -134,14 +131,14 @@ export class Auditor implements AuditorService {
   readonly #addRedactions?: (redactions: Iterable<string>) => void;
 
   /**
-   * Creates a {@link Auditor} instance.
+   * Creates a {@link DefaultAuditorService} instance.
    */
-  static create(options?: AuditorOptions): Auditor {
-    const redacter = Auditor.redacter();
+  static create(options?: AuditorOptions): DefaultAuditorService {
+    const redacter = DefaultAuditorService.redacter();
     const defaultFormatter =
       process.env.NODE_ENV === 'production'
         ? defaultProdFormat
-        : Auditor.colorFormat();
+        : DefaultAuditorService.colorFormat();
 
     let auditor = winston.createLogger({
       level: 'info',
@@ -156,15 +153,7 @@ export class Auditor implements AuditorService {
     if (options?.meta) {
       auditor = auditor.child(options.meta);
     }
-    return new Auditor(
-      auditor,
-      {
-        auth: options?.auth,
-        httpAuth: options?.httpAuth,
-        plugin: options?.plugin,
-      },
-      redacter.add,
-    );
+    return new DefaultAuditorService(auditor, {}, redacter.add);
   }
 
   /**
@@ -255,7 +244,7 @@ export class Auditor implements AuditorService {
       plugin?: PluginMetadataService;
     },
   ): AuditorService {
-    return new Auditor(this.#winstonLogger.child(meta), {
+    return new DefaultAuditorService(this.#winstonLogger.child(meta), {
       auth: deps?.auth ?? this.#auth,
       httpAuth: deps?.httpAuth ?? this.#httpAuth,
       plugin: deps?.plugin ?? this.#plugin,

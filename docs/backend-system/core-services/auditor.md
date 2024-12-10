@@ -63,10 +63,11 @@ export async function createRouter(
       // ... process the request
 
       await auditorEvent.success();
-      res.status(200).send('Success!');
+      res.status(200).json({ message: 'Succeeded!' });
     } catch (error) {
       await auditorEvent.fail({ error });
-      res.status(500).send('Error!');
+      res.status(500).json({ message: 'Failed!' });
+      throw error;
     }
   });
 
@@ -112,7 +113,7 @@ The `auditorServiceFactoryWithOptions` function allows you to create an auditor 
 Here's an example of how to create a custom auditor service factory:
 
 ```typescript
-import { auditorServiceFactoryWithOptions } from '@backstage/backend-defaults/auditor';
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import winston from 'winston';
 
 const myAuditorServiceFactory = auditorServiceFactoryWithOptions({

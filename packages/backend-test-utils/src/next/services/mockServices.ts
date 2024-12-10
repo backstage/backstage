@@ -52,10 +52,10 @@ import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { MockAuditorService } from './MockAuditorService';
 import { MockAuthService } from './MockAuthService';
-import { mockCredentials } from './mockCredentials';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
+import { mockCredentials } from './mockCredentials';
 
 /** @internal */
 function createLoggerMock() {
@@ -233,15 +233,14 @@ export namespace mockServices {
   ): AuditorService {
     const service = 'backstage';
     const pluginId = options?.pluginId ?? 'test';
-    const mockAuth =
-      options?.auth ??
-      new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      });
-    const mockHttpAuth =
-      options?.httpAuth ??
-      new MockHttpAuthService(pluginId, mockCredentials.user());
+    const mockAuth = new MockAuthService({
+      pluginId,
+      disableDefaultAuthPolicy: false,
+    });
+    const mockHttpAuth = new MockHttpAuthService(
+      pluginId,
+      mockCredentials.user(),
+    );
 
     const mockPlugin = {
       getId: () => pluginId,

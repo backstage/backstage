@@ -21,7 +21,11 @@ import {
 import type { Config } from '@backstage/config';
 import * as winston from 'winston';
 import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
-import { Auditor, auditorFieldFormat, defaultProdFormat } from './Auditor';
+import {
+  DefaultAuditorService,
+  auditorFieldFormat,
+  defaultProdFormat,
+} from './Auditor';
 
 const transports = {
   auditorConsole: (config?: Config) => {
@@ -55,9 +59,7 @@ export interface AuditorFactoryOptions {
  *
  * @public
  */
-export const auditorServiceFactoryWithOptions = (
-  options?: AuditorFactoryOptions,
-) =>
+const auditorServiceFactoryWithOptions = (options?: AuditorFactoryOptions) =>
   createServiceFactory({
     service: coreServices.auditor,
     deps: {
@@ -69,7 +71,7 @@ export const auditorServiceFactoryWithOptions = (
     async createRootContext({ config }) {
       const auditorConfig = config.getOptionalConfig('backend.auditor');
 
-      const auditor = Auditor.create({
+      const auditor = DefaultAuditorService.create({
         meta: {
           service: 'backstage',
         },
@@ -79,7 +81,7 @@ export const auditorServiceFactoryWithOptions = (
             auditorFieldFormat,
             process.env.NODE_ENV === 'production'
               ? defaultProdFormat
-              : Auditor.colorFormat(),
+              : DefaultAuditorService.colorFormat(),
           ),
         transports: [
           ...transports.auditorConsole(auditorConfig),
