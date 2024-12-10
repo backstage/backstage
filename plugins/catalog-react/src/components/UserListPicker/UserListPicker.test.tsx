@@ -545,6 +545,38 @@ describe('<UserListPicker />', () => {
           }),
         );
       });
+
+      it('doesn\nt reset the filter to "all" when entities are loaded and resetFiltersWhenNoResultsFound is set to false', async () => {
+        mockCatalogApi.queryEntities?.mockImplementation(async request => {
+          if (
+            (
+              (request as QueryEntitiesInitialRequest).filter as Record<
+                string,
+                string
+              >
+            )['metadata.name']
+          ) {
+            return { items: [], totalItems: 0, pageInfo: {} };
+          }
+          return mockQueryEntitiesImplementation(request);
+        });
+
+        await renderInTestApp(
+          <Picker
+            initialFilter="starred"
+            resetFiltersWhenNoResultsFound={false}
+          />,
+        );
+
+        await waitFor(() =>
+          expect(updateFilters).toHaveBeenLastCalledWith({
+            user: EntityUserFilter.starred([
+              'component:default/e-1',
+              'component:default/e-2',
+            ]),
+          }),
+        );
+      });
     });
 
     describe(`when there are some owned entities present`, () => {
@@ -644,6 +676,25 @@ describe('<UserListPicker />', () => {
             ]),
           }),
         );
+      });
+
+      it("doesn't render when hidden", async () => {
+        await renderInTestApp(
+          <ApiProvider apis={apis}>
+            <MockEntityListContextProvider value={{}}>
+              <UserListPicker hidden />
+            </MockEntityListContextProvider>
+          </ApiProvider>,
+        );
+
+        await waitFor(() =>
+          expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+        );
+        await waitFor(() =>
+          expect(mockCatalogApi.queryEntities).toHaveBeenCalled(),
+        );
+        expect(screen.queryByText('Personal')).toBeNull();
+        expect(screen.queryByText('Test Company')).toBeNull();
       });
     });
   });

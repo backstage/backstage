@@ -132,7 +132,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
     initialFilter,
     availableFilters,
     hidden,
-    resetFiltersWhenNoResultsFound,
+    resetFiltersWhenNoResultsFound = true,
   } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);

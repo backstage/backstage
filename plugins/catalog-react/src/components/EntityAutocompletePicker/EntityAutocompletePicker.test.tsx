@@ -393,4 +393,22 @@ describe('<EntityAutocompletePicker/>', () => {
       }),
     );
   });
+
+  it("doesn't render when hidden", async () => {
+    const catalogApi = makeMockCatalogApi();
+    render(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+            hidden
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => expect(screen.queryByText('Options')).toBeNull());
+  });
 });
