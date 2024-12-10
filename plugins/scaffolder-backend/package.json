@@ -54,7 +54,7 @@
     "build": "backstage-cli package build",
     "build:assets": "node scripts/build-nunjucks.js",
     "clean": "backstage-cli package clean",
-    "generate": "backstage-repo-tools package schema openapi generate --server",
+    "generate": "backstage-repo-tools package schema openapi generate --server --client-package plugins/scaffolder-common",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
