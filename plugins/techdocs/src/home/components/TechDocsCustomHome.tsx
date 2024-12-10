@@ -72,7 +72,7 @@ export interface PanelProps {
   showSupport?: boolean;
   options?: TableOptions<DocsTableRow>;
   linkContent?: string | JSX.Element;
-  linkDestination?: (entity: Entity) => string;
+  linkDestination?: (entity: Entity) => string | undefined;
 }
 
 /**

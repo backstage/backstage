@@ -45,7 +45,7 @@ const useStyles = makeStyles(
 export type InfoCardGridProps = {
   entities: Entity[] | undefined;
   linkContent?: string | JSX.Element;
-  linkDestination?: (entity: Entity) => string;
+  linkDestination?: (entity: Entity) => string | undefined;
 };
 
 /**
@@ -58,17 +58,19 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
   const classes = useStyles();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
-  const linkRoute = (entity: Entity) =>
-    typeof linkDestination === 'function'
-      ? linkDestination(entity)
-      : getRouteToReaderPageFor({
-          namespace: toLowerMaybe(
-            entity.metadata.namespace ?? 'default',
-            config,
-          ),
-          kind: toLowerMaybe(entity.kind, config),
-          name: toLowerMaybe(entity.metadata.name, config),
-        });
+  const linkRoute = (entity: Entity) => {
+    if (linkDestination) {
+      const destination = linkDestination(entity);
+      if (destination) {
+        return destination;
+      }
+    }
+    return getRouteToReaderPageFor({
+      namespace: toLowerMaybe(entity.metadata.namespace ?? 'default', config),
+      kind: toLowerMaybe(entity.kind, config),
+      name: toLowerMaybe(entity.metadata.name, config),
+    });
+  };
 
   if (!entities) return null;
   return (
