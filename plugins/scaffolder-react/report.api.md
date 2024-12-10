@@ -550,7 +550,7 @@ export const useCustomFieldExtensions: <
   TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
-) => (TComponentDataType | FieldExtensionOptions)[];
+) => TComponentDataType[];
 
 // @public
 export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(

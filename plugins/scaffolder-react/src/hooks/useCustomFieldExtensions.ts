@@ -27,6 +27,7 @@ import {
  * @public
  */
 export const useCustomFieldExtensions = <
+  // todo(blam): this shouldn't be here, should remove this, but this is a breaking change to remove the generic.
   TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
@@ -62,5 +63,5 @@ export const useCustomFieldExtensions = <
     }),
   );
 
-  return [...blueprintsToLegacy, ...outletFields];
+  return [...blueprintsToLegacy, ...outletFields] as TComponentDataType[];
 };
