@@ -34,6 +34,7 @@ body {
   --canon-background: #f8f8f8;
   --canon-surface-1: #fff;
   --canon-surface-2: #f4f4f4;
+  --canon-surface-3: #f1f1f1;
 
   /* Outlines */
   --canon-outline: rgba(0, 0, 0, 0.1);
@@ -64,29 +65,38 @@ body {
   --canon-font-bold: 600;
 
   /* Font sizes */
-  --canon-font-size-2xs: 0.625rem;
-  --canon-font-size-xs: 0.75rem;
-  --canon-font-size-sm: 0.875rem;
-  --canon-font-size-md: 1rem;
-  --canon-font-size-lg: 1.125rem;
-  --canon-font-size-xl: 1.25rem;
-  --canon-font-size-2xl: 1.5rem;
-  --canon-font-size-3xl: 1.875rem;
-  --canon-font-size-4xl: 2.25rem;
-  --canon-font-size-5xl: 3rem;
-  --canon-font-size-6xl: 3.75rem;
-  --canon-font-size-7xl: 4.5rem;
-  --canon-font-size-8xl: 6rem;
-  --canon-font-size-9xl: 8rem;
+  --canon-font-size-label: 0.625rem; /* 10px */
+  --canon-font-size-caption: 0.75rem; /* 12px */
+  --canon-font-size-body: 0.875rem; /* 14px */
+  --canon-font-size-subtitle: 1rem; /* 16px */
+  --canon-font-size-title1: 1.25rem; /* 20px */
+  --canon-font-size-title2: 1.5rem; /* 24px */
+  --canon-font-size-title3: 2rem; /* 32px */
+  --canon-font-size-title4: 3rem; /* 48px */
+  --canon-font-size-title5: 4rem; /* 64px */
+  --canon-font-size-display: 5.75rem; /* 48px */
 
   /* Spacing */
-  --canon-spacing-2xs: 0.25rem;
-  --canon-spacing-xs: 0.5rem;
-  --canon-spacing-sm: 0.75rem;
-  --canon-spacing-md: 1.25rem;
-  --canon-spacing-lg: 2rem;
-  --canon-spacing-xl: 3.25rem;
-  --canon-spacing-2xl: 5.25rem;
+  --canon-spacing-5xs: 0.125rem; /* 2px */
+  --canon-spacing-4xs: 0.25rem; /* 4px */
+  --canon-spacing-3xs: 0.375rem; /* 6px */
+  --canon-spacing-2xs: 0.5rem; /* 8px */
+  --canon-spacing-xs: 0.75rem; /* 12px */
+  --canon-spacing-sm: 1rem; /* 16px */
+  --canon-spacing-md: 1.5rem; /* 24px */
+  --canon-spacing-lg: 2rem; /* 32px */
+  --canon-spacing-xl: 2.5rem; /* 40px */
+  --canon-spacing-2xl: 3rem; /* 48px */
+  --canon-spacing-3xl: 3.5rem; /* 56px */
+
+  /* Border radius */
+  --canon-border-radius-2xs: 0.125rem; /* 2px */
+  --canon-border-radius-xs: 0.25rem; /* 4px */
+  --canon-border-radius-sm: 0.5rem; /* 8px */
+  --canon-border-radius-md: 0.75rem; /* 12px */
+  --canon-border-radius-lg: 1rem; /* 16px */
+  --canon-border-radius-xl: 1.25rem; /* 20px */
+  --canon-border-radius-2xl: 1.5rem; /* 24px */
 
   /* Container */
   --canon-container-max-width: 1200px;

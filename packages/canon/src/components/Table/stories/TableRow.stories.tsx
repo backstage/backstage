@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { TableRow } from '../Table';
+import { Table, TableRow, TableHeader } from '../Table';
 
 const meta = {
-  title: 'Components/Table/TableRow',
+  title: 'Components/Table/Components/TableRow',
   component: TableRow,
+  decorators: [
+    Story => (
+      <Table>
+        <TableHeader>
+          <Story />
+        </TableHeader>
+      </Table>
+    ),
+  ],
 } satisfies Meta<typeof TableRow>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {},
+  args: {
+    children: "Hello World! I'm a basic table row",
+  },
 };

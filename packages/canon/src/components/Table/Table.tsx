@@ -20,7 +20,7 @@ const Table = React.forwardRef<
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
   <div className="table">
-    <table ref={ref} className={['', className].join(' ')} {...props} />
+    <table ref={ref} className={className} {...props} />
   </div>
 ));
 Table.displayName = 'Table';
@@ -29,7 +29,11 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={['', className].join(' ')} {...props} />
+  <thead
+    ref={ref}
+    className={['table-header', className].join(' ')}
+    {...props}
+  />
 ));
 TableHeader.displayName = 'TableHeader';
 
@@ -37,7 +41,7 @@ const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={['', className].join(' ')} {...props} />
+  <tbody ref={ref} className={['table-body', className].join(' ')} {...props} />
 ));
 TableBody.displayName = 'TableBody';
 
@@ -45,7 +49,11 @@ const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tfoot ref={ref} className={['', className].join(' ')} {...props} />
+  <tfoot
+    ref={ref}
+    className={['table-footer', className].join(' ')}
+    {...props}
+  />
 ));
 TableFooter.displayName = 'TableFooter';
 
@@ -53,7 +61,9 @@ const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => (
-  <tr ref={ref} className={['', className].join(' ')} {...props} />
+  <tr ref={ref} className={['table-row', className].join(' ')} {...props}>
+    {props.children}
+  </tr>
 ));
 TableRow.displayName = 'TableRow';
 
@@ -61,7 +71,7 @@ const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <th ref={ref} className={['', className].join(' ')} {...props} />
+  <th ref={ref} className={['table-head', className].join(' ')} {...props} />
 ));
 TableHead.displayName = 'TableHead';
 
@@ -69,7 +79,7 @@ const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <td ref={ref} className={['', className].join(' ')} {...props} />
+  <td ref={ref} className={['table-cell', className].join(' ')} {...props} />
 ));
 TableCell.displayName = 'TableCell';
 
@@ -77,7 +87,11 @@ const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption ref={ref} className={['', className].join(' ')} {...props} />
+  <caption
+    ref={ref}
+    className={['table-caption', className].join(' ')}
+    {...props}
+  />
 ));
 TableCaption.displayName = 'TableCaption';
 

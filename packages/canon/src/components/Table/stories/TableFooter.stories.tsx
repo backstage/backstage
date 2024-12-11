@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TableFooter } from '../Table';
 
 const meta = {
-  title: 'Components/Table/TableFooter',
+  title: 'Components/Table/Components/TableFooter',
   component: TableFooter,
 } satisfies Meta<typeof TableFooter>;
 

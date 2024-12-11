@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TableHead } from '../Table';
 
 const meta = {
-  title: 'Components/Table/TableHead',
+  title: 'Components/Table/Components/TableHead',
   component: TableHead,
 } satisfies Meta<typeof TableHead>;
 
