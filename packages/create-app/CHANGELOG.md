@@ -1,5 +1,43 @@
 # @backstage/create-app
 
+## 0.5.23-next.2
+
+### Patch Changes
+
+- e913fdf: Add github backend module to create-app and improve error messages
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.23-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.23-next.0
+
+### Patch Changes
+
+- 5819f8d: Updated Dockerfile to include `backstage.json` file
+- 583f3d4: Updated the template to use `@backstage/cli/config/prettier` instead of `@spotify/prettier-config`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.22
+
+### Patch Changes
+
+- 7907e3b: Bumped create-app version.
+- 42386c2: Bumped create-app version.
+- 702f41d: Updated engines to support Node 20 or 22
+- a917f86: This update adds the @backstage/repo-tools package to the versions.ts file, enabling proper version resolution for templates. The {{version '@backstage/repo-tools'}} placeholder now works as expected in the create-app process.
+- 5872964: Use the main entrypoint for `create-app` installs
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.22-next.3
 
 ### Patch Changes

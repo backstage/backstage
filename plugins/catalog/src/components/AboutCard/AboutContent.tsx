@@ -132,6 +132,7 @@ export function AboutContent(props: AboutContentProps) {
       <AboutField
         label={t('aboutCard.ownerField.label')}
         value={t('aboutCard.ownerField.value')}
+        className={classes.description}
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {ownedByRelations.length > 0 && (

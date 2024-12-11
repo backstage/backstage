@@ -223,7 +223,7 @@ export const NotificationsTable = ({
               </Grid>
               <Grid item xs={11}>
                 <Box>
-                  <Typography variant="subtitle2">
+                  <Typography variant="subtitle1">
                     {notification.payload.link ? (
                       <Link
                         to={notification.payload.link}

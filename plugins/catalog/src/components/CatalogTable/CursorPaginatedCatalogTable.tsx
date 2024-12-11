@@ -30,12 +30,10 @@ type PaginatedCatalogTableProps = {
  */
 
 export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev, title, isLoading, options, ...restProps } =
-    props;
+  const { columns, data, next, prev, options, ...restProps } = props;
 
   return (
     <Table
-      title={isLoading ? '' : title}
       columns={columns}
       data={data}
       options={{
@@ -62,7 +60,6 @@ export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       /* this will enable the next button accordingly */
       totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
       localization={{ pagination: { labelDisplayedRows: '' } }}
-      isLoading={isLoading}
       {...restProps}
     />
   );

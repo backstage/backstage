@@ -13,7 +13,7 @@ import { CSSProperties } from '@material-ui/styles/withStyles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
-import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { EntityListPagination, EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -365,6 +365,7 @@ export type TechDocsIndexPageProps = {
   options?: TableOptions<DocsTableRow>;
   title?: string;
   subtitle?: string;
+  pagination?: EntityListPagination;
 };
 
 // @public @deprecated (undocumented)
@@ -430,6 +431,7 @@ export const TechDocsReaderPageContent: (
 export type TechDocsReaderPageContentProps = {
   entityRef?: CompoundEntityRef;
   withSearch?: boolean;
+  searchResultUrlMapper?: (url: string) => string;
   onReady?: () => void;
 };
 
@@ -490,6 +492,7 @@ export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
   entityTitle?: string;
   debounceTime?: number;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 // @public

@@ -51,6 +51,7 @@ import {
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { EventsService } from '@backstage/plugin-events-node';
 
 const mockAccess = jest.fn();
 
@@ -99,6 +100,9 @@ describe('createRouter', () => {
   const auth = mockServices.auth();
   const httpAuth = mockServices.httpAuth();
   const discovery = mockServices.discovery();
+  const events = {
+    publish: jest.fn(),
+  } as unknown as EventsService;
 
   const credentials = mockCredentials.user();
   const token = mockCredentials.service.token({
@@ -211,6 +215,7 @@ describe('createRouter', () => {
         auth,
         httpAuth,
         discovery,
+        events,
       });
       app = express().use(router);
 

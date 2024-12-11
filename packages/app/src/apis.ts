@@ -26,6 +26,9 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
+import { formDecoratorsApiRef } from '@backstage/plugin-scaffolder/alpha';
+import { DefaultScaffolderFormDecoratorsApi } from '@backstage/plugin-scaffolder/alpha';
+import { mockDecorator } from './components/scaffolder/decorators';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -37,6 +40,15 @@ export const apis: AnyApiFactory[] = [
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  }),
+
+  createApiFactory({
+    api: formDecoratorsApiRef,
+    deps: {},
+    factory: () =>
+      DefaultScaffolderFormDecoratorsApi.create({
+        decorators: [mockDecorator],
+      }),
   }),
 
   ScmAuth.createDefaultApiFactory(),

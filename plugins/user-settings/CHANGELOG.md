@@ -1,5 +1,77 @@
 # @backstage/plugin-user-settings
 
+## 0.8.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-app-api@1.15.3-next.1
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.8-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-app-api@1.15.3-next.0
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.7
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.15.3-next.0
+  - @backstage/plugin-catalog-react@1.14.3-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.7
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/core-app-api@1.15.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/plugin-signals-react@0.0.7
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.15-next.3
 
 ### Patch Changes

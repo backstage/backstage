@@ -92,7 +92,6 @@ describe('DefaultCatalogProcessingEngine', () => {
             resultHash: '',
             state: [] as any,
             nextUpdateAt: DateTime.now(),
-            lastDiscoveryAt: DateTime.now(),
           },
         ],
       });
@@ -161,7 +160,6 @@ describe('DefaultCatalogProcessingEngine', () => {
             resultHash: '',
             state: { cache: { myProcessor: { myKey: 'myValue' } } },
             nextUpdateAt: DateTime.now(),
-            lastDiscoveryAt: DateTime.now(),
           },
         ],
       });

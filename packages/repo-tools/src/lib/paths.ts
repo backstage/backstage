@@ -37,6 +37,23 @@ export async function resolvePackagePaths(
   let packages = await PackageGraph.listTargetPackages();
 
   if (providedPaths && providedPaths.length > 0) {
+    const invalidPaths: string[] = [];
+    for (const path of providedPaths) {
+      const matches = packages.some(
+        ({ dir }) =>
+          new Minimatch(path).match(relativePath(paths.targetRoot, dir)) ||
+          isChildPath(dir, path),
+      );
+      if (!matches) {
+        invalidPaths.push(path);
+      }
+    }
+    if (invalidPaths.length > 0) {
+      throw new Error(`Invalid paths provided: ${invalidPaths.join(', ')}`);
+    }
+  }
+
+  if (providedPaths && providedPaths.length > 0) {
     packages = packages.filter(({ dir }) =>
       providedPaths.some(
         path =>

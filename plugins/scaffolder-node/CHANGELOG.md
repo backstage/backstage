@@ -1,5 +1,65 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 1a23421: Make sure that isomorphic git push commands are not proxied.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.6.0
+
+### Minor Changes
+
+- e61d5ef: BREAKING EXPERIMENTAL: The `checkpoint` method now takes an object instead of previous arguments.
+
+  ```ts
+  await ctx.checkpoint({ key: 'repo.create', fn: () => ockokit.repo.create({...})})
+  ```
+
+  You can also now return `void` from the checkpoint if the method returns `void` inside the `checkpoint` handler.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.7
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+
 ## 0.5.1-next.3
 
 ### Patch Changes

@@ -1,5 +1,72 @@
 # @backstage/plugin-api-docs
 
+## 0.12.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.26.0-next.2
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-react@0.4.29-next.0
+
+## 0.12.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/plugin-catalog@1.25.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
+## 0.12.2-next.0
+
+### Patch Changes
+
+- 11babd9: Fix link styling in ProvidedApisCard component so it aligns with other card components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/plugin-catalog@1.25.2-next.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
+## 0.12.0
+
+### Minor Changes
+
+- 6836522: Added support for pagination in api-docs plugin - DefaultApiExplorerPage
+
+### Patch Changes
+
+- 11f57de: bump `@asyncapi/react-component` to latest `2.x`
+- 3cd1dee: Uses theme values to style the API definition schema so that theme overrides apply.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.25.0
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
 ## 0.11.12-next.3
 
 ### Patch Changes

@@ -22,6 +22,7 @@ import {
   TableOptions,
 } from '@backstage/core-components';
 import {
+  EntityListPagination,
   EntityOwnerPickerProps,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
@@ -43,6 +44,7 @@ export type TechDocsIndexPageProps = {
   options?: TableOptions<DocsTableRow>;
   title?: string;
   subtitle?: string;
+  pagination?: EntityListPagination;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

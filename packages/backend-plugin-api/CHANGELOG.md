@@ -1,5 +1,63 @@
 # @backstage/backend-plugin-api
 
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 0e9c9fa: The `RootLifecycleService` now has a new `addBeforeShutdownHook` method, and hooks added through this method will run immediately when a termination event is received.
+
+  The backend will not proceed with the shutdown and run the `Shutdown` hooks until all `BeforeShutdown` hooks have completed.
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 12eac85: **EXPERIMENTAL**: Adds a new `instanceMetadataService` to hold information about a specific backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.2
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- eef3ef1: Removed unused `express` dependencies.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.2
+
+## 1.0.2
+
+### Patch Changes
+
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.5
+
 ## 1.0.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,58 @@
 # @backstage/plugin-events-node
 
+## 0.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/types@1.2.0
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- 79a06f6: Clarified purpose of subscriber ID in TSDoc for `EventsServiceSubscribeOptions`.
+- 1577511: Allow configuring a timeout for event bus polling requests. This can be set like so in your app-config:
+
+  ```yaml
+  events:
+    notifyTimeoutMs: 30000
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.4.5
+
+### Patch Changes
+
+- 4501631: Fixed an issue where subscribing to events threw an error and gave up too easily. Calling the subscribe method will cause the background polling loop to keep trying to connect to the events backend, even if the initial request fails.
+
+  By default the events service will attempt to publish and subscribe to events from the events bus API in the events backend, but if it fails due to the events backend not being installed, it will bail and never try calling the API again. There is now a new `events.useEventBus` configuration and option for the `DefaultEventsService` that lets you control this behavior. You can set it to `'never'` to disabled API calls to the events backend completely, or `'always'` to never allow it to be disabled.
+
+- e02a02b: Fix `events.useEventBus` by propagating config to `DefaultEventsService`
+- 9816f51: Add raw body information to `RequestDetails`
+  and use the raw body when validating incoming event requests.
+- 5d74716: Remove unused backend-common dependency
+- 0b57aa1: Fixed an issue where the event bus polling would duplicate and increase exponentially over time.
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/errors@1.2.5
+
 ## 0.4.5-next.3
 
 ### Patch Changes
