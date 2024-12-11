@@ -13,7 +13,8 @@ import { CSSProperties } from '@material-ui/styles/withStyles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
-import { EntityListPagination, EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
+import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -218,7 +219,7 @@ export type InfoCardGridClassKey = 'linkSpacer' | 'readMoreLink';
 export type InfoCardGridProps = {
   entities: Entity[] | undefined;
   linkContent?: string | JSX.Element;
-  linkDestination?: (entity: Entity) => string;
+  linkDestination?: (entity: Entity) => string | undefined;
 };
 
 // @public
@@ -245,7 +246,7 @@ export interface PanelProps {
   // (undocumented)
   linkContent?: string | JSX.Element;
   // (undocumented)
-  linkDestination?: (entity: Entity) => string;
+  linkDestination?: (entity: Entity) => string | undefined;
   // (undocumented)
   options?: TableOptions<DocsTableRow>;
   // (undocumented)
