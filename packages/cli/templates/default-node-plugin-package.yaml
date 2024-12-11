@@ -2,7 +2,7 @@
 description: A new Node.js library plugin package
 template: ./default-node-plugin-package
 targetPath: plugins
+suffix: node
 prompts:
-  - id: test
-    prompt: Test prompt
-    default: test-default
+  - id
+  - owner

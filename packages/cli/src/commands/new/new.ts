@@ -99,7 +99,6 @@ export default async () => {
       },
     );
 
-    // update default templates
     // create additional actions
     // install to app
     // install to backend

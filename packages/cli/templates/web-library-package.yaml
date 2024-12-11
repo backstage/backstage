@@ -2,9 +2,7 @@
 description: A new web-library package, exporting shared functionality for frontend plugins
 template: ./web-library-package
 targetPath: packages
+plugin: false
 prompts:
   - id
-  - id: another-id
-    prompt: Provide another id
-    default: another-id-example
-    validate: backstage-id
+  - owner

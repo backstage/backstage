@@ -2,7 +2,7 @@
 description: A new isomorphic common plugin package
 template: ./default-common-plugin-package
 targetPath: plugins
+suffix: common
 prompts:
-  - id: test
-    prompt: Test prompt
-    default: test-default
+  - id
+  - owner
