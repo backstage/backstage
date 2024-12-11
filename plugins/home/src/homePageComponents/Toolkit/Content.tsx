@@ -16,6 +16,7 @@
 
 import { Link } from '@backstage/core-components';
 import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,6 +28,11 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     textAlign: 'center',
+  },
+  item: {
+    textAlign: 'center',
+    width: 'fit-content',
+    padding: 0,
   },
   tool: {
     margin: theme.spacing(0.5, 1),
@@ -63,13 +69,15 @@ export const Content = (props: ToolkitContentProps) => {
   return (
     <List className={classes.toolkit}>
       {tools.map((tool: Tool) => (
-        <Link key={tool.url} to={tool.url} className={classes.tool}>
-          <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
-          <ListItemText
-            secondaryTypographyProps={{ className: classes.label }}
-            secondary={tool.label}
-          />
-        </Link>
+        <ListItem className={classes.item}>
+          <Link key={tool.url} to={tool.url} className={classes.tool}>
+            <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
+            <ListItemText
+              secondaryTypographyProps={{ className: classes.label }}
+              secondary={tool.label}
+            />
+          </Link>
+        </ListItem>
       ))}
     </List>
   );
