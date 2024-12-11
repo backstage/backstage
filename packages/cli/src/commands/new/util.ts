@@ -104,10 +104,12 @@ export async function verifyTemplate({
 export async function promptOptions({
   prompts,
   globals,
+  codeOwnersFilePath,
 }: {
   prompts: ConfigurablePrompt[];
-  globals: Record<string, string | boolean>;
-}): Promise<Record<string, string | boolean>> {
+  globals: Record<string, string>;
+  codeOwnersFilePath: string | undefined;
+}): Promise<Record<string, string>> {
   const answers = await inquirer.prompt(
     prompts.map((prompt: ConfigurablePrompt) => {
       if (typeof prompt === 'string') {
@@ -119,7 +121,7 @@ export async function promptOptions({
           case 'npmregistry':
             return npmRegistryPrompt();
           case 'owner':
-            return ownerPrompt();
+            return ownerPrompt(codeOwnersFilePath);
           default:
             throw new Error(
               `There is no built-in prompt with the following id: ${prompt}`,
@@ -167,6 +169,8 @@ interface Options extends Record<string, string | boolean> {
   baseVersion: string;
   license: string;
   targetDir: string;
+  owner: string;
+  scope: string;
 }
 
 async function calculateBaseVersion(baseVersion: string) {
@@ -184,18 +188,20 @@ async function calculateBaseVersion(baseVersion: string) {
 }
 
 export async function populateOptions(
-  prompts: Record<string, string | boolean>,
+  prompts: Record<string, string>,
   template: Template,
 ): Promise<Options> {
   return {
-    id: prompts.id as string,
-    private: (prompts.private as boolean) ?? false,
-    baseVersion: await calculateBaseVersion(prompts.baseVersion as string),
-    license: (prompts.license as string) ?? 'Apache-2.0',
+    id: prompts.id,
+    private: false,
+    baseVersion: await calculateBaseVersion(prompts.baseVersion),
+    owner: prompts.owner ?? '',
+    license: prompts.license ?? 'Apache-2.0',
     targetDir: paths.resolveTargetRoot(
-      template.targetPath,
+      prompts.targetPath ?? template.targetPath,
       prompts.id as string,
     ),
+    scope: prompts.scope ?? '',
     ...prompts,
   };
 }
