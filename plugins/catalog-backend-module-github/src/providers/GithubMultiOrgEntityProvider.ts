@@ -74,6 +74,7 @@ import {
   getOrganizationsFromUser,
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
+  QueryOptions,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
@@ -164,6 +165,16 @@ export interface GithubMultiOrgEntityProviderOptions {
    * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * (optional) options for modifying the rate and size of github user queries
+   */
+  userQueryOptions?: QueryOptions;
+
+  /**
+   * (optional) options for modifying the rate and size of github team queries
+   */
+  teamQueryOptions?: QueryOptions;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -196,7 +207,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const logger = options.logger.child({
       target: options.githubUrl,
     });
-
+    logger.info('initializing GitHub multi-org entity provider');
     const provider = new GithubMultiOrgEntityProvider({
       id: options.id,
       gitHubConfig,
@@ -210,6 +221,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
+      userQueryOptions: options.userQueryOptions,
+      teamQueryOptions: options.teamQueryOptions,
     });
 
     provider.schedule(options.schedule);
@@ -229,6 +242,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
+      userQueryOptions?: QueryOptions;
+      teamQueryOptions?: QueryOptions;
     },
   ) {}
 
@@ -259,7 +274,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
-
+    logger.info('Reading GitHub users and groups');
     const allUsersMap = new Map();
     const allTeams: Entity[] = [];
 
@@ -284,12 +299,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         org,
         tokenType,
         this.options.userTransformer,
+        this.options.userQueryOptions,
       );
 
       const { teams } = await getOrganizationTeams(
         client,
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
+        this.options.teamQueryOptions,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our

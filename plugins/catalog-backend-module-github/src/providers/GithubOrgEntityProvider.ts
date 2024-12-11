@@ -55,6 +55,7 @@ import {
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
   GithubTeam,
+  QueryOptions,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
@@ -127,6 +128,16 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * (optional) options for modifying the rate and size of github user queries
+   */
+  userQueryOptions?: QueryOptions;
+
+  /**
+   * (optional) options for modifying the rate and size of github team queries
+   */
+  teamQueryOptions?: QueryOptions;
 }
 
 /**
@@ -142,7 +153,6 @@ export class GithubOrgEntityProvider implements EntityProvider {
   static fromConfig(config: Config, options: GithubOrgEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
-
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub Org provider that matches ${options.orgUrl}. Please add a configuration for an integration.`,
@@ -164,6 +174,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      userQueryOptions: options.userQueryOptions,
+      teamQueryOptions: options.teamQueryOptions,
     });
 
     provider.schedule(options.schedule);
@@ -181,6 +193,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      userQueryOptions?: QueryOptions;
+      teamQueryOptions?: QueryOptions;
     },
   ) {
     this.credentialsProvider =
@@ -231,11 +245,14 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      this.options.userQueryOptions,
     );
+
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
+      this.options.teamQueryOptions,
     );
 
     if (areGroupEntities(teams)) {
