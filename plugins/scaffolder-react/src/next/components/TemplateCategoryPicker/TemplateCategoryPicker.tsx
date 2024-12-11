@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
-import capitalize from 'lodash/capitalize';
 import { Progress } from '@backstage/core-components';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -27,8 +28,10 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import capitalize from 'lodash/capitalize';
+import React, { ReactNode } from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -50,6 +53,7 @@ const useStyles = makeStyles(
  * @alpha
  */
 export const TemplateCategoryPicker = () => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
@@ -75,7 +79,7 @@ export const TemplateCategoryPicker = () => {
         component="label"
         htmlFor="categories-picker"
       >
-        Categories
+        {t('templateCategoryPicker.title')}
       </Typography>
       <Autocomplete<string, true>
         PopperComponent={popperProps => (
