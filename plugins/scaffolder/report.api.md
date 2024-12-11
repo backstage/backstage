@@ -501,6 +501,7 @@ export type RouterProps = {
     tasks?: boolean;
     create?: boolean;
   };
+  overrideFilters?: React_2.ReactNode;
 };
 
 // @public @deprecated (undocumented)
