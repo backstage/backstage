@@ -359,6 +359,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SerializedTask'
+        totalTasks:
+          type: number
+      required:
+        - tasks
       description: The response shape for the `listTasks` call to the `scaffolder-backend`
     MapStringString:
       type: object
@@ -640,9 +644,7 @@ components:
           properties:
             entity:
               type: object
-              properties: {}
               description: The decorated entity from the Catalog
-              additionalProperties: {}
             ref:
               type: string
               description: An entity ref for the author of the task
@@ -800,12 +802,14 @@ components:
           description: Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
         entity:
           type: object
-          description: The Template entity.
           properties:
             metadata:
               # come back to this one - done
               $ref: '#/components/schemas/EntityMeta'
               description: The metadata of the Template.
+          required:
+            - metadata
+          description: The Template entity.
       required:
         - entityRef
       description: |-
