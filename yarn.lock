@@ -26806,15 +26806,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.3.6":
-  version: 4.3.7
-  resolution: "debug@npm:4.3.7"
+"debug@npm:4, debug@npm:^4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:~4.4.0":
+  version: 4.4.0
+  resolution: "debug@npm:4.4.0"
   dependencies:
     ms: ^2.1.3
   peerDependenciesMeta:
     supports-color:
       optional: true
-  checksum: 822d74e209cd910ef0802d261b150314bbcf36c582ccdbb3e70f0894823c17e49a50d3e66d96b633524263975ca16b6a833f3e3b7e030c157169a5fabac63160
+  checksum: fb42df878dd0e22816fc56e1fdca9da73caa85212fbe40c868b1295a6878f9101ae684f4eeef516c13acfc700f5ea07f1136954f43d4cd2d477a811144136479
   languageName: node
   linkType: hard
 
@@ -35018,10 +35018,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lilconfig@npm:~3.1.2":
-  version: 3.1.2
-  resolution: "lilconfig@npm:3.1.2"
-  checksum: 4e8b83ddd1d0ad722600994e6ba5d858ddca14f0587aa6b9c8185e17548149b5e13d4d583d811e9e9323157fa8c6a527e827739794c7502b59243c58e210b8c3
+"lilconfig@npm:~3.1.3":
+  version: 3.1.3
+  resolution: "lilconfig@npm:3.1.3"
+  checksum: 644eb10830350f9cdc88610f71a921f510574ed02424b57b0b3abb66ea725d7a082559552524a842f4e0272c196b88dfe1ff7d35ffcc6f45736777185cd67c9a
   languageName: node
   linkType: hard
 
@@ -35068,22 +35068,22 @@ __metadata:
   linkType: hard
 
 "lint-staged@npm:^15.0.0":
-  version: 15.2.10
-  resolution: "lint-staged@npm:15.2.10"
+  version: 15.2.11
+  resolution: "lint-staged@npm:15.2.11"
   dependencies:
     chalk: ~5.3.0
     commander: ~12.1.0
-    debug: ~4.3.6
+    debug: ~4.4.0
     execa: ~8.0.1
-    lilconfig: ~3.1.2
-    listr2: ~8.2.4
+    lilconfig: ~3.1.3
+    listr2: ~8.2.5
     micromatch: ~4.0.8
     pidtree: ~0.6.0
     string-argv: ~0.3.2
-    yaml: ~2.5.0
+    yaml: ~2.6.1
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 7ab255b848478ca47c6b94aad0e7a3cfe5ba48ae1fb353cfa86635741333b83b1fd793d7cac6d44bf0388ad087d7e0250c7ec0a8ebece63fbcf7a8d175279809
+  checksum: 9668e67791fd73aa91cf9268641a5b41191b4221ac9e4d34b51bb10088a082548aa5984d9b38066c3832e41f5a01bbb36aa41d9a8c96bbc775301cb5c9071e13
   languageName: node
   linkType: hard
 
@@ -35094,9 +35094,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"listr2@npm:~8.2.4":
-  version: 8.2.4
-  resolution: "listr2@npm:8.2.4"
+"listr2@npm:~8.2.5":
+  version: 8.2.5
+  resolution: "listr2@npm:8.2.5"
   dependencies:
     cli-truncate: ^4.0.0
     colorette: ^2.0.20
@@ -35104,7 +35104,7 @@ __metadata:
     log-update: ^6.1.0
     rfdc: ^1.4.1
     wrap-ansi: ^9.0.0
-  checksum: b1cdcae653ff967a9b28637e346df2d6614165b4ad1e9e36b1403bc972550c51f57ec0e6d307dc3921ceea0601e244e848ab79457c6d570ab1f088b577a63d90
+  checksum: 0ca2387b067eb11bbe91863f36903f3a5a040790422a499cc1a15806d8497979e7d1990bd129061c0510906b2971eaa97a74a9635e3ec5abd5830c9749b655b9
   languageName: node
   linkType: hard
 
@@ -47990,21 +47990,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3, yaml@npm:^2.3.4":
+"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3, yaml@npm:^2.3.4, yaml@npm:~2.6.1":
   version: 2.6.1
   resolution: "yaml@npm:2.6.1"
   bin:
     yaml: bin.mjs
   checksum: 5cf2627f121dcf04ccdebce8e6cbac7c9983d465c4eab314f6fbdc13cda8a07f4e8f9c2252a382b30bcabe05ee3c683647293afd52eb37cbcefbdc7b6ebde9ee
-  languageName: node
-  linkType: hard
-
-"yaml@npm:~2.5.0":
-  version: 2.5.1
-  resolution: "yaml@npm:2.5.1"
-  bin:
-    yaml: bin.mjs
-  checksum: 31275223863fbd0b47ba9d2b248fbdf085db8d899e4ca43fff8a3a009497c5741084da6871d11f40e555d61360951c4c910b98216c1325d2c94753c0036d8172
   languageName: node
   linkType: hard
 
