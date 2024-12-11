@@ -8,6 +8,3 @@ prompts:
     prompt: Provide another id
     default: another-id-example
     validate: backstage-id
-  - id: private
-    prompt: Would you like for this package to be private?
-    type: confirm
