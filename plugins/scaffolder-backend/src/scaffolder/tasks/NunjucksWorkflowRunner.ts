@@ -80,6 +80,11 @@ type TemplateContext = {
     ref?: string;
   };
   each?: JsonValue;
+  context: {
+    task: {
+      id: string;
+    };
+  };
 };
 
 type CheckpointState =
@@ -367,6 +372,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
         await action.handler({
           input: iteration.input,
+          task: {
+            id: await task.getWorkspaceName(),
+          },
           secrets: task.secrets ?? {},
           // TODO(blam): move to LoggerService and away from Winston
           logger: loggerToWinstonLogger(taskLogger),
@@ -485,11 +493,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
-
       const context: TemplateContext = {
         parameters: task.spec.parameters,
         steps: {},
         user: task.spec.user,
+        context: {
+          task: {
+            id: taskId,
+          },
+        },
       };
 
       const [decision]: PolicyDecision[] =
