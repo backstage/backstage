@@ -16313,8 +16313,8 @@ __metadata:
   linkType: hard
 
 "@rspack/dev-server@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "@rspack/dev-server@npm:1.0.9"
+  version: 1.0.10
+  resolution: "@rspack/dev-server@npm:1.0.10"
   dependencies:
     chokidar: ^3.6.0
     connect-history-api-fallback: ^2.0.0
@@ -16327,7 +16327,7 @@ __metadata:
     ws: ^8.16.0
   peerDependencies:
     "@rspack/core": "*"
-  checksum: 46b6ad1e8f52a44c178042b6b9306fe54ad28ab24b86015f118d03a69628b04bf9563201686e0738b8c06ee8c5dedbc0bb4d6705c7f2d7d3959f2a449ff95cd6
+  checksum: 0df53d1a655e5eb95c3a84b8ef34bcab6d32f8c7b23ba080f9691aa15edeee6dd79236c3942c1d55834ff9ae9f427b6e5f58cbf5e10aae015979f3d171bd65ef
   languageName: node
   linkType: hard
 
