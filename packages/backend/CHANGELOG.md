@@ -1,5 +1,13 @@
 # example-backend
 
+## 0.0.33-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.4-next.3
+  - @backstage/plugin-scaffolder-backend@1.28.0-next.3
+
 ## 0.0.33-next.2
 
 ### Patch Changes

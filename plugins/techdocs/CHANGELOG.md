@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.12.0-next.3
+
+### Minor Changes
+
+- e153ca6: Add pagination support to TechDocs Index Page and make it the default
+
 ## 1.11.3-next.2
 
 ### Patch Changes
