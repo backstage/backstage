@@ -2,7 +2,7 @@
 description: A new node-library package, exporting shared functionality for backend plugins and modules
 template: ./node-library-package
 targetPath: packages
+plugin: false
 prompts:
-  - id: test
-    prompt: Test prompt
-    default: test-default
+  - id
+  - owner
