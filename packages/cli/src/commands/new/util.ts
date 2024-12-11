@@ -106,8 +106,8 @@ export async function promptOptions({
   globals,
 }: {
   prompts: ConfigurablePrompt[];
-  globals: Record<string, string | boolean>;
-}): Promise<Record<string, string | boolean>> {
+  globals: Record<string, string>;
+}): Promise<Record<string, string>> {
   const answers = await inquirer.prompt(
     prompts.map((prompt: ConfigurablePrompt) => {
       if (typeof prompt === 'string') {
@@ -167,6 +167,7 @@ interface Options extends Record<string, string | boolean> {
   baseVersion: string;
   license: string;
   targetDir: string;
+  owner: string;
 }
 
 async function calculateBaseVersion(baseVersion: string) {
@@ -184,14 +185,15 @@ async function calculateBaseVersion(baseVersion: string) {
 }
 
 export async function populateOptions(
-  prompts: Record<string, string | boolean>,
+  prompts: Record<string, string>,
   template: Template,
 ): Promise<Options> {
   return {
-    id: prompts.id as string,
-    private: (prompts.private as boolean) ?? false,
-    baseVersion: await calculateBaseVersion(prompts.baseVersion as string),
-    license: (prompts.license as string) ?? 'Apache-2.0',
+    id: prompts.id,
+    private: false,
+    baseVersion: await calculateBaseVersion(prompts.baseVersion),
+    owner: prompts.owner ?? '',
+    license: prompts.license ?? 'Apache-2.0',
     targetDir: paths.resolveTargetRoot(
       template.targetPath,
       prompts.id as string,

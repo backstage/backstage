@@ -16,12 +16,12 @@
 
 import os from 'os';
 import fs from 'fs-extra';
-import { join as joinPath, dirname } from 'path';
-import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
+import { join as joinPath } from 'path';
 import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
+import { addCodeownersEntry } from '../../lib/codeowners';
 
 import { executePluginPackageTemplate } from '../../lib/new/factories/common/tasks';
 import {
@@ -77,12 +77,30 @@ export default async () => {
     );
 
     // create scope prompt
-    // npmregistry prompt
-    // incorporate owners prompt
-    // additional actions
-    // add to frontend
-    // add to backend
-    // install and lint
+    // npmregistry prompt - double check
+    // map out existing required variables for executePluginPackageTemplate
+    // double check default template paths
+
+    // create additional actions
+    // install to app
+    // install to backend
+    // add to backend/index.ts
+
+    if (options.install) {
+      // 🚨 temporary
+      if (options.owner) {
+        await addCodeownersEntry(options.targetDir, options.owner);
+      }
+
+      await Task.forCommand('yarn install', {
+        cwd: options.targetDir,
+        optional: true,
+      });
+      await Task.forCommand('yarn lint --fix', {
+        cwd: options.targetDir,
+        optional: true,
+      });
+    }
 
     Task.log();
     Task.log(`🎉  Successfully created ${template.id}`);
