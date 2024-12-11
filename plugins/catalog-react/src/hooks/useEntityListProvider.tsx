@@ -48,7 +48,7 @@ import {
   reduceBackendCatalogFilters,
   reduceCatalogFilters,
   reduceEntityFilters,
-} from '../utils';
+} from '../utils/filters';
 import { useApi } from '@backstage/core-plugin-api';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 

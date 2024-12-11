@@ -31,7 +31,7 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
-import { reduceBackendCatalogFilters } from '../../utils';
+import { reduceBackendCatalogFilters } from '../../utils/filters';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {

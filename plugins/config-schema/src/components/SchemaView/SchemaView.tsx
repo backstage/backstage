@@ -15,11 +15,21 @@
  */
 
 import React from 'react';
-import { ArrayView } from './ArrayView';
-import { MatchView } from './MatchView';
-import { ObjectView } from './ObjectView';
-import { ScalarView } from './ScalarView';
 import { SchemaViewProps } from './types';
+
+// Break circular imports
+const ArrayView = React.lazy(() =>
+  import('./ArrayView').then(m => ({ default: m.ArrayView })),
+);
+const MatchView = React.lazy(() =>
+  import('./MatchView').then(m => ({ default: m.MatchView })),
+);
+const ObjectView = React.lazy(() =>
+  import('./ObjectView').then(m => ({ default: m.ObjectView })),
+);
+const ScalarView = React.lazy(() =>
+  import('./ScalarView').then(m => ({ default: m.ScalarView })),
+);
 
 export function SchemaView(props: SchemaViewProps) {
   const { schema } = props;

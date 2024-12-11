@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Schema } from 'jsonschema';
 import React from 'react';
 import { SchemaViewer } from './SchemaViewer';
 
 describe('SchemaViewer', () => {
-  it('should render a simple schema', () => {
+  it('should render a simple schema', async () => {
     const schema = {
       type: 'object',
       properties: {
@@ -37,14 +37,16 @@ describe('SchemaViewer', () => {
 
     render(<SchemaViewer schema={schema} />);
 
-    expect(screen.getAllByText('a').length).toBe(2);
-    expect(screen.getByText('My A')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getAllByText('a').length).toBe(2);
+      expect(screen.getByText('My A')).toBeInTheDocument();
 
-    expect(screen.getAllByText('b').length).toBe(2);
-    expect(screen.getByText('My B')).toBeInTheDocument();
+      expect(screen.getAllByText('b').length).toBe(2);
+      expect(screen.getByText('My B')).toBeInTheDocument();
+    });
   });
 
-  it('should render complex schema', () => {
+  it('should render complex schema', async () => {
     const schema: Schema = {
       type: 'object',
       properties: {
@@ -102,35 +104,39 @@ describe('SchemaViewer', () => {
 
     render(<SchemaViewer schema={schema} />);
 
-    expect(screen.getAllByText('a').length).toBe(2);
-    expect(screen.getByText('My A')).toBeInTheDocument();
-    expect(screen.getByText('a.<prefix.*>')).toBeInTheDocument();
-    expect(screen.getByText('Prefix prop')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getAllByText('a').length).toBe(2);
+      expect(screen.getByText('My A')).toBeInTheDocument();
+      expect(screen.getByText('a.<prefix.*>')).toBeInTheDocument();
+      expect(screen.getByText('Prefix prop')).toBeInTheDocument();
 
-    expect(screen.getByText('a.*')).toBeInTheDocument();
-    expect(screen.getByText('Additional properties for A')).toBeInTheDocument();
-    expect(screen.getByText('72')).toBeInTheDocument();
-    expect(screen.getByText('79')).toBeInTheDocument();
+      expect(screen.getByText('a.*')).toBeInTheDocument();
+      expect(
+        screen.getByText('Additional properties for A'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('72')).toBeInTheDocument();
+      expect(screen.getByText('79')).toBeInTheDocument();
 
-    expect(screen.getAllByText('b').length).toBe(2);
-    expect(screen.getByText('b/1')).toBeInTheDocument();
-    expect(screen.getByText('B one of 1')).toBeInTheDocument();
+      expect(screen.getAllByText('b').length).toBe(2);
+      expect(screen.getByText('b/1')).toBeInTheDocument();
+      expect(screen.getByText('B one of 1')).toBeInTheDocument();
 
-    expect(screen.getByText('b/2')).toBeInTheDocument();
-    expect(screen.getByText('B one of 2')).toBeInTheDocument();
+      expect(screen.getByText('b/2')).toBeInTheDocument();
+      expect(screen.getByText('B one of 2')).toBeInTheDocument();
 
-    expect(screen.getByText('b/2[]')).toBeInTheDocument();
-    expect(screen.getByText('b/2[]/1')).toBeInTheDocument();
-    expect(screen.getByText('Any of B 1')).toBeInTheDocument();
-    expect(screen.getByText('b/2[]/2')).toBeInTheDocument();
-    expect(screen.getByText('Any of B 2')).toBeInTheDocument();
-    expect(screen.getByText('b/2[]/3')).toBeInTheDocument();
-    expect(screen.getByText('Any of B 3')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]/1')).toBeInTheDocument();
+      expect(screen.getByText('Any of B 1')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]/2')).toBeInTheDocument();
+      expect(screen.getByText('Any of B 2')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]/3')).toBeInTheDocument();
+      expect(screen.getByText('Any of B 3')).toBeInTheDocument();
 
-    expect(screen.getByText('b/2[]/3.deep')).toBeInTheDocument();
-    expect(screen.getByText('b/2[]/3.deep/1')).toBeInTheDocument();
-    expect(screen.getByText('Impossible 1')).toBeInTheDocument();
-    expect(screen.getByText('b/2[]/3.deep/2')).toBeInTheDocument();
-    expect(screen.getByText('Impossible 2')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]/3.deep')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]/3.deep/1')).toBeInTheDocument();
+      expect(screen.getByText('Impossible 1')).toBeInTheDocument();
+      expect(screen.getByText('b/2[]/3.deep/2')).toBeInTheDocument();
+      expect(screen.getByText('Impossible 2')).toBeInTheDocument();
+    });
   });
 });
