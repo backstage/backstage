@@ -17,51 +17,33 @@
 import os from 'os';
 import fs from 'fs-extra';
 import { join as joinPath } from 'path';
-import { OptionValues } from 'commander';
-import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
 import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
+import { addCodeownersEntry } from '../../lib/codeowners';
 
-function parseOptions(optionStrings: string[]): Record<string, string> {
-  const options: Record<string, string> = {};
+import { executePluginPackageTemplate } from '../../lib/new/factories/common/tasks';
+import {
+  readCliConfig,
+  templateSelector,
+  verifyTemplate,
+  promptOptions,
+  populateOptions,
+} from './util';
 
-  for (const str of optionStrings) {
-    const [key] = str.split('=', 1);
-    const value = str.slice(key.length + 1);
-    if (!key || str[key.length] !== '=') {
-      throw new Error(
-        `Invalid option '${str}', must be of the format <key>=<value>`,
-      );
-    }
-    options[key] = value;
-  }
+export default async () => {
+  const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
+  const cliConfig = pkgJson.backstage?.cli;
 
-  return options;
-}
+  const { templates, globals } = await readCliConfig(cliConfig);
+  const template = await verifyTemplate(await templateSelector(templates));
 
-export default async (opts: OptionValues) => {
-  const factory = await FactoryRegistry.interactiveSelect(opts.select);
-
-  const providedOptions = parseOptions(opts.option);
-  const options = await FactoryRegistry.populateOptions(
-    factory,
-    providedOptions,
-  );
-
-  let defaultVersion = '0.1.0';
-  if (opts.baseVersion) {
-    defaultVersion = opts.baseVersion;
-  } else {
-    const lernaVersion = await fs
-      .readJson(paths.resolveTargetRoot('lerna.json'))
-      .then(pkg => pkg.version)
-      .catch(() => undefined);
-    if (lernaVersion) {
-      defaultVersion = lernaVersion;
-    }
-  }
+  const prompts = await promptOptions({
+    prompts: template.prompts || [],
+    globals,
+  });
+  const options = await populateOptions(prompts, template);
 
   const tempDirs = new Array<string>();
   async function createTemporaryDirectory(name: string): Promise<string> {
@@ -70,25 +52,58 @@ export default async (opts: OptionValues) => {
     return dir;
   }
 
-  const license = opts.license ?? 'Apache-2.0';
-
   let modified = false;
   try {
-    await factory.create(options, {
-      isMonoRepo: await isMonoRepo(),
-      defaultVersion,
-      license,
-      scope: opts.scope?.replace(/^@/, ''),
-      npmRegistry: opts.npmRegistry,
-      private: Boolean(opts.private),
-      createTemporaryDirectory,
-      markAsModified() {
-        modified = true;
+    await executePluginPackageTemplate(
+      {
+        private: options.private,
+        defaultVersion: options.baseVersion,
+        license: options.license,
+        isMonoRepo: await isMonoRepo(),
+        createTemporaryDirectory,
+        markAsModified() {
+          modified = true;
+        },
       },
-    });
+      {
+        targetDir: options.targetDir,
+        templateDir: template.templatePath,
+        values: {
+          name: options.id,
+          pluginVersion: options.baseVersion,
+          ...options,
+        },
+      },
+    );
+
+    // create scope prompt
+    // npmregistry prompt - double check
+    // map out existing required variables for executePluginPackageTemplate
+    // double check default template paths
+
+    // create additional actions
+    // install to app
+    // install to backend
+    // add to backend/index.ts
+
+    if (options.install) {
+      // 🚨 temporary
+      if (options.owner) {
+        await addCodeownersEntry(options.targetDir, options.owner);
+      }
+
+      await Task.forCommand('yarn install', {
+        cwd: options.targetDir,
+        optional: true,
+      });
+      await Task.forCommand('yarn lint --fix', {
+        cwd: options.targetDir,
+        optional: true,
+      });
+    }
 
     Task.log();
-    Task.log(`🎉  Successfully created ${factory.name}`);
+    Task.log(`🎉  Successfully created ${template.id}`);
     Task.log();
   } catch (error) {
     assertError(error);
@@ -104,7 +119,7 @@ export default async (opts: OptionValues) => {
         'continue manually, but you can also revert the changes and try again.',
       );
 
-      Task.error(`🔥  Failed to create ${factory.name}!`);
+      Task.error(`🔥  Failed to create ${template.id}!`);
     }
   } finally {
     for (const dir of tempDirs) {
