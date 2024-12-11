@@ -16,6 +16,7 @@
 
 import {
   TranslationApi,
+  TranslationComponent,
   TranslationFunction,
   TranslationRef,
   TranslationSnapshot,
@@ -99,5 +100,11 @@ export class MockTranslationApi implements TranslationApi {
     return new ObservableImpl<TranslationSnapshot<TMessages>>(_subscriber => {
       return () => {};
     });
+  }
+
+  getTranslationComponent<TMessages extends { [key in string]: string }>(
+    _t: TranslationFunction<TMessages>,
+  ): TranslationComponent<TMessages> {
+    return ({ children }) => children;
   }
 }

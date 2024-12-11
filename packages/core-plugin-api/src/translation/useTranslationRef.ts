@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { errorApiRef, useApi } from '../apis';
 import {
   translationApiRef,
+  TranslationComponent,
   TranslationFunction,
   TranslationSnapshot,
 } from '../apis/alpha';
@@ -31,7 +32,10 @@ export const useTranslationRef = <
   TMessages extends { [key in string]: string },
 >(
   translationRef: TranslationRef<string, TMessages>,
-): { t: TranslationFunction<TMessages> } => {
+): {
+  t: TranslationFunction<TMessages>;
+  Translation: TranslationComponent<TMessages>;
+} => {
   const errorApi = useApi(errorApiRef);
   const translationApi = useApi(translationApiRef);
 
@@ -101,5 +105,10 @@ export const useTranslationRef = <
     });
   }
 
-  return { t: snapshot.t };
+  const Translation = useMemo(
+    () => translationApi.getTranslationComponent<TMessages>(snapshot.t),
+    [snapshot.t, translationApi],
+  );
+
+  return { t: snapshot.t, Translation };
 };

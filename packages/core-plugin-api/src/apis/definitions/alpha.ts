@@ -15,7 +15,9 @@
  */
 export {
   translationApiRef,
+  type BaseOptions,
   type TranslationApi,
+  type TranslationComponent,
   type TranslationFunction,
   type TranslationSnapshot,
 } from './TranslationApi';
