@@ -40,7 +40,7 @@ jobs:
             const prNumber = artifact.name.slice('pr_number-'.length)
             core.setOutput('pr-number', prNumber);
 
-      - uses: backstage/actions/re-review@c5c3b91fe86c59a87cf9782de1f89e48e19d4492 # v0.6.16
+      - uses: backstage/actions/re-review@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
