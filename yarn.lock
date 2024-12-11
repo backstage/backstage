@@ -20407,11 +20407,11 @@ __metadata:
   linkType: hard
 
 "@types/react-dom@npm:^18":
-  version: 18.3.3
-  resolution: "@types/react-dom@npm:18.3.3"
+  version: 18.3.4
+  resolution: "@types/react-dom@npm:18.3.4"
   peerDependencies:
     "@types/react": ^18.0.0
-  checksum: d9d78c5541a223d696ead4ae5fd7e20334723b2c0ee9f7455f96c9fdb95aeb876dd5b29519fa2c6686e5000624290c5d0dbd2f1005e478172e07a42343857e8d
+  checksum: 20a0862c210bea9c7d9b4f7f82214bc449be9650c061046b52d443ce95baf4266aed5bb63aef484ba086e86c16318166d8a58ceabd8d3984638f0a6b77c663cf
   languageName: node
   linkType: hard
 
