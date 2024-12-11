@@ -49,59 +49,65 @@ jest.mock('child_process');
 jest.mock('./versions', () => ({
   packageVersions: {
     root: '1.2.3',
-    '@backstage/cli': '1.0.0',
+    '@backstage/app-defaults': '1.0.0',
     '@backstage/backend-defaults': '1.0.0',
     '@backstage/backend-tasks': '1.0.0',
+    '@backstage/canon': '1.0.0',
     '@backstage/catalog-model': '1.0.0',
     '@backstage/catalog-client': '1.0.0',
+    '@backstage/catalog-model': '1.0.0',
+    '@backstage/cli': '1.0.0',
     '@backstage/config': '1.0.0',
+    '@backstage/core-app-api': '1.0.0',
+    '@backstage/core-components': '1.0.0',
+    '@backstage/core-plugin-api': '1.0.0',
+    '@backstage/e2e-test-utils': '1.0.0',
+    '@backstage/frontend-defaults': '1.0.0',
+    '@backstage/frontend-plugin-api': '1.0.0',
+    '@backstage/integration-react': '1.0.0',
+    '@backstage/plugin-api-docs': '1.0.0',
     '@backstage/plugin-app-backend': '1.0.0',
+    '@backstage/plugin-app-visualizer': '1.0.0',
     '@backstage/plugin-auth-backend': '1.0.0',
-    '@backstage/plugin-auth-node': '1.0.0',
     '@backstage/plugin-auth-backend-module-github-provider': '1.0.0',
     '@backstage/plugin-auth-backend-module-guest-provider': '1.0.0',
+    '@backstage/plugin-auth-node': '1.0.0',
+    '@backstage/plugin-catalog': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
     '@backstage/plugin-catalog-backend-module-logs': '1.0.0',
     '@backstage/plugin-catalog-backend-module-scaffolder-entity-model': '1.0.0',
-    '@backstage/plugin-permission-common': '1.0.0',
-    '@backstage/plugin-permission-node': '1.0.0',
+    '@backstage/plugin-catalog-common': '1.0.0',
+    '@backstage/plugin-catalog-graph': '1.0.0',
+    '@backstage/plugin-catalog-import': '1.0.0',
+    '@backstage/plugin-catalog-react': '1.0.0',
+    '@backstage/plugin-home': '1.0.0',
+    '@backstage/plugin-kubernetes': '1.0.0',
+    '@backstage/plugin-kubernetes-backend': '1.0.0',
+    '@backstage/plugin-org': '1.0.0',
     '@backstage/plugin-permission-backend': '1.0.0',
     '@backstage/plugin-permission-backend-module-allow-all-policy': '1.0.0',
+    '@backstage/plugin-permission-common': '1.0.0',
+    '@backstage/plugin-permission-node': '1.0.0',
+    '@backstage/plugin-permission-react': '1.0.0',
     '@backstage/plugin-proxy-backend': '1.0.0',
+    '@backstage/plugin-scaffolder': '1.0.0',
     '@backstage/plugin-scaffolder-backend': '1.0.0',
+    '@backstage/plugin-scaffolder-backend-module-github': '1.0.0',
+    '@backstage/plugin-search': '1.0.0',
     '@backstage/plugin-search-backend': '1.0.0',
     '@backstage/plugin-search-backend-module-catalog': '1.0.0',
     '@backstage/plugin-search-backend-module-pg': '1.0.0',
     '@backstage/plugin-search-backend-module-techdocs': '1.0.0',
     '@backstage/plugin-search-backend-node': '1.0.0',
-    '@backstage/plugin-techdocs-backend': '1.0.0',
-    '@backstage/app-defaults': '1.0.0',
-    '@backstage/core-app-api': '1.0.0',
-    '@backstage/core-components': '1.0.0',
-    '@backstage/core-plugin-api': '1.0.0',
-    '@backstage/e2e-test-utils': '1.0.0',
-    '@backstage/integration-react': '1.0.0',
-    '@backstage/plugin-api-docs': '1.0.0',
-    '@backstage/plugin-catalog': '1.0.0',
-    '@backstage/plugin-catalog-common': '1.0.0',
-    '@backstage/plugin-catalog-graph': '1.0.0',
-    '@backstage/plugin-catalog-import': '1.0.0',
-    '@backstage/plugin-catalog-react': '1.0.0',
-    '@backstage/plugin-kubernetes': '1.0.0',
-    '@backstage/plugin-kubernetes-backend': '1.0.0',
-    '@backstage/plugin-org': '1.0.0',
-    '@backstage/plugin-scaffolder': '1.0.0',
-    '@backstage/plugin-scaffolder-backend-module-github': '1.0.0',
-    '@backstage/plugin-permission-react': '1.0.0',
-    '@backstage/plugin-search': '1.0.0',
     '@backstage/plugin-search-react': '1.0.0',
     '@backstage/plugin-techdocs': '1.0.0',
-    '@backstage/plugin-techdocs-react': '1.0.0',
+    '@backstage/plugin-techdocs-backend': '1.0.0',
     '@backstage/plugin-techdocs-module-addons-contrib': '1.0.0',
+    '@backstage/plugin-techdocs-react': '1.0.0',
     '@backstage/plugin-user-settings': '1.0.0',
-    '@backstage/theme': '1.0.0',
     '@backstage/test-utils': '1.0.0',
     '@backstage/ui': '1.0.0',
+    '@backstage/theme': '1.0.0',
   },
 }));
 
@@ -267,7 +273,7 @@ describe('tasks', () => {
   });
 
   describe('templatingTask', () => {
-    it('should generate a project populating context parameters', async () => {
+    it('should generate a project and populate context parameters', async () => {
       const templateDir = resolvePath(__dirname, '../../templates/default-app');
       const destinationDir = 'templatedApp';
       const context = {
@@ -290,6 +296,20 @@ describe('tasks', () => {
       await expect(
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
       ).resolves.toContain('sqlite3"');
+    });
+
+    it('should generate a project and skip excluded directories', async () => {
+      const templateDir = resolvePath(__dirname, '../../templates/default-app');
+      const destinationDir = 'templatedApp';
+      const context = { name: 'Backstage', dbTypeSqlite: true };
+      const excludedDirs = ['packages/app-next'];
+      await templatingTask(templateDir, destinationDir, context, excludedDirs);
+      expect(fs.existsSync('templatedApp/packages/app/package.json')).toBe(
+        true,
+      );
+      expect(fs.existsSync('templatedApp/packages/app-next/package.json')).toBe(
+        false,
+      );
     });
   });
 

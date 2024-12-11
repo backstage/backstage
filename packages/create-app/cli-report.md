@@ -8,6 +8,7 @@
 Usage: backstage-create-app [options]
 
 Options:
+  --experimental-frontend
   --path [directory]
   --skip-install
   --template-path [directory]
