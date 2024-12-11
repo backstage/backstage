@@ -23,6 +23,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
+import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -110,6 +111,7 @@ const config: Config = {
                 },
               }
             : undefined),
+          docItemComponent: "@theme/ApiItem",
         },
         blog: {
           path: 'blog',
@@ -266,7 +268,33 @@ const config: Config = {
         ratingMode: 'stars',
       },
     ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: "api", // plugin id
+        docsPluginId: "classic", // configured for preset-classic
+        config: {
+          catalog: {
+            specPath: "../plugins/catalog-backend/src/schema/openapi.yaml",
+            outputDir: "../docs/features/software-catalog/api",
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+              categoryLinkSource: "tag",
+            },
+          } satisfies OpenApiPlugin.Options,
+          search: {
+            specPath: "../plugins/search-backend/src/schema/openapi.yaml",
+            outputDir: "../docs/features/search/api",
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+              categoryLinkSource: "tag",
+            },
+          } satisfies OpenApiPlugin.Options,
+        }
+      },
+    ]
   ],
+  themes: ["docusaurus-theme-openapi-docs"],
   themeConfig: {
     colorMode: {
       defaultMode: 'dark',
