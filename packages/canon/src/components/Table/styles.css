@@ -1,0 +1,11 @@
+.table {
+  position: relative;
+  overflow: auto;
+  width: 100%;
+
+  table {
+    width: 100%;
+    caption-side: bottom;
+    font-size: var(--canon-font-size-sm);
+  }
+}
