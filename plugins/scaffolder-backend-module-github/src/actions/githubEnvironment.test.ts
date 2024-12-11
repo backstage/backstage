@@ -20,6 +20,7 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const mockOctokit = {
   rest: {
@@ -71,6 +72,14 @@ describe('github:environment:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
+
+  const credentials = mockCredentials.user();
+
+  const token = mockCredentials.service.token({
+    onBehalfOf: credentials,
+    targetPluginId: 'catalog',
+  });
+
   let action: TemplateAction<any>;
 
   const mockContext = createMockActionContext({
@@ -78,6 +87,7 @@ describe('github:environment:create', () => {
       repoUrl: 'github.com?repo=repository&owner=owner',
       name: 'envname',
     },
+    secrets: { backstageToken: token },
   });
 
   beforeEach(() => {
@@ -122,6 +132,7 @@ describe('github:environment:create', () => {
     action = createGithubEnvironmentAction({
       integrations,
       catalogClient: mockCatalogClient as CatalogApi,
+      auth: mockServices.auth(),
     });
   });
 
@@ -452,6 +463,13 @@ describe('github:environment:create', () => {
         reviewers: ['group:default/team-a', 'user:default/johndoe'],
       },
     });
+
+    expect(mockCatalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+      {
+        entityRefs: ['group:default/team-a', 'user:default/johndoe'],
+      },
+      { token },
+    );
 
     expect(
       mockOctokit.rest.repos.createOrUpdateEnvironment,
