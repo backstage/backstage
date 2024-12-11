@@ -16,6 +16,7 @@
 
 import { CookieOptions, Request, Response } from 'express';
 import { CookieConfigurer } from '../types';
+import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 
 const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 const TEN_MINUTES_MS = 600 * 1000;
@@ -55,6 +56,7 @@ export class OAuthCookieManager {
   private readonly nonceCookie: string;
   private readonly refreshTokenCookie: string;
   private readonly grantedScopeCookie: string;
+  private readonly maxAge: number;
 
   constructor(
     private readonly options: {
@@ -63,6 +65,7 @@ export class OAuthCookieManager {
       baseUrl: string;
       callbackUrl: string;
       cookieConfigurer?: CookieConfigurer;
+      sessionDuration?: HumanDuration;
     },
   ) {
     this.cookieConfigurer = options.cookieConfigurer ?? defaultCookieConfigurer;
@@ -70,6 +73,9 @@ export class OAuthCookieManager {
     this.nonceCookie = `${options.providerId}-nonce`;
     this.refreshTokenCookie = `${options.providerId}-refresh-token`;
     this.grantedScopeCookie = `${options.providerId}-granted-scope`;
+    this.maxAge = options.sessionDuration
+      ? durationToMilliseconds(options.sessionDuration)
+      : THOUSAND_DAYS_MS;
   }
 
   private getConfig(origin?: string, pathSuffix: string = '') {
@@ -103,7 +109,7 @@ export class OAuthCookieManager {
       res,
       this.refreshTokenCookie,
       refreshToken,
-      THOUSAND_DAYS_MS,
+      this.maxAge,
       origin,
     );
   }
@@ -117,13 +123,7 @@ export class OAuthCookieManager {
   }
 
   setGrantedScopes(res: Response, scope: string, origin?: string): void {
-    this.setCookie(
-      res,
-      this.grantedScopeCookie,
-      scope,
-      THOUSAND_DAYS_MS,
-      origin,
-    );
+    this.setCookie(res, this.grantedScopeCookie, scope, this.maxAge, origin);
   }
 
   getNonce(req: Request): string | undefined {

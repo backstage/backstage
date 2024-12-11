@@ -47,6 +47,7 @@ auth:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scope: ${AUTH_ATLASSIAN_SCOPES}
+        sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/atlassian/provider#resolvers for more resolvers
@@ -60,6 +61,10 @@ The Atlassian provider is a structure with three configuration keys:
 - `scope`: List of scopes the app has permissions for, separated by spaces.
 
 **NOTE:** the scopes `offline_access`, `read:jira-work`, and `read:jira-user` are provided by default.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the refresh token cookie and granted scopes cookie issued during the authentication process.
 
 ### Resolvers
 

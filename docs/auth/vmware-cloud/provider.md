@@ -47,6 +47,7 @@ auth:
       development:
         clientId: ${APP_ID}
         organizationId: ${ORG_ID}
+        sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/vmware-cloud/provider#resolvers for more resolvers
@@ -67,6 +68,10 @@ should be replaced with a long, complex and unique string which will act as a
 key for signing session cookies set by Backstage.
 
 :::
+
+### Optional
+
+- `sessionDuration`: Lifespan of the refresh token cookie and granted scopes cookie issued during the authentication process.
 
 ### Resolvers
 
