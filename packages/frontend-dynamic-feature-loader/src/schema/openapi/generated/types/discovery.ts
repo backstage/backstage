@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,8 @@
  */
 
 /**
- * APIs for creating Backstage apps with a default setup.
- *
- * @packageDocumentation
+ * This is a copy of the DiscoveryApi, to avoid importing core-plugin-api.
  */
-
-export {
-  createApp,
-  type CreateAppOptions,
-  type CreateAppFeatureLoader,
-} from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
-export { isBackstageFeature } from './discovery';
+export type DiscoveryApi = {
+  getBaseUrl(pluginId: string): Promise<string>;
+};
