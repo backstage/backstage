@@ -34,12 +34,6 @@ export interface LifecycleMiddlewareOptions {
    * Defaults to 5 seconds.
    */
   startupRequestPauseTimeout?: HumanDuration;
-  /**
-   * The maximum time that the server will wait for stop accepting traffic, before returning an error.
-   *
-   * Defaults to 0 seconds.
-   */
-  serverShutdownDelay?: HumanDuration;
 }
 
 /**
@@ -59,8 +53,7 @@ export interface LifecycleMiddlewareOptions {
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
-  const { lifecycle, startupRequestPauseTimeout, serverShutdownDelay } =
-    options;
+  const { lifecycle, startupRequestPauseTimeout } = options;
 
   let state: 'init' | 'up' | 'down' = 'init';
   const waiting = new Set<{
@@ -77,15 +70,6 @@ export function createLifecycleMiddleware(
       }
       waiting.clear();
     }
-  });
-
-  lifecycle.addBeforeShutdownHook(async () => {
-    const timeoutMs = durationToMilliseconds(
-      serverShutdownDelay ?? DEFAULT_SERVER_SHUTDOWN_TIMEOUT,
-    );
-    return await new Promise(resolve => {
-      setTimeout(resolve, timeoutMs);
-    });
   });
 
   lifecycle.addShutdownHook(async () => {

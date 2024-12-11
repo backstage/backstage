@@ -78,31 +78,4 @@ describe('createLifecycleMiddleware', () => {
       new ServiceUnavailableError('Service has not started up yet'),
     );
   });
-
-  it('should delay service shutdown for the default timeout duration', async () => {
-    jest.useFakeTimers();
-    const defaultTimeout = 30000;
-    const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
-    createLifecycleMiddleware({ lifecycle });
-    const beforeShutdownPromise = lifecycle.beforeShutdown().then(() => {
-      jest.useRealTimers();
-    });
-    jest.advanceTimersByTime(defaultTimeout);
-    return expect(beforeShutdownPromise).resolves.toBeUndefined();
-  });
-
-  it('should delay service shutdown for the configured timeout duration - time in human duration', async () => {
-    jest.useFakeTimers();
-    const configuredTimeout = 20000;
-    const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
-    createLifecycleMiddleware({
-      lifecycle,
-      serverShutdownDelay: { milliseconds: configuredTimeout },
-    });
-    const beforeShutdownPromise = lifecycle.beforeShutdown().then(() => {
-      jest.useRealTimers();
-    });
-    jest.advanceTimersByTime(configuredTimeout);
-    return expect(beforeShutdownPromise).resolves.toBeUndefined();
-  });
 });
