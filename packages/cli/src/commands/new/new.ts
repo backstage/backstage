@@ -16,12 +16,17 @@
 
 import os from 'os';
 import fs from 'fs-extra';
-import { join as joinPath, dirname } from 'path';
-import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
+import { join as joinPath } from 'path';
 import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
+
 import { Task } from '../../lib/tasks';
+import {
+  addCodeownersEntry,
+  getCodeownersFilePath,
+} from '../../lib/codeowners';
+import { resolvePackageName } from '../../lib/new/factories/common/util';
 
 import { executePluginPackageTemplate } from '../../lib/new/factories/common/tasks';
 import {
@@ -39,9 +44,12 @@ export default async () => {
   const { templates, globals } = await readCliConfig(cliConfig);
   const template = await verifyTemplate(await templateSelector(templates));
 
+  const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
+
   const prompts = await promptOptions({
     prompts: template.prompts || [],
     globals,
+    codeOwnersFilePath,
   });
   const options = await populateOptions(prompts, template);
 
@@ -69,7 +77,11 @@ export default async () => {
         targetDir: options.targetDir,
         templateDir: template.templatePath,
         values: {
-          name: options.id,
+          name: resolvePackageName({
+            baseName: options.id,
+            scope: options.scope,
+            plugin: template.plugin ?? true,
+          }),
           pluginVersion: options.baseVersion,
           ...options,
         },
@@ -77,12 +89,28 @@ export default async () => {
     );
 
     // create scope prompt
-    // npmregistry prompt
-    // incorporate owners prompt
-    // additional actions
-    // add to frontend
-    // add to backend
-    // install and lint
+    // double check default template paths
+
+    // create additional actions
+    // install to app
+    // install to backend
+    // add to backend/index.ts
+
+    if (options.install) {
+      // 🚨 temporary
+      if (options.owner) {
+        await addCodeownersEntry(options.targetDir, options.owner);
+      }
+
+      await Task.forCommand('yarn install', {
+        cwd: options.targetDir,
+        optional: true,
+      });
+      await Task.forCommand('yarn lint --fix', {
+        cwd: options.targetDir,
+        optional: true,
+      });
+    }
 
     Task.log();
     Task.log(`🎉  Successfully created ${template.id}`);
