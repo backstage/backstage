@@ -17,6 +17,8 @@
 import os from 'os';
 import fs from 'fs-extra';
 import { join as joinPath } from 'path';
+import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
 import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
@@ -82,19 +84,22 @@ export default async () => {
         templateDir: template.templatePath,
         values: {
           name: resolvePackageName({
-            baseName: dirName, // convert to dirname
+            baseName: dirName,
             scope: options.scope,
             plugin: template.plugin ?? true,
           }),
           pluginVersion: options.baseVersion,
-          moduleVar: '', // backend module
-          extension: '', // frontend plugin
-          pluginVar: '', // backend plugin
+          moduleVar: `${camelCase(options.id)}Module${camelCase(
+            options.moduleId,
+          )[0].toUpperCase()}${camelCase(options.moduleId).slice(1)}`, // used in default-backend-module template
+          extension: `${upperFirst(camelCase(options.id))}Page`, // used in default-plugin template
+          pluginVar: `${camelCase(options.id)}Plugin`, // used in default-backend-plugin and default-plugin template
           ...options,
         },
       },
     );
 
+    // update default templates
     // create additional actions
     // install to app
     // install to backend
