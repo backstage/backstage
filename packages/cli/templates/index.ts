@@ -16,7 +16,7 @@ export default [
     target: '@backstage/cli/templates/alpha/default-node-plugin-package.yaml',
   },
   {
-    id: 'frontend-plugion', // changed from 'plugin'
+    id: 'frontend-plugin', // changed from 'plugin'
     target: '@backstage/cli/templates/alpha/default-plugin.yaml',
   },
   {
