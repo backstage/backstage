@@ -51,73 +51,6 @@ module.exports = {
     'Core Features': [
       {
         type: 'category',
-        label: 'Software Catalog',
-        items: [
-          'features/software-catalog/software-catalog-overview',
-          'features/software-catalog/life-of-an-entity',
-          'features/software-catalog/configuration',
-          'features/software-catalog/system-model',
-          'features/software-catalog/descriptor-format',
-          'features/software-catalog/references',
-          'features/software-catalog/well-known-annotations',
-          'features/software-catalog/well-known-relations',
-          'features/software-catalog/well-known-statuses',
-          'features/software-catalog/extending-the-model',
-          'features/software-catalog/external-integrations',
-          'features/software-catalog/catalog-customization',
-          'features/software-catalog/software-catalog-api',
-          'features/software-catalog/creating-the-catalog-graph',
-          'features/software-catalog/faq',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Kubernetes',
-        items: [
-          'features/kubernetes/overview',
-          'features/kubernetes/installation',
-          'features/kubernetes/configuration',
-          'features/kubernetes/authentication',
-          'features/kubernetes/authentication-strategies',
-          'features/kubernetes/troubleshooting',
-          'features/kubernetes/proxy',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Software Templates',
-        items: [
-          'features/software-templates/software-templates-index',
-          'features/software-templates/configuration',
-          'features/software-templates/adding-templates',
-          'features/software-templates/writing-templates',
-          'features/software-templates/input-examples',
-          'features/software-templates/builtin-actions',
-          'features/software-templates/writing-custom-actions',
-          'features/software-templates/writing-tests-for-actions',
-          'features/software-templates/writing-custom-field-extensions',
-          'features/software-templates/writing-custom-step-layouts',
-          'features/software-templates/authorizing-scaffolder-template-details',
-          'features/software-templates/migrating-to-rjsf-v5',
-          'features/software-templates/migrating-from-v1beta2-to-v1beta3',
-          'features/software-templates/dry-run-testing',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Search',
-        items: [
-          'features/search/search-overview',
-          'features/search/getting-started',
-          'features/search/concepts',
-          'features/search/architecture',
-          'features/search/search-engines',
-          'features/search/collators',
-          'features/search/how-to-guides',
-        ],
-      },
-      {
-        type: 'category',
         label: 'Auth and Identity',
         items: [
           'auth/index',
@@ -155,6 +88,24 @@ module.exports = {
       },
       {
         type: 'category',
+        label: 'Kubernetes',
+        items: [
+          'features/kubernetes/overview',
+          'features/kubernetes/installation',
+          'features/kubernetes/configuration',
+          'features/kubernetes/authentication',
+          'features/kubernetes/authentication-strategies',
+          'features/kubernetes/troubleshooting',
+          'features/kubernetes/proxy',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'Notifications',
+        items: ['notifications/index'],
+      },
+      {
+        type: 'category',
         label: 'Permissions',
         items: [
           'permissions/overview',
@@ -178,6 +129,60 @@ module.exports = {
       },
       {
         type: 'category',
+        label: 'Search',
+        items: [
+          'features/search/search-overview',
+          'features/search/getting-started',
+          'features/search/concepts',
+          'features/search/architecture',
+          'features/search/search-engines',
+          'features/search/collators',
+          'features/search/how-to-guides',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'Software Catalog',
+        items: [
+          'features/software-catalog/software-catalog-overview',
+          'features/software-catalog/life-of-an-entity',
+          'features/software-catalog/configuration',
+          'features/software-catalog/system-model',
+          'features/software-catalog/descriptor-format',
+          'features/software-catalog/references',
+          'features/software-catalog/well-known-annotations',
+          'features/software-catalog/well-known-relations',
+          'features/software-catalog/well-known-statuses',
+          'features/software-catalog/extending-the-model',
+          'features/software-catalog/external-integrations',
+          'features/software-catalog/catalog-customization',
+          'features/software-catalog/software-catalog-api',
+          'features/software-catalog/creating-the-catalog-graph',
+          'features/software-catalog/faq',
+        ],
+      },
+      {
+        type: 'category',
+        label: 'Software Templates',
+        items: [
+          'features/software-templates/software-templates-index',
+          'features/software-templates/configuration',
+          'features/software-templates/adding-templates',
+          'features/software-templates/writing-templates',
+          'features/software-templates/input-examples',
+          'features/software-templates/builtin-actions',
+          'features/software-templates/writing-custom-actions',
+          'features/software-templates/writing-tests-for-actions',
+          'features/software-templates/writing-custom-field-extensions',
+          'features/software-templates/writing-custom-step-layouts',
+          'features/software-templates/authorizing-scaffolder-template-details',
+          'features/software-templates/migrating-to-rjsf-v5',
+          'features/software-templates/migrating-from-v1beta2-to-v1beta3',
+          'features/software-templates/dry-run-testing',
+        ],
+      },
+      {
+        type: 'category',
         label: 'TechDocs',
         items: [
           'features/techdocs/techdocs-overview',
@@ -195,11 +200,6 @@ module.exports = {
           'features/techdocs/troubleshooting',
           'features/techdocs/faqs',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Notifications',
-        items: ['notifications/index'],
       },
     ],
     Integrations: [
@@ -341,27 +341,6 @@ module.exports = {
       'conf/writing',
       'conf/defining',
     ],
-    Tooling: [
-      {
-        type: 'category',
-        label: 'Backstage CLI',
-        items: [
-          'tooling/cli/overview',
-          'tooling/cli/build-system',
-          'tooling/cli/commands',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Local Development',
-        items: [
-          'tooling/local-dev/linking-local-packages',
-          'tooling/local-dev/debugging',
-          'tooling/local-dev/profiling',
-        ],
-      },
-      'tooling/package-metadata',
-    ],
     Framework: [
       {
         type: 'category',
@@ -483,6 +462,23 @@ module.exports = {
           },
         ],
       },
+      {
+        'Backstage CLI': [
+          'tooling/cli/overview',
+          'tooling/cli/build-system',
+          'tooling/cli/commands',
+          {
+            type: 'category',
+            label: 'Local Development',
+            items: [
+              'tooling/local-dev/linking-local-packages',
+              'tooling/local-dev/debugging',
+              'tooling/local-dev/profiling',
+            ],
+          },
+          'tooling/package-metadata',
+        ],
+      }
     ],
     'Designing for Backstage': [
       'dls/design',
@@ -519,16 +515,8 @@ module.exports = {
         type: 'category',
         label: 'API Reference',
         items: [
-          {
-            type: 'category',
-            label: 'Guides',
-            items: ['api/utility-apis'],
-          },
-          {
-            type: 'category',
-            label: 'API Reference',
-            items: ['reference/index'],
-          },
+          'api/utility-apis',
+          'reference/index',
           'api/deprecations',
         ],
       },
