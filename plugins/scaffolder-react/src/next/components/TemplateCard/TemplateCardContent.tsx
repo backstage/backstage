@@ -15,11 +15,14 @@
  */
 
 import { MarkdownContent } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import type { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(() => ({
   box: {
@@ -45,13 +48,16 @@ export interface TemplateCardContentProps {
   template: TemplateEntityV1beta3;
 }
 export const TemplateCardContent = ({ template }: TemplateCardContentProps) => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const styles = useStyles();
   return (
     <Grid item xs={12} data-testid="template-card-content-grid">
       <Box className={styles.box} data-testid="template-card-content-container">
         <MarkdownContent
           className={styles.markdown}
-          content={template.metadata.description ?? 'No description'}
+          content={
+            template.metadata.description ?? t('templateCard.noDescription')
+          }
         />
       </Box>
     </Grid>
