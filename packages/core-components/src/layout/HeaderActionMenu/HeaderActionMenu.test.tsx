@@ -22,7 +22,9 @@ import userEvent from '@testing-library/user-event';
 
 describe('<ComponentContextMenu />', () => {
   it('renders without any items and without exploding', async () => {
-    await renderInTestApp(<HeaderActionMenu actionItems={[]} />);
+    await expect(
+      renderInTestApp(<HeaderActionMenu actionItems={[]} />),
+    ).resolves.not.toThrow();
   });
 
   it('can open the menu and click menu items', async () => {

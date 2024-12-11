@@ -34,7 +34,9 @@ describe('<CodeSnippet />', () => {
   // react-syntax-highlighter is large and can cause significant slowdowns
   // This test makes sure we're loading things in asynchronously and not too broadly.
   it('renders quickly', async () => {
-    await renderInTestApp(<CodeSnippet text="" language="javascript" />);
+    await expect(
+      renderInTestApp(<CodeSnippet text="" language="javascript" />),
+    ).resolves.not.toThrow();
   }, 1000);
 
   it('renders text without exploding', async () => {
