@@ -478,7 +478,7 @@ module.exports = {
           },
           'tooling/package-metadata',
         ],
-      }
+      },
     ],
     'Designing for Backstage': [
       'dls/design',
