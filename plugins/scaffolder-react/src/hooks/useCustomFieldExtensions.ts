@@ -35,7 +35,7 @@ export const useCustomFieldExtensions = <
   // Get custom fields created with FormFieldBlueprint
   const formFieldsApi = useApi(formFieldsApiRef);
   const [{ result: blueprintFields }, methods] = useAsync(
-    formFieldsApi?.getFormFields,
+    formFieldsApi.getFormFields,
     [],
   );
   useMountEffect(methods.execute);

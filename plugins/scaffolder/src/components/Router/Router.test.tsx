@@ -37,7 +37,10 @@ jest.mock('../../alpha/components', () => ({
   TemplateListPage: jest.fn(() => null),
 }));
 
-const renderInApp = (element: React.ReactElement, opts?: TestAppOptions) =>
+const wrapInApisAndRender = (
+  element: React.ReactElement,
+  opts?: TestAppOptions,
+) =>
   renderInTestApp(
     <TestApiProvider
       apis={[[formFieldsApiRef, { getFormFields: async () => [] }]]}
@@ -54,13 +57,13 @@ describe('Router', () => {
   });
   describe('/', () => {
     it('should render the TemplateListPage', async () => {
-      await renderInApp(<Router />);
+      await wrapInApisAndRender(<Router />);
 
       expect(TemplateListPage).toHaveBeenCalled();
     });
 
     it('should render user-provided TemplateListPage', async () => {
-      const { getByText } = await renderInApp(
+      const { getByText } = await wrapInApisAndRender(
         <Router
           components={{
             EXPERIMENTAL_TemplateListPageComponent: () => <>foobar</>,
@@ -77,7 +80,7 @@ describe('Router', () => {
 
   describe('/templates/:templateName', () => {
     it('should render the TemplateWizard page', async () => {
-      await renderInApp(<Router />, {
+      await wrapInApisAndRender(<Router />, {
         routeEntries: ['/templates/default/foo'],
       });
 
@@ -85,7 +88,7 @@ describe('Router', () => {
     });
 
     it('should render user-provided TemplateWizardPage', async () => {
-      const { getByText } = await renderInApp(
+      const { getByText } = await wrapInApisAndRender(
         <Router
           components={{
             EXPERIMENTAL_TemplateWizardPageComponent: () => <>foobar</>,
@@ -102,7 +105,7 @@ describe('Router', () => {
     it('should pass through the FormProps property', async () => {
       const transformErrorsMock = jest.fn();
 
-      await renderInApp(
+      await wrapInApisAndRender(
         <Router
           formProps={{
             transformErrors: transformErrorsMock,
@@ -134,7 +137,7 @@ describe('Router', () => {
         }),
       );
 
-      await renderInApp(
+      await wrapInApisAndRender(
         <Router>
           <ScaffolderFieldExtensions>
             <CustomFieldExtension />
@@ -162,7 +165,7 @@ describe('Router', () => {
         }),
       );
 
-      await renderInApp(
+      await wrapInApisAndRender(
         <Router>
           <ScaffolderLayouts>
             <Layout />
