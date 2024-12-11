@@ -24,5 +24,6 @@ import { SerializedTask } from '../models/SerializedTask.model';
  * @public
  */
 export interface ListTasksResponse {
-  tasks?: Array<SerializedTask>;
+  tasks: Array<SerializedTask>;
+  totalTasks?: number;
 }
