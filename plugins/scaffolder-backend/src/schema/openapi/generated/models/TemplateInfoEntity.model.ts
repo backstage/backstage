@@ -24,5 +24,5 @@ import { EntityMeta } from '../models/EntityMeta.model';
  * @public
  */
 export interface TemplateInfoEntity {
-  metadata?: EntityMeta;
+  metadata: EntityMeta;
 }

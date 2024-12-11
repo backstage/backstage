@@ -26,7 +26,7 @@ export interface TaskSpecV1beta3User {
   /**
    * The decorated entity from the Catalog
    */
-  entity?: { [key: string]: any };
+  entity?: any;
   /**
    * An entity ref for the author of the task
    */

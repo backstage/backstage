@@ -464,7 +464,11 @@ export const spec = {
               $ref: '#/components/schemas/SerializedTask',
             },
           },
+          totalTasks: {
+            type: 'number',
+          },
         },
+        required: ['tasks'],
         description:
           'The response shape for the `listTasks` call to the `scaffolder-backend`',
       },
@@ -833,9 +837,7 @@ export const spec = {
             properties: {
               entity: {
                 type: 'object',
-                properties: {},
                 description: 'The decorated entity from the Catalog',
-                additionalProperties: {},
               },
               ref: {
                 type: 'string',
@@ -1014,13 +1016,14 @@ export const spec = {
           },
           entity: {
             type: 'object',
-            description: 'The Template entity.',
             properties: {
               metadata: {
                 $ref: '#/components/schemas/EntityMeta',
                 description: 'The metadata of the Template.',
               },
             },
+            required: ['metadata'],
+            description: 'The Template entity.',
           },
         },
         required: ['entityRef'],
