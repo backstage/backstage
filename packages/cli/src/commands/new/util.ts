@@ -168,7 +168,7 @@ interface Options extends Record<string, string | boolean> {
   private: boolean;
   baseVersion: string;
   license: string;
-  targetDir: string;
+  targetPath: string;
   owner: string;
   scope: string;
 }
@@ -192,16 +192,28 @@ export async function populateOptions(
   template: Template,
 ): Promise<Options> {
   return {
-    id: prompts.id,
+    id: prompts.id ?? '',
     private: false,
     baseVersion: await calculateBaseVersion(prompts.baseVersion),
     owner: prompts.owner ?? '',
     license: prompts.license ?? 'Apache-2.0',
-    targetDir: paths.resolveTargetRoot(
-      prompts.targetPath ?? template.targetPath,
-      prompts.id as string,
-    ),
+    targetPath: prompts.targetPath ?? template.targetPath,
     scope: prompts.scope ?? '',
     ...prompts,
   };
+}
+
+export function createDirName(template: Template, options: Options) {
+  if (!options.id) {
+    throw new Error(`id prompt is mandatory for all cli templates`);
+  }
+  if (template.backendModulePrefix) {
+    if (!options.moduleId) {
+      throw new Error(`backendModulePrefix requires moduleId prompt`);
+    }
+    return `${options.id}-backend-module-${options.moduleId}`;
+  } else if (template.suffix) {
+    return `${options.id}-${template.suffix}`;
+  }
+  return options.id;
 }

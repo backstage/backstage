@@ -28,6 +28,9 @@ export interface Template {
   template: string;
   templatePath: string;
   targetPath: string;
+  plugin?: boolean;
+  backendModulePrefix?: boolean;
+  suffix?: string;
   prompts?: ConfigurablePrompt[];
   additionalActions?: string[];
 }
