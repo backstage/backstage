@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.5.4-next.3
+
+### Patch Changes
+
+- 973dd6f: Minor spell fix in action parameters
+
 ## 0.5.4-next.2
 
 ### Patch Changes
