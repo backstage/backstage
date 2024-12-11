@@ -510,16 +510,6 @@ module.exports = {
       'contribute/project-structure',
     ],
     References: [
-      'references/glossary',
-      {
-        type: 'category',
-        label: 'API Reference',
-        items: [
-          'api/utility-apis',
-          'reference/index',
-          'api/deprecations',
-        ],
-      },
       {
         type: 'category',
         label: 'Architecture Decision Records (ADRs)',
@@ -540,6 +530,10 @@ module.exports = {
           'architecture-decisions/adrs-adr013',
         ],
       },
+      'api/deprecations',
+      'references/glossary',
+      'api/utility-apis',
+      'reference/index',
     ],
   },
   releases: {
