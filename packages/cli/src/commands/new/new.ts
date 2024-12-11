@@ -35,6 +35,7 @@ import {
   verifyTemplate,
   promptOptions,
   populateOptions,
+  createDirName,
 } from './util';
 
 export default async () => {
@@ -60,6 +61,9 @@ export default async () => {
     return dir;
   }
 
+  const dirName = createDirName(template, options);
+  const targetDir = paths.resolveTargetRoot(options.targetPath, dirName);
+
   let modified = false;
   try {
     await executePluginPackageTemplate(
@@ -74,22 +78,22 @@ export default async () => {
         },
       },
       {
-        targetDir: options.targetDir,
+        targetDir,
         templateDir: template.templatePath,
         values: {
           name: resolvePackageName({
-            baseName: options.id,
+            baseName: dirName, // convert to dirname
             scope: options.scope,
             plugin: template.plugin ?? true,
           }),
           pluginVersion: options.baseVersion,
+          moduleVar: '', // backend module
+          extension: '', // frontend plugin
+          pluginVar: '', // backend plugin
           ...options,
         },
       },
     );
-
-    // create scope prompt
-    // double check default template paths
 
     // create additional actions
     // install to app
@@ -99,15 +103,15 @@ export default async () => {
     if (options.install) {
       // 🚨 temporary
       if (options.owner) {
-        await addCodeownersEntry(options.targetDir, options.owner);
+        await addCodeownersEntry(targetDir, options.owner);
       }
 
       await Task.forCommand('yarn install', {
-        cwd: options.targetDir,
+        cwd: targetDir,
         optional: true,
       });
       await Task.forCommand('yarn lint --fix', {
-        cwd: options.targetDir,
+        cwd: targetDir,
         optional: true,
       });
     }
