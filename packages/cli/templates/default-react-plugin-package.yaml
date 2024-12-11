@@ -2,7 +2,7 @@
 description: A new web library plugin package
 template: ./default-react-plugin-package
 targetPath: plugins
+suffix: react
 prompts:
-  - id: test
-    prompt: Test prompt
-    default: test-default
+  - id
+  - owner

@@ -3,6 +3,5 @@ description: A new frontend plugin
 template: ./default-plugin
 targetPath: plugins
 prompts:
-  - id: test
-    prompt: Test prompt
-    default: test-default
+  - id
+  - owner
