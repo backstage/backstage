@@ -33874,11 +33874,11 @@ __metadata:
   linkType: hard
 
 "jest-when@npm:^3.1.0":
-  version: 3.6.0
-  resolution: "jest-when@npm:3.6.0"
+  version: 3.7.0
+  resolution: "jest-when@npm:3.7.0"
   peerDependencies:
     jest: ">= 25"
-  checksum: ed32ed84e5802bb6fec98966cdf862ce59677551be33d3795e6ac7a6207acf467ed559573d671c8d94c59f7fc0780cf358d2d165d81cdc7d9611250d975ee024
+  checksum: d805e2af8e76bf172e33dfde5280590fbc3510427a2d671d3a36df1c90c1bb68ebfee2ea4c87132e265973c7092d3ad20efb69398bd70141f7abef8815d5ad00
   languageName: node
   linkType: hard
 
