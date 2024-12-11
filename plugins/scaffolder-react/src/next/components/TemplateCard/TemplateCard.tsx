@@ -36,7 +36,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import LanguageIcon from '@material-ui/icons/Language';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
 import { usePermission } from '@backstage/plugin-permission-react';

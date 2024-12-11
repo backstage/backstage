@@ -1,6 +1,6 @@
 import Link from '@docusaurus/Link';
 import clsx from 'clsx';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { isValidElement, PropsWithChildren, ReactNode } from 'react';
 
 import contentBlockStyles from './contentBlock.module.scss';
 
@@ -31,10 +31,10 @@ export const ContentBlock = ({
     <div className="contentBlockTitle">
       {hasBulletLine && <div className="bulletLine" />}
 
-      {title && React.isValidElement(title) ? title : <h2>{title}</h2>}
+      {title && isValidElement(title) ? title : <h2>{title}</h2>}
     </div>
 
-    {children && React.isValidElement(children) ? children : <p>{children}</p>}
+    {children && isValidElement(children) ? children : <p>{children}</p>}
 
     {actionButtons && (
       <div

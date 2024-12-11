@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
 import { Button, withStyles } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { Edge } from './Edge';
 import { DependencyGraphTypes as Types } from './types';

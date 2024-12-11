@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import hubSpotStyles from './hubSpotNewAdoptersForm.module.scss';
 

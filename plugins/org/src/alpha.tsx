@@ -19,7 +19,6 @@ import {
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';

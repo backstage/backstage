@@ -23,10 +23,10 @@ import {
 } from '@backstage/test-utils';
 import SearchIcon from '@material-ui/icons/Search';
 import { fireEvent, screen } from '@testing-library/react';
-import * as React from 'react';
+import { ReactNode } from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
 
-function render(children: React.ReactNode) {
+function render(children: ReactNode) {
   return renderInTestApp(
     <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
       <EntityProvider

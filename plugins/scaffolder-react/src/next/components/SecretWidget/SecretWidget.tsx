@@ -17,7 +17,6 @@
 import { WidgetProps } from '@rjsf/utils';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import TextField from '@material-ui/core/TextField';
-import React from 'react';
 
 /**
  * Secret Widget for overriding the default password input widget

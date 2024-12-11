@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { useOutlet } from 'react-router-dom';
-import React from 'react';
 import { DefaultSettingsPage } from '../DefaultSettingsPage';
 import { useElementFilter } from '@backstage/core-plugin-api';
 import {

@@ -32,7 +32,7 @@ Given the following `package.json`:
     "role": "frontend-plugin"
   },
   "dependencies": {
-    "react": "^17.0.0"
+    "react": "^18.0.0"
   },
   "devDependencies": {
     "@backstage/core-plugin-api": "^1.0.0"
@@ -51,9 +51,6 @@ Inside `src/my-plugin.ts`:
 // Should be declared as a dependency
 const _ = require('lodash');
 import _ from 'lodash';
-
-// React should be a peer dependency in frontend plugins
-import react from 'react';
 
 // Should be declared as a dependency, not a dev dependency
 import { useApi } from '@backstage/core-plugin-api';

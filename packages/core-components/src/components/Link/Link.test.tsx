@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import { PropsWithChildren, ComponentType } from 'react';
 import { fireEvent, waitFor, screen, renderHook } from '@testing-library/react';
 import {
   mockApis,
@@ -153,9 +153,7 @@ describe('<Link />', () => {
   });
 
   describe('useResolvedPath', () => {
-    const wrapper: ComponentType<React.PropsWithChildren<{}>> = ({
-      children,
-    }) => {
+    const wrapper: ComponentType<PropsWithChildren<{}>> = ({ children }) => {
       const configApi = new ConfigReader({
         app: { baseUrl: 'http://localhost:3000/example' },
       });

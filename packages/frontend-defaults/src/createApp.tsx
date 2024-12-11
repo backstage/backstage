@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX, ReactNode } from 'react';
+import { lazy, Suspense, JSX, ReactNode } from 'react';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -118,11 +118,11 @@ export function createApp(options?: CreateAppOptions): {
 
   return {
     createRoot() {
-      const LazyApp = React.lazy(appLoader);
+      const LazyApp = lazy(appLoader);
       return (
-        <React.Suspense fallback={suspenseFallback}>
+        <Suspense fallback={suspenseFallback}>
           <LazyApp />
-        </React.Suspense>
+        </Suspense>
       );
     },
   };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import { SettingsModal } from '@backstage/plugin-home-react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -54,8 +54,8 @@ export const ComponentAccordion = (props: {
   } = props;
 
   const classes = useStyles();
-  const [settingsIsExpanded, setSettingsIsExpanded] = React.useState(false);
-  const [isExpanded, setIsExpanded] = React.useState(expanded);
+  const [settingsIsExpanded, setSettingsIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(expanded);
 
   const handleOpenSettings = (e: any) => {
     e.stopPropagation();

@@ -35,13 +35,13 @@ To switch a project to React 18, there are generally three changes that need to 
   "dependencies": {
     ...
     // highlight-remove-next-line
-    "react": "^17.0.2",
+    "react": "^17.0.0",
     // highlight-remove-next-line
-    "react-dom": "^17.0.2",
+    "react-dom": "^17.0.0",
     // highlight-add-next-line
-    "react": "^18.0.2",
+    "react": "^18.0.0",
     // highlight-add-next-line
-    "react-dom": "^18.0.2",
+    "react-dom": "^18.0.0",
     ...
   },
 ```
@@ -50,7 +50,6 @@ To switch a project to React 18, there are generally three changes that need to 
 
 ```tsx title="packages/app/src/index.tsx"
 import '@backstage/cli/asset-types';
-import React from 'react';
 // highlight-remove-next-line
 import ReactDOM from 'react-dom';
 // highlight-add-next-line

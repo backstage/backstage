@@ -26,9 +26,9 @@ import { IdSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { Ref } from 'react';
 import { Registry } from '@rjsf/utils';
@@ -305,9 +305,7 @@ export interface ScaffolderGetIntegrationsListResponse {
 }
 
 // @public
-export const ScaffolderLayouts: React_2.ComponentType<
-  React_2.PropsWithChildren<{}>
->;
+export const ScaffolderLayouts: ComponentType<PropsWithChildren<{}>>;
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {
@@ -505,7 +503,7 @@ export const SecretsContextProvider: (
   props: PropsWithChildren<{
     initialSecrets?: Record<string, string>;
   }>,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type TaskStream = {

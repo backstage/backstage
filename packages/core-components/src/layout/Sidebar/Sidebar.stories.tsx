@@ -23,7 +23,7 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import CloudQueueIcon from '@material-ui/icons/CloudQueue';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { SidebarPage } from './Page';
 import { Sidebar } from './Bar';
 import { SidebarGroup } from './SidebarGroup';

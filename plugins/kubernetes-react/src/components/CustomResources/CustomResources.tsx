@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import lodash, { Dictionary } from 'lodash';
 import { RolloutAccordions } from './ArgoRollouts';
 import { DefaultCustomResourceAccordions } from './DefaultCustomResource';
@@ -26,7 +26,7 @@ import { GroupedResponsesContext } from '../../hooks';
  * @public
  */
 export interface CustomResourcesProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 const kindToResource = (customResources: any[]): Dictionary<any[]> => {
