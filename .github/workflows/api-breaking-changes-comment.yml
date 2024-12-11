@@ -20,6 +20,7 @@ jobs:
       git-ref: ${{ steps.event.outputs.GIT_REF }}
       pr-number: ${{ steps.event.outputs.PR_NUMBER }}
       action: ${{ steps.event.outputs.ACTION }}
+      comment-cache-key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
@@ -64,20 +65,28 @@ jobs:
           echo ACTION=$(jq --raw-output '.action | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
           echo GIT_REF=$(jq --raw-output '.pull_request.head.sha | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
 
+      - name: Fetch Command and Calculate Hash
+        id: hash
+        run: |
+          unzip preview-spec.zip comment.md
+          ls
+          echo "COMMENT_FILE_HASH=$(md5sum comment.md | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+
+      - name: Cache Comment
+        if: ${{ steps.event.outputs.ACTION != 'closed' }}
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          path: comment.md
+          key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
+
       - name: DEBUG - Print Job Outputs
         if: ${{ runner.debug }}
         run: |
           echo "PR number: ${{ steps.event.outputs.PR_NUMBER }}"
           echo "Git Ref: ${{ steps.event.outputs.GIT_REF }}"
           echo "Action: ${{ steps.event.outputs.ACTION }}"
+          echo "Hash: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}"
           cat event.json
-
-      - name: Get Comment
-        id: get-comment
-        run: |
-          unzip preview-spec.zip comment.md
-          ls
-          grep
 
   add-comment:
     name: Write comment about issues
@@ -91,6 +100,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Fetch cached Manifests File
+        id: cache
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+        with:
+          path: comment.md
+          key: ${{ needs.setup.outputs.comment-cache-key }}
 
       # Identify comment to be updated
       - name: Find comment for API Changes
