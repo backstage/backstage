@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { metrics } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { createGaugeMetric } from '../util/metrics';
-import { DbRelationsRow, DbLocationsRow, DbSearchRow } from './tables';
-import { metrics } from '@opentelemetry/api';
+import { DbLocationsRow, DbRelationsRow, DbSearchRow } from './tables';
 
 export function initDatabaseMetrics(knex: Knex) {
   const seenProm = new Set<string>();
@@ -132,6 +132,31 @@ export function initDatabaseMetrics(knex: Knex) {
           });
           gauge.observe(Number(total[0].count));
         }
+      }),
+    total_used_connections: meter
+      .createObservableGauge('total_used_connection', {
+        description: 'Total used connection pool',
+      })
+      .addCallback(async gauge => {
+        const usedConnection: number = knex.client.pool.numUsed();
+        gauge.observe(Number(usedConnection));
+      }),
+    total_free_connections: meter
+      .createObservableGauge('total_free_connections', {
+        description: 'Available free connection pool',
+      })
+      .addCallback(async gauge => {
+        const freeConnections: number = knex.client.pool.numFree();
+        gauge.observe(Number(freeConnections));
+      }),
+    total_waiting_acquires: meter
+      .createObservableGauge('total_waiting_acquires', {
+        description: 'Total acquires are waiting for resource to be released',
+      })
+      .addCallback(async gauge => {
+        const waitingForResource: number =
+          knex.client.pool.numPendingAcquires();
+        gauge.observe(Number(waitingForResource));
       }),
   };
 }
