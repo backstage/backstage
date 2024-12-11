@@ -83,7 +83,7 @@ const httpHandlers = [
   }),
 
   rest.get(
-    `${apiBaseUrlSaas}/groups/subgroup1/members/all`,
+    `${apiBaseUrlSaas}/groups/group1%2Fsubgroup1/members/all`,
     (_req, res, ctx) => {
       return res(ctx.json(subgroup_saas_users_response)); // To-DO change
     },
