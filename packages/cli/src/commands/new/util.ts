@@ -171,6 +171,7 @@ interface Options extends Record<string, string | boolean> {
   targetPath: string;
   owner: string;
   scope: string;
+  moduleId: string;
 }
 
 async function calculateBaseVersion(baseVersion: string) {
@@ -199,6 +200,7 @@ export async function populateOptions(
     license: prompts.license ?? 'Apache-2.0',
     targetPath: prompts.targetPath ?? template.targetPath,
     scope: prompts.scope ?? '',
+    moduleId: prompts.moduleId ?? '',
     ...prompts,
   };
 }
