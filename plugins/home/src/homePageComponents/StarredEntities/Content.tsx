@@ -28,6 +28,8 @@ import Tab from '@material-ui/core/Tab';
 import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
@@ -63,6 +65,7 @@ export const Content = ({
   const catalogApi = useApi(catalogApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [activeTab, setActiveTab] = React.useState(0);
+  const { t } = useTranslationRef(homePageTranslationRef);
 
   // Grab starred entities from catalog to ensure they still exist and also retrieve display titles
   const entities = useAsync(async () => {
@@ -82,7 +85,9 @@ export const Content = ({
     return (
       <Typography variant="body1">
         {noStarredEntitiesMessage ||
-          'Click the star beside an entity name to add it to this list!'}
+          t(
+            'homePageComponents.starredEntities.defaultNoStarredEntitiesMessage',
+          )}
       </Typography>
     );
 

@@ -26,6 +26,8 @@ import { Widget } from './types';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 const Form = withTheme(MuiTheme);
 
@@ -63,6 +65,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
     props;
   const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
   const styles = useStyles();
+  const { t } = useTranslationRef(homePageTranslationRef);
 
   return (
     <div className={styles.settingsOverlay}>
@@ -102,7 +105,11 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
       >
         {widget.settingsSchema && (
           <Grid item className="overlayGridItem">
-            <Tooltip title="Edit settings">
+            <Tooltip
+              title={t(
+                'components.customHomepage.widgetSettingsOverlay.settingsSchema.tooltip.title',
+              )}
+            >
               <IconButton
                 color="primary"
                 onClick={() => setSettingsDialogOpen(true)}
@@ -114,7 +121,11 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
         )}
         {deletable !== false && (
           <Grid item className="overlayGridItem">
-            <Tooltip title="Delete widget">
+            <Tooltip
+              title={t(
+                'components.customHomepage.widgetSettingsOverlay.deleteWidgetButton.tooltip.title',
+              )}
+            >
               <IconButton color="secondary" onClick={() => handleRemove(id)}>
                 <DeleteIcon fontSize="large" />
               </IconButton>

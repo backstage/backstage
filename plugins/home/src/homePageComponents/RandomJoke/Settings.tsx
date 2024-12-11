@@ -21,13 +21,19 @@ import Radio from '@material-ui/core/Radio';
 import React from 'react';
 import { useRandomJoke, JokeType } from './Context';
 import upperFirst from 'lodash/upperFirst';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homePageTranslationRef } from '../../translation';
 
 export const Settings = () => {
   const { type, handleChangeType } = useRandomJoke();
   const JOKE_TYPES: JokeType[] = ['any' as JokeType, 'programming' as JokeType];
+  const { t: tRef } = useTranslationRef(homePageTranslationRef);
+
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend">Joke Type</FormLabel>
+      <FormLabel component="legend">
+        {tRef('homePageComponents.randomJoke.settings.jokeTypeLabel')}
+      </FormLabel>
       <RadioGroup
         aria-label="joke type"
         value={type}
