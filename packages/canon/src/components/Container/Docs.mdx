@@ -1,0 +1,77 @@
+import { Meta, Unstyled, Source } from '@storybook/blocks';
+import * as ContainerStories from './Container.stories';
+import { Title, Text, PropsTable, getProps } from '../../../docs/components';
+import { spacingProperties } from '../../layout/sprinkles.css';
+import { containerProperties } from './sprinkles.css';
+
+<Meta of={ContainerStories} />
+
+<Unstyled>
+
+<Title type="h1">Container</Title>
+
+<Text>
+  The container component let you use our default max-width and center the
+  content on the page.
+</Text>
+
+<Title type="h2">Installation</Title>
+<Source
+  code={`import { Container } from "@backstage/canon";`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    ...getProps(containerProperties.styles),
+    children: {
+      type: 'ReactNode',
+      required: false,
+    },
+    className: {
+      type: 'string',
+      required: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      required: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Simple</Title>
+<Text>A simple example of how to use the Container component.</Text>
+
+<Source
+  code={`<Container>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Container>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive padding & margin</Title>
+<Text>
+  The Container component also supports responsive values, making it easy to
+  create responsive designs.
+</Text>
+<Source
+  code={`<Container paddingY={{ xs: 'sm', md: 'md' }}>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Container>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>

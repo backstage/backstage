@@ -36,12 +36,17 @@ export function parseEntityFilterParams(
 
   // Outer array: "any of the inner ones"
   // Inner arrays: "all of these must match"
-  const filters = filterStrings.map(parseEntityFilterString).filter(Boolean);
+  const filters = filterStrings
+    .map(parseEntityFilterString)
+    .filter((r): r is EntitiesSearchFilter[] => Boolean(r));
   if (!filters.length) {
     return undefined;
   }
 
-  return { anyOf: filters.map(f => ({ allOf: f! })) };
+  const outer = filters.map(inner =>
+    inner.length === 1 ? inner[0] : { allOf: inner },
+  );
+  return outer.length === 1 ? outer[0] : { anyOf: outer };
 }
 
 /**

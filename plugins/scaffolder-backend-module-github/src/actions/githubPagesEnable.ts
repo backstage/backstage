@@ -67,14 +67,13 @@ export function createGithubPagesEnableAction(options: {
           sourceBranch: {
             title: 'Source Branch',
             type: 'string',
-            description:
-              'The the GitHub Pages source branch. Default is "main"',
+            description: 'The GitHub Pages source branch. Default is "main"',
           },
           sourcePath: {
             title: 'Source Path',
             type: 'string',
             description:
-              'The the GitHub Pages source path - "/" or "/docs". Default is "/"',
+              'The GitHub Pages source path - "/" or "/docs". Default is "/"',
           },
           token: {
             title: 'Authorization Token',

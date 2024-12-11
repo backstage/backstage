@@ -80,6 +80,8 @@ cron
 cronjobs
 crontab
 css
+cve
+CVEs
 daemonsets
 Datadog
 dataflow
@@ -101,6 +103,8 @@ Deutsche
 dev
 devops
 devs
+dequeue
+dequeueing
 dialogs
 discoverability
 Discoverability
@@ -337,6 +341,7 @@ rebase
 rebasing
 Recharts
 Redash
+redis
 renderer
 renderers
 replicasets

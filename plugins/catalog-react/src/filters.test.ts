@@ -72,6 +72,33 @@ const templates: TemplateEntityV1beta3[] = [
   },
 ];
 
+const users: Entity[] = [
+  {
+    apiVersion: '1',
+    kind: 'User',
+    metadata: {
+      name: 'jd1234',
+    },
+    spec: {
+      profile: {
+        displayName: 'DOE, JOHN',
+      },
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'User',
+    metadata: {
+      name: 'fb3456',
+    },
+    spec: {
+      profile: {
+        displayName: 'BAR, FOO',
+      },
+    },
+  },
+];
+
 describe('EntityTextFilter', () => {
   it('should search name', () => {
     const filter = new EntityTextFilter('app');
@@ -95,6 +122,12 @@ describe('EntityTextFilter', () => {
     const filter = new EntityTextFilter('JaVa');
     expect(filter.filterEntity(entities[0])).toBeFalsy();
     expect(filter.filterEntity(entities[1])).toBeTruthy();
+  });
+
+  it('should search display name', () => {
+    const filter = new EntityTextFilter('doe');
+    expect(filter.filterEntity(users[0])).toBeTruthy();
+    expect(filter.filterEntity(users[1])).toBeFalsy();
   });
 });
 

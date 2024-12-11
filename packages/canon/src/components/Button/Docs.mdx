@@ -1,0 +1,50 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as ButtonStories from './Button.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+
+<Meta of={ButtonStories} />
+
+<Unstyled>
+
+<Title type="h1">Button</Title>
+<Text>A button component that can be used to trigger actions.</Text>
+
+<Canvas of={ButtonStories.Primary} />
+
+<Source of={ButtonStories.Primary} dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    size: {
+      type: ['small', 'medium'],
+      responsive: false,
+    },
+    variant: {
+      type: ['primary', 'secondary', 'tertiary'],
+      responsive: false,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+</Unstyled>

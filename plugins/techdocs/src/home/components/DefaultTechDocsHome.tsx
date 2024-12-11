@@ -56,6 +56,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     title,
     subtitle,
     showSupport = true,
+    pagination,
   } = props;
   const Wrapper = showHeader ? TechDocsPageWrapper : React.Fragment;
   return (
@@ -68,7 +69,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
             </SupportButton>
           </ContentHeader>
         )}
-        <EntityListProvider>
+        <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <TechDocsPicker />

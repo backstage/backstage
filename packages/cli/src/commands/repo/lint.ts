@@ -15,6 +15,7 @@
  */
 
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import { Command, OptionValues } from 'commander';
 import { createHash } from 'crypto';
 import { relative as relativePath } from 'path';
@@ -220,6 +221,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   const outputSuccessCache = [];
 
+  let errorOutput = '';
+
   let failed = false;
   for (const {
     relativeDir,
@@ -234,12 +237,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       // When doing repo lint, only list the results if the lint failed to avoid a log
       // dump of all warnings that might be irrelevant
       if (resultText) {
-        console.log();
-        console.log(resultText.trimStart());
+        if (opts.outputFile) {
+          errorOutput += `${resultText}\n`;
+        } else {
+          console.log();
+          console.log(resultText.trimStart());
+        }
       }
     } else if (sha) {
       outputSuccessCache.push(sha);
     }
+  }
+
+  if (opts.outputFile && errorOutput) {
+    await fs.writeFile(paths.resolveTargetRoot(opts.outputFile), errorOutput);
   }
 
   if (cacheContext) {

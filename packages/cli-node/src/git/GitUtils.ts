@@ -15,8 +15,7 @@
  */
 
 import { assertError, ForwardedError } from '@backstage/errors';
-import { paths } from '../paths';
-import { execFile } from '../run';
+import { execFile, paths } from '../util';
 
 /**
  * Run a git command, trimming the output splitting it into lines.

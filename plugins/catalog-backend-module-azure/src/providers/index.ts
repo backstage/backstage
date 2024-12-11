@@ -15,3 +15,4 @@
  */
 
 export { AzureDevOpsEntityProvider } from './AzureDevOpsEntityProvider';
+export { AzureBlobStorageEntityProvider } from './AzureBlobStorageEntityProvider';

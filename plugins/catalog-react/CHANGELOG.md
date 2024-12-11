@@ -1,5 +1,92 @@
 # @backstage/plugin-catalog-react
 
+## 1.14.3-next.2
+
+### Patch Changes
+
+- 95092a6: Fixed an issue where `<CatalogFilterLayout.Filters />` would re-render its children on page load for smaller screens, potentially leading to unnecessary additional backend requests.
+- 4a43398: Fixed an issue where the `EntityOwnerPicker` component failed to load when the `mode` prop was set to `owners-only`. In this mode, the `EntityOwnerPicker` does not load details about the owners, such as `displayName` or `title`. To display these details, use `mode=all` instead.
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/frontend-test-utils@0.2.4-next.2
+  - @backstage/integration-react@1.2.2-next.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+  - @backstage/plugin-permission-react@0.4.29-next.0
+
+## 1.14.3-next.1
+
+### Patch Changes
+
+- d97a2cd: Fixed an issue causing the `EntityOwnerPicker` to reset scrolling when more elements are loaded.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/frontend-test-utils@0.2.4-next.1
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.14.3-next.0
+
+### Patch Changes
+
+- f18c67d: Fix catalog filtering to allow searching entities by display name
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-test-utils@0.2.4-next.0
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.14.1
+
+### Patch Changes
+
+- 9cc82c0: Fixed bug in `EntityDisplayName` where text was overflowing.
+- 6fcbb3b: Ensure EntityDisplayName component link receives underline on hover.
+- 9670906: Improve UI consistency of default catalog filters
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/types@1.2.0
+  - @backstage/core-components@0.16.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/frontend-test-utils@0.2.2
+  - @backstage/integration-react@1.2.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
 ## 1.14.1-next.3
 
 ### Patch Changes

@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-import { structUtils } from '@yarnpkg/core';
+import {
+  Configuration,
+  Project,
+  ResolveOptions,
+  structUtils,
+  ThrowReport,
+  httpUtils,
+} from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
-import { getManifestByVersion } from '@backstage/release-manifests';
 import { BackstageResolver } from './BackstageResolver';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-
-jest.mock('@backstage/release-manifests', () => ({
-  getManifestByVersion: jest.fn().mockResolvedValue({
-    releaseVersion: '1.23.45',
-    packages: [
-      {
-        name: '@backstage/core',
-        version: '6.7.8',
-      },
-    ],
-  }),
-}));
-
-const getManifestByVersionMock = getManifestByVersion as jest.MockedFunction<
-  typeof getManifestByVersion
->;
 
 describe('BackstageResolver', () => {
   const mockDir = createMockDirectory();
   let backstageResolver: BackstageResolver;
+  let resolveOptions: ResolveOptions;
 
   beforeEach(() => {
     jest
@@ -48,6 +39,16 @@ describe('BackstageResolver', () => {
     jest
       .spyOn(process, 'cwd')
       .mockReturnValue(npath.toPortablePath(mockDir.path));
+
+    jest.spyOn(httpUtils, 'get').mockResolvedValue({
+      releaseVersion: '1.23.45',
+      packages: [
+        {
+          name: '@backstage/core',
+          version: '6.7.8',
+        },
+      ],
+    });
 
     mockDir.setContent({
       'backstage.json': JSON.stringify({
@@ -71,6 +72,14 @@ describe('BackstageResolver', () => {
     });
 
     backstageResolver = new BackstageResolver();
+
+    resolveOptions = {
+      resolver: backstageResolver,
+      project: new Project(ppath.cwd(), {
+        configuration: Configuration.create(ppath.cwd()),
+      }),
+      report: new ThrowReport(),
+    };
   });
 
   afterEach(() => {
@@ -96,7 +105,7 @@ describe('BackstageResolver', () => {
 
   describe('bindDescriptor', () => {
     describe('with range "backstage:^"', () => {
-      it('returns a descriptor basedwith a version range for the current Backstage version', () => {
+      it('returns a descriptor with a version range for the current Backstage version', () => {
         expect(
           backstageResolver.bindDescriptor(
             structUtils.makeDescriptor(
@@ -107,25 +116,25 @@ describe('BackstageResolver', () => {
         ).toEqual(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
         );
       });
     });
 
-    describe('with range "backstage:1.23.45"', () => {
+    describe('with range "backstage:^::v=1.23.45"', () => {
       it('returns the correct descriptor', () => {
         expect(
           backstageResolver.bindDescriptor(
             structUtils.makeDescriptor(
               structUtils.makeIdent('backstage', 'core'),
-              'backstage:1.23.45',
+              'backstage:^::v=1.23.45',
             ),
           ),
         ).toEqual(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
         );
       });
@@ -136,11 +145,11 @@ describe('BackstageResolver', () => {
     it('returns an npm: descriptor based on the manifest for the appropriate backstage version', async () => {
       const descriptor = structUtils.makeDescriptor(
         structUtils.makeIdent('backstage', 'core'),
-        'backstage:1.23.45',
+        'backstage:^::v=1.23.45',
       );
 
       await expect(
-        backstageResolver.getCandidates(descriptor),
+        backstageResolver.getCandidates(descriptor, {}, resolveOptions),
       ).resolves.toEqual([structUtils.makeLocator(descriptor, 'npm:6.7.8')]);
     });
 
@@ -151,66 +160,57 @@ describe('BackstageResolver', () => {
             structUtils.makeIdent('backstage', 'core'),
             'npm:1.2.3',
           ),
+          {},
+          resolveOptions,
         ),
       ).rejects.toThrow(/unsupported version protocol/i);
     });
 
-    it('rejects backstage: ranges with a ^ shorthand version', async () => {
+    it('rejects backstage: ranges missing a version parameter', async () => {
       await expect(
         backstageResolver.getCandidates(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
             'backstage:^',
           ),
+          {},
+          resolveOptions,
         ),
-      ).rejects.toThrow(/invalid backstage version/i);
+      ).rejects.toThrow(/missing Backstage version/i);
     });
 
-    it('rejects backstage: ranges with a * shorthand version', async () => {
+    it('rejects backstage: ranges with multiple version parameters', async () => {
       await expect(
         backstageResolver.getCandidates(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:*',
+            'backstage:^::v=1&v=2',
           ),
+          {},
+          resolveOptions,
         ),
-      ).rejects.toThrow(/invalid backstage version/i);
+      ).rejects.toThrow(/multiple Backstage versions/i);
     });
 
-    it('rejects backstage: ranges with an invalid version specified', async () => {
-      await expect(
-        backstageResolver.getCandidates(
-          structUtils.makeDescriptor(
-            structUtils.makeIdent('backstage', 'core'),
-            'backstage:latest',
+    it.each`
+      selector
+      ${'*'}
+      ${'latest'}
+    `(
+      'rejects backstage: ranges with invalid selector "$selector"',
+      async ({ selector }) => {
+        await expect(
+          backstageResolver.getCandidates(
+            structUtils.makeDescriptor(
+              structUtils.makeIdent('backstage', 'core'),
+              `backstage:${selector}`,
+            ),
+            {},
+            resolveOptions,
           ),
-        ),
-      ).rejects.toThrow(/invalid backstage version/i);
-    });
-
-    it('memoizes manifest retrieval', async () => {
-      const descriptor1 = structUtils.makeDescriptor(
-        structUtils.makeIdent('backstage', 'core'),
-        'backstage:1.23.45',
-      );
-
-      for (let i = 0; i < 5; i++) {
-        await backstageResolver.getCandidates(descriptor1);
-      }
-
-      expect(getManifestByVersionMock).toHaveBeenCalledTimes(1);
-
-      const descriptor2 = structUtils.makeDescriptor(
-        structUtils.makeIdent('backstage', 'core'),
-        'backstage:6.78.90',
-      );
-
-      for (let i = 0; i < 5; i++) {
-        await backstageResolver.getCandidates(descriptor2);
-      }
-
-      expect(getManifestByVersionMock).toHaveBeenCalledTimes(2);
-    });
+        ).rejects.toThrow(/unexpected version selector/i);
+      },
+    );
   });
 
   describe('getSatisfying', () => {
@@ -219,7 +219,7 @@ describe('BackstageResolver', () => {
         backstageResolver.getSatisfying(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
           {},
           [
@@ -236,6 +236,7 @@ describe('BackstageResolver', () => {
               'npm:1.2.3',
             ),
           ],
+          resolveOptions,
         ),
       ).resolves.toEqual({
         locators: [
@@ -253,7 +254,7 @@ describe('BackstageResolver', () => {
         backstageResolver.getSatisfying(
           structUtils.makeDescriptor(
             structUtils.makeIdent('backstage', 'core'),
-            'backstage:1.23.45',
+            'backstage:^::v=1.23.45',
           ),
           {},
           [
@@ -270,6 +271,7 @@ describe('BackstageResolver', () => {
               'npm:7.8.9',
             ),
           ],
+          resolveOptions,
         ),
       ).resolves.toEqual({
         locators: [
@@ -291,8 +293,9 @@ describe('BackstageResolver', () => {
           ),
           {},
           [],
+          resolveOptions,
         ),
-      ).rejects.toThrow(/unexpected npm: range/i);
+      ).rejects.toThrow(/unsupported version protocol/i);
     });
   });
 });

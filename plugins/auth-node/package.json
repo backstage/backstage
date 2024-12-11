@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.5.4-next.2",
+  "version": "0.5.5-next.2",
   "backstage": {
     "role": "node-library",
     "pluginId": "auth",
@@ -44,12 +44,11 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "*",
+    "@types/express": "^4.17.6",
     "@types/passport": "^1.0.3",
     "express": "^4.17.1",
     "jose": "^5.0.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.7.0",
     "passport": "^0.7.0",
     "winston": "^3.2.1",
     "zod": "^3.22.4",
@@ -64,6 +63,6 @@
     "lodash": "^4.17.21",
     "msw": "^1.0.0",
     "supertest": "^7.0.0",
-    "uuid": "^9.0.0"
+    "uuid": "^11.0.0"
   }
 }

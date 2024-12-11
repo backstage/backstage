@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  starredEntitiesApiRef,
+  MockStarredEntitiesApi,
+} from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
@@ -37,7 +41,10 @@ const mockCatalogApi = catalogApiMock({
 });
 
 describe('TechDocsCustomHome', () => {
-  const apiRegistry = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
+  const apiRegistry = TestApiRegistry.from(
+    [catalogApiRef, mockCatalogApi],
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+  );
 
   it('should render a TechDocs home page', async () => {
     const tabsConfig = [

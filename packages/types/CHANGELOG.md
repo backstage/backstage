@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.2.0
+
+### Minor Changes
+
+- c5e39e7: Introduce `createDeferred` and `DeferredPromise`.
+
 ## 1.1.1
 
 ### Patch Changes

@@ -24,10 +24,6 @@ import {
 import { DevToolsBackendApi } from '../api';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
-import {
-  createLegacyAuthAdapters,
-  errorHandler,
-} from '@backstage/backend-common';
 import express from 'express';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
@@ -37,10 +33,10 @@ import {
   PermissionsService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 /**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export interface RouterOptions {
   devToolsBackendApi?: DevToolsBackendApi;
@@ -48,19 +44,16 @@ export interface RouterOptions {
   config: RootConfigService;
   permissions: PermissionsService;
   discovery: DiscoveryService;
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
 }
 
 /**
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
+ * @internal
  * */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, permissions } = options;
-
-  const { httpAuth } = createLegacyAuthAdapters(options);
+  const { logger, config, permissions, httpAuth } = options;
 
   const devToolsBackendApi =
     options.devToolsBackendApi || new DevToolsBackendApi(logger, config);
@@ -128,6 +121,8 @@ export async function createRouter(
     response.status(200).json(health);
   });
 
-  router.use(errorHandler());
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
 }

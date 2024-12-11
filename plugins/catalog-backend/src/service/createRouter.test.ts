@@ -135,9 +135,10 @@ describe('createRouter readonly disabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [entities[0]],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [entities[0]],
+        pageInfo: {},
+        totalItems: 1,
       });
 
       const response = await request(app).get('/entities');
@@ -147,17 +148,18 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
       });
       const response = await request(app).get(
         '/entities?filter=a=1,a=2,b=3&filter=c=4',
       );
 
       expect(response.status).toEqual(200);
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         filter: {
           anyOf: [
             {
@@ -166,10 +168,12 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
+        limit: 10000,
         credentials: mockCredentials.user(),
+        skipTotalItems: true,
       });
     });
   });
@@ -218,7 +222,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         orderFields: [
@@ -258,7 +262,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         orderFields: [
@@ -441,20 +445,15 @@ describe('createRouter readonly disabled', () => {
           namespace: 'ns',
         },
       };
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: [entity],
       });
 
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({
-          kind: 'k',
-          'metadata.namespace': 'ns',
-          'metadata.name': 'n',
-        }),
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['k:ns/n'],
         credentials: mockCredentials.user(),
       });
       expect(response.status).toEqual(200);
@@ -462,20 +461,15 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('responds with a 404 for missing entities', async () => {
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: [null],
       });
 
       const response = await request(app).get('/entities/by-name/b/d/c');
 
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': 'c',
-        }),
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['b:d/c'],
         credentials: mockCredentials.user(),
       });
       expect(response.status).toEqual(404);
@@ -554,13 +548,7 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: expect.any(Function),
         credentials: mockCredentials.user(),
-        filter: {
-          anyOf: [
-            {
-              allOf: [{ key: 'kind', values: ['Component'] }],
-            },
-          ],
-        },
+        filter: { key: 'kind', values: ['Component'] },
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });
@@ -919,9 +907,10 @@ describe('createRouter readonly enabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [entities[0]],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [entities[0]],
+        pageInfo: {},
+        totalItems: 1,
       });
 
       const response = await request(app).get('/entities');

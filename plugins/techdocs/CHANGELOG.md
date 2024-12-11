@@ -1,5 +1,103 @@
 # @backstage/plugin-techdocs
 
+## 1.11.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/integration-react@1.2.2-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/plugin-auth-react@0.1.10-next.2
+  - @backstage/plugin-search-common@1.2.16-next.0
+  - @backstage/plugin-search-react@1.8.4-next.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.12-next.2
+
+## 1.11.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/plugin-auth-react@0.1.10-next.1
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-search-react@1.8.4-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.12-next.1
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- 7d8777d: Added support for the Search bar in docs residing in the entity page tab, and not only the global "/docs" page.
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-search-react@1.8.4-next.0
+  - @backstage/plugin-catalog-react@1.14.3-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/core-compat-api@0.3.4-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/plugin-auth-react@0.1.10-next.0
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.12-next.0
+
+## 1.11.1
+
+### Patch Changes
+
+- 37a7810: Fixed an issue where `<TechDocsReaderPageContent />` would re-render infinitely under certain conditions.
+- e937ae7: Fix an issue with index page of documentation site being re-rendered.
+- 90246a9: Fix techdocs config schema for custom elements sanitizer
+- 605bdc0: Avoid page re-rendering when clicking on anchor links in the same documentation page.
+- 4f0cb89: Added DomPurify sanitizer configuration for custom elements implementing RFC https://github.com/backstage/backstage/issues/26988.
+  See https://backstage.io/docs/features/techdocs/how-to-guides#how-to-enable-custom-elements-in-techdocs for how to enable it in the configuration.
+- f246178: Removed `canvas` dev dependency.
+- 4a2f73a: Fix an issue that caused the current documentation page to be re-rendered when navigating to
+  another one.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/theme@0.6.1
+  - @backstage/plugin-catalog-react@1.14.1
+  - @backstage/core-components@0.16.0
+  - @backstage/plugin-techdocs-react@1.2.10
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/integration@1.15.2
+  - @backstage/integration-react@1.2.1
+  - @backstage/plugin-auth-react@0.1.8
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-search-react@1.8.2
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.11.1-next.3
 
 ### Patch Changes

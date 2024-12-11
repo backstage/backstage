@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { DomainEntity } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
@@ -63,6 +64,8 @@ export function AboutField(props: AboutFieldProps): React_2.JSX.Element;
 export interface AboutFieldProps {
   // (undocumented)
   children?: React_2.ReactNode;
+  // (undocumented)
+  className?: string;
   // (undocumented)
   gridSizes?: Record<string, number>;
   // (undocumented)
@@ -154,7 +157,7 @@ export interface CatalogSearchResultListItemProps {
   result?: IndexableDocument;
 }
 
-// @public (undocumented)
+// @public
 export const CatalogTable: {
   (props: CatalogTableProps): React_2.JSX.Element;
   columns: Readonly<{
@@ -212,6 +215,7 @@ export interface CatalogTableProps {
   subtitle?: string;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  title?: string;
 }
 
 // @public (undocumented)
@@ -582,6 +586,8 @@ export interface HasSubcomponentsCardProps {
 
 // @public (undocumented)
 export interface HasSubdomainsCardProps {
+  // (undocumented)
+  columns?: TableColumn<DomainEntity>[];
   // (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)

@@ -18,11 +18,7 @@ import React from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import {
-  getEntityRelations,
-  humanizeEntityRef,
-} from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
 import { rootDocsRouteRef } from '../../../routes';
 import {
   EmptyState,
@@ -33,9 +29,9 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { actionFactories } from './actions';
-import { columnFactories } from './columns';
-import { toLowerMaybe } from '../../../helpers';
+import { columnFactories, defaultColumns } from './columns';
 import { DocsTableRow } from './types';
+import { entitiesToDocsMapper } from './helpers';
 
 /**
  * Props for {@link DocsTable}.
@@ -51,14 +47,6 @@ export type DocsTableProps = {
   options?: TableOptions<DocsTableRow>;
 };
 
-const defaultColumns: TableColumn<DocsTableRow>[] = [
-  columnFactories.createTitleColumn({ hidden: true }),
-  columnFactories.createNameColumn(),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createKindColumn(),
-  columnFactories.createTypeColumn(),
-];
-
 /**
  * Component which renders a table documents
  *
@@ -71,26 +59,11 @@ export const DocsTable = (props: DocsTableProps) => {
   const config = useApi(configApiRef);
   if (!entities) return null;
 
-  const documents = entities.map(entity => {
-    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-    return {
-      entity,
-      resolved: {
-        docsUrl: getRouteToReaderPageFor({
-          namespace: toLowerMaybe(
-            entity.metadata.namespace ?? 'default',
-            config,
-          ),
-          kind: toLowerMaybe(entity.kind, config),
-          name: toLowerMaybe(entity.metadata.name, config),
-        }),
-        ownedByRelations,
-        ownedByRelationsTitle: ownedByRelations
-          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
-          .join(', '),
-      },
-    };
-  });
+  const documents = entitiesToDocsMapper(
+    entities,
+    getRouteToReaderPageFor,
+    config,
+  );
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
     actionFactories.createCopyDocsUrlAction(copyToClipboard),
