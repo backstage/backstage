@@ -65,15 +65,14 @@ export function npmRegistryPrompt(): Prompt<{ npmRegistry: string }> {
   };
 }
 
-export function ownerPrompt(): Prompt<{
-  owner?: string;
-  codeOwnersPath?: string;
-}> {
+export function ownerPrompt(
+  codeOwnersPath: string | undefined,
+): Prompt<{ owner?: string }> {
   return {
     type: 'input',
     name: 'owner',
     message: 'Enter an owner to add to CODEOWNERS [optional]',
-    when: opts => Boolean(opts.codeOwnersPath),
+    when: Boolean(codeOwnersPath),
     validate: (value: string) => {
       if (!value) {
         return true;
