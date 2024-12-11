@@ -37,20 +37,17 @@ const useStyles = makeStyles<Theme>(() => ({
   actionContainer: { padding: '16px', flex: 1, alignItems: 'flex-end' },
 }));
 
-/** @alpha */
-export interface TemplateCardAdditionalLink {
-  icon: IconComponent;
-  text: string;
-  url: string;
-}
-
 /**
  * The Props for the {@link TemplateCard} component
  * @alpha
  */
 export interface TemplateCardProps {
   template: TemplateEntityV1beta3;
-  additionalLinks?: TemplateCardAdditionalLink[];
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
   onSelected?: (template: TemplateEntityV1beta3) => void;
 }
 

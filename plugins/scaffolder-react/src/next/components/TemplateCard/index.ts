@@ -13,8 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  TemplateCard,
-  type TemplateCardProps,
-  type TemplateCardAdditionalLink,
-} from './TemplateCard';
+export { TemplateCard, type TemplateCardProps } from './TemplateCard';

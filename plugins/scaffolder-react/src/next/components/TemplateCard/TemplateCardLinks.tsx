@@ -22,7 +22,6 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
 import { CardLink } from './CardLink';
-import { TemplateCardAdditionalLink } from './TemplateCard';
 
 const useStyles = makeStyles<Theme>({});
 
@@ -32,7 +31,11 @@ const useStyles = makeStyles<Theme>({});
  */
 export interface TemplateCardLinksProps {
   template: TemplateEntityV1beta3;
-  additionalLinks?: TemplateCardAdditionalLink[];
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
 }
 export const TemplateCardLinks = ({
   template,
