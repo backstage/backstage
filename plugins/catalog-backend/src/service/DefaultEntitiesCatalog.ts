@@ -142,7 +142,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         targetQuery: entitiesQuery,
         onEntityIdField: 'final_entities.entity_id',
         knex: db,
-        strategy: limit !== undefined && limit <= 500 ? 'join' : 'in',
       });
     }
 
@@ -305,7 +304,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             targetQuery: inner,
             onEntityIdField: 'final_entities.entity_id',
             knex: this.database,
-            strategy: limit <= 500 ? 'join' : 'in',
           });
         }
 
