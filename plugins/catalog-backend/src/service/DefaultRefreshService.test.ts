@@ -84,7 +84,6 @@ describe('DefaultRefreshService', () => {
         entity_ref: stringifyEntityRef(entity),
         unprocessed_entity: JSON.stringify(entity),
         errors: '[]',
-        next_update_at: '2031-01-01 23:00:00',
         last_discovery_at: '2021-04-01 13:37:00',
       });
     }
@@ -290,7 +289,7 @@ describe('DefaultRefreshService', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'should refresh even when parent has no changes',
+    'should refresh even when parent has no changes, %p',
     async databaseId => {
       let secondRound = false;
       const { knex, processingDb, catalogDb } = await createDatabase(
