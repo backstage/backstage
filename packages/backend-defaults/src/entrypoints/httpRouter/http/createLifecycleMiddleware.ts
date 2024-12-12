@@ -51,7 +51,7 @@ export interface LifecycleMiddlewareOptions {
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
-  const { lifecycle } = options;
+  const { config, lifecycle } = options;
 
   let state: 'init' | 'up' | 'down' = 'init';
   const waiting = new Set<{
@@ -82,11 +82,8 @@ export function createLifecycleMiddleware(
 
   let startupRequestPauseTimeout: HumanDuration = DEFAULT_TIMEOUT;
 
-  if (
-    'config' in options &&
-    options.config.has('backend.lifecycle.startupRequestPauseTimeout')
-  ) {
-    startupRequestPauseTimeout = readDurationFromConfig(options.config, {
+  if (config.has('backend.lifecycle.startupRequestPauseTimeout')) {
+    startupRequestPauseTimeout = readDurationFromConfig(config, {
       key: 'backend.lifecycle.startupRequestPauseTimeout',
     });
   }
