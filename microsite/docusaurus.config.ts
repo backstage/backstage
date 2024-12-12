@@ -59,7 +59,7 @@ const defaultOpenApiOptions = {
   hideSendButton: true,
   sidebarOptions: {
     groupPathsBy: 'tag',
-    categoryLinkSource: "tag",
+    categoryLinkSource: 'tag'
   },
 } satisfies OpenApiPlugin.Options
 

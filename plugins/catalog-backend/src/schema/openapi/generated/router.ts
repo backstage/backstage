@@ -26,7 +26,7 @@ export const spec = {
     title: 'catalog',
     version: '1',
     description:
-      'The Backstage backend plugin that provides the Backstage catalog',
+      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n> **Note:** This page only describes some of the most commonly used parts of the\n> API, and is a work in progress.\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -81,7 +81,8 @@ export const spec = {
       cursor: {
         name: 'cursor',
         in: 'query',
-        description: 'Cursor to a set page of results.',
+        description:
+          'You may pass the `cursor` query parameters to perform cursor based pagination\nthrough the set of entities. The value of `cursor` will be returned in the response, under the `pageInfo` property:\n\n```json\n  "pageInfo": {\n    "nextCursor": "a-cursor",\n    "prevCursor": "another-cursor"\n  }\n```\n\nIf `nextCursor` exists, it can be used to retrieve the next batch of entities. Following the same approach,\nif `prevCursor` exists, it can be used to retrieve the previous batch of entities.\n\n- [`filter`](#filtering), for selecting only a subset of all entities\n- [`fields`](#field-selection), for selecting only parts of the full data\n  structure of each entity\n- `limit` for limiting the number of entities returned (20 is the default)\n- [`orderField`](#ordering), for deciding the order of the entities\n- `fullTextFilter`\n  **NOTE**: [`filter`, `orderField`, `fullTextFilter`] and `cursor` are mutually exclusive. This means that,\n  it isn\'t possible to change any of [`filter`, `orderField`, `fullTextFilter`] when passing `cursor` as query parameters,\n  as changing any of these properties will affect pagination. If any of `filter`, `orderField`, `fullTextFilter` is specified together with `cursor`, only the latter is taken into consideration.\n',
         required: false,
         allowReserved: true,
         schema: {
@@ -103,7 +104,8 @@ export const spec = {
       fields: {
         name: 'fields',
         in: 'query',
-        description: 'Restrict to just these fields in the response.',
+        description:
+          "By default the full entities are returned, but you can pass in a `fields` query\nparameter which selects what parts of the entity data to retain. This makes the\nresponse smaller and faster to transfer, and may allow the catalog to perform\nmore efficient queries.\n\nThe query parameter value is a comma separated list of simplified JSON paths\nlike above. Each path corresponds to the key of either a value, or of a subtree\nroot that you want to keep in the output. The rest is pruned away. For example,\nspecifying `?fields=metadata.name,metadata.annotations,spec` retains only the\n`name` and `annotations` fields of the `metadata` of each entity (it'll be an\nobject with at most two keys), keeps the entire `spec` unchanged, and cuts out\nall other roots such as `relations`.\n\nSome more real world usable examples:\n\n- Return only enough data to form the full ref of each entity:\n\n  `/entities/by-query?fields=kind,metadata.namespace,metadata.name`\n",
         required: false,
         allowReserved: true,
         explode: false,
@@ -125,7 +127,8 @@ export const spec = {
       filter: {
         name: 'filter',
         in: 'query',
-        description: 'Filter for just the entities defined by this filter.',
+        description:
+          'You can pass in one or more filter sets that get matched against each entity.\nEach filter set is a number of conditions that all have to match for the\ncondition to be true (conditions effectively have an AND between them). At least\none filter set has to be true for the entity to be part of the result set\n(filter sets effectively have an OR between them).\n\nExample:\n\n```text\n/entities/by-query?filter=kind=user,metadata.namespace=default&filter=kind=group,spec.type\n\n  Return entities that match\n\n    Filter set 1:\n      Condition 1: kind = user\n                  AND\n      Condition 2: metadata.namespace = default\n\n    OR\n\n    Filter set 2:\n      Condition 1: kind = group\n                  AND\n      Condition 2: spec.type exists\n```\n\nEach condition is either on the form `<key>`, or on the form `<key>=<value>`.\nThe first form asserts on the existence of a certain key (with any value), and\nthe second asserts that the key exists and has a certain value. All checks are\nalways case _insensitive_.\n\nIn all cases, the key is a simplified JSON path in a given piece of entity data.\nEach part of the path is a key of an object, and the traversal also descends\nthrough arrays. There are two special forms:\n\n- Array items that are simple value types (such as strings) match on a key-value\n  pair where the key is the item as a string, and the value is the string `true`\n- Relations can be matched on a `relations.<type>=<targetRef>` form\n\nLet\'s look at a simplified example to illustrate the concept:\n\n```json\n{\n  "a": {\n    "b": ["c", { "d": 1 }],\n    "e": 7\n  }\n}\n```\n\nThis would match any one of the following conditions:\n\n- `a`\n- `a.b`\n- `a.b.c`\n- `a.b.c=true`\n- `a.b.d`\n- `a.b.d=1`\n- `a.e`\n- `a.e=7`\n\nSome more real world usable examples:\n\n- Return all orphaned entities:\n\n  `/entities/by-query?filter=metadata.annotations.backstage.io/orphan=true`\n\n- Return all users and groups:\n\n  `/entities/by-query?filter=kind=user&filter=kind=group`\n\n- Return all service components:\n\n  `/entities/by-query?filter=kind=component,spec.type=service`\n\n- Return all entities with the `java` tag:\n\n  `/entities/by-query?filter=metadata.tags.java`\n\n- Return all users who are members of the `ops` group (note that the full\n  [reference](references.md) of the group is used):\n\n  `/entities/by-query?filter=kind=user,relations.memberof=group:default/ops`\n',
         required: false,
         allowReserved: true,
         schema: {
@@ -170,7 +173,8 @@ export const spec = {
       orderField: {
         name: 'orderField',
         in: 'query',
-        description: 'The fields to sort returned results by.',
+        description:
+          'By default the entities are returned ordered by their internal uid. You can\ncustomize the `orderField` query parameters to affect that ordering.\n\nFor example, to return entities by their name:\n\n`/entities/by-query?orderField=metadata.name,asc`\n\nEach parameter can be followed by `asc` for ascending lexicographical order or\n`desc` for descending (reverse) lexicographical order.\n',
         required: false,
         allowReserved: true,
         schema: {
@@ -788,6 +792,7 @@ export const spec = {
     '/refresh': {
       post: {
         operationId: 'RefreshEntity',
+        tags: ['Entity'],
         description: 'Refresh the entity related to entityRef.',
         responses: {
           '200': {
@@ -836,6 +841,7 @@ export const spec = {
     '/entities': {
       get: {
         operationId: 'GetEntities',
+        tags: ['Entity'],
         description: 'Get all entities matching a given filter.',
         responses: {
           '200': {
@@ -898,6 +904,7 @@ export const spec = {
     '/entities/by-uid/{uid}': {
       get: {
         operationId: 'GetEntityByUid',
+        tags: ['Entity'],
         description: 'Get a single entity by the UID.',
         responses: {
           '200': {
@@ -931,6 +938,7 @@ export const spec = {
       },
       delete: {
         operationId: 'DeleteEntityByUid',
+        tags: ['Entity'],
         description: 'Delete a single entity by UID.',
         responses: {
           '204': {
@@ -959,6 +967,7 @@ export const spec = {
     '/entities/by-name/{kind}/{namespace}/{name}': {
       get: {
         operationId: 'GetEntityByName',
+        tags: ['Entity'],
         description: 'Get an entity by an entity ref.',
         responses: {
           '200': {
@@ -1000,6 +1009,7 @@ export const spec = {
     '/entities/by-name/{kind}/{namespace}/{name}/ancestry': {
       get: {
         operationId: 'GetEntityAncestryByName',
+        tags: ['Entity'],
         description: "Get an entity's ancestry by entity ref.",
         responses: {
           '200': {
@@ -1041,6 +1051,7 @@ export const spec = {
     '/entities/by-refs': {
       post: {
         operationId: 'GetEntitiesByRefs',
+        tags: ['Entity'],
         description:
           'Get a batch set of entities given an array of entityRefs.',
         responses: {
@@ -1118,6 +1129,7 @@ export const spec = {
     '/entities/by-query': {
       get: {
         operationId: 'GetEntitiesByQuery',
+        tags: ['Entity'],
         description: 'Search for entities by a given query.',
         responses: {
           '200': {
@@ -1194,6 +1206,7 @@ export const spec = {
     '/entity-facets': {
       get: {
         operationId: 'GetEntityFacets',
+        tags: ['Entity'],
         description: 'Get all entity facets that match the given filters.',
         responses: {
           '200': {
@@ -1249,6 +1262,7 @@ export const spec = {
     '/locations': {
       post: {
         operationId: 'CreateLocation',
+        tags: ['Locations'],
         description: 'Create a location for a given target.',
         responses: {
           '201': {
@@ -1322,6 +1336,7 @@ export const spec = {
       },
       get: {
         operationId: 'GetLocations',
+        tags: ['Locations'],
         description: 'Get all locations',
         responses: {
           '200': {
@@ -1359,6 +1374,7 @@ export const spec = {
     '/locations/{id}': {
       get: {
         operationId: 'GetLocation',
+        tags: ['Locations'],
         description: 'Get a location by id.',
         responses: {
           '200': {
@@ -1395,6 +1411,7 @@ export const spec = {
       },
       delete: {
         operationId: 'DeleteLocation',
+        tags: ['Locations'],
         description: 'Delete a location by id.',
         responses: {
           '204': {
@@ -1429,6 +1446,7 @@ export const spec = {
     '/locations/by-entity/{kind}/{namespace}/{name}': {
       get: {
         operationId: 'getLocationByEntity',
+        tags: ['Locations'],
         description: 'Get a location for entity.',
         responses: {
           '200': {
@@ -1485,6 +1503,7 @@ export const spec = {
     '/analyze-location': {
       post: {
         operationId: 'AnalyzeLocation',
+        tags: ['Locations'],
         description: 'Validate a given location.',
         responses: {
           '200': {
@@ -1535,6 +1554,7 @@ export const spec = {
     '/validate-entity': {
       post: {
         operationId: 'ValidateEntity',
+        tags: ['Entity'],
         description:
           'Validate that a passed in entity has no errors in schema.',
         responses: {
