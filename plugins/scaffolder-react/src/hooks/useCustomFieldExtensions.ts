@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useAsync, useMountEffect } from '@react-hookz/web';
-import { useApiHolder, useElementFilter } from '@backstage/core-plugin-api';
+import { useApi, useElementFilter } from '@backstage/core-plugin-api';
 import { formFieldsApiRef } from '../next';
 import { FieldExtensionOptions } from '../extensions';
 import {
@@ -33,10 +33,9 @@ export const useCustomFieldExtensions = <
   outlet: React.ReactNode,
 ) => {
   // Get custom fields created with FormFieldBlueprint
-  const apiHolder = useApiHolder();
-  const formFieldsApi = apiHolder.get(formFieldsApiRef);
+  const formFieldsApi = useApi(formFieldsApiRef);
   const [{ result: blueprintFields }, methods] = useAsync(
-    formFieldsApi?.getFormFields ?? (async () => []),
+    formFieldsApi.getFormFields,
     [],
   );
   useMountEffect(methods.execute);
