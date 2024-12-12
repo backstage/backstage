@@ -23,7 +23,7 @@ export function processRawEntitiesResult(
 ): EntitiesResponseItems {
   if (transform) {
     return {
-      type: 'objects',
+      type: 'object',
       entities: serializedEntities.map(e =>
         e !== null ? transform(JSON.parse(e)) : e,
       ),
@@ -47,7 +47,7 @@ export function processEntitiesResponseItems(
     return processRawEntitiesResult(response.entities, transform);
   }
   return {
-    type: 'objects',
+    type: 'object',
     entities: response.entities.map(e => (e !== null ? transform(e) : e)),
   };
 }
@@ -55,7 +55,7 @@ export function processEntitiesResponseItems(
 export function entitiesResponseToObjects(
   response: EntitiesResponseItems,
 ): (Entity | null)[] {
-  if (response.type === 'objects') {
+  if (response.type === 'object') {
     return response.entities;
   }
   return response.entities.map(e => (e !== null ? JSON.parse(e) : e));

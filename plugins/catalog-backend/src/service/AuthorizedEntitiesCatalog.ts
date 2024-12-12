@@ -60,7 +60,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        entities: { type: 'objects', entities: [] },
+        entities: { type: 'object', entities: [] },
         pageInfo: { hasNextPage: false },
       };
     }
@@ -93,7 +93,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
         items: {
-          type: 'objects',
+          type: 'object',
           entities: new Array(request.entityRefs.length).fill(null),
         },
       };
@@ -126,7 +126,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        items: { type: 'objects', entities: [] },
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       };

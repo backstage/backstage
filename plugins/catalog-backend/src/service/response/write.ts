@@ -17,27 +17,29 @@
 import { Response } from 'express';
 import { EntitiesResponseItems } from '../../catalog/types';
 import { JsonValue } from '@backstage/types';
+import { NotFoundError } from '@backstage/errors';
 
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
 
 export function writeSingleEntityResponse(
   res: Response,
   response: EntitiesResponseItems,
-): boolean {
-  const entity = response.entities[0];
-  if (!entity) {
-    return false;
-  }
+  notFoundMessage: string,
+) {
+  if (response.type === 'object') {
+    if (!response.entities[0]) {
+      throw new NotFoundError(notFoundMessage);
+    }
 
-  if (typeof entity === 'string') {
-    res.setHeader('Content-Type', JSON_CONTENT_TYPE);
-    res.status(200);
-    res.write(entity);
+    res.json(response.entities[0]);
   } else {
-    res.json(entity);
-  }
+    if (!response.entities[0]) {
+      throw new NotFoundError(notFoundMessage);
+    }
 
-  return true;
+    res.setHeader('Content-Type', JSON_CONTENT_TYPE);
+    res.end(response.entities[0]);
+  }
 }
 
 export function writeEntitiesResponse(
@@ -45,7 +47,7 @@ export function writeEntitiesResponse(
   response: EntitiesResponseItems,
   responseWrapper?: (entities: JsonValue) => JsonValue,
 ) {
-  if (response.type === 'objects') {
+  if (response.type === 'object') {
     res.json(
       responseWrapper
         ? responseWrapper?.(response.entities)
@@ -55,7 +57,6 @@ export function writeEntitiesResponse(
   }
 
   res.setHeader('Content-Type', JSON_CONTENT_TYPE);
-  res.status(200);
 
   // responseWrapper allows the caller to render the entities within an object
   let trailing = '';

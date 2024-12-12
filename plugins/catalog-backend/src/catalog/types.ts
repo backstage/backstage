@@ -58,7 +58,7 @@ export type EntitiesRequest = {
  */
 export type EntitiesResponseItems =
   | {
-      type: 'objects';
+      type: 'object';
       entities: (Entity | null)[];
     }
   | {

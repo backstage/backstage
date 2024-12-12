@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError, NotFoundError, serializeError } from '@backstage/errors';
+import { InputError, serializeError } from '@backstage/errors';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
@@ -272,9 +272,7 @@ export async function createRouter(
           filter: basicEntityFilter({ 'metadata.uid': uid }),
           credentials: await httpAuth.credentials(req),
         });
-        if (!writeSingleEntityResponse(res, entities)) {
-          throw new NotFoundError(`No entity with uid ${uid}`);
-        }
+        writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -289,11 +287,11 @@ export async function createRouter(
           entityRefs: [stringifyEntityRef({ kind, namespace, name })],
           credentials: await httpAuth.credentials(req),
         });
-        if (!writeSingleEntityResponse(res, items)) {
-          throw new NotFoundError(
-            `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
-          );
-        }
+        writeSingleEntityResponse(
+          res,
+          items,
+          `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+        );
       })
       .get(
         '/entities/by-name/:kind/:namespace/:name/ancestry',
