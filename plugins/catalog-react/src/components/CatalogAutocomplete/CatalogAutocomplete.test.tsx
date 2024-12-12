@@ -19,7 +19,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CatalogAutocomplete } from './CatalogAutocomplete';
 
-describe('Autocomplete', () => {
+describe('CatalogAutocomplete', () => {
   const user = userEvent.setup();
   const mockOptions = ['Option 1', 'Option 2', 'Option 3'];
 

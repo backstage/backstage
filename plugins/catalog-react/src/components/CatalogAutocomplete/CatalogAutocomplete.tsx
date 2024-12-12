@@ -124,7 +124,6 @@ const PaperComponent = (props: PaperProps) => (
   <Paper {...props} elevation={8} />
 );
 
-/** @public */
 export type CatalogAutocompleteProps<
   T,
   Multiple extends boolean | undefined = undefined,
@@ -146,7 +145,6 @@ export type CatalogAutocompleteProps<
   >['renderInput'];
 };
 
-/** @public */
 export function CatalogAutocomplete<
   T,
   Multiple extends boolean | undefined = undefined,
