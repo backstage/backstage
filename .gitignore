@@ -65,6 +65,7 @@ typings/
 .npm
 
 # Yarn 3 files
+yarn.lock
 .pnp.*
 **/.yarn/*
 !**/.yarn/patches
