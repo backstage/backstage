@@ -226,7 +226,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       ];
 
       fakeCatalog.queryEntities.mockResolvedValue({
-        items: entities,
+        items: { type: 'objects', entities },
         pageInfo: {
           nextCursor: {
             isPrevious: false,

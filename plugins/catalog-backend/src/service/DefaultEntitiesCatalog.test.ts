@@ -38,6 +38,7 @@ import { Stitcher } from '../stitching/types';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
+import { entitiesResponseToObjects } from './response';
 
 jest.setTimeout(60_000);
 
@@ -310,10 +311,11 @@ describe('DefaultEntitiesCatalog', () => {
         const testFilter = {
           key: 'spec.test',
         };
-        const { entities } = await catalog.entities({
+        const res = await catalog.entities({
           filter: testFilter,
           credentials: mockCredentials.none(),
         });
+        const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity2);
@@ -351,10 +353,11 @@ describe('DefaultEntitiesCatalog', () => {
             key: 'spec.test',
           },
         };
-        const { entities } = await catalog.entities({
+        const res = await catalog.entities({
           filter: testFilter,
           credentials: mockCredentials.none(),
         });
+        const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity1);
@@ -416,7 +419,7 @@ describe('DefaultEntitiesCatalog', () => {
             values: ['red'],
           },
         };
-        const { entities } = await catalog.entities({
+        const res = await catalog.entities({
           filter: {
             allOf: [
               testFilter1,
@@ -427,6 +430,7 @@ describe('DefaultEntitiesCatalog', () => {
           },
           credentials: mockCredentials.none(),
         });
+        const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(2);
         expect(entities).toContainEqual(entity2);
@@ -465,7 +469,7 @@ describe('DefaultEntitiesCatalog', () => {
         const testFilter2 = {
           key: 'metadata.desc',
         };
-        const { entities } = await catalog.entities({
+        const res = await catalog.entities({
           filter: {
             not: {
               allOf: [testFilter1, testFilter2],
@@ -474,6 +478,7 @@ describe('DefaultEntitiesCatalog', () => {
 
           credentials: mockCredentials.none(),
         });
+        const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(1);
         expect(entities).toContainEqual(entity1);
@@ -509,10 +514,11 @@ describe('DefaultEntitiesCatalog', () => {
           key: 'kind',
           values: [],
         };
-        const { entities } = await catalog.entities({
+        const res = await catalog.entities({
           filter: testFilter,
           credentials: mockCredentials.none(),
         });
+        const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(0);
       },
@@ -553,10 +559,11 @@ describe('DefaultEntitiesCatalog', () => {
           stitcher,
         });
 
-        const { entities } = await catalog.entities();
+        const res = await catalog.entities();
+        const entities = entitiesResponseToObjects(res.entities);
 
         expect(
-          entities.find(e => e.metadata.name === 'one')!.relations,
+          entities.find(e => e?.metadata.name === 'one')!.relations,
         ).toEqual([
           {
             type: 'r',
@@ -565,7 +572,7 @@ describe('DefaultEntitiesCatalog', () => {
           },
         ]);
         expect(
-          entities.find(e => e.metadata.name === 'two')!.relations,
+          entities.find(e => e?.metadata.name === 'two')!.relations,
         ).toEqual([
           {
             type: 'r',
@@ -615,7 +622,9 @@ describe('DefaultEntitiesCatalog', () => {
           return catalog
             .entities({ ...request, credentials: mockCredentials.none() })
             .then(response =>
-              response.entities.map(e => e.metadata.name).toSorted(),
+              entitiesResponseToObjects(response.entities)
+                .map(e => e!.metadata.name)
+                .toSorted(),
             );
         }
 
@@ -678,7 +687,11 @@ describe('DefaultEntitiesCatalog', () => {
         ): Promise<string[]> {
           return catalog
             .entities({ ...request, credentials: mockCredentials.none() })
-            .then(response => response.entities.map(e => e.metadata.name));
+            .then(response =>
+              entitiesResponseToObjects(response.entities).map(
+                e => e!.metadata.name,
+              ),
+            );
         }
 
         await expect(
@@ -764,7 +777,7 @@ describe('DefaultEntitiesCatalog', () => {
           stitcher,
         });
 
-        const { items } = await catalog.entitiesBatch({
+        const res = await catalog.entitiesBatch({
           entityRefs: [
             'k:default/two',
             'k:default/one',
@@ -775,6 +788,7 @@ describe('DefaultEntitiesCatalog', () => {
           ],
           credentials: mockCredentials.none(),
         });
+        const items = entitiesResponseToObjects(res.items);
 
         expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
           'k:default/two',
@@ -819,11 +833,12 @@ describe('DefaultEntitiesCatalog', () => {
           stitcher,
         });
 
-        const { items } = await catalog.entitiesBatch({
+        const res = await catalog.entitiesBatch({
           entityRefs: ['k:default/two', 'k:default/one'],
           filter: { key: 'spec.owner', values: ['me'] },
           credentials: mockCredentials.none(),
         });
+        const items = entitiesResponseToObjects(res.items);
 
         expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
           'k:default/two',
@@ -1830,7 +1845,9 @@ describe('DefaultEntitiesCatalog', () => {
               orderFields: [{ field: 'metadata.title', order: 'asc' }],
               credentials: mockCredentials.none(),
             })
-            .then(r => r.items.map(e => e.metadata.name)),
+            .then(r =>
+              entitiesResponseToObjects(r.items).map(e => e!.metadata.name),
+            ),
         ).resolves.toEqual(['CC', 'BB', 'AA']); // 'AA' has no title, ends up last
 
         await expect(
@@ -1839,7 +1856,9 @@ describe('DefaultEntitiesCatalog', () => {
               orderFields: [{ field: 'metadata.title', order: 'desc' }],
               credentials: mockCredentials.none(),
             })
-            .then(r => r.items.map(e => e.metadata.name)),
+            .then(r =>
+              entitiesResponseToObjects(r.items).map(e => e!.metadata.name),
+            ),
         ).resolves.toEqual(['BB', 'CC', 'AA']); // 'AA' has no title, ends up last
       },
     );
@@ -1869,7 +1888,9 @@ describe('DefaultEntitiesCatalog', () => {
               limit: 10,
               credentials: mockCredentials.none(),
             })
-            .then(r => r.items.map(e => e.metadata.name)),
+            .then(r =>
+              entitiesResponseToObjects(r.items).map(e => e!.metadata.name),
+            ),
         ).resolves.toEqual(['AA', 'BB']);
 
         // simulate a situation where stitching is not yet complete
@@ -1884,7 +1905,9 @@ describe('DefaultEntitiesCatalog', () => {
               limit: 10,
               credentials: mockCredentials.none(),
             })
-            .then(r => r.items.map(e => e.metadata.name)),
+            .then(r =>
+              entitiesResponseToObjects(r.items).map(e => e!.metadata.name),
+            ),
         ).resolves.toEqual(['BB']);
       },
     );

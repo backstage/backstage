@@ -55,6 +55,7 @@ import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { mockServices } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { DatabaseManager } from '@backstage/backend-common';
+import { entitiesResponseToObjects } from '../service/response';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -365,7 +366,12 @@ class TestHarness {
 
   async getOutputEntities(): Promise<Record<string, Entity>> {
     const { entities } = await this.#catalog.entities();
-    return Object.fromEntries(entities.map(e => [stringifyEntityRef(e), e]));
+    return Object.fromEntries(
+      entitiesResponseToObjects(entities).map(e => [
+        stringifyEntityRef(e!),
+        e!,
+      ]),
+    );
   }
 
   async refresh(options: RefreshOptions) {

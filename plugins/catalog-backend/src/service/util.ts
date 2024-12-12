@@ -20,6 +20,7 @@ import lodash from 'lodash';
 import { z } from 'zod';
 import {
   Cursor,
+  EntitiesResponseItems,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
@@ -148,35 +149,32 @@ export function decodeCursor(encodedCursor: string) {
 // sure that all adopters have re-stitched their entities so that the new
 // targetRef field is present on them, and that they have stopped consuming
 // the now-removed old field
-// TODO(jhaals): Remove this in April 2022
-export function expandLegacyCompoundRelationRefsInResponse(
-  entities: Entity[],
-): void {
-  for (const entity of entities) {
-    if (entity.relations) {
-      for (const relation of entity.relations as any) {
-        if (!relation.targetRef && relation.target) {
-          // This is the case where an old-form entity, not yet stitched with
-          // the updated code, was in the database
-          relation.targetRef = stringifyEntityRef(relation.target);
-        } else if (!relation.target && relation.targetRef) {
-          // This is the case where a new-form entity, stitched with the
-          // updated code, was in the database but we still want to produce
-          // the old data shape as well for compatibility reasons
-          relation.target = parseEntityRef(relation.targetRef);
-        }
+// TODO(patriko): Remove this in catalog 2.0
+export function expandLegacyCompoundRelationsInEntity(entity: Entity): Entity {
+  if (entity.relations) {
+    for (const relation of entity.relations as any) {
+      if (!relation.targetRef && relation.target) {
+        // This is the case where an old-form entity, not yet stitched with
+        // the updated code, was in the database
+        relation.targetRef = stringifyEntityRef(relation.target);
+      } else if (!relation.target && relation.targetRef) {
+        // This is the case where a new-form entity, stitched with the
+        // updated code, was in the database but we still want to produce
+        // the old data shape as well for compatibility reasons
+        relation.target = parseEntityRef(relation.targetRef);
       }
     }
   }
+  return entity;
 }
 
 export interface EntityArrayJsonStream {
-  send(entities: Entity[]): boolean;
+  send(entities: EntitiesResponseItems): boolean;
   complete(): void;
   close(): void;
 }
 
-// Helps stream Entity[] as a JSON response stream to avoid performance issues
+// Helps stream EntitiesResponseItems[] as a JSON response stream to avoid performance issues
 export function createEntityArrayJsonStream(
   res: Response,
 ): EntityArrayJsonStream {
@@ -186,19 +184,33 @@ export function createEntityArrayJsonStream(
   let completed = false;
 
   return {
-    send(entities) {
+    send(response) {
       if (firstSend) {
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         res.status(200);
         res.flushHeaders();
       }
 
+      if (response.type === 'raw') {
+        let result = true;
+        for (const item of response.entities) {
+          if (firstSend) {
+            result ||= res.write('[');
+            firstSend = false;
+          } else {
+            result ||= res.write(',');
+          }
+          result ||= res.write(item);
+        }
+        return result;
+      }
+
       let data: string;
       if (prettyPrint) {
-        data = JSON.stringify(entities, null, 2);
+        data = JSON.stringify(response.entities, null, 2);
         data = firstSend ? data.slice(0, -2) : `,\n${data.slice(2, -2)}`;
       } else {
-        data = JSON.stringify(entities);
+        data = JSON.stringify(response.entities);
         data = firstSend ? data.slice(0, -1) : `,${data.slice(1, -1)}`;
       }
 

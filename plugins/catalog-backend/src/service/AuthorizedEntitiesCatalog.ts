@@ -60,7 +60,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        entities: [],
+        entities: { type: 'objects', entities: [] },
         pageInfo: { hasNextPage: false },
       };
     }
@@ -92,7 +92,10 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        items: new Array(request.entityRefs.length).fill(null),
+        items: {
+          type: 'objects',
+          entities: new Array(request.entityRefs.length).fill(null),
+        },
       };
     }
 
@@ -123,7 +126,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        items: [],
+        items: { type: 'objects', entities: [] },
         pageInfo: {},
         totalItems: 0,
       };
@@ -208,7 +211,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
           allOf: [permissionFilter, basicEntityFilter({ 'metadata.uid': uid })],
         },
       });
-      if (entities.length === 0) {
+      if (entities.entities.length === 0) {
         throw new NotAllowedError();
       }
     }
