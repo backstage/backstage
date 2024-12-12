@@ -41,7 +41,6 @@ import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { LocationService, RefreshService } from './types';
 import {
-  createEntityArrayJsonStream,
   disallowReadonlyMode,
   encodeCursor,
   expandLegacyCompoundRelationsInEntity,
@@ -61,6 +60,7 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
 import { DeferredPromise, createDeferred } from '@backstage/types';
 import {
+  createEntityArrayJsonStream,
   processEntitiesResponseItems,
   writeEntitiesResponse,
   writeSingleEntityResponse,

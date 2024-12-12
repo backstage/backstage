@@ -20,3 +20,4 @@ export {
   entitiesResponseToObjects,
 } from './process';
 export { writeSingleEntityResponse, writeEntitiesResponse } from './write';
+export { createEntityArrayJsonStream } from './createEntityArrayJsonStream';

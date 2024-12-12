@@ -15,12 +15,11 @@
  */
 
 import { InputError, NotAllowedError } from '@backstage/errors';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
 import {
   Cursor,
-  EntitiesResponseItems,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
@@ -166,65 +165,4 @@ export function expandLegacyCompoundRelationsInEntity(entity: Entity): Entity {
     }
   }
   return entity;
-}
-
-export interface EntityArrayJsonStream {
-  send(entities: EntitiesResponseItems): boolean;
-  complete(): void;
-  close(): void;
-}
-
-// Helps stream EntitiesResponseItems[] as a JSON response stream to avoid performance issues
-export function createEntityArrayJsonStream(
-  res: Response,
-): EntityArrayJsonStream {
-  // Imitate the httpRouter behavior of pretty-printing in development
-  const prettyPrint = process.env.NODE_ENV === 'development';
-  let firstSend = true;
-  let completed = false;
-
-  return {
-    send(response) {
-      if (firstSend) {
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.status(200);
-        res.flushHeaders();
-      }
-
-      if (response.type === 'raw') {
-        let needsDrain = false;
-        for (const item of response.entities) {
-          const prefix = firstSend ? '[' : ',';
-          firstSend = false;
-          needsDrain ||= !res.write(prefix + item, 'utf8');
-        }
-        return !needsDrain;
-      }
-
-      let data: string;
-      if (prettyPrint) {
-        data = JSON.stringify(response.entities, null, 2);
-        data = firstSend ? data.slice(0, -2) : `,\n${data.slice(2, -2)}`;
-      } else {
-        data = JSON.stringify(response.entities);
-        data = firstSend ? data.slice(0, -1) : `,${data.slice(1, -1)}`;
-      }
-
-      firstSend = false;
-      return res.write(data, 'utf8');
-    },
-    complete() {
-      if (firstSend) {
-        res.json([]);
-      } else {
-        res.end(prettyPrint ? '\n]' : ']', 'utf8');
-      }
-      completed = true;
-    },
-    close() {
-      if (!completed) {
-        res.end();
-      }
-    },
-  };
 }
