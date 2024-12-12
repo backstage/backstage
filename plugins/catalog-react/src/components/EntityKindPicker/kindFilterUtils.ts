@@ -56,15 +56,19 @@ export function filterKinds(
   // enforced casing from the catalog-backend. This makes a key/value record for the Select options,
   // including selectedKind if it's unknown - but allows the selectedKind to get clobbered by the
   // more proper catalog kind if it exists.
-  const desiredKinds = allowedKinds
-    ? allowedKinds.map(k => k.toLocaleLowerCase('en-US'))
-    : Array.from(allKinds.keys());
+  let availableKinds = Array.from(allKinds.keys());
+  if (allowedKinds) {
+    availableKinds = allowedKinds
+      .map(k => k.toLocaleLowerCase('en-US'))
+      .filter(k => allKinds.has(k));
+  }
 
   const kindsMap = new Map(
-    desiredKinds.map(kind => [kind, allKinds.get(kind) || kind]),
+    availableKinds.map(kind => [kind, allKinds.get(kind) || kind]),
   );
 
   if (forcedKinds && !kindsMap.has(forcedKinds)) {
+    // this is the only time we set a label for a kind which is not properly capitalized
     kindsMap.set(forcedKinds.toLocaleLowerCase('en-US'), forcedKinds);
   }
 
