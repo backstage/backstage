@@ -1,6 +1,17 @@
-const { releases } = require('./releases');
+import { releases } from './releases';
 
-module.exports = {
+function tryToLoadCustomSidebar(ref){
+  try{
+    return require(ref)
+  } catch (e) {
+    return []
+  }
+}
+
+const catalogSidebar = tryToLoadCustomSidebar("../docs/features/software-catalog/api/sidebar.ts")
+const searchSidebar = tryToLoadCustomSidebar("../docs/features/search/api/sidebar.ts")
+
+export default {
   docs: {
     Overview: [
       'overview/what-is-backstage',
@@ -136,6 +147,19 @@ module.exports = {
           'features/search/search-overview',
           'features/search/getting-started',
           'features/search/concepts',
+          {
+            type: "category",
+            label: "API",
+            link: searchSidebar.length > 0 ? {
+              type: "generated-index",
+              title: "Search API",
+              slug: "/category/search-api",
+            } : {
+              type: "doc",
+              id: "openapi/generated-docs/404",
+            },
+            items: searchSidebar,
+          },
           'features/search/architecture',
           'features/search/search-engines',
           'features/search/collators',
@@ -158,7 +182,19 @@ module.exports = {
           'features/software-catalog/extending-the-model',
           'features/software-catalog/external-integrations',
           'features/software-catalog/catalog-customization',
-          'features/software-catalog/software-catalog-api',
+          {
+            type: "category",
+            label: "API",
+            link: catalogSidebar.length > 0 ? {
+              type: "generated-index",
+              title: "Catalog API",
+              slug: "/category/catalog-api",
+            }: {
+              type: "doc",
+              id: "openapi/generated-docs/404",
+            },
+            items: catalogSidebar,
+          },
           'features/software-catalog/creating-the-catalog-graph',
           'features/software-catalog/faq',
         ],
