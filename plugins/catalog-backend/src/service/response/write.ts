@@ -78,15 +78,18 @@ export async function writeEntitiesResponse(
     const prefix = first ? '[' : ',';
     first = false;
 
-    await new Promise((resolve, reject) => {
-      res.write(prefix + entity, 'utf8', err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(err);
-        }
+    const needsDrain = !res.write(prefix + entity, 'utf8');
+    if (needsDrain) {
+      await new Promise<void>(resolve => {
+        const cont = () => {
+          res.off('drain', cont);
+          res.off('close', cont);
+          resolve();
+        };
+        res.on('drain', cont);
+        res.on('close', cont);
       });
-    });
+    }
   }
   res.end(`${first ? '[' : ''}]${trailing}`);
 }
