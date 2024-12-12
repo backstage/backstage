@@ -23,9 +23,9 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import React, { useState } from 'react';
 import { useEntityList } from '../../hooks';
-import { Autocomplete } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
@@ -68,7 +68,7 @@ export const EntityProcessingStatusPicker = () => {
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
-      <Autocomplete<string, true>
+      <CatalogAutocomplete<string, true>
         label={t('entityProcessingStatusPicker.title')}
         multiple
         disableCloseOnSelect

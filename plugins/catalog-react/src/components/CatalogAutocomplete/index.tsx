@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 export {
-  AutocompleteComponent as Autocomplete,
-  type AutocompleteComponentProps,
-} from './Autocomplete';
+  CatalogAutocomplete,
+  type CatalogAutocompleteProps,
+} from './CatalogAutocomplete';

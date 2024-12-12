@@ -16,7 +16,6 @@
 
 export * from './AlertDisplay';
 export * from './AutoLogout';
-export * from './Autocomplete';
 export * from './Avatar';
 export * from './LinkButton';
 export * from './CodeSnippet';

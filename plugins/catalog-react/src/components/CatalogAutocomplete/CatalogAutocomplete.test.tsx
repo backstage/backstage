@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AutocompleteComponent as Autocomplete } from './Autocomplete';
+import { CatalogAutocomplete } from './CatalogAutocomplete';
 
 describe('Autocomplete', () => {
   const user = userEvent.setup();
@@ -25,7 +25,7 @@ describe('Autocomplete', () => {
 
   it('renders without exploding', () => {
     render(
-      <Autocomplete
+      <CatalogAutocomplete
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
@@ -36,7 +36,7 @@ describe('Autocomplete', () => {
 
   it('renders the expand icon', () => {
     render(
-      <Autocomplete
+      <CatalogAutocomplete
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
@@ -48,7 +48,7 @@ describe('Autocomplete', () => {
 
   it('displays options when clicked', async () => {
     render(
-      <Autocomplete
+      <CatalogAutocomplete
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
@@ -65,7 +65,7 @@ describe('Autocomplete', () => {
 
   it('supports required input', () => {
     render(
-      <Autocomplete
+      <CatalogAutocomplete
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
@@ -79,7 +79,7 @@ describe('Autocomplete', () => {
 
   it('displays helper text when provided', () => {
     render(
-      <Autocomplete
+      <CatalogAutocomplete
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"
@@ -91,7 +91,9 @@ describe('Autocomplete', () => {
   });
 
   it('renders without label', () => {
-    render(<Autocomplete name="test-autocomplete" options={mockOptions} />);
+    render(
+      <CatalogAutocomplete name="test-autocomplete" options={mockOptions} />,
+    );
 
     const input = screen.getByRole('textbox');
     expect(input).toBeInTheDocument();
@@ -99,7 +101,7 @@ describe('Autocomplete', () => {
 
   it('displays correct option on selection', async () => {
     render(
-      <Autocomplete
+      <CatalogAutocomplete
         name="test-autocomplete"
         options={mockOptions}
         label="Test Label"

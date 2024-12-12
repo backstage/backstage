@@ -27,7 +27,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import { Autocomplete } from '@backstage/core-components';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
@@ -40,6 +39,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -177,7 +177,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
-      <Autocomplete<Entity, true>
+      <CatalogAutocomplete<Entity, true>
         label={t('entityOwnerPicker.title')}
         multiple
         disableCloseOnSelect

@@ -27,8 +27,8 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
-import { Autocomplete } from '@backstage/core-components';
 import { reduceBackendCatalogFilters } from '../../utils/filters';
+import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -148,7 +148,7 @@ export function EntityAutocompletePicker<
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
-      <Autocomplete<string, true>
+      <CatalogAutocomplete<string, true>
         multiple
         disableCloseOnSelect
         label={label}

@@ -125,7 +125,7 @@ const PaperComponent = (props: PaperProps) => (
 );
 
 /** @public */
-export type AutocompleteComponentProps<
+export type CatalogAutocompleteProps<
   T,
   Multiple extends boolean | undefined = undefined,
   DisableClearable extends boolean | undefined = undefined,
@@ -147,12 +147,12 @@ export type AutocompleteComponentProps<
 };
 
 /** @public */
-export function AutocompleteComponent<
+export function CatalogAutocomplete<
   T,
   Multiple extends boolean | undefined = undefined,
   DisableClearable extends boolean | undefined = undefined,
   FreeSolo extends boolean | undefined = undefined,
->(props: AutocompleteComponentProps<T, Multiple, DisableClearable, FreeSolo>) {
+>(props: CatalogAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>) {
   const { label, name, LabelProps, TextFieldProps, ...rest } = props;
   const classes = useStyles();
   const renderInput = useCallback(
