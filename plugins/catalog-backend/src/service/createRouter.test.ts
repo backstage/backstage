@@ -883,7 +883,7 @@ describe('createRouter readonly and raw json enabled', () => {
       getLocationByEntity: jest.fn(),
     };
     const router = await createRouter({
-      enableRawJson: true,
+      disableRelationsCompatibility: true,
       entitiesCatalog,
       locationService,
       logger: mockServices.logger.mock(),

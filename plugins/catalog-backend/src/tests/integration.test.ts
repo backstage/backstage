@@ -198,7 +198,7 @@ class TestHarness {
   readonly #proxyProgressTracker: ProxyProgressTracker;
 
   static async create(options?: {
-    enableRawJson?: boolean;
+    disableRelationsCompatibility?: boolean;
     logger?: LoggerService;
     db?: Knex;
     permissions?: PermissionEvaluator;
@@ -277,7 +277,7 @@ class TestHarness {
       database: db,
       logger,
       stitcher,
-      enableRawJson: options?.enableRawJson,
+      disableRelationsCompatibility: options?.disableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -788,7 +788,7 @@ describe('Catalog Backend Integration', () => {
 
   it('should return valid responses in raw JSON mode', async () => {
     const harness = await TestHarness.create({
-      enableRawJson: true,
+      disableRelationsCompatibility: true,
     });
 
     const entityA = {

@@ -486,8 +486,8 @@ export class CatalogBuilder {
       discovery,
     });
 
-    const enableRawJson = config.getOptionalBoolean(
-      'catalog.enableRawJsonResponses',
+    const disableRelationsCompatibility = config.getOptionalBoolean(
+      'catalog.disableRelationsCompatibility',
     );
 
     const policy = this.buildEntityPolicy();
@@ -526,7 +526,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
-      enableRawJson,
+      disableRelationsCompatibility,
     });
 
     let permissionsService: PermissionsService;
@@ -638,7 +638,7 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       permissionsService,
-      enableRawJson,
+      disableRelationsCompatibility,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

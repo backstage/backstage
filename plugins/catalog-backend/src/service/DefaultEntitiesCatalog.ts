@@ -105,18 +105,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
   private readonly stitcher: Stitcher;
-  private readonly enableRawJson: boolean;
+  private readonly disableRelationsCompatibility: boolean;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
     stitcher: Stitcher;
-    enableRawJson?: boolean;
+    disableRelationsCompatibility?: boolean;
   }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
-    this.enableRawJson = Boolean(options.enableRawJson);
+    this.disableRelationsCompatibility = Boolean(
+      options.disableRelationsCompatibility,
+    );
   }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -197,7 +199,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     return {
       entities: processRawEntitiesResult(
         rows.map(r => r.final_entity!),
-        this.enableRawJson
+        this.disableRelationsCompatibility
           ? request?.fields
           : e => {
               expandLegacyCompoundRelationsInEntity(e);

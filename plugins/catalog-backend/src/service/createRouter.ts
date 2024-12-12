@@ -85,7 +85,7 @@ export interface RouterOptions {
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
-  enableRawJson?: boolean;
+  disableRelationsCompatibility?: boolean;
 }
 
 /**
@@ -113,7 +113,7 @@ export async function createRouter(
     permissionsService,
     auth,
     httpAuth,
-    enableRawJson = false,
+    disableRelationsCompatibility = false,
   } = options;
 
   const readonlyEnabled =
@@ -215,7 +215,7 @@ export async function createRouter(
 
               signal.throwIfAborted();
 
-              if (!enableRawJson) {
+              if (!disableRelationsCompatibility) {
                 processEntitiesResponseItems(
                   result.items,
                   expandLegacyCompoundRelationsInEntity,
