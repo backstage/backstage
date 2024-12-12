@@ -17,7 +17,7 @@
 import express from 'express';
 import { mockErrorHandler } from '@backstage/backend-test-utils';
 import request from 'supertest';
-import { writeSingleEntityResponse } from './write';
+import { writeEntitiesResponse, writeSingleEntityResponse } from './write';
 
 describe('writeSingleEntityResponse', () => {
   const app = express();
@@ -119,6 +119,162 @@ describe('writeSingleEntityResponse', () => {
       );
       expect(res.body).toMatchObject({
         error: { name: 'NotFoundError', message: 'not found' },
+      });
+    });
+  });
+});
+
+describe('writeEntitiesResponse', () => {
+  const app = express();
+  app.use(express.json());
+  app.get('/echo', (req, res) => {
+    writeEntitiesResponse(res, req.body);
+  });
+  app.get('/wrapped', (req, res) => {
+    writeEntitiesResponse(res, req.body, entities => ({
+      page: 1,
+      items: entities,
+      totalItems: 1337,
+    }));
+  });
+  app.use(mockErrorHandler());
+
+  describe('in object form', () => {
+    it('should return empty list', async () => {
+      const res = await request(app).get('/echo').send({
+        type: 'object',
+        entities: [],
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual([]);
+    });
+
+    it('should return mixed objects', async () => {
+      const res = await request(app)
+        .get('/echo')
+        .send({
+          type: 'object',
+          entities: [{ kind: 'Component' }, null, { kind: 'User' }, null],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual([
+        { kind: 'Component' },
+        null,
+        { kind: 'User' },
+        null,
+      ]);
+    });
+
+    it('should wrap response of empty list', async () => {
+      const res = await request(app)
+        .get('/wrapped')
+        .send({ type: 'object', entities: [] });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual({ page: 1, items: [], totalItems: 1337 });
+    });
+
+    it('should wrap response of mixed list', async () => {
+      const res = await request(app)
+        .get('/wrapped')
+        .send({
+          type: 'object',
+          entities: [{ kind: 'Component' }, null, { kind: 'User' }, null],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual({
+        page: 1,
+        items: [{ kind: 'Component' }, null, { kind: 'User' }, null],
+        totalItems: 1337,
+      });
+    });
+  });
+
+  describe('in raw form', () => {
+    it('should return empty list', async () => {
+      const res = await request(app).get('/echo').send({
+        type: 'raw',
+        entities: [],
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual([]);
+    });
+
+    it('should return mixed objects', async () => {
+      const res = await request(app)
+        .get('/echo')
+        .send({
+          type: 'raw',
+          entities: ['{"kind":"Component"}', null, '{"kind":"User"}', null],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual([
+        { kind: 'Component' },
+        null,
+        { kind: 'User' },
+        null,
+      ]);
+    });
+
+    it('should wrap response of empty list', async () => {
+      const res = await request(app)
+        .get('/wrapped')
+        .send({ type: 'raw', entities: [] });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual({ page: 1, items: [], totalItems: 1337 });
+    });
+
+    it('should wrap response of mixed list', async () => {
+      const res = await request(app)
+        .get('/wrapped')
+        .send({
+          type: 'raw',
+          entities: ['{"kind":"Component"}', null, '{"kind":"User"}', null],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual({
+        page: 1,
+        items: [{ kind: 'Component' }, null, { kind: 'User' }, null],
+        totalItems: 1337,
       });
     });
   });

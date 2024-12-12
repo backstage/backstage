@@ -42,7 +42,7 @@ export function writeSingleEntityResponse(
   }
 }
 
-export function writeEntitiesResponse(
+export async function writeEntitiesResponse(
   res: Response,
   response: EntitiesResponseItems,
   responseWrapper?: (entities: JsonValue) => JsonValue,
@@ -63,7 +63,7 @@ export function writeEntitiesResponse(
   if (responseWrapper) {
     const marker = `__MARKER_${Math.random().toString(36).slice(2, 10)}__`;
     const wrapped = JSON.stringify(responseWrapper(marker));
-    const parts = wrapped.split(marker);
+    const parts = wrapped.split(`"${marker}"`);
     if (parts.length !== 2) {
       throw new Error(
         `Entity items response was incorrectly wrapped into ${parts.length} different parts`,
@@ -75,16 +75,18 @@ export function writeEntitiesResponse(
 
   let first = true;
   for (const entity of response.entities) {
-    if (first) {
-      res.write('[', 'utf8');
-      first = false;
-    } else {
-      res.write(',', 'utf8');
-    }
-    res.write(entity, 'utf8');
+    const prefix = first ? '[' : ',';
+    first = false;
+
+    await new Promise((resolve, reject) => {
+      res.write(prefix + entity, 'utf8', err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(err);
+        }
+      });
+    });
   }
-  res.end(']');
-  if (trailing) {
-    res.write(trailing, 'utf8');
-  }
+  res.end(`${first ? '[' : ''}]${trailing}`);
 }

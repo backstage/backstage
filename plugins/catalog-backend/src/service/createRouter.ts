@@ -171,7 +171,7 @@ export async function createRouter(
             res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
           }
 
-          writeEntitiesResponse(res, entities);
+          await writeEntitiesResponse(res, entities);
           return;
         }
 
@@ -253,7 +253,7 @@ export async function createRouter(
             credentials: await httpAuth.credentials(req),
           });
 
-        writeEntitiesResponse(res, items, entities => ({
+        await writeEntitiesResponse(res, items, entities => ({
           items: entities,
           totalItems,
           pageInfo: {
@@ -312,7 +312,9 @@ export async function createRouter(
           fields: parseEntityTransformParams(req.query, request.fields),
           credentials: await httpAuth.credentials(req),
         });
-        writeEntitiesResponse(res, items, entities => ({ items: entities }));
+        await writeEntitiesResponse(res, items, entities => ({
+          items: entities,
+        }));
       })
       .get('/entity-facets', async (req, res) => {
         const response = await entitiesCatalog.facets({
