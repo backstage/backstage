@@ -52,7 +52,7 @@ auth:
             - resolver: usernameMatchingUserEntityName
 ```
 
-The Atlassian provider is a structure with two configuration keys:
+The Atlassian provider is a structure with the following configuration keys:
 
 - `clientId`: The Key you generated in the developer console.
 - `clientSecret`: The Secret tied to the generated Key.
