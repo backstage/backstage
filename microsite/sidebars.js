@@ -507,7 +507,7 @@ module.exports = {
           'tutorials/auth-service-migration',
           'tutorials/enable-public-entry',
           'tutorials/setup-opentelemetry',
-          'accessibility/index'
+          'accessibility/index',
         ],
       },
     ],
