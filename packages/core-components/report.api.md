@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
@@ -34,7 +33,6 @@ import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Options } from 'react-markdown';
 import { Options as Options_2 } from '@material-table/core';
-import { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -53,7 +51,6 @@ import { StyleRules as StyleRules_2 } from '@material-ui/core/styles/withStyles'
 import { TabProps } from '@material-ui/core/Tab';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
-import { TypographyProps } from '@material-ui/core/Typography';
 import { WithStyles } from '@material-ui/core/styles';
 
 // @public
@@ -77,38 +74,6 @@ export function AppIcon(props: AppIconProps): React_2.JSX.Element;
 export type AppIconProps = IconComponentProps & {
   id: string;
   Fallback?: IconComponent;
-};
-
-// @public (undocumented)
-export function Autocomplete<
-  T,
-  Multiple extends boolean | undefined = undefined,
-  DisableClearable extends boolean | undefined = undefined,
-  FreeSolo extends boolean | undefined = undefined,
->(
-  props: AutocompleteComponentProps<T, Multiple, DisableClearable, FreeSolo>,
-): React_2.JSX.Element;
-
-// @public (undocumented)
-export type AutocompleteComponentProps<
-  T,
-  Multiple extends boolean | undefined = undefined,
-  DisableClearable extends boolean | undefined = undefined,
-  FreeSolo extends boolean | undefined = undefined,
-> = Omit<
-  AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-  'PopperComponent' | 'PaperComponent' | 'popupIcon' | 'renderInput'
-> & {
-  name: string;
-  label?: string;
-  LabelProps?: TypographyProps<'label'>;
-  TextFieldProps?: Omit<OutlinedTextFieldProps, 'variant'>;
-  renderInput?: AutocompleteProps<
-    T,
-    Multiple,
-    DisableClearable,
-    FreeSolo
-  >['renderInput'];
 };
 
 // @public
