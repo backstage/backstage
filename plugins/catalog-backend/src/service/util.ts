@@ -192,17 +192,13 @@ export function createEntityArrayJsonStream(
       }
 
       if (response.type === 'raw') {
-        let result = true;
+        let needsDrain = false;
         for (const item of response.entities) {
-          if (firstSend) {
-            result ||= res.write('[');
-            firstSend = false;
-          } else {
-            result ||= res.write(',');
-          }
-          result ||= res.write(item);
+          const prefix = firstSend ? '[' : ',';
+          firstSend = false;
+          needsDrain ||= !res.write(prefix + item, 'utf8');
         }
-        return result;
+        return !needsDrain;
       }
 
       let data: string;
@@ -215,13 +211,13 @@ export function createEntityArrayJsonStream(
       }
 
       firstSend = false;
-      return res.write(data);
+      return res.write(data, 'utf8');
     },
     complete() {
       if (firstSend) {
         res.json([]);
       } else {
-        res.end(prettyPrint ? '\n]' : ']');
+        res.end(prettyPrint ? '\n]' : ']', 'utf8');
       }
       completed = true;
     },

@@ -30,7 +30,6 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { JsonObject } from '@backstage/types';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import { EntitiesCatalog } from '../catalog/types';
@@ -199,7 +198,7 @@ class TestHarness {
   readonly #proxyProgressTracker: ProxyProgressTracker;
 
   static async create(options?: {
-    config?: JsonObject;
+    enableRawJson?: boolean;
     logger?: LoggerService;
     db?: Knex;
     permissions?: PermissionEvaluator;
@@ -209,21 +208,19 @@ class TestHarness {
       emit: CatalogProcessorEmit,
     ): Promise<Entity>;
   }) {
-    const config = new ConfigReader(
-      options?.config ?? {
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
-          },
-        },
-        catalog: {
-          stitchingStrategy: {
-            mode: 'immediate',
-          },
+    const config = new ConfigReader({
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
         },
       },
-    );
+      catalog: {
+        stitchingStrategy: {
+          mode: 'immediate',
+        },
+      },
+    });
     const logger = options?.logger ?? mockServices.logger.mock();
     const db =
       options?.db ??
@@ -280,6 +277,7 @@ class TestHarness {
       database: db,
       logger,
       stitcher,
+      enableRawJson: options?.enableRawJson,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -785,6 +783,59 @@ describe('Catalog Backend Integration', () => {
           "Invalid location ref 'url:javascript:bad()', target is a javascript: URL",
         ),
       ],
+    });
+  });
+
+  it('should return valid responses in raw JSON mode', async () => {
+    const harness = await TestHarness.create({
+      enableRawJson: true,
+    });
+
+    const entityA = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'a',
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityB = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'b',
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+
+    await harness.setInputEntities([entityA, entityB]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': {
+        ...entityA,
+        metadata: {
+          ...entityA.metadata,
+          etag: expect.any(String),
+          uid: expect.any(String),
+        },
+        relations: [],
+      },
+      'component:default/b': {
+        ...entityB,
+        metadata: {
+          ...entityB.metadata,
+          etag: expect.any(String),
+          uid: expect.any(String),
+        },
+        relations: [],
+      },
     });
   });
 });

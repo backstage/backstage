@@ -860,7 +860,7 @@ describe('createRouter readonly disabled', () => {
   });
 });
 
-describe('createRouter readonly enabled', () => {
+describe('createRouter readonly and raw json enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let app: express.Express;
   let locationService: jest.Mocked<LocationService>;
@@ -883,6 +883,7 @@ describe('createRouter readonly enabled', () => {
       getLocationByEntity: jest.fn(),
     };
     const router = await createRouter({
+      enableRawJson: true,
       entitiesCatalog,
       locationService,
       logger: mockServices.logger.mock(),
@@ -910,7 +911,7 @@ describe('createRouter readonly enabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: { type: 'object', entities: [entities[0]] },
+        items: { type: 'raw', entities: [JSON.stringify(entities[0])] },
         pageInfo: {},
         totalItems: 1,
       });
