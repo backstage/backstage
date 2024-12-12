@@ -23,6 +23,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
+import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -53,6 +54,14 @@ const PatchedRedirectPlugin: typeof RedirectPlugin = (ctx, opts) => {
     },
   };
 };
+
+const defaultOpenApiOptions = {
+  hideSendButton: true,
+  sidebarOptions: {
+    groupPathsBy: 'tag',
+    categoryLinkSource: "tag",
+  },
+} satisfies OpenApiPlugin.Options
 
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
@@ -110,6 +119,7 @@ const config: Config = {
                 },
               }
             : undefined),
+          docItemComponent: "@theme/ApiItem",
         },
         blog: {
           path: 'blog',
@@ -266,7 +276,27 @@ const config: Config = {
         ratingMode: 'stars',
       },
     ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: "api", // plugin id
+        docsPluginId: "classic", // configured for preset-classic
+        config: {
+          catalog: {
+            ...defaultOpenApiOptions,
+            specPath: "../plugins/catalog-backend/src/schema/openapi.yaml",
+            outputDir: "../docs/features/software-catalog/api",
+          } satisfies OpenApiPlugin.Options,
+          search: {
+            ...defaultOpenApiOptions,
+            specPath: "../plugins/search-backend/src/schema/openapi.yaml",
+            outputDir: "../docs/features/search/api",
+          } satisfies OpenApiPlugin.Options,
+        }
+      },
+    ]
   ],
+  themes: ["docusaurus-theme-openapi-docs"],
   themeConfig: {
     colorMode: {
       defaultMode: 'dark',
