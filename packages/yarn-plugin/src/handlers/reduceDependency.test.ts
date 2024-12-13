@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { join as joinPath } from 'path';
-import fs from 'fs-extra';
 import { Configuration, Project, structUtils, httpUtils } from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -143,48 +141,6 @@ describe('reduceDependency', () => {
           structUtils.makeIdent('backstage', 'core'),
           'npm:^6.7.8',
         ),
-      );
-    });
-
-    it('throws if backstage.json is missing', async () => {
-      await fs.remove(joinPath(mockDir.path, 'backstage.json'));
-
-      await expect(
-        reduceDependency(
-          structUtils.makeDescriptor(
-            structUtils.makeIdent('backstage', 'other'),
-            'backstage:^',
-          ),
-          project,
-        ),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          message: expect.stringContaining(
-            'Valid version string not found in backstage.json',
-          ),
-        }),
-      );
-    });
-
-    it(`throws if backstage.json doesn't contain a valid version`, async () => {
-      mockDir.addContent({
-        'backstage.json': JSON.stringify({}),
-      });
-
-      await expect(
-        reduceDependency(
-          structUtils.makeDescriptor(
-            structUtils.makeIdent('backstage', 'other'),
-            'backstage:^',
-          ),
-          project,
-        ),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          message: expect.stringContaining(
-            'Valid version string not found in backstage.json',
-          ),
-        }),
       );
     });
 

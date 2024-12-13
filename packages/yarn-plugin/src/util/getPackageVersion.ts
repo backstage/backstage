@@ -20,35 +20,10 @@ import {
   httpUtils,
   structUtils,
 } from '@yarnpkg/core';
-import { ppath, npath, xfs } from '@yarnpkg/fslib';
-import { valid as semverValid } from 'semver';
-import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { getManifestByVersion } from '@backstage/release-manifests';
 
-import { PROTOCOL } from './constants';
-
-export const getCurrentBackstageVersion = () => {
-  const workspaceRoot = npath.toPortablePath(
-    findPaths(npath.fromPortablePath(ppath.cwd())).targetRoot,
-  );
-  const backstageJsonPath = ppath.join(workspaceRoot, BACKSTAGE_JSON);
-
-  if (!xfs.existsSync(backstageJsonPath)) {
-    throw new Error('Valid version string not found in backstage.json');
-  }
-
-  const backstageJson = xfs.readJsonSync(
-    ppath.join(workspaceRoot, BACKSTAGE_JSON),
-  );
-
-  const backstageVersion = semverValid(backstageJson.version);
-
-  if (backstageVersion === null) {
-    throw new Error('Valid version string not found in backstage.json');
-  }
-
-  return backstageVersion;
-};
+import { PROTOCOL } from '../constants';
+import { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
 
 export const getPackageVersion = async (
   descriptor: Descriptor,
