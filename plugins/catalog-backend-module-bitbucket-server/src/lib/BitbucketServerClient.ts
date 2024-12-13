@@ -19,6 +19,13 @@ import {
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
 import pThrottle from 'p-throttle';
+import {
+  BitbucketServerDefaultBranch,
+  BitbucketServerRepository,
+} from './index';
+import { BitbucketServerProject } from './types';
+import { NotFoundError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 
 // 1 per second
 const throttle = pThrottle({
@@ -31,15 +38,6 @@ const throttledFetch = throttle(
     return await fetch(url, options);
   },
 );
-import {
-  BitbucketServerDefaultBranch,
-  BitbucketServerRepository,
-} from './index';
-
-import { BitbucketServerProject } from './types';
-import { NotFoundError } from '@backstage/errors';
-
-import { ResponseError } from '@backstage/errors';
 
 /**
  * A client for interacting with a Bitbucket Server instance
