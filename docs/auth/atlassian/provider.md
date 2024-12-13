@@ -46,10 +46,9 @@ auth:
       development:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
-        audience: "https://api.atlassian.com"            # Optional: Specifies the intended recipient of tokens
-        callbackUrl: "https://backstage.example.com/api/auth/atlassian/handler/frame" 
-                                                        # Optional: Must match the redirect URL set in Atlassian OAuth settings.
-        additionalScopes:                                # Optional: Additional permissions requested from Atlassian.
+        audience: "https://api.atlassian.com"                                                  # Optional: Specifies the intended recipient of tokens
+        callbackUrl: "https://backstage.example.com/api/auth/atlassian/handler/frame"          # Optional: Must match the redirect URL set in Atlassian OAuth settings.
+        additionalScopes:                                                                      # Optional: Additional permissions requested from Atlassian.
           - "read:jira-user"
           - "read:jira-work"
         signIn:
