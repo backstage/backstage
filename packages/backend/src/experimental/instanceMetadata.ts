@@ -18,6 +18,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import Router from 'express-promise-router';
 
 // Example usage of the instance metadata service to log the installed features.
 export default createBackendPlugin({
@@ -27,13 +28,22 @@ export default createBackendPlugin({
       deps: {
         instanceMetadata: instanceMetadataServiceRef,
         logger: coreServices.logger,
+        httpRouter: coreServices.rootHttpRouter,
       },
-      async init({ instanceMetadata, logger }) {
+      async init({ instanceMetadata, logger, httpRouter }) {
         logger.info(
-          `Installed features on this instance: ${instanceMetadata
-            .getInstalledFeatures()
-            .join(', ')}`,
+          `Installed features on this instance: ${JSON.stringify(
+            instanceMetadata.getInstalledFeatures(),
+          )}`,
         );
+
+        const router = Router();
+
+        router.get('/features/installed', (_, res) => {
+          res.json({ items: instanceMetadata.getInstalledFeatures() });
+        });
+
+        httpRouter.use('/.backstage/instanceInfo', router);
       },
     });
   },

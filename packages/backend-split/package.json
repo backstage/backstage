@@ -1,6 +1,6 @@
 {
-  "name": "example-backend",
-  "version": "0.0.38-next.2",
+  "name": "example-backend-split",
+  "version": "0.0.33-next.2",
   "backstage": {
     "role": "backend"
   },
@@ -22,12 +22,10 @@
   ],
   "scripts": {
     "build": "backstage-cli package build",
-    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "start": "backstage-cli package start --require ./src/instrumentation.js",
     "start:split": "backstage-cli package start --require ./src/instrumentation.js --config ../../app-config.yaml --config app-config.split.yaml",
-    "start:prometheus": "docker run --mount type=bind,source=./prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus",
     "test": "backstage-cli package test"
   },
   "dependencies": {
@@ -46,7 +44,6 @@
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-devtools-backend": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
-    "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",

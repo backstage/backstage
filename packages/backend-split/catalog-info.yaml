@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-backend-split
+  title: example-backend-split
+spec:
+  lifecycle: experimental
+  type: backstage-backend
+  owner: maintainers
