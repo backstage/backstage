@@ -16,9 +16,10 @@
 
 import { EntitiesResponseItems } from '../../catalog/types';
 import { Response } from 'express';
+import { writeResponseData } from './write';
 
 export interface EntityArrayJsonStream {
-  send(entities: EntitiesResponseItems): boolean;
+  send(entities: EntitiesResponseItems): Promise<boolean>;
   complete(): void;
   close(): void;
 }
@@ -33,7 +34,7 @@ export function createEntityArrayJsonStream(
   let completed = false;
 
   return {
-    send(response) {
+    async send(response) {
       if (firstSend) {
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         res.status(200);
@@ -41,13 +42,15 @@ export function createEntityArrayJsonStream(
       }
 
       if (response.type === 'raw') {
-        let needsDrain = false;
         for (const item of response.entities) {
           const prefix = firstSend ? '[' : ',';
           firstSend = false;
-          needsDrain ||= !res.write(prefix + item, 'utf8');
+
+          if (await writeResponseData(res, prefix + item)) {
+            return true;
+          }
         }
-        return !needsDrain;
+        return false;
       }
 
       let data: string;
@@ -60,7 +63,7 @@ export function createEntityArrayJsonStream(
       }
 
       firstSend = false;
-      return res.write(data, 'utf8');
+      return writeResponseData(res, data);
     },
     complete() {
       if (firstSend) {

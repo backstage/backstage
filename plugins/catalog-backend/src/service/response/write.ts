@@ -78,26 +78,37 @@ export async function writeEntitiesResponse(
     const prefix = first ? '[' : ',';
     first = false;
 
-    const needsDrain = !res.write(prefix + entity, 'utf8');
-    if (needsDrain) {
-      const closed = await new Promise<boolean>(resolve => {
-        function onContinue() {
-          res.off('drain', onContinue);
-          res.off('close', onClose);
-          resolve(false);
-        }
-        function onClose() {
-          res.off('drain', onContinue);
-          res.off('close', onClose);
-          resolve(true);
-        }
-        res.on('drain', onContinue);
-        res.on('close', onClose);
-      });
-      if (closed) {
-        return;
-      }
+    if (await writeResponseData(res, prefix + entity)) {
+      return;
     }
   }
   res.end(`${first ? '[' : ''}]${trailing}`);
+}
+
+/**
+ * Writes a data to the response and waits if the response buffer needs draining.
+ *
+ * @internal
+ * @returns true if the response was closed while waiting for the buffer to drain
+ */
+export async function writeResponseData(res: Response, data: string | Buffer) {
+  const ok = res.write(data, 'utf8');
+  if (!ok) {
+    const closed = await new Promise<boolean>(resolve => {
+      function onContinue() {
+        res.off('drain', onContinue);
+        res.off('close', onClose);
+        resolve(false);
+      }
+      function onClose() {
+        res.off('drain', onContinue);
+        res.off('close', onClose);
+        resolve(true);
+      }
+      res.on('drain', onContinue);
+      res.on('close', onClose);
+    });
+    return closed;
+  }
+  return false;
 }
