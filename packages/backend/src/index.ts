@@ -19,6 +19,7 @@ import {
   coreServices,
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
+import { systemMetadataServiceFactory } from '@backstage/backend-defaults/alpha/systemMetadata';
 
 const backend = createBackend();
 
@@ -69,7 +70,9 @@ backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-backend.add(import('./instanceMetadata'));
+backend.add(import('./experimental/instanceMetadata'));
+backend.add(import('./experimental/systemMetadata'));
+backend.add(systemMetadataServiceFactory);
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
 backend.add(import('@backstage/plugin-mcp-actions-backend'));

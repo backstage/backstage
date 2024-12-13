@@ -23,3 +23,16 @@ export type {
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
 export { actionsRegistryServiceRef, actionsServiceRef } from './refs';
+
+import { createServiceRef } from '@backstage/backend-plugin-api';
+
+export const systemMetadataServiceRef = createServiceRef<
+  import('./services/definitions/SystemMetadataService').SystemMetadataService
+>({
+  id: 'core.systemMetadata',
+});
+
+export type {
+  BackstageInstance,
+  SystemMetadataService,
+} from './services/definitions/SystemMetadataService';
