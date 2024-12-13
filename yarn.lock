@@ -5752,8 +5752,8 @@ __metadata:
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
     msw: ^1.0.0
-    p-throttle: ^4.1.1
     node-fetch: ^2.7.0
+    p-throttle: ^4.1.1
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft
