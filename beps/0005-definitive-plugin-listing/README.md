@@ -204,10 +204,10 @@ discovery:
 
 ```yaml
 paths:
-  /.backstage/systemInfo/features/installed:
+  /.backstage/systemInfo/instances:
     get:
-      summary: Get a list of installed features for this system.
-      operationId: GetInstalledFeaturesBySystem
+      summary: Get a list of instances in this Backstage system.
+      operationId: ListInstances
       responses:
         '200':
           description: Successful operation
@@ -216,22 +216,15 @@ paths:
               schema:
                 type: array
                 items:
-                  oneOf:
-                    - type: object
-                      properties:
-                        type:
-                          type: string
-                          enum:
-                            - plugin
-                        pluginId: { type: string }
-                    - type: object
-                      properties:
-                        type:
-                          type: string
-                          enum:
-                            - module
-                        pluginId: { type: string }
-                        moduleId: { type: string }
+                  type: object
+                  properties:
+                    url:
+                      oneOf:
+                        - type: string
+                        - type: object
+                          properties:
+                            internal: { type: string }
+                            external: { type: string }
 ```
 
 ## Release Plan
