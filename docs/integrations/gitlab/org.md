@@ -170,7 +170,7 @@ catalog:
       yourProviderId:
         host: gitlab.com
         orgEnabled: true
-        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
+        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only this group and groups under the provided path (which will be stripped)
         relations: # Optional
           - INHERITED # Optional. Members of any ancestor groups will also be considered members of the current group.
           - DESCENDANTS # Optional. Members of any descendant groups will also be considered members of the current group.
@@ -240,7 +240,7 @@ catalog:
       yourProviderId:
         host: gitlab.com ## Could also be self hosted.
         orgEnabled: true
-        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
+        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only this group and groups under the provided path (which will be stripped)
         restrictUsersToGroup: true # Optional: Backstage will ingest only users directly assigned to org/teams.
         includeUsersWithoutSeat: false # Optional: Set to true to include users without paid seat, only applicable for SaaS
 ```

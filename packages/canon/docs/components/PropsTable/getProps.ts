@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function getBoxProps(styles: Record<string, any>) {
+export function getProps(styles: Record<string, any>) {
   return Object.keys(styles).reduce(
     (acc: Record<string, { type: any[]; responsive: boolean }>, n) => {
       const style = styles[n];

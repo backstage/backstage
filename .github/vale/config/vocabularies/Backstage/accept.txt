@@ -80,6 +80,8 @@ cron
 cronjobs
 crontab
 css
+cve
+CVEs
 daemonsets
 Datadog
 dataflow
@@ -95,6 +97,7 @@ deliverables
 denormalized
 dependabot
 deps
+deserialization
 destructured
 destructuring
 Deutsche
@@ -339,6 +342,7 @@ rebase
 rebasing
 Recharts
 Redash
+redis
 renderer
 renderers
 replicasets

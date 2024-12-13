@@ -32,7 +32,7 @@ dependencies that they have between each other.
 
 :::tip
 
-To make the the version bump process even easier and more streamlined we highly recommend using the [Backstage yarn plugin](#managing-package-versions-with-the-backstage-yarn-plugin)
+To make the version bump process even easier and more streamlined we highly recommend using the [Backstage yarn plugin](#managing-package-versions-with-the-backstage-yarn-plugin)
 
 :::
 

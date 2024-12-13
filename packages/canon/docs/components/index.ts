@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+export * from './Banner';
 export * from './Chip';
-export * from './Table';
-export * from './Title';
-export * from './Text';
 export * from './Columns';
 export * from './ComponentStatus';
-export * from './LayoutComponents';
-export * from './Banner';
 export * from './IconLibrary';
+export * from './LayoutComponents';
+export * from './PropsTable';
 export * from './Roadmap';
+export * from './Table';
+export * from './Text';
+export * from './Title';

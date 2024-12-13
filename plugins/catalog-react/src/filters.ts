@@ -22,7 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations } from './utils';
+import { getEntityRelations } from './utils/getEntityRelations';
 
 /**
  * Filter entities based on Kind.

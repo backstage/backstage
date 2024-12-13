@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend
 
+## 1.29.0-next.2
+
+### Minor Changes
+
+- c1307b4: Implement `/entities` in terms of `queryEntities` to not run into memory and performance problems on large catalogs
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 8013c9c: Perform the by-query count inlined with the main query
+- feba9ee: Use a join based strategy for filtering, when having small page sizes
+- 1fdb48e: Use a faster count method on pg when computing some metrics
+- 0c33465: Implement `/entities/by-name/:kind/:namespace/:name` using `getEntitiesByRefs`
+- d93390d: When parsing filters, do not make redundant `anyOf` and `allOf` nodes when there's only a single entry within them
+- 24ecea8: Avoid extra ordering in by-query when the user doesn't ask for it
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/backend-openapi-utils@0.4.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 1.29.0-next.1
 
 ### Minor Changes

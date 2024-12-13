@@ -2,7 +2,7 @@ import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
 import { Padding } from './docs/padding';
-import { PropsTable, getBoxProps } from '../../../docs/components/PropsTable';
+import { PropsTable, getProps } from '../../../docs/components';
 import { boxProperties } from './sprinkles.css';
 import { spacingProperties } from '../../layout/sprinkles.css';
 
@@ -29,7 +29,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 
 <PropsTable
   data={{
-    ...getBoxProps(boxProperties.styles),
+    ...getProps(boxProperties.styles),
     children: {
       type: 'ReactNode',
       required: false,
@@ -53,7 +53,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 
 <Padding />
 
-<PropsTable data={getBoxProps(spacingProperties.styles)} />
+<PropsTable data={getProps(spacingProperties.styles)} />
 
 <Title type="h2">Examples</Title>
 <Text>Here are some examples of how you can use the Box component.</Text>

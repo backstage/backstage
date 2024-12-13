@@ -33,3 +33,4 @@ export * from './components/Container';
 // UI components
 export * from './components/Button';
 export * from './components/Icon';
+export * from './components/Checkbox';
