@@ -23,9 +23,9 @@ import {
 } from '@backstage/backend-plugin-api/alpha';
 import Router from 'express-promise-router';
 
-// Example usage of the instance metadata service to log the installed features.
+// Example usage of the instance metadata service to log the list of instances and a small HTTP API.
 export default createBackendPlugin({
-  pluginId: 'system-metadata-logging',
+  pluginId: 'system-metadata',
   register(env) {
     env.registerInit({
       deps: {

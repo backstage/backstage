@@ -70,8 +70,6 @@ backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-backend.add(import('./experimental/instanceMetadata'));
-backend.add(import('./experimental/systemMetadata'));
 backend.add(systemMetadataServiceFactory);
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));

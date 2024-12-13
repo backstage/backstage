@@ -20,7 +20,7 @@ import {
 
 // Example usage of the instance metadata service to log the installed plugins.
 export default createBackendPlugin({
-  pluginId: 'instance-metadata-logging',
+  pluginId: 'instance-metadata',
   register(env) {
     env.registerInit({
       deps: {
