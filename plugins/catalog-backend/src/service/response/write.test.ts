@@ -277,5 +277,41 @@ describe('writeEntitiesResponse', () => {
         totalItems: 1337,
       });
     });
+
+    it('should write a large wrapped response', async () => {
+      const entityMock = JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          namespace: 'default',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:https://example.com',
+          },
+        },
+        spec: {
+          type: 'service',
+          owner: 'me',
+          lifecycle: 'production',
+        },
+      });
+      const res = await request(app)
+        .get('/wrapped')
+        .send({
+          type: 'raw',
+          entities: Array(300).fill(entityMock),
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.body).toEqual({
+        page: 1,
+        items: expect.objectContaining({ length: 300 }),
+        totalItems: 1337,
+      });
+    });
   });
 });

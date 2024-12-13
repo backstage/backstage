@@ -80,15 +80,23 @@ export async function writeEntitiesResponse(
 
     const needsDrain = !res.write(prefix + entity, 'utf8');
     if (needsDrain) {
-      await new Promise<void>(resolve => {
-        const cont = () => {
-          res.off('drain', cont);
-          res.off('close', cont);
-          resolve();
-        };
-        res.on('drain', cont);
-        res.on('close', cont);
+      const closed = await new Promise<boolean>(resolve => {
+        function onContinue() {
+          res.off('drain', onContinue);
+          res.off('close', onClose);
+          resolve(false);
+        }
+        function onClose() {
+          res.off('drain', onContinue);
+          res.off('close', onClose);
+          resolve(true);
+        }
+        res.on('drain', onContinue);
+        res.on('close', onClose);
       });
+      if (closed) {
+        return;
+      }
     }
   }
   res.end(`${first ? '[' : ''}]${trailing}`);
