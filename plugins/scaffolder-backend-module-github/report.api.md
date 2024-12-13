@@ -79,6 +79,7 @@ export function createGithubBranchProtectionAction(options: {
     requiredConversationResolution?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
     requiredCommitSigning?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
     token?: string | undefined;
   },
   JsonObject
@@ -270,6 +271,7 @@ export function createGithubRepoCreateAction(options: {
         }
       | undefined;
     requireCommitSigning?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
     customProperties?:
       | {
           [key: string]: string;
@@ -317,6 +319,7 @@ export function createGithubRepoPushAction(options: {
     sourcePath?: string | undefined;
     token?: string | undefined;
     requiredCommitSigning?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
   },
   JsonObject
@@ -430,6 +433,7 @@ export function createPublishGithubAction(options: {
         }
       | undefined;
     requiredCommitSigning?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
     customProperties?:
       | {
           [key: string]: string;
