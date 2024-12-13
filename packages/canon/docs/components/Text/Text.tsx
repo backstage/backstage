@@ -24,7 +24,7 @@ export const Text = ({
   style?: React.CSSProperties;
 }) => {
   return (
-    <div className="text" style={style}>
+    <div className="sb-text" style={style}>
       {children}
     </div>
   );

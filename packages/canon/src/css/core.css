@@ -17,6 +17,12 @@
 /* Normalize */
 @import './normalize.css';
 
+*,
+html,
+body {
+  font-family: var(--canon-font-regular);
+}
+
 /* Light theme tokens */
 :root {
   /* Colors */
@@ -91,12 +97,6 @@
   /* Container */
   --canon-container-max-width: 1200px;
   --canon-container-padding: 1rem;
-
-  *,
-  html,
-  body {
-    font-family: var(--canon-font-regular);
-  }
 }
 
 /* Dark theme tokens */

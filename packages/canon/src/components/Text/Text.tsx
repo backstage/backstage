@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-.sb-text {
-  font-family: 'Geist', sans-serif;
-  font-size: 16px;
-  line-height: 28px;
-  margin: 0;
-  font-weight: 300;
-  margin-bottom: 16px;
+import React, { forwardRef } from 'react';
+import { TextProps } from './types';
 
-  & p {
-    font-family: 'Geist', sans-serif;
-    font-size: 16px;
-    line-height: 28px;
-    margin: 0;
-    font-weight: 300;
-  }
-}
+export const Text = forwardRef<HTMLParagraphElement, TextProps>(
+  (props, ref) => {
+    const {
+      children,
+      variant = 'body',
+      weight = 'regular',
+      ...restProps
+    } = props;
+
+    return (
+      <p
+        ref={ref}
+        {...restProps}
+        className={`text ${variant ? `text-${variant}` : ''} ${
+          weight ? `text-${weight}` : ''
+        }`}
+      >
+        {children}
+      </p>
+    );
+  },
+);
+
+Text.displayName = 'Text';
