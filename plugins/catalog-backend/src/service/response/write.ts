@@ -94,6 +94,9 @@ export async function writeEntitiesResponse(
 export async function writeResponseData(res: Response, data: string | Buffer) {
   const ok = res.write(data, 'utf8');
   if (!ok) {
+    if (!res.writableNeedDrain) {
+      return true;
+    }
     const closed = await new Promise<boolean>(resolve => {
       function onContinue() {
         res.off('drain', onContinue);
