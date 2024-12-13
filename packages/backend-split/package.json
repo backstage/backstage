@@ -1,6 +1,6 @@
 {
   "name": "example-backend-split",
-  "version": "0.0.33-next.2",
+  "version": "0.0.1",
   "backstage": {
     "role": "backend"
   },
