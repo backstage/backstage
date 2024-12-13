@@ -136,7 +136,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [entities[0]],
+        items: { type: 'object', entities: [entities[0]] },
         pageInfo: {},
         totalItems: 1,
       });
@@ -149,7 +149,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses single and multiple request parameters and passes them down', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [],
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
@@ -185,7 +185,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -203,7 +203,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses initial request', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [],
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
@@ -239,7 +239,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses encoded params request', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [],
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
@@ -283,7 +283,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -312,7 +312,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: {
           nextCursor: mockCursor({ fullTextFilter: { term: 'mySearch' } }),
@@ -354,7 +354,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -379,7 +379,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -402,7 +402,7 @@ describe('createRouter readonly disabled', () => {
         },
       };
       entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
+        entities: { type: 'object', entities: [entity] },
         pageInfo: { hasNextPage: false },
       });
 
@@ -419,7 +419,7 @@ describe('createRouter readonly disabled', () => {
 
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entities.mockResolvedValue({
-        entities: [],
+        entities: { type: 'object', entities: [] },
         pageInfo: { hasNextPage: false },
       });
 
@@ -446,7 +446,7 @@ describe('createRouter readonly disabled', () => {
         },
       };
       entitiesCatalog.entitiesBatch.mockResolvedValue({
-        items: [entity],
+        items: { type: 'object', entities: [entity] },
       });
 
       const response = await request(app).get('/entities/by-name/k/ns/n');
@@ -462,7 +462,7 @@ describe('createRouter readonly disabled', () => {
 
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entitiesBatch.mockResolvedValue({
-        items: [null],
+        items: { type: 'object', entities: [null] },
       });
 
       const response = await request(app).get('/entities/by-name/b/d/c');
@@ -533,7 +533,9 @@ describe('createRouter readonly disabled', () => {
         },
       };
       const entityRef = stringifyEntityRef(entity);
-      entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
+      });
       const response = await request(app)
         .post('/entities/by-refs?filter=kind=Component')
         .set('Content-Type', 'application/json')
@@ -858,7 +860,7 @@ describe('createRouter readonly disabled', () => {
   });
 });
 
-describe('createRouter readonly enabled', () => {
+describe('createRouter readonly and raw json enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let app: express.Express;
   let locationService: jest.Mocked<LocationService>;
@@ -881,6 +883,7 @@ describe('createRouter readonly enabled', () => {
       getLocationByEntity: jest.fn(),
     };
     const router = await createRouter({
+      disableRelationsCompatibility: true,
       entitiesCatalog,
       locationService,
       logger: mockServices.logger.mock(),
@@ -908,7 +911,7 @@ describe('createRouter readonly enabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [entities[0]],
+        items: { type: 'raw', entities: [JSON.stringify(entities[0])] },
         pageInfo: {},
         totalItems: 1,
       });
@@ -1128,7 +1131,7 @@ describe('NextRouter permissioning', () => {
       },
     };
     entitiesCatalog.entities.mockResolvedValueOnce({
-      entities: [spideySense],
+      entities: { type: 'object', entities: [spideySense] },
       pageInfo: { hasNextPage: false },
     });
 
