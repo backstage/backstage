@@ -216,7 +216,7 @@ export async function createRouter(
               signal.throwIfAborted();
 
               if (!disableRelationsCompatibility) {
-                processEntitiesResponseItems(
+                result.items = processEntitiesResponseItems(
                   result.items,
                   expandLegacyCompoundRelationsInEntity,
                 );

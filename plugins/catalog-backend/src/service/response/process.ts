@@ -39,7 +39,7 @@ export function processRawEntitiesResult(
 export function processEntitiesResponseItems(
   response: EntitiesResponseItems,
   transform?: (entity: Entity) => Entity,
-) {
+): EntitiesResponseItems {
   if (!transform) {
     return response;
   }
