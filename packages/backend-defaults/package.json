@@ -23,6 +23,7 @@
     "./actions": "./src/entrypoints/actions/index.ts",
     "./actionsRegistry": "./src/entrypoints/actionsRegistry/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
+    "./alpha/systemMetadata": "./src/entrypoints/systemMetadata/index.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
     "./cache": "./src/entrypoints/cache/index.ts",
     "./database": "./src/entrypoints/database/index.ts",
@@ -55,6 +56,9 @@
       ],
       "auditor": [
         "src/entrypoints/auditor/index.ts"
+      ],
+      "alpha/systemMetadata": [
+        "src/entrypoints/systemMetadata/index.ts"
       ],
       "auth": [
         "src/entrypoints/auth/index.ts"

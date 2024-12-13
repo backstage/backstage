@@ -1,0 +1,5 @@
+GET http://localhost:7007/.backstage/systemInfo/features/installed
+
+###
+
+GET http://localhost:7008/.backstage/systemInfo/features/installed
