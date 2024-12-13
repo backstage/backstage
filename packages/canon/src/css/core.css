@@ -17,16 +17,6 @@
 /* Normalize */
 @import './normalize.css';
 
-/* Geist font */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
-
-*,
-html,
-body {
-  font-family: var(--canon-font-regular);
-}
-
 /* Light theme tokens */
 :root {
   /* Colors */
@@ -101,6 +91,12 @@ body {
   /* Container */
   --canon-container-max-width: 1200px;
   --canon-container-padding: 1rem;
+
+  *,
+  html,
+  body {
+    font-family: var(--canon-font-regular);
+  }
 }
 
 /* Dark theme tokens */

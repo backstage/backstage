@@ -6,8 +6,7 @@ import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import '../docs/components/styles.css';
 
 // Canon specific styles
-
-import '../src/css/backstage.css';
+import '../src/css/core.css';
 import '../src/css/components.css';
 
 // Custom themes
