@@ -15,7 +15,7 @@
  */
 
 import { InputError, NotAllowedError } from '@backstage/errors';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
 import {
@@ -148,75 +148,21 @@ export function decodeCursor(encodedCursor: string) {
 // sure that all adopters have re-stitched their entities so that the new
 // targetRef field is present on them, and that they have stopped consuming
 // the now-removed old field
-// TODO(jhaals): Remove this in April 2022
-export function expandLegacyCompoundRelationRefsInResponse(
-  entities: Entity[],
-): void {
-  for (const entity of entities) {
-    if (entity.relations) {
-      for (const relation of entity.relations as any) {
-        if (!relation.targetRef && relation.target) {
-          // This is the case where an old-form entity, not yet stitched with
-          // the updated code, was in the database
-          relation.targetRef = stringifyEntityRef(relation.target);
-        } else if (!relation.target && relation.targetRef) {
-          // This is the case where a new-form entity, stitched with the
-          // updated code, was in the database but we still want to produce
-          // the old data shape as well for compatibility reasons
-          relation.target = parseEntityRef(relation.targetRef);
-        }
+// TODO(patriko): Remove this in catalog 2.0
+export function expandLegacyCompoundRelationsInEntity(entity: Entity): Entity {
+  if (entity.relations) {
+    for (const relation of entity.relations as any) {
+      if (!relation.targetRef && relation.target) {
+        // This is the case where an old-form entity, not yet stitched with
+        // the updated code, was in the database
+        relation.targetRef = stringifyEntityRef(relation.target);
+      } else if (!relation.target && relation.targetRef) {
+        // This is the case where a new-form entity, stitched with the
+        // updated code, was in the database but we still want to produce
+        // the old data shape as well for compatibility reasons
+        relation.target = parseEntityRef(relation.targetRef);
       }
     }
   }
-}
-
-export interface EntityArrayJsonStream {
-  send(entities: Entity[]): boolean;
-  complete(): void;
-  close(): void;
-}
-
-// Helps stream Entity[] as a JSON response stream to avoid performance issues
-export function createEntityArrayJsonStream(
-  res: Response,
-): EntityArrayJsonStream {
-  // Imitate the httpRouter behavior of pretty-printing in development
-  const prettyPrint = process.env.NODE_ENV === 'development';
-  let firstSend = true;
-  let completed = false;
-
-  return {
-    send(entities) {
-      if (firstSend) {
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.status(200);
-        res.flushHeaders();
-      }
-
-      let data: string;
-      if (prettyPrint) {
-        data = JSON.stringify(entities, null, 2);
-        data = firstSend ? data.slice(0, -2) : `,\n${data.slice(2, -2)}`;
-      } else {
-        data = JSON.stringify(entities);
-        data = firstSend ? data.slice(0, -1) : `,${data.slice(1, -1)}`;
-      }
-
-      firstSend = false;
-      return res.write(data);
-    },
-    complete() {
-      if (firstSend) {
-        res.json([]);
-      } else {
-        res.end(prettyPrint ? '\n]' : ']');
-      }
-      completed = true;
-    },
-    close() {
-      if (!completed) {
-        res.end();
-      }
-    },
-  };
+  return entity;
 }

@@ -207,20 +207,21 @@ describe('rootHttpRouterServiceFactory', () => {
   it('should wait the server to shutdown', async () => {
     jest.useFakeTimers();
 
+    const serverStopMock = jest.fn();
+
     let app: Express | undefined = undefined;
     const lifecycleMock = new BackendLifecycleImpl(mockServices.rootLogger());
 
     const tester = ServiceFactoryTester.from(
       rootHttpRouterServiceFactory({
         configure(options) {
-          console.log('configure');
           options.app.use(options.healthRouter);
-          options.app.use(options.lifecycleMiddleware);
           options.app.get('/test', (_req, res) => {
             res.status(200).send({ status: 'ok' }).end();
           });
           options.app.use(options.middleware.error());
           app = options.app;
+          options.server.addListener('close', serverStopMock);
         },
       }),
       {
@@ -306,18 +307,6 @@ describe('rootHttpRouterServiceFactory', () => {
 
     jest.advanceTimersByTime(1);
 
-    // No longer accepting requests after shutdown
-    await request(app!)
-      .get('/test')
-      .expect(503, {
-        error: {
-          name: 'ServiceUnavailableError',
-          message: 'Service is shutting down',
-        },
-        request: { method: 'GET', url: '/test' },
-        response: { statusCode: 503 },
-      });
-
     await request(app)
       .get('/.backstage/health/v1/liveness')
       .expect(200, { status: 'ok' });
@@ -327,6 +316,11 @@ describe('rootHttpRouterServiceFactory', () => {
       status: 'error',
     });
 
-    return await expect(beforeShutdownPromise).resolves.toBeUndefined();
+    return expect(
+      beforeShutdownPromise.then(() => {
+        expect(serverStopMock).toHaveBeenCalled();
+        jest.useRealTimers();
+      }),
+    ).resolves.toBeUndefined();
   });
 });

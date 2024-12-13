@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import React from 'react';
-import { MetadataView } from './MetadataView';
-import { SchemaViewProps } from './types';
-
-export function ScalarView({ schema }: SchemaViewProps) {
-  return (
-    <>
-      {schema.description && (
-        <Box marginBottom={4}>
-          <Typography variant="body1">{schema.description}</Typography>
-        </Box>
-      )}
-      <MetadataView schema={schema} />
-    </>
-  );
-}
+export {
+  processRawEntitiesResult,
+  processEntitiesResponseItems,
+  entitiesResponseToObjects,
+} from './process';
+export { writeSingleEntityResponse, writeEntitiesResponse } from './write';
+export { createEntityArrayJsonStream } from './createEntityArrayJsonStream';

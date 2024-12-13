@@ -36,18 +36,18 @@
 
 .button.primary:hover {
   background-color: transparent;
-  box-shadow: 0 0 0 1px var(--canon-outline-focus);
+  box-shadow: inset 0 0 0 1px var(--canon-outline-focus);
   color: var(--canon-text-primary);
 }
 
 .button.secondary {
   background-color: transparent;
-  box-shadow: 0 0 0 1px var(--canon-outline);
+  box-shadow: inset 0 0 0 1px var(--canon-outline);
   color: var(--canon-text-primary);
 }
 
 .button.secondary:hover {
-  box-shadow: 0 0 0 1px var(--canon-outline-hover);
+  box-shadow: inset 0 0 0 1px var(--canon-outline-hover);
 }
 
 .button.tertiary {

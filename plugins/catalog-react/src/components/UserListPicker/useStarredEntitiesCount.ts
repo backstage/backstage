@@ -23,7 +23,7 @@ import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
-import { reduceCatalogFilters } from '../../utils';
+import { reduceCatalogFilters } from '../../utils/filters';
 
 export function useStarredEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
