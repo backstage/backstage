@@ -26,8 +26,8 @@
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "start": "backstage-cli package start --require ./src/instrumentation.js",
-    "start:split": "backstage-cli package start --require ./src/instrumentation.js --config ../../app-config.yaml --config app-config.split.yaml",
     "start:prometheus": "docker run --mount type=bind,source=./prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus",
+    "start:split": "backstage-cli package start --require ./src/instrumentation.js --config ../../app-config.yaml --config app-config.split.yaml",
     "test": "backstage-cli package test"
   },
   "dependencies": {
@@ -68,8 +68,7 @@
     "@opentelemetry/auto-instrumentations-node": "^0.61.0",
     "@opentelemetry/exporter-prometheus": "^0.54.0",
     "@opentelemetry/sdk-node": "^0.54.0",
-    "example-app": "link:../app",
-    "express-promise-router": "^4.1.0"
+    "example-app": "link:../app"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
