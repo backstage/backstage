@@ -58,7 +58,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
-import { DeferredPromise, createDeferred } from '@backstage/types';
 import {
   createEntityArrayJsonStream,
   processEntitiesResponseItems,
@@ -175,22 +174,6 @@ export async function createRouter(
           return;
         }
 
-        // For other read-the-entire-world cases, use queryEntities and stream
-        // out results.
-
-        // The write lock is used for back pressure, preventing slow readers
-        // from forcing our read loop to pile up response data in userspace
-        // buffers faster than the kernel buffer is emptied.
-        // https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback
-        const locks: { writeLock?: DeferredPromise } = {};
-        const controller = new AbortController();
-        const signal = controller.signal;
-        req.on('end', () => {
-          controller.abort(new Error('Client closed connection'));
-          locks.writeLock?.resolve();
-          delete locks.writeLock;
-        });
-
         const responseStream = createEntityArrayJsonStream(res);
         const limit = 10000;
         let cursor: Cursor | undefined;
@@ -211,30 +194,16 @@ export async function createRouter(
             );
 
             if (result.items.entities.length) {
-              await locks?.writeLock;
-
-              signal.throwIfAborted();
-
               if (!disableRelationsCompatibility) {
                 result.items = processEntitiesResponseItems(
                   result.items,
                   expandLegacyCompoundRelationsInEntity,
                 );
               }
-              if (!responseStream.send(result.items)) {
-                // The kernel buffer is full. Create the lock but do not await it
-                // yet - we can better spend our time going to the next round of
-                // the loop and read from the database while we wait for it to
-                // drain.
-                locks.writeLock = createDeferred();
-                res.once('drain', () => {
-                  locks.writeLock?.resolve();
-                  delete locks.writeLock;
-                });
+              if (await responseStream.send(result.items)) {
+                return; // Client closed connection
               }
             }
-
-            signal.throwIfAborted();
 
             cursor = result.pageInfo?.nextCursor;
           } while (cursor);
