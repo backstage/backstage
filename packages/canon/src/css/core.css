@@ -51,10 +51,10 @@ body {
   --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2);
 
   /* Font families */
-  --canon-font-regular: 'Geist', serif;
+  --canon-font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
   --canon-font-monospace: 'Monospace', monospace;
-  --canon-font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
 
   /* Font weights */
   --canon-font-normal: 400;
