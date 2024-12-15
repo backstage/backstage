@@ -24,4 +24,27 @@
     font-size: var(--canon-font-size-body);
     line-height: 140%;
   }
+
+  &.text-subtitle {
+    font-size: var(--canon-font-size-subtitle);
+    line-height: 140%;
+  }
+
+  &.text-caption {
+    font-size: var(--canon-font-size-caption);
+    line-height: 140%;
+  }
+
+  &.text-label {
+    font-size: var(--canon-font-size-label);
+    line-height: 140%;
+  }
+
+  &.text-regular {
+    font-weight: var(--canon-font-weight-regular);
+  }
+
+  &.text-bold {
+    font-weight: var(--canon-font-weight-bold);
+  }
 }

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Text } from './Text';
+import { Stack } from '../Stack';
 
 const meta = {
   title: 'Components/Text',
@@ -28,8 +30,34 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     children:
-      ' Lorem ipsum dolor sit amet consectetur. Nec arcu vel lacus magna adipiscing nisi mauris tortor viverra. Enim rhoncus quisque consectetur ligula diam ac lacus massa. Id interdum id pellentesque justo ut massa nibh amet. Odio massa in scelerisque tortor massa integer purus amet enim. Eros sit neque nullam facilisis. Purus massa dignissim aliquet purus eu in. Urna consequat ullamcorper arcu amet dictumst. Commodo praesent turpis fringilla tristique congue volutpat in. Nulla in nulla ultrices lacus. In ultrices id tellus ut. Semper duis in in non proin et pulvinar. Sit amet vulputate lorem sit ipsum quis amet pulvinar ultricies. Imperdiet enim molestie habitant eget. Aenean mollis aenean dolor sodales tempus blandit.',
+      'Lorem ipsum dolor sit amet consectetur. Nec arcu vel lacus magna adipiscing nisi mauris tortor viverra. Enim rhoncus quisque consectetur ligula diam ac lacus massa. Id interdum id pellentesque justo ut massa nibh amet. Odio massa in scelerisque tortor massa integer purus amet enim. Eros sit neque nullam facilisis. Purus massa dignissim aliquet purus eu in. Urna consequat ullamcorper arcu amet dictumst. Commodo praesent turpis fringilla tristique congue volutpat in. Nulla in nulla ultrices lacus. In ultrices id tellus ut.',
   },
+};
+
+export const AllVariants: Story = {
+  args: {
+    children: 'Text',
+  },
+  render: () => (
+    <Stack gap="md">
+      <Text variant="subtitle">Subtitle {Default.args?.children}</Text>
+      <Text variant="body">Body {Default.args?.children}</Text>
+      <Text variant="caption">Caption {Default.args?.children}</Text>
+      <Text variant="label">Label {Default.args?.children}</Text>
+    </Stack>
+  ),
+};
+
+export const AllWeights: Story = {
+  args: {
+    children: 'Text',
+  },
+  render: () => (
+    <Stack gap="md">
+      <Text weight="regular">Regular {Default.args?.children}</Text>
+      <Text weight="bold">Bold {Default.args?.children}</Text>
+    </Stack>
+  ),
 };
 
 export const Responsive: Story = {

@@ -57,8 +57,8 @@ body {
   --canon-font-monospace: 'Monospace', monospace;
 
   /* Font weights */
-  --canon-font-normal: 400;
-  --canon-font-bold: 600;
+  --canon-font-weight-regular: 400;
+  --canon-font-weight-bold: 600;
 
   /* Font sizes */
   --canon-font-size-label: 0.625rem; /* 10px */
