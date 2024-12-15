@@ -13,17 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Breakpoints } from '../types';
 
-import { Breakpoint } from '../../layout/types';
+export const getResponsiveValue = (
+  value: any,
+  breakpoint: keyof Breakpoints,
+) => {
+  if (typeof value === 'object') {
+    const breakpointsOrder: (keyof Breakpoints)[] = [
+      'xs',
+      'sm',
+      'md',
+      'lg',
+      'xl',
+      '2xl',
+    ];
+    const index = breakpointsOrder.indexOf(breakpoint);
 
-/** @public */
-export interface TextProps {
-  children: React.ReactNode;
-  variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
-}
+    for (let i = index; i >= 0; i--) {
+      if (value[breakpointsOrder[i]]) {
+        return value[breakpointsOrder[i]];
+      }
+    }
+    return value['xs'];
+  }
+  return value;
+};

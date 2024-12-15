@@ -31,3 +31,13 @@ export const Default: Story = {
       ' Lorem ipsum dolor sit amet consectetur. Nec arcu vel lacus magna adipiscing nisi mauris tortor viverra. Enim rhoncus quisque consectetur ligula diam ac lacus massa. Id interdum id pellentesque justo ut massa nibh amet. Odio massa in scelerisque tortor massa integer purus amet enim. Eros sit neque nullam facilisis. Purus massa dignissim aliquet purus eu in. Urna consequat ullamcorper arcu amet dictumst. Commodo praesent turpis fringilla tristique congue volutpat in. Nulla in nulla ultrices lacus. In ultrices id tellus ut. Semper duis in in non proin et pulvinar. Sit amet vulputate lorem sit ipsum quis amet pulvinar ultricies. Imperdiet enim molestie habitant eget. Aenean mollis aenean dolor sodales tempus blandit.',
   },
 };
+
+export const Responsive: Story = {
+  args: {
+    ...Default.args,
+    variant: {
+      xs: 'label',
+      md: 'body',
+    },
+  },
+};

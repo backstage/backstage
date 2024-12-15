@@ -11,6 +11,7 @@ import '../src/css/components.css';
 
 // Custom themes
 import './themes/backstage.css';
+import { ThemeProvider } from '../src/theme/context';
 
 const preview: Preview = {
   parameters: {
@@ -27,6 +28,46 @@ const preview: Preview = {
       storySort: {
         method: 'alphabetical',
       },
+    },
+    viewport: {
+      viewports: {
+        small: {
+          name: 'Small',
+          styles: {
+            width: '640px',
+            height: '100%',
+          },
+        },
+        medium: {
+          name: 'Medium',
+          styles: {
+            width: '768px',
+            height: '100%',
+          },
+        },
+        large: {
+          name: 'Large',
+          styles: {
+            width: '1024px',
+            height: '100%',
+          },
+        },
+        xlarge: {
+          name: 'XLarge',
+          styles: {
+            width: '1280px',
+            height: '100%',
+          },
+        },
+        '2xl': {
+          name: '2XL',
+          styles: {
+            width: '1536px',
+            height: '100%',
+          },
+        },
+      },
+      defaultViewport: 'small',
     },
   },
   decorators: [
@@ -48,7 +89,11 @@ const preview: Preview = {
           'var(--canon-background)';
       });
 
-      return <Story />;
+      return (
+        <ThemeProvider>
+          <Story />
+        </ThemeProvider>
+      );
     },
   ],
 };
