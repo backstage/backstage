@@ -15,8 +15,6 @@
  */
 
 .sb-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   font-size: 16px;
   line-height: 28px;
   margin: 0;
@@ -24,9 +22,6 @@
   margin-bottom: 16px;
 
   & p {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-      'Segoe UI Symbol';
     font-size: 16px;
     line-height: 28px;
     margin: 0;
