@@ -885,7 +885,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(1);
+    expect.assertions(2);
     const backend = new BackendInitializer(baseFactories);
     const plugin = createBackendPlugin({
       pluginId: 'test',
@@ -919,6 +919,13 @@ describe('BackendInitializer', () => {
                 type: 'plugin',
               },
             ]);
+            expect(instanceMetadata.getInstalledFeatures().map(String)).toEqual(
+              [
+                'plugin{pluginId=test}',
+                'module{moduleId=test,pluginId=test}',
+                'plugin{pluginId=instance-metadata}',
+              ],
+            );
           },
         });
       },
