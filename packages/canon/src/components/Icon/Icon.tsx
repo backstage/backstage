@@ -16,10 +16,10 @@
 
 import React from 'react';
 import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+import type { IconProps } from './types';
 
 /** @public */
-export const Icon = (props: { name: IconNames; size?: number }) => {
+export const Icon = (props: IconProps) => {
   const { name, size = 16 } = props;
   const { icons } = useTheme();
 

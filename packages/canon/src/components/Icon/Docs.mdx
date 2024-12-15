@@ -1,21 +1,23 @@
 import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
-import * as ButtonStories from './Button.stories';
+import * as IconStories from './Icon.stories';
 import { Title, Text } from '../../../docs/components';
 import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+import { defaultIcons } from './icons';
 
-<Meta of={ButtonStories} />
+<Meta of={IconStories} />
 
 <Unstyled>
 
-<Title type="h1">Button</Title>
-<Text>A button component that can be used to trigger actions.</Text>
+<Title type="h1">Icon</Title>
 
-<Canvas of={ButtonStories.Primary} />
+<Text>Icons are used to represent an action or a state.</Text>
+
+<Canvas of={IconStories.Primary} />
 
 <Title type="h2">Usage</Title>
-<Source code={`import { Button } from "@backstage/canon";
+<Source code={`import { Icon } from "@backstage/canon";
 
-<Button>Click me</Button>
+<Icon name="icon-name" />
 `} language="tsx" dark />
 
 <Title type="h2" style={{ marginBottom: '16px' }}>
@@ -24,20 +26,12 @@ import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
 
 <PropsTable
   data={{
+    name: {
+      type: Object.keys(defaultIcons),
+      responsive: false,
+    },
     size: {
-      type: ['small', 'medium'],
-      responsive: false,
-    },
-    variant: {
-      type: ['primary', 'secondary', 'tertiary'],
-      responsive: false,
-    },
-    disabled: {
-      type: 'boolean',
-      responsive: false,
-    },
-    children: {
-      type: 'ReactNode',
+      type: 'number',
       responsive: false,
     },
     className: {

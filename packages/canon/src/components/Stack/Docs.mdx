@@ -15,12 +15,16 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   columns. All values are responsive.
 </Text>
 
-<Title type="h2">Installation</Title>
+<Title type="h2">Usage</Title>
 <Source
-  code={`import { Stack } from "@backstage/canon";`}
-  language="tsx"
-  dark
-/>
+  code={`import { Stack } from "@backstage/canon";
+
+<Stack>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Stack>
+`} language="tsx" dark />
 
 <Title type="h2" style={{ marginBottom: '16px' }}>
   API reference

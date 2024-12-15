@@ -13,7 +13,11 @@ import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
 
 <Canvas of={HeadingStories.Title1} />
 
-<Source of={HeadingStories.Title1} dark />
+<Title type="h2">Usage</Title>
+<Source code={`import { Heading } from "@backstage/canon";
+
+<Heading variant="title1">Hello World!</Heading>
+`} language="tsx" dark />
 
 <Title type="h2" style={{ marginBottom: '16px' }}>
   API reference
