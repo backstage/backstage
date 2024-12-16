@@ -19,17 +19,21 @@ import { HeadingProps } from './types';
 import { useTheme } from '../../theme/context';
 import { getResponsiveValue } from '../../utils/getResponsiveValue';
 
-export const Heading = forwardRef<HTMLParagraphElement, HeadingProps>(
+export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
-    const { children, variant = 'title1', ...restProps } = props;
+    const { children, variant = 'title1', as = 'h1', ...restProps } = props;
     const { breakpoint } = useTheme();
     const responsiveVariant = getResponsiveValue(variant, breakpoint);
 
-    console.log(breakpoint);
-    console.log(responsiveVariant);
+    let Component = as;
+    if (variant === 'title2') Component = 'h2';
+    if (variant === 'title3') Component = 'h3';
+    if (variant === 'title4') Component = 'h4';
+    if (variant === 'title5') Component = 'h5';
+    if (as) Component = as;
 
     return (
-      <p
+      <Component
         ref={ref}
         {...restProps}
         className={`text ${
@@ -37,7 +41,7 @@ export const Heading = forwardRef<HTMLParagraphElement, HeadingProps>(
         }`}
       >
         {children}
-      </p>
+      </Component>
     );
   },
 );

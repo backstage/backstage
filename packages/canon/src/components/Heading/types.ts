@@ -32,4 +32,5 @@ export interface HeadingProps {
           'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
         >
       >;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }
