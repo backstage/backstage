@@ -2642,7 +2642,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service":
+"@backstage/backend-dynamic-feature-service@workspace:^, @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service"
   dependencies:
@@ -3432,7 +3432,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader":
+"@backstage/frontend-dynamic-feature-loader@workspace:^, @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader":
   version: 0.0.0-use.local
   resolution: "@backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader"
   dependencies:
@@ -29970,6 +29970,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"example-app-next@link:../app-next::locator=example-backend%40workspace%3Apackages%2Fbackend":
+  version: 0.0.0-use.local
+  resolution: "example-app-next@link:../app-next::locator=example-backend%40workspace%3Apackages%2Fbackend"
+  languageName: node
+  linkType: soft
+
 "example-app-next@workspace:packages/app-next":
   version: 0.0.0-use.local
   resolution: "example-app-next@workspace:packages/app-next"
@@ -29984,9 +29990,9 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-defaults": "workspace:^"
+    "@backstage/frontend-dynamic-feature-loader": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
-    "@backstage/plugin-api-docs": "workspace:^"
     "@backstage/plugin-app": "workspace:^"
     "@backstage/plugin-app-visualizer": "workspace:^"
     "@backstage/plugin-auth": "workspace:^"
@@ -29998,21 +30004,12 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
     "@backstage/plugin-home": "workspace:^"
-    "@backstage/plugin-kubernetes": "workspace:^"
-    "@backstage/plugin-kubernetes-cluster": "workspace:^"
-    "@backstage/plugin-notifications": "workspace:^"
-    "@backstage/plugin-org": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-scaffolder": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     "@backstage/plugin-search": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
-    "@backstage/plugin-signals": "workspace:^"
-    "@backstage/plugin-techdocs": "workspace:^"
-    "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
-    "@backstage/plugin-techdocs-react": "workspace:^"
-    "@backstage/plugin-user-settings": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
@@ -30037,12 +30034,6 @@ __metadata:
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
   languageName: unknown
-  linkType: soft
-
-"example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend":
-  version: 0.0.0-use.local
-  resolution: "example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend"
-  languageName: node
   linkType: soft
 
 "example-app@workspace:packages/app":
@@ -30117,6 +30108,7 @@ __metadata:
   resolution: "example-backend@workspace:packages/backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-dynamic-feature-service": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -30155,7 +30147,7 @@ __metadata:
     "@opentelemetry/auto-instrumentations-node": "npm:^0.61.0"
     "@opentelemetry/exporter-prometheus": "npm:^0.54.0"
     "@opentelemetry/sdk-node": "npm:^0.54.0"
-    example-app: "link:../app"
+    example-app-next: "link:../app-next"
   languageName: unknown
   linkType: soft
 

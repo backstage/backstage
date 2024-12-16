@@ -17,11 +17,10 @@
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
 import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
-
-import '@backstage/ui/css/styles.css';
+import { dynamicFrontendFeaturesLoader } from '@backstage/frontend-dynamic-feature-loader';
 
 const app = createApp({
-  features: [appModulePublicSignIn],
+  features: [appModulePublicSignIn, dynamicFrontendFeaturesLoader()],
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

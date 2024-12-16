@@ -16,8 +16,11 @@
 
 import { createBackend } from '@backstage/backend-defaults';
 import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import { dynamicPluginsFeatureLoader } from '@backstage/backend-dynamic-feature-service';
 
 const backend = createBackend();
+
+backend.add(dynamicPluginsFeatureLoader);
 
 // An example of how to group together and load multiple features. You can also
 // access root-scoped services by adding `deps`.
