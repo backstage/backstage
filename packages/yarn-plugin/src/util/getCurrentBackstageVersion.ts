@@ -16,15 +16,13 @@
 
 import assert from 'assert';
 import { valid as semverValid } from 'semver';
-import { npath, ppath, xfs } from '@yarnpkg/fslib';
-import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
+import { ppath, xfs } from '@yarnpkg/fslib';
+import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { memoize } from './memoize';
+import { getWorkspaceRoot } from './getWorkspaceRoot';
 
 export const getCurrentBackstageVersion = memoize(() => {
-  const workspaceRoot = npath.toPortablePath(
-    findPaths(npath.fromPortablePath(ppath.cwd())).targetRoot,
-  );
-  const backstageJsonPath = ppath.join(workspaceRoot, BACKSTAGE_JSON);
+  const backstageJsonPath = ppath.join(getWorkspaceRoot(), BACKSTAGE_JSON);
 
   let backstageVersion: string | null = null;
   try {
