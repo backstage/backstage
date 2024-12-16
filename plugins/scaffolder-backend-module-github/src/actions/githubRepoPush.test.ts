@@ -331,6 +331,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
 
@@ -359,6 +360,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
 
@@ -387,6 +389,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
 
@@ -415,6 +418,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
   });
@@ -465,6 +469,11 @@ describe('github:repo:push', () => {
       overrideValue: true,
     },
     {
+      inputProperty: 'requiredLinearHistory',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
       inputProperty: 'protectEnforceAdmins',
       defaultValue: true,
       overrideValue: false,
@@ -508,6 +517,7 @@ describe('github:repo:push', () => {
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         restrictions: undefined,
         [octokitParameter || inputProperty]: defaultValue,
       });
@@ -536,6 +546,7 @@ describe('github:repo:push', () => {
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         restrictions: undefined,
         [octokitParameter || inputProperty]: overrideValue,
       });
@@ -564,6 +575,7 @@ describe('github:repo:push', () => {
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         restrictions: undefined,
         [octokitParameter || inputProperty]: defaultValue,
       });

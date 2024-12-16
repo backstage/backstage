@@ -1,5 +1,68 @@
 # @backstage/plugin-events-backend
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/backend-openapi-utils@0.4.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/backend-openapi-utils@0.3.1-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- 1577511: Allow configuring a timeout for event bus polling requests. This can be set like so in your app-config:
+
+  ```yaml
+  events:
+    notifyTimeoutMs: 30000
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/backend-openapi-utils@0.3.1-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.3.16
+
+### Patch Changes
+
+- e02a02b: Fix `events.useEventBus` by propagating config to `DefaultEventsService`
+- 9816f51: Add raw body information to `RequestDetails`
+  and use the raw body when validating incoming event requests.
+- b7d0334: Cleaning up event subscriptions after the max age window
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-events-node@0.4.5
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/backend-openapi-utils@0.3.0
+  - @backstage/errors@1.2.5
+
 ## 0.3.16-next.3
 
 ### Patch Changes

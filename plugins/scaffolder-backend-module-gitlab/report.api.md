@@ -76,11 +76,11 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
+    scopes: string[];
     repoUrl: string;
     projectId: string | number;
     username?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
   },
   {
     user: string;
@@ -149,8 +149,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_off'
             | 'default_on'
+            | 'default_off'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;

@@ -1,5 +1,56 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.2-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 32459d0: **BREAKING**: Upgraded the `gitbeaker` library to version 41. As part of this, the `scopes` parameter to the `gitlab:projectDeployToken:create` is no longer optional, so you will have to pass it a value (for example `['read_repository']`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+
+## 0.6.1
+
+### Patch Changes
+
+- cdc8b4c: Improve error messages from Gitlab
+- 2dbdccb: Removed circular import
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+
 ## 0.6.1-next.3
 
 ### Patch Changes

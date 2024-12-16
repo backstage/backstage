@@ -16,6 +16,12 @@
 
 export interface Config {
   events?: {
+    /**
+     * Timeout in milliseconds for how long to wait before closing subscription events
+     * requests to ensure they don't stall or that events get stuck. Defaults to 55 seconds.
+     */
+    notifyTimeoutMs?: number;
+
     http?: {
       /**
        * Topics for which a route has to be registered

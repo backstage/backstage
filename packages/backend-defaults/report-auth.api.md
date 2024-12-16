@@ -5,10 +5,41 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public
 export const authServiceFactory: ServiceFactory<
   AuthService,
+  'plugin',
+  'singleton'
+>;
+
+// @public
+export interface PluginTokenHandler {
+  // (undocumented)
+  issueToken(options: {
+    pluginId: string;
+    targetPluginId: string;
+    onBehalfOf?: {
+      limitedUserToken: string;
+      expiresAt: Date;
+    };
+  }): Promise<{
+    token: string;
+  }>;
+  // (undocumented)
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        limitedUserToken?: string;
+      }
+    | undefined
+  >;
+}
+
+// @public
+export const pluginTokenHandlerDecoratorServiceRef: ServiceRef<
+  (defaultImplementation: PluginTokenHandler) => PluginTokenHandler,
   'plugin',
   'singleton'
 >;

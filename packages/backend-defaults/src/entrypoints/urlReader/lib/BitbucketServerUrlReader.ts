@@ -31,14 +31,25 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { parseLastModified } from './util';
+
+import pThrottle from 'p-throttle';
+
+// 1 per second
+const throttle = pThrottle({
+  limit: 1,
+  interval: 1000,
+});
+
+const throttledFetch = throttle(
+  async (url: RequestInfo, options?: RequestInit) => {
+    return await fetch(url, options);
+  },
+);
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
@@ -82,7 +93,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
+      response = await throttledFetch(bitbucketUrl.toString(), {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
@@ -107,12 +118,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
@@ -137,7 +143,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const archiveResponse = await fetch(
+    const archiveResponse = await throttledFetch(
       downloadUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
@@ -150,7 +156,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(archiveResponse.body),
+      response: archiveResponse,
       subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
@@ -206,7 +212,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
     const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
-    const branchListResponse = await fetch(
+    const branchListResponse = await throttledFetch(
       branchListUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );

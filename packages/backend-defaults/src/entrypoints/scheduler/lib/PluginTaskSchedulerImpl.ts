@@ -24,7 +24,7 @@ import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
-import { Counter, Histogram, metrics, trace } from '@opentelemetry/api';
+import { Counter, Histogram, Gauge, metrics, trace } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import { LocalTaskWorker } from './LocalTaskWorker';
@@ -44,6 +44,8 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
 
   private readonly counter: Counter;
   private readonly duration: Histogram;
+  private readonly lastStarted: Gauge;
+  private readonly lastCompleted: Gauge;
 
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
@@ -58,6 +60,17 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       description: 'Histogram of task run durations',
       unit: 'seconds',
     });
+    this.lastStarted = meter.createGauge('backend_tasks.task.runs.started', {
+      description: 'Epoch timestamp seconds when the task was last started',
+      unit: 'seconds',
+    });
+    this.lastCompleted = meter.createGauge(
+      'backend_tasks.task.runs.completed',
+      {
+        description: 'Epoch timestamp seconds when the task was last completed',
+        unit: 'seconds',
+      },
+    );
     this.shutdownInitiated = new Promise(shutdownInitiated => {
       rootLifecycle?.addShutdownHook(() => shutdownInitiated(true));
     });
@@ -144,6 +157,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         scope,
       };
       this.counter.add(1, { ...labels, result: 'started' });
+      this.lastStarted.record(Date.now() / 1000, { taskId: task.id });
 
       const startTime = process.hrtime();
 
@@ -170,6 +184,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         const endTime = delta[0] + delta[1] / 1e9;
         this.counter.add(1, labels);
         this.duration.record(endTime, labels);
+        this.lastCompleted.record(Date.now() / 1000, labels);
       }
     };
   }

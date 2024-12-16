@@ -22,7 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations } from './utils';
+import { getEntityRelations } from './utils/getEntityRelations';
 
 /**
  * Filter entities based on Kind.
@@ -94,6 +94,7 @@ export class EntityTextFilter implements EntityFilter {
     const partialMatch = this.toUpperArray([
       entity.metadata.name,
       entity.metadata.title,
+      (entity.spec?.profile as { displayName?: string })?.displayName,
     ]);
 
     for (const word of words) {

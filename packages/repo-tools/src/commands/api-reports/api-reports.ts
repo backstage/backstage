@@ -48,6 +48,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const omitMessages = parseArrayOption(opts.omitMessages);
 
   const isAllPackages = !paths?.length;
+
   const selectedPackageDirs = await resolvePackagePaths({
     paths,
     include: opts.include,
@@ -130,5 +131,10 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
  * // returns []
  */
 function parseArrayOption(value: string | undefined) {
-  return value ? value.split(',').map(s => s.trim()) : [];
+  return value
+    ? value
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+    : [];
 }

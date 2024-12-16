@@ -37,6 +37,7 @@ import { version } from '../../lib/version';
 import yn from 'yn';
 import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
+import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -182,19 +183,35 @@ export async function createConfig(
   );
 
   if (options.moduleFederation?.mode !== 'remote') {
-    plugins.push(
-      // `rspack.HtmlRspackPlugin` does not support object type `templateParameters` value, `frontendConfig` in this case
-      new HtmlWebpackPlugin({
-        meta: {
-          'backstage-app-mode': options?.appMode ?? 'public',
-        },
-        template: paths.targetHtml,
-        templateParameters: {
-          publicPath,
-          config: frontendConfig,
-        },
-      }),
-    );
+    const templateOptions = {
+      meta: {
+        'backstage-app-mode': options?.appMode ?? 'public',
+      },
+      template: paths.targetHtml,
+      templateParameters: {
+        publicPath,
+        config: frontendConfig,
+      },
+    };
+    if (rspack) {
+      // With Rspack we inject config via index.html, this is both because we
+      // can't use APP_CONFIG due to the lack of support for runtime values, but
+      // also because we are able to do it and it lines up better with what the
+      // app-backend is doing.
+      //
+      // We still use the html plugin from WebPack, since the Rspack one won't
+      // let us inject complex objects like the config.
+      plugins.push(
+        new ConfigInjectingHtmlWebpackPlugin(
+          templateOptions,
+          options.getFrontendAppConfigs,
+        ),
+      );
+    } else {
+      // Config injection via index.html doesn't work across reloads with
+      // WebPack, so we rely on the APP_CONFIG injection instead
+      plugins.push(new HtmlWebpackPlugin(templateOptions));
+    }
     plugins.push(
       new HtmlWebpackPlugin({
         meta: {
@@ -284,8 +301,7 @@ export async function createConfig(
     new bundler.DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
       'process.env.APP_CONFIG': rspack
-        ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
-          JSON.stringify(options.getFrontendAppConfigs())
+        ? JSON.stringify([]) // Inject via index.html instead
         : bundler.DefinePlugin.runtimeValue(
             () => JSON.stringify(options.getFrontendAppConfigs()),
             true,

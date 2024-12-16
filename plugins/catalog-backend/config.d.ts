@@ -139,6 +139,16 @@ export interface Config {
     }>;
 
     /**
+     * Disables the compatibility layer for relations in returned entities that
+     * ensures that all relations objects have both `target` and `targetRef`.
+     *
+     * Enabling this option significantly reduces the memory usage of the
+     * catalog, and slightly increases performance, but may break consumers that
+     * rely on the existence of `target` in the relations objects.
+     */
+    disableRelationsCompatibility?: boolean;
+
+    /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
      * "keep".
@@ -157,9 +167,9 @@ export interface Config {
           /** Defer stitching to be performed asynchronously */
           mode: 'deferred';
           /** Polling interval for tasks in seconds */
-          pollingInterval?: HumanDuration;
+          pollingInterval?: HumanDuration | string;
           /** How long to wait for a stitch to complete before giving up in seconds */
-          stitchTimeout?: HumanDuration;
+          stitchTimeout?: HumanDuration | string;
         };
 
     /**

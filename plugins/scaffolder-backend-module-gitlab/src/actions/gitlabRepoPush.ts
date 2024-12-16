@@ -19,7 +19,7 @@ import {
   parseRepoUrl,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Types } from '@gitbeaker/core';
+import { CommitAction } from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
@@ -141,7 +141,7 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      const actions: Types.CommitAction[] = fileContents.map(file => ({
+      const actions: CommitAction[] = fileContents.map(file => ({
         action: commitAction ?? 'create',
         filePath: targetPath
           ? path.posix.join(targetPath, file.path)

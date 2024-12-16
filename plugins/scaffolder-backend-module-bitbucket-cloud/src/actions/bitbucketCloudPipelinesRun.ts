@@ -16,7 +16,6 @@
 
 import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import fetch, { Response } from 'node-fetch';
 import * as inputProps from './inputProperties';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { getAuthorizationHeader } from './helpers';

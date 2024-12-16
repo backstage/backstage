@@ -20,10 +20,14 @@ import {
   Locator,
   Package,
   Resolver,
+  ResolveOptions,
 } from '@yarnpkg/core';
-import semver from 'semver';
 import { PROTOCOL } from '../constants';
-import { getCurrentBackstageVersion, getPackageVersion } from '../util';
+import {
+  bindBackstageVersion,
+  getCurrentBackstageVersion,
+  getPackageVersion,
+} from '../util';
 
 export class BackstageResolver implements Resolver {
   static protocol = PROTOCOL;
@@ -45,10 +49,7 @@ export class BackstageResolver implements Resolver {
    */
   bindDescriptor(descriptor: Descriptor): Descriptor {
     if (descriptor.range === 'backstage:^') {
-      return structUtils.makeDescriptor(
-        descriptor,
-        `${PROTOCOL}${getCurrentBackstageVersion()}`,
-      );
+      return bindBackstageVersion(descriptor, getCurrentBackstageVersion());
     }
 
     return descriptor;
@@ -60,28 +61,18 @@ export class BackstageResolver implements Resolver {
    * concrete version into the appropriate concrete npm version for that
    * backstage release.
    */
-  async getCandidates(descriptor: Descriptor): Promise<Locator[]> {
-    const range = structUtils.parseRange(descriptor.range);
-    if (range.protocol !== BackstageResolver.protocol) {
-      throw new Error(
-        `Unsupported version protocol in version range "${
-          descriptor.range
-        }" for package ${structUtils.stringifyIdent(descriptor)}`,
-      );
-    }
-
-    if (!semver.valid(range.selector)) {
-      throw new Error(
-        `Invalid Backstage version string when resolving version for ${structUtils.stringifyIdent(
-          descriptor,
-        )}`,
-      );
-    }
-
+  async getCandidates(
+    descriptor: Descriptor,
+    _dependencies: Record<string, Package>,
+    opts: ResolveOptions,
+  ): Promise<Locator[]> {
     return [
       structUtils.makeLocator(
         descriptor,
-        `npm:${await getPackageVersion(descriptor)}`,
+        `npm:${await getPackageVersion(
+          descriptor,
+          opts.project.configuration,
+        )}`,
       ),
     ];
   }
@@ -96,8 +87,12 @@ export class BackstageResolver implements Resolver {
     descriptor: Descriptor,
     _dependencies: Record<string, Package>,
     locators: Array<Locator>,
+    opts: ResolveOptions,
   ): Promise<{ locators: Locator[]; sorted: boolean }> {
-    const packageVersion = await getPackageVersion(descriptor);
+    const packageVersion = await getPackageVersion(
+      descriptor,
+      opts.project.configuration,
+    );
 
     return {
       locators: locators.filter(

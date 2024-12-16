@@ -16,6 +16,7 @@
 
 export type { EventParams } from './EventParams';
 export { EventRouter } from './EventRouter';
+export { EVENTS_NOTIFY_TIMEOUT_HEADER } from './EventsService';
 export type {
   EventsService,
   EventsServiceSubscribeOptions,

@@ -333,7 +333,6 @@ describe('readLdapUsers', () => {
 
   it('transfers all attributes from for vendorDN case sensitivity', async () => {
     const vendor = DefaultLdapVendor;
-    vendor.dnCaseSensitive = true;
     client.getVendor.mockResolvedValue(vendor);
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
@@ -365,15 +364,13 @@ describe('readLdapUsers', () => {
       },
     ];
     const { users, userMemberOf } = await readLdapUsers(client, config, vendor);
-    // reset dnCaseSensitivity
-    vendor.dnCaseSensitive = false;
     expect(users).toEqual([
       expect.objectContaining({
         metadata: {
           name: 'uid-value',
           description: 'description-value',
           annotations: {
-            [LDAP_DN_ANNOTATION]: 'dn-value',
+            [LDAP_DN_ANNOTATION]: 'dn-VALUE',
             [LDAP_RDN_ANNOTATION]: 'uid-value',
             [LDAP_UUID_ANNOTATION]: 'uuid-value',
           },
@@ -389,7 +386,7 @@ describe('readLdapUsers', () => {
       }),
     ]);
     expect(userMemberOf).toEqual(
-      new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
+      new Map([['dn-VALUE', new Set(['x', 'Y', 'z'])]]),
     );
   });
   it('fails to transfer all attributes from for due case sensitivity', async () => {
@@ -1111,14 +1108,13 @@ describe('defaultUserTransformerWithCaseSensitiveDNs', () => {
     });
 
     const vendor = DefaultLdapVendor;
-    vendor.dnCaseSensitive = true;
     let output = await defaultUserTransformer(vendor, config, entry);
     expect(output).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'User',
       metadata: {
         annotations: {
-          'backstage.io/ldap-dn': 'dn-value',
+          'backstage.io/ldap-dn': 'dn-VALUE',
           'backstage.io/ldap-rdn': 'uid-value',
           'backstage.io/ldap-uuid': 'uuid-value',
           a: 2,
@@ -1136,14 +1132,12 @@ describe('defaultUserTransformerWithCaseSensitiveDNs', () => {
 
     // exact same inputs again
     output = await defaultUserTransformer(vendor, config, entry);
-    // reset dnCaseSensitivity
-    vendor.dnCaseSensitive = false;
     expect(output).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'User',
       metadata: {
         annotations: {
-          'backstage.io/ldap-dn': 'dn-value',
+          'backstage.io/ldap-dn': 'dn-VALUE',
           'backstage.io/ldap-rdn': 'uid-value',
           'backstage.io/ldap-uuid': 'uuid-value',
           a: 2,
@@ -1192,7 +1186,6 @@ describe('defaultGroupTransformerWithCaseSensitiveDNs', () => {
     });
 
     const vendor = DefaultLdapVendor;
-    vendor.dnCaseSensitive = true;
 
     let output = await defaultGroupTransformer(vendor, config, entry);
     expect(output).toEqual({
@@ -1200,7 +1193,7 @@ describe('defaultGroupTransformerWithCaseSensitiveDNs', () => {
       kind: 'Group',
       metadata: {
         annotations: {
-          'backstage.io/ldap-dn': 'dn-value',
+          'backstage.io/ldap-dn': 'dn-VALUE',
           'backstage.io/ldap-rdn': 'uid-value',
           'backstage.io/ldap-uuid': 'uuid-value',
           a: 2,
@@ -1220,14 +1213,12 @@ describe('defaultGroupTransformerWithCaseSensitiveDNs', () => {
 
     // exact same inputs again
     output = await defaultGroupTransformer(vendor, config, entry);
-    // reset dnCaseSensitivity
-    vendor.dnCaseSensitive = false;
     expect(output).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'Group',
       metadata: {
         annotations: {
-          'backstage.io/ldap-dn': 'dn-value',
+          'backstage.io/ldap-dn': 'dn-VALUE',
           'backstage.io/ldap-rdn': 'uid-value',
           'backstage.io/ldap-uuid': 'uuid-value',
           a: 2,

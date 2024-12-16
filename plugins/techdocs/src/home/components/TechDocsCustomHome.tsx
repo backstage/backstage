@@ -23,6 +23,7 @@ import {
   catalogApiRef,
   CatalogApi,
   useEntityOwnership,
+  EntityListProvider,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTable } from './Tables';
@@ -127,7 +128,9 @@ const CustomPanel = ({
         ) : null}
       </ContentHeader>
       <div className={classes.panelContainer}>
-        <Panel data-testid="techdocs-custom-panel" entities={shownEntities} />
+        <EntityListProvider>
+          <Panel data-testid="techdocs-custom-panel" entities={shownEntities} />
+        </EntityListProvider>
       </div>
     </>
   );

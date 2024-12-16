@@ -531,7 +531,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     context?: Record<string, string>;
   }): Promise<{
     results: {
-      title: string;
+      title?: string;
+      id: string;
     }[];
   }>;
   // (undocumented)

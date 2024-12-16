@@ -236,6 +236,7 @@ Usage: backstage-cli package lint [options] [directories...]
 
 Options:
   --format <format>
+  --output-file <path>
   --fix
   --max-warnings <number>
   -h, --help
@@ -446,6 +447,7 @@ Usage: backstage-cli repo lint [options]
 
 Options:
   --format <format>
+  --output-file <path>
   --since <ref>
   --successCache
   --successCacheDir <path>

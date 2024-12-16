@@ -85,3 +85,11 @@ export const columnFactories = {
     };
   },
 };
+
+export const defaultColumns: TableColumn<DocsTableRow>[] = [
+  columnFactories.createTitleColumn({ hidden: true }),
+  columnFactories.createNameColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createKindColumn(),
+  columnFactories.createTypeColumn(),
+];

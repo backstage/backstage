@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import { LifecycleService } from '@backstage/backend-plugin-api';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { ServiceUnavailableError } from '@backstage/errors';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
 
-export const DEFAULT_TIMEOUT = { seconds: 5 };
+export const DEFAULT_STARTUP_REQUEST_PAUSE_TIMEOUT = { seconds: 5 };
+export const DEFAULT_SERVER_SHUTDOWN_TIMEOUT = { seconds: 0 };
 
 /**
  * Options for {@link createLifecycleMiddleware}.
- * @internal
+ * @public
  */
 export interface LifecycleMiddlewareOptions {
-  lifecycle: LifecycleService;
+  lifecycle: RootLifecycleService;
   /**
    * The maximum time that paused requests will wait for the service to start, before returning an error.
    *
@@ -47,12 +48,12 @@ export interface LifecycleMiddlewareOptions {
  * If the service is shutting down, all requests will be rejected with a
  * {@link @backstage/errors#ServiceUnavailableError}.
  *
- * @internal
+ * @public
  */
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
-  const { lifecycle, startupRequestPauseTimeout = DEFAULT_TIMEOUT } = options;
+  const { lifecycle, startupRequestPauseTimeout } = options;
 
   let state: 'init' | 'up' | 'down' = 'init';
   const waiting = new Set<{
@@ -73,15 +74,12 @@ export function createLifecycleMiddleware(
 
   lifecycle.addShutdownHook(async () => {
     state = 'down';
-
     for (const item of waiting) {
       clearTimeout(item.timeout);
       item.next(new ServiceUnavailableError('Service is shutting down'));
     }
     waiting.clear();
   });
-
-  const timeoutMs = durationToMilliseconds(startupRequestPauseTimeout);
 
   return (_req, _res, next) => {
     if (state === 'up') {
@@ -91,6 +89,10 @@ export function createLifecycleMiddleware(
       next(new ServiceUnavailableError('Service is shutting down'));
       return;
     }
+
+    const timeoutMs = durationToMilliseconds(
+      startupRequestPauseTimeout ?? DEFAULT_STARTUP_REQUEST_PAUSE_TIMEOUT,
+    );
 
     const item = {
       next,

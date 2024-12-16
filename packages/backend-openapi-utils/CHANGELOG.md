@@ -1,5 +1,50 @@
 # @backstage/backend-openapi-utils
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- afcebea: Fixed a Typescript error when trying to use the new OpenAPI server-side generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/types@1.2.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 1440232: Adds a new `createValidatedOpenApiRouterFromGeneratedEndpointMap` function that uses the new static server generation in `backstage-cli package schema openapi generate --server` to create a typed express router.
+
+### Patch Changes
+
+- f01787a: Moves msw from dependencies to devDependencies
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/errors@1.2.5
+
 ## 0.3.0-next.2
 
 ### Minor Changes
