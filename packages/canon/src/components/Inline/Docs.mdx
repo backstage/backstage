@@ -16,12 +16,16 @@ import { inlineProperties } from './sprinkles.css';
   responsively.
 </Text>
 
-<Title type="h2">Installation</Title>
+<Title type="h2">Usage</Title>
 <Source
-  code={`import { Inline } from "@backstage/canon";`}
-  language="tsx"
-  dark
-/>
+  code={`import { Inline } from "@backstage/canon";
+
+<Inline>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Inline>
+`} language="tsx" dark />
 
 <Title type="h2" style={{ marginBottom: '16px' }}>
   API reference

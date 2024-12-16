@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Heading } from './Heading';
+import { Stack } from '../Stack';
 
 const meta = {
   title: 'Components/Heading',
@@ -31,11 +33,33 @@ export const Default: Story = {
   },
 };
 
+export const Title1: Story = {
+  args: {
+    children: 'Look mum, no hands!',
+    variant: 'title1',
+  },
+};
+
+export const AllVariants: Story = {
+  args: {
+    children: 'Heading',
+  },
+  render: () => (
+    <Stack gap="md">
+      <Heading variant="display">Display</Heading>
+      <Heading variant="title1">Title 1</Heading>
+      <Heading variant="title2">Title 2</Heading>
+      <Heading variant="title3">Title 3</Heading>
+      <Heading variant="title4">Title 4</Heading>
+    </Stack>
+  ),
+};
+
 export const Responsive: Story = {
   args: {
     ...Default.args,
     variant: {
-      // xs: 'title4',
+      xs: 'title4',
       sm: 'display',
     },
   },

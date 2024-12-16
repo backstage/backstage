@@ -267,10 +267,7 @@ export interface GridProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export const Icon: (props: {
-  name: IconNames;
-  size?: number;
-}) => React_2.JSX.Element;
+export const Icon: (props: IconProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
@@ -294,6 +291,12 @@ export type IconNames =
   | 'heart'
   | 'plus'
   | 'trash';
+
+// @public (undocumented)
+export type IconProps = {
+  name: IconNames;
+  size?: number;
+};
 
 // @public (undocumented)
 export const Inline: ForwardRefExoticComponent<

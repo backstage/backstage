@@ -36,3 +36,9 @@ export type IconNames =
 
 /** @public */
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
+
+/** @public */
+export type IconProps = {
+  name: IconNames;
+  size?: number;
+};
