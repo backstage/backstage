@@ -1,5 +1,48 @@
 # @backstage/catalog-client
 
+## 1.9.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- d7e7836: Fixed a bug in the `queryEntities` method where errors were not being handled properly.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
+## 1.8.0
+
+### Minor Changes
+
+- 656d1ef: Internal update to use the updated generated code from `backstage-cli package schema openapi generate --client-package ...`.
+- 31c4fe0: The client now automatically splits up very large `getEntitiesByRefs` calls into several smaller requests behind the scenes when needed. This ensures that each individual request does not exceed common Express.js request body limits or overload the server.
+
+### Patch Changes
+
+- 873f89a: Fix for certain filter fields in the `catalogApiMock` being case sensitive.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 1.8.0-next.1
 
 ### Minor Changes

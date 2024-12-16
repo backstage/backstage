@@ -39,7 +39,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 
 const server = setupServer();
@@ -67,10 +67,9 @@ describe('GithubLocationAnalyzer', () => {
 
   beforeEach(() => {
     server.use(
-      rest.post('http://localhost:7007/locations', async (_, res, ctx) => {
-        return res(
-          ctx.status(201),
-          ctx.json({
+      http.post('http://localhost:7007/locations', () =>
+        HttpResponse.json(
+          {
             location: 'test',
             exists: false,
             entities: [
@@ -100,9 +99,10 @@ describe('GithubLocationAnalyzer', () => {
                 },
               },
             ],
-          }),
-        );
-      }),
+          },
+          { status: 201 },
+        ),
+      ),
     );
 
     octokit.repos.get.mockResolvedValue({

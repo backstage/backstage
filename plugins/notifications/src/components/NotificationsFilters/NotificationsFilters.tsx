@@ -197,9 +197,9 @@ export const NotificationsFilters = ({
               value={viewValue}
               onChange={handleOnViewChanged}
             >
-              <MenuItem value="unread">New only</MenuItem>
+              <MenuItem value="unread">Unread notifications</MenuItem>
+              <MenuItem value="read">Read notifications</MenuItem>
               <MenuItem value="saved">Saved</MenuItem>
-              <MenuItem value="read">Marked as read</MenuItem>
               <MenuItem value="all">All</MenuItem>
             </Select>
           </FormControl>

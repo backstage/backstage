@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.2.3-next.3",
+  "version": "0.2.4-next.2",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
@@ -44,11 +44,10 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "*",
+    "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "http-proxy-middleware": "^2.0.0",
-    "node-fetch": "^2.7.0",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "ws": "^8.18.0",

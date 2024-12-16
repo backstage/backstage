@@ -78,6 +78,9 @@ import {
 } from './components/fields/MyGroupsPicker/MyGroupsPicker';
 import { RepoBranchPicker } from './components/fields/RepoBranchPicker/RepoBranchPicker';
 import { RepoBranchPickerSchema } from './components/fields/RepoBranchPicker/schema';
+import { formDecoratorsApiRef } from './alpha/api/ref';
+import { DefaultScaffolderFormDecoratorsApi } from './alpha/api/FormDecoratorsApi';
+import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 
 /**
  * The main plugin export for the scaffolder.
@@ -101,6 +104,16 @@ export const scaffolderPlugin = createPlugin({
           fetchApi,
           identityApi,
         }),
+    }),
+    createApiFactory({
+      api: formDecoratorsApiRef,
+      deps: {},
+      factory: () => DefaultScaffolderFormDecoratorsApi.create(),
+    }),
+    createApiFactory({
+      api: formFieldsApiRef,
+      deps: {},
+      factory: () => ({ getFormFields: async () => [] }),
     }),
   ],
   routes: {

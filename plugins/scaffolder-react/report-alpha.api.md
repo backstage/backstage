@@ -5,12 +5,17 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiFactory } from '@backstage/frontend-plugin-api';
+import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
@@ -76,6 +81,39 @@ export function createFormField<
 >(opts: FormFieldExtensionData<TReturnValue, TUiOptions>): FormField;
 
 // @alpha
+export function createScaffolderFormDecorator<
+  TInputSchema extends {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  } = {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
+  TDeps extends {
+    [key in string]: AnyApiRef;
+  } = {
+    [key in string]: AnyApiRef;
+  },
+  TInput extends JsonObject = {
+    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+  },
+>(options: {
+  id: string;
+  schema?: {
+    input?: TInputSchema;
+  };
+  deps?: TDeps;
+  decorator: (
+    ctx: ScaffolderFormDecoratorContext<TInput>,
+    deps: TDeps extends {
+      [key in string]: AnyApiRef;
+    }
+      ? {
+          [key in keyof TDeps]: TDeps[key]['T'];
+        }
+      : never,
+  ) => Promise<void>;
+}): ScaffolderFormDecorator<TInput>;
+
+// @alpha
 export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput;
 }) => React_2.JSX.Element | null;
@@ -138,6 +176,34 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
+export const formFieldsApi: ExtensionDefinition<{
+  config: {};
+  configInput: {};
+  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  inputs: {
+    formFields: ExtensionInput<
+      ConfigurableExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+  };
+  kind: 'api';
+  name: 'form-fields';
+  params: {
+    factory: AnyApiFactory;
+  };
+}>;
+
+// @alpha (undocumented)
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+
+// @alpha (undocumented)
 export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };
@@ -188,6 +254,33 @@ export interface ScaffolderFieldProps {
   rawHelp?: string;
   // (undocumented)
   required?: boolean;
+}
+
+// @alpha (undocumented)
+export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
+  readonly $$type: '@backstage/scaffolder/FormDecorator';
+  readonly id: string;
+  readonly TInput: TInput;
+};
+
+// @alpha (undocumented)
+export type ScaffolderFormDecoratorContext<
+  TInput extends JsonObject = JsonObject,
+> = {
+  input: TInput;
+  formState: Record<string, JsonValue>;
+  setFormState: (
+    fn: (currentState: Record<string, JsonValue>) => Record<string, JsonValue>,
+  ) => void;
+  setSecrets: (
+    fn: (currentState: Record<string, string>) => Record<string, string>,
+  ) => void;
+};
+
+// @alpha (undocumented)
+export interface ScaffolderFormFieldsApi {
+  // (undocumented)
+  getFormFields(): Promise<FormFieldExtensionData[]>;
 }
 
 // @alpha (undocumented)
@@ -346,9 +439,9 @@ export const useFormDataFromQuery: (
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest: TemplateParameterSchema | undefined;
+  manifest?: TemplateParameterSchema | undefined;
   loading: boolean;
-  error: Error | undefined;
+  error?: Error | undefined;
 };
 
 // @alpha

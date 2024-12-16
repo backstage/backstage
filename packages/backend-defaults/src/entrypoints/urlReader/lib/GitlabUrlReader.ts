@@ -34,11 +34,8 @@ import {
 import parseGitUrl from 'git-url-parse';
 import { trimEnd, trimStart } from 'lodash';
 import { Minimatch } from 'minimatch';
-import fetch, { Response } from 'node-fetch';
-import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
-import { parseLastModified } from './util';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
@@ -101,12 +98,7 @@ export class GitlabUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -228,7 +220,7 @@ export class GitlabUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(archiveGitLabResponse.body),
+      response: archiveGitLabResponse,
       subpath: filepath,
       etag: commitSha,
       filter: options?.filter,

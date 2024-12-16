@@ -55,7 +55,11 @@ describe('PluginTaskManagerImpl', () => {
     const manager = new PluginTaskSchedulerImpl(
       async () => knex,
       mockServices.logger.mock(),
-      { addShutdownHook, addStartupHook: jest.fn() },
+      {
+        addShutdownHook,
+        addBeforeShutdownHook: jest.fn(),
+        addStartupHook: jest.fn(),
+      },
     );
     return { knex, manager };
   }

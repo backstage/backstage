@@ -16,7 +16,6 @@
 
 import * as http from 'http';
 import * as https from 'https';
-import stoppableServer from 'stoppable';
 import { RequestListener } from 'http';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { HttpServerOptions, ExtendedHttpServer } from './types';
@@ -33,13 +32,6 @@ export async function createHttpServer(
   deps: { logger: LoggerService },
 ): Promise<ExtendedHttpServer> {
   const server = await createServer(listener, options, deps);
-
-  const stopper = stoppableServer(server, 0);
-  // The stopper here is actually the server itself, so if we try
-  // to call stopper.stop() down in the stop implementation, we'll
-  // be calling ourselves.
-  const stopServer = stopper.stop.bind(stopper);
-
   return Object.assign(server, {
     start() {
       return new Promise<void>((resolve, reject) => {
@@ -61,7 +53,13 @@ export async function createHttpServer(
 
     stop() {
       return new Promise<void>((resolve, reject) => {
-        stopServer((error?: Error) => {
+        if (process.env.NODE_ENV === 'development') {
+          // Ensure that various polling connections are shut down fast in development
+          server.closeAllConnections();
+        } else {
+          server.closeIdleConnections();
+        }
+        server.close(error => {
           if (error) {
             reject(error);
           } else {

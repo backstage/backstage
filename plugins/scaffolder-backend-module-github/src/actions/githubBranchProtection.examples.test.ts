@@ -98,6 +98,7 @@ describe('github:branch-protection:create', () => {
         require_last_push_approval: false,
       },
       required_conversation_resolution: false,
+      required_linear_history: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -130,6 +131,7 @@ describe('github:branch-protection:create', () => {
         require_last_push_approval: false,
       },
       required_conversation_resolution: false,
+      required_linear_history: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -162,6 +164,44 @@ describe('github:branch-protection:create', () => {
         require_last_push_approval: true,
       },
       required_conversation_resolution: true,
+      required_linear_history: false,
+    });
+    expect(
+      mockOctokit.rest.repos.createCommitSignatureProtection,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      branch: 'master',
+    });
+  });
+
+  it('should create branch protection with params and require linear history', async () => {
+    const input = yaml.parse(examples[3].example).steps[0].input;
+    const ctx = Object.assign({}, mockContext, { input });
+    await action.handler(ctx);
+
+    expect(mockOctokit.rest.repos.updateBranchProtection).toHaveBeenCalledWith({
+      mediaType: {
+        previews: ['luke-cage-preview'],
+      },
+      owner: 'owner',
+      repo: 'repo',
+      branch: 'master',
+      required_status_checks: {
+        strict: true,
+        contexts: ['test'],
+      },
+      restrictions: null,
+      enforce_admins: true,
+      required_pull_request_reviews: {
+        required_approving_review_count: 1,
+        require_code_owner_reviews: true,
+        bypass_pull_request_allowances: undefined,
+        dismiss_stale_reviews: true,
+        require_last_push_approval: true,
+      },
+      required_conversation_resolution: true,
+      required_linear_history: true,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,

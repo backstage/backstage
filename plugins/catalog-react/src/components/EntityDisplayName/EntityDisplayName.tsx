@@ -79,7 +79,6 @@ export const EntityDisplayName = (
 
   // The innermost "body" content
   let content = <>{primaryTitle}</>;
-
   // Optionally an icon, and wrapper around them both
   content = (
     <Box component="span" className={classes.root}>

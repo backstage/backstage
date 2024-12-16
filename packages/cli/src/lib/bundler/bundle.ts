@@ -119,6 +119,12 @@ export async function buildBundle(options: BuildOptions) {
     );
   }
 
+  if (rspack) {
+    console.log(
+      chalk.yellow(`⚠️  WARNING: Using experimental RSPack bundler.`),
+    );
+  }
+
   const { stats } = await build(configs, isCi, rspack);
 
   if (!stats) {

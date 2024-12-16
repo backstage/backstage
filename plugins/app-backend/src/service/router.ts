@@ -267,7 +267,7 @@ async function createEntryPointRouter({
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
-  const injectedConfigPath =
+  const injectResult =
     appConfigs &&
     (await injectConfig({ appConfigs, logger, rootDir, staticDir }));
 
@@ -278,7 +278,7 @@ async function createEntryPointRouter({
   staticRouter.use(
     express.static(staticDir, {
       setHeaders: (res, path) => {
-        if (path === injectedConfigPath) {
+        if (injectResult?.injectedPath === path) {
           res.setHeader('Cache-Control', CACHE_CONTROL_REVALIDATE_CACHE);
         } else {
           res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
@@ -302,7 +302,17 @@ async function createEntryPointRouter({
   staticRouter.use(notFoundHandler());
 
   router.use('/static', staticRouter);
-  router.use(
+
+  const rootRouter = Router();
+  rootRouter.use((req, _res, next) => {
+    // Make sure / and /index.html are handled by the HTML5 route below
+    if (req.path === '/' || req.path === '/index.html') {
+      next('router');
+    } else {
+      next();
+    }
+  });
+  rootRouter.use(
     express.static(rootDir, {
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
@@ -315,15 +325,23 @@ async function createEntryPointRouter({
       },
     }),
   );
+  router.use(rootRouter);
 
+  // HTML5 routing
   router.get('/*', (_req, res) => {
-    res.sendFile(resolvePath(rootDir, 'index.html'), {
-      headers: {
-        // The Cache-Control header instructs the browser to not cache the index.html since it might
-        // link to static assets from recently deployed versions.
-        'cache-control': CACHE_CONTROL_NO_CACHE,
-      },
-    });
+    if (injectResult?.indexHtmlContent) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', CACHE_CONTROL_NO_CACHE);
+      res.send(injectResult.indexHtmlContent);
+    } else {
+      res.sendFile(resolvePath(rootDir, 'index.html'), {
+        headers: {
+          // The Cache-Control header instructs the browser to not cache the index.html since it might
+          // link to static assets from recently deployed versions.
+          'cache-control': CACHE_CONTROL_NO_CACHE,
+        },
+      });
+    }
   });
 
   return router;

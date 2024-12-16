@@ -41,7 +41,7 @@ if (process.env.BACKSTAGE_CLI_LINKED_WORKSPACE) {
     }
 
     // The package import that we're overriding will always existing in the root
-    // node_modules of the linked workspace, so it's enough to override the the
+    // node_modules of the linked workspace, so it's enough to override the
     // parent paths with that single entry
     return origLoad.call(this, request, {
       ...parent,

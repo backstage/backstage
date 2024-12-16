@@ -1,0 +1,47 @@
+.checkbox-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--canon-font-size-xs);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-text-primary);
+  user-select: none;
+
+  & .checkbox {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    box-shadow: inset 0 0 0 1px var(--canon-outline);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease-in-out;
+
+    &[data-state='unchecked'] {
+      & .checkbox-indicator {
+        display: none;
+      }
+    }
+
+    &[data-state='checked'] {
+      background: var(--canon-accent);
+    }
+  }
+
+  & .checkbox-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--canon-text-primary-on-accent);
+  }
+
+  &:hover {
+    & .checkbox {
+      box-shadow: inset 0 0 0 1px var(--canon-outline-hover);
+    }
+  }
+}

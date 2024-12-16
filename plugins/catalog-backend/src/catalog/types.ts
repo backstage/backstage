@@ -52,8 +52,22 @@ export type EntitiesRequest = {
   credentials: BackstageCredentials;
 };
 
+/**
+ * Encapsulates either a deserialized or serialized entities to be sent in a response.
+ * @internal
+ */
+export type EntitiesResponseItems =
+  | {
+      type: 'object';
+      entities: (Entity | null)[];
+    }
+  | {
+      type: 'raw';
+      entities: (string | null)[];
+    };
+
 export type EntitiesResponse = {
-  entities: Entity[];
+  entities: EntitiesResponseItems;
   pageInfo: PageInfo;
 };
 
@@ -86,7 +100,7 @@ export interface EntitiesBatchResponse {
    * The list of entities, in the same order as the refs in the request. Entries
    * that are null signify that no entity existed with that ref.
    */
-  items: Array<Entity | null>;
+  items: EntitiesResponseItems;
 }
 
 export type EntityAncestryResponse = {
@@ -203,6 +217,7 @@ export interface QueryEntitiesInitialRequest {
     term: string;
     fields?: string[];
   };
+  skipTotalItems?: boolean;
 }
 
 /**
@@ -223,7 +238,7 @@ export interface QueryEntitiesResponse {
   /**
    * The entities for the current pagination request
    */
-  items: Entity[];
+  items: EntitiesResponseItems;
 
   pageInfo: {
     /**

@@ -1,5 +1,39 @@
 # @backstage/plugin-auth-backend-module-google-provider
 
+## 0.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-auth-node@0.5.5-next.2
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- 79b055a: Pass through `includeGrantedScopes` in order to persist scopes across refresh calls
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- b833660: Fix visibility of config for use in front end code
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/backend-plugin-api@1.0.2
+
 ## 0.2.2-next.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-node",
-  "version": "0.2.10-next.0",
+  "version": "0.2.11-next.1",
   "description": "Node.js library for Backstage CLIs",
   "backstage": {
     "role": "node-library"
@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^"
   }
 }
