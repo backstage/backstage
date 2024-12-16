@@ -537,6 +537,7 @@ module.exports = {
           'architecture-decisions/adrs-adr011',
           'architecture-decisions/adrs-adr012',
           'architecture-decisions/adrs-adr013',
+          'architecture-decisions/adrs-adr014',
         ],
       },
       'api/deprecations',
