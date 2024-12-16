@@ -89,8 +89,8 @@
   --canon-surface-2: #1a1a1a;
 
   /* Outlines */
-  --canon-outline: rgba(255, 255, 255, 0.1);
-  --canon-outline-hover: rgba(255, 255, 255, 0.2);
+  --canon-outline: rgba(255, 255, 255, 0.2);
+  --canon-outline-hover: rgba(255, 255, 255, 0.4);
   --canon-outline-focus: #fff;
 
   /* States - Add more states */
