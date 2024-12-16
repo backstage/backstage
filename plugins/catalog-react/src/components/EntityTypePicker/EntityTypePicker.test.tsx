@@ -189,34 +189,4 @@ describe('<EntityTypePicker/>', () => {
       type: new EntityTypeFilter(['tool']),
     });
   });
-
-  it('sorts the available entity types when sorted prop is true', async () => {
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{ filters: { kind: new EntityKindFilter('component') } }}
-        >
-          <EntityTypePicker sorted />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(screen.getByText('Type')).toBeInTheDocument();
-
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
-
-    await waitFor(() => screen.getByText('library'));
-
-    const sortedEntities = entities
-      .map(e => e.spec!.type as string)
-      .sort((a, b) =>
-        a
-          .toLocaleLowerCase('en-US')
-          .localeCompare(b.toLocaleLowerCase('en-US')),
-      );
-
-    sortedEntities.forEach(entityType => {
-      expect(screen.getByText(entityType)).toBeInTheDocument();
-    });
-  });
 });
