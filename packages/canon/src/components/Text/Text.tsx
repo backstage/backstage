@@ -16,7 +16,7 @@
 
 import React, { forwardRef } from 'react';
 import { TextProps } from './types';
-import { useTheme } from '../../theme/context';
+import { useCanon } from '../../contexts/canon';
 
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
@@ -27,7 +27,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       ...restProps
     } = props;
 
-    const { getResponsiveValue } = useTheme();
+    const { getResponsiveValue } = useCanon();
 
     // Get the responsive values for the variant and weight
     const responsiveVariant = getResponsiveValue(variant);

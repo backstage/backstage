@@ -104,3 +104,18 @@ export const Disabled: Story = {
     disabled: true,
   },
 };
+
+export const Responsive: Story = {
+  args: {
+    children: 'Button',
+    variant: {
+      xs: 'primary',
+      sm: 'secondary',
+      md: 'tertiary',
+    },
+    size: {
+      xs: 'small',
+      sm: 'medium',
+    },
+  },
+};

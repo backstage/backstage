@@ -16,12 +16,12 @@
 
 import React, { forwardRef } from 'react';
 import { HeadingProps } from './types';
-import { useTheme } from '../../theme/context';
+import { useCanon } from '../../contexts/canon';
 
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
     const { children, variant = 'title1', as = 'h1', ...restProps } = props;
-    const { getResponsiveValue } = useTheme();
+    const { getResponsiveValue } = useCanon();
 
     // Get the responsive value for the variant
     const responsiveVariant = getResponsiveValue(variant);

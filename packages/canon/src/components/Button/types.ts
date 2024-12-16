@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { IconNames } from '../Icon';
+import { Breakpoint } from '../../layout/types';
 
 /**
  * Properties for {@link Button}
@@ -21,8 +22,12 @@ import { IconNames } from '../Icon';
  * @public
  */
 export interface ButtonProps {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary' | 'tertiary';
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
   children: React.ReactNode;
   disabled?: boolean;
   iconStart?: IconNames;
