@@ -26,27 +26,47 @@ import type {
   HttpAuthService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
-import { ForwardedError, ServiceUnavailableError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import type { JsonObject } from '@backstage/types';
 import type { Request } from 'express';
 import type { mockServices } from './mockServices';
 
 export class MockAuditorService implements AuditorService {
-  readonly #options: mockServices.auditor.Options & {
-    auth?: AuthService;
-    httpAuth?: HttpAuthService;
-    plugin?: PluginMetadataService;
-  };
+  private readonly impl: MockRootAuditorService;
+  private readonly auth: AuthService;
+  private readonly httpAuth: HttpAuthService;
+  private readonly plugin: PluginMetadataService;
 
-  static create(options?: mockServices.auditor.Options): MockAuditorService {
-    return new MockAuditorService(options ?? {});
+  private constructor(
+    impl: MockRootAuditorService,
+    deps: {
+      auth: AuthService;
+      httpAuth: HttpAuthService;
+      plugin: PluginMetadataService;
+    },
+  ) {
+    this.impl = impl;
+    this.auth = deps.auth;
+    this.httpAuth = deps.httpAuth;
+    this.plugin = deps.plugin;
+  }
+
+  static create(
+    impl: MockRootAuditorService,
+    deps: {
+      auth: AuthService;
+      httpAuth: HttpAuthService;
+      plugin: PluginMetadataService;
+    },
+  ): AuditorService {
+    return new MockAuditorService(impl, deps);
   }
 
   private async log<TMeta extends JsonObject>(
     options: AuditorEventOptions<TMeta>,
   ): Promise<void> {
     const auditEvent = await this.reshapeAuditorEvent(options);
-    this.#log(...auditEvent);
+    this.impl.log(auditEvent);
   }
 
   async createEvent<TMeta extends JsonObject>(
@@ -89,57 +109,25 @@ export class MockAuditorService implements AuditorService {
     };
   }
 
-  child(
-    meta: JsonObject,
-    deps?: {
-      auth?: AuthService;
-      httpAuth?: HttpAuthService;
-      plugin?: PluginMetadataService;
-    },
-  ): AuditorService {
-    return new MockAuditorService({
-      ...this.#options,
-      auth: deps?.auth,
-      httpAuth: deps?.httpAuth,
-      plugin: deps?.plugin,
-      meta: {
-        ...this.#options.meta,
-        ...meta,
-      },
-    });
-  }
-
   private async getActorId(
     request?: Request<any, any, any, any, any>,
   ): Promise<string | undefined> {
-    if (!this.#options.auth) {
-      throw new ServiceUnavailableError(
-        `The core service 'auth' was not provided during the auditor's instantiation`,
-      );
-    }
-
-    if (!this.#options.httpAuth) {
-      throw new ServiceUnavailableError(
-        `The core service 'httpAuth' was not provided during the auditor's instantiation`,
-      );
-    }
-
     let credentials: BackstageCredentials =
-      await this.#options.auth.getOwnServiceCredentials();
+      await this.auth.getOwnServiceCredentials();
 
     if (request) {
       try {
-        credentials = await this.#options.httpAuth.credentials(request);
+        credentials = await this.httpAuth.credentials(request);
       } catch (error) {
         throw new ForwardedError('Could not resolve credentials', error);
       }
     }
 
-    if (this.#options.auth.isPrincipal(credentials, 'user')) {
+    if (this.auth.isPrincipal(credentials, 'user')) {
       return credentials.principal.userEntityRef;
     }
 
-    if (this.#options.auth.isPrincipal(credentials, 'service')) {
+    if (this.auth.isPrincipal(credentials, 'service')) {
       return credentials.principal.subject;
     }
 
@@ -151,14 +139,8 @@ export class MockAuditorService implements AuditorService {
   ): Promise<AuditorEvent> {
     const { eventId, severityLevel = 'low', request, ...rest } = options;
 
-    if (!this.#options.plugin) {
-      throw new ServiceUnavailableError(
-        `The core service 'plugin' was not provided during the auditor's instantiation`,
-      );
-    }
-
     const auditEvent: AuditorEvent = [
-      `${this.#options.plugin.getId()}.${eventId}`,
+      `${this.plugin.getId()}.${eventId}`,
       {
         severityLevel,
         actor: {
@@ -179,15 +161,32 @@ export class MockAuditorService implements AuditorService {
 
     return auditEvent;
   }
+}
 
-  private constructor(
-    options: mockServices.auditor.Options & {
-      auth?: AuthService;
-      httpAuth?: HttpAuthService;
-      plugin?: PluginMetadataService;
-    },
-  ) {
-    this.#options = options;
+export class MockRootAuditorService {
+  private readonly options: mockServices.auditor.Options;
+
+  private constructor(options?: mockServices.auditor.Options) {
+    this.options = options ?? {};
+  }
+
+  static create(
+    options?: mockServices.auditor.Options,
+  ): MockRootAuditorService {
+    return new MockRootAuditorService(options);
+  }
+
+  async log(auditEvent: AuditorEvent): Promise<void> {
+    this.#log(...auditEvent);
+  }
+
+  forPlugin(deps: {
+    auth: AuthService;
+    httpAuth: HttpAuthService;
+    plugin: PluginMetadataService;
+  }): AuditorService {
+    const impl = new MockRootAuditorService(this.options);
+    return MockAuditorService.create(impl, deps);
   }
 
   #log(message: string, meta?: AuditorEvent[1]) {
