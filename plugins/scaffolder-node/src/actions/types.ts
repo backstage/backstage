@@ -58,9 +58,9 @@ export type ActionContext<
   getInitiatorCredentials(): Promise<BackstageCredentials>;
 
   /**
-   * Optional task information
+   * Task information
    */
-  task?: {
+  task: {
     id: string;
   };
 
