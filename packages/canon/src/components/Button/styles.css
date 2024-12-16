@@ -22,7 +22,7 @@
   user-select: none;
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-bold);
-  font-size: var(--canon-font-sizes-md);
+  font-size: var(--canon-font-size-md);
   padding: 0;
   transition: all 150ms ease;
   cursor: pointer;

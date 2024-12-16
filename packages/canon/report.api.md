@@ -7,6 +7,7 @@
 
 import { ForwardRefExoticComponent } from 'react';
 import { default as React_2 } from 'react';
+import * as React_3 from 'react';
 import { RefAttributes } from 'react';
 
 // @public (undocumented)
@@ -456,6 +457,48 @@ export interface StackProps extends SpaceProps, ColorProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public (undocumented)
+export const Table: React_3.ForwardRefExoticComponent<
+  React_3.HTMLAttributes<HTMLTableElement> &
+    React_3.RefAttributes<HTMLTableElement>
+>;
+
+// @public (undocumented)
+export const TableBody: React_3.ForwardRefExoticComponent<
+  React_3.HTMLAttributes<HTMLTableSectionElement> &
+    React_3.RefAttributes<HTMLTableSectionElement>
+>;
+
+// @public (undocumented)
+export const TableCell: React_3.ForwardRefExoticComponent<
+  React_3.TdHTMLAttributes<HTMLTableCellElement> &
+    React_3.RefAttributes<HTMLTableCellElement>
+>;
+
+// @public (undocumented)
+export const TableFooter: React_3.ForwardRefExoticComponent<
+  React_3.HTMLAttributes<HTMLTableSectionElement> &
+    React_3.RefAttributes<HTMLTableSectionElement>
+>;
+
+// @public (undocumented)
+export const TableHead: React_3.ForwardRefExoticComponent<
+  React_3.ThHTMLAttributes<HTMLTableCellElement> &
+    React_3.RefAttributes<HTMLTableCellElement>
+>;
+
+// @public (undocumented)
+export const TableHeader: React_3.ForwardRefExoticComponent<
+  React_3.HTMLAttributes<HTMLTableSectionElement> &
+    React_3.RefAttributes<HTMLTableSectionElement>
+>;
+
+// @public (undocumented)
+export const TableRow: React_3.ForwardRefExoticComponent<
+  React_3.HTMLAttributes<HTMLTableRowElement> &
+    React_3.RefAttributes<HTMLTableRowElement>
+>;
 
 // @public (undocumented)
 export type Theme = keyof typeof themes;

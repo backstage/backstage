@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
+import type { Meta, StoryObj } from '@storybook/react';
+import { TableHead } from '../Table';
 
-// Layout types
-export * from './layout/types';
+const meta = {
+  title: 'Components/Table/Components/TableHead',
+  component: TableHead,
+} satisfies Meta<typeof TableHead>;
 
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
-export * from './components/Checkbox';
-export * from './components/Table';
+export const Default: Story = {
+  args: {},
+};

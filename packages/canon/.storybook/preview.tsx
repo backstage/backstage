@@ -6,7 +6,8 @@ import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import '../docs/components/styles.css';
 
 // Canon specific styles
-import '../src/theme/styles.css';
+import '../src/css/core.css';
+import '../src/css/components.css';
 
 // Custom themes
 import './themes/backstage.css';
@@ -21,6 +22,11 @@ const preview: Preview = {
     },
     backgrounds: {
       disable: true,
+    },
+    options: {
+      storySort: {
+        method: 'alphabetical',
+      },
     },
   },
   decorators: [
