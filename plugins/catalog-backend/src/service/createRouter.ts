@@ -43,7 +43,6 @@ import { LocationService, RefreshService } from './types';
 import {
   disallowReadonlyMode,
   encodeCursor,
-  expandLegacyCompoundRelationsInEntity,
   locationInput,
   validateRequestBody,
 } from './util';
@@ -60,7 +59,6 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
   createEntityArrayJsonStream,
-  processEntitiesResponseItems,
   writeEntitiesResponse,
   writeSingleEntityResponse,
 } from './response';
@@ -153,7 +151,7 @@ export async function createRouter(
         // When pagination parameters are passed in, use the legacy slow path
         // that loads all entities into memory
 
-        if (pagination) {
+        if (pagination || disableRelationsCompatibility !== true) {
           const { entities, pageInfo } = await entitiesCatalog.entities({
             filter,
             fields,
@@ -194,12 +192,6 @@ export async function createRouter(
             );
 
             if (result.items.entities.length) {
-              if (!disableRelationsCompatibility) {
-                result.items = processEntitiesResponseItems(
-                  result.items,
-                  expandLegacyCompoundRelationsInEntity,
-                );
-              }
               if (await responseStream.send(result.items)) {
                 return; // Client closed connection
               }
