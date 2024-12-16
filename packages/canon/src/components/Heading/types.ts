@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-.sb-text {
-  font-family: 'Geist', sans-serif;
-  font-size: 16px;
-  line-height: 28px;
-  margin: 0;
-  font-weight: 300;
-  margin-bottom: 16px;
+import { Breakpoint } from '../../layout/types';
 
-  & p {
-    font-family: 'Geist', sans-serif;
-    font-size: 16px;
-    line-height: 28px;
-    margin: 0;
-    font-weight: 300;
-  }
+/** @public */
+export interface HeadingProps {
+  children: React.ReactNode;
+  variant?:
+    | 'display'
+    | 'title1'
+    | 'title2'
+    | 'title3'
+    | 'title4'
+    | 'title5'
+    | Partial<
+        Record<
+          Breakpoint,
+          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
+        >
+      >;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }

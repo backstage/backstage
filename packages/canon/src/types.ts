@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.sb-text {
-  font-family: 'Geist', sans-serif;
-  font-size: 16px;
-  line-height: 28px;
-  margin: 0;
-  font-weight: 300;
-  margin-bottom: 16px;
-
-  & p {
-    font-family: 'Geist', sans-serif;
-    font-size: 16px;
-    line-height: 28px;
-    margin: 0;
-    font-weight: 300;
-  }
+export interface Breakpoints {
+  xs: string;
+  sm: string;
+  md: string;
+  lg: string;
+  xl: string;
+  '2xl': string;
 }

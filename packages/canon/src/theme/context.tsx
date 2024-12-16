@@ -17,28 +17,59 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { IconMap, IconNames } from '../components/Icon/types';
 import { defaultIcons } from '../components/Icon/icons';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { Breakpoints } from '../types';
+
+const defaultBreakpoints: Breakpoints = {
+  xs: '0px',
+  sm: '640px',
+  md: '768px',
+  lg: '1024px',
+  xl: '1280px',
+  '2xl': '1536px',
+};
 
 interface ThemeContextProps {
   icons: IconMap;
+  breakpoint: keyof Breakpoints;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
   icons: defaultIcons,
+  breakpoint: 'md',
 });
 
+interface ThemeProviderProps {
+  children?: ReactNode;
+  overrides?: Partial<Record<IconNames, React.ComponentType>>;
+  breakpoints?: Partial<Breakpoints>;
+}
+
 /** @public */
-export const ThemeProvider = ({
-  children,
-  overrides,
-}: {
-  children: ReactNode;
-  overrides: Partial<Record<IconNames, React.ComponentType>>;
-}) => {
+export const ThemeProvider = (props: ThemeProviderProps) => {
+  const { children, overrides, breakpoints = defaultBreakpoints } = props;
+
   // Merge provided overrides with default icons
   const combinedIcons = { ...defaultIcons, ...overrides };
 
+  const isBreakpointSm = useMediaQuery(`(min-width: ${breakpoints.sm})`);
+  const isBreakpointMd = useMediaQuery(`(min-width: ${breakpoints.md})`);
+  const isBreakpointLg = useMediaQuery(`(min-width: ${breakpoints.lg})`);
+  const isBreakpointXl = useMediaQuery(`(min-width: ${breakpoints.xl})`);
+  const isBreakpoint2xl = useMediaQuery(`(min-width: ${breakpoints['2xl']})`);
+
+  // Determine the current breakpoint
+  const breakpoint = (() => {
+    if (isBreakpoint2xl) return '2xl';
+    if (isBreakpointXl) return 'xl';
+    if (isBreakpointLg) return 'lg';
+    if (isBreakpointMd) return 'md';
+    if (isBreakpointSm) return 'sm';
+    return 'xs';
+  })();
+
   return (
-    <ThemeContext.Provider value={{ icons: combinedIcons }}>
+    <ThemeContext.Provider value={{ icons: combinedIcons, breakpoint }}>
       {children}
     </ThemeContext.Provider>
   );

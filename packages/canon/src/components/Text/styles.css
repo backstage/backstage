@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-.sb-text {
-  font-family: 'Geist', sans-serif;
-  font-size: 16px;
-  line-height: 28px;
+.text {
+  font-family: var(--canon-font-regular);
+  color: var(--canon-text-primary);
+  padding: 0;
   margin: 0;
-  font-weight: 300;
-  margin-bottom: 16px;
 
-  & p {
-    font-family: 'Geist', sans-serif;
-    font-size: 16px;
-    line-height: 28px;
-    margin: 0;
-    font-weight: 300;
+  &.text-body {
+    font-size: var(--canon-font-size-body);
+    line-height: 140%;
   }
 }

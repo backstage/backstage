@@ -14,19 +14,37 @@
  * limitations under the License.
  */
 
-.sb-text {
-  font-family: 'Geist', sans-serif;
-  font-size: 16px;
-  line-height: 28px;
-  margin: 0;
-  font-weight: 300;
-  margin-bottom: 16px;
+import type { Meta, StoryObj } from '@storybook/react';
+import { Heading } from './Heading';
 
-  & p {
-    font-family: 'Geist', sans-serif;
-    font-size: 16px;
-    line-height: 28px;
-    margin: 0;
-    font-weight: 300;
-  }
-}
+const meta = {
+  title: 'Components/Heading',
+  component: Heading,
+} satisfies Meta<typeof Heading>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    children: 'Heading',
+  },
+};
+
+export const Responsive: Story = {
+  args: {
+    ...Default.args,
+    variant: {
+      // xs: 'title4',
+      sm: 'display',
+    },
+  },
+};
+
+export const CustomTag: Story = {
+  args: {
+    ...Default.args,
+    variant: 'title5',
+    as: 'h2',
+  },
+};

@@ -13,20 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Breakpoints } from '../types';
 
-.sb-text {
-  font-family: 'Geist', sans-serif;
-  font-size: 16px;
-  line-height: 28px;
-  margin: 0;
-  font-weight: 300;
-  margin-bottom: 16px;
+export const getResponsiveValue = (
+  value: any,
+  breakpoint: keyof Breakpoints,
+) => {
+  if (typeof value === 'object') {
+    const breakpointsOrder: (keyof Breakpoints)[] = [
+      'xs',
+      'sm',
+      'md',
+      'lg',
+      'xl',
+      '2xl',
+    ];
+    const index = breakpointsOrder.indexOf(breakpoint);
 
-  & p {
-    font-family: 'Geist', sans-serif;
-    font-size: 16px;
-    line-height: 28px;
-    margin: 0;
-    font-weight: 300;
+    for (let i = index; i >= 0; i--) {
+      if (value[breakpointsOrder[i]]) {
+        return value[breakpointsOrder[i]];
+      }
+    }
+    return value['xs'];
   }
-}
+  return value;
+};
