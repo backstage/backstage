@@ -20,7 +20,7 @@ import {
   httpUtils,
   structUtils,
 } from '@yarnpkg/core';
-import { ppath, xfs } from '@yarnpkg/fslib';
+import { ppath, npath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
 import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { getManifestByVersion } from '@backstage/release-manifests';
@@ -28,7 +28,9 @@ import { getManifestByVersion } from '@backstage/release-manifests';
 import { PROTOCOL } from './constants';
 
 export const getCurrentBackstageVersion = () => {
-  const workspaceRoot = ppath.resolve(findPaths(ppath.cwd()).targetRoot);
+  const workspaceRoot = npath.toPortablePath(
+    findPaths(npath.fromPortablePath(ppath.cwd())).targetRoot,
+  );
 
   const backstageJson = xfs.readJsonSync(
     ppath.join(workspaceRoot, BACKSTAGE_JSON),
