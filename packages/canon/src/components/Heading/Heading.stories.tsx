@@ -60,7 +60,7 @@ export const Responsive: Story = {
     ...Default.args,
     variant: {
       xs: 'title4',
-      sm: 'display',
+      md: 'display',
     },
   },
 };

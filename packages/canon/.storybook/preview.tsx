@@ -32,6 +32,13 @@ const preview: Preview = {
     },
     viewport: {
       viewports: {
+        xs: {
+          name: 'XSmall',
+          styles: {
+            width: '320px',
+            height: '100%',
+          },
+        },
         small: {
           name: 'Small',
           styles: {

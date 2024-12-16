@@ -17,7 +17,6 @@
 import React, { forwardRef } from 'react';
 import { TextProps } from './types';
 import { useTheme } from '../../theme/context';
-import { getResponsiveValue } from '../../utils/getResponsiveValue';
 
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
@@ -28,10 +27,11 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       ...restProps
     } = props;
 
-    const { breakpoint } = useTheme();
+    const { getResponsiveValue } = useTheme();
 
-    const responsiveVariant = getResponsiveValue(variant, breakpoint);
-    const responsiveWeight = getResponsiveValue(weight, breakpoint);
+    // Get the responsive values for the variant and weight
+    const responsiveVariant = getResponsiveValue(variant);
+    const responsiveWeight = getResponsiveValue(weight);
 
     return (
       <p

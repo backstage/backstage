@@ -32,11 +32,13 @@ const defaultBreakpoints: Breakpoints = {
 interface ThemeContextProps {
   icons: IconMap;
   breakpoint: keyof Breakpoints;
+  getResponsiveValue: (value: string | Partial<Breakpoints>) => string;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
   icons: defaultIcons,
   breakpoint: 'md',
+  getResponsiveValue: () => '',
 });
 
 interface ThemeProviderProps {
@@ -68,8 +70,32 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     return 'xs';
   })();
 
+  const getResponsiveValue = (value: string | Partial<Breakpoints>) => {
+    if (typeof value === 'object') {
+      const breakpointsOrder: (keyof Breakpoints)[] = [
+        'xs',
+        'sm',
+        'md',
+        'lg',
+        'xl',
+        '2xl',
+      ];
+      const index = breakpointsOrder.indexOf(breakpoint);
+
+      for (let i = index; i >= 0; i--) {
+        if (value[breakpointsOrder[i]]) {
+          return value[breakpointsOrder[i]] as string;
+        }
+      }
+      return value['xs'] as string;
+    }
+    return value;
+  };
+
   return (
-    <ThemeContext.Provider value={{ icons: combinedIcons, breakpoint }}>
+    <ThemeContext.Provider
+      value={{ icons: combinedIcons, breakpoint, getResponsiveValue }}
+    >
       {children}
     </ThemeContext.Provider>
   );

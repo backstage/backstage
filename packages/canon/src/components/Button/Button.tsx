@@ -16,21 +16,7 @@
 
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
-import type { IconNames } from '../Icon/types';
-
-/**
- * Properties for {@link Button}
- *
- * @public
- */
-export interface ButtonProps {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary' | 'tertiary';
-  children: React.ReactNode;
-  disabled?: boolean;
-  iconStart?: IconNames;
-  iconEnd?: IconNames;
-}
+import { ButtonProps } from './types';
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

@@ -13,29 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Breakpoints } from '../types';
+import { IconNames } from '../Icon';
 
-export const getResponsiveValue = (
-  value: any,
-  breakpoint: keyof Breakpoints,
-) => {
-  if (typeof value === 'object') {
-    const breakpointsOrder: (keyof Breakpoints)[] = [
-      'xs',
-      'sm',
-      'md',
-      'lg',
-      'xl',
-      '2xl',
-    ];
-    const index = breakpointsOrder.indexOf(breakpoint);
-
-    for (let i = index; i >= 0; i--) {
-      if (value[breakpointsOrder[i]]) {
-        return value[breakpointsOrder[i]];
-      }
-    }
-    return value['xs'];
-  }
-  return value;
-};
+/**
+ * Properties for {@link Button}
+ *
+ * @public
+ */
+export interface ButtonProps {
+  size?: 'small' | 'medium';
+  variant?: 'primary' | 'secondary' | 'tertiary';
+  children: React.ReactNode;
+  disabled?: boolean;
+  iconStart?: IconNames;
+  iconEnd?: IconNames;
+}
