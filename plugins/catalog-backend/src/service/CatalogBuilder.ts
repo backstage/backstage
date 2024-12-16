@@ -676,14 +676,14 @@ export class CatalogBuilder {
     const entityPolicies: EntityPolicy[] = this.entityPoliciesReplace
       ? [new SchemaValidEntityPolicy(), ...this.entityPolicies]
       : [
-        new SchemaValidEntityPolicy(),
-        new DefaultNamespaceEntityPolicy(),
-        new NoForeignRootFieldsEntityPolicy(),
-        new FieldFormatEntityPolicy(
-          makeValidator(this.fieldFormatValidators),
-        ),
-        ...this.entityPolicies,
-      ];
+          new SchemaValidEntityPolicy(),
+          new DefaultNamespaceEntityPolicy(),
+          new NoForeignRootFieldsEntityPolicy(),
+          new FieldFormatEntityPolicy(
+            makeValidator(this.fieldFormatValidators),
+          ),
+          ...this.entityPolicies,
+        ];
 
     return EntityPolicies.allOf(entityPolicies);
   }
