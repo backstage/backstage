@@ -44,7 +44,7 @@ export function parseUrl(url: string): { path: string; container: string } {
   const parsedUrl = new URL(url);
   const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
 
-  if (pathSegments.length < 2) {
+  if (pathSegments.length < 1) {
     throw new Error(`Invalid Azure Blob Storage URL format: ${url}`);
   }
 
@@ -171,7 +171,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
         },
       );
     } catch (e) {
-      if (e.$metadata && e.$metadata.httpStatusCode === 304) {
+      if (e.statusCode === 304) {
         throw new NotModifiedError();
       }
 
