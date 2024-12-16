@@ -20531,12 +20531,12 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18":
-  version: 18.3.16
-  resolution: "@types/react@npm:18.3.16"
+  version: 18.3.17
+  resolution: "@types/react@npm:18.3.17"
   dependencies:
     "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 467c2a325870580b88b4e3bf439749b51b27cb13f52408653cb8c3e7e1b7eff86ada87e384b1aa4d34aa6027c187ca27df00bea77140fda524d726992f5b93ef
+  checksum: 8107f6f5cc8706a3814e6c927e135ce0c7b40a6d9ae2b8dfb071fee03c6f714456041ecdf92dece599da0db8be7f56f6dc6353d4701f47a04772c7ec0cbb0b59
   languageName: node
   linkType: hard
 
