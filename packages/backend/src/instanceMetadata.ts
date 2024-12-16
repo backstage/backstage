@@ -30,7 +30,9 @@ export default createBackendPlugin({
       },
       async init({ instanceMetadata, logger }) {
         logger.info(
-          `Installed features on this instance: ${instanceMetadata.getInstalledFeatures()}`,
+          `Installed features on this instance: ${instanceMetadata
+            .getInstalledFeatures()
+            .join(', ')}`,
         );
       },
     });
