@@ -35,7 +35,7 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
-import { EntitiesCatalog } from '../catalog/types';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
@@ -50,7 +50,11 @@ import {
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
-import { writeEntitiesResponse, writeSingleEntityResponse } from './response';
+import {
+  createEntityArrayJsonStream,
+  writeEntitiesResponse,
+  writeSingleEntityResponse,
+} from './response';
 import { LocationService, RefreshService } from './types';
 import {
   disallowReadonlyMode,

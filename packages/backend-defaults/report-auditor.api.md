@@ -7,7 +7,6 @@ import type { AuditorCreateEvent } from '@backstage/backend-plugin-api';
 import type { AuditorEventSeverityLevel } from '@backstage/backend-plugin-api';
 import { AuditorService } from '@backstage/backend-plugin-api';
 import type { AuthService } from '@backstage/backend-plugin-api';
-import type { Config } from '@backstage/config';
 import type { Format } from 'logform';
 import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
@@ -15,31 +14,6 @@ import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { Request as Request_2 } from 'express';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
-
-// @public
-export class Auditor implements AuditorService {
-  // (undocumented)
-  addRedactions(redactions: Iterable<string>): void;
-  // (undocumented)
-  child(
-    meta: JsonObject,
-    deps?: {
-      auth?: AuthService;
-      httpAuth?: HttpAuthService;
-      plugin?: PluginMetadataService;
-    },
-  ): AuditorService;
-  static colorFormat(): Format;
-  static create(options?: AuditorOptions): Auditor;
-  // (undocumented)
-  createEvent<TMeta extends JsonObject>(
-    options: Parameters<AuditorCreateEvent<TMeta>>[0],
-  ): ReturnType<AuditorCreateEvent<TMeta>>;
-  static redacter(): {
-    format: Format;
-    add: (redactions: Iterable<string>) => void;
-  };
-}
 
 // @public
 export type AuditorEvent = [
@@ -94,45 +68,57 @@ export type AuditorEventStatus<TError extends Error = Error> =
     ));
 
 // @public
-export interface AuditorFactoryOptions {
-  // (undocumented)
-  format: (config?: Config) => winston.Logform.Format;
-  // (undocumented)
-  transports: (config?: Config) => winston.transport[];
-}
-
-// @public
 export const auditorFieldFormat: Format;
 
-// @public (undocumented)
-export interface AuditorOptions {
-  // (undocumented)
-  auth?: AuthService;
-  // (undocumented)
-  format?: Format;
-  // (undocumented)
-  httpAuth?: HttpAuthService;
-  // (undocumented)
-  meta?: JsonObject;
-  // (undocumented)
-  plugin?: PluginMetadataService;
-  // (undocumented)
-  transports?: winston.transport[];
-}
-
-// @public (undocumented)
-export const auditorServiceFactory: ((
-  options?: AuditorFactoryOptions,
-) => ServiceFactory<AuditorService, 'plugin', 'singleton'>) &
-  ServiceFactory<AuditorService, 'plugin', 'singleton'>;
+// @public
+export const auditorServiceFactory: ServiceFactory<
+  AuditorService,
+  'plugin',
+  'singleton'
+>;
 
 // @public
-export const auditorServiceFactoryWithOptions: (
-  options?: AuditorFactoryOptions,
-) => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
+export class DefaultAuditorService implements AuditorService {
+  static create(
+    impl: DefaultRootAuditorService,
+    deps: {
+      auth: AuthService;
+      httpAuth: HttpAuthService;
+      plugin: PluginMetadataService;
+    },
+  ): DefaultAuditorService;
+  // (undocumented)
+  createEvent<TMeta extends JsonObject>(
+    options: Parameters<AuditorCreateEvent<TMeta>>[0],
+  ): ReturnType<AuditorCreateEvent<TMeta>>;
+}
 
 // @public (undocumented)
 export const defaultProdFormat: Format;
+
+// @public (undocumented)
+export class DefaultRootAuditorService {
+  static colorFormat(): Format;
+  static create(options?: RootAuditorOptions): DefaultRootAuditorService;
+  // (undocumented)
+  forPlugin(deps: {
+    auth: AuthService;
+    httpAuth: HttpAuthService;
+    plugin: PluginMetadataService;
+  }): AuditorService;
+  // (undocumented)
+  log(auditEvent: AuditorEvent): Promise<void>;
+}
+
+// @public (undocumented)
+export interface RootAuditorOptions {
+  // (undocumented)
+  format?: Format;
+  // (undocumented)
+  meta?: JsonObject;
+  // (undocumented)
+  transports?: winston.transport[];
+}
 
 // (No @packageDocumentation comment for this package)
 ```
