@@ -51,7 +51,7 @@ import {
 } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
-import { MockAuditorService } from './MockAuditorService';
+import { MockRootAuditorService } from './MockAuditorService';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
@@ -228,7 +228,7 @@ export namespace mockServices {
    * Creates a mock implementation of the `AuditorService`.
    */
   export function auditor(
-    options?: Omit<auditor.Options, 'plugin'> & {
+    options?: auditor.Options & {
       pluginId?: string;
     },
   ): AuditorService {
@@ -247,18 +247,19 @@ export namespace mockServices {
       getId: () => pluginId,
     };
 
-    const auditorMock = MockAuditorService.create({
+    const auditorMock = MockRootAuditorService.create({
       meta: options?.meta ? { ...options.meta, service } : { service },
     });
 
-    return auditorMock.child(
-      { pluginId },
-      { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },
-    );
+    return auditorMock.forPlugin({
+      auth: mockAuth,
+      httpAuth: mockHttpAuth,
+      plugin: mockPlugin,
+    });
   }
 
   export namespace auditor {
-    export type Options = Omit<RootAuditorOptions, 'format' | 'transports'>;
+    export type Options = RootAuditorOptions;
 
     export const factory = (options?: auditor.Options) =>
       createServiceFactory({
@@ -271,23 +272,19 @@ export namespace mockServices {
         createRootContext() {
           const service = 'backstage';
 
-          return MockAuditorService.create({
+          return MockRootAuditorService.create({
             meta: options?.meta ? { ...options.meta, service } : { service },
           });
         },
         factory(
-          {
-            plugin,
+          { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },
+          rootAuditor,
+        ) {
+          return rootAuditor.forPlugin({
             auth: mockAuth,
             httpAuth: mockHttpAuth,
             plugin: mockPlugin,
-          },
-          rootAuditor,
-        ) {
-          return rootAuditor.child(
-            { plugin: plugin.getId() },
-            { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },
-          );
+          });
         },
       });
 
