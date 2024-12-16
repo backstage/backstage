@@ -64,3 +64,11 @@ export const Responsive: Story = {
     },
   },
 };
+
+export const CustomTag: Story = {
+  args: {
+    ...Default.args,
+    variant: 'title5',
+    as: 'h2',
+  },
+};
