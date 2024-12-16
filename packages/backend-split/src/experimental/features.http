@@ -1,0 +1,6 @@
+// Not working yet, the metadata plugin HTTP APIs need to be moved to rootHttpRouter.
+# GET http://localhost:7007/.backstage/systemInfo/features/installed
+
+###
+
+GET http://localhost:7008/.backstage/systemInfo/features/installed
