@@ -53,7 +53,7 @@ describe('createRouter readonly disabled', () => {
   let locationAnalyzer: jest.Mocked<LocationAnalyzer>;
   let permissionsService: jest.Mocked<PermissionsService>;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
       entitiesBatch: jest.fn(),
@@ -135,6 +135,38 @@ describe('createRouter readonly disabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
+      entitiesCatalog.entities.mockResolvedValueOnce({
+        entities: { type: 'object', entities: [entities[0]] },
+        pageInfo: { hasNextPage: false },
+      });
+
+      const response = await request(app).get('/entities');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(entities);
+    });
+
+    it('happy path: lists entities when by-entities emulation is enabled', async () => {
+      const router = await createRouter({
+        entitiesCatalog,
+        locationService,
+        orchestrator,
+        logger: mockServices.logger.mock(),
+        refreshService,
+        config: new ConfigReader(undefined),
+        permissionIntegrationRouter: express.Router(),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        locationAnalyzer,
+        permissionsService: permissionsService,
+        disableRelationsCompatibility: true, // added
+      });
+      app = await wrapServer(express().use(router));
+
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [entities[0]] },
         pageInfo: {},
@@ -148,6 +180,49 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
+      entitiesCatalog.entities.mockResolvedValueOnce({
+        entities: { type: 'object', entities: [] },
+        pageInfo: { hasNextPage: false },
+      });
+      const response = await request(app).get(
+        '/entities?filter=a=1,a=2,b=3&filter=c=4',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
+        filter: {
+          anyOf: [
+            {
+              allOf: [
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
+              ],
+            },
+            { key: 'c', values: ['4'] },
+          ],
+        },
+        credentials: mockCredentials.user(),
+      });
+    });
+
+    it('parses single and multiple request parameters and passes them down when by-entities emulation is enabled', async () => {
+      const router = await createRouter({
+        entitiesCatalog,
+        locationService,
+        orchestrator,
+        logger: mockServices.logger.mock(),
+        refreshService,
+        config: new ConfigReader(undefined),
+        permissionIntegrationRouter: express.Router(),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        locationAnalyzer,
+        permissionsService: permissionsService,
+        disableRelationsCompatibility: true, // added
+      });
+      app = await wrapServer(express().use(router));
+
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [] },
         pageInfo: {},
