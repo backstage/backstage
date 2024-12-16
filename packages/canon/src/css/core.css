@@ -21,6 +21,7 @@
 html,
 body {
   font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-regular);
 }
 
 /* Light theme tokens */
