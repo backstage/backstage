@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
-import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
-import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import {
   createServiceRef,
   createServiceFactory,
-  coreServices,
   createBackendPlugin,
   createBackendModule,
   createExtensionPoint,
@@ -29,26 +25,13 @@ import {
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
-
-class MockLogger {
-  debug() {}
-  info() {}
-  warn() {}
-  error() {}
-  child() {
-    return this;
-  }
-}
+import { mockServices } from '@backstage/backend-test-utils';
 
 const baseFactories = [
-  lifecycleServiceFactory,
-  rootLifecycleServiceFactory,
-  createServiceFactory({
-    service: coreServices.rootLogger,
-    deps: {},
-    factory: () => new MockLogger(),
-  }),
-  loggerServiceFactory,
+  mockServices.rootLifecycle.factory(),
+  mockServices.lifecycle.factory(),
+  mockServices.rootLogger.factory(),
+  mockServices.logger.factory(),
 ];
 
 function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
@@ -707,12 +690,8 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
     const init = new BackendInitializer([
-      rootLifecycleServiceFactory,
-      createServiceFactory({
-        service: coreServices.rootLogger,
-        deps: {},
-        factory: () => new MockLogger(),
-      }),
+      mockServices.rootLifecycle.factory(),
+      mockServices.rootLogger.factory(),
     ]);
     init.add(testPlugin);
     init.add(

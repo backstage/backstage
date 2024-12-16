@@ -119,7 +119,7 @@ function createInstanceMetadataServiceFactory(
                 'toString',
                 {
                   enumerable: false,
-                  configurable: false,
+                  configurable: true,
                   value: () => `plugin{pluginId=${feature.pluginId}}`,
                 },
               );
@@ -133,7 +133,7 @@ function createInstanceMetadataServiceFactory(
                 'toString',
                 {
                   enumerable: false,
-                  configurable: false,
+                  configurable: true,
                   value: () =>
                     `module{moduleId=${feature.moduleId},pluginId=${feature.pluginId}}`,
                 },
