@@ -26,6 +26,7 @@ describe('<ComponentContextMenu />', () => {
       <HeaderActionMenu actionItems={[]} />,
     );
 
+    expect(rendered.queryByTestId('header-action-menu')).toBeInTheDocument();
     expect(
       rendered.queryByTestId('header-action-item'),
     ).not.toBeInTheDocument();
