@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.28.0
+
+### Minor Changes
+
+- c05a343: Emit scaffolder events using the optional `EventsService`
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- 6c326cf: The --no-node-snapshot check needs to be done against process.execArgv instead of process.argv
+- e913fdf: Add github backend module to create-app and improve error messages
+- 8f59dc5: Add fs:readdir to scaffolder startup
+- 0851834: Resolved an issue where the `templateManagementPermission` was not being exposed through the `/permissions/metadata` endpoint.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.4
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/plugin-scaffolder-common@1.5.8
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.4
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.4
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.4
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.4
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.4
+
 ## 1.28.0-next.2
 
 ### Patch Changes

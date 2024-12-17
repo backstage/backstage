@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.0
+
+### Minor Changes
+
+- 99dce5c: Implemented discovery for top-level groups defined in config.group or if undefined global top-level group in Gitlab
+
+### Patch Changes
+
+- 191e5bf: `restrictUsersToGroup` should use the entire group path when getting members
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/plugin-catalog-common@1.1.2
+
 ## 0.6.0-next.2
 
 ### Minor Changes

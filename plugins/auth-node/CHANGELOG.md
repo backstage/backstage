@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-node
 
+## 0.5.5
+
+### Patch Changes
+
+- c907440: Improved error forwarding for OAuth refresh endpoints
+- 1e624ca: Restrict `@types/express` version range from `*` to `^4.17.6`.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+
 ## 0.5.5-next.2
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications
 
+## 0.5.0
+
+### Minor Changes
+
+- fc15b77: Switched to using the new `/notifications` endpoints. Be sure to update the `notifications` plugin backend before deploying this frontend plugin change.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/errors@1.2.6
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-signals-react@0.0.8
+
 ## 0.5.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,28 @@
 # @backstage/plugin-events-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- 1577511: Allow configuring a timeout for event bus polling requests. This can be set like so in your app-config:
+
+  ```yaml
+  events:
+    notifyTimeoutMs: 30000
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/backend-openapi-utils@0.4.0
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+
 ## 0.4.0-next.2
 
 ### Patch Changes

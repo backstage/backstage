@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.5.4
+
+### Patch Changes
+
+- 7df6179: adding requiredLinearHistory property for branch protection settings
+- b5e002b: Change `github:environment:create` action to request and use a token when resolving reviewer entity refs from the Backstage catalog.
+- e913fdf: Add github backend module to create-app and improve error messages
+- 973dd6f: Minor spell fix in action parameters
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/catalog-client@1.9.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+
 ## 0.5.4-next.2
 
 ### Patch Changes
