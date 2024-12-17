@@ -29,7 +29,7 @@ import {
   useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import { ReactNode } from 'react';
 
 /**
  * Props for {@link EntityListDocsGrid}
@@ -37,7 +37,7 @@ import React from 'react';
  * @public
  */
 export type DocsGroupConfig = {
-  title: React.ReactNode;
+  title: ReactNode;
   filterPredicate: ((entity: Entity) => boolean) | string;
 };
 
@@ -76,7 +76,7 @@ const EntityListDocsGridGroup = (props: {
     );
   });
 
-  const titleComponent: React.ReactNode = (() => {
+  const titleComponent: ReactNode = (() => {
     return typeof group.title === 'string' ? (
       <ContentHeader title={group.title} />
     ) : (

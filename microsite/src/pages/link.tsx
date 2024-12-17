@@ -1,5 +1,4 @@
 import { Redirect } from '@docusaurus/router';
-import React from 'react';
 
 const redirects = {
   'bind-routes':

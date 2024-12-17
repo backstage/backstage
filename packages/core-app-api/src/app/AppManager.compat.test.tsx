@@ -15,7 +15,7 @@
  */
 
 import tlr, { render } from '@testing-library/react';
-import React from 'react';
+import * as React from 'react';
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {

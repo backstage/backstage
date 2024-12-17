@@ -18,7 +18,6 @@ import { UserIcon } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import React from 'react';
 
 const useStyles = makeStyles<Theme>(theme => ({
   footer: {

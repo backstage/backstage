@@ -178,7 +178,7 @@ provided by the Addon framework.
 ```tsx
 // plugins/your-plugin/src/addons/MakeAllImagesCatGifs.tsx
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 
 // This is a normal react component; in order to make it an Addon, you would

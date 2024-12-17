@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ReviewState } from './ReviewState';
 import { render } from '@testing-library/react';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';

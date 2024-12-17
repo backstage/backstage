@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { sidebarConfig } from '@backstage/core-components';

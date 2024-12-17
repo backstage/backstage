@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ComponentType } from 'react';
 import { useCanon } from '../../contexts/canon';
 import type { IconProps } from './types';
 
@@ -23,7 +23,7 @@ export const Icon = (props: IconProps) => {
   const { name, size = 16 } = props;
   const { icons } = useCanon();
 
-  const RemixIcon = icons[name] as React.ComponentType<{ className?: string }>;
+  const RemixIcon = icons[name] as ComponentType<{ className?: string }>;
 
   if (!RemixIcon) {
     console.error(`Icon "${name}" not found or is not a valid component.`);

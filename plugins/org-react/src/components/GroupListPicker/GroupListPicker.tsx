@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { MouseEvent, useState, useCallback } from 'react';
 import {
   catalogApiRef,
   humanizeEntityRef,
@@ -45,10 +45,10 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
 
   const { onChange, groupTypes, placeholder = '', defaultValue = '' } = props;
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [inputValue, setInputValue] = React.useState(defaultValue);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [inputValue, setInputValue] = useState(defaultValue);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

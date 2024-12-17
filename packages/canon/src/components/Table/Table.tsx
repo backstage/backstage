@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
+import {
+  forwardRef,
+  HTMLAttributes,
+  TdHTMLAttributes,
+  ThHTMLAttributes,
+} from 'react';
 
 /** @public */
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="table">
-    <table ref={ref} className={className} {...props} />
-  </div>
-));
+const Table = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
+  ({ className, ...props }, ref) => (
+    <div className="table">
+      <table ref={ref} className={className} {...props} />
+    </div>
+  ),
+);
 Table.displayName = 'Table';
 
 /** @public */
-const TableHeader = React.forwardRef<
+const TableHeader = forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
+  HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
@@ -40,18 +44,18 @@ const TableHeader = React.forwardRef<
 TableHeader.displayName = 'TableHeader';
 
 /** @public */
-const TableBody = React.forwardRef<
+const TableBody = forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
+  HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <tbody ref={ref} className={['table-body', className].join(' ')} {...props} />
 ));
 TableBody.displayName = 'TableBody';
 
 /** @public */
-const TableFooter = React.forwardRef<
+const TableFooter = forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
+  HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
@@ -62,9 +66,9 @@ const TableFooter = React.forwardRef<
 TableFooter.displayName = 'TableFooter';
 
 /** @public */
-const TableRow = React.forwardRef<
+const TableRow = forwardRef<
   HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
+  HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => (
   <tr ref={ref} className={['table-row', className].join(' ')} {...props}>
     {props.children}
@@ -73,27 +77,27 @@ const TableRow = React.forwardRef<
 TableRow.displayName = 'TableRow';
 
 /** @public */
-const TableHead = React.forwardRef<
+const TableHead = forwardRef<
   HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
+  ThHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
   <th ref={ref} className={['table-head', className].join(' ')} {...props} />
 ));
 TableHead.displayName = 'TableHead';
 
 /** @public */
-const TableCell = React.forwardRef<
+const TableCell = forwardRef<
   HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
+  TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
   <td ref={ref} className={['table-cell', className].join(' ')} {...props} />
 ));
 TableCell.displayName = 'TableCell';
 
 /** @public */
-const TableCaption = React.forwardRef<
+const TableCaption = forwardRef<
   HTMLTableCaptionElement,
-  React.HTMLAttributes<HTMLTableCaptionElement>
+  HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
@@ -105,11 +109,11 @@ TableCaption.displayName = 'TableCaption';
 
 export {
   Table,
-  TableHeader,
   TableBody,
+  TableCaption,
+  TableCell,
   TableFooter,
   TableHead,
+  TableHeader,
   TableRow,
-  TableCell,
-  TableCaption,
 };

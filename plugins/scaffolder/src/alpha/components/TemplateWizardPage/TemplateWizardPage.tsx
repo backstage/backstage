@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { ComponentType, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
@@ -60,7 +60,7 @@ import { useFormDecorators } from '../../hooks';
 export type TemplateWizardPageProps = {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
   components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   layouts?: LayoutOptions[];
   formProps?: FormProps;

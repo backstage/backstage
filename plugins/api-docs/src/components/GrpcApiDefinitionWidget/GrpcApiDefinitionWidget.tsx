@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
 import { useTheme } from '@material-ui/core/styles';
 

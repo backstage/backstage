@@ -6,9 +6,11 @@
 /// <reference types="react" />
 
 import { ForwardRefExoticComponent } from 'react';
-import { default as React_2 } from 'react';
-import * as React_3 from 'react';
+import { HTMLAttributes } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { RefAttributes } from 'react';
+import { TdHTMLAttributes } from 'react';
+import { ThHTMLAttributes } from 'react';
 
 // @public (undocumented)
 export type AlignItemsProps =
@@ -110,8 +112,8 @@ export const breakpoints: {
 };
 
 // @public (undocumented)
-export const Button: React_2.ForwardRefExoticComponent<
-  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+export const Button: ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public
@@ -135,8 +137,8 @@ export interface ButtonProps {
 }
 
 // @public (undocumented)
-export const Checkbox: React_2.ForwardRefExoticComponent<
-  CheckboxProps & React_2.RefAttributes<HTMLButtonElement>
+export const Checkbox: ForwardRefExoticComponent<
+  CheckboxProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
@@ -182,8 +184,8 @@ export interface ColorProps {
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 // @public (undocumented)
-export const Container: React_2.ForwardRefExoticComponent<
-  ContainerProps & React_2.RefAttributes<HTMLDivElement>
+export const Container: ForwardRefExoticComponent<
+  ContainerProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -271,7 +273,7 @@ export interface GridProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export const Icon: (props: IconProps) => React_2.JSX.Element;
+export const Icon: (props: IconProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
@@ -466,45 +468,41 @@ export interface StackProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export const Table: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableElement> &
-    React_3.RefAttributes<HTMLTableElement>
+export const Table: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
 >;
 
 // @public (undocumented)
-export const TableBody: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableBody: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableCell: React_3.ForwardRefExoticComponent<
-  React_3.TdHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
+export const TableCell: ForwardRefExoticComponent<
+  TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
 >;
 
 // @public (undocumented)
-export const TableFooter: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableFooter: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableHead: React_3.ForwardRefExoticComponent<
-  React_3.ThHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
+export const TableHead: ForwardRefExoticComponent<
+  ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
 >;
 
 // @public (undocumented)
-export const TableHeader: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableHeader: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableRow: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableRowElement> &
-    React_3.RefAttributes<HTMLTableRowElement>
+export const TableRow: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
 >;
 
 // @public (undocumented)

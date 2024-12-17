@@ -17,7 +17,6 @@
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import React from 'react';
 import { BackButton, ViewComponentButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';

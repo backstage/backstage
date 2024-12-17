@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { CSSProperties, ReactNode, createElement } from 'react';
 
 export const Title = ({
   children,
   style,
   type = 'h1',
 }: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
+  children: ReactNode;
+  style?: CSSProperties;
   type?: 'h1' | 'h2' | 'h3';
 }) => {
   let Component = 'h1';
@@ -30,7 +30,7 @@ export const Title = ({
   if (type === 'h2') Component = 'h2';
   if (type === 'h3') Component = 'h3';
 
-  return React.createElement(Component, {
+  return createElement(Component, {
     className: `sb-title ${type}`,
     style,
     children,

@@ -15,7 +15,7 @@
  */
 
 import { QuickStartCard } from '../../plugin';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
 import ContentImage from './static/backstageSystemModel.png';

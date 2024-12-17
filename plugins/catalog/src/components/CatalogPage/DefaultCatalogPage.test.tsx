@@ -32,7 +32,7 @@ import {
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import React from 'react';
+import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
@@ -165,7 +165,7 @@ describe('DefaultCatalogPage', () => {
     displayName: 'Display Name',
   });
 
-  const renderWrapped = (children: React.ReactNode) =>
+  const renderWrapped = (children: ReactNode) =>
     renderInTestApp(
       <TestApiProvider
         apis={[

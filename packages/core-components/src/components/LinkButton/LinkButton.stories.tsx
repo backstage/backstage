@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { LinkButton } from './LinkButton';
 import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 
-export const Root = ({ children }: { children: React.ReactNode }) => {
+export const Root = ({ children }: { children: ReactNode }) => {
   return (
     <div className="sb-table-wrapper">
       <table className="sb-table">{children}</table>
@@ -24,26 +24,26 @@ export const Root = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const Header = ({ children }: { children: React.ReactNode }) => {
+export const Header = ({ children }: { children: ReactNode }) => {
   return <thead>{children}</thead>;
 };
 
-export const Body = ({ children }: { children: React.ReactNode }) => {
+export const Body = ({ children }: { children: ReactNode }) => {
   return <tbody>{children}</tbody>;
 };
 
-export const HeaderRow = ({ children }: { children: React.ReactNode }) => {
+export const HeaderRow = ({ children }: { children: ReactNode }) => {
   return <tr>{children}</tr>;
 };
 
-export const HeaderCell = ({ children }: { children: React.ReactNode }) => {
+export const HeaderCell = ({ children }: { children: ReactNode }) => {
   return <th className="sb-table-cell sb-table-header-cell">{children}</th>;
 };
 
-export const Row = ({ children }: { children: React.ReactNode }) => {
+export const Row = ({ children }: { children: ReactNode }) => {
   return <tr className="sb-table-row">{children}</tr>;
 };
 
-export const Cell = ({ children }: { children: React.ReactNode }) => {
+export const Cell = ({ children }: { children: ReactNode }) => {
   return <td className="sb-table-cell">{children}</td>;
 };

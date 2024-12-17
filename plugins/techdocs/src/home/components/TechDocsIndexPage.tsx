@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useOutlet } from 'react-router-dom';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { CSSProperties, ReactNode } from 'react';
 
 export const Text = ({
   children,
   style,
 }: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
+  children: ReactNode;
+  style?: CSSProperties;
 }) => {
   return (
     <div className="sb-text" style={style}>

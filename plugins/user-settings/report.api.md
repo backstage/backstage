@@ -9,17 +9,18 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { ElementType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SignalApi } from '@backstage/plugin-signals-react';
@@ -30,7 +31,7 @@ import { TabProps } from '@material-ui/core/Tab';
 // @public (undocumented)
 export const DefaultProviderSettings: (props: {
   configuredProviders: string[];
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const ProviderSettingsItem: (props: {
@@ -38,19 +39,19 @@ export const ProviderSettingsItem: (props: {
   description: string;
   icon: IconComponent;
   apiRef: ApiRef<ProfileInfoApi & SessionApi>;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const Router: (props: {
   providerSettings?: JSX.Element;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const Settings: (props: { icon?: IconComponent }) => React_2.JSX.Element;
+export const Settings: (props: { icon?: IconComponent }) => JSX_2.Element;
 
 // @public (undocumented)
 export const SettingsLayout: {
-  (props: SettingsLayoutProps): React_2.JSX.Element;
+  (props: SettingsLayoutProps): JSX_2.Element;
   Route: (props: SettingsLayoutRouteProps) => null;
 };
 
@@ -58,7 +59,7 @@ export const SettingsLayout: {
 export type SettingsLayoutProps = {
   title?: string;
   subtitle?: string;
-  children?: React_2.ReactNode;
+  children?: ReactNode;
 };
 
 // @public (undocumented)
@@ -67,9 +68,9 @@ export type SettingsLayoutRouteProps = {
   title: string;
   children: JSX.Element;
   tabProps?: TabProps<
-    React_2.ElementType,
+    ElementType,
     {
-      component?: React_2.ElementType;
+      component?: ElementType;
     }
   >;
 };
@@ -78,27 +79,27 @@ export type SettingsLayoutRouteProps = {
 export const USER_SETTINGS_TAB_KEY = 'plugin.user-settings.settingsLayoutRoute';
 
 // @public (undocumented)
-export const UserSettingsAppearanceCard: () => React_2.JSX.Element;
+export const UserSettingsAppearanceCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const UserSettingsAuthProviders: (props: {
   providerSettings?: JSX.Element;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const UserSettingsFeatureFlags: () => React_2.JSX.Element;
+export const UserSettingsFeatureFlags: () => JSX_2.Element;
 
 // @public (undocumented)
-export const UserSettingsGeneral: () => React_2.JSX.Element;
+export const UserSettingsGeneral: () => JSX_2.Element;
 
 // @public (undocumented)
-export const UserSettingsIdentityCard: () => React_2.JSX.Element;
+export const UserSettingsIdentityCard: () => JSX_2.Element;
 
 // @public (undocumented)
-export const UserSettingsLanguageToggle: () => React_2.JSX.Element | null;
+export const UserSettingsLanguageToggle: () => JSX_2.Element | null;
 
 // @public (undocumented)
-export const UserSettingsMenu: () => React_2.JSX.Element;
+export const UserSettingsMenu: () => JSX_2.Element;
 
 // @public (undocumented)
 export const UserSettingsPage: (props: {
@@ -106,7 +107,7 @@ export const UserSettingsPage: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export const UserSettingsPinToggle: () => React_2.JSX.Element;
+export const UserSettingsPinToggle: () => JSX_2.Element;
 
 // @public (undocumented)
 const userSettingsPlugin: BackstagePlugin<
@@ -119,12 +120,12 @@ export { userSettingsPlugin as plugin };
 export { userSettingsPlugin };
 
 // @public (undocumented)
-export const UserSettingsProfileCard: () => React_2.JSX.Element;
+export const UserSettingsProfileCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const UserSettingsSignInAvatar: (props: {
   size?: number;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public
 export class UserSettingsStorage implements StorageApi {
@@ -152,9 +153,7 @@ export class UserSettingsStorage implements StorageApi {
 }
 
 // @public @deprecated
-export const UserSettingsTab: (
-  props: UserSettingsTabProps,
-) => React_2.JSX.Element;
+export const UserSettingsTab: (props: UserSettingsTabProps) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export type UserSettingsTabProps = PropsWithChildren<{
@@ -163,7 +162,7 @@ export type UserSettingsTabProps = PropsWithChildren<{
 }>;
 
 // @public (undocumented)
-export const UserSettingsThemeToggle: () => React_2.JSX.Element;
+export const UserSettingsThemeToggle: () => JSX_2.Element;
 
 // @public (undocumented)
 export const useUserProfile: () =>

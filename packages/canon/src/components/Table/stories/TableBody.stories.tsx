@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table, TableBody } from '../Table';
 

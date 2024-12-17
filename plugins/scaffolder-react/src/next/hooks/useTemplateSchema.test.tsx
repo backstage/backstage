@@ -16,7 +16,7 @@
 import { useTemplateSchema } from './useTemplateSchema';
 import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { TemplateParameterSchema } from '../../types';
 
@@ -50,7 +50,7 @@ describe('useTemplateSchema', () => {
     };
 
     const { result } = renderHook(() => useTemplateSchema(manifest), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider
           apis={[[featureFlagsApiRef, { isActive: () => false }]]}
         >
@@ -117,7 +117,7 @@ describe('useTemplateSchema', () => {
       };
 
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[[featureFlagsApiRef, { isActive: () => false }]]}
           >
@@ -161,7 +161,7 @@ describe('useTemplateSchema', () => {
       };
 
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[[featureFlagsApiRef, { isActive: () => true }]]}
           >
@@ -212,7 +212,7 @@ describe('useTemplateSchema', () => {
       };
 
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[[featureFlagsApiRef, { isActive: () => false }]]}
           >
@@ -250,7 +250,7 @@ describe('useTemplateSchema', () => {
       };
 
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[[featureFlagsApiRef, { isActive: () => false }]]}
           >
@@ -354,7 +354,7 @@ describe('useTemplateSchema', () => {
       };
 
       const { result } = renderHook(() => useTemplateSchema(manifest), {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[[featureFlagsApiRef, { isActive: () => false }]]}
           >

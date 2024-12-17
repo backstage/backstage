@@ -35,18 +35,24 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
 import type { Location } from 'history';
-import React, {
+
+import {
   ComponentProps,
   ComponentType,
+  createElement,
   CSSProperties,
   forwardRef,
   KeyboardEventHandler,
+  ReactElement,
   ReactNode,
   useCallback,
   useContext,
   useMemo,
   useState,
+  MouseEvent,
+  ChangeEvent,
 } from 'react';
+
 import {
   Link,
   NavLinkProps,
@@ -227,7 +233,7 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
  * @returns boolean
  */
 const useLocationMatch = (
-  submenu: React.ReactElement<SidebarSubmenuProps>,
+  submenu: ReactElement<SidebarSubmenuProps>,
   location: Location,
 ): boolean =>
   useElementFilter(
@@ -270,22 +276,22 @@ type SidebarItemBaseProps = {
   disableHighlight?: boolean;
   className?: string;
   noTrack?: boolean;
-  onClick?: (ev: React.MouseEvent) => void;
+  onClick?: (ev: MouseEvent) => void;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
-  onClick: (ev: React.MouseEvent) => void;
+  onClick: (ev: MouseEvent) => void;
   children?: ReactNode;
 };
 
 type SidebarItemLinkProps = SidebarItemBaseProps & {
   to: string;
-  onClick?: (ev: React.MouseEvent) => void;
+  onClick?: (ev: MouseEvent) => void;
 } & NavLinkProps;
 
 type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
   to?: string;
-  onClick?: (ev: React.MouseEvent) => void;
+  onClick?: (ev: MouseEvent) => void;
   children: ReactNode;
 };
 
@@ -305,12 +311,12 @@ function isButtonItem(
   return (props as SidebarItemLinkProps).to === undefined;
 }
 
-const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
+const sidebarSubmenuType = createElement(SidebarSubmenu).type;
 
 // TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
 //               This is needed because react-router doesn't handle the path comparison
 //               properly yet, matching for example /foobar with /foo.
-export const WorkaroundNavLink = React.forwardRef<
+export const WorkaroundNavLink = forwardRef<
   HTMLAnchorElement,
   NavLinkProps & {
     children?: ReactNode;
@@ -449,7 +455,7 @@ const SidebarItemBase = forwardRef<
   );
 
   const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
       if (!noTrack) {
         const action = 'click';
         const subject = text ?? 'Sidebar Item';
@@ -494,7 +500,7 @@ const SidebarItemWithSubmenu = ({
   children,
   ...props
 }: SidebarItemBaseProps & {
-  children: React.ReactElement<SidebarSubmenuProps>;
+  children: ReactElement<SidebarSubmenuProps>;
 }) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
@@ -576,7 +582,7 @@ export const SidebarItem = forwardRef<
   if (submenu) {
     return (
       <SidebarItemWithSubmenu {...props}>
-        {submenu as React.ReactElement<SidebarSubmenuProps>}
+        {submenu as ReactElement<SidebarSubmenuProps>}
       </SidebarItemWithSubmenu>
     );
   }
@@ -608,17 +614,17 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
     }
   };
 
-  const handleInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInput = (ev: ChangeEvent<HTMLInputElement>) => {
     setInput(ev.target.value);
   };
 
-  const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+  const handleInputClick = (ev: MouseEvent<HTMLInputElement>) => {
     // Clicking into the search fields shouldn't navigate to the search page
     ev.preventDefault();
     ev.stopPropagation();
   };
 
-  const handleItemClick = (ev: React.MouseEvent) => {
+  const handleItemClick = (ev: MouseEvent) => {
     // Clicking on the search icon while should execute a query with the current field content
     search();
     ev.preventDefault();

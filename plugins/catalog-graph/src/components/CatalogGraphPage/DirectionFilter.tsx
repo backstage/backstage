@@ -15,7 +15,7 @@
  */
 import { Select, SelectedItems } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Direction } from '../EntityRelationsGraph';
 
 const DIRECTION_DISPLAY_NAMES = {

@@ -112,7 +112,6 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
      InfoContent,
    } from '@backstage/plugin-devtools';
    import { DevToolsLayout } from '@backstage/plugin-devtools';
-   import React from 'react';
 
    export const DevToolsPage = () => {
      return (
@@ -374,7 +373,6 @@ import {
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import React from 'react';
 
 const DevToolsPage = () => {
   return (

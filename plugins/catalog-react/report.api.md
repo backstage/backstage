@@ -11,15 +11,16 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -41,7 +42,7 @@ export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
 // @public
 export const AsyncEntityProvider: (
   props: AsyncEntityProviderProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface AsyncEntityProviderProps {
@@ -73,15 +74,15 @@ export const catalogApiRef: ApiRef<CatalogApi>;
 
 // @public (undocumented)
 export const CatalogFilterLayout: {
-  (props: { children: React_2.ReactNode }): React_2.JSX.Element;
+  (props: { children: ReactNode }): JSX_2.Element;
   Filters: (props: {
-    children: React_2.ReactNode;
+    children: ReactNode;
     options?: {
       drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
       drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
     };
-  }) => React_2.JSX.Element;
-  Content: (props: { children: React_2.ReactNode }) => React_2.JSX.Element;
+  }) => JSX_2.Element;
+  Content: (props: { children: ReactNode }) => JSX_2.Element;
 };
 
 // @public (undocumented)
@@ -175,9 +176,7 @@ export function defaultEntityPresentation(
 ): EntityRefPresentationSnapshot;
 
 // @public (undocumented)
-export const DefaultFilters: (
-  props: DefaultFiltersProps,
-) => React_2.JSX.Element;
+export const DefaultFilters: (props: DefaultFiltersProps) => JSX_2.Element;
 
 // @public
 export type DefaultFiltersProps = {
@@ -191,7 +190,7 @@ export type DefaultFiltersProps = {
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
->(props: EntityAutocompletePickerProps<T, Name>): React_2.JSX.Element | null;
+>(props: EntityAutocompletePickerProps<T, Name>): JSX_2.Element | null;
 
 // @public (undocumented)
 export type EntityAutocompletePickerProps<
@@ -257,7 +256,7 @@ export class EntityKindFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityKindPicker: (
   props: EntityKindPickerProps,
-) => React_2.JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @public
 export interface EntityKindPickerProps {
@@ -284,10 +283,10 @@ export class EntityLifecycleFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityLifecyclePicker: (props: {
   initialFilter?: string[];
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public
-export const EntityListContext: React_2.Context<
+export const EntityListContext: Context<
   EntityListContextProps<any> | undefined
 >;
 
@@ -334,7 +333,7 @@ export type EntityListPagination =
 // @public
 export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
   props: EntityListProviderProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
@@ -365,7 +364,7 @@ export class EntityNamespaceFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityNamespacePicker: (
   props: EntityNamespacePickerProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface EntityNamespacePickerProps {
@@ -399,7 +398,7 @@ export class EntityOwnerFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityOwnerPicker: (
   props?: EntityOwnerPickerProps,
-) => React_2.JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @public (undocumented)
 export type EntityOwnerPickerProps = {
@@ -409,7 +408,7 @@ export type EntityOwnerPickerProps = {
 // @public
 export const EntityPeekAheadPopover: (
   props: EntityPeekAheadPopoverProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
@@ -432,12 +431,10 @@ export interface EntityPresentationApi {
 export const entityPresentationApiRef: ApiRef<EntityPresentationApi>;
 
 // @public (undocumented)
-export const EntityProcessingStatusPicker: () => React_2.JSX.Element;
+export const EntityProcessingStatusPicker: () => JSX_2.Element;
 
 // @public
-export const EntityProvider: (
-  props: EntityProviderProps,
-) => React_2.JSX.Element;
+export const EntityProvider: (props: EntityProviderProps) => JSX_2.Element;
 
 // @public
 export interface EntityProviderProps {
@@ -456,7 +453,7 @@ export type EntityRefLinkProps = {
   defaultKind?: string;
   defaultNamespace?: string;
   title?: string;
-  children?: React_2.ReactNode;
+  children?: ReactNode;
   hideIcon?: boolean;
   disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;
@@ -464,7 +461,7 @@ export type EntityRefLinkProps = {
 // @public
 export function EntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
->(props: EntityRefLinksProps<TRef>): React_2.JSX.Element;
+>(props: EntityRefLinksProps<TRef>): JSX_2.Element;
 
 // @public
 export type EntityRefLinksProps<
@@ -507,7 +504,7 @@ export const entityRouteRef: RouteRef<{
 }>;
 
 // @public
-export const EntitySearchBar: () => React_2.JSX.Element;
+export const EntitySearchBar: () => JSX_2.Element;
 
 // @public (undocumented)
 export type EntitySourceLocation = {
@@ -517,7 +514,7 @@ export type EntitySourceLocation = {
 
 // @public
 export const EntityTable: {
-  <T extends Entity>(props: EntityTableProps<T>): React_2.JSX.Element;
+  <T extends Entity>(props: EntityTableProps<T>): JSX_2.Element;
   columns: Readonly<{
     createEntityRefColumn<T_1 extends Entity>(options: {
       defaultKind?: string | undefined;
@@ -573,9 +570,7 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityTagPicker: (
-  props: EntityTagPickerProps,
-) => React_2.JSX.Element;
+export const EntityTagPicker: (props: EntityTagPickerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityTagPickerProps = {
@@ -614,7 +609,7 @@ export class EntityTypeFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityTypePicker: (
   props: EntityTypePickerProps,
-) => React_2.JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @public
 export interface EntityTypePickerProps {
@@ -645,9 +640,7 @@ export class EntityUserFilter implements EntityFilter {
 }
 
 // @public
-export const FavoriteEntity: (
-  props: FavoriteEntityProps,
-) => React_2.JSX.Element;
+export const FavoriteEntity: (props: FavoriteEntityProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
@@ -686,13 +679,13 @@ export function InspectEntityDialog(props: {
   open: boolean;
   entity: Entity;
   onClose: () => void;
-}): React_2.JSX.Element | null;
+}): JSX_2.Element | null;
 
 // @public
 export function MissingAnnotationEmptyState(props: {
   annotation: string | string[];
   readMoreUrl?: string;
-}): React_2.JSX.Element;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
@@ -704,7 +697,7 @@ export function MockEntityListContextProvider<
   props: PropsWithChildren<{
     value?: Partial<EntityListContextProps<T>>;
   }>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
@@ -729,7 +722,7 @@ export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi>;
 // @public (undocumented)
 export const UnregisterEntityDialog: (
   props: UnregisterEntityDialogProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type UnregisterEntityDialogProps = {
@@ -814,9 +807,7 @@ export class UserListFilter implements EntityFilter {
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
 
 // @public (undocumented)
-export const UserListPicker: (
-  props: UserListPickerProps,
-) => React_2.JSX.Element;
+export const UserListPicker: (props: UserListPickerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type UserListPickerProps = {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ReactNode } from 'react';
+import { CSSProperties, ReactElement, ReactNode } from 'react';
 import { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -82,7 +82,7 @@ export type CustomHomepageGridProps = {
   /**
    * Custom style for grid.
    */
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   /**
    * Compaction type of widgets in the grid. This controls where widgets are moved in case
    * they are overlapping in the grid.

@@ -18,7 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import Grid, { GridProps } from '@material-ui/core/Grid';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 
 const useStyles = makeStyles<Theme, { entity: Entity }>(theme => ({
   root: ({ entity }) => ({
