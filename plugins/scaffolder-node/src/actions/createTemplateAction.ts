@@ -20,18 +20,18 @@ import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import type {
   InferActionType,
-  NewActionContext,
-  NewTemplateAction,
-  OldActionContext,
-  OldTemplateAction,
+  ActionContextV2,
+  TemplateActionV2,
+  ActionContextV1,
+  TemplateActionV1,
   TemplateExample,
 } from './types';
 
 /**
- * @deprecated migrate to {@link NewTemplateActionOptions}
+ * @deprecated migrate to {@link TemplateActionOptionsV2}
  * @public
  */
-export type OldTemplateActionOptions<
+export type TemplateActionOptionsV1<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends Schema | z.ZodType = Schema,
@@ -59,15 +59,13 @@ export type OldTemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (
-    ctx: OldActionContext<TActionInput, TActionOutput>,
-  ) => Promise<void>;
+  handler: (ctx: ActionContextV1<TActionInput, TActionOutput>) => Promise<void>;
 };
 
 /**
  * @public
  */
-export type NewTemplateActionOptions<
+export type TemplateActionOptionsV2<
   TInputParams extends Record<
     PropertyKey,
     (zod: typeof z) => z.ZodType
@@ -86,7 +84,7 @@ export type NewTemplateActionOptions<
     output: TOutputParams;
   };
   handler: (
-    ctx: NewActionContext<
+    ctx: ActionContextV2<
       InferActionType<TInputParams>,
       InferActionType<TOutputParams>
     >,
@@ -94,14 +92,36 @@ export type NewTemplateActionOptions<
 };
 
 /**
+ * @deprecated migrate to {@link TemplateActionOptionsV2}
  * @public
  */
 export type TemplateActionOptions<
-  TInputParams extends Record<PropertyKey, (zod: typeof z) => z.ZodType>,
-  TOutputParams extends Record<PropertyKey, (zod: typeof z) => z.ZodType>,
-> =
-  | OldTemplateActionOptions
-  | NewTemplateActionOptions<TInputParams, TOutputParams>;
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends Schema | z.ZodType = Schema,
+  TOutputSchema extends Schema | z.ZodType = Schema,
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TInputParams,
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TOutputParams,
+> = TemplateActionOptionsV1<
+  TInputParams,
+  TOutputParams,
+  TInputSchema,
+  TOutputSchema,
+  TActionInput,
+  TActionOutput
+>;
 
 function isZod(schema?: Schema | z.ZodType): schema is z.ZodType {
   return !!(schema && 'safeParseAsync' in schema);
@@ -118,10 +138,10 @@ function transformZodRecordToObject(
 /**
  * This function is used to create new template actions to get type safety.
  * Will convert zod schemas to json schemas for use throughout the system.
- * @deprecated migrate to {@link newCreateTemplateAction}
+ * @deprecated migrate to {@link createTemplateActionV2}
  * @public
  */
-export function oldCreateTemplateAction<
+export function createTemplateActionV1<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends Schema | z.ZodType = {},
@@ -141,7 +161,7 @@ export function oldCreateTemplateAction<
     ? IReturn
     : TOutputParams,
 >(
-  action: OldTemplateActionOptions<
+  action: TemplateActionOptionsV1<
     TInputParams,
     TOutputParams,
     TInputSchema,
@@ -149,7 +169,7 @@ export function oldCreateTemplateAction<
     TActionInput,
     TActionOutput
   >,
-): OldTemplateAction<TActionInput, TActionOutput> {
+): TemplateActionV1<TActionInput, TActionOutput> {
   const inputSchema =
     action.schema && action.schema.input && isZod(action.schema.input)
       ? (zodToJsonSchema(action.schema.input) as Schema)
@@ -175,12 +195,12 @@ export function oldCreateTemplateAction<
  * Will convert zod schemas to json schemas for use throughout the system.
  * @public
  */
-export function newCreateTemplateAction<
+export function createTemplateActionV2<
   TInputParams extends Record<PropertyKey, (zod: typeof z) => z.ZodType>,
   TOutputParams extends Record<PropertyKey, (zod: typeof z) => z.ZodType>,
 >(
-  action: NewTemplateActionOptions<TInputParams, TOutputParams>,
-): NewTemplateAction<
+  action: TemplateActionOptionsV2<TInputParams, TOutputParams>,
+): TemplateActionV2<
   InferActionType<TInputParams>,
   InferActionType<TOutputParams>
 > {
@@ -197,9 +217,9 @@ export function newCreateTemplateAction<
   };
 }
 
-function isOldAction(
-  action: OldTemplateActionOptions | NewTemplateActionOptions,
-): action is OldTemplateActionOptions {
+function isV1Action(
+  action: TemplateActionOptionsV1 | TemplateActionOptionsV2,
+): action is TemplateActionOptionsV1 {
   return (
     isZod(action.schema?.input) ||
     typeof action.schema?.input === 'string' ||
@@ -217,15 +237,15 @@ export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TAction extends
-    | OldTemplateActionOptions
-    | NewTemplateActionOptions = OldTemplateActionOptions,
-  TReturn = TAction extends OldTemplateActionOptions
-    ? Prettify<OldTemplateAction<TInputParams, TOutputParams>>
-    : Prettify<NewTemplateAction>,
+    | TemplateActionOptionsV1
+    | TemplateActionOptionsV2 = TemplateActionOptionsV1,
+  TReturn = TAction extends TemplateActionOptionsV1
+    ? Prettify<TemplateActionV1<TInputParams, TOutputParams>>
+    : Prettify<TemplateActionV2>,
 >(action: TAction): TReturn {
-  if (isOldAction(action)) {
-    return oldCreateTemplateAction(action) as TReturn;
+  if (isV1Action(action)) {
+    return createTemplateActionV1(action) as TReturn;
   }
 
-  return newCreateTemplateAction(action) as TReturn;
+  return createTemplateActionV2(action) as TReturn;
 }
