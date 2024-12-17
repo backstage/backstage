@@ -25,7 +25,15 @@ import {
   npmRegistryPrompt,
   ownerPrompt,
 } from '../../lib/new/factories/common/prompts';
+
 import defaultTemplates from '../../../templates';
+import {
+  installFrontend,
+  addFrontendLegacy,
+  installBackend,
+  addBackend,
+  AdditionalActionsOptions,
+} from './additionalActions';
 
 import { Template, TemplateLocation, ConfigurablePrompt } from './types';
 
@@ -218,4 +226,28 @@ export function createDirName(template: Template, options: Options) {
     return `${options.id}-${template.suffix}`;
   }
   return options.id;
+}
+
+export async function runAdditionalActions(
+  additionalActions: string[],
+  options: AdditionalActionsOptions,
+) {
+  for (const action of additionalActions) {
+    switch (action) {
+      case 'install-frontend':
+        await installFrontend(options);
+        break;
+      case 'add-frontend-legacy':
+        await addFrontendLegacy(options);
+        break;
+      case 'install-backend':
+        await installBackend(options);
+        break;
+      case 'add-backend':
+        await addBackend(options);
+        break;
+      default:
+        throw new Error(`${action} is not a valid additional action`);
+    }
+  }
 }
