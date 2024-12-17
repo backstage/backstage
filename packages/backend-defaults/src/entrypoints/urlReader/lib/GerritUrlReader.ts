@@ -104,15 +104,6 @@ export class GerritUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
     let response: Response;
-    const tagIndex = apiUrl.indexOf('tags');
-    if (tagIndex > 0) {
-      const parts = apiUrl.split('files');
-      response = await this.readRepository(parts[0], options);
-      let responseBody = (await response.buffer()).toString("base64");
-      const changeId = responseBody.slice(responseBody.indexOf('revision')+8, responseBody.indexOf('can/delete'));
-      const repoUrl = apiUrl.slice(0, tagIndex);
-      apiUrl = `${repoUrl}commits/${changeId}/files${parts[1]}`;
-    }
     try {
       response = await fetch(url, {
         method: 'GET',
