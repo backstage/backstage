@@ -21,8 +21,8 @@
   justify-content: center;
   user-select: none;
   font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-bold);
-  font-size: var(--canon-font-size-md);
+  font-weight: var(--canon-font-weight-bold);
+  font-size: var(--canon-font-size-body);
   padding: 0;
   transition: all 150ms ease;
   cursor: pointer;
@@ -70,10 +70,11 @@
     height: 40px;
   }
 
-  &.cn-button-content {
+  & .cn-button-content {
     display: flex;
     align-items: center;
     gap: var(--canon-spacing-xs);
+    font-weight: var(--canon-font-weight-bold);
 
     &.cn-button-content-icon-both {
       flex: 1;
