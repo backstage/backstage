@@ -351,9 +351,6 @@ export interface KubernetesRequestBody {
 // @public
 export const kubernetesResourcesPermission: BasicPermission;
 
-// @public
-export const kubernetesServicesPermission: BasicPermission;
-
 // @public (undocumented)
 export interface LimitRangeFetchResponse {
   // (undocumented)
