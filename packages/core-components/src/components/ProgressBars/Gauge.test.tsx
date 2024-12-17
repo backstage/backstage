@@ -24,34 +24,34 @@ describe('<Gauge />', () => {
     const { getByText } = await renderInTestApp(
       <Gauge value={10} fractional={false} />,
     );
-    getByText('10%');
+    expect(getByText('10%')).toBeInTheDocument();
   });
   it('handles fractional prop', async () => {
     const { getByText } = await renderInTestApp(
       <Gauge value={0.1} fractional />,
     );
-    getByText('10%');
+    expect(getByText('10%')).toBeInTheDocument();
   });
 
   it('handles max prop', async () => {
     const { getByText } = await renderInTestApp(
       <Gauge value={1} max={10} fractional={false} />,
     );
-    getByText('1%');
+    expect(getByText('1%')).toBeInTheDocument();
   });
 
   it('handles unit prop', async () => {
     const { getByText } = await renderInTestApp(
       <Gauge value={10} fractional={false} unit="m" />,
     );
-    getByText('10m');
+    expect(getByText('10m')).toBeInTheDocument();
   });
 
   it('handle relativeToMax prop', async () => {
     const { getByText } = await renderInTestApp(
       <Gauge value={7} max={10} relativeToMax fractional={false} unit=" pts" />,
     );
-    getByText('7 pts');
+    expect(getByText('7 pts')).toBeInTheDocument();
   });
 
   it('handle decimalDigits prop', async () => {
@@ -65,7 +65,7 @@ describe('<Gauge />', () => {
         unit="/10"
       />,
     );
-    getByText('5.50/10');
+    expect(getByText('5.50/10')).toBeInTheDocument();
   });
 
   const ok = '#111';
