@@ -32,7 +32,6 @@ import {
   getGerritBranchApiUrl,
   getGerritFileContentsApiUrl,
   getGerritRequestOptions,
-  parseGerritGitilesUrl,
   parseGerritJsonResponse,
 } from '@backstage/integration';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
@@ -82,7 +81,21 @@ export class GerritUrlReader implements UrlReaderService {
   ) {}
 
   async read(url: string): Promise<Buffer> {
-    const response = await this.readUrl(url);
+    let apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
+    let response;
+    const tagIndex = apiUrl.indexOf('tags');
+    if (tagIndex > 0) {
+      const parts = apiUrl.split('files');
+      response = await this.readUrl(parts[0]);
+      const responseBody = (await response.buffer()).toString('base64');
+      const changeId = responseBody.slice(
+        responseBody.indexOf('revision') + 8,
+        responseBody.indexOf('can/delete'),
+      );
+      const repoUrl = apiUrl.slice(0, tagIndex);
+      apiUrl = `${repoUrl}commits/${changeId}/files${parts[1]}`;
+    }
+    response = await this.readUrl(apiUrl);
     return response.buffer();
   }
 
@@ -90,7 +103,6 @@ export class GerritUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    let apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
     let response: Response;
     const tagIndex = apiUrl.indexOf('tags');
     if (tagIndex > 0) {
@@ -102,7 +114,7 @@ export class GerritUrlReader implements UrlReaderService {
       apiUrl = `${repoUrl}commits/${changeId}/files${parts[1]}`;
     }
     try {
-      response = await fetch(apiUrl, {
+      response = await fetch(url, {
         method: 'GET',
         ...getGerritRequestOptions(this.integration.config),
         // TODO(freben): The signal cast is there because pre-3.x versions of
@@ -115,44 +127,6 @@ export class GerritUrlReader implements UrlReaderService {
       });
     } catch (e) {
       throw new Error(`Unable to read gerrit file ${url}, ${e}`);
-    }
-
-    if (response.ok) {
-      let responseBody: string;
-      return {
-        buffer: async () => {
-          if (responseBody === undefined) {
-            responseBody = await response.text();
-          }
-          return Buffer.from(responseBody, 'base64');
-        },
-        stream: () => {
-          const readable = Readable.from(response.body);
-          return readable.pipe(new Base64Decode());
-        },
-      };
-    }
-    if (response.status === 404) {
-      throw new NotFoundError(`File ${url} not found.`);
-    }
-    throw new Error(
-      `${url} could not be read as ${apiUrl}, ${response.status} ${response.statusText}`,
-    );
-  }
-
-  async readRepository(
-    url: string,
-    options?: UrlReaderServiceReadUrlOptions,
-  ): Promise<UrlReaderServiceReadUrlResponse> {
-    let response;
-    try {
-      response = await fetch(url, {
-        method: 'GET',
-        ...getGerritRequestOptions(this.integration.config),
-        signal: options?.signal as any,
-      });
-    } catch (e) {
-      throw new Error(`Unable to read repository ${url}, ${e}`);
     }
 
     if (response.ok) {
@@ -226,16 +200,9 @@ export class GerritUrlReader implements UrlReaderService {
     revision: string,
     options?: UrlReaderServiceReadTreeOptions,
   ) {
-    const { branch, filePath, project, tags } = parseGerritGitilesUrl(
-      this.integration.config,
-      url,
-    );
     const archiveUrl = buildGerritGitilesArchiveUrl(
       this.integration.config,
-      project,
-      branch,
-      filePath,
-      tags,
+      url,
     );
     const archiveResponse = await fetch(archiveUrl, {
       ...getGerritRequestOptions(this.integration.config),

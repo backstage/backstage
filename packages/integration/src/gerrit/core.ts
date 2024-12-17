@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { join, takeWhile, trimEnd, trimStart } from 'lodash';
 import { GerritIntegrationConfig } from './config';
 
@@ -227,29 +228,27 @@ export function buildGerritGitilesUrl(
  * Build a Gerrit Gitiles archive url that targets a specific branch and path
  *
  * @param config - A Gerrit provider config.
- * @param project - The name of the git project
- * @param branch - The branch we will target.
- * @param filePath - The absolute file path.
- * @param tags - Checks if tags is used.
+ * @param url - An url pointing to a file in git.
  * @public
  */
 export function buildGerritGitilesArchiveUrl(
   config: GerritIntegrationConfig,
-  project: string,
-  branch: string,
-  filePath: string,
-  tags: boolean = false,
+  url: string,
 ): string {
+  const { ref, path, project, refType } = parseGitilesUrlRef(config, url);
   const archiveName =
-    filePath === '/' || filePath === '' ? '.tar.gz' : `/${filePath}.tar.gz`;
-  if (tags) {
+    path === '/' || path === '' ? '.tar.gz' : `/${path}.tar.gz`;
+  if (refType === 'tag') {
     return `${getGitilesAuthenticationUrl(
-      config
-    )}/${project}/+archive/refs/tags/${branch}${archiveName}`;
+      config,
+    )}/${project}/+archive/refs/tags/${ref}${archiveName}`;
   }
-  return `${getGitilesAuthenticationUrl(
-    config,
-  )}/${project}/+archive/refs/heads/${branch}${archiveName}`;
+  if (refType === 'branch') {
+    return `${getGitilesAuthenticationUrl(
+      config,
+    )}/${project}/+archive/refs/heads/${ref}${archiveName}`;
+  }
+  throw new Error(`Unsupported gitiles ref type: ${refType}`);
 }
 
 /**
@@ -314,15 +313,18 @@ export function getGerritBranchApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, project, tags } = parseGerritGitilesUrl(config, url);
-  if (tags) {
+  const { project, ref, refType } = parseGitilesUrlRef(config, url);
+  if (refType === 'tag') {
     return `${config.baseUrl}${getAuthenticationPrefix(
-      config
-    )}projects/${encodeURIComponent(project)}/tags/${branch}`;
+      config,
+    )}projects/${encodeURIComponent(project)}/tags/${ref}`;
   }
-  return `${config.baseUrl}${getAuthenticationPrefix(
-    config,
-  )}projects/${encodeURIComponent(project)}/branches/${branch}`;
+  if (refType === 'branch') {
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config,
+    )}projects/${encodeURIComponent(project)}/branches/${ref}`;
+  }
+  throw new Error(`Unsupported gitiles ref type: ${refType}`);
 }
 
 /**
@@ -351,19 +353,22 @@ export function getGerritFileContentsApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, filePath, project, tags } = parseGerritGitilesUrl(config, url);
-  if (tags) {
+  const { project, path, ref, refType } = parseGitilesUrlRef(config, url);
+  if (refType === 'tag') {
     return `${config.baseUrl}${getAuthenticationPrefix(
-      config
+      config,
     )}projects/${encodeURIComponent(
-      project
-    )}/tags/${branch}/files/${encodeURIComponent(filePath)}/content`;
+      project,
+    )}/tags/${ref}/files/${encodeURIComponent(path)}/content`;
   }
-  return `${config.baseUrl}${getAuthenticationPrefix(
-    config,
-  )}projects/${encodeURIComponent(
-    project,
-  )}/branches/${branch}/files/${encodeURIComponent(filePath)}/content`;
+  if (refType === 'branch') {
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config,
+    )}projects/${encodeURIComponent(
+      project,
+    )}/branches/${ref}/files/${encodeURIComponent(path)}/content`;
+  }
+  throw new Error(`Unsupported gitiles ref type: ${refType}`);
 }
 
 /**

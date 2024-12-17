@@ -2,5 +2,8 @@
 '@backstage/backend-defaults': minor
 ---
 
-**BREAKING** Update readUrl function and add readRepository function in
-**GerritUrlReader** to handle Gerrit URL with tags.
+**BREAKING** The following functions in **GerritUrlReader** are updated to handle Gerrit URL with tags:
+
+- read
+- readUrl
+- readTreeFromGitiles
