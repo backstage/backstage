@@ -72,6 +72,7 @@ config
 Config
 configmaps
 configs
+conformant
 const
 cookiecutter
 corepack
@@ -343,6 +344,7 @@ rebasing
 Recharts
 Redash
 redis
+reimplement
 renderer
 renderers
 replicasets
@@ -406,6 +408,7 @@ src
 statefulsets
 stdout
 storable
+storages
 stringified
 stringify
 subcommand
