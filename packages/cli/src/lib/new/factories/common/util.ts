@@ -19,8 +19,9 @@ export const resolvePackageName = (options: {
   scope?: string;
   plugin: boolean;
 }) => {
-  const { baseName, scope, plugin } = options;
-  if (scope) {
+  const { baseName, scope: _scope, plugin } = options;
+  if (_scope) {
+    const scope = _scope.replace(/@/g, '');
     if (plugin) {
       const pluginName = scope.startsWith('backstage')
         ? 'plugin'
