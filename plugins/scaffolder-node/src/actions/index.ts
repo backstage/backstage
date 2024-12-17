@@ -16,8 +16,8 @@
 
 export {
   createTemplateAction,
-  type NewTemplateActionOptions,
-  type OldTemplateActionOptions,
+  type TemplateActionOptionsV2,
+  type TemplateActionOptionsV1,
   type TemplateActionOptions,
 } from './createTemplateAction';
 export {
@@ -35,12 +35,12 @@ export {
 } from './gitHelpers';
 export type {
   ActionContext,
+  ActionContextV1,
+  ActionContextV2,
   InferActionType,
-  NewActionContext,
-  NewTemplateAction,
-  OldActionContext,
-  OldTemplateAction,
   TemplateAction,
+  TemplateActionV1,
+  TemplateActionV2,
   TemplateExample,
 } from './types';
 export { getRepoSourceDirectory, parseRepoUrl } from './util';

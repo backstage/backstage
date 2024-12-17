@@ -47,11 +47,11 @@ export type InferActionType<
 }>;
 
 /**
- * OldActionContext is passed into scaffolder actions.
- * @deprecated migrate to {@link NewActionContext}
+ * ActionContextV1 is passed into scaffolder actions.
+ * @deprecated migrate to {@link ActionContextV2}
  * @public
  */
-export type OldActionContext<
+export type ActionContextV1<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
@@ -117,10 +117,10 @@ export type OldActionContext<
 };
 
 /**
- * NewActionContext is passed into scaffolder actions.
+ * ActionContextV2 is passed into scaffolder actions.
  * @public
  */
-export type NewActionContext<
+export type ActionContextV2<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
@@ -183,20 +183,19 @@ export type NewActionContext<
 };
 
 /**
+ * @deprecated migrate to {@link ActionContextV2}
  * @public
  */
 export type ActionContext<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-> =
-  | OldActionContext<TActionInput, TActionOutput>
-  | NewActionContext<TActionInput, TActionOutput>;
+> = ActionContextV2<TActionInput, TActionOutput>;
 
 /**
- * @deprecated migrate to {@link NewTemplateAction}
+ * @deprecated migrate to {@link TemplateActionV2}
  * @public
  */
-export type OldTemplateAction<
+export type TemplateActionV1<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
@@ -208,15 +207,13 @@ export type OldTemplateAction<
     input?: Schema;
     output?: Schema;
   };
-  handler: (
-    ctx: OldActionContext<TActionInput, TActionOutput>,
-  ) => Promise<void>;
+  handler: (ctx: ActionContextV1<TActionInput, TActionOutput>) => Promise<void>;
 };
 
 /**
  * @public
  */
-export type NewTemplateAction<
+export type TemplateActionV2<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
@@ -228,17 +225,14 @@ export type NewTemplateAction<
     input: Schema;
     output: Schema;
   };
-  handler: (
-    ctx: NewActionContext<TActionInput, TActionOutput>,
-  ) => Promise<void>;
+  handler: (ctx: ActionContextV2<TActionInput, TActionOutput>) => Promise<void>;
 };
 
 /**
+ * @deprecated migrate to {@link ActionContextV2}
  * @public
  */
 export type TemplateAction<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-> =
-  | OldTemplateAction<TActionInput, TActionOutput>
-  | NewTemplateAction<TActionInput, TActionOutput>;
+> = TemplateActionV1<TActionInput, TActionOutput>;

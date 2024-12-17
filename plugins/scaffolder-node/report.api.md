@@ -23,13 +23,72 @@ import type { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { z } from 'zod';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ActionContext<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-> =
-  | OldActionContext<TActionInput, TActionOutput>
-  | NewActionContext<TActionInput, TActionOutput>;
+> = ActionContextV2<TActionInput, TActionOutput>;
+
+// @public @deprecated
+export type ActionContextV1<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
+  logger: Logger;
+  logStream: Writable;
+  secrets?: TaskSecrets;
+  workspacePath: string;
+  input: TActionInput;
+  checkpoint<T extends JsonValue | void>(opts: {
+    key: string;
+    fn: () => Promise<T> | T;
+  }): Promise<T>;
+  output(
+    ...params: {
+      [K in keyof TActionOutput]: [name: K, value: TActionOutput[K]];
+    }[keyof TActionOutput]
+  ): void;
+  createTemporaryDirectory(): Promise<string>;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  templateInfo?: TemplateInfo;
+  isDryRun?: boolean;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
+  signal?: AbortSignal;
+  each?: JsonObject;
+};
+
+// @public
+export type ActionContextV2<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
+  logger: LoggerService;
+  secrets?: TaskSecrets;
+  workspacePath: string;
+  input: TActionInput;
+  checkpoint<U extends JsonValue>(
+    key: string,
+    fn: () => Promise<U>,
+  ): Promise<U>;
+  output(
+    ...params: {
+      [K in keyof TActionOutput]: [name: K, value: TActionOutput[K]];
+    }[keyof TActionOutput]
+  ): void;
+  createTemporaryDirectory(): Promise<string>;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  templateInfo?: TemplateInfo;
+  isDryRun?: boolean;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
+  signal?: AbortSignal;
+  each?: JsonObject;
+};
 
 // @public (undocumented)
 export function addFiles(options: {
@@ -131,11 +190,11 @@ export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TAction extends
-    | OldTemplateActionOptions
-    | NewTemplateActionOptions = OldTemplateActionOptions,
-  TReturn = TAction extends OldTemplateActionOptions
-    ? Prettify<OldTemplateAction<TInputParams, TOutputParams>>
-    : Prettify<NewTemplateAction>,
+    | TemplateActionOptionsV1
+    | TemplateActionOptionsV2 = TemplateActionOptionsV1,
+  TReturn = TAction extends TemplateActionOptionsV1
+    ? Prettify<TemplateActionV1<TInputParams, TOutputParams>>
+    : Prettify<TemplateActionV2>,
 >(action: TAction): TReturn;
 
 // @public
@@ -216,164 +275,6 @@ export function initRepoAndPush(input: {
 }): Promise<{
   commitHash: string;
 }>;
-
-// @public
-export type NewActionContext<
-  TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
-> = {
-  logger: LoggerService;
-  secrets?: TaskSecrets;
-  workspacePath: string;
-  input: TActionInput;
-  checkpoint<U extends JsonValue>(
-    key: string,
-    fn: () => Promise<U>,
-  ): Promise<U>;
-  output(
-    ...params: {
-      [K in keyof TActionOutput]: [name: K, value: TActionOutput[K]];
-    }[keyof TActionOutput]
-  ): void;
-  createTemporaryDirectory(): Promise<string>;
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
-  templateInfo?: TemplateInfo;
-  isDryRun?: boolean;
-  user?: {
-    entity?: UserEntity;
-    ref?: string;
-  };
-  signal?: AbortSignal;
-  each?: JsonObject;
-};
-
-// @public (undocumented)
-export type NewTemplateAction<
-  TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
-> = {
-  id: string;
-  description?: string;
-  examples?: TemplateExample[];
-  supportsDryRun?: boolean;
-  schema: {
-    input: Schema;
-    output: Schema;
-  };
-  handler: (
-    ctx: NewActionContext<TActionInput, TActionOutput>,
-  ) => Promise<void>;
-};
-
-// @public (undocumented)
-export type NewTemplateActionOptions<
-  TInputParams extends Record<
-    PropertyKey,
-    (zod: typeof z) => z.ZodType
-  > = Record<PropertyKey, (zod: typeof z) => z.ZodType>,
-  TOutputParams extends Record<
-    PropertyKey,
-    (zod: typeof z) => z.ZodType
-  > = Record<PropertyKey, (zod: typeof z) => z.ZodType>,
-> = {
-  id: string;
-  description?: string;
-  examples?: TemplateExample[];
-  supportsDryRun?: boolean;
-  schema: {
-    input: TInputParams;
-    output: TOutputParams;
-  };
-  handler: (
-    ctx: NewActionContext<
-      InferActionType<TInputParams>,
-      InferActionType<TOutputParams>
-    >,
-  ) => Promise<void>;
-};
-
-// @public @deprecated
-export type OldActionContext<
-  TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
-> = {
-  logger: Logger;
-  logStream: Writable;
-  secrets?: TaskSecrets;
-  workspacePath: string;
-  input: TActionInput;
-  checkpoint<T extends JsonValue | void>(opts: {
-    key: string;
-    fn: () => Promise<T> | T;
-  }): Promise<T>;
-  output(
-    ...params: {
-      [K in keyof TActionOutput]: [name: K, value: TActionOutput[K]];
-    }[keyof TActionOutput]
-  ): void;
-  createTemporaryDirectory(): Promise<string>;
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
-  templateInfo?: TemplateInfo;
-  isDryRun?: boolean;
-  user?: {
-    entity?: UserEntity;
-    ref?: string;
-  };
-  signal?: AbortSignal;
-  each?: JsonObject;
-};
-
-// @public @deprecated (undocumented)
-export type OldTemplateAction<
-  TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
-> = {
-  id: string;
-  description?: string;
-  examples?: TemplateExample[];
-  supportsDryRun?: boolean;
-  schema?: {
-    input?: Schema;
-    output?: Schema;
-  };
-  handler: (
-    ctx: OldActionContext<TActionInput, TActionOutput>,
-  ) => Promise<void>;
-};
-
-// @public @deprecated (undocumented)
-export type OldTemplateActionOptions<
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends Schema | z.ZodType = Schema,
-  TOutputSchema extends Schema | z.ZodType = Schema,
-  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
-    any,
-    any,
-    infer IReturn
-  >
-    ? IReturn
-    : TInputParams,
-  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
-    any,
-    any,
-    infer IReturn
-  >
-    ? IReturn
-    : TOutputParams,
-> = {
-  id: string;
-  description?: string;
-  examples?: TemplateExample[];
-  supportsDryRun?: boolean;
-  schema?: {
-    input?: TInputSchema;
-    output?: TOutputSchema;
-  };
-  handler: (
-    ctx: OldActionContext<TActionInput, TActionOutput>,
-  ) => Promise<void>;
-};
 
 // @public (undocumented)
 export const parseRepoUrl: (
@@ -563,21 +464,131 @@ export type TaskStatus =
   | 'open'
   | 'processing';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type TemplateAction<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-> =
-  | OldTemplateAction<TActionInput, TActionOutput>
-  | NewTemplateAction<TActionInput, TActionOutput>;
+> = TemplateActionV1<TActionInput, TActionOutput>;
+
+// @public @deprecated (undocumented)
+export type TemplateActionOptions<
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends Schema | z.ZodType = Schema,
+  TOutputSchema extends Schema | z.ZodType = Schema,
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TInputParams,
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TOutputParams,
+> = TemplateActionOptionsV1<
+  TInputParams,
+  TOutputParams,
+  TInputSchema,
+  TOutputSchema,
+  TActionInput,
+  TActionOutput
+>;
+
+// @public @deprecated (undocumented)
+export type TemplateActionOptionsV1<
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends Schema | z.ZodType = Schema,
+  TOutputSchema extends Schema | z.ZodType = Schema,
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TInputParams,
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TOutputParams,
+> = {
+  id: string;
+  description?: string;
+  examples?: TemplateExample[];
+  supportsDryRun?: boolean;
+  schema?: {
+    input?: TInputSchema;
+    output?: TOutputSchema;
+  };
+  handler: (ctx: ActionContextV1<TActionInput, TActionOutput>) => Promise<void>;
+};
 
 // @public (undocumented)
-export type TemplateActionOptions<
-  TInputParams extends Record<PropertyKey, (zod: typeof z) => z.ZodType>,
-  TOutputParams extends Record<PropertyKey, (zod: typeof z) => z.ZodType>,
-> =
-  | OldTemplateActionOptions
-  | NewTemplateActionOptions<TInputParams, TOutputParams>;
+export type TemplateActionOptionsV2<
+  TInputParams extends Record<
+    PropertyKey,
+    (zod: typeof z) => z.ZodType
+  > = Record<PropertyKey, (zod: typeof z) => z.ZodType>,
+  TOutputParams extends Record<
+    PropertyKey,
+    (zod: typeof z) => z.ZodType
+  > = Record<PropertyKey, (zod: typeof z) => z.ZodType>,
+> = {
+  id: string;
+  description?: string;
+  examples?: TemplateExample[];
+  supportsDryRun?: boolean;
+  schema: {
+    input: TInputParams;
+    output: TOutputParams;
+  };
+  handler: (
+    ctx: ActionContextV2<
+      InferActionType<TInputParams>,
+      InferActionType<TOutputParams>
+    >,
+  ) => Promise<void>;
+};
+
+// @public @deprecated (undocumented)
+export type TemplateActionV1<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
+  id: string;
+  description?: string;
+  examples?: TemplateExample[];
+  supportsDryRun?: boolean;
+  schema?: {
+    input?: Schema;
+    output?: Schema;
+  };
+  handler: (ctx: ActionContextV1<TActionInput, TActionOutput>) => Promise<void>;
+};
+
+// @public (undocumented)
+export type TemplateActionV2<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
+  id: string;
+  description?: string;
+  examples?: TemplateExample[];
+  supportsDryRun?: boolean;
+  schema: {
+    input: Schema;
+    output: Schema;
+  };
+  handler: (ctx: ActionContextV2<TActionInput, TActionOutput>) => Promise<void>;
+};
 
 // @public (undocumented)
 export type TemplateExample = {
