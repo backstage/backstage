@@ -18,8 +18,6 @@
   border: 1px solid #e7e7e7;
   border-radius: 4px;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 
   & .sb-table {
     width: 100%;
@@ -34,9 +32,7 @@
     border: none !important;
     text-align: left;
     background-color: white !important;
-    font-family: 'Geist', sans-serif;
     font-size: 16px;
-    font-weight: 300;
 
     & p {
       margin: 0;

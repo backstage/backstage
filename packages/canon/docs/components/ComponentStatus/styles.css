@@ -20,14 +20,12 @@
 
   & .title {
     color: #3b59ff;
-    font-family: 'Geist', sans-serif;
     font-size: 16px;
     font-weight: 400;
     text-decoration: none;
   }
 
   & .pill {
-    font-family: 'Geist', sans-serif;
     display: inline-flex;
     align-items: center;
     color: #000;

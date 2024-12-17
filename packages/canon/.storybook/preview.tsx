@@ -11,7 +11,7 @@ import '../src/css/components.css';
 
 // Custom themes
 import './themes/backstage.css';
-import { ThemeProvider } from '../src/theme/context';
+import { CanonProvider } from '../src/contexts/canon';
 
 const preview: Preview = {
   parameters: {
@@ -32,6 +32,13 @@ const preview: Preview = {
     },
     viewport: {
       viewports: {
+        xs: {
+          name: 'XSmall',
+          styles: {
+            width: '320px',
+            height: '100%',
+          },
+        },
         small: {
           name: 'Small',
           styles: {
@@ -91,9 +98,9 @@ const preview: Preview = {
       });
 
       return (
-        <ThemeProvider>
+        <CanonProvider>
           <Story />
-        </ThemeProvider>
+        </CanonProvider>
       );
     },
   ],

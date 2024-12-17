@@ -117,7 +117,7 @@ export const Button: React_2.ForwardRefExoticComponent<
 // @public
 export interface ButtonProps {
   // (undocumented)
-  children: React_2.ReactNode;
+  children: React.ReactNode;
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
@@ -125,9 +125,13 @@ export interface ButtonProps {
   // (undocumented)
   iconStart?: IconNames;
   // (undocumented)
-  size?: 'small' | 'medium';
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
-  variant?: 'primary' | 'secondary' | 'tertiary';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)

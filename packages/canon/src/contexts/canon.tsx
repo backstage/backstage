@@ -29,24 +29,26 @@ const defaultBreakpoints: Breakpoints = {
   '2xl': '1536px',
 };
 
-interface ThemeContextProps {
+interface CanonContextProps {
   icons: IconMap;
   breakpoint: keyof Breakpoints;
+  getResponsiveValue: (value: string | Partial<Breakpoints>) => string;
 }
 
-const ThemeContext = createContext<ThemeContextProps>({
+const CanonContext = createContext<CanonContextProps>({
   icons: defaultIcons,
   breakpoint: 'md',
+  getResponsiveValue: () => '',
 });
 
-interface ThemeProviderProps {
+interface CanonProviderProps {
   children?: ReactNode;
   overrides?: Partial<Record<IconNames, React.ComponentType>>;
   breakpoints?: Partial<Breakpoints>;
 }
 
 /** @public */
-export const ThemeProvider = (props: ThemeProviderProps) => {
+export const CanonProvider = (props: CanonProviderProps) => {
   const { children, overrides, breakpoints = defaultBreakpoints } = props;
 
   // Merge provided overrides with default icons
@@ -68,12 +70,36 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     return 'xs';
   })();
 
+  const getResponsiveValue = (value: string | Partial<Breakpoints>) => {
+    if (typeof value === 'object') {
+      const breakpointsOrder: (keyof Breakpoints)[] = [
+        'xs',
+        'sm',
+        'md',
+        'lg',
+        'xl',
+        '2xl',
+      ];
+      const index = breakpointsOrder.indexOf(breakpoint);
+
+      for (let i = index; i >= 0; i--) {
+        if (value[breakpointsOrder[i]]) {
+          return value[breakpointsOrder[i]] as string;
+        }
+      }
+      return value['xs'] as string;
+    }
+    return value;
+  };
+
   return (
-    <ThemeContext.Provider value={{ icons: combinedIcons, breakpoint }}>
+    <CanonContext.Provider
+      value={{ icons: combinedIcons, breakpoint, getResponsiveValue }}
+    >
       {children}
-    </ThemeContext.Provider>
+    </CanonContext.Provider>
   );
 };
 
 /** @public */
-export const useTheme = () => useContext(ThemeContext);
+export const useCanon = () => useContext(CanonContext);

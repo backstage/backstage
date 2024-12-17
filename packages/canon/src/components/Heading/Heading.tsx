@@ -16,15 +16,17 @@
 
 import React, { forwardRef } from 'react';
 import { HeadingProps } from './types';
-import { useTheme } from '../../theme/context';
-import { getResponsiveValue } from '../../utils/getResponsiveValue';
+import { useCanon } from '../../contexts/canon';
 
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
     const { children, variant = 'title1', as = 'h1', ...restProps } = props;
-    const { breakpoint } = useTheme();
-    const responsiveVariant = getResponsiveValue(variant, breakpoint);
+    const { getResponsiveValue } = useCanon();
 
+    // Get the responsive value for the variant
+    const responsiveVariant = getResponsiveValue(variant);
+
+    // Determine the component to render based on the variant
     let Component = as;
     if (variant === 'title2') Component = 'h2';
     if (variant === 'title3') Component = 'h3';
