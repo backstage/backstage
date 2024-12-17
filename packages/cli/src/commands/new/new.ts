@@ -78,7 +78,7 @@ export default async () => {
     `${camelCase(options.id)}Module${camelCase(
       options.moduleId,
     )[0].toUpperCase()}${camelCase(options.moduleId).slice(1)}`; // used in default-backend-module template
-  const extension = `${upperFirst(camelCase(options.id))}Page`; // used in default-plugin template
+  const extensionName = `${upperFirst(camelCase(options.id))}Page`; // used in default-plugin template
   const pluginVar = `${camelCase(options.id)}Plugin`; // used in default-backend-plugin and default-plugin template
 
   let modified = false;
@@ -101,7 +101,7 @@ export default async () => {
           name: packageName,
           pluginVersion: options.baseVersion,
           moduleVar,
-          extension,
+          extensionName,
           pluginVar,
           ...options,
         },
@@ -113,7 +113,7 @@ export default async () => {
         name: packageName,
         version: options.baseVersion,
         id: options.id, // for frontend legacy
-        extension: extension, // for frontend legacy
+        extensionName, // for frontend legacy
       });
     }
 
