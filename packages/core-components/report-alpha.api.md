@@ -10,7 +10,16 @@ export const coreComponentsTranslationRef: TranslationRef<
   'core-components',
   {
     readonly 'table.filter.title': 'Filters';
+    readonly 'table.filter.placeholder': 'All results';
     readonly 'table.filter.clearAll': 'Clear all';
+    readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.toolbar.search': 'Filter';
+    readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
+    readonly 'table.pagination.lastTooltip': 'Last Page';
+    readonly 'table.pagination.nextTooltip': 'Next Page';
+    readonly 'table.pagination.previousTooltip': 'Previous Page';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
