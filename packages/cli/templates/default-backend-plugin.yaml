@@ -6,3 +6,6 @@ suffix: backend
 prompts:
   - id
   - owner
+additionalActions:
+  - install-backend
+  - add-backend

@@ -8,5 +8,8 @@ prompts:
     prompt: Enter the ID of the plugin [required]
     default: scaffolder
     validate: backstage-id
-  - moduleId
+  - moduleid
   - owner
+additionalActions:
+  - install-backend
+  - add-backend

@@ -5,5 +5,8 @@ targetPath: plugins
 backendModulePrefix: true
 prompts:
   - id
-  - moduleId
+  - moduleid
   - owner
+additionalActions:
+  - install-backend
+  - add-backend
