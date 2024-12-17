@@ -73,9 +73,11 @@ export default async () => {
     plugin: template.plugin ?? true,
   });
 
-  const moduleVar = `${camelCase(options.id)}Module${camelCase(
-    options.moduleId,
-  )[0].toUpperCase()}${camelCase(options.moduleId).slice(1)}`; // used in default-backend-module template
+  const moduleVar =
+    options.moduleId ??
+    `${camelCase(options.id)}Module${camelCase(
+      options.moduleId,
+    )[0].toUpperCase()}${camelCase(options.moduleId).slice(1)}`; // used in default-backend-module template
   const extension = `${upperFirst(camelCase(options.id))}Page`; // used in default-plugin template
   const pluginVar = `${camelCase(options.id)}Plugin`; // used in default-backend-plugin and default-plugin template
 
