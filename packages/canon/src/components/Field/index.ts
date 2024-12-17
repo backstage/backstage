@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-
-import { Input as InputPrimitive } from '@base-ui-components/react/input';
-import clsx from 'clsx';
-
-/** @public */
-const Input = React.forwardRef<
-  React.ElementRef<typeof InputPrimitive>,
-  React.ComponentPropsWithoutRef<typeof InputPrimitive>
->(({ className, ...props }, ref) => (
-  <InputPrimitive
-    ref={ref}
-    className={clsx('canon-input', className)}
-    {...props}
-  />
-));
-Input.displayName = InputPrimitive.displayName;
-
-export { Input };
+export { Field } from './Field';
