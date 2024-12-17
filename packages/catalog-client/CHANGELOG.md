@@ -1,5 +1,18 @@
 # @backstage/catalog-client
 
+## 1.9.0
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- d7e7836: Fixed a bug in the `queryEntities` method where errors were not being handled properly.
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+
 ## 1.9.0-next.2
 
 ### Patch Changes

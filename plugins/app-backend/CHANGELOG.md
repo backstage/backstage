@@ -1,5 +1,21 @@
 # @backstage/plugin-app-backend
 
+## 0.4.3
+
+### Patch Changes
+
+- 74c3f2a: Fixed a bug where config would not be injected on the `/` and `/index.html` paths.
+- 5c9cc05: Use native fetch instead of node-fetch
+- d66fa80: Fix root route handling when query parameters are present
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-app-node@0.1.28
+
 ## 0.4.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/plugin-search-backend
 
+## 1.8.0
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/backend-openapi-utils@0.4.0
+  - @backstage/plugin-search-backend-node@1.3.6
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-search-common@1.2.16
+
 ## 1.8.0-next.2
 
 ### Patch Changes

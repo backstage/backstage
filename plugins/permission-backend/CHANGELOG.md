@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.52
+
+### Patch Changes
+
+- 1e624ca: Restrict `@types/express` version range from `*` to `^4.17.6`.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/plugin-permission-common@0.8.3
+
 ## 0.5.52-next.2
 
 ### Patch Changes

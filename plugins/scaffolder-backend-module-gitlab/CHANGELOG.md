@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.7.0
+
+### Minor Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 32459d0: **BREAKING**: Upgraded the `gitbeaker` library to version 41. As part of this, the `scopes` parameter to the `gitlab:projectDeployToken:create` is no longer optional, so you will have to pass it a value (for example `['read_repository']`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
 ## 0.7.0-next.2
 
 ### Patch Changes
