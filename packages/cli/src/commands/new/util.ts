@@ -202,7 +202,7 @@ export async function populateOptions(
 ): Promise<Options> {
   return {
     id: prompts.id ?? '',
-    private: false,
+    private: !!prompts.private,
     baseVersion: await calculateBaseVersion(prompts.baseVersion),
     owner: prompts.owner ?? '',
     license: prompts.license ?? 'Apache-2.0',

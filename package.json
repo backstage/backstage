@@ -5,12 +5,13 @@
     "cli": {
       "defaults": true,
       "globals": {
+        "scope": "backstage",
         "private": false
       },
       "templates": [
         {
-          "id": "local backend module example",
-          "target": "./example-cli-template.yaml"
+          "id": "example cli template",
+          "target": "./example.yaml"
         }
       ]
     }
