@@ -796,7 +796,6 @@ metadata:
       permissions: [
         { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
         { type: 'basic', name: 'kubernetes.resources', attributes: {} },
-        { type: 'basic', name: 'kubernetes.services', attributes: {} },
         { type: 'basic', name: 'kubernetes.clusters', attributes: {} },
       ],
       rules: [],

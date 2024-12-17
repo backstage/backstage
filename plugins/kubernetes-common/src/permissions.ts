@@ -24,19 +24,11 @@ export const kubernetesProxyPermission = createPermission({
   attributes: {},
 });
 
-/** This permission is used to check access to the /resources endpoints
+/** This permission is used to check access to the /resources and /services/:serviceId endpoints
  * @public
  */
 export const kubernetesResourcesPermission = createPermission({
   name: 'kubernetes.resources',
-  attributes: {},
-});
-
-/** This permission is used to check access to the /services endpoint
- * @public
- */
-export const kubernetesServicesPermission = createPermission({
-  name: 'kubernetes.services',
   attributes: {},
 });
 
@@ -55,6 +47,5 @@ export const kubernetesClustersPermission = createPermission({
 export const kubernetesPermissions = [
   kubernetesProxyPermission,
   kubernetesResourcesPermission,
-  kubernetesServicesPermission,
   kubernetesClustersPermission,
 ];

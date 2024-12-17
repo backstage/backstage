@@ -20,7 +20,7 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   kubernetesClustersPermission,
   kubernetesPermissions,
-  kubernetesServicesPermission,
+  kubernetesResourcesPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
@@ -398,7 +398,7 @@ export class KubernetesBuilder {
     router.post('/services/:serviceId', async (req, res) => {
       await requirePermission(
         permissionApi,
-        kubernetesServicesPermission,
+        kubernetesResourcesPermission,
         httpAuth,
         req,
       );
