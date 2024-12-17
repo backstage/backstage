@@ -27,7 +27,6 @@ export {
   kubernetesProxyPermission,
   kubernetesClustersPermission,
   kubernetesResourcesPermission,
-  kubernetesServicesPermission,
   kubernetesPermissions,
 } from './permissions';
 export * from './error-detection';
