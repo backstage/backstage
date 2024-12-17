@@ -38,6 +38,7 @@ import {
   promptOptions,
   populateOptions,
   createDirName,
+  runAdditionalActions,
 } from './util';
 
 export default async () => {
@@ -66,43 +67,55 @@ export default async () => {
   const dirName = createDirName(template, options);
   const targetDir = paths.resolveTargetRoot(options.targetPath, dirName);
 
+  const packageName = resolvePackageName({
+    baseName: dirName,
+    scope: options.scope,
+    plugin: template.plugin ?? true,
+  });
+
+  const moduleVar = `${camelCase(options.id)}Module${camelCase(
+    options.moduleId,
+  )[0].toUpperCase()}${camelCase(options.moduleId).slice(1)}`; // used in default-backend-module template
+  const extension = `${upperFirst(camelCase(options.id))}Page`; // used in default-plugin template
+  const pluginVar = `${camelCase(options.id)}Plugin`; // used in default-backend-plugin and default-plugin template
+
   let modified = false;
   try {
-    await executePluginPackageTemplate(
-      {
-        private: options.private,
-        defaultVersion: options.baseVersion,
-        license: options.license,
-        isMonoRepo: await isMonoRepo(),
-        createTemporaryDirectory,
-        markAsModified() {
-          modified = true;
+    if (options.install) {
+      await executePluginPackageTemplate(
+        {
+          private: options.private,
+          defaultVersion: options.baseVersion,
+          license: options.license,
+          isMonoRepo: await isMonoRepo(),
+          createTemporaryDirectory,
+          markAsModified() {
+            modified = true;
+          },
         },
-      },
-      {
-        targetDir,
-        templateDir: template.templatePath,
-        values: {
-          name: resolvePackageName({
-            baseName: dirName,
-            scope: options.scope,
-            plugin: template.plugin ?? true,
-          }),
-          pluginVersion: options.baseVersion,
-          moduleVar: `${camelCase(options.id)}Module${camelCase(
-            options.moduleId,
-          )[0].toUpperCase()}${camelCase(options.moduleId).slice(1)}`, // used in default-backend-module template
-          extension: `${upperFirst(camelCase(options.id))}Page`, // used in default-plugin template
-          pluginVar: `${camelCase(options.id)}Plugin`, // used in default-backend-plugin and default-plugin template
-          ...options,
+        {
+          targetDir,
+          templateDir: template.templatePath,
+          values: {
+            name: packageName,
+            pluginVersion: options.baseVersion,
+            moduleVar,
+            extension,
+            pluginVar,
+            ...options,
+          },
         },
-      },
-    );
+      );
+    }
 
-    // create additional actions
-    // install to app
-    // install to backend
-    // add to backend/index.ts
+    if (template.additionalActions?.length) {
+      await runAdditionalActions(template.additionalActions, {
+        name: packageName,
+        version: options.baseVersion,
+        id: options.id, // for frontend legacy
+        extension: extension, // for frontend legacy
+      });
+    }
 
     if (options.install) {
       // 🚨 temporary
