@@ -175,8 +175,6 @@ describe('<EntityKindPicker/>', () => {
     const input = screen.getByTestId('select');
     fireEvent.mouseDown(within(input).getByRole('button'));
 
-    // screen.debug();
-
     expect(
       screen.getByRole('option', { name: 'Component' }),
     ).toBeInTheDocument();
