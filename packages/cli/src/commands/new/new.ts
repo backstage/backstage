@@ -83,32 +83,30 @@ export default async () => {
 
   let modified = false;
   try {
-    if (options.install) {
-      await executePluginPackageTemplate(
-        {
-          private: options.private,
-          defaultVersion: options.baseVersion,
-          license: options.license,
-          isMonoRepo: await isMonoRepo(),
-          createTemporaryDirectory,
-          markAsModified() {
-            modified = true;
-          },
+    await executePluginPackageTemplate(
+      {
+        private: options.private,
+        defaultVersion: options.baseVersion,
+        license: options.license,
+        isMonoRepo: await isMonoRepo(),
+        createTemporaryDirectory,
+        markAsModified() {
+          modified = true;
         },
-        {
-          targetDir,
-          templateDir: template.templatePath,
-          values: {
-            name: packageName,
-            pluginVersion: options.baseVersion,
-            moduleVar,
-            extension,
-            pluginVar,
-            ...options,
-          },
+      },
+      {
+        targetDir,
+        templateDir: template.templatePath,
+        values: {
+          name: packageName,
+          pluginVersion: options.baseVersion,
+          moduleVar,
+          extension,
+          pluginVar,
+          ...options,
         },
-      );
-    }
+      },
+    );
 
     if (template.additionalActions?.length) {
       await runAdditionalActions(template.additionalActions, {
@@ -119,21 +117,18 @@ export default async () => {
       });
     }
 
-    if (options.install) {
-      // 🚨 temporary
-      if (options.owner) {
-        await addCodeownersEntry(targetDir, options.owner);
-      }
-
-      await Task.forCommand('yarn install', {
-        cwd: targetDir,
-        optional: true,
-      });
-      await Task.forCommand('yarn lint --fix', {
-        cwd: targetDir,
-        optional: true,
-      });
+    if (options.owner) {
+      await addCodeownersEntry(targetDir, options.owner);
     }
+
+    await Task.forCommand('yarn install', {
+      cwd: targetDir,
+      optional: true,
+    });
+    await Task.forCommand('yarn lint --fix', {
+      cwd: targetDir,
+      optional: true,
+    });
 
     Task.log();
     Task.log(`🎉  Successfully created ${template.id}`);
