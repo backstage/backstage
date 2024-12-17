@@ -21,7 +21,7 @@ export interface AdditionalActionsOptions {
   name: string;
   version: string;
   id: string;
-  extension: string;
+  extensionName: string;
 }
 
 export async function installFrontend(options: AdditionalActionsOptions) {
@@ -57,12 +57,12 @@ export async function addFrontendLegacy(options: AdditionalActionsOptions) {
     );
 
     if (lastImportIndex !== -1 && lastRouteIndex !== -1) {
-      const importLine = `import { ${options.extension} } from '${options.name}';`;
+      const importLine = `import { ${options.extensionName} } from '${options.name}';`;
       if (!content.includes(importLine)) {
         revLines.splice(lastImportIndex, 0, importLine);
       }
 
-      const componentLine = `<Route path="/${options.id}" element={<${options.extension} />} />`;
+      const componentLine = `<Route path="/${options.id}" element={<${options.extensionName} />} />`;
       if (!content.includes(componentLine)) {
         const [indentation] = revLines[lastRouteIndex + 1].match(/^\s*/) ?? [];
         revLines.splice(lastRouteIndex + 1, 0, indentation + componentLine);
