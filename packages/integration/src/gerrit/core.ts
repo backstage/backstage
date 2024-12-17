@@ -20,7 +20,7 @@ import { GerritIntegrationConfig } from './config';
 const GERRIT_BODY_PREFIX = ")]}'";
 
 /**
- * Parse a Gitiles URL and return branch, file path, project and tags.
+ * Parse a Gitiles URL and return branch, file path and project.
  *
  * @remarks
  *
@@ -38,8 +38,6 @@ const GERRIT_BODY_PREFIX = ")]}'";
  * Gitiles url:
  * https://g.com/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
  * https://g.com/a/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
- * https://g.com/optional_path/\{project\}/+/refs/tags/\{branch\}/\{filePath\}
- * https://g.com/a/optional_path/\{project\}/+/refs/tags/\{branch\}/\{filePath\}
  *
  *
  * @param url - An URL pointing to a file stored in git.
@@ -49,7 +47,7 @@ const GERRIT_BODY_PREFIX = ")]}'";
 export function parseGerritGitilesUrl(
   config: GerritIntegrationConfig,
   url: string,
-): { branch: string; filePath: string; project: string; tags: boolean } {
+): { branch: string; filePath: string; project: string } {
   const baseUrlParse = new URL(config.gitilesBaseUrl!);
   const urlParse = new URL(url);
 
@@ -70,15 +68,9 @@ export function parseGerritGitilesUrl(
   }
   const project = trimStart(parts.slice(0, projectEndIndex).join('/'), '/');
 
-  let branchIndex = parts.indexOf('heads');
-  let tags = false;
+  const branchIndex = parts.indexOf('heads');
   if (branchIndex <= 0) {
-    branchIndex = parts.indexOf('tags');
-    if (branchIndex <= 0) {
-      throw new Error(`Unable to parse branch from url: ${url}`);
-    } else {
-      tags = true;
-    }
+    throw new Error(`Unable to parse branch from url: ${url}`);
   }
   const branch = parts[branchIndex + 1];
   const filePath = parts.slice(branchIndex + 2).join('/');
@@ -87,7 +79,6 @@ export function parseGerritGitilesUrl(
     branch,
     filePath: filePath === '' ? '/' : filePath,
     project,
-    tags,
   };
 }
 
@@ -204,7 +195,6 @@ export function parseGitilesUrlRef(
  * @param project - The name of the git project
  * @param branch - The branch we will target.
  * @param filePath - The absolute file path.
- * @param tags - Checks if tags is used.
  * @public
  */
 export function buildGerritGitilesUrl(
@@ -212,13 +202,7 @@ export function buildGerritGitilesUrl(
   project: string,
   branch: string,
   filePath: string,
-  tags: boolean = false,
 ): string {
-  if (tags) {
-    return `${
-      config.gitilesBaseUrl
-    }/${project}/+/refs/tags/${branch}/${trimStart(filePath, '/')}`;
-  }
   return `${
     config.gitilesBaseUrl
   }/${project}/+/refs/heads/${branch}/${trimStart(filePath, '/')}`;

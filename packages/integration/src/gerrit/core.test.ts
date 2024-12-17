@@ -341,14 +341,13 @@ describe('gerrit core', () => {
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
       };
-      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
+      const { branch, filePath, project } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/gitiles/web/project/+/refs/heads/master/README.md',
       );
       expect(project).toEqual('web/project');
       expect(branch).toEqual('master');
       expect(filePath).toEqual('README.md');
-      expect(tags).toEqual('false');
 
       const { filePath: rootPath } = parseGerritGitilesUrl(
         config,
@@ -361,58 +360,17 @@ describe('gerrit core', () => {
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
       };
-      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
+      const { branch, filePath, project } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/a/gitiles/web/project/+/refs/heads/master/README.md',
       );
       expect(project).toEqual('web/project');
       expect(branch).toEqual('master');
       expect(filePath).toEqual('README.md');
-      expect(tags).toEqual(false);
 
       const { filePath: rootPath } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/gitiles/web/project/+/refs/heads/master',
-      );
-      expect(rootPath).toEqual('/');
-    });
-    it('can parse a valid gitiles urls with tags.', () => {
-      const config: GerritIntegrationConfig = {
-        host: 'gerrit.com',
-        gitilesBaseUrl: 'https://gerrit.com/gitiles',
-      };
-      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/gitiles/web/project/+/refs/tags/1.0.12/README.md',
-      );
-      expect(project).toEqual('web/project');
-      expect(branch).toEqual('1.0.12');
-      expect(filePath).toEqual('README.md');
-      expect(tags).toEqual(true);
-
-      const { filePath: rootPath } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/gitiles/web/project/+/refs/tags/1.0.12',
-      );
-      expect(rootPath).toEqual('/');
-    });
-    it('can parse a valid authenticated gitiles url with tags.', () => {
-      const config: GerritIntegrationConfig = {
-        host: 'gerrit.com',
-        gitilesBaseUrl: 'https://gerrit.com/gitiles',
-      };
-      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/a/gitiles/web/project/+/refs/tags/1.0.12/README.md',
-      );
-      expect(project).toEqual('web/project');
-      expect(branch).toEqual('1.0.12');
-      expect(filePath).toEqual('README.md');
-      expect(tags).toEqual(true);
-
-      const { filePath: rootPath } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/gitiles/web/project/+/refs/tags/1.0.12',
       );
       expect(rootPath).toEqual('/');
     });
