@@ -33,6 +33,7 @@ export * from './github';
 export * from './gitlab';
 export * from './googleGcs';
 export * from './harness';
+export * from './confluence';
 export { defaultScmResolveUrl } from './helpers';
 export { ScmIntegrations } from './ScmIntegrations';
 export type { IntegrationsByType } from './ScmIntegrations';

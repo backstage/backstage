@@ -29,6 +29,8 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import path from 'path';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
+import { Config } from '@backstage/config';
+import { ConfluenceReader } from '@backstage/backend-defaults';
 
 /**
  * Parsed location annotation
@@ -132,6 +134,8 @@ export const getLocationForEntity = (
       return annotation;
     case 'dir':
       return transformDirLocation(entity, annotation, scmIntegration);
+    case 'confluence':
+      return annotation;
     default:
       throw new Error(`Invalid reference annotation ${annotation.type}`);
   }
@@ -161,5 +165,33 @@ export const getDocFilesFromRepository = async (
   return {
     preparedDir,
     etag: readTreeResponse.etag,
+  };
+};
+
+/**
+ * Returns a preparer response {@link PreparerResponse}
+ * @public
+ * @param config - Backstage config
+ * @param entity - A TechDocs entity instance
+ * @param opts - Options for configuring the reader, e.g. logger, etag, etc.
+ */
+export const getDocFilesFromConfluence = async (
+  config: Config,
+  entity: Entity,
+  opts?: { etag?: string; logger?: LoggerService },
+): Promise<PreparerResponse> => {
+  const { target } = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
+  opts?.logger?.debug(`Reading files from ${target}`);
+
+  const reader = ConfluenceReader.factory({
+    config,
+  });
+  const preparedDir = await reader.readPage(target);
+
+  opts?.logger?.debug(`Files downloaded and stored at ${preparedDir}`);
+
+  return {
+    preparedDir,
+    etag: 'something',
   };
 };

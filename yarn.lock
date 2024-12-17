@@ -3644,6 +3644,7 @@ __metadata:
     mysql2: ^3.0.0
     node-fetch: ^2.7.0
     node-forge: ^1.3.1
+    node-html-markdown: ^1.3.0
     node-mocks-http: ^1.0.0
     p-limit: ^3.1.0
     p-throttle: ^4.1.1
@@ -5090,7 +5091,9 @@ __metadata:
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
     cross-fetch: ^4.0.0
+    dotenv: ^16.4.7
     git-url-parse: ^15.0.0
+    js-yaml: ^4.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -8606,6 +8609,7 @@ __metadata:
     "@aws-sdk/types": ^3.347.0
     "@azure/identity": ^4.0.0
     "@azure/storage-blob": ^12.5.0
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -27555,10 +27559,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.0.0, dotenv@npm:^16.3.1":
-  version: 16.4.5
-  resolution: "dotenv@npm:16.4.5"
-  checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
+"dotenv@npm:^16.0.0, dotenv@npm:^16.3.1, dotenv@npm:^16.4.7":
+  version: 16.4.7
+  resolution: "dotenv@npm:16.4.7"
+  checksum: c27419b5875a44addcc56cc69b7dc5b0e6587826ca85d5b355da9303c6fc317fc9989f1f18366a16378c9fdd9532d14117a1abe6029cc719cdbbef6eaef2cea4
   languageName: node
   linkType: hard
 
