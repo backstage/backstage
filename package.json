@@ -3,14 +3,14 @@
   "version": "1.36.0-next.0",
   "backstage": {
     "cli": {
-      "defaults": false,
+      "defaults": true,
       "globals": {
         "private": false
       },
       "templates": [
         {
-          "id": "local web plugin",
-          "target": "./packages/cli/templates/web-library-package.yaml"
+          "id": "local backend module example",
+          "target": "./example-cli-template.yaml"
         }
       ]
     }
