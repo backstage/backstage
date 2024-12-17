@@ -3826,6 +3826,7 @@ __metadata:
     "@vanilla-extract/rollup-plugin": ^1.3.10
     "@vanilla-extract/sprinkles": ^1.6.3
     "@vanilla-extract/webpack-plugin": ^2.3.14
+    clsx: ^2.1.1
     eslint-plugin-storybook: ^0.11.1
     globals: ^15.11.0
     mini-css-extract-plugin: ^2.9.2

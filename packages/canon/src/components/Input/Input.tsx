@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Field/styles.css';
+import { Input as InputPrimitive } from '@base-ui-components/react/input';
+import clsx from 'clsx';
+
+const Input = React.forwardRef<
+  React.ElementRef<typeof InputPrimitive>,
+  React.ComponentPropsWithoutRef<typeof InputPrimitive>
+>(({ className, ...props }, ref) => (
+  <InputPrimitive
+    ref={ref}
+    className={clsx('canon-input', className)}
+    {...props}
+  />
+));
+Input.displayName = InputPrimitive.displayName;
+
+export { Input };

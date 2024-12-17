@@ -1,0 +1,29 @@
+.canon-fieldRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.canon-fieldLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+.canon-fieldControl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.canon-fieldDescription {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+}
+
+.canon-fieldError {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+}

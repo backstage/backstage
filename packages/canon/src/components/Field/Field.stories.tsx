@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Field/styles.css';
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Field } from './Field';
+import { Input } from '../Input/Input';
+const meta = {
+  title: 'Components/Field',
+  component: Field.Root,
+  parameters: {
+    layout: 'centered',
+  },
+} satisfies Meta<typeof Field.Root>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  render: () => (
+    <Field.Root>
+      <Field.Label>Label</Field.Label>
+      <Input />
+    </Field.Root>
+  ),
+};
