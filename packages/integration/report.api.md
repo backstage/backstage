@@ -305,6 +305,7 @@ export function buildGerritGitilesArchiveUrl(
   project: string,
   branch: string,
   filePath: string,
+  tags: boolean,
 ): string;
 
 // @public
@@ -810,6 +811,7 @@ export function parseGerritGitilesUrl(
   branch: string;
   filePath: string;
   project: string;
+  tags: boolean;
 };
 
 // @public
