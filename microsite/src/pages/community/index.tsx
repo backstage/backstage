@@ -4,14 +4,14 @@ import { BannerSection } from '@site/src/components/bannerSection/bannerSection'
 import { BannerSectionGrid } from '@site/src/components/bannerSection/bannerSectionGrid';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { ContentBlock } from '../../components/contentBlock/contentBlock';
 import communityStyles from './community.module.scss';
 
 interface ICollectionItem {
   title?: string;
-  content: React.ReactNode;
+  content: ReactNode;
   label: string;
   link: string;
 }

@@ -1,5 +1,4 @@
 import { ChipCategory } from '@site/src/util/types';
-import React from 'react';
 
 type Props = {
   categories: ChipCategory[];
