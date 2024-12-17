@@ -18,6 +18,7 @@ import { Response } from 'express';
 import { EntitiesResponseItems } from '../../catalog/types';
 import { JsonValue } from '@backstage/types';
 import { NotFoundError } from '@backstage/errors';
+import { processEntitiesResponseItems } from './process';
 
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
 
@@ -42,16 +43,20 @@ export function writeSingleEntityResponse(
   }
 }
 
-export async function writeEntitiesResponse(
-  res: Response,
-  response: EntitiesResponseItems,
-  responseWrapper?: (entities: JsonValue) => JsonValue,
-) {
-  if (response.type === 'object') {
+export async function writeEntitiesResponse(options: {
+  res: Response;
+  items: EntitiesResponseItems;
+  responseWrapper?: (entities: JsonValue) => JsonValue;
+  alwaysUseObjectMode?: boolean;
+}) {
+  const { res, responseWrapper, alwaysUseObjectMode } = options;
+  const items = alwaysUseObjectMode
+    ? processEntitiesResponseItems(options.items, e => e)
+    : options.items;
+
+  if (items.type === 'object') {
     res.json(
-      responseWrapper
-        ? responseWrapper?.(response.entities)
-        : response.entities,
+      responseWrapper ? responseWrapper?.(items.entities) : items.entities,
     );
     return;
   }
@@ -74,7 +79,7 @@ export async function writeEntitiesResponse(
   }
 
   let first = true;
-  for (const entity of response.entities) {
+  for (const entity of items.entities) {
     const prefix = first ? '[' : ',';
     first = false;
 
