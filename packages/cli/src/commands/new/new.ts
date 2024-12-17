@@ -99,6 +99,7 @@ export default async () => {
         templateDir: template.templatePath,
         values: {
           name: packageName,
+          privatePackage: options.private,
           pluginVersion: options.baseVersion,
           moduleVar,
           extensionName,
