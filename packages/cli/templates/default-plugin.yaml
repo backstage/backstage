@@ -5,3 +5,6 @@ targetPath: plugins
 prompts:
   - id
   - owner
+additionalActions:
+  - install-frontend
+  - add-frontend-legacy
