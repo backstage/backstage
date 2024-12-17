@@ -1,5 +1,5 @@
 ---
-'yarn-plugin-backstage': minor
+'yarn-plugin-backstage': patch
 ---
 
-Fixed windows path resolution on windows
+Fixed path resolution on windows

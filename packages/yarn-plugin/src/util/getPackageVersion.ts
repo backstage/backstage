@@ -20,37 +20,10 @@ import {
   httpUtils,
   structUtils,
 } from '@yarnpkg/core';
-import { ppath, npath, xfs } from '@yarnpkg/fslib';
-import { valid as semverValid } from 'semver';
-import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { getManifestByVersion } from '@backstage/release-manifests';
 
-import { PROTOCOL } from './constants';
-
-export const getCurrentBackstageVersion = () => {
-  const workspaceRoot = npath.toPortablePath(
-    findPaths(npath.fromPortablePath(ppath.cwd())).targetRoot,
-  );
-
-  const backstageJson = xfs.readJsonSync(
-    ppath.join(workspaceRoot, BACKSTAGE_JSON),
-  );
-
-  const backstageVersion = semverValid(backstageJson.version);
-
-  if (backstageVersion === null) {
-    throw new Error('Valid version string not found in backstage.json');
-  }
-
-  return backstageVersion;
-};
-
-export const bindBackstageVersion = (
-  descriptor: Descriptor,
-  backstageVersion: string,
-) => {
-  return structUtils.bindDescriptor(descriptor, { v: backstageVersion });
-};
+import { PROTOCOL } from '../constants';
+import { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
 
 export const getPackageVersion = async (
   descriptor: Descriptor,
@@ -71,20 +44,10 @@ export const getPackageVersion = async (
     );
   }
 
-  if (!range.params?.v) {
-    throw new Error(
-      `Missing Backstage version parameter in range "${descriptor.range}" for package ${ident}`,
-    );
-  }
-
-  if (Array.isArray(range.params.v)) {
-    throw new Error(
-      `Multiple Backstage versions specified in range "${descriptor.range}" for package ${ident}`,
-    );
-  }
+  const backstageVersion = getCurrentBackstageVersion();
 
   const manifest = await getManifestByVersion({
-    version: range.params.v,
+    version: backstageVersion,
     // We override the fetch function used inside getManifestByVersion with a
     // custom implementation that calls yarn's built-in `httpUtils` method
     // instead. This has a couple of benefits:
@@ -123,7 +86,7 @@ export const getPackageVersion = async (
 
   if (!manifestEntry) {
     throw new Error(
-      `Package ${ident} not found in manifest for Backstage v${range.selector}. ` +
+      `Package ${ident} not found in manifest for Backstage v${backstageVersion}. ` +
         `This means the specified package is not included in this Backstage ` +
         `release. This may imply the package has been replaced with an alternative - ` +
         `please review the documentation for the package. If you need to continue ` +

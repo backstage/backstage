@@ -48206,6 +48206,7 @@ __metadata:
     "@yarnpkg/core": ^4.0.3
     "@yarnpkg/fslib": ^3.0.2
     "@yarnpkg/plugin-pack": ^4.0.0
+    fs-extra: ^11.2.0
     nodemon: ^3.0.1
     semver: ^7.6.0
   languageName: unknown
