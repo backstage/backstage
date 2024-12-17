@@ -168,7 +168,11 @@ export async function createRouter(
             res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
           }
 
-          await writeEntitiesResponse(res, entities);
+          await writeEntitiesResponse({
+            res,
+            items: entities,
+            alwaysUseObjectMode: !disableRelationsCompatibility,
+          });
           return;
         }
 
@@ -214,18 +218,23 @@ export async function createRouter(
             credentials: await httpAuth.credentials(req),
           });
 
-        await writeEntitiesResponse(res, items, entities => ({
-          items: entities,
-          totalItems,
-          pageInfo: {
-            ...(pageInfo.nextCursor && {
-              nextCursor: encodeCursor(pageInfo.nextCursor),
-            }),
-            ...(pageInfo.prevCursor && {
-              prevCursor: encodeCursor(pageInfo.prevCursor),
-            }),
-          },
-        }));
+        await writeEntitiesResponse({
+          res,
+          items,
+          alwaysUseObjectMode: !disableRelationsCompatibility,
+          responseWrapper: entities => ({
+            items: entities,
+            totalItems,
+            pageInfo: {
+              ...(pageInfo.nextCursor && {
+                nextCursor: encodeCursor(pageInfo.nextCursor),
+              }),
+              ...(pageInfo.prevCursor && {
+                prevCursor: encodeCursor(pageInfo.prevCursor),
+              }),
+            },
+          }),
+        });
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -273,9 +282,14 @@ export async function createRouter(
           fields: parseEntityTransformParams(req.query, request.fields),
           credentials: await httpAuth.credentials(req),
         });
-        await writeEntitiesResponse(res, items, entities => ({
-          items: entities,
-        }));
+        await writeEntitiesResponse({
+          res,
+          items,
+          alwaysUseObjectMode: !disableRelationsCompatibility,
+          responseWrapper: entities => ({
+            items: entities,
+          }),
+        });
       })
       .get('/entity-facets', async (req, res) => {
         const response = await entitiesCatalog.facets({
