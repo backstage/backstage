@@ -24,6 +24,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { stringifyError } from '@backstage/errors';
+import { metrics } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { MysqlConnector } from './connectors/mysql';
 import { PgConnector } from './connectors/postgres';
@@ -52,6 +53,8 @@ export type DatabaseManagerOptions = {
  * Testable implementation class for {@link DatabaseManager} below.
  */
 export class DatabaseManagerImpl {
+  private didRegisterMetrics: boolean = false;
+
   constructor(
     private readonly config: Config,
     private readonly connectors: Record<string, Connector>,
@@ -185,6 +188,7 @@ export class DatabaseManagerImpl {
       );
     }
 
+    this.registerMetricsOnFirstConnection();
     return clientPromise;
   }
 
@@ -217,6 +221,35 @@ export class DatabaseManagerImpl {
         );
       }, 60 * 1000),
     );
+  }
+
+  private registerMetricsOnFirstConnection(): void {
+    if (this.didRegisterMetrics) {
+      return;
+    }
+    this.didRegisterMetrics = true;
+
+    const meter = metrics.getMeter('default');
+
+    const poolConnections = meter.createObservableGauge(
+      'backend_database.pool.connections.count',
+      { description: 'Number of database pool connections' },
+    );
+    poolConnections.addCallback(async result => {
+      await Promise.allSettled(
+        [...this.databaseCache.entries()].map(async ([plugin, knexPromise]) => {
+          const knex = await knexPromise;
+          const [used, free, pending] = await Promise.all([
+            knex.client.pool.numUsed(),
+            knex.client.pool.numFree(),
+            knex.client.pool.numPendingAcquires(),
+          ]);
+          result.observe(Number(used), { plugin, state: 'used' });
+          result.observe(Number(free), { plugin, state: 'free' });
+          result.observe(Number(pending), { plugin, state: 'pending' });
+        }),
+      );
+    });
   }
 }
 
