@@ -38,3 +38,11 @@ export type MkDocs = {
     [key: string]: string;
   }[];
 };
+
+export type ChildPage = {
+  id: string;
+  status: string;
+  title: string;
+  spaceId: string;
+  childPosition: number;
+};

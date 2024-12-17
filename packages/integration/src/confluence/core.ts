@@ -13,110 +13,212 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Attachment, MkDocs } from './types';
+import { Attachment, ChildPage, MkDocs } from './types';
 import fs from 'fs';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 require('dotenv').config();
 
 import yaml from 'js-yaml';
 import os from 'os';
-// import { ConfluenceIntegrationConfig } from "./config";
+import { ConfluenceIntegrationConfig } from './config';
+import { Readable } from 'stream';
+import { FromReadableArrayOptions } from '@backstage/backend-defaults';
 
 // const workingDir = this.config.getOptionalString(
 //   'backend.workingDirectory',
 // );
 const tmpdirPath = os.tmpdir();
 
-// export async function fetchConfluencePage(
-//   pageId : string,
-//   config: ConfluenceIntegrationConfig
-// ) {
-//   const url = `https://${config.host}/wiki/api/v2/pages/${pageId}?body-format=EXPORT_VIEW`
-//   const response = await fetch(url, {
-//     headers: {
-//       Authorization: config.apiToken,
-//     }
-//   });
+export async function loadConfluencePage(
+  pageId: string,
+  config: ConfluenceIntegrationConfig,
+  path: string,
+): Promise<FromReadableArrayOptions> {
+  const docItems: FromReadableArrayOptions = [];
 
-//   if(!response.ok) {
-//     throw new Error(`Failed to fetch page: ${response.status}`);
-//   }
+  const { page, title } = await fetchConfluencePage(pageId, config);
 
-//   const apiResponse = await response.json();
-//   const pageHtml = apiResponse.body.export_view.value;
-//   return htmlToMardDown(pageHtml);
-// }
+  const attachments = await fetchConfluencePageAttachments(pageId, config);
+  for (const attachment of attachments) {
+    const imageData = await fetchAttachment(attachment, config);
+    docItems.push({
+      data: Readable.from(imageData),
+      path: `${path}/attachments/${attachment.title.replaceAll(' ', '-')}`,
+    });
+  }
 
-// async function fetchConfluencePageAttachments(
-//   pageId: string,
-//   config: ConfluenceIntegrationConfig
-// ) {
-//   const response = await fetch(`https://${config.host}/wiki/api/v2/pages/${pageId}/attachments`, {
-//     headers: {
-//       Authorization: config.apiToken,
-//     }
-//   })
+  const pageMarkdown = replaceAttachmentLinks(attachments, page);
+  docItems.push({
+    data: Readable.from(pageMarkdown),
+    path: `${path}/${title}.md`,
+  });
 
-//   if(!response.ok) {
-//     throw new Error(`Failed to fetch page: ${response.status}`);
-//   }
+  const children = await fetchChildPages(pageId, config);
+  for (const childPage of children) {
+    const childPageContent = await loadConfluencePage(
+      childPage.id,
+      config,
+      `${path}/${title.toLowerCase('en-US').replaceAll(' ', '-')}`,
+    );
+    docItems.push(...childPageContent);
+  }
+  return docItems;
+}
 
-//   const apiResponse = await response.json();
-//   const attachments = apiResponse.results;
-//   return attachments;
-// }
+export function generateIndexPage(pages: FromReadableArrayOptions) {
+  let markdownContent = '# Index of Pages\n\n';
 
-// async function downloadAttachment(
-//   attachment: Attachment,
-//   dirPath: string,
-//   config: ConfluenceIntegrationConfig
-// ) {
-//   const host = config.host
-//   const attachmentTitle = attachment.title.replace(/ /g, '-')
-//   const path = `${dirPath}/${attachmentTitle}`;
+  pages.forEach(page => {
+    const parts = page.path.split('/');
+    let fileName = parts.pop() || '';
+    if (fileName.endsWith('.md')) {
+      fileName = fileName.replace('.md', '');
+      const path = page.path.replace('/docs/', '').replace('.md', '');
+      const depth = parts.length - 2;
+      const indentation = '  '.repeat(depth);
+      markdownContent += `${indentation}- [${fileName}](./${path})\n`;
+    }
+  });
 
-//   // console.log(url)
-//   const url = `https://${host}/wiki/rest/api/content/${attachment.pageId}/child/attachment/${attachment.id}/download`
-//   const res = await fetch(url, {
-//     method: 'GET',
-//     headers: {
-//       Authorization: config.apiToken,
-//     },
-//   });
-//   if (!res.ok) {
-//     throw new Error(`Failed to download attachment: ${res.status}`)
-//   }
-//   const writeStream = fs.createWriteStream(
-//     path,
-//   );
+  return markdownContent;
+}
 
-//   await new Promise((resolve, reject) => {
-//     res.body?.pipeTo(new WritableStream({
-//       write(chunk) {
-//         writeStream.write(chunk);
-//       },
-//       close() {
-//         writeStream.close(resolve);
-//       },
-//       abort(err) {
-//         fs.unlink(path, () => reject(err)); // Clean up the file on error
-//       },
-//     }))
-//   });
-// }
+export async function fetchConfluencePage(
+  pageId: string,
+  config: ConfluenceIntegrationConfig,
+) {
+  const url = `https://${config.host}/wiki/api/v2/pages/${pageId}?body-format=EXPORT_VIEW`;
+  const response = await fetch(url, {
+    headers: {
+      Authorization: config.apiToken,
+    },
+  });
 
-// export async function fetchPageAttachments(
-//   pageId : string,
-//   config: ConfluenceIntegrationConfig
-// ) {
-//   const attachments = await fetchConfluencePageAttachments(pageId, config);
-//   const path = `${tmpdirPath}/docs/attachments`;
-//   createDirectoryIfnotExists(path);
-//   for(let attachment of attachments) {
-//     await downloadAttachment(attachment, path, config);
-//   }
-//   return attachments;
-// }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch page: ${response.status}`);
+  }
+
+  const apiResponse = await response.json();
+  const pageHtml = apiResponse.body.export_view.value;
+  const title = apiResponse.title;
+  return {
+    page: htmlToMardDown(pageHtml),
+    title,
+  };
+}
+
+export async function fetchChildPages(
+  pageId: string,
+  config: ConfluenceIntegrationConfig,
+): Promise<ChildPage[]> {
+  const url = `https://${config.host}/wiki/api/v2/pages/${pageId}/children`;
+  const response = await fetch(url, {
+    headers: {
+      Authorization: config.apiToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch page: ${response.status}`);
+  }
+
+  const apiResponse = await response.json();
+  const childPages: ChildPage[] = apiResponse.results;
+  return childPages;
+}
+
+async function fetchConfluencePageAttachments(
+  pageId: string,
+  config: ConfluenceIntegrationConfig,
+) {
+  const response = await fetch(
+    `https://${config.host}/wiki/api/v2/pages/${pageId}/attachments`,
+    {
+      headers: {
+        Authorization: config.apiToken,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch page: ${response.status}`);
+  }
+
+  const apiResponse = await response.json();
+  const attachments = apiResponse.results;
+  return attachments;
+}
+
+async function fetchAttachment(
+  attachment: Attachment,
+  config: ConfluenceIntegrationConfig,
+): Promise<string> {
+  const host = config.host;
+
+  const url = `https://${host}/wiki/rest/api/content/${attachment.pageId}/child/attachment/${attachment.id}/download`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: config.apiToken,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to download attachment: ${res.status}`);
+  }
+  return res.text();
+}
+async function downloadAttachment(
+  attachment: Attachment,
+  dirPath: string,
+  config: ConfluenceIntegrationConfig,
+) {
+  const host = config.host;
+  const attachmentTitle = attachment.title.replace(/ /g, '-');
+  const path = `${dirPath}/${attachmentTitle}`;
+
+  // console.log(url)
+  const url = `https://${host}/wiki/rest/api/content/${attachment.pageId}/child/attachment/${attachment.id}/download`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: config.apiToken,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to download attachment: ${res.status}`);
+  }
+  const writeStream = fs.createWriteStream(path);
+
+  await new Promise((resolve, reject) => {
+    res.body?.pipeTo(
+      new WritableStream({
+        write(chunk) {
+          writeStream.write(chunk);
+        },
+        close() {
+          writeStream.close(resolve);
+        },
+        abort(err) {
+          fs.unlink(path, () => reject(err)); // Clean up the file on error
+        },
+      }),
+    );
+  });
+}
+
+export async function fetchPageAttachments(
+  pageId: string,
+  config: ConfluenceIntegrationConfig,
+) {
+  const attachments = await fetchConfluencePageAttachments(pageId, config);
+  const path = `${tmpdirPath}/docs/attachments`;
+  createDirectoryIfnotExists(path);
+  for (const attachment of attachments) {
+    await downloadAttachment(attachment, path, config);
+  }
+  return attachments;
+}
 
 export function replaceAttachmentLinks(
   attachments: Attachment[],
@@ -146,9 +248,9 @@ function createDirectoryIfnotExists(path: string) {
   }
 }
 
-// function htmlToMardDown(html: string) {
-//   return NodeHtmlMarkdown.translate(html)
-// }
+function htmlToMardDown(html: string) {
+  return NodeHtmlMarkdown.translate(html);
+}
 
 const mkdocs: MkDocs = {
   site_name: 'Beestack documentation',
@@ -170,6 +272,13 @@ export async function savePage(page: string, pageId: string) {
     Home: `${pageId}.md`,
   });
   createMkdocs();
+}
+
+export async function fetchMkDocs(pageTitle: string, pageId: string) {
+  const nav: any = {};
+  nav[pageTitle] = `${pageId}.md`;
+  mkdocs.nav.push(nav);
+  return yaml.dump(mkdocs);
 }
 
 /**

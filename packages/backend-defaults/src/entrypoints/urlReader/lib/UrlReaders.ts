@@ -36,6 +36,7 @@ import { GiteaUrlReader } from './GiteaUrlReader';
 import { AwsCodeCommitUrlReader } from './AwsCodeCommitUrlReader';
 import { HarnessUrlReader } from './HarnessUrlReader';
 import { AzureBlobStorageUrlReader } from './AzureBlobStorageUrlReader';
+import { ConfluenceUrlReader } from './ConfluenceUrlReader';
 
 /**
  * Creation options for {@link @backstage/backend-plugin-api#UrlReaderService}.
@@ -103,6 +104,7 @@ export class UrlReaders {
         AzureBlobStorageUrlReader.factory,
         AwsCodeCommitUrlReader.factory,
         FetchUrlReader.factory,
+        ConfluenceUrlReader.factory,
       ]),
     });
   }
