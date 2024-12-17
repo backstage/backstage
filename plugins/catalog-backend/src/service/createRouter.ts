@@ -181,6 +181,7 @@ export async function createRouter(
         let cursor: Cursor | undefined;
 
         try {
+          let currentWrite: Promise<boolean> | undefined = undefined;
           do {
             const result = await entitiesCatalog.queryEntities(
               !cursor
@@ -195,14 +196,20 @@ export async function createRouter(
                 : { credentials, fields, limit, cursor },
             );
 
+            // Wait for previous write to complete
+            if (await currentWrite) {
+              return; // Client closed connection
+            }
+
             if (result.items.entities.length) {
-              if (await responseStream.send(result.items)) {
-                return; // Client closed connection
-              }
+              currentWrite = responseStream.send(result.items);
             }
 
             cursor = result.pageInfo?.nextCursor;
           } while (cursor);
+
+          // Wait for last write to complete
+          await currentWrite;
 
           responseStream.complete();
         } finally {
