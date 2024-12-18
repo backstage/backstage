@@ -32616,12 +32616,12 @@ __metadata:
   linkType: hard
 
 "isolated-vm@npm:^5.0.1":
-  version: 5.0.2
-  resolution: "isolated-vm@npm:5.0.2"
+  version: 5.0.3
+  resolution: "isolated-vm@npm:5.0.3"
   dependencies:
     node-gyp: latest
     prebuild-install: ^7.1.2
-  checksum: 065f19ecb2e43393e6833321105bfa5911d82d0165e25beeb779bb6a262e1401dd387c900bcc3ad706eb7e73f5c5d57ca16ef7e2ee710e62e86b2a5ef39ce76b
+  checksum: 71ec0c45fe00ed5e48b598281682e46bea7b478177d303326a0ba0602a3186059164d89935820b6648d3ea68aa73d23cd47378752189a7a6877bdfcec140985a
   languageName: node
   linkType: hard
 
