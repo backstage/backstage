@@ -70,6 +70,7 @@
     "glob": "^8.0.3",
     "is-glob": "^4.0.3",
     "js-yaml": "^4.1.0",
+    "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
     "p-limit": "^3.0.2",
@@ -84,17 +85,22 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/node": "^20.16.0",
-    "@types/prettier": "^2.0.0"
+    "@types/prettier": "^2.0.0",
+    "embedded-postgres": "17.2.0-beta.15"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
     "@useoptic/optic": "^1.0.0",
+    "embedded-postgres": "17.2.0-beta.15",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
   },
   "peerDependenciesMeta": {
+    "embedded-postgres": {
+      "optional": true
+    },
     "prettier": {
       "optional": true
     }
