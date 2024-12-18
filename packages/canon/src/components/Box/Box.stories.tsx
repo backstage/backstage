@@ -17,24 +17,8 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
-import {
-  listResponsiveValues,
-  argTypesSpacing,
-  argTypesColor,
-} from '../../../docs/utils/argTypes';
-import { boxProperties } from './sprinkles.css';
 import { Stack } from '../Stack';
 import { Inline } from '../Inline';
-
-const argTypesBox = Object.keys(boxProperties.styles).reduce<
-  Record<string, any>
->((acc, n) => {
-  acc[n] = {
-    control: 'select',
-    options: listResponsiveValues(n as keyof typeof boxProperties.styles),
-  };
-  return acc;
-}, {});
 
 const meta = {
   title: 'Components/Box',
@@ -43,9 +27,6 @@ const meta = {
     layout: 'centered',
   },
   argTypes: {
-    ...argTypesSpacing,
-    ...argTypesColor,
-    ...argTypesBox,
     as: {
       control: { type: 'select' },
       options: ['div', 'span', 'article', 'section'],
