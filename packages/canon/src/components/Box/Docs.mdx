@@ -1,7 +1,6 @@
-import { Meta, Unstyled, Source } from '@storybook/blocks';
+import { Meta, Unstyled, Source, Canvas } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
-import { Padding } from './docs/padding';
 import { PropsTable, getProps } from '../../../docs/components';
 import { boxProperties } from './sprinkles.css';
 import { spacingProperties } from '../../layout/sprinkles.css';
@@ -54,7 +53,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   avoid collapsing margins but both are available.
 </Text>
 
-<Padding />
+<Canvas of={BoxStories.Padding} />
 
 <PropsTable data={getProps(spacingProperties.styles)} />
 

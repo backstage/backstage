@@ -205,66 +205,49 @@ export const AlignItems: Story = {
   ),
 };
 
-export const Nested: Story = {
-  render: () => (
-    <Box padding="lg" background="background">
-      <Box padding="md" background="background">
-        Header
-      </Box>
-      <Box
-        display="flex"
-        padding="md"
-        background="background"
-        justifyContent="space-between"
-      >
-        <Box padding="xs" background="background">
-          Sidebar
-        </Box>
-        <Box padding="xs" background="background">
-          Main Content
-        </Box>
-      </Box>
-      <Box padding="md" background="background">
-        Footer
-      </Box>
-    </Box>
-  ),
+const stylePaddingBox = {
+  background: 'rgb(196, 202, 251)',
+  color: 'white',
+  borderRadius: '4px',
 };
 
-export const Alignment: Story = {
-  render: () => (
-    <Box
-      display="flex"
-      padding="lg"
-      background="background"
-      justifyContent="center"
-      alignItems="center"
-      style={{ height: '200px' }}
-    >
-      <Box padding="md" background="background">
-        Centered Content
-      </Box>
-    </Box>
-  ),
-};
-
-// Example showing different spacing combinations
-export const Spacing: Story = {
-  render: () => (
-    <Box display="flex" flexDirection="column" gap="md">
-      <Box padding="xs" background="background">
-        Small Padding
-      </Box>
-      <Box padding="md" background="background">
-        Medium Padding
-      </Box>
-      <Box padding="lg" background="background">
-        Large Padding
-      </Box>
-      <Box paddingX="lg" paddingY="xs" background="background">
-        Mixed Padding
-      </Box>
-    </Box>
+export const Padding: Story = {
+  args: {
+    style: {
+      background: '#1f47ff',
+      color: 'white',
+      borderRadius: '4px',
+      padding: '12px 12px',
+    },
+  },
+  render: args => (
+    <Stack align="center" gap="md">
+      <Inline alignY="center" gap="md">
+        <Box padding="md" style={stylePaddingBox}>
+          <Box {...args}>Padding</Box>
+        </Box>
+        <Box paddingX="md" style={stylePaddingBox}>
+          <Box {...args}>Padding X</Box>
+        </Box>
+        <Box paddingY="md" style={stylePaddingBox}>
+          <Box {...args}>Padding Y</Box>
+        </Box>
+      </Inline>
+      <Inline alignY="center" gap="md">
+        <Box paddingTop="md" style={stylePaddingBox}>
+          <Box {...args}>Padding Top</Box>
+        </Box>
+        <Box paddingRight="md" style={stylePaddingBox}>
+          <Box {...args}>Padding Right</Box>
+        </Box>
+        <Box paddingBottom="md" style={stylePaddingBox}>
+          <Box {...args}>Padding Bottom</Box>
+        </Box>
+        <Box paddingLeft="md" style={stylePaddingBox}>
+          <Box {...args}>Padding Left</Box>
+        </Box>
+      </Inline>
+    </Stack>
   ),
 };
 

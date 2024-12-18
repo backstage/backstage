@@ -32,7 +32,7 @@ export const boxProperties = defineProperties({
     //   'space-around',
     //   'space-between',
     // ],
-    alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
+    // alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
     borderRadius: {
       none: 0,
       small: '4px',
@@ -49,7 +49,7 @@ export const boxProperties = defineProperties({
       thin: '1px solid var(--canon-outline)',
       error: '1px solid var(--canon-error)',
     },
-    display: ['none', 'flex', 'block', 'inline'],
+    // display: ['none', 'flex', 'block', 'inline'],
     flexWrap: ['wrap', 'nowrap'],
   },
 });
