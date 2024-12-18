@@ -23,15 +23,15 @@ export const boxProperties = defineProperties({
   defaultCondition: 'xs',
   responsiveArray: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
   properties: {
-    flexDirection: ['row', 'column'],
-    justifyContent: [
-      'stretch',
-      'flex-start',
-      'center',
-      'flex-end',
-      'space-around',
-      'space-between',
-    ],
+    // flexDirection: ['row', 'column'],
+    // justifyContent: [
+    //   'stretch',
+    //   'flex-start',
+    //   'center',
+    //   'flex-end',
+    //   'space-around',
+    //   'space-between',
+    // ],
     alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
     borderRadius: {
       none: 0,

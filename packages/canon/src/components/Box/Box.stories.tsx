@@ -23,6 +23,8 @@ import {
   argTypesColor,
 } from '../../../docs/utils/argTypes';
 import { boxProperties } from './sprinkles.css';
+import { Stack } from '../Stack';
+import { Inline } from '../Inline';
 
 const argTypesBox = Object.keys(boxProperties.styles).reduce<
   Record<string, any>
@@ -52,53 +54,154 @@ const meta = {
       control: false,
     },
   },
-  args: {
-    as: 'div',
-    background: 'elevation1',
-    borderRadius: 'small',
-    children: 'Basic Box',
-    display: 'block',
-    padding: 'sm',
-  },
 } satisfies Meta<typeof Box>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-  args: {},
+  args: {
+    style: {
+      background: '#1f47ff',
+      color: 'white',
+      padding: '4px 8px',
+      borderRadius: '4px',
+    },
+    children: 'Basic Box',
+  },
 };
 
-export const Responsive: Story = {
-  render: () => (
-    <Box
-      display={{ xs: 'block', sm: 'flex' }}
-      padding={{ xs: 'xs', sm: 'md', lg: 'lg' }}
-      background="background"
-    >
-      Responsive Box
-    </Box>
+export const Display: Story = {
+  args: {
+    style: {
+      ...Basic.args?.style,
+    },
+  },
+  render: args => (
+    <Stack align="center">
+      <Inline>
+        <Box display="block" {...args}>
+          Block
+        </Box>
+        <Box display="flex" {...args}>
+          Flex
+        </Box>
+        <Box display="inline" {...args}>
+          Inline
+        </Box>
+        <Box display="none" {...args}>
+          None
+        </Box>
+      </Inline>
+      <Box display={{ xs: 'block', sm: 'flex', md: 'inline' }} {...args}>
+        Responsive
+      </Box>
+    </Stack>
   ),
 };
 
-export const FlexContainer: Story = {
-  render: () => (
-    <Box
-      display="flex"
-      flexDirection="column"
-      padding="lg"
-      background="background"
-    >
-      <Box padding="md" background="background" color="primary">
-        Item 1
+export const FlexDirection: Story = {
+  args: {
+    style: {
+      ...Basic.args?.style,
+    },
+    display: 'flex',
+    gap: 'xs',
+  },
+  render: args => (
+    <Stack align="center">
+      <Box flexDirection="row" {...args}>
+        <span>Row</span>
+        <span>Row</span>
       </Box>
-      <Box padding="md" background="background" color="primary">
-        Item 2
+      <Box flexDirection="column" {...args}>
+        <span>Column</span>
+        <span>Column</span>
       </Box>
-      <Box padding="md" background="background" color="primary">
-        Item 3
+      <Box flexDirection={{ xs: 'column', sm: 'row' }} {...args}>
+        <span>Responsive</span>
+        <span>Flex Direction</span>
       </Box>
-    </Box>
+    </Stack>
+  ),
+};
+
+export const JustifyContent: Story = {
+  args: {
+    style: {
+      ...Basic.args?.style,
+      width: '200px',
+    },
+    display: 'flex',
+    gap: 'xs',
+  },
+  render: args => (
+    <Stack>
+      <Box justifyContent="start" {...args}>
+        <span>Flex Start</span>
+      </Box>
+      <Box justifyContent="center" {...args}>
+        <span>Center</span>
+      </Box>
+      <Box justifyContent="end" {...args}>
+        <span>Flex End</span>
+      </Box>
+      <Box justifyContent="around" {...args}>
+        <span>Space</span>
+        <span>Around</span>
+      </Box>
+      <Box justifyContent="between" {...args}>
+        <span>Space</span>
+        <span>Between</span>
+      </Box>
+      <Box
+        justifyContent={{
+          xs: 'between',
+          sm: 'around',
+          md: 'start',
+        }}
+        {...args}
+      >
+        <span>Responsive</span>
+        <span>Spacing</span>
+      </Box>
+    </Stack>
+  ),
+};
+
+export const AlignItems: Story = {
+  args: {
+    style: {
+      ...Basic.args?.style,
+      width: '200px',
+      height: '100px',
+    },
+    display: 'flex',
+    gap: 'xs',
+  },
+  render: args => (
+    <Stack>
+      <Box alignItems="start" {...args}>
+        <span>Flex Start</span>
+      </Box>
+      <Box alignItems="center" {...args}>
+        <span>Center</span>
+      </Box>
+      <Box alignItems="end" {...args}>
+        <span>Flex End</span>
+      </Box>
+      <Box
+        alignItems={{
+          xs: 'start',
+          sm: 'center',
+          md: 'end',
+        }}
+        {...args}
+      >
+        <span>Responsive</span>
+        <span>Spacing</span>
+      </Box>
+    </Stack>
   ),
 };
 

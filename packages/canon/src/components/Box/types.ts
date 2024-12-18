@@ -39,32 +39,25 @@ export type FlexWrapProps =
 /** @public */
 export type JustifyContentProps =
   | 'stretch'
-  | 'flex-start'
+  | 'start'
   | 'center'
-  | 'flex-end'
-  | 'space-around'
-  | 'space-between'
+  | 'end'
+  | 'around'
+  | 'between'
   | Partial<
       Record<
         Breakpoint,
-        | 'stretch'
-        | 'flex-start'
-        | 'center'
-        | 'flex-end'
-        | 'space-around'
-        | 'space-between'
+        'stretch' | 'start' | 'center' | 'end' | 'around' | 'between'
       >
     >;
 
 /** @public */
 export type AlignItemsProps =
   | 'stretch'
-  | 'flex-start'
+  | 'start'
   | 'center'
-  | 'flex-end'
-  | Partial<
-      Record<Breakpoint, 'stretch' | 'flex-start' | 'center' | 'flex-end'>
-    >;
+  | 'end'
+  | Partial<Record<Breakpoint, 'stretch' | 'start' | 'center' | 'end'>>;
 
 /** @public */
 export type BorderRadiusProps =

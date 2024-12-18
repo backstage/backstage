@@ -29,13 +29,13 @@ const spaceMap = (type: string) => ({
 const valueMap: Record<string, Record<string, string>> = {
   display: {
     none: 'hidden',
-    flex: 'block',
+    flex: 'flex',
     block: 'block',
     inline: 'inline',
   },
   flexDirection: {
-    row: 'row',
-    column: 'column',
+    row: 'flex-row',
+    column: 'flex-col',
   },
   flexWrap: {
     wrap: 'flex-wrap',
@@ -43,17 +43,17 @@ const valueMap: Record<string, Record<string, string>> = {
   },
   justifyContent: {
     stretch: 'justify-stretch',
-    'flex-start': 'justify-start',
+    start: 'justify-start',
     center: 'justify-center',
-    'flex-end': 'justify-end',
-    'space-around': 'justify-around',
-    'space-between': 'justify-between',
+    end: 'justify-end',
+    around: 'justify-around',
+    between: 'justify-between',
   },
   alignItems: {
     stretch: 'items-stretch',
-    'flex-start': 'items-start',
+    start: 'items-start',
     center: 'items-center',
-    'flex-end': 'items-end',
+    end: 'items-end',
   },
   borderRadius: {
     none: 'rounded-none',
