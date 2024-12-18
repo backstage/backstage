@@ -97,4 +97,4 @@ export type PreparerBuilder = {
  * Location where documentation files are stored
  * @public
  */
-export type RemoteProtocol = 'url' | 'dir' | 'confluence';
+export type RemoteProtocol = 'url' | 'dir';

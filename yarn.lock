@@ -5083,6 +5083,7 @@ __metadata:
   dependencies:
     "@azure/identity": ^4.0.0
     "@azure/storage-blob": ^12.5.0
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
@@ -5097,6 +5098,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
+    node-html-markdown: ^1.3.0
   languageName: unknown
   linkType: soft
 

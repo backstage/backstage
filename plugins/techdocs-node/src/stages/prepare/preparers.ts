@@ -25,7 +25,6 @@ import {
   PreparerConfig,
   RemoteProtocol,
 } from './types';
-import { ConfluencePreparer } from './confluence';
 
 /**
  * Collection of docs preparers (dir and url)
@@ -61,12 +60,6 @@ export class Preparers implements PreparerBuilder {
       logger: options.logger,
     });
     preparers.register('dir', directoryPreparer);
-
-    const confluencePreparer = ConfluencePreparer.fromConfig(backstageConfig, {
-      reader: options.reader,
-      logger: options.logger,
-    });
-    preparers.register('confluence', confluencePreparer);
 
     return preparers;
   }

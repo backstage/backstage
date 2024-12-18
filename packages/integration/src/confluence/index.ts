@@ -15,4 +15,4 @@
  */
 export type { ConfluenceIntegrationConfig } from './config';
 export { readConfluenceIntegrationConfigs } from './config';
-export * from './core';
+export * from './types';

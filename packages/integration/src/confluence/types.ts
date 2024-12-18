@@ -21,6 +21,13 @@ export type Attachment = {
   status: string;
   createdAt: string;
   comment: string;
+  version: {
+    number: number;
+    message: string;
+    minorEdit: boolean;
+    authorId: string;
+    createdAt: string;
+  };
   title: string;
   mediaType: string;
   id: string;

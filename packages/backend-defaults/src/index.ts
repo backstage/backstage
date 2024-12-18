@@ -22,4 +22,4 @@
 
 export { createBackend } from './CreateBackend';
 export { discoveryFeatureLoader } from './discoveryFeatureLoader';
-export { ConfluenceReader } from './entrypoints/urlReader/lib/ConfluenceReader';
+export * from './entrypoints/urlReader';
