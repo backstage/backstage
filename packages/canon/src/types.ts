@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface Breakpoints {
-  xs: string;
-  sm: string;
-  md: string;
-  lg: string;
-  xl: string;
-  '2xl': string;
-}
 
+/** @public */
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
+/** @public */
 export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
+/** @public */
 export type Display = 'none' | 'flex' | 'block' | 'inline';
+
+/** @public */
 export type FlexDirection = 'row' | 'column';
+
+/** @public */
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
+
+/** @public */
 export type JustifyContent =
   | 'stretch'
   | 'start'
@@ -33,37 +37,38 @@ export type JustifyContent =
   | 'end'
   | 'around'
   | 'between';
+
+/** @public */
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
+
+/** @public */
 export type BorderRadius = 'none' | 'small' | 'medium' | 'full';
+
+/** @public */
 export type BoxShadow = 'small' | 'medium' | 'large';
 
+/** @public */
 export interface UtilityProps {
-  display?: Display | Partial<Record<keyof Breakpoints, Display>>;
-  flexDirection?:
-    | FlexDirection
-    | Partial<Record<keyof Breakpoints, FlexDirection>>;
-  flexWrap?: FlexWrap | Partial<Record<keyof Breakpoints, FlexWrap>>;
-  justifyContent?:
-    | JustifyContent
-    | Partial<Record<keyof Breakpoints, JustifyContent>>;
-  alignItems?: AlignItems | Partial<Record<keyof Breakpoints, AlignItems>>;
-  borderRadius?:
-    | BorderRadius
-    | Partial<Record<keyof Breakpoints, BorderRadius>>;
-  boxShadow?: BoxShadow | Partial<Record<keyof Breakpoints, BoxShadow>>;
-  padding?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  paddingX?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  paddingY?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  paddingLeft?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  paddingRight?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  paddingTop?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  paddingBottom?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  margin?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  marginX?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  marginY?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  marginLeft?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  marginRight?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  marginTop?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  marginBottom?: Space | Partial<Record<keyof Breakpoints, Space>>;
-  gap?: Space | Partial<Record<keyof Breakpoints, Space>>;
+  display?: Display | Partial<Record<Breakpoint, Display>>;
+  flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
+  flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
+  justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
+  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
+  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  boxShadow?: BoxShadow | Partial<Record<Breakpoint, BoxShadow>>;
+  padding?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  margin?: Space | Partial<Record<Breakpoint, Space>>;
+  marginX?: Space | Partial<Record<Breakpoint, Space>>;
+  marginY?: Space | Partial<Record<Breakpoint, Space>>;
+  marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  marginRight?: Space | Partial<Record<Breakpoint, Space>>;
+  marginTop?: Space | Partial<Record<Breakpoint, Space>>;
+  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  gap?: Space | Partial<Record<Breakpoint, Space>>;
 }

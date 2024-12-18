@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Breakpoints, UtilityProps } from '../types';
+import type { Breakpoint, UtilityProps } from '../types';
 
 const spaceMap = (type: string) => ({
   none: `${type}-none`,
@@ -93,7 +93,7 @@ const generateClassNames = (propName: string, propValue: any) => {
     classNames.push(`cu-${value}`);
   } else if (typeof propValue === 'object') {
     // If the property value is an object, map each key-value pair
-    Object.entries(propValue as Record<keyof Breakpoints, string>).forEach(
+    Object.entries(propValue as Record<Breakpoint, string>).forEach(
       ([breakpoint, value]) => {
         const mappedValue = valueMap[propName]?.[value] || value;
 

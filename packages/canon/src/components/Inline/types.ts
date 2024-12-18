@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
+import { AsProps, ColorProps } from '../../layout/types';
 import { SpaceProps } from '../../layout/types';
-
+import type { Breakpoint } from '../../types';
 /** @public */
 export interface InlineProps extends SpaceProps, ColorProps {
   children: React.ReactNode;

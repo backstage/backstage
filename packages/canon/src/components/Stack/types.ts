@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
+import { AsProps, ColorProps } from '../../layout/types';
 import { SpaceProps } from '../../layout/types';
-
+import type { Breakpoint } from '../../types';
 /** @public */
 export interface StackProps extends SpaceProps, ColorProps {
   children: React.ReactNode;

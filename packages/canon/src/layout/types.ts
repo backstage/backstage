@@ -13,61 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { breakpoints, space, themes } from './properties';
 
 /** @public */
-export type Breakpoint = keyof typeof breakpoints;
+export type BreakpointLocal = keyof typeof breakpoints;
 
 /** @public */
-export type Space = keyof typeof space;
+export type SpaceLocal = keyof typeof space;
 
 /** @public */
 export type Theme = keyof typeof themes;
 
 /** @public */
-export type Gap = Space | Partial<Record<Breakpoint, Space>>;
+export type Gap = SpaceLocal | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type PaddingLeft = Space | Partial<Record<Breakpoint, Space>>;
+export type PaddingLeft =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type PaddingRight = Space | Partial<Record<Breakpoint, Space>>;
+export type PaddingRight =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type PaddingTop = Space | Partial<Record<Breakpoint, Space>>;
+export type PaddingTop =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type PaddingBottom = Space | Partial<Record<Breakpoint, Space>>;
+export type PaddingBottom =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type Padding = Space | Partial<Record<Breakpoint, Space>>;
+export type Padding = SpaceLocal | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type PaddingX = Space | Partial<Record<Breakpoint, Space>>;
+export type PaddingX =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type PaddingY = Space | Partial<Record<Breakpoint, Space>>;
+export type PaddingY =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type MarginLeft = Space | Partial<Record<Breakpoint, Space>>;
+export type MarginLeft =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type MarginRight = Space | Partial<Record<Breakpoint, Space>>;
+export type MarginRight =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type MarginTop = Space | Partial<Record<Breakpoint, Space>>;
+export type MarginTop =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type MarginBottom = Space | Partial<Record<Breakpoint, Space>>;
+export type MarginBottom =
+  | SpaceLocal
+  | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type Margin = Space | Partial<Record<Breakpoint, Space>>;
+export type Margin = SpaceLocal | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type MarginX = Space | Partial<Record<Breakpoint, Space>>;
+export type MarginX = SpaceLocal | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
-export type MarginY = Space | Partial<Record<Breakpoint, Space>>;
+export type MarginY = SpaceLocal | Partial<Record<BreakpointLocal, SpaceLocal>>;
 
 /** @public */
 export interface SpaceProps {

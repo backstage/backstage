@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../../layout/types';
+import type { Breakpoint } from '../../types';
 
 /** @public */
 export interface TextProps {

@@ -18,21 +18,14 @@ import React, { createContext, useContext, ReactNode } from 'react';
 import { IconMap, IconNames } from '../components/Icon/types';
 import { defaultIcons } from '../components/Icon/icons';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import { Breakpoints } from '../types';
-
-const defaultBreakpoints: Breakpoints = {
-  xs: '0px',
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
-  '2xl': '1536px',
-};
+import type { Breakpoint } from '../types';
 
 interface CanonContextProps {
   icons: IconMap;
-  breakpoint: keyof Breakpoints;
-  getResponsiveValue: (value: string | Partial<Breakpoints>) => string;
+  breakpoint: Breakpoint;
+  getResponsiveValue: (
+    value: string | Partial<Record<Breakpoint, string>>,
+  ) => string;
 }
 
 const CanonContext = createContext<CanonContextProps>({
@@ -44,21 +37,20 @@ const CanonContext = createContext<CanonContextProps>({
 interface CanonProviderProps {
   children?: ReactNode;
   overrides?: Partial<Record<IconNames, React.ComponentType>>;
-  breakpoints?: Partial<Breakpoints>;
 }
 
 /** @public */
 export const CanonProvider = (props: CanonProviderProps) => {
-  const { children, overrides, breakpoints = defaultBreakpoints } = props;
+  const { children, overrides } = props;
 
   // Merge provided overrides with default icons
   const combinedIcons = { ...defaultIcons, ...overrides };
 
-  const isBreakpointSm = useMediaQuery(`(min-width: ${breakpoints.sm})`);
-  const isBreakpointMd = useMediaQuery(`(min-width: ${breakpoints.md})`);
-  const isBreakpointLg = useMediaQuery(`(min-width: ${breakpoints.lg})`);
-  const isBreakpointXl = useMediaQuery(`(min-width: ${breakpoints.xl})`);
-  const isBreakpoint2xl = useMediaQuery(`(min-width: ${breakpoints['2xl']})`);
+  const isBreakpointSm = useMediaQuery(`(min-width: 640px)`);
+  const isBreakpointMd = useMediaQuery(`(min-width: 768px)`);
+  const isBreakpointLg = useMediaQuery(`(min-width: 1024px)`);
+  const isBreakpointXl = useMediaQuery(`(min-width: 1280px)`);
+  const isBreakpoint2xl = useMediaQuery(`(min-width: 1536px)`);
 
   // Determine the current breakpoint
   const breakpoint = (() => {
@@ -70,9 +62,11 @@ export const CanonProvider = (props: CanonProviderProps) => {
     return 'xs';
   })();
 
-  const getResponsiveValue = (value: string | Partial<Breakpoints>) => {
+  const getResponsiveValue = (
+    value: string | Partial<Record<Breakpoint, string>>,
+  ) => {
     if (typeof value === 'object') {
-      const breakpointsOrder: (keyof Breakpoints)[] = [
+      const breakpointsOrder: Breakpoint[] = [
         'xs',
         'sm',
         'md',
