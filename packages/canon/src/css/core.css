@@ -15,14 +15,8 @@
  */
 
 /* Normalize */
-@import './normalize.css';
-
-*,
-html,
-body {
-  font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-weight-regular);
-}
+@import './base.css';
+@import './utilities.css';
 
 /* Light theme tokens */
 :root {
