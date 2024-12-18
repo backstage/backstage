@@ -33,7 +33,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@c5c3b91fe86c59a87cf9782de1f89e48e19d4492 # v0.6.16
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: linux-v20
 
