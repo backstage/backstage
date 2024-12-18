@@ -25,15 +25,15 @@ export interface Breakpoints {
 export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type Display = 'none' | 'flex' | 'block' | 'inline';
 export type FlexDirection = 'row' | 'column';
-export type FlexWrap = 'wrap' | 'nowrap';
+export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
 export type JustifyContent =
   | 'stretch'
-  | 'flex-start'
+  | 'start'
   | 'center'
-  | 'flex-end'
-  | 'space-around'
-  | 'space-between';
-export type AlignItems = 'stretch' | 'flex-start' | 'center' | 'flex-end';
+  | 'end'
+  | 'around'
+  | 'between';
+export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 export type BorderRadius = 'none' | 'small' | 'medium' | 'full';
 export type BoxShadow = 'small' | 'medium' | 'large';
 

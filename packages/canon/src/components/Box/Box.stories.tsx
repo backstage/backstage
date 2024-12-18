@@ -205,7 +205,7 @@ export const AlignItems: Story = {
   ),
 };
 
-const stylePaddingBox = {
+const styleInsideBox = {
   background: 'rgb(196, 202, 251)',
   color: 'white',
   borderRadius: '4px',
@@ -223,27 +223,27 @@ export const Padding: Story = {
   render: args => (
     <Stack align="center" gap="md">
       <Inline alignY="center" gap="md">
-        <Box padding="md" style={stylePaddingBox}>
+        <Box padding="md" style={styleInsideBox}>
           <Box {...args}>Padding</Box>
         </Box>
-        <Box paddingX="md" style={stylePaddingBox}>
+        <Box paddingX="md" style={styleInsideBox}>
           <Box {...args}>Padding X</Box>
         </Box>
-        <Box paddingY="md" style={stylePaddingBox}>
+        <Box paddingY="md" style={styleInsideBox}>
           <Box {...args}>Padding Y</Box>
         </Box>
       </Inline>
       <Inline alignY="center" gap="md">
-        <Box paddingTop="md" style={stylePaddingBox}>
+        <Box paddingTop="md" style={styleInsideBox}>
           <Box {...args}>Padding Top</Box>
         </Box>
-        <Box paddingRight="md" style={stylePaddingBox}>
+        <Box paddingRight="md" style={styleInsideBox}>
           <Box {...args}>Padding Right</Box>
         </Box>
-        <Box paddingBottom="md" style={stylePaddingBox}>
+        <Box paddingBottom="md" style={styleInsideBox}>
           <Box {...args}>Padding Bottom</Box>
         </Box>
-        <Box paddingLeft="md" style={stylePaddingBox}>
+        <Box paddingLeft="md" style={styleInsideBox}>
           <Box {...args}>Padding Left</Box>
         </Box>
       </Inline>
@@ -251,19 +251,95 @@ export const Padding: Story = {
   ),
 };
 
-// Example showing different display values
-export const DisplayVariants: Story = {
-  render: () => (
-    <Box display="flex" flexDirection="column" gap="md">
-      <Box padding="md" background="background" display="block">
-        Display Block
+export const Margin: Story = {
+  args: {
+    style: {
+      background: '#1f47ff',
+      color: 'white',
+      borderRadius: '4px',
+      padding: '12px 12px',
+    },
+  },
+  render: args => (
+    <Stack align="center" gap="md">
+      <Inline alignY="center" gap="md">
+        <Box style={styleInsideBox}>
+          <Box margin="md" {...args}>
+            Margin
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box marginX="md" {...args}>
+            Margin X
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box marginY="md" {...args}>
+            Margin Y
+          </Box>
+        </Box>
+      </Inline>
+      <Inline alignY="center" gap="md">
+        <Box style={styleInsideBox}>
+          <Box marginTop="md" {...args}>
+            Margin Top
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box marginRight="md" {...args}>
+            Margin Right
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box marginBottom="md" {...args}>
+            Margin Bottom
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box marginLeft="md" {...args}>
+            Margin Left
+          </Box>
+        </Box>
+      </Inline>
+    </Stack>
+  ),
+};
+
+export const FlexWrap: Story = {
+  args: {
+    style: {
+      ...Basic.args?.style,
+      width: '200px',
+    },
+    display: 'flex',
+    gap: 'xs',
+  },
+  render: args => (
+    <Stack align="center">
+      <Box flexWrap="wrap" {...args}>
+        <span>One</span>
+        <span>Two</span>
+        <span>Three</span>
+        <span>Four</span>
+        <span>Five</span>
+        <span>Six</span>
       </Box>
-      <Box padding="md" background="background" display="flex">
-        Display Flex
+      <Box flexWrap="nowrap" {...args}>
+        <span>One</span>
+        <span>Two</span>
+        <span>Three</span>
+        <span>Four</span>
+        <span>Five</span>
+        <span>Six</span>
       </Box>
-      <Box padding="md" background="background" display="inline">
-        Display Inline
+      <Box flexWrap="wrap-reverse" {...args}>
+        <span>One</span>
+        <span>Two</span>
+        <span>Three</span>
+        <span>Four</span>
+        <span>Five</span>
+        <span>Six</span>
       </Box>
-    </Box>
+    </Stack>
   ),
 };

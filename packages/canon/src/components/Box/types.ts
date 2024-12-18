@@ -14,69 +14,12 @@
  * limitations under the License.
  */
 
-import { Breakpoint, SpaceProps, ColorProps } from '../../layout/types';
+import type { UtilityProps } from '../../types';
 
 /** @public */
-export type DisplayProps =
-  | 'flex'
-  | 'none'
-  | 'inline'
-  | 'block'
-  | Partial<Record<Breakpoint, 'flex' | 'none' | 'inline' | 'block'>>;
-
-/** @public */
-export type FlexDirectionProps =
-  | 'row'
-  | 'column'
-  | Partial<Record<Breakpoint, 'row' | 'column'>>;
-
-/** @public */
-export type FlexWrapProps =
-  | 'wrap'
-  | 'nowrap'
-  | Partial<Record<Breakpoint, 'wrap' | 'nowrap'>>;
-
-/** @public */
-export type JustifyContentProps =
-  | 'stretch'
-  | 'start'
-  | 'center'
-  | 'end'
-  | 'around'
-  | 'between'
-  | Partial<
-      Record<
-        Breakpoint,
-        'stretch' | 'start' | 'center' | 'end' | 'around' | 'between'
-      >
-    >;
-
-/** @public */
-export type AlignItemsProps =
-  | 'stretch'
-  | 'start'
-  | 'center'
-  | 'end'
-  | Partial<Record<Breakpoint, 'stretch' | 'start' | 'center' | 'end'>>;
-
-/** @public */
-export type BorderRadiusProps =
-  | 'none'
-  | 'small'
-  | 'medium'
-  | 'full'
-  | Partial<Record<Breakpoint, 'none' | 'small' | 'medium' | 'full'>>;
-
-/** @public */
-export interface BoxProps extends SpaceProps, ColorProps {
+export interface BoxProps extends UtilityProps {
   as?: keyof JSX.IntrinsicElements;
   children?: React.ReactNode;
-  display?: DisplayProps;
-  flexDirection?: FlexDirectionProps;
-  flexWrap?: FlexWrapProps;
-  justifyContent?: JustifyContentProps;
-  alignItems?: AlignItemsProps;
-  borderRadius?: BorderRadiusProps;
   className?: string;
   style?: React.CSSProperties;
 }

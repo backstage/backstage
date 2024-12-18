@@ -40,6 +40,7 @@ const valueMap: Record<string, Record<string, string>> = {
   flexWrap: {
     wrap: 'flex-wrap',
     nowrap: 'flex-nowrap',
+    'wrap-reverse': 'flex-wrap-reverse',
   },
   justifyContent: {
     stretch: 'justify-stretch',
