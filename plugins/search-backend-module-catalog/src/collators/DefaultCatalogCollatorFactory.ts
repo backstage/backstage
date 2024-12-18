@@ -18,6 +18,7 @@ import {
   TokenManager,
   createLegacyAuthAdapters,
 } from '@backstage/backend-common';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import {
   CatalogApi,
   CatalogClient,
@@ -33,7 +34,6 @@ import { Readable } from 'stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 import { readCollatorConfigOptions } from './config';
 import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -55,6 +55,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
    * @deprecated Use the config key `search.collators.catalog.batchSize` instead.
    */
   batchSize?: number;
+  // TODO(freben): Change to required CatalogService instead when fully migrated to the new backend system.
   catalogClient?: CatalogApi;
   /**
    * Allows you to customize how entities are shaped into documents.
@@ -137,32 +138,25 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 
   private async *execute(): AsyncGenerator<CatalogEntityDocument> {
     let entitiesRetrieved = 0;
-    let moreEntitiesToGet = true;
+    let cursor: string | undefined = undefined;
 
-    // Offset/limit pagination is used on the Catalog Client in order to
-    // limit (and allow some control over) memory used by the search backend
-    // at index-time.
-    while (moreEntitiesToGet) {
+    do {
       const { token } = await this.auth.getPluginRequestToken({
         onBehalfOf: await this.auth.getOwnServiceCredentials(),
         targetPluginId: 'catalog',
       });
-      const entities = (
-        await this.catalogClient.getEntities(
-          {
-            filter: this.filter,
-            limit: this.batchSize,
-            offset: entitiesRetrieved,
-          },
-          { token },
-        )
-      ).items;
+      const response = await this.catalogClient.queryEntities(
+        {
+          filter: this.filter,
+          limit: this.batchSize,
+          ...(cursor ? { cursor } : {}),
+        },
+        { token },
+      );
+      cursor = response.pageInfo.nextCursor;
+      entitiesRetrieved += response.items.length;
 
-      // Control looping through entity batches.
-      moreEntitiesToGet = entities.length === this.batchSize;
-      entitiesRetrieved += entities.length;
-
-      for (const entity of entities) {
+      for (const entity of response.items) {
         yield {
           ...this.entityTransformer(entity),
           authorization: {
@@ -175,7 +169,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
           }),
         };
       }
-    }
+    } while (cursor);
   }
 
   private applyArgsToFormat(
