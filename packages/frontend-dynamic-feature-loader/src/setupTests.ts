@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * APIs for creating Backstage apps with a default setup.
- *
- * @packageDocumentation
- */
-
-export {
-  createApp,
-  type CreateAppOptions,
-  type CreateAppFeatureLoader,
-} from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
-export { isBackstageFeature } from './discovery';
+import '@testing-library/jest-dom';
