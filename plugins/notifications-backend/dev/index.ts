@@ -20,13 +20,13 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { notificationService } from '@backstage/plugin-notifications-node';
-import { errorHandler } from '@backstage/backend-common';
 import {
   notificationSeverities,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 const randomSeverity = (): NotificationSeverity => {
   return notificationSeverities[
@@ -77,8 +77,12 @@ const notificationsDebug = createBackendPlugin({
       deps: {
         notifications: notificationService,
         httpRouter: coreServices.httpRouter,
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
       },
-      async init({ notifications, httpRouter }) {
+      async init({ notifications, httpRouter, config, logger }) {
+        const middleware = MiddlewareFactory.create({ config, logger });
+
         const router = Router();
         router.use(express.json());
         router.post('/', async (_, res: Response<unknown>) => {
@@ -96,7 +100,7 @@ const notificationsDebug = createBackendPlugin({
           });
           res.status(200).send({ status: 'ok' });
         });
-        router.use(errorHandler());
+        router.use(middleware.error());
 
         httpRouter.use(router);
         httpRouter.addAuthPolicy({
