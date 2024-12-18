@@ -25,6 +25,6 @@ export const catalogCollatorExtensionPoint: ExtensionPoint<CatalogCollatorExtens
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
 
 // @public
-const searchBackendModule: BackendFeature;
-export default searchBackendModule;
+const searchModuleCatalogCollator: BackendFeature;
+export default searchModuleCatalogCollator;
 ```

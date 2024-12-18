@@ -16,7 +16,7 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { searchBackendModule } from './module';
+import { searchModuleCatalogCollator } from './module';
 
 describe('searchModuleCatalogCollator', () => {
   it('should register the catalog collator to the search index registry extension point with factory and schedule', async () => {
@@ -28,7 +28,7 @@ describe('searchModuleCatalogCollator', () => {
       extensionPoints: [
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
-      features: [searchBackendModule],
+      features: [searchModuleCatalogCollator],
     });
 
     expect(extensionPointMock.addCollator).toHaveBeenCalledTimes(1);
@@ -50,7 +50,7 @@ describe('searchModuleCatalogCollator', () => {
           ],
         ],
         features: [
-          searchBackendModule,
+          searchModuleCatalogCollator,
           mockServices.rootConfig.factory({
             data: {
               search: {

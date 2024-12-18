@@ -59,7 +59,7 @@ export const catalogCollatorExtensionPoint =
  *
  * @public
  */
-export const searchBackendModule = createBackendModule({
+export const searchModuleCatalogCollator = createBackendModule({
   pluginId: 'search',
   moduleId: 'catalog-collator',
   register(env) {

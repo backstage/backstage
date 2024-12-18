@@ -23,6 +23,6 @@
 export {
   type CatalogCollatorExtensionPoint,
   catalogCollatorExtensionPoint,
-  searchBackendModule as default,
+  searchModuleCatalogCollator as default,
 } from './module';
 export * from './collators';
