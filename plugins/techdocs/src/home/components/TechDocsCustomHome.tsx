@@ -148,9 +148,9 @@ export const CustomDocsPanel = ({
 
   return (
     <>
-      {config.panelProps?.showHeader !== false && (
+      {!!config.panelProps?.showHeader && (
         <ContentHeader title={config.title} description={config.description}>
-          {index === 0 && config.panelProps?.showSupport !== false && (
+          {index === 0 && !!config.panelProps?.showSupport && (
             <SupportButton>
               Discover documentation in your ecosystem.
             </SupportButton>

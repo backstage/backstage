@@ -72,28 +72,26 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
     });
   };
 
-  if (!entities) return null;
+  if (!entities || !entities?.length) return null;
   return (
     <ItemCardGrid data-testid="info-card-container">
-      {!entities?.length
-        ? null
-        : entities.map(entity => (
-            <InfoCard
-              key={entity.metadata.name}
-              data-testid={entity?.metadata?.title}
-              title={entity?.metadata?.title || entity?.metadata?.name}
-            >
-              <div>{entity?.metadata?.description}</div>
-              <div className={classes.linkSpacer} />
-              <Link
-                to={linkRoute(entity)}
-                className={classes.readMoreLink}
-                data-testid="read-docs-link"
-              >
-                {linkContent || 'Read Docs'}
-              </Link>
-            </InfoCard>
-          ))}
+      {entities.map(entity => (
+        <InfoCard
+          key={entity.metadata.name}
+          data-testid={entity?.metadata?.title}
+          title={entity?.metadata?.title || entity?.metadata?.name}
+        >
+          <div>{entity?.metadata?.description}</div>
+          <div className={classes.linkSpacer} />
+          <Link
+            to={linkRoute(entity)}
+            className={classes.readMoreLink}
+            data-testid="read-docs-link"
+          >
+            {linkContent || 'Read Docs'}
+          </Link>
+        </InfoCard>
+      ))}
     </ItemCardGrid>
   );
 };
