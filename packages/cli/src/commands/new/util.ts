@@ -26,7 +26,7 @@ import {
   ownerPrompt,
 } from '../../lib/new/factories/common/prompts';
 
-import defaultTemplates from '../../../templates';
+import defaultTemplates from '../../../templates/all-default-templates';
 import {
   installFrontend,
   addFrontendLegacy,
