@@ -387,8 +387,8 @@ $ yarn build-image --tag backstage:1.0.0
 ```
 
 There is no special wiring needed to access the PostgreSQL service. Since it's
-running on the same cluster, Kubernetes will inject `POSTGRES_SERVICE_HOST` and
-`POSTGRES_SERVICE_PORT` environment variables into our Backstage container.
+running on the same cluster, Kubernetes will inject `POSTGRES_HOST` and
+`POSTGRES_PORT` environment variables into our Backstage container.
 These can be used in the Backstage `app-config.yaml` along with the secrets. Apply this to `app-config.production.yaml` as well if you have one:
 
 ```yaml
@@ -396,8 +396,8 @@ backend:
   database:
     client: pg
     connection:
-      host: ${POSTGRES_SERVICE_HOST}
-      port: ${POSTGRES_SERVICE_PORT}
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
 ```
