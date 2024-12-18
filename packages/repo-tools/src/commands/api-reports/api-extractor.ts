@@ -1218,6 +1218,7 @@ export async function categorizePackageDirs(packageDirs: string[]) {
   const dirs = packageDirs.slice();
   const tsPackageDirs = new Array<string>();
   const cliPackageDirs = new Array<string>();
+  const sqlPackageDirs = new Array<string>();
 
   await Promise.all(
     Array(10)
@@ -1241,6 +1242,11 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           if (!role) {
             return; // Ignore packages without roles
           }
+          if (
+            await fs.pathExists(cliPaths.resolveTargetRoot(dir, 'migrations'))
+          ) {
+            sqlPackageDirs.push(dir);
+          }
           // TODO(Rugvip): Inlined packages are ignored because we can't handle @internal exports
           //               gracefully, and we don't want to have to mark all exports @public etc.
           //               It would be good if we could include these packages though.
@@ -1256,7 +1262,7 @@ export async function categorizePackageDirs(packageDirs: string[]) {
       }),
   );
 
-  return { tsPackageDirs, cliPackageDirs };
+  return { tsPackageDirs, cliPackageDirs, sqlPackageDirs };
 }
 
 function parseHelpPage(helpPageContent: string) {
