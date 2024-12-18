@@ -23,11 +23,12 @@ import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
+import { existsSync } from 'node:fs';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
-const useVersionedDocs = require('fs').existsSync('versions.json');
+const useVersionedDocs = existsSync('versions.json');
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
@@ -113,6 +114,7 @@ const config: Config = {
         },
         blog: {
           path: 'blog',
+          onInlineAuthors: 'ignore',
         },
         theme: {
           customCss: 'src/theme/customTheme.scss',
@@ -137,23 +139,6 @@ const config: Config = {
       return removeHtmlComments(fileContent);
     },
     format: 'detect',
-  },
-  webpack: {
-    jsLoader: isServer => ({
-      loader: require.resolve('swc-loader'),
-      options: {
-        jsc: {
-          parser: {
-            syntax: 'typescript',
-            tsx: true,
-          },
-          target: 'es2017',
-        },
-        module: {
-          type: isServer ? 'commonjs' : 'es6',
-        },
-      },
-    }),
   },
   plugins: [
     'docusaurus-plugin-sass',
@@ -444,5 +429,8 @@ const config: Config = {
       ],
     },
   } satisfies Preset.ThemeConfig,
+  future: {
+    experimental_faster: true,
+  },
 };
 export default config;

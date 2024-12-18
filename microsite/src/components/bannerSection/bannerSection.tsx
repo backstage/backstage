@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 import bannerStyles from './bannerSection.module.scss';
 

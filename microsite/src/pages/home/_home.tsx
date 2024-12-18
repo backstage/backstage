@@ -6,7 +6,7 @@ import { BannerSectionGrid } from '@site/src/components/bannerSection/bannerSect
 import { ContentBlock } from '@site/src/components/contentBlock/contentBlock';
 import Layout from '@theme/Layout';
 import { clsx } from 'clsx';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import homeStyles from './home.module.scss';
 import { HubSpotNewAdoptersForm } from './_hubSpotNewAdoptersForm';
