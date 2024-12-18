@@ -8555,11 +8555,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/apply-release-plan@npm:^7.0.6":
-  version: 7.0.6
-  resolution: "@changesets/apply-release-plan@npm:7.0.6"
+"@changesets/apply-release-plan@npm:^7.0.7":
+  version: 7.0.7
+  resolution: "@changesets/apply-release-plan@npm:7.0.7"
   dependencies:
-    "@changesets/config": ^3.0.4
+    "@changesets/config": ^3.0.5
     "@changesets/get-version-range-type": ^0.4.0
     "@changesets/git": ^3.0.2
     "@changesets/should-skip-package": ^0.1.1
@@ -8572,7 +8572,7 @@ __metadata:
     prettier: ^2.7.1
     resolve-from: ^5.0.0
     semver: ^7.5.3
-  checksum: d84049b0874fe86db35a18b3959eee5ccb0e1be095a4d4718495e47e1123580c219bbaf4522190394ce3c40380c03b4e83d00e15070f0df77887b15c69fab14c
+  checksum: 775e8f86ab8b82ebdb44471dfbdf14e669144e63b6c972bc8502d608247ef909baca63973f71b8d15acd4fff8740a61802256bc261de12b956e4c2b8fd34d929
   languageName: node
   linkType: hard
 
@@ -8600,16 +8600,16 @@ __metadata:
   linkType: hard
 
 "@changesets/cli@npm:^2.14.0":
-  version: 2.27.10
-  resolution: "@changesets/cli@npm:2.27.10"
+  version: 2.27.11
+  resolution: "@changesets/cli@npm:2.27.11"
   dependencies:
-    "@changesets/apply-release-plan": ^7.0.6
+    "@changesets/apply-release-plan": ^7.0.7
     "@changesets/assemble-release-plan": ^6.0.5
     "@changesets/changelog-git": ^0.2.0
-    "@changesets/config": ^3.0.4
+    "@changesets/config": ^3.0.5
     "@changesets/errors": ^0.2.0
     "@changesets/get-dependents-graph": ^2.1.2
-    "@changesets/get-release-plan": ^4.0.5
+    "@changesets/get-release-plan": ^4.0.6
     "@changesets/git": ^3.0.2
     "@changesets/logger": ^0.1.1
     "@changesets/pre": ^2.0.1
@@ -8620,7 +8620,7 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     ansi-colors: ^4.1.3
     ci-info: ^3.7.0
-    enquirer: ^2.3.0
+    enquirer: ^2.4.1
     external-editor: ^3.1.0
     fs-extra: ^7.0.1
     mri: ^1.2.0
@@ -8633,13 +8633,13 @@ __metadata:
     term-size: ^2.1.0
   bin:
     changeset: bin.js
-  checksum: 9927bd57299d8b26c49ed48b2380cd19eb7b8a4fafd6babd5ec0d92d3b68cc7a54305201ce63142723de48bc5a9e75f611dd747d5a7c6ac80a934a3c4a83399b
+  checksum: 0c9d1f03ad113494ad3091caa7eca1ee167761af8257911f74c64bff670fb8a542fe9f84921b1e7e29c584b2f5883b8a6287c4f42afe59007369f4fd1cc94cec
   languageName: node
   linkType: hard
 
-"@changesets/config@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "@changesets/config@npm:3.0.4"
+"@changesets/config@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@changesets/config@npm:3.0.5"
   dependencies:
     "@changesets/errors": ^0.2.0
     "@changesets/get-dependents-graph": ^2.1.2
@@ -8648,7 +8648,7 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     fs-extra: ^7.0.1
     micromatch: ^4.0.8
-  checksum: 43763d930e7fc4f24f9bb7b974708cc72f13d1a3dca10ace21d63135b7ff47dbfa3461cc9842171ae0564e37b17da2cc2e6e3f69a3f180a28efce2389eceb7de
+  checksum: 75cdb5c4965656935277c69591336dd3aa825eef91d971c1d3e37777d181b6e3c1f1d78bf7ec826bbae9d70841af28c4a9cb1ea477808b3d9101413bd9f04fcf
   languageName: node
   linkType: hard
 
@@ -8673,17 +8673,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/get-release-plan@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "@changesets/get-release-plan@npm:4.0.5"
+"@changesets/get-release-plan@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "@changesets/get-release-plan@npm:4.0.6"
   dependencies:
     "@changesets/assemble-release-plan": ^6.0.5
-    "@changesets/config": ^3.0.4
+    "@changesets/config": ^3.0.5
     "@changesets/pre": ^2.0.1
     "@changesets/read": ^0.6.2
     "@changesets/types": ^6.0.0
     "@manypkg/get-packages": ^1.1.3
-  checksum: 3e06ea36b814e9a36aaac3ab46102c01802d2cd262e9ec2705a63c461f43af44be48bd55bb6d86e6753b51aaac81d7c6e2a13bc2e8a86d60fe6bce481dbd2e27
+  checksum: 1aabe351e39ce0b0a057f96eb3ac4183907ad0458cffe1a7e0b5651ae1ef3aefb22cc6021df5114d646a2b5dc2a665bc670f9b705a85dca0bd31f7792b22403c
   languageName: node
   linkType: hard
 
@@ -27274,7 +27274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enquirer@npm:^2.3.0, enquirer@npm:^2.3.6":
+"enquirer@npm:^2.3.6, enquirer@npm:^2.4.1":
   version: 2.4.1
   resolution: "enquirer@npm:2.4.1"
   dependencies:
