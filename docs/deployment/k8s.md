@@ -210,6 +210,11 @@ spec:
           envFrom:
             - secretRef:
                 name: postgres-secrets
+          env:
+            - name: POSTGRES_HOST
+              value: postgres.backstage
+            - name: POSTGRES_PORT
+              value: '5432'
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
