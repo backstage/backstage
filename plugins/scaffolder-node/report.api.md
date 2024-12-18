@@ -400,6 +400,8 @@ export interface TaskContext {
   // (undocumented)
   spec: TaskSpec;
   // (undocumented)
+  taskId?: string;
+  // (undocumented)
   updateCheckpoint?(
     options:
       | {
