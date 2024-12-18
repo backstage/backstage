@@ -18,27 +18,14 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { EventsService } from '@backstage/plugin-events-node';
-import {
-  DiscoveryService,
-  UserInfoService,
-} from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
-const eventsServiceMock: jest.Mocked<EventsService> = {
-  subscribe: jest.fn(),
-  publish: jest.fn(),
-};
-
-const discovery: jest.Mocked<DiscoveryService> = {
-  getBaseUrl: jest.fn().mockResolvedValue('/api/signals'),
-  getExternalBaseUrl: jest.fn(),
-};
-
-const userInfo: jest.Mocked<UserInfoService> = {
-  getUserInfo: jest.fn(),
-};
+const eventsServiceMock = mockServices.events.mock();
+const discovery = mockServices.discovery.mock({
+  getBaseUrl: async () => '/api/signals',
+});
+const userInfo = mockServices.userInfo.mock();
 
 describe('createRouter', () => {
   let app: express.Express;

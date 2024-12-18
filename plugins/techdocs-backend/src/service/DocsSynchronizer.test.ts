@@ -31,7 +31,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -59,10 +58,7 @@ describe('DocsSynchronizer', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const discovery = mockServices.discovery.mock();
   const cache: jest.Mocked<TechDocsCache> = {
     get: jest.fn(),
     set: jest.fn(),
