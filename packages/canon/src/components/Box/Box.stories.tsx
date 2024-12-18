@@ -343,3 +343,75 @@ export const FlexWrap: Story = {
     </Stack>
   ),
 };
+
+export const BorderRadius: Story = {
+  args: {
+    style: {
+      background: '#1f47ff',
+      color: 'white',
+      padding: '4px 8px',
+      width: '64px',
+      height: '64px',
+    },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  render: args => (
+    <Inline align="center">
+      <Box borderRadius="2xs" {...args}>
+        <span>2xs</span>
+      </Box>
+      <Box borderRadius="xs" {...args}>
+        <span>xs</span>
+      </Box>
+      <Box borderRadius="sm" {...args}>
+        <span>sm</span>
+      </Box>
+      <Box borderRadius="md" {...args}>
+        <span>md</span>
+      </Box>
+      <Box borderRadius="xl" {...args}>
+        <span>xl</span>
+      </Box>
+      <Box borderRadius="2xl" {...args}>
+        <span>2xl</span>
+      </Box>
+    </Inline>
+  ),
+};
+
+export const Border: Story = {
+  args: {
+    style: {
+      background: 'var(--canon-surface-1)',
+      color: 'var(--canon-text-primary)',
+      padding: '4px 8px',
+      width: '80px',
+      height: '32px',
+    },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 'xs',
+  },
+  render: args => (
+    <Inline align="center">
+      <Box border="base" {...args}>
+        Base
+      </Box>
+      <Box border="error" {...args}>
+        Error
+      </Box>
+      <Box border="warning" {...args}>
+        Warning
+      </Box>
+      <Box border="selected" {...args}>
+        Selected
+      </Box>
+      <Box border="none" {...args}>
+        None
+      </Box>
+    </Inline>
+  ),
+};

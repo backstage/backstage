@@ -33,12 +33,12 @@ export const boxProperties = defineProperties({
     //   'space-between',
     // ],
     // alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
-    borderRadius: {
-      none: 0,
-      small: '4px',
-      medium: '8px',
-      full: '9999px',
-    },
+    // borderRadius: {
+    //   none: 0,
+    //   small: '4px',
+    //   medium: '8px',
+    //   full: '9999px',
+    // },
     boxShadow: {
       small: 'var(--canon-box-shadow-small)',
       medium: 'var(--canon-box-shadow-medium)',
@@ -50,7 +50,7 @@ export const boxProperties = defineProperties({
       error: '1px solid var(--canon-error)',
     },
     // display: ['none', 'flex', 'block', 'inline'],
-    flexWrap: ['wrap', 'nowrap'],
+    // flexWrap: ['wrap', 'nowrap'],
   },
 });
 

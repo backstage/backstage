@@ -27,10 +27,11 @@
   --canon-surface-2: #f4f4f4;
   --canon-surface-3: #f1f1f1;
 
-  /* Outlines */
-  --canon-outline: rgba(0, 0, 0, 0.1);
-  --canon-outline-hover: rgba(0, 0, 0, 0.2);
-  --canon-outline-focus: #000;
+  /* Borders */
+  --canon-border-base: rgba(0, 0, 0, 0.1);
+  --canon-border-warning: #e36d05;
+  --canon-border-error: #e22b2b;
+  --canon-border-selected: #1db954;
 
   /* States - Add more states */
   --canon-error: #f50000;
@@ -41,9 +42,9 @@
   --canon-text-secondary: #646464;
 
   /* Box shadows */
-  --canon-box-shadow-small: 0 0 0 1px rgba(0, 0, 0, 0.05);
-  --canon-box-shadow-medium: 0 0 0 1px rgba(0, 0, 0, 0.1);
-  --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  /* --canon-box-shadow-small: 0 0 0 1px rgba(0, 0, 0, 0.05); */
+  /* --canon-box-shadow-medium: 0 0 0 1px rgba(0, 0, 0, 0.1); */
+  /* --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2); */
 
   /* Font families */
   --canon-font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -102,10 +103,11 @@
   --canon-surface-1: #121212;
   --canon-surface-2: #1a1a1a;
 
-  /* Outlines */
-  --canon-outline: rgba(255, 255, 255, 0.2);
-  --canon-outline-hover: rgba(255, 255, 255, 0.4);
-  --canon-outline-focus: #fff;
+  /* Borders */
+  --canon-border-base: rgba(255, 255, 255, 0.2);
+  --canon-border-warning: #f50000;
+  --canon-border-error: #f87503;
+  --canon-border-selected: #25d262;
 
   /* States - Add more states */
   --canon-error: #f50000;

@@ -42,33 +42,41 @@ export type JustifyContent =
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
 /** @public */
-export type BorderRadius = 'none' | 'small' | 'medium' | 'full';
+export type BorderRadius =
+  | 'none'
+  | '2xs'
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl'
+  | '2xl';
 
 /** @public */
-export type BoxShadow = 'small' | 'medium' | 'large';
+export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 /** @public */
 export interface UtilityProps {
+  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
+  border?: Border | Partial<Record<Breakpoint, Border>>;
+  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
   display?: Display | Partial<Record<Breakpoint, Display>>;
   flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
   flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
+  gap?: Space | Partial<Record<Breakpoint, Space>>;
   justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
-  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
-  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
-  boxShadow?: BoxShadow | Partial<Record<Breakpoint, BoxShadow>>;
-  padding?: Space | Partial<Record<Breakpoint, Space>>;
-  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
-  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
-  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
-  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
-  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
-  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
   margin?: Space | Partial<Record<Breakpoint, Space>>;
-  marginX?: Space | Partial<Record<Breakpoint, Space>>;
-  marginY?: Space | Partial<Record<Breakpoint, Space>>;
+  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
   marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
   marginRight?: Space | Partial<Record<Breakpoint, Space>>;
   marginTop?: Space | Partial<Record<Breakpoint, Space>>;
-  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
-  gap?: Space | Partial<Record<Breakpoint, Space>>;
+  marginX?: Space | Partial<Record<Breakpoint, Space>>;
+  marginY?: Space | Partial<Record<Breakpoint, Space>>;
+  padding?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
+  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
 }

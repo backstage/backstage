@@ -20,6 +20,35 @@
       display: block;
     }
 
+    .cu-lg-border-base {
+      border-color: var(--canon-border-base);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-lg-border-error {
+      border-color: var(--canon-border-error);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-lg-border-none {
+      border-color: transparent;
+      border-width: 0;
+    }
+
+    .cu-lg-border-selected {
+      border-color: var(--canon-border-selected);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-lg-border-warning {
+      border-color: var(--canon-border-warning);
+      border-width: 1px;
+      border-style: solid;
+    }
+
     .cu-lg-flex {
       display: flex;
     }
@@ -546,6 +575,38 @@
     .cu-lg-py-xs {
       padding-top: var(--canon-spacing-xs);
       padding-bottom: var(--canon-spacing-xs);
+    }
+
+    .cu-lg-rounded-2xl {
+      border-radius: var(--canon-border-radius-2xl);
+    }
+
+    .cu-lg-rounded-2xs {
+      border-radius: var(--canon-border-radius-2xs);
+    }
+
+    .cu-lg-rounded-lg {
+      border-radius: var(--canon-border-radius-lg);
+    }
+
+    .cu-lg-rounded-md {
+      border-radius: var(--canon-border-radius-md);
+    }
+
+    .cu-lg-rounded-none {
+      border-radius: 0;
+    }
+
+    .cu-lg-rounded-sm {
+      border-radius: var(--canon-border-radius-sm);
+    }
+
+    .cu-lg-rounded-xl {
+      border-radius: var(--canon-border-radius-xl);
+    }
+
+    .cu-lg-rounded-xs {
+      border-radius: var(--canon-border-radius-xs);
     }
 
     .cu-lg-wrap-reverse {

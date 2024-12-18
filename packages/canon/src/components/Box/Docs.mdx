@@ -1,9 +1,7 @@
 import { Meta, Unstyled, Source, Canvas } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
-import { PropsTable, getProps } from '../../../docs/components';
-import { boxProperties } from './sprinkles.css';
-import { spacingProperties } from '../../layout/sprinkles.css';
+import { PropsTable } from '../../../docs/components';
 
 <Meta of={BoxStories} />
 
@@ -31,18 +29,49 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 
 <PropsTable
   data={{
-    ...getProps(boxProperties.styles),
+    alignItems: {
+      type: ['stretch', 'start', 'center', 'end'],
+      responsive: true,
+    },
+    border: {
+      type: ['none', 'base', 'error', 'warning', 'selected'],
+      responsive: true,
+    },
+    borderRadius: {
+      type: ['none', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'],
+      responsive: true,
+    },
     children: {
       type: 'ReactNode',
-      required: false,
+      responsive: false,
     },
     className: {
       type: 'string',
-      required: false,
+      responsive: false,
+    },
+    display: {
+      type: ['none', 'flex', 'block', 'inline'],
+      responsive: true,
+    },
+    flexDirection: {
+      type: ['row', 'column'],
+      responsive: true,
+    },
+    flexWrap: {
+      type: ['wrap', 'nowrap', 'wrap-reverse'],
+      responsive: true,
+    },
+    gap: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    justifyContent: {
+      type: ['stretch', 'start', 'center', 'end', 'around', 'between'],
+      responsive: true,
     },
     style: {
       type: 'CSSProperties',
-      required: false,
+      responsive: false,
     },
   }}
 />
@@ -55,7 +84,66 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 
 <Canvas of={BoxStories.Padding} />
 
-<PropsTable data={getProps(spacingProperties.styles)} />
+<PropsTable
+  data={{
+    margin: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    marginBottom: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    marginLeft: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    marginRight: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    marginTop: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    marginX: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    marginY: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    padding: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    paddingBottom: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    paddingLeft: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    paddingRight: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    paddingTop: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    paddingX: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    paddingY: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+  }}
+/>
 
 <Title type="h2">Examples</Title>
 <Text>Here are some examples of how you can use the Box component.</Text>
