@@ -11041,12 +11041,13 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "@keyv/redis@npm:4.0.2"
+  version: 4.1.0
+  resolution: "@keyv/redis@npm:4.1.0"
   dependencies:
-    keyv: "*"
+    cluster-key-slot: ^1.1.2
+    keyv: ^5.2.1
     redis: ^4.7.0
-  checksum: 356dcf125072b35be45649fcf5af5e5400b0227b25013d2f7494176a920654a1de63cb95e2a4a661b7db4c1cef8b7553d6e33603ace03d5fbe0a7e22955c9f2b
+  checksum: 71508c7a51f1c6eddd2a103e1f8271de8ab7fbd3c10a0163dabeebd4621632a9b04c158529d08518350e21def55ff931cf96cc20efd0855c75a18e2a10c52b7f
   languageName: node
   linkType: hard
 
@@ -24709,7 +24710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cluster-key-slot@npm:1.1.2, cluster-key-slot@npm:^1.1.0":
+"cluster-key-slot@npm:1.1.2, cluster-key-slot@npm:^1.1.0, cluster-key-slot@npm:^1.1.2":
   version: 1.1.2
   resolution: "cluster-key-slot@npm:1.1.2"
   checksum: be0ad2d262502adc998597e83f9ded1b80f827f0452127c5a37b22dfca36bab8edf393f7b25bb626006fb9fb2436106939ede6d2d6ecf4229b96a47f27edd681
