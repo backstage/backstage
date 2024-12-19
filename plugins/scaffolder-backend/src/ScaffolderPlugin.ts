@@ -31,6 +31,8 @@ import {
   AutocompleteHandler,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
+  ScaffolderPermissionRule,
+  scaffolderPermissionsExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
   scaffolderWorkspaceProviderExtensionPoint,
@@ -61,6 +63,13 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',
   register(env) {
+    const addedRules = new Array<ScaffolderPermissionRule>();
+    env.registerExtensionPoint(scaffolderPermissionsExtensionPoint, {
+      addPermissionRule(...newRules) {
+        addedRules.push(...newRules);
+      },
+    });
+
     const addedActions = new Array<TemplateAction<any, any>>();
     env.registerExtensionPoint(scaffolderActionsExtensionPoint, {
       addActions(...newActions: TemplateAction<any>[]) {
@@ -192,6 +201,7 @@ export const scaffolderPlugin = createBackendPlugin({
           httpAuth,
           discovery,
           permissions,
+          permissionRules: addedRules,
           autocompleteHandlers,
           additionalWorkspaceProviders,
           events,
