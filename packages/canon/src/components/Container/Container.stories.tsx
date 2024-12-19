@@ -17,25 +17,12 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from '../Box/Box';
-import { argTypesSpacing } from '../../../docs/utils/argTypes';
 import { Container } from './Container';
-
-const argTypesSpacingWithoutLeftAndRight = { ...argTypesSpacing };
-delete argTypesSpacingWithoutLeftAndRight.padding;
-delete argTypesSpacingWithoutLeftAndRight.paddingLeft;
-delete argTypesSpacingWithoutLeftAndRight.paddingRight;
-delete argTypesSpacingWithoutLeftAndRight.paddingX;
-delete argTypesSpacingWithoutLeftAndRight.margin;
-delete argTypesSpacingWithoutLeftAndRight.marginLeft;
-delete argTypesSpacingWithoutLeftAndRight.marginRight;
-delete argTypesSpacingWithoutLeftAndRight.marginX;
-delete argTypesSpacingWithoutLeftAndRight.gap;
 
 const meta = {
   title: 'Components/Container',
   component: Container,
   argTypes: {
-    ...argTypesSpacingWithoutLeftAndRight,
     children: {
       control: false,
     },

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { Breakpoint, UtilityProps } from '../types';
 
 const spaceMap = (type: string) => ({
@@ -27,6 +28,89 @@ const spaceMap = (type: string) => ({
 });
 
 const valueMap: Record<string, Record<string, string>> = {
+  alignItems: {
+    stretch: 'items-stretch',
+    start: 'items-start',
+    center: 'items-center',
+    end: 'items-end',
+  },
+  border: {
+    none: 'border-none',
+    base: 'border-base',
+    error: 'border-error',
+    warning: 'border-warning',
+    selected: 'border-selected',
+  },
+  borderRadius: {
+    none: 'rounded-none',
+    '2xs': 'rounded-2xs',
+    xs: 'rounded-xs',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl',
+    '2xl': 'rounded-2xl',
+  },
+  colEnd: {
+    1: 'col-end-1',
+    2: 'col-end-2',
+    3: 'col-end-3',
+    4: 'col-end-4',
+    5: 'col-end-5',
+    6: 'col-end-6',
+    7: 'col-end-7',
+    8: 'col-end-8',
+    9: 'col-end-9',
+    10: 'col-end-10',
+    11: 'col-end-11',
+    12: 'col-end-12',
+    auto: 'col-end-auto',
+  },
+  colSpan: {
+    1: 'col-span-1',
+    2: 'col-span-2',
+    3: 'col-span-3',
+    4: 'col-span-4',
+    5: 'col-span-5',
+    6: 'col-span-6',
+    7: 'col-span-7',
+    8: 'col-span-8',
+    9: 'col-span-9',
+    10: 'col-span-10',
+    11: 'col-span-11',
+    12: 'col-span-12',
+    auto: 'col-span-auto',
+  },
+  colStart: {
+    1: 'col-start-1',
+    2: 'col-start-2',
+    3: 'col-start-3',
+    4: 'col-start-4',
+    5: 'col-start-5',
+    6: 'col-start-6',
+    7: 'col-start-7',
+    8: 'col-start-8',
+    9: 'col-start-9',
+    10: 'col-start-10',
+    11: 'col-start-11',
+    12: 'col-start-12',
+    auto: 'col-start-auto',
+  },
+  columns: {
+    1: 'grid-cols-1',
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
+    4: 'grid-cols-4',
+    5: 'grid-cols-5',
+    6: 'grid-cols-6',
+    7: 'grid-cols-7',
+    8: 'grid-cols-8',
+    9: 'grid-cols-9',
+    10: 'grid-cols-10',
+    11: 'grid-cols-11',
+    12: 'grid-cols-12',
+    auto: 'grid-cols-auto',
+  },
   display: {
     none: 'hidden',
     flex: 'flex',
@@ -42,6 +126,7 @@ const valueMap: Record<string, Record<string, string>> = {
     nowrap: 'flex-nowrap',
     'wrap-reverse': 'flex-wrap-reverse',
   },
+  gap: spaceMap('gap'),
   justifyContent: {
     stretch: 'justify-stretch',
     start: 'justify-start',
@@ -50,44 +135,35 @@ const valueMap: Record<string, Record<string, string>> = {
     around: 'justify-around',
     between: 'justify-between',
   },
-  alignItems: {
-    stretch: 'items-stretch',
-    start: 'items-start',
-    center: 'items-center',
-    end: 'items-end',
-  },
-  borderRadius: {
-    none: 'rounded-none',
-    '2xs': 'rounded-2xs',
-    xs: 'rounded-xs',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    xl: 'rounded-xl',
-    '2xl': 'rounded-2xl',
-  },
-  border: {
-    none: 'border-none',
-    base: 'border-base',
-    error: 'border-error',
-    warning: 'border-warning',
-    selected: 'border-selected',
-  },
-  padding: spaceMap('p'),
-  paddingX: spaceMap('px'),
-  paddingY: spaceMap('py'),
-  paddingLeft: spaceMap('pl'),
-  paddingRight: spaceMap('pr'),
-  paddingTop: spaceMap('pt'),
-  paddingBottom: spaceMap('pb'),
   margin: spaceMap('m'),
-  marginX: spaceMap('mx'),
-  marginY: spaceMap('my'),
+  marginBottom: spaceMap('mb'),
   marginLeft: spaceMap('ml'),
   marginRight: spaceMap('mr'),
   marginTop: spaceMap('mt'),
-  marginBottom: spaceMap('mb'),
-  gap: spaceMap('gap'),
+  marginX: spaceMap('mx'),
+  marginY: spaceMap('my'),
+  padding: spaceMap('p'),
+  paddingBottom: spaceMap('pb'),
+  paddingLeft: spaceMap('pl'),
+  paddingRight: spaceMap('pr'),
+  paddingTop: spaceMap('pt'),
+  paddingX: spaceMap('px'),
+  paddingY: spaceMap('py'),
+  rowSpan: {
+    1: 'row-span-1',
+    2: 'row-span-2',
+    3: 'row-span-3',
+    4: 'row-span-4',
+    5: 'row-span-5',
+    6: 'row-span-6',
+    7: 'row-span-7',
+    8: 'row-span-8',
+    9: 'row-span-9',
+    10: 'row-span-10',
+    11: 'row-span-11',
+    12: 'row-span-12',
+    full: 'row-span-full',
+  },
 };
 
 const generateClassNames = (propName: string, propValue: any) => {
@@ -98,7 +174,7 @@ const generateClassNames = (propName: string, propValue: any) => {
     return classNames;
   }
 
-  if (typeof propValue === 'string') {
+  if (typeof propValue === 'string' || typeof propValue === 'number') {
     // If the property value is a string, map it to the valueMap
     const value = valueMap[propName]?.[propValue] || propValue;
     classNames.push(`cu-${value}`);

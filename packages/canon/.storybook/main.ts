@@ -1,7 +1,4 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
-import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
-import { merge } from 'webpack-merge';
-
 import { join, dirname } from 'path';
 
 /**
@@ -28,13 +25,8 @@ const config: StorybookConfig = {
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {
-      plugins: [new VanillaExtractPlugin()],
+      plugins: [],
     },
-  },
-  webpackFinal: config => {
-    return merge(config, {
-      plugins: [new VanillaExtractPlugin()],
-    });
   },
 };
 export default config;

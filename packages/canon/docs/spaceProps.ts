@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
-import { breakpoints } from '../../layout/properties';
-import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
-
-const stackProperties = defineProperties({
-  conditions: breakpoints,
-  defaultCondition: 'xs',
-  properties: {
-    alignItems: ['stretch', 'flex-start', 'center', 'flex-end'],
+export const spacePropsList = [
+  'margin',
+  'marginBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginX',
+  'marginY',
+  'padding',
+  'paddingBottom',
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingX',
+  'paddingY',
+].reduce(
+  (acc: { [key: string]: { type: string[]; responsive: boolean } }, prop) => {
+    acc[prop] = {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    };
+    return acc;
   },
-});
-
-export const stackSprinkles = createSprinkles(
-  spacingProperties,
-  colorProperties,
-  stackProperties,
+  {},
 );

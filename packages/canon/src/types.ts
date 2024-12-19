@@ -15,6 +15,25 @@
  */
 
 /** @public */
+export type AsProps =
+  | 'div'
+  | 'span'
+  | 'p'
+  | 'article'
+  | 'section'
+  | 'main'
+  | 'nav'
+  | 'aside'
+  | 'ul'
+  | 'ol'
+  | 'li'
+  | 'details'
+  | 'summary'
+  | 'dd'
+  | 'dl'
+  | 'dt';
+
+/** @public */
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 /** @public */
@@ -56,15 +75,10 @@ export type BorderRadius =
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 /** @public */
-export interface UtilityProps {
-  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
-  border?: Border | Partial<Record<Breakpoint, Border>>;
-  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
-  display?: Display | Partial<Record<Breakpoint, Display>>;
-  flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
-  flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
-  gap?: Space | Partial<Record<Breakpoint, Space>>;
-  justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
+export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+
+/** @public */
+export interface SpaceProps {
   margin?: Space | Partial<Record<Breakpoint, Space>>;
   marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
   marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
@@ -79,4 +93,21 @@ export interface UtilityProps {
   paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
   paddingX?: Space | Partial<Record<Breakpoint, Space>>;
   paddingY?: Space | Partial<Record<Breakpoint, Space>>;
+}
+
+/** @public */
+export interface UtilityProps extends SpaceProps {
+  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
+  border?: Border | Partial<Record<Breakpoint, Border>>;
+  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  colEnd?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  colSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  colStart?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
+  display?: Display | Partial<Record<Breakpoint, Display>>;
+  flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
+  flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
+  gap?: Space | Partial<Record<Breakpoint, Space>>;
+  justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
+  rowSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
 }

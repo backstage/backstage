@@ -19,15 +19,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
-import { argTypesSpacing, argTypesColor } from '../../../docs/utils/argTypes';
 import { Stack } from '../Stack';
 
 const meta = {
   title: 'Components/Grid',
   component: Grid,
   argTypes: {
-    ...argTypesSpacing,
-    ...argTypesColor,
     children: {
       control: false,
     },
