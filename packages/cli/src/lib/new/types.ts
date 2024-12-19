@@ -17,18 +17,8 @@
 import { Answers, DistinctQuestion } from 'inquirer';
 
 export interface CreateContext {
-  /** The package scope to use for new packages */
-  scope?: string;
-  /** The NPM registry to use for new packages */
-  npmRegistry?: string;
-  /** Whether new packages should be marked as private */
-  private: boolean;
   /** Whether we are creating something in a monorepo or not */
   isMonoRepo: boolean;
-  /** The default version to use for new packages */
-  defaultVersion: string;
-  /** License to use for new packages */
-  license: string;
 
   /** Creates a temporary directory. This will always be deleted after creation is done. */
   createTemporaryDirectory(name: string): Promise<string>;
