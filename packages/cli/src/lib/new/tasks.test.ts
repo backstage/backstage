@@ -21,7 +21,7 @@ import {
   expectLogsToMatch,
   mockPaths,
 } from './testUtils';
-import { CreateContext } from '../../types';
+import { CreateContext } from './types';
 import { executePluginPackageTemplate } from './tasks';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 

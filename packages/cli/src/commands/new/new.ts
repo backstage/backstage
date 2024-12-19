@@ -28,9 +28,9 @@ import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from '../../lib/codeowners';
-import { resolvePackageName } from '../../lib/new/factories/common/util';
+import { resolvePackageName } from '../../lib/new/util';
 
-import { executePluginPackageTemplate } from '../../lib/new/factories/common/tasks';
+import { executePluginPackageTemplate } from '../../lib/new/tasks';
 import {
   readCliConfig,
   templateSelector,
