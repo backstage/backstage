@@ -15334,11 +15334,11 @@ __metadata:
   linkType: hard
 
 "@remixicon/react@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "@remixicon/react@npm:4.5.0"
+  version: 4.6.0
+  resolution: "@remixicon/react@npm:4.6.0"
   peerDependencies:
     react: ">=18.2.0"
-  checksum: e37b61090954954601d35367a740b7be30c105a49f67eaa5a697db16d4668d71d9fd94b339da6d449a254736d5af3b567d3694021b79d3c82fe28afb818830bc
+  checksum: 81127617eff78fb97aff01dc392ebbafb69fbfe835270b4db8ee68844d02d8c47a42d312d72104708f7266d8ad005405ea1245a536e35b66305d00d56f20b9eb
   languageName: node
   linkType: hard
 
