@@ -1,5 +1,15 @@
 # example-backend
 
+## 0.0.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.2.7
+  - @backstage/plugin-notifications-backend@0.5.1
+  - @backstage/plugin-catalog-backend@1.29.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.6
+
 ## 0.0.33
 
 ### Patch Changes

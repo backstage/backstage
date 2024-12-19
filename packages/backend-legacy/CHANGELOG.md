@@ -1,5 +1,13 @@
 # example-backend-legacy
 
+## 0.2.106
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.2.7
+  - @backstage/plugin-catalog-backend@1.29.1
+
 ## 0.2.105
 
 ### Patch Changes
