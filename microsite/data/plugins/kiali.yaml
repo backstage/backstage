@@ -5,6 +5,6 @@ authorUrl: https://redhat.com
 category: Istio
 description: Configure, visualize, validate and troubleshoot your mesh with Istio
 documentation: https://janus-idp.io/plugins/kiali
-iconUrl: https://janus-idp.io/images/plugins/kiali.svg
+iconUrl: /img/kiali.svg
 npmPackageName: '@janus-idp/backstage-plugin-kiali'
 addedDate: '2023-07-25'
