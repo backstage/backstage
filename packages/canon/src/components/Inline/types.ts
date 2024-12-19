@@ -15,23 +15,18 @@
  */
 
 import { AsProps, ColorProps } from '../../layout/types';
-import type { Breakpoint, SpaceProps, UtilityProps } from '../../types';
+import type { SpaceProps, UtilityProps } from '../../types';
 
 /** @public */
 export interface InlineProps extends SpaceProps, ColorProps {
   children: React.ReactNode;
   as?: AsProps;
   gap?: UtilityProps['gap'];
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  alignY?:
-    | 'top'
-    | 'center'
-    | 'bottom'
-    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
+  align?: Omit<
+    UtilityProps['justifyContent'],
+    'stretch' | 'around' | 'between'
+  >;
+  alignY?: UtilityProps['alignItems'];
   className?: string;
   style?: React.CSSProperties;
 }

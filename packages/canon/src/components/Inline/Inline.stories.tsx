@@ -81,7 +81,7 @@ export const Default: Story = {
 export const AlignLeft: Story = {
   args: {
     ...Default.args,
-    align: 'left',
+    align: 'start',
   },
 };
 
@@ -95,14 +95,14 @@ export const AlignCenter: Story = {
 export const AlignRight: Story = {
   args: {
     ...Default.args,
-    align: 'right',
+    align: 'end',
   },
 };
 
 export const VerticalAlignTop: Story = {
   args: {
     ...Default.args,
-    alignY: 'top',
+    alignY: 'start',
   },
 };
 
@@ -116,7 +116,7 @@ export const VerticalAlignCenter: Story = {
 export const VerticalAlignBottom: Story = {
   args: {
     ...Default.args,
-    alignY: 'bottom',
+    alignY: 'end',
   },
 };
 

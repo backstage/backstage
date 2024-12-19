@@ -15,46 +15,32 @@
  */
 
 import { createElement, forwardRef } from 'react';
-import { inlineSprinkles } from './sprinkles.css';
 import type { InlineProps } from './types';
-
-const alignYToFlexAlign = (alignY: InlineProps['alignY']) => {
-  if (alignY === 'top') return 'flex-start';
-  if (alignY === 'center') return 'center';
-  if (alignY === 'bottom') return 'flex-end';
-  return undefined;
-};
-
-const alignToFlexAlignY = (align: InlineProps['align']) => {
-  if (align === 'left') return 'flex-start';
-  if (align === 'center') return 'center';
-  if (align === 'right') return 'flex-end';
-  return undefined;
-};
+import { getClassNames } from '../../utils/getClassNames';
 
 /** @public */
 export const Inline = forwardRef<HTMLElement, InlineProps>((props, ref) => {
   const {
     as = 'div',
     children,
-    align = 'left',
-    alignY = 'top',
+    align = 'start',
+    alignY = 'start',
     gap = 'xs',
     className,
     style,
     ...restProps
   } = props;
 
-  // Generate the list of class names
-  const sprinklesClassName = inlineSprinkles({
-    ...restProps,
+  // Generate utility class names
+  const utilityClassNames = getClassNames({
     gap,
-    alignItems: alignYToFlexAlign(alignY),
-    justifyContent: alignToFlexAlignY(align),
+    alignItems: alignY,
+    justifyContent: align,
+    ...restProps,
   });
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['inline', sprinklesClassName, className]
+  const classNames = ['canon-inline', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 

@@ -154,23 +154,23 @@ export const Container: React_2.ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface ContainerProps
-  extends Omit<
-    SpaceProps,
-    | 'padding'
-    | 'paddingLeft'
-    | 'paddingRight'
-    | 'paddingX'
-    | 'margin'
-    | 'marginLeft'
-    | 'marginRight'
-    | 'marginX'
-    | 'gap'
-  > {
+export interface ContainerProps {
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
+  // (undocumented)
+  marginBottom?: SpaceProps['marginBottom'];
+  // (undocumented)
+  marginTop?: SpaceProps['marginTop'];
+  // (undocumented)
+  marginY?: SpaceProps['marginY'];
+  // (undocumented)
+  paddingBottom?: SpaceProps['paddingBottom'];
+  // (undocumented)
+  paddingTop?: SpaceProps['paddingTop'];
+  // (undocumented)
+  paddingY?: SpaceProps['paddingY'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -265,17 +265,12 @@ export const Inline: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface InlineProps extends SpaceProps, ColorProps {
   // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  align?: Omit<
+    UtilityProps['justifyContent'],
+    'stretch' | 'around' | 'between'
+  >;
   // (undocumented)
-  alignY?:
-    | 'top'
-    | 'center'
-    | 'bottom'
-    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
+  alignY?: UtilityProps['alignItems'];
   // (undocumented)
   as?: AsProps;
   // (undocumented)
@@ -340,11 +335,7 @@ export const Stack: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface StackProps extends SpaceProps, ColorProps {
   // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  align?: UtilityProps['alignItems'];
   // (undocumented)
   as?: AsProps;
   // (undocumented)
