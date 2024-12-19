@@ -20,26 +20,26 @@ import { join as joinPath } from 'path';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import { isMonoRepo } from '@backstage/cli-node';
-import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 
+import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { resolvePackageName } from '../../lib/new/util';
+import { promptOptions } from '../../lib/new/prompts';
+import { runAdditionalActions } from '../../lib/new/additionalActions';
 
 import { executePluginPackageTemplate } from '../../lib/new/executePluginPackageTemplate';
 import {
   readCliConfig,
   templateSelector,
   verifyTemplate,
-  promptOptions,
   populateOptions,
   createDirName,
 } from '../../lib/new/utils';
-import { runAdditionalActions } from '../../lib/new/additionalActions';
 
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
