@@ -16,20 +16,14 @@
 import { SpaceProps } from '../../types';
 
 /** @public */
-export interface ContainerProps
-  extends Omit<
-    SpaceProps,
-    | 'padding'
-    | 'paddingLeft'
-    | 'paddingRight'
-    | 'paddingX'
-    | 'margin'
-    | 'marginLeft'
-    | 'marginRight'
-    | 'marginX'
-    | 'gap'
-  > {
+export interface ContainerProps {
   children?: React.ReactNode;
   className?: string;
+  marginY?: SpaceProps['marginY'];
+  marginBottom?: SpaceProps['marginBottom'];
+  marginTop?: SpaceProps['marginTop'];
+  paddingY?: SpaceProps['paddingY'];
+  paddingBottom?: SpaceProps['paddingBottom'];
+  paddingTop?: SpaceProps['paddingTop'];
   style?: React.CSSProperties;
 }
