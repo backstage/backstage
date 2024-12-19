@@ -260,4 +260,36 @@ describe('<EntityTagPicker/>', () => {
       }),
     );
   });
+
+  it('respects the initial filter value', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityTagPicker initialFilter={['tag3']} />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: new EntityTagFilter(['tag3']),
+      }),
+    );
+  });
+
+  it("doesn't render when hidden", async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityTagPicker hidden />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => expect(screen.queryByText('Tags')).toBeNull());
+  });
 });
