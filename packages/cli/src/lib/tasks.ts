@@ -15,12 +15,8 @@
  */
 
 import chalk from 'chalk';
-import fs from 'fs-extra';
-import handlebars from 'handlebars';
 import ora from 'ora';
 import { promisify } from 'util';
-import { basename, dirname } from 'path';
-import recursive from 'recursive-readdir';
 import { exec as execCb } from 'child_process';
 import { assertError } from '@backstage/errors';
 
@@ -92,66 +88,6 @@ export class Task {
           `Failed to execute command '${chalk.cyan(command)}', ${error}`,
         );
       }
-    }
-  }
-}
-
-export async function templatingTask(
-  templateDir: string,
-  destinationDir: string,
-  context: any,
-  versionProvider: (name: string, versionHint?: string) => string,
-  isMonoRepo: boolean,
-) {
-  const files = await recursive(templateDir).catch(error => {
-    throw new Error(`Failed to read template directory: ${error.message}`);
-  });
-
-  for (const file of files) {
-    const destinationFile = file.replace(templateDir, destinationDir);
-    await fs.ensureDir(dirname(destinationFile));
-
-    if (file.endsWith('.hbs')) {
-      await Task.forItem('templating', basename(file), async () => {
-        const destination = destinationFile.replace(/\.hbs$/, '');
-
-        const template = await fs.readFile(file);
-        const compiled = handlebars.compile(template.toString(), {
-          strict: true,
-        });
-        const contents = compiled(
-          { name: basename(destination), ...context },
-          {
-            helpers: {
-              versionQuery(name: string, versionHint: string | unknown) {
-                return versionProvider(
-                  name,
-                  typeof versionHint === 'string' ? versionHint : undefined,
-                );
-              },
-            },
-          },
-        );
-
-        await fs.writeFile(destination, contents).catch(error => {
-          throw new Error(
-            `Failed to create file: ${destination}: ${error.message}`,
-          );
-        });
-      });
-    } else {
-      if (isMonoRepo && file.match('tsconfig.json')) {
-        continue;
-      }
-
-      await Task.forItem('copying', basename(file), async () => {
-        await fs.copyFile(file, destinationFile).catch(error => {
-          const destination = destinationFile;
-          throw new Error(
-            `Failed to copy file to ${destination} : ${error.message}`,
-          );
-        });
-      });
     }
   }
 }
