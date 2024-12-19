@@ -28,18 +28,20 @@ import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from '../../lib/codeowners';
-import { resolvePackageName } from '../../lib/new/util';
-import { promptOptions } from '../../lib/new/prompts';
-import { runAdditionalActions } from '../../lib/new/additionalActions';
 
-import { executePluginPackageTemplate } from '../../lib/new/executePluginPackageTemplate';
 import {
   readCliConfig,
   templateSelector,
   verifyTemplate,
+} from '../../lib/new/templateSelector';
+import { promptOptions } from '../../lib/new/prompts';
+import {
   populateOptions,
   createDirName,
+  resolvePackageName,
 } from '../../lib/new/utils';
+import { runAdditionalActions } from '../../lib/new/additionalActions';
+import { executePluginPackageTemplate } from '../../lib/new/executeTemplate';
 
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));

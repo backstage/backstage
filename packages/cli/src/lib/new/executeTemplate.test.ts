@@ -22,7 +22,7 @@ import {
   mockPaths,
 } from './testUtils';
 import { CreateContext } from './types';
-import { executePluginPackageTemplate } from './executePluginPackageTemplate';
+import { executePluginPackageTemplate } from './executeTemplate';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const mockDir = createMockDirectory();

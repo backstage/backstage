@@ -13,88 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import inquirer from 'inquirer';
-import { dirname } from 'path';
-import { parse } from 'yaml';
 import fs from 'fs-extra';
-
 import { paths } from '../paths';
-
-import defaultTemplates from '../../../templates/all-default-templates';
-
-import { Template, TemplateLocation } from './types';
-
-export async function readCliConfig(
-  cliConfig:
-    | {
-        defaults?: boolean;
-        templates?: TemplateLocation[];
-        globals?: Record<string, string>;
-      }
-    | undefined,
-) {
-  let templates: TemplateLocation[] = [];
-
-  if (!cliConfig || cliConfig?.defaults) {
-    templates = defaultTemplates;
-  }
-
-  const cliTemplates = cliConfig?.templates;
-  if (cliTemplates?.length) {
-    cliTemplates.forEach((template: TemplateLocation) => {
-      templates.push({
-        id: template.id,
-        target: template.target,
-      });
-    });
-  }
-  return {
-    templates,
-    globals: { ...cliConfig?.globals },
-  };
-}
-
-export async function templateSelector(
-  templates: TemplateLocation[],
-): Promise<TemplateLocation> {
-  const answer = await inquirer.prompt<{ name: TemplateLocation }>([
-    {
-      type: 'list',
-      name: 'name',
-      message: 'What do you want to create?',
-      choices: templates.map(template => {
-        return {
-          name: template.id,
-          value: template,
-        };
-      }),
-    },
-  ]);
-  return answer.name;
-}
-
-export async function verifyTemplate({
-  id,
-  target,
-}: TemplateLocation): Promise<Template> {
-  if (target.startsWith('http')) {
-    throw new Error('Remote templates are not supported yet');
-  }
-  const template = parse(fs.readFileSync(target, 'utf-8'));
-  const templatePath = paths.resolveTargetRoot(
-    dirname(target),
-    template.template,
-  );
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(
-      `Your CLI template skeleton does not exist: ${templatePath}`,
-    );
-  }
-  if (!template.targetPath) {
-    throw new Error(`Your template, ${id}, is missing a targetPath`);
-  }
-  return { id, templatePath, ...template };
-}
+import { Template } from './types';
 
 interface Options extends Record<string, string | boolean> {
   id: string;
@@ -106,6 +27,30 @@ interface Options extends Record<string, string | boolean> {
   scope: string;
   moduleId: string;
 }
+
+export const resolvePackageName = (options: {
+  baseName: string;
+  scope?: string;
+  plugin: boolean;
+}) => {
+  const { baseName, scope: _scope, plugin } = options;
+  if (_scope) {
+    const scope = _scope.replace(/@/g, '');
+    if (plugin) {
+      const pluginName = scope.startsWith('backstage')
+        ? 'plugin'
+        : 'backstage-plugin';
+      return scope.includes('/')
+        ? `@${scope}${pluginName}-${baseName}`
+        : `@${scope}/${pluginName}-${baseName}`;
+    }
+    return scope.includes('/')
+      ? `@${scope}${baseName}`
+      : `@${scope}/${baseName}`;
+  }
+
+  return plugin ? `backstage-plugin-${baseName}` : baseName;
+};
 
 async function calculateBaseVersion(baseVersion: string) {
   if (!baseVersion) {
