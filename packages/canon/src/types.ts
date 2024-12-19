@@ -15,6 +15,25 @@
  */
 
 /** @public */
+export type AsProps =
+  | 'div'
+  | 'span'
+  | 'p'
+  | 'article'
+  | 'section'
+  | 'main'
+  | 'nav'
+  | 'aside'
+  | 'ul'
+  | 'ol'
+  | 'li'
+  | 'details'
+  | 'summary'
+  | 'dd'
+  | 'dl'
+  | 'dt';
+
+/** @public */
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 /** @public */

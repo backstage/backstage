@@ -33,16 +33,6 @@ export type AsProps =
   | 'dt';
 
 // @public (undocumented)
-export type Background =
-  | 'background'
-  | 'elevation1'
-  | 'elevation2'
-  | 'transparent'
-  | Partial<
-      Record<Theme, 'background' | 'elevation1' | 'elevation2' | 'transparent'>
-    >;
-
-// @public (undocumented)
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 // @public (undocumented)
@@ -128,21 +118,6 @@ export interface CheckboxProps {
   style?: React.CSSProperties;
   // (undocumented)
   value?: string;
-}
-
-// @public (undocumented)
-export type Color =
-  | 'primary'
-  | 'secondary'
-  | 'error'
-  | Partial<Record<Theme, 'primary' | 'secondary' | 'error'>>;
-
-// @public (undocumented)
-export interface ColorProps {
-  // (undocumented)
-  background?: Background;
-  // (undocumented)
-  color?: Color;
 }
 
 // @public (undocumented)
@@ -263,7 +238,7 @@ export const Inline: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface InlineProps extends SpaceProps, ColorProps {
+export interface InlineProps extends SpaceProps {
   // (undocumented)
   align?: Omit<
     UtilityProps['justifyContent'],
@@ -333,7 +308,7 @@ export const Stack: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface StackProps extends SpaceProps, ColorProps {
+export interface StackProps extends SpaceProps {
   // (undocumented)
   align?: UtilityProps['alignItems'];
   // (undocumented)
@@ -389,9 +364,6 @@ export const TableRow: React_3.ForwardRefExoticComponent<
   React_3.HTMLAttributes<HTMLTableRowElement> &
     React_3.RefAttributes<HTMLTableRowElement>
 >;
-
-// @public (undocumented)
-export type Theme = 'light' | 'dark';
 
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {

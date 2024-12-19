@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AsProps, ColorProps } from '../../layout/types';
-import type { SpaceProps, UtilityProps } from '../../types';
+
+import type { SpaceProps, UtilityProps, AsProps } from '../../types';
 
 /** @public */
-export interface StackProps extends SpaceProps, ColorProps {
+export interface StackProps extends SpaceProps {
   children: React.ReactNode;
   as?: AsProps;
   gap?: UtilityProps['gap'];
