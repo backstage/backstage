@@ -23,7 +23,11 @@ import {
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { ReaderFactory, ReadTreeResponseFactory } from './types';
+import {
+  FromReadableArrayOptions,
+  ReaderFactory,
+  ReadTreeResponseFactory,
+} from './types';
 import {
   Attachment,
   ChildPage,
@@ -31,7 +35,6 @@ import {
   readConfluenceIntegrationConfigs,
 } from '@backstage/integration';
 import { Readable } from 'stream';
-import { FromReadableArrayOptions } from '@backstage/backend-defaults';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 
