@@ -25601,11 +25601,11 @@ __metadata:
   linkType: hard
 
 "cronstrue@npm:^2.2.0, cronstrue@npm:^2.32.0":
-  version: 2.51.0
-  resolution: "cronstrue@npm:2.51.0"
+  version: 2.52.0
+  resolution: "cronstrue@npm:2.52.0"
   bin:
     cronstrue: bin/cli.js
-  checksum: 7487eeb7bdb9bc8882ede5d3f1cadf73dec44f1da8d29b8ebb0312f85413cd300842ce0c6c49beb66e549917d48f699dfd8b9585d00050c5571c3f8cbf091ac6
+  checksum: bfe4d8a58d74ba4a987ea6fe65917529451c648e2abe072d22a6ad4c750f4a7ae9d01321c999594b59cb138990ca43537505e759c23811bbffa606956fff5c55
   languageName: node
   linkType: hard
 
