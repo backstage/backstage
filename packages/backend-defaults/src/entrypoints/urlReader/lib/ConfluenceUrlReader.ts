@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  LoggerService,
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,
@@ -35,9 +36,9 @@ import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 export class ConfluenceUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     return readConfluenceIntegrationConfigs(config).map(integration => {
-      const reader = new ConfluenceUrlReader(integration, {
+      const reader = new ConfluenceUrlReader(integration, logger, {
         treeResponseFactory,
       });
       const predicate = (url: URL) => url.host === integration.host;
@@ -47,6 +48,7 @@ export class ConfluenceUrlReader implements UrlReaderService {
 
   constructor(
     private readonly config: ConfluenceIntegrationConfig,
+    private readonly logger: LoggerService,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -98,39 +100,45 @@ export class ConfluenceUrlReader implements UrlReaderService {
   ): Promise<FromReadableArrayOptions> {
     const docItems: FromReadableArrayOptions = [];
 
-    // fetch page
-    const { page, title, lastModifiedAt } = await this.fetchConfluencePage(
-      pageId,
-    );
-
-    // fetch its attachments
-    const attachments: Attachment[] = await this.fetchConfluencePageAttachments(
-      pageId,
-    );
-    for (const attachment of attachments) {
-      const imageData: any = await this.fetchAttachment(attachment);
-      docItems.push({
-        data: Readable.fromWeb(imageData),
-        path: `${path}/attachments/${attachment.title.replaceAll(' ', '-')}`,
-        lastModifiedAt: new Date(attachment.version.createdAt),
-      });
-    }
-
-    const pageMarkdown = this.replaceAttachmentLinks(attachments, page);
-    docItems.push({
-      data: Readable.from(pageMarkdown),
-      path: `${path}/${title}.md`,
-      lastModifiedAt: new Date(lastModifiedAt),
-    });
-
-    // fetch child pages and repeat
-    const children = await this.fetchChildPages(pageId);
-    for (const childPage of children) {
-      const childPageContent = await this.loadConfluencePage(
-        childPage.id,
-        `${path}/${title.toLocaleLowerCase().replaceAll(' ', '-')}`,
+    try {
+      // fetch page
+      const { page, title, lastModifiedAt } = await this.fetchConfluencePage(
+        pageId,
       );
-      docItems.push(...childPageContent);
+
+      // fetch its attachments
+      const attachments: Attachment[] =
+        await this.fetchConfluencePageAttachments(pageId);
+      for (const attachment of attachments) {
+        const imageData: any = await this.fetchAttachment(attachment);
+        docItems.push({
+          data: Readable.fromWeb(imageData),
+          path: `${path}/attachments/${attachment.title.replaceAll(' ', '-')}`,
+          lastModifiedAt: new Date(attachment.version.createdAt),
+        });
+      }
+
+      const pageMarkdown = this.replaceAttachmentLinks(attachments, page);
+      docItems.push({
+        data: Readable.from(pageMarkdown),
+        path: `${path}/${title}.md`,
+        lastModifiedAt: new Date(lastModifiedAt),
+      });
+
+      // fetch child pages and repeat
+      const children = await this.fetchChildPages(pageId);
+      for (const childPage of children) {
+        const childPageContent = await this.loadConfluencePage(
+          childPage.id,
+          `${path}/${title.toLocaleLowerCase().replaceAll(' ', '-')}`,
+        );
+        docItems.push(...childPageContent);
+      }
+    } catch (error) {
+      console.log(error);
+      this.logger.error(
+        `Error reading page ${pageId} from confluence: ${error.message}`,
+      );
     }
 
     return docItems;
