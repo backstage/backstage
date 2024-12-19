@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../../types';
+@layer base {
+  @import './normalize.css';
 
-/** @public */
-export interface HeadingProps {
-  children: React.ReactNode;
-  variant?:
-    | 'display'
-    | 'title1'
-    | 'title2'
-    | 'title3'
-    | 'title4'
-    | 'title5'
-    | Partial<
-        Record<
-          Breakpoint,
-          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
-        >
-      >;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  *,
+  html,
+  body {
+    font-family: var(--canon-font-regular);
+    font-weight: var(--canon-font-weight-regular);
+  }
 }

@@ -75,7 +75,6 @@ const preview: Preview = {
           },
         },
       },
-      defaultViewport: 'small',
     },
   },
   decorators: [

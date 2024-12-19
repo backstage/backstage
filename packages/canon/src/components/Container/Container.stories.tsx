@@ -53,7 +53,7 @@ type Story = StoryObj<typeof meta>;
 
 const FakeBox = () => (
   <Box
-    borderRadius="small"
+    borderRadius="xs"
     style={{ background: '#1f47ff', color: 'white', height: '400px' }}
   />
 );
