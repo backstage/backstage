@@ -8,7 +8,9 @@
     "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -17,23 +19,8 @@
     "directory": "plugins/search-backend-module-catalog"
   },
   "license": "Apache-2.0",
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "files": [
     "dist",
     "config.d.ts"
@@ -48,7 +35,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
