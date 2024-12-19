@@ -38,7 +38,8 @@
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-alpha.4",
-    "@remixicon/react": "^4.5.0"
+    "@remixicon/react": "^4.5.0",
+    "clsx": "^2.1.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

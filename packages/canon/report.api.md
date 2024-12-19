@@ -5,7 +5,9 @@
 ```ts
 /// <reference types="react" />
 
+import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
+import { Input as Input_2 } from '@base-ui-components/react/input';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { RefAttributes } from 'react';
@@ -217,6 +219,35 @@ export type DisplayProps =
   | Partial<Record<Breakpoint, 'flex' | 'none' | 'inline' | 'block'>>;
 
 // @public (undocumented)
+export const Field: {
+  Root: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Root.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Label: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Label.Props & React_2.RefAttributes<any>, 'ref'> &
+      React_2.RefAttributes<any>
+  >;
+  Description: React_2.ForwardRefExoticComponent<
+    Omit<
+      Field_2.Description.Props & React_2.RefAttributes<HTMLParagraphElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLParagraphElement>
+  >;
+  Error: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Error.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Validity: ({
+    children,
+    ...props
+  }: React_2.ComponentPropsWithoutRef<
+    typeof Field_2.Validity
+  >) => React_2.JSX.Element;
+};
+
+// @public (undocumented)
 export type FlexDirectionProps =
   | 'row'
   | 'column'
@@ -330,6 +361,12 @@ export interface InlineProps extends SpaceProps, ColorProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public (undocumented)
+export const Input: React_2.ForwardRefExoticComponent<
+  Omit<Input_2.Props & React_2.RefAttributes<HTMLInputElement>, 'ref'> &
+    React_2.RefAttributes<HTMLInputElement>
+>;
 
 // @public (undocumented)
 export type JustifyContentProps =
