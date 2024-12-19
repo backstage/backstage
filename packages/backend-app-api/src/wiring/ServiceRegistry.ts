@@ -22,8 +22,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConflictError, stringifyError } from '@backstage/errors';
 // Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`

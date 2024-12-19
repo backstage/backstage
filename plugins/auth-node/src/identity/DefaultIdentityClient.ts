@@ -24,7 +24,7 @@ import {
   JWSHeaderParameters,
   jwtVerify,
 } from 'jose';
-import { GetKeyFunction } from 'jose/dist/types/types';
+import { GetKeyFunction } from 'jose';
 import { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 import { IdentityApi, IdentityApiGetIdentityRequest } from './IdentityApi';
 import { BackstageIdentityResponse } from '../types';
