@@ -16,6 +16,12 @@
 import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
+/**
+ *
+ * The Confluence integration configuration.
+ *
+ * @public
+ */
 export type ConfluenceIntegrationConfig = {
   host: string;
 
@@ -30,6 +36,15 @@ export type ConfluenceIntegrationConfig = {
   apiToken: string;
 };
 
+/**
+ *
+ *
+ * Given a configuration this function parses it
+ * and returns the host api and API token.
+ *
+ * @param config - The Backstage configuration object.
+ * @public
+ */
 export function readConfluenceIntegrationConfig(
   config: Config,
 ): ConfluenceIntegrationConfig {
@@ -48,6 +63,14 @@ export function readConfluenceIntegrationConfig(
   };
 }
 
+/**
+ *
+ * Parses the Confluence integration configurations from the provided Backstage configuration.
+ * and returns the list of host apis and their corresponding API tokens.
+ *
+ * @param config - The Backstage configuration object.
+ * @public
+ */
 export function readConfluenceIntegrationConfigs(
   config: Config,
 ): ConfluenceIntegrationConfig[] {

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ *
+ * Type of attachments for a page in confluence
+ *
+ * @public
+ */
 export type Attachment = {
   pageId: string;
   fieldId: string;
@@ -37,15 +43,11 @@ export type Attachment = {
   };
 };
 
-export type MkDocs = {
-  site_name: string;
-  repo_url: string;
-  edit_uri: string;
-  nav: {
-    [key: string]: string;
-  }[];
-};
-
+/**
+ * Type of metadata for a child page in confluence
+ *
+ * @public
+ */
 export type ChildPage = {
   id: string;
   status: string;
