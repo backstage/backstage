@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-} from '@backstage/plugin-scaffolder-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
+import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 const templateConditionExports = createConditionExports({
   pluginId: 'scaffolder',
@@ -44,7 +44,7 @@ const actionsConditionExports = createConditionExports({
  * ```
  * // MyAuthorizationPolicy.ts
  * ...
- * import { createScaffolderPolicyDecision } from '@backstage/plugin-scaffolder-backend';
+ * import { createScaffolderTemplateConditionalDecision } from '@backstage/plugin-scaffolder-backend';
  * import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common';
  *
  * class MyAuthorizationPolicy implements PermissionPolicy {
@@ -52,7 +52,7 @@ const actionsConditionExports = createConditionExports({
  *    ...
  *
  *    if (isResourcePermission(request.permission, RESOURCE_TYPE_SCAFFOLDER_TEMPLATE)) {
- *      return createScaffolderConditionalDecision(
+ *      return createScaffolderTemplateConditionalDecision(
  *        request.permission,
  *        { anyOf: [...insert conditions here...] }
  *      );
