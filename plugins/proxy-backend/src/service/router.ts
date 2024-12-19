@@ -20,7 +20,6 @@ import Router from 'express-promise-router';
 import {
   createProxyMiddleware,
   fixRequestBody,
-  Options,
   RequestHandler,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
@@ -31,6 +30,7 @@ import {
   HttpRouterService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { ProxyConfig } from '@backstage/plugin-proxy-node/alpha';
 
 // A list of headers that are always forwarded to the proxy targets.
 const safeForwardHeaders = [
@@ -63,12 +63,7 @@ export interface RouterOptions {
   discovery: DiscoveryService;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
-}
-
-export interface ProxyConfig extends Options {
-  allowedMethods?: string[];
-  allowedHeaders?: string[];
-  reviveRequestBody?: boolean;
+  additionalEndpoints?: JsonObject;
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -315,7 +310,10 @@ export async function createRouterInternal(
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
   const { pathname: pathPrefix } = new URL(externalUrl);
 
-  const proxyConfig = readProxyConfig(options.config, options.logger);
+  const proxyConfig = {
+    ...(options.additionalEndpoints ?? {}),
+    ...readProxyConfig(options.config, options.logger),
+  };
   configureMiddlewares(
     proxyOptions,
     currentRouter,
