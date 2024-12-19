@@ -85,6 +85,11 @@ import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-rea
 import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
 import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
+import { version as pluginNotificationsCommon } from '../../../../plugins/notifications-common/package.json';
+import { version as pluginNotifications } from '../../../../plugins/notifications/package.json';
+import { version as pluginNotificationsBackend } from '../../../../plugins/notifications-backend/package.json';
+import { version as pluginSignals } from '../../../../plugins/signals/package.json';
+import { version as pluginSignalsBackend } from '../../../../plugins/signals-backend/package.json';
 
 export const packageVersions = {
   root,
@@ -121,6 +126,9 @@ export const packageVersions = {
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-kubernetes': pluginKubernetes,
   '@backstage/plugin-kubernetes-backend': pluginKubernetesBackend,
+  '@backstage/plugin-notifications-backend': pluginNotificationsBackend,
+  '@backstage/plugin-notifications': pluginNotifications,
+  '@backstage/plugin-notifications-common': pluginNotificationsCommon,
   '@backstage/plugin-org': pluginOrg,
   '@backstage/plugin-permission-backend': pluginPermissionBackend,
   '@backstage/plugin-permission-backend-module-allow-all-policy':
@@ -142,6 +150,8 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-module-techdocs':
     pluginSearchBackendModuleTechdocs,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
+  '@backstage/plugin-signals-backend': pluginSignalsBackend,
+  '@backstage/plugin-signals': pluginSignals,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-react': pluginTechdocsReact,
   '@backstage/plugin-techdocs-module-addons-contrib':
