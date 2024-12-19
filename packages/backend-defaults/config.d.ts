@@ -411,13 +411,11 @@ export interface Config {
             /**
              * The specific config for cloudsql connections
              */
-            type: 'cloudsql';
+            type?: 'cloudsql';
             /**
              * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
              */
-            instance: string;
-          }
-        | {
+            instance?: string;
             /**
              * Password that belongs to the client User
              * @visibility secret
@@ -480,13 +478,11 @@ export interface Config {
                 /**
                  * The specific config for cloudsql connections
                  */
-                type: 'cloudsql';
+                type?: 'cloudsql';
                 /**
                  * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
                  */
-                instance: string;
-              }
-            | {
+                instance?: string;
                 /**
                  * Password that belongs to the client User
                  * @visibility secret
