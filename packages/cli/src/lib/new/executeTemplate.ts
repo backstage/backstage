@@ -16,9 +16,17 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import handlebars from 'handlebars';
+import recursive from 'recursive-readdir';
+import {
+  basename,
+  dirname,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
+
 import { paths } from '../paths';
-import { Task, templatingTask } from '../tasks';
+import { Task } from '../tasks';
 import { Lockfile } from '../versioning';
 import { createPackageVersionProvider } from '../version';
 import { CreateContext } from './types';
@@ -31,7 +39,7 @@ export async function executePluginPackageTemplate(
     values: Record<string, unknown>;
   },
 ) {
-  const { targetDir, templateDir } = options;
+  const { targetDir, templateDir, values } = options;
 
   let lockfile: Lockfile | undefined;
   try {
@@ -60,7 +68,7 @@ export async function executePluginPackageTemplate(
   await templatingTask(
     templateDir,
     tempDir,
-    options.values,
+    values,
     createPackageVersionProvider(lockfile),
     ctx.isMonoRepo,
   );
@@ -82,4 +90,64 @@ export async function executePluginPackageTemplate(
   });
 
   ctx.markAsModified();
+}
+
+export async function templatingTask(
+  templateDir: string,
+  destinationDir: string,
+  context: any,
+  versionProvider: (name: string, versionHint?: string) => string,
+  isMonoRepo: boolean,
+) {
+  const files = await recursive(templateDir).catch(error => {
+    throw new Error(`Failed to read template directory: ${error.message}`);
+  });
+
+  for (const file of files) {
+    const destinationFile = file.replace(templateDir, destinationDir);
+    await fs.ensureDir(dirname(destinationFile));
+
+    if (file.endsWith('.hbs')) {
+      await Task.forItem('templating', basename(file), async () => {
+        const destination = destinationFile.replace(/\.hbs$/, '');
+
+        const template = await fs.readFile(file);
+        const compiled = handlebars.compile(template.toString(), {
+          strict: true,
+        });
+        const contents = compiled(
+          { name: basename(destination), ...context },
+          {
+            helpers: {
+              versionQuery(name: string, versionHint: string | unknown) {
+                return versionProvider(
+                  name,
+                  typeof versionHint === 'string' ? versionHint : undefined,
+                );
+              },
+            },
+          },
+        );
+
+        await fs.writeFile(destination, contents).catch(error => {
+          throw new Error(
+            `Failed to create file: ${destination}: ${error.message}`,
+          );
+        });
+      });
+    } else {
+      if (isMonoRepo && file.match('tsconfig.json')) {
+        continue;
+      }
+
+      await Task.forItem('copying', basename(file), async () => {
+        await fs.copyFile(file, destinationFile).catch(error => {
+          const destination = destinationFile;
+          throw new Error(
+            `Failed to copy file to ${destination} : ${error.message}`,
+          );
+        });
+      });
+    }
+  }
 }
