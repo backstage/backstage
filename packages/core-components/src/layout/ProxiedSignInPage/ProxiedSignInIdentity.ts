@@ -21,7 +21,12 @@ import {
   ProfileInfo,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { ProxiedSession, proxiedSessionSchema } from './types';
+import {
+  LogoutResponse,
+  logoutResponseSchema,
+  ProxiedSession,
+  proxiedSessionSchema,
+} from './types';
 
 export const DEFAULTS = {
   // The amount of time between token refreshes, if we fail to get an actual
@@ -52,6 +57,7 @@ type ProxiedSignInIdentityOptions = {
   provider: string;
   discoveryApi: typeof discoveryApiRef.T;
   headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
+  logoutRedirectUrl?: string;
 };
 
 type State =
@@ -138,8 +144,11 @@ export class ProxiedSignInIdentity implements IdentityApi {
   }
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.signOut} */
-  async signOut(): Promise<void> {
-    this.abortController.abort();
+  async signOut(): Promise<LogoutResponse> {
+    const response = await this.postLogout();
+    return {
+      redirectUrl: response.redirectUrl ?? '/',
+    };
   }
 
   getSessionSync(): ProxiedSession {
@@ -189,6 +198,30 @@ export class ProxiedSignInIdentity implements IdentityApi {
     };
 
     return promise;
+  }
+
+  async postLogout(): Promise<LogoutResponse> {
+    const baseUrl = await this.options.discoveryApi.getBaseUrl('auth');
+
+    const headers =
+      typeof this.options.headers === 'function'
+        ? await this.options.headers()
+        : this.options.headers;
+    const mergedHeaders = new Headers(headers);
+    mergedHeaders.set('X-Requested-With', 'XMLHttpRequest');
+
+    const response = await fetch(`${baseUrl}/${this.options.provider}/logout`, {
+      method: 'POST',
+      signal: this.abortController.signal,
+      headers: mergedHeaders,
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return logoutResponseSchema.parse(await response.json());
   }
 
   async fetchSession(): Promise<ProxiedSession> {
