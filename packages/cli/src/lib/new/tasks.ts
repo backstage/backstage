@@ -17,11 +17,11 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { resolve as resolvePath, relative as relativePath } from 'path';
-import { paths } from '../../../paths';
-import { Task, templatingTask } from '../../../tasks';
-import { Lockfile } from '../../../versioning';
-import { createPackageVersionProvider } from '../../../version';
-import { CreateContext } from '../../types';
+import { paths } from '../paths';
+import { Task, templatingTask } from '../tasks';
+import { Lockfile } from '../versioning';
+import { createPackageVersionProvider } from '../version';
+import { CreateContext } from './types';
 
 export async function executePluginPackageTemplate(
   ctx: CreateContext,

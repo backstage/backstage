@@ -24,7 +24,7 @@ import {
   moduleIdIdPrompt,
   npmRegistryPrompt,
   ownerPrompt,
-} from '../../lib/new/factories/common/prompts';
+} from '../../lib/new/prompts';
 
 import defaultTemplates from '../../../templates/all-default-templates';
 import {
