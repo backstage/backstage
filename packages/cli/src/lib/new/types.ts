@@ -40,3 +40,30 @@ export interface CreateContext {
 export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
   name: string;
 };
+
+export type ConfigurablePrompt =
+  | {
+      id: string;
+      prompt: string;
+      validate?: string;
+      default?: string | boolean;
+    }
+  | string;
+
+export interface Template {
+  id: string;
+  description?: string;
+  template: string;
+  templatePath: string;
+  targetPath: string;
+  plugin?: boolean;
+  backendModulePrefix?: boolean;
+  suffix?: string;
+  prompts?: ConfigurablePrompt[];
+  additionalActions?: string[];
+}
+
+export interface TemplateLocation {
+  id: string;
+  target: string;
+}
