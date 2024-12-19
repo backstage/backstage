@@ -23,7 +23,6 @@ import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
 import { exec as execCb } from 'child_process';
 import { assertError } from '@backstage/errors';
-import { paths } from './paths';
 
 const exec = promisify(execCb);
 
@@ -154,75 +153,5 @@ export async function templatingTask(
         });
       });
     }
-  }
-}
-
-export async function addPackageDependency(
-  path: string,
-  options: {
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-    peerDependencies?: Record<string, string>;
-  },
-) {
-  try {
-    const pkgJson = await fs.readJson(path);
-
-    const normalize = (obj: Record<string, string>) => {
-      if (Object.keys(obj).length === 0) {
-        return undefined;
-      }
-      return Object.fromEntries(
-        Object.keys(obj)
-          .sort()
-          .map(key => [key, obj[key]]),
-      );
-    };
-
-    pkgJson.dependencies = normalize({
-      ...pkgJson.dependencies,
-      ...options.dependencies,
-    });
-    pkgJson.devDependencies = normalize({
-      ...pkgJson.devDependencies,
-      ...options.devDependencies,
-    });
-    pkgJson.peerDependencies = normalize({
-      ...pkgJson.peerDependencies,
-      ...options.peerDependencies,
-    });
-
-    await fs.writeJson(path, pkgJson, { spaces: 2 });
-  } catch (error) {
-    throw new Error(`Failed to add package dependencies, ${error}`);
-  }
-}
-
-export async function addToBackend(name: string) {
-  if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
-    await Task.forItem('backend', `adding ${name}`, async () => {
-      const backendFilePath = paths.resolveTargetRoot(
-        'packages/backend/src/index.ts',
-      );
-      if (!(await fs.pathExists(backendFilePath))) {
-        return;
-      }
-
-      const content = await fs.readFile(backendFilePath, 'utf8');
-      const lines = content.split('\n');
-      const backendAddLine = `backend.add(import('${name}'));`;
-
-      const backendStartIndex = lines.findIndex(line =>
-        line.match(/backend.start/),
-      );
-
-      if (backendStartIndex !== -1) {
-        const [indentation] = lines[backendStartIndex].match(/^\s*/)!;
-        lines.splice(backendStartIndex, 0, `${indentation}${backendAddLine}`);
-
-        const newContent = lines.join('\n');
-        await fs.writeFile(backendFilePath, newContent, 'utf8');
-      }
-    });
   }
 }
