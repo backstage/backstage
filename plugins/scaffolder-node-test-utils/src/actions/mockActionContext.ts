@@ -45,6 +45,9 @@ export const createMockActionContext = <
     input: {} as TActionInput,
     checkpoint: jest.fn(),
     getInitiatorCredentials: () => Promise.resolve(credentials),
+    task: {
+      id: 'mock-task-id',
+    },
   };
 
   const createDefaultWorkspace = () => ({
@@ -58,8 +61,15 @@ export const createMockActionContext = <
     };
   }
 
-  const { input, logger, logStream, secrets, templateInfo, workspacePath } =
-    options;
+  const {
+    input,
+    logger,
+    logStream,
+    secrets,
+    templateInfo,
+    workspacePath,
+    task,
+  } = options;
 
   return {
     ...defaultContext,
@@ -71,6 +81,7 @@ export const createMockActionContext = <
     ...(logStream && { logStream }),
     ...(input && { input }),
     ...(secrets && { secrets }),
+    ...(task && { task }),
     templateInfo,
   };
 };

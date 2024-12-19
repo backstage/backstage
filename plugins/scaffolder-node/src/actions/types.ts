@@ -57,6 +57,13 @@ export type ActionContext<
    */
   getInitiatorCredentials(): Promise<BackstageCredentials>;
 
+  /**
+   * Task information
+   */
+  task: {
+    id: string;
+  };
+
   templateInfo?: TemplateInfo;
 
   /**
