@@ -46,6 +46,11 @@ export type ProxiedSignInPageProps = SignInPageProps & {
   headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 
   /**
+   * Optional url to redirect to upon logout.
+   */
+  logoutRedirectUrl?: string;
+
+  /**
    * Error component to be rendered instead of the default error panel in case
    * sign in fails.
    */
