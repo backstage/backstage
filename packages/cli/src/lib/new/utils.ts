@@ -18,22 +18,15 @@ import { dirname } from 'path';
 import { parse } from 'yaml';
 import fs from 'fs-extra';
 
-import { paths } from '../../lib/paths';
+import { paths } from '../paths';
 import {
   pluginIdPrompt,
   moduleIdIdPrompt,
   npmRegistryPrompt,
   ownerPrompt,
-} from '../../lib/new/prompts';
+} from './prompts';
 
 import defaultTemplates from '../../../templates/all-default-templates';
-import {
-  installFrontend,
-  addFrontendLegacy,
-  installBackend,
-  addBackend,
-  AdditionalActionsOptions,
-} from './additionalActions';
 
 import { Template, TemplateLocation, ConfigurablePrompt } from './types';
 
@@ -226,28 +219,4 @@ export function createDirName(template: Template, options: Options) {
     return `${options.id}-${template.suffix}`;
   }
   return options.id;
-}
-
-export async function runAdditionalActions(
-  additionalActions: string[],
-  options: AdditionalActionsOptions,
-) {
-  for (const action of additionalActions) {
-    switch (action) {
-      case 'install-frontend':
-        await installFrontend(options);
-        break;
-      case 'add-frontend-legacy':
-        await addFrontendLegacy(options);
-        break;
-      case 'install-backend':
-        await installBackend(options);
-        break;
-      case 'add-backend':
-        await addBackend(options);
-        break;
-      default:
-        throw new Error(`${action} is not a valid additional action`);
-    }
-  }
 }
