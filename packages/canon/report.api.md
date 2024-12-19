@@ -240,12 +240,17 @@ export const Inline: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface InlineProps extends SpaceProps {
   // (undocumented)
-  align?: Omit<
-    UtilityProps['justifyContent'],
-    'stretch' | 'around' | 'between'
-  >;
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
   // (undocumented)
-  alignY?: UtilityProps['alignItems'];
+  alignY?:
+    | 'top'
+    | 'center'
+    | 'bottom'
+    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
   // (undocumented)
   as?: AsProps;
   // (undocumented)
@@ -310,7 +315,11 @@ export const Stack: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface StackProps extends SpaceProps {
   // (undocumented)
-  align?: UtilityProps['alignItems'];
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
   // (undocumented)
   as?: AsProps;
   // (undocumented)

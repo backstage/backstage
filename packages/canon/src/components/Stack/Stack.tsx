@@ -23,7 +23,7 @@ import type { AlignItems, Breakpoint } from '../../types';
 const mapAlignValue = (value?: StackProps['align']) => {
   if (typeof value === 'string') {
     let returnedValue: AlignItems = 'stretch';
-    if (value === 'left') returnedValue = 'start';
+    if (value === 'left') returnedValue = 'stretch';
     if (value === 'center') returnedValue = 'center';
     if (value === 'right') returnedValue = 'end';
     return returnedValue;
