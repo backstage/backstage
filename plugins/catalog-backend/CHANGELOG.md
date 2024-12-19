@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend
 
+## 1.29.1
+
+### Patch Changes
+
+- be0aae7: Improved concurrency of the `entities` endpoint when using the streamed query mode behind the `catalog.disableRelationsCompatibility` flag.
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.2.7
+
 ## 1.29.0
 
 ### Minor Changes

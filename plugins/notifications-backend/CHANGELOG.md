@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- cbc0e63: Remove `@backstage/backend-common` dependency
+
 ## 0.5.0
 
 ### Minor Changes
