@@ -198,14 +198,9 @@ export async function addPackageDependency(
   }
 }
 
-export async function addToBackend(
-  name: string,
-  options: {
-    type: 'plugin' | 'module';
-  },
-) {
+export async function addToBackend(name: string) {
   if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
-    await Task.forItem('backend', `adding ${options.type}`, async () => {
+    await Task.forItem('backend', `adding ${name}`, async () => {
       const backendFilePath = paths.resolveTargetRoot(
         'packages/backend/src/index.ts',
       );
