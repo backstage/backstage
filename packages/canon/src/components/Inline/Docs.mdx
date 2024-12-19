@@ -1,8 +1,7 @@
 import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as InlineStories from './Inline.stories';
 import { Title, Text, PropsTable, getProps } from '../../../docs/components';
-import { spacingProperties } from '../../layout/sprinkles.css';
-import { inlineProperties } from './sprinkles.css';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={InlineStories} />
 
@@ -34,11 +33,11 @@ import { inlineProperties } from './sprinkles.css';
 <PropsTable
   data={{
     align: {
-      type: 'left | center | right',
+      type: 'start | center | end',
       responsive: true,
     },
     alignY: {
-      type: 'top | center | bottom',
+      type: 'start | center | end',
       responsive: true,
     },
     children: {
@@ -60,7 +59,7 @@ import { inlineProperties } from './sprinkles.css';
   The grid component also accepts all the spacing props from the Box component.
 </Text>
 
-<PropsTable data={getProps(spacingProperties.styles)} />
+<PropsTable data={spacePropsList} />
 
 <Title type="h2">Examples</Title>
 

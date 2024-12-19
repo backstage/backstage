@@ -18,14 +18,11 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Stack } from './Stack';
 import { Box } from '../Box/Box';
-import { argTypesSpacing, argTypesColor } from '../../../docs/utils/argTypes';
 
 const meta = {
   title: 'Components/Stack',
   component: Stack,
   argTypes: {
-    ...argTypesSpacing,
-    ...argTypesColor,
     align: {
       control: 'inline-radio',
       options: ['left', 'center', 'right'],
@@ -41,7 +38,7 @@ const meta = {
     },
   },
   args: {
-    align: 'left',
+    align: 'start',
     gap: 'xs',
   },
 } satisfies Meta<typeof Stack>;
@@ -75,7 +72,7 @@ export const Default: Story = {
 export const AlignLeft: Story = {
   args: {
     ...Default.args,
-    align: 'left',
+    align: 'start',
   },
 };
 
@@ -89,7 +86,7 @@ export const AlignCenter: Story = {
 export const AlignRight: Story = {
   args: {
     ...Default.args,
-    align: 'right',
+    align: 'end',
   },
 };
 
@@ -97,9 +94,9 @@ export const ResponsiveAlign: Story = {
   args: {
     ...Default.args,
     align: {
-      xs: 'left',
+      xs: 'start',
       md: 'center',
-      lg: 'right',
+      lg: 'end',
     },
   },
 };

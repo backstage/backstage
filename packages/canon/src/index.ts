@@ -34,5 +34,4 @@ export * from './components/Checkbox';
 export * from './components/Table';
 
 // Types
-export * from './layout/types';
 export * from './types';

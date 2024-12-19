@@ -16,39 +16,29 @@
 
 import { createElement, forwardRef } from 'react';
 import { StackProps } from './types';
-import { stackSprinkles } from './sprinkles.css';
-
-const alignToFlexAlign = (align: StackProps['align']) => {
-  if (align === 'left') return 'stretch';
-  if (align === 'center') return 'center';
-  if (align === 'right') return 'flex-end';
-  return undefined;
-};
+import { getClassNames } from '../../utils/getClassNames';
 
 /** @public */
 export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   const {
     as = 'div',
     children,
-    align = 'left',
+    align = 'start',
     gap = 'xs',
     className,
     style,
     ...restProps
   } = props;
 
-  // Transform the align prop
-  const flexAlign = alignToFlexAlign(align);
-
-  // Generate the list of class names
-  const sprinklesClassName = stackSprinkles({
-    ...restProps,
+  // Generate utility class names
+  const utilityClassNames = getClassNames({
     gap,
-    alignItems: flexAlign,
+    alignItems: align === 'start' ? 'stretch' : align,
+    ...restProps,
   });
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['stack', sprinklesClassName, className]
+  const classNames = ['canon-stack', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 

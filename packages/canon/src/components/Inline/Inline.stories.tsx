@@ -18,14 +18,11 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Inline } from './Inline';
 import { Box } from '../Box/Box';
-import { argTypesSpacing, argTypesColor } from '../../../docs/utils/argTypes';
 
 const meta = {
   title: 'Components/Inline',
   component: Inline,
   argTypes: {
-    ...argTypesSpacing,
-    ...argTypesColor,
     align: {
       control: 'inline-radio',
       options: ['left', 'center', 'right'],
@@ -81,7 +78,7 @@ export const Default: Story = {
 export const AlignLeft: Story = {
   args: {
     ...Default.args,
-    align: 'left',
+    align: 'start',
   },
 };
 
@@ -95,14 +92,14 @@ export const AlignCenter: Story = {
 export const AlignRight: Story = {
   args: {
     ...Default.args,
-    align: 'right',
+    align: 'end',
   },
 };
 
 export const VerticalAlignTop: Story = {
   args: {
     ...Default.args,
-    alignY: 'top',
+    alignY: 'start',
   },
 };
 
@@ -116,7 +113,7 @@ export const VerticalAlignCenter: Story = {
 export const VerticalAlignBottom: Story = {
   args: {
     ...Default.args,
-    alignY: 'bottom',
+    alignY: 'end',
   },
 };
 

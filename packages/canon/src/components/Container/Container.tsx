@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 import React, { forwardRef } from 'react';
-import { containerSprinkles } from './sprinkles.css';
 import { ContainerProps } from './types';
+import { getClassNames } from '../../utils/getClassNames';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
     const { children, className, style, ...restProps } = props;
 
-    const containerClassName = containerSprinkles(restProps);
+    // Generate utility class names
+    const utilityClassNames = getClassNames(restProps);
+
+    // Combine the base class name, the sprinkles class name, and any additional class names
+    const classNames = ['canon-container', utilityClassNames, className]
+      .filter(Boolean)
+      .join(' ');
 
     return (
-      <div
-        ref={ref}
-        className={['container', containerClassName].filter(Boolean).join(' ')}
-        style={style}
-      >
+      <div ref={ref} className={classNames} style={style}>
         {children}
       </div>
     );
