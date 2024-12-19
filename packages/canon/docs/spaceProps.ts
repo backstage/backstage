@@ -13,61 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const spacePropsList = {
-  margin: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
+
+export const spacePropsList = [
+  'margin',
+  'marginBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginX',
+  'marginY',
+  'padding',
+  'paddingBottom',
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingX',
+  'paddingY',
+].reduce(
+  (acc: { [key: string]: { type: string[]; responsive: boolean } }, prop) => {
+    acc[prop] = {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    };
+    return acc;
   },
-  marginBottom: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  marginLeft: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  marginRight: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  marginTop: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  marginX: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  marginY: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  padding: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  paddingBottom: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  paddingLeft: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  paddingRight: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  paddingTop: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  paddingX: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-  paddingY: {
-    type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-    responsive: true,
-  },
-};
+  {},
+);
