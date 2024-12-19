@@ -146,7 +146,7 @@ export interface ColorProps {
 }
 
 // @public (undocumented)
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
 
 // @public (undocumented)
 export const Container: React_2.ForwardRefExoticComponent<
@@ -185,9 +185,6 @@ export type FlexDirection = 'row' | 'column';
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
 
 // @public (undocumented)
-export type Gap = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
 export const Grid: ForwardRefExoticComponent<
   GridProps & RefAttributes<HTMLDivElement>
 > & {
@@ -203,25 +200,27 @@ export interface GridItemProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  colSpan?: Columns | 'full';
+  colEnd?: UtilityProps['colEnd'];
   // (undocumented)
-  end?: Columns | 'auto';
+  colSpan?: UtilityProps['colSpan'];
   // (undocumented)
-  rowSpan?: Columns | 'full';
+  colStart?: UtilityProps['colStart'];
   // (undocumented)
-  start?: Columns | 'auto';
+  rowSpan?: UtilityProps['rowSpan'];
   // (undocumented)
   style?: React.CSSProperties;
 }
 
 // @public (undocumented)
-export interface GridProps extends SpaceProps, ColorProps {
+export interface GridProps extends SpaceProps {
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
+  columns?: UtilityProps['columns'];
+  // (undocumented)
+  gap?: UtilityProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -284,6 +283,8 @@ export interface InlineProps extends SpaceProps, ColorProps {
   // (undocumented)
   className?: string;
   // (undocumented)
+  gap?: UtilityProps['gap'];
+  // (undocumented)
   style?: React.CSSProperties;
 }
 
@@ -297,82 +298,38 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
-export type Margin = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type MarginBottom = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type MarginLeft = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type MarginRight = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type MarginTop = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type MarginX = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type MarginY = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type Padding = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type PaddingBottom = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type PaddingLeft = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type PaddingRight = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type PaddingTop = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type PaddingX = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
-export type PaddingY = Space | Partial<Record<Breakpoint, Space>>;
-
-// @public (undocumented)
 export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 // @public (undocumented)
 export interface SpaceProps {
   // (undocumented)
-  gap?: Gap;
+  margin?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  margin?: Margin;
+  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  marginBottom?: MarginBottom;
+  marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  marginLeft?: MarginLeft;
+  marginRight?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  marginRight?: MarginRight;
+  marginTop?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  marginTop?: MarginTop;
+  marginX?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  marginX?: MarginX;
+  marginY?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  marginY?: MarginY;
+  padding?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  padding?: Padding;
+  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  paddingBottom?: PaddingBottom;
+  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  paddingLeft?: PaddingLeft;
+  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  paddingRight?: PaddingRight;
+  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  paddingTop?: PaddingTop;
+  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
   // (undocumented)
-  paddingX?: PaddingX;
-  // (undocumented)
-  paddingY?: PaddingY;
+  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
 }
 
 // @public (undocumented)
@@ -394,6 +351,8 @@ export interface StackProps extends SpaceProps, ColorProps {
   children: React.ReactNode;
   // (undocumented)
   className?: string;
+  // (undocumented)
+  gap?: UtilityProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -444,13 +403,21 @@ export const TableRow: React_3.ForwardRefExoticComponent<
 export type Theme = 'light' | 'dark';
 
 // @public (undocumented)
-export interface UtilityProps {
+export interface UtilityProps extends SpaceProps {
   // (undocumented)
   alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
   // (undocumented)
   border?: Border | Partial<Record<Breakpoint, Border>>;
   // (undocumented)
   borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  // (undocumented)
+  colEnd?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  // (undocumented)
+  colSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  // (undocumented)
+  colStart?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  // (undocumented)
+  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
   // (undocumented)
   display?: Display | Partial<Record<Breakpoint, Display>>;
   // (undocumented)
@@ -462,32 +429,6 @@ export interface UtilityProps {
   // (undocumented)
   justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
   // (undocumented)
-  margin?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  marginRight?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  marginTop?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  marginX?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  marginY?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  padding?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
-  // (undocumented)
-  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
+  rowSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
 }
 ```

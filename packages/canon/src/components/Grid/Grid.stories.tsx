@@ -61,20 +61,6 @@ export const Default: Story = {
   ),
 };
 
-export const Test: Story = {
-  args: {
-    columns: 12,
-    gap: 'md',
-  },
-  render: args => (
-    <Grid {...args}>
-      <FakeBox />
-      <FakeBox />
-      <FakeBox />
-    </Grid>
-  ),
-};
-
 export const LargeGap: Story = {
   args: {
     gap: 'lg',

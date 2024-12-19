@@ -15,12 +15,13 @@
  */
 
 import { AsProps, ColorProps } from '../../layout/types';
-import { SpaceProps } from '../../layout/types';
-import type { Breakpoint } from '../../types';
+import type { Breakpoint, SpaceProps, UtilityProps } from '../../types';
+
 /** @public */
 export interface InlineProps extends SpaceProps, ColorProps {
   children: React.ReactNode;
   as?: AsProps;
+  gap?: UtilityProps['gap'];
   align?:
     | 'left'
     | 'center'

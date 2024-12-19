@@ -2,6 +2,7 @@ import { Meta, Unstyled, Source, Canvas } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
 import { PropsTable } from '../../../docs/components';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={BoxStories} />
 
@@ -84,66 +85,7 @@ import { PropsTable } from '../../../docs/components';
 
 <Canvas of={BoxStories.Padding} />
 
-<PropsTable
-  data={{
-    margin: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    marginBottom: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    marginLeft: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    marginRight: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    marginTop: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    marginX: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    marginY: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    padding: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    paddingBottom: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    paddingLeft: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    paddingRight: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    paddingTop: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    paddingX: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    paddingY: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-  }}
-/>
+<PropsTable data={spacePropsList} />
 
 <Title type="h2">Examples</Title>
 <Text>Here are some examples of how you can use the Box component.</Text>

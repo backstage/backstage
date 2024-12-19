@@ -14,74 +14,8 @@
  * limitations under the License.
  */
 
-import type { Breakpoint, Space } from '../types';
-
 /** @public */
 export type Theme = 'light' | 'dark';
-
-/** @public */
-export type Gap = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type PaddingLeft = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type PaddingRight = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type PaddingTop = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type PaddingBottom = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type Padding = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type PaddingX = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type PaddingY = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type MarginLeft = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type MarginRight = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type MarginTop = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type MarginBottom = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type Margin = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type MarginX = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export type MarginY = Space | Partial<Record<Breakpoint, Space>>;
-
-/** @public */
-export interface SpaceProps {
-  gap?: Gap;
-  padding?: Padding;
-  paddingLeft?: PaddingLeft;
-  paddingRight?: PaddingRight;
-  paddingTop?: PaddingTop;
-  paddingBottom?: PaddingBottom;
-  paddingX?: PaddingX;
-  paddingY?: PaddingY;
-  margin?: Margin;
-  marginLeft?: MarginLeft;
-  marginRight?: MarginRight;
-  marginTop?: MarginTop;
-  marginBottom?: MarginBottom;
-  marginX?: MarginX;
-  marginY?: MarginY;
-}
 
 /** @public */
 export type Background =

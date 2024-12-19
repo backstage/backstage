@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SpaceProps } from '../../layout/types';
+import { SpaceProps } from '../../types';
 
 /** @public */
 export interface ContainerProps

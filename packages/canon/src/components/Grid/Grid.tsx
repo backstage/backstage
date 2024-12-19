@@ -47,13 +47,6 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
 
   const utilityClassNames = getClassNames(restProps);
 
-  // const sprinklesClassName = gridItemSprinkles({
-  //   rowSpan,
-  //   colSpan,
-  //   start,
-  //   end,
-  // });
-
   const classNames = ['grid-item', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
