@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles/withStyles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -51,6 +52,17 @@ export type ContentStateTypes =
   | 'CONTENT_NOT_FOUND'
   /** There is only the latest and greatest content */
   | 'CONTENT_FRESH';
+
+// @public
+export const CustomDocsPanel: ({
+  config,
+  entities,
+  index,
+}: {
+  config: PanelConfig;
+  entities: Entity[];
+  index: number;
+}) => React_2.JSX.Element;
 
 // @public
 export const DefaultTechDocsHome: (
@@ -196,6 +208,21 @@ export const EntityTechdocsContent: (props: {
 }) => JSX_2.Element;
 
 // @public
+export const InfoCardGrid: (
+  props: InfoCardGridProps,
+) => React_2.JSX.Element | null;
+
+// @public (undocumented)
+export type InfoCardGridClassKey = 'linkSpacer' | 'readMoreLink';
+
+// @public
+export type InfoCardGridProps = {
+  entities: Entity[] | undefined;
+  linkContent?: string | JSX.Element;
+  linkDestination?: (entity: Entity) => string | undefined;
+};
+
+// @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
 
 // @public
@@ -207,13 +234,33 @@ export interface PanelConfig {
   // (undocumented)
   panelCSS?: CSSProperties;
   // (undocumented)
+  panelProps?: PanelProps;
+  // (undocumented)
   panelType: PanelType;
   // (undocumented)
   title: string;
 }
 
 // @public
-export type PanelType = 'DocsCardGrid' | 'DocsTable';
+export interface PanelProps {
+  // (undocumented)
+  linkContent?: string | JSX.Element;
+  // (undocumented)
+  linkDestination?: (entity: Entity) => string | undefined;
+  // (undocumented)
+  options?: TableOptions<DocsTableRow>;
+  // (undocumented)
+  showHeader?: boolean;
+  // (undocumented)
+  showSupport?: boolean;
+}
+
+// @public
+export type PanelType =
+  | 'DocsCardGrid'
+  | 'DocsTable'
+  | 'TechDocsIndexPage'
+  | 'InfoCardGrid';
 
 // @public @deprecated
 export const Reader: (
@@ -294,6 +341,10 @@ export const TechDocsCustomHome: (
 // @public
 export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
+  filter?: EntityFilterQuery;
+  title?: string;
+  subtitle?: string;
+  showSubtitle?: boolean;
 };
 
 // @public @deprecated (undocumented)
@@ -310,6 +361,11 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  showHeader?: boolean;
+  showSupport?: boolean;
+  options?: TableOptions<DocsTableRow>;
+  title?: string;
+  subtitle?: string;
   pagination?: EntityListPagination;
 };
 
@@ -327,6 +383,9 @@ export const TechDocsPageWrapper: (
 // @public
 export type TechDocsPageWrapperProps = {
   children?: React_2.ReactNode;
+  title?: string;
+  subtitle?: string;
+  showSubtitle?: boolean;
 };
 
 // @public

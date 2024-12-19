@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { useOutlet } from 'react-router-dom';
-import { TableColumn, TableProps } from '@backstage/core-components';
+import {
+  TableColumn,
+  TableProps,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityListPagination,
   EntityOwnerPickerProps,
@@ -35,6 +39,11 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  showHeader?: boolean;
+  showSupport?: boolean;
+  options?: TableOptions<DocsTableRow>;
+  title?: string;
+  subtitle?: string;
   pagination?: EntityListPagination;
 };
 

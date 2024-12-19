@@ -16,3 +16,4 @@
 
 export * from './EntityListDocsGrid';
 export * from './DocsCardGrid';
+export * from './InfoCardGrid';

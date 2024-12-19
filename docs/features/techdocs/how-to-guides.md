@@ -137,6 +137,10 @@ Modify your `App.tsx` as follows:
 import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 //...
 
+const options = { emptyRowsWhenPaging: false };
+const linkDestination = (entity: Entity): string | undefined => {
+  return entity.metadata.annotations?.['external-docs'];
+};
 const techDocsTabsConfig = [
   {
     label: 'Recommended Documentation',
@@ -145,8 +149,33 @@ const techDocsTabsConfig = [
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
+        panelProps: { showHeader: false, showSupport: false },
+        filterPredicate: entity =>
+          entity?.metadata?.tags?.includes('golden-path') ?? false,
+      },
+      {
+        title: 'Recommended',
+        description: 'Useful documentation',
+        panelType: 'InfoCardGrid',
+        panelProps: {
+          showHeader: false,
+          showSupport: false,
+          linkDestination: linkDestination,
+        },
         filterPredicate: entity =>
           entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    ],
+  },
+  {
+    label: 'Browse All',
+    panels: [
+      {
+        description: 'Browse all docs',
+        filterPredicate: filterEntity,
+        panelType: 'TechDocsIndexPage',
+        title: 'All',
+        panelProps: { showHeader: false, showSupport: false, options: options },
       },
     ],
   },
@@ -156,7 +185,17 @@ const AppRoutes = () => {
   <FlatRoutes>
     <Route
       path="/docs"
-      element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}
+      element={
+        <TechDocsCustomHome
+          tabsConfig={techDocsTabsConfig}
+          title="Docs"
+          showSubtitle={false}
+          filter={{
+            kind: ['Location', 'Resource', 'Component'],
+            'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+          }}
+        />
+      }
     />
   </FlatRoutes>;
 };
