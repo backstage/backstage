@@ -15742,8 +15742,8 @@ __metadata:
   linkType: hard
 
 "@rspack/core@npm:^1.0.10":
-  version: 1.1.6
-  resolution: "@rspack/core@npm:1.1.6"
+  version: 1.1.7
+  resolution: "@rspack/core@npm:1.1.7"
   dependencies:
     "@module-federation/runtime-tools": 0.5.1
     "@rspack/binding": 1.1.6
@@ -15754,7 +15754,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 5032e0512297f68cc40fdfa9cfcbdbed6ee28cb3f72ebd38de0960e6f80ffdce2c108321ea81d5022abef8489cca3a18935abdda2ddc37e0d739ac6e779482bf
+  checksum: bcc78e90c0dedfb7527b2cb942059c2b8716e9ad5fb9a794433837614caf566809d2dccbd904c3bcda544211e3a687cdc26d84bbae78d7db369e4ad083ce953d
   languageName: node
   linkType: hard
 
