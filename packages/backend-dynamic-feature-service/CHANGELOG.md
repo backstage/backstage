@@ -1,5 +1,12 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.29.1
+
 ## 0.5.2
 
 ### Patch Changes

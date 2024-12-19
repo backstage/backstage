@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.2.7
+
+### Patch Changes
+
+- 1e09b06: Internal refactor to use cursor based pagination
+
 ## 0.2.6
 
 ### Patch Changes
