@@ -19,7 +19,7 @@ import { GerritIntegrationConfig } from './config';
 const GERRIT_BODY_PREFIX = ")]}'";
 
 /**
- * Parse a Gitiles URL and return branch, file path and project.
+ * Parse a Gitiles URL and return branch, file path, project and tags.
  *
  * @remarks
  *
@@ -37,6 +37,8 @@ const GERRIT_BODY_PREFIX = ")]}'";
  * Gitiles url:
  * https://g.com/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
  * https://g.com/a/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
+ * https://g.com/optional_path/\{project\}/+/refs/tags/\{branch\}/\{filePath\}
+ * https://g.com/a/optional_path/\{project\}/+/refs/tags/\{branch\}/\{filePath\}
  *
  *
  * @param url - An URL pointing to a file stored in git.
@@ -46,7 +48,7 @@ const GERRIT_BODY_PREFIX = ")]}'";
 export function parseGerritGitilesUrl(
   config: GerritIntegrationConfig,
   url: string,
-): { branch: string; filePath: string; project: string } {
+): { branch: string; filePath: string; project: string; tags: boolean } {
   const baseUrlParse = new URL(config.gitilesBaseUrl!);
   const urlParse = new URL(url);
 
@@ -67,9 +69,15 @@ export function parseGerritGitilesUrl(
   }
   const project = trimStart(parts.slice(0, projectEndIndex).join('/'), '/');
 
-  const branchIndex = parts.indexOf('heads');
+  let branchIndex = parts.indexOf('heads');
+  let tags = false;
   if (branchIndex <= 0) {
-    throw new Error(`Unable to parse branch from url: ${url}`);
+    branchIndex = parts.indexOf('tags');
+    if (branchIndex <= 0) {
+      throw new Error(`Unable to parse branch from url: ${url}`);
+    } else {
+      tags = true;
+    }
   }
   const branch = parts[branchIndex + 1];
   const filePath = parts.slice(branchIndex + 2).join('/');
@@ -78,6 +86,7 @@ export function parseGerritGitilesUrl(
     branch,
     filePath: filePath === '' ? '/' : filePath,
     project,
+    tags,
   };
 }
 
@@ -194,6 +203,7 @@ export function parseGitilesUrlRef(
  * @param project - The name of the git project
  * @param branch - The branch we will target.
  * @param filePath - The absolute file path.
+ * @param tags - Checks if tags is used.
  * @public
  */
 export function buildGerritGitilesUrl(
@@ -201,7 +211,13 @@ export function buildGerritGitilesUrl(
   project: string,
   branch: string,
   filePath: string,
+  tags: boolean = false,
 ): string {
+  if (tags) {
+    return `${
+      config.gitilesBaseUrl
+    }/${project}/+/refs/tags/${branch}/${trimStart(filePath, '/')}`;
+  }
   return `${
     config.gitilesBaseUrl
   }/${project}/+/refs/heads/${branch}/${trimStart(filePath, '/')}`;
@@ -214,6 +230,7 @@ export function buildGerritGitilesUrl(
  * @param project - The name of the git project
  * @param branch - The branch we will target.
  * @param filePath - The absolute file path.
+ * @param tags - Checks if tags is used.
  * @public
  */
 export function buildGerritGitilesArchiveUrl(
@@ -221,9 +238,15 @@ export function buildGerritGitilesArchiveUrl(
   project: string,
   branch: string,
   filePath: string,
+  tags: boolean = false,
 ): string {
   const archiveName =
     filePath === '/' || filePath === '' ? '.tar.gz' : `/${filePath}.tar.gz`;
+  if (tags) {
+    return `${getGitilesAuthenticationUrl(
+      config
+    )}/${project}/+archive/refs/tags/${branch}${archiveName}`;
+  }
   return `${getGitilesAuthenticationUrl(
     config,
   )}/${project}/+archive/refs/heads/${branch}${archiveName}`;
@@ -291,8 +314,12 @@ export function getGerritBranchApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, project } = parseGerritGitilesUrl(config, url);
-
+  const { branch, project, tags } = parseGerritGitilesUrl(config, url);
+  if (tags) {
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config
+    )}projects/${encodeURIComponent(project)}/tags/${branch}`;
+  }
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
   )}projects/${encodeURIComponent(project)}/branches/${branch}`;
@@ -324,8 +351,14 @@ export function getGerritFileContentsApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, filePath, project } = parseGerritGitilesUrl(config, url);
-
+  const { branch, filePath, project, tags } = parseGerritGitilesUrl(config, url);
+  if (tags) {
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config
+    )}projects/${encodeURIComponent(
+      project
+    )}/tags/${branch}/files/${encodeURIComponent(filePath)}/content`;
+  }
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
   )}projects/${encodeURIComponent(

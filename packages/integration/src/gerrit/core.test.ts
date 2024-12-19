@@ -55,9 +55,11 @@ describe('gerrit core', () => {
       expect(buildGerritGitilesArchiveUrl(config, 'repo', 'dev', '')).toEqual(
         'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev.tar.gz',
       );
-
       expect(buildGerritGitilesArchiveUrl(config, 'repo', 'dev', '/')).toEqual(
         'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev.tar.gz',
+      );
+      expect(buildGerritGitilesArchiveUrl(config, 'repo', '1.0.12', '/', true)).toEqual(
+        'https://gerrit.com/gitiles/repo/+archive/refs/tags/1.0.12.tar.gz',
       );
     });
     it('can create an archive url for a specific directory', () => {
@@ -65,6 +67,11 @@ describe('gerrit core', () => {
         buildGerritGitilesArchiveUrl(config, 'repo', 'dev', 'docs'),
       ).toEqual(
         'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+      );
+      expect(
+        buildGerritGitilesArchiveUrl(config, 'repo', '1.0.12', 'docs', true),
+      ).toEqual(
+        'https://gerrit.com/gitiles/repo/+archive/refs/tags/1.0.12/docs.tar.gz',
       );
     });
     it('can create an authenticated url when auth is enabled', () => {
@@ -78,6 +85,11 @@ describe('gerrit core', () => {
       ).toEqual(
         'https://gerrit.com/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
       );
+      expect(
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', '1.0.12', 'docs', true),
+      ).toEqual(
+        'https://gerrit.com/a/gitiles/repo/+archive/refs/tags/1.0.12/docs.tar.gz',
+      );
     });
     it('can create an authenticated url when auth is enabled and an url-path is used', () => {
       const authConfig = {
@@ -89,6 +101,11 @@ describe('gerrit core', () => {
         buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
       ).toEqual(
         'https://gerrit.com/gerrit/a/plugins/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+      );
+      expect(
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', '1.0.12', 'docs', true),
+      ).toEqual(
+        'https://gerrit.com/gerrit/a/plugins/gitiles/repo/+archive/refs/tags/1.0.12/docs.tar.gz',
       );
     });
     it('Cannot build an authenticated url when a dedicated Gitiles server is used', () => {
@@ -111,6 +128,11 @@ describe('gerrit core', () => {
         buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
       ).toEqual(
         'https://dedicated-gitiles-server.com/gerrit/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+      );
+      expect(
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', '1.0.12', 'docs', true),
+      ).toEqual(
+        'https://dedicated-gitiles-server.com/gerrit/gitiles/repo/+archive/refs/tags/1.0.12/docs.tar.gz',
       );
     });
   });
@@ -277,13 +299,14 @@ describe('gerrit core', () => {
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
       };
-      const { branch, filePath, project } = parseGerritGitilesUrl(
+      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/gitiles/web/project/+/refs/heads/master/README.md',
       );
       expect(project).toEqual('web/project');
       expect(branch).toEqual('master');
       expect(filePath).toEqual('README.md');
+      expect(tags).toEqual('false');
 
       const { filePath: rootPath } = parseGerritGitilesUrl(
         config,
@@ -296,17 +319,58 @@ describe('gerrit core', () => {
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
       };
-      const { branch, filePath, project } = parseGerritGitilesUrl(
+      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/a/gitiles/web/project/+/refs/heads/master/README.md',
       );
       expect(project).toEqual('web/project');
       expect(branch).toEqual('master');
       expect(filePath).toEqual('README.md');
+      expect(tags).toEqual(false);
 
       const { filePath: rootPath } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/gitiles/web/project/+/refs/heads/master',
+      );
+      expect(rootPath).toEqual('/');
+    });
+    it('can parse a valid gitiles urls with tags.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      };
+      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
+        config,
+        'https://gerrit.com/gitiles/web/project/+/refs/tags/1.0.12/README.md',
+      );
+      expect(project).toEqual('web/project');
+      expect(branch).toEqual('1.0.12');
+      expect(filePath).toEqual('README.md');
+      expect(tags).toEqual(true);
+
+      const { filePath: rootPath } = parseGerritGitilesUrl(
+        config,
+        'https://gerrit.com/gitiles/web/project/+/refs/tags/1.0.12',
+      );
+      expect(rootPath).toEqual('/');
+    });
+    it('can parse a valid authenticated gitiles url with tags.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      };
+      const { branch, filePath, project, tags } = parseGerritGitilesUrl(
+        config,
+        'https://gerrit.com/a/gitiles/web/project/+/refs/tags/1.0.12/README.md',
+      );
+      expect(project).toEqual('web/project');
+      expect(branch).toEqual('1.0.12');
+      expect(filePath).toEqual('README.md');
+      expect(tags).toEqual(true);
+
+      const { filePath: rootPath } = parseGerritGitilesUrl(
+        config,
+        'https://gerrit.com/gitiles/web/project/+/refs/tags/1.0.12',
       );
       expect(rootPath).toEqual('/');
     });
@@ -359,6 +423,36 @@ describe('gerrit core', () => {
       );
       expect(authFileContentUrl).toEqual(
         'https://gerrit.com/a/projects/web%2Fproject/branches/master',
+      );
+    });
+    it('can create an url with tags for anonymous access.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      const fileContentUrl = getGerritBranchApiUrl(
+        config,
+        'https://gerrit.com/web/project/+/refs/tags/1.0.12/README.md',
+      );
+      expect(fileContentUrl).toEqual(
+        'https://gerrit.com/projects/web%2Fproject/tags/1.0.12',
+      );
+    });
+    it('can create an url with tags for authenticated access.', () => {
+      const authConfig: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+        username: 'u',
+        password: 'u',
+      };
+      const authFileContentUrl = getGerritBranchApiUrl(
+        authConfig,
+        'https://gerrit.com/web/project/+/refs/tags/1.0.12/README.md',
+      );
+      expect(authFileContentUrl).toEqual(
+        'https://gerrit.com/a/projects/web%2Fproject/tags/1.0.12',
       );
     });
   });
@@ -424,6 +518,36 @@ describe('gerrit core', () => {
       );
       expect(authFileContentUrl).toEqual(
         'https://gerrit.com/a/projects/web%2Fproject/branches/master/files/README.md/content',
+      );
+    });
+    it('can create an url with tags for anonymous access to the file fetch api.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      const fileContentUrl = getGerritFileContentsApiUrl(
+        config,
+        'https://gerrit.com/web/project/+/refs/tags/1.0.12/README.md',
+      );
+      expect(fileContentUrl).toEqual(
+        'https://gerrit.com/projects/web%2Fproject/tags/1.0.12/files/README.md/content',
+      );
+    });
+    it('can create an url with tags for authenticated access to the file fetch api.', () => {
+      const authConfig: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+        username: 'u',
+        password: 'u',
+      };
+      const authFileContentUrl = getGerritFileContentsApiUrl(
+        authConfig,
+        'https://gerrit.com/web/project/+/refs/tags/1.0.12/README.md',
+      );
+      expect(authFileContentUrl).toEqual(
+        'https://gerrit.com/a/projects/web%2Fproject/tags/1.0.12/files/README.md/content',
       );
     });
   });
