@@ -1,7 +1,7 @@
 import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as StackStories from './Stack.stories';
 import { Title, Text, PropsTable, getProps } from '../../../docs/components';
-import { spacingProperties } from '../../layout/sprinkles.css';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={StackStories} />
 
@@ -33,7 +33,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 <PropsTable
   data={{
     align: {
-      type: ['left', 'center', 'right'],
+      type: ['start', 'center', 'end'],
       responsive: true,
     },
     children: {
@@ -55,7 +55,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   The grid component also accepts all the spacing props from the Box component.
 </Text>
 
-<PropsTable data={getProps(spacingProperties.styles)} />
+<PropsTable data={spacePropsList} />
 
 <Title type="h2">Common questions</Title>
 

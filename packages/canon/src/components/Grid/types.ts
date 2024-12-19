@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Breakpoint, ColorProps } from '../../layout/types';
-import { SpaceProps } from '../../layout/types';
+
+import type { UtilityProps, SpaceProps } from '../../types';
 
 /** @public */
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-
-/** @public */
-export interface GridProps extends SpaceProps, ColorProps {
+export interface GridProps extends SpaceProps {
   children?: React.ReactNode;
-  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
   className?: string;
+  columns?: UtilityProps['columns'];
+  gap?: UtilityProps['gap'];
   style?: React.CSSProperties;
 }
 
 /** @public */
 export interface GridItemProps {
   children: React.ReactNode;
-  rowSpan?: Columns | 'full';
-  colSpan?: Columns | 'full';
-  start?: Columns | 'auto';
-  end?: Columns | 'auto';
   className?: string;
+  colSpan?: UtilityProps['colSpan'];
+  colEnd?: UtilityProps['colEnd'];
+  colStart?: UtilityProps['colStart'];
+  rowSpan?: UtilityProps['rowSpan'];
   style?: React.CSSProperties;
 }

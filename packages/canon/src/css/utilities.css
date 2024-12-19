@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
-import { breakpoints } from '../../layout/properties';
-import { colorProperties, spacingProperties } from '../../layout/sprinkles.css';
+/* Default utilities */
+@import './utilities/xs.css';
 
-export const inlineProperties = defineProperties({
-  conditions: breakpoints,
-  defaultCondition: 'xs',
-  properties: {
-    alignItems: ['flex-start', 'center', 'flex-end'],
-    justifyContent: ['flex-start', 'center', 'flex-end'],
-  },
-});
+/* Min 640px */
+@import './utilities/sm.css';
 
-export const inlineSprinkles = createSprinkles(
-  spacingProperties,
-  colorProperties,
-  inlineProperties,
-);
+/* Min 768px */
+@import './utilities/md.css';
+
+/* Min 1024px */
+@import './utilities/lg.css';
+
+/* Min 1280px */
+@import './utilities/xl.css';
+
+/* Min 1536px */
+@import './utilities/2xl.css';

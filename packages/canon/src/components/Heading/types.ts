@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../../layout/types';
+import { Breakpoint } from '../../types';
 
 /** @public */
 export interface HeadingProps {

@@ -20,9 +20,6 @@
  * @packageDocumentation
  */
 
-// Layout types
-export * from './layout/types';
-
 // Layout components
 export * from './components/Box';
 export * from './components/Grid';
@@ -35,5 +32,6 @@ export * from './components/Button';
 export * from './components/Icon';
 export * from './components/Checkbox';
 export * from './components/Table';
-export * from './components/Field';
-export * from './components/Input';
+
+// Types
+export * from './types';

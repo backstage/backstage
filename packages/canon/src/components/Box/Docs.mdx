@@ -1,10 +1,8 @@
-import { Meta, Unstyled, Source } from '@storybook/blocks';
+import { Meta, Unstyled, Source, Canvas } from '@storybook/blocks';
 import * as BoxStories from './Box.stories';
 import { Title, Text } from '../../../docs/components';
-import { Padding } from './docs/padding';
-import { PropsTable, getProps } from '../../../docs/components';
-import { boxProperties } from './sprinkles.css';
-import { spacingProperties } from '../../layout/sprinkles.css';
+import { PropsTable } from '../../../docs/components';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={BoxStories} />
 
@@ -32,18 +30,49 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 
 <PropsTable
   data={{
-    ...getProps(boxProperties.styles),
+    alignItems: {
+      type: ['stretch', 'start', 'center', 'end'],
+      responsive: true,
+    },
+    border: {
+      type: ['none', 'base', 'error', 'warning', 'selected'],
+      responsive: true,
+    },
+    borderRadius: {
+      type: ['none', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'],
+      responsive: true,
+    },
     children: {
       type: 'ReactNode',
-      required: false,
+      responsive: false,
     },
     className: {
       type: 'string',
-      required: false,
+      responsive: false,
+    },
+    display: {
+      type: ['none', 'flex', 'block', 'inline'],
+      responsive: true,
+    },
+    flexDirection: {
+      type: ['row', 'column'],
+      responsive: true,
+    },
+    flexWrap: {
+      type: ['wrap', 'nowrap', 'wrap-reverse'],
+      responsive: true,
+    },
+    gap: {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    },
+    justifyContent: {
+      type: ['stretch', 'start', 'center', 'end', 'around', 'between'],
+      responsive: true,
     },
     style: {
       type: 'CSSProperties',
-      required: false,
+      responsive: false,
     },
   }}
 />
@@ -54,9 +83,9 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   avoid collapsing margins but both are available.
 </Text>
 
-<Padding />
+<Canvas of={BoxStories.Padding} />
 
-<PropsTable data={getProps(spacingProperties.styles)} />
+<PropsTable data={spacePropsList} />
 
 <Title type="h2">Examples</Title>
 <Text>Here are some examples of how you can use the Box component.</Text>
