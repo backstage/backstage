@@ -191,7 +191,8 @@ export type KubernetesObjectTypes =
   | 'ingresses'
   | 'customresources'
   | 'statefulsets'
-  | 'daemonsets';
+  | 'daemonsets'
+  | 'secrets';
 
 // @public
 export interface KubernetesServiceLocator {
