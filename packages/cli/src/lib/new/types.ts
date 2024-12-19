@@ -37,45 +37,6 @@ export interface CreateContext {
   markAsModified(): void;
 }
 
-export type AnyOptions = Record<string, string>;
-
 export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
   name: string;
 };
-
-export interface Factory<TOptions extends AnyOptions> {
-  /**
-   * The name used for this factory.
-   */
-  name: string;
-
-  /**
-   * A description that describes what this factory creates to the user.
-   */
-  description: string;
-
-  /**
-   * An optional options discovery step that is run
-   * before the prompts to potentially fill in some of the options.
-   */
-  optionsDiscovery?(): Promise<Partial<TOptions>>;
-
-  /**
-   * Inquirer prompts that will be filled in either interactively or
-   * through command line arguments.
-   */
-  optionsPrompts?: ReadonlyArray<Prompt<TOptions>>;
-
-  /**
-   * The main method of the factory that handles creation.
-   */
-  create(options: TOptions, context?: CreateContext): Promise<void>;
-}
-
-export type AnyFactory = Factory<AnyOptions>;
-
-export function createFactory<TOptions extends AnyOptions>(
-  config: Factory<TOptions>,
-): AnyFactory {
-  return config as AnyFactory;
-}
