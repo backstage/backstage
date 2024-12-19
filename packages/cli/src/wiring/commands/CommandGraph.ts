@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageCommand } from './types';
+import { BackstageCommand } from '../types';
 
 type Node = TreeNode | LeafNode;
 

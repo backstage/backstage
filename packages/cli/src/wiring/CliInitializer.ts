@@ -14,39 +14,63 @@
  * limitations under the License.
  */
 
-import { CommandGraph } from './CommandGraph';
-import { CliFeature, InternalCliFeature, InternalCliPlugin } from './types';
-import { CommandRegistry } from './CommandRegistry';
+import { CommandGraph } from './commands/CommandGraph';
+import { InternalFeature } from './types';
 import { program } from 'commander';
 import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
 import { assertError } from '@backstage/errors';
+import { ServiceRegistry } from './services/ServiceRegistry';
+import { CliFeature } from './features/types';
+import { createServiceFactory, InternalServiceFactory } from './services/types';
+import { InternalPlugin } from './plugins/types';
+import { FeatureRegistry } from './FeatureRegistry';
+import { cliServiceRef, DefaultCli } from './services/cli';
 
 type UninitializedFeature = CliFeature | Promise<CliFeature>;
 
 export class CliInitializer {
   private graph = new CommandGraph();
-  private commandRegistry = new CommandRegistry(this.graph);
-  #uninitiazedFeatures: Promise<CliFeature>[] = [];
+  private serviceRegistry = new ServiceRegistry();
+  private featureRegistry = new FeatureRegistry(this.serviceRegistry);
+  #uninitializedFeatures: Promise<CliFeature>[] = [
+    Promise.resolve(
+      createServiceFactory({
+        service: cliServiceRef,
+        deps: {},
+        factory: async () => {
+          return new DefaultCli(this.graph);
+        },
+      }),
+    ),
+  ];
 
   add(module: UninitializedFeature) {
-    this.#uninitiazedFeatures.push(Promise.resolve(module));
+    this.#uninitializedFeatures.push(Promise.resolve(module));
   }
 
   async #register(feature: CliFeature) {
     if (isCliPlugin(feature)) {
-      await feature.init(this.commandRegistry);
+      await this.featureRegistry.register(feature);
+    } else if (isCliService(feature)) {
+      this.serviceRegistry.register(feature);
     } else {
       throw new Error(`Unsupported feature type: ${feature.$$type}`);
     }
   }
 
+  async #initialize() {
+    await this.serviceRegistry.initializeScope('root');
+    await this.featureRegistry.initialize();
+  }
+
   async #doInit() {
-    const features = await Promise.all(this.#uninitiazedFeatures);
+    const features = await Promise.all(this.#uninitializedFeatures);
     for (const feature of features) {
       await this.#register(feature);
     }
+    await this.#initialize();
   }
 
   /**
@@ -54,6 +78,7 @@ export class CliInitializer {
    */
   async run() {
     await this.#doInit();
+    console.log('!!!Running CLI!!!');
     program
       .name('backstage-cli')
       .version(version)
@@ -117,22 +142,23 @@ export class CliInitializer {
   }
 }
 
-function toInternalCliFeature(feature: CliFeature): InternalCliFeature {
+function toInternalCliFeature(feature: CliFeature): InternalFeature {
   if (feature.$$type !== '@backstage/CliFeature') {
     throw new Error(`Invalid CliFeature, bad type '${feature.$$type}'`);
   }
-  const internal = feature as InternalCliFeature;
+  const internal = feature as InternalFeature;
   if (internal.version !== 'v1') {
     throw new Error(`Invalid CliFeature, bad version '${internal.version}'`);
   }
   return internal;
 }
 
-function isCliPlugin(feature: CliFeature): feature is InternalCliPlugin {
+function isCliPlugin(feature: CliFeature): feature is InternalPlugin {
   const internal = toInternalCliFeature(feature);
-  if (internal.featureType === 'plugin') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'plugin' in internal;
+  return internal.featureType === 'plugin';
+}
+
+function isCliService(feature: CliFeature): feature is InternalServiceFactory {
+  const internal = toInternalCliFeature(feature);
+  return internal.featureType === 'service';
 }

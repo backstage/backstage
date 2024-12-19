@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import { CommandRegistry } from './CommandRegistry';
-import { InternalCliPlugin } from './types';
+import { CliPluginRegistrationPoints, InternalPlugin } from './plugins/types';
 
-export function createCliPlugin(options: {
+export function createPlugin(options: {
   pluginId: string;
-  init: (registry: CommandRegistry) => Promise<void>;
-}): InternalCliPlugin {
+  register: (env: CliPluginRegistrationPoints) => Promise<void>;
+}): InternalPlugin {
   return {
     id: options.pluginId,
-    init: options.init,
+    register: options.register,
     $$type: '@backstage/CliFeature',
     version: 'v1',
     featureType: 'plugin',
     description: 'A Backstage CLI plugin',
   };
 }
+
+export * from './services/types';
