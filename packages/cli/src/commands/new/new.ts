@@ -87,9 +87,6 @@ export default async () => {
   try {
     await executePluginPackageTemplate(
       {
-        private: options.private,
-        defaultVersion: options.baseVersion,
-        license: options.license,
         isMonoRepo: await isMonoRepo(),
         createTemporaryDirectory,
         markAsModified() {

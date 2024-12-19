@@ -22,17 +22,18 @@ import {
   mockPaths,
 } from './testUtils';
 import { CreateContext } from './types';
-import { executePluginPackageTemplate } from './executeTemplate';
+import {
+  executePluginPackageTemplate,
+  templatingTask,
+} from './executeTemplate';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const mockDir = createMockDirectory();
-
-mockPaths({
-  ownDir: mockDir.resolve('own'),
-  targetRoot: mockDir.resolve('root'),
-});
-
 describe('executePluginPackageTemplate', () => {
+  const mockDir = createMockDirectory();
+  mockPaths({
+    ownDir: mockDir.resolve('own'),
+    targetRoot: mockDir.resolve('root'),
+  });
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -82,7 +83,7 @@ some-package@^1.1.0:
         },
       } as CreateContext,
       {
-        templateName: 'test-template',
+        templateDir: 'test-template',
         targetDir: mockDir.resolve('target'),
         values: {
           id: 'testing',
@@ -120,5 +121,49 @@ some-package@^1.1.0:
     await expect(
       fs.readFile(mockDir.resolve('target/subdir/not-templated.txt'), 'utf8'),
     ).resolves.toBe('Hello {{id}}!');
+  });
+});
+
+describe('templatingTask', () => {
+  const mockDir = createMockDirectory();
+
+  it('should template a directory with mix of regular files and templates', async () => {
+    // Testing template directory
+    const tmplDir = 'test-tmpl';
+
+    // Temporary dest dir to write the template to
+    const destDir = 'test-dest';
+
+    // Files content
+    const testFileContent = 'testing';
+    const testVersionFileContent =
+      "version: {{pluginVersion}} {{versionQuery 'mock-pkg'}}";
+
+    mockDir.setContent({
+      [tmplDir]: {
+        sub: {
+          'version.txt.hbs': testVersionFileContent,
+        },
+        'test.txt': testFileContent,
+      },
+      [destDir]: {},
+    });
+
+    await templatingTask(
+      mockDir.resolve(tmplDir),
+      mockDir.resolve(destDir),
+      {
+        pluginVersion: '0.0.0',
+      },
+      () => '^0.1.2',
+      true,
+    );
+
+    await expect(
+      fs.readFile(mockDir.resolve(destDir, 'test.txt'), 'utf8'),
+    ).resolves.toBe(testFileContent);
+    await expect(
+      fs.readFile(mockDir.resolve(destDir, 'sub/version.txt'), 'utf8'),
+    ).resolves.toBe('version: 0.0.0 ^0.1.2');
   });
 });
