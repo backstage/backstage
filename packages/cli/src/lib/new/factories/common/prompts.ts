@@ -49,15 +49,30 @@ export function moduleIdIdPrompt(): Prompt<{ moduleId: string }> {
   };
 }
 
-export function ownerPrompt(): Prompt<{
-  owner?: string;
-  codeOwnersPath?: string;
-}> {
+export function npmRegistryPrompt(): Prompt<{ npmRegistry: string }> {
+  return {
+    type: 'input',
+    name: 'npmRegistry',
+    message: 'Please specify your NPM registry [optional]',
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the URL of your NPM registry';
+      } else if (!/^http*$/.test(value)) {
+        return 'Invalid URL.';
+      }
+      return true;
+    },
+  };
+}
+
+export function ownerPrompt(
+  codeOwnersPath: string | undefined,
+): Prompt<{ owner?: string }> {
   return {
     type: 'input',
     name: 'owner',
     message: 'Enter an owner to add to CODEOWNERS [optional]',
-    when: opts => Boolean(opts.codeOwnersPath),
+    when: Boolean(codeOwnersPath),
     validate: (value: string) => {
       if (!value) {
         return true;
