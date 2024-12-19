@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { Breakpoint, UtilityProps } from '../types';
 
 const spaceMap = (type: string) => ({

@@ -49,6 +49,170 @@
       border-style: solid;
     }
 
+    .cu-sm-col-end-1 {
+      grid-column-end: 1;
+    }
+
+    .cu-sm-col-end-10 {
+      grid-column-end: 10;
+    }
+
+    .cu-sm-col-end-11 {
+      grid-column-end: 11;
+    }
+
+    .cu-sm-col-end-12 {
+      grid-column-end: 12;
+    }
+
+    .cu-sm-col-end-13 {
+      grid-column-end: 13;
+    }
+
+    .cu-sm-col-end-2 {
+      grid-column-end: 2;
+    }
+
+    .cu-sm-col-end-3 {
+      grid-column-end: 3;
+    }
+
+    .cu-sm-col-end-4 {
+      grid-column-end: 4;
+    }
+
+    .cu-sm-col-end-5 {
+      grid-column-end: 5;
+    }
+
+    .cu-sm-col-end-6 {
+      grid-column-end: 6;
+    }
+
+    .cu-sm-col-end-7 {
+      grid-column-end: 7;
+    }
+
+    .cu-sm-col-end-8 {
+      grid-column-end: 8;
+    }
+
+    .cu-sm-col-end-9 {
+      grid-column-end: 9;
+    }
+
+    .cu-sm-col-end-auto {
+      grid-column-end: auto;
+    }
+
+    .cu-sm-col-span-1 {
+      grid-column: span 1 / span 1;
+    }
+
+    .cu-sm-col-span-10 {
+      grid-column: span 10 / span 10;
+    }
+
+    .cu-sm-col-span-11 {
+      grid-column: span 11 / span 11;
+    }
+
+    .cu-sm-col-span-12 {
+      grid-column: span 12 / span 12;
+    }
+
+    .cu-sm-col-span-2 {
+      grid-column: span 2 / span 2;
+    }
+
+    .cu-sm-col-span-3 {
+      grid-column: span 3 / span 3;
+    }
+
+    .cu-sm-col-span-4 {
+      grid-column: span 4 / span 4;
+    }
+
+    .cu-sm-col-span-5 {
+      grid-column: span 5 / span 5;
+    }
+
+    .cu-sm-col-span-6 {
+      grid-column: span 6 / span 6;
+    }
+
+    .cu-sm-col-span-7 {
+      grid-column: span 7 / span 7;
+    }
+
+    .cu-sm-col-span-8 {
+      grid-column: span 8 / span 8;
+    }
+
+    .cu-sm-col-span-9 {
+      grid-column: span 9 / span 9;
+    }
+
+    .cu-sm-col-span-auto {
+      grid-column: span auto / span auto;
+    }
+
+    .cu-sm-col-start-1 {
+      grid-column-start: 1;
+    }
+
+    .cu-sm-col-start-10 {
+      grid-column-start: 10;
+    }
+
+    .cu-sm-col-start-11 {
+      grid-column-start: 11;
+    }
+
+    .cu-sm-col-start-12 {
+      grid-column-start: 12;
+    }
+
+    .cu-sm-col-start-13 {
+      grid-column-start: 13;
+    }
+
+    .cu-sm-col-start-2 {
+      grid-column-start: 2;
+    }
+
+    .cu-sm-col-start-3 {
+      grid-column-start: 3;
+    }
+
+    .cu-sm-col-start-4 {
+      grid-column-start: 4;
+    }
+
+    .cu-sm-col-start-5 {
+      grid-column-start: 5;
+    }
+
+    .cu-sm-col-start-6 {
+      grid-column-start: 6;
+    }
+
+    .cu-sm-col-start-7 {
+      grid-column-start: 7;
+    }
+
+    .cu-sm-col-start-8 {
+      grid-column-start: 8;
+    }
+
+    .cu-sm-col-start-9 {
+      grid-column-start: 9;
+    }
+
+    .cu-sm-col-start-auto {
+      grid-column-start: auto;
+    }
+
     .cu-sm-flex {
       display: flex;
     }
@@ -103,6 +267,58 @@
 
     .cu-sm-grid {
       display: grid;
+    }
+
+    .cu-sm-grid-cols-1 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-10 {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-11 {
+      grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-12 {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-7 {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-8 {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-9 {
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+
+    .cu-sm-grid-cols-auto {
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     }
 
     .cu-sm-hidden {
@@ -609,60 +825,60 @@
       border-radius: var(--canon-border-radius-xs);
     }
 
+    .cu-sm-row-span-1 {
+      grid-row: span 1 / span 1;
+    }
+
+    .cu-sm-row-span-10 {
+      grid-row: span 10 / span 10;
+    }
+
+    .cu-sm-row-span-11 {
+      grid-row: span 11 / span 11;
+    }
+
+    .cu-sm-row-span-12 {
+      grid-row: span 12 / span 12;
+    }
+
+    .cu-sm-row-span-2 {
+      grid-row: span 2 / span 2;
+    }
+
+    .cu-sm-row-span-3 {
+      grid-row: span 3 / span 3;
+    }
+
+    .cu-sm-row-span-4 {
+      grid-row: span 4 / span 4;
+    }
+
+    .cu-sm-row-span-5 {
+      grid-row: span 5 / span 5;
+    }
+
+    .cu-sm-row-span-6 {
+      grid-row: span 6 / span 6;
+    }
+
+    .cu-sm-row-span-7 {
+      grid-row: span 7 / span 7;
+    }
+
+    .cu-sm-row-span-8 {
+      grid-row: span 8 / span 8;
+    }
+
+    .cu-sm-row-span-9 {
+      grid-row: span 9 / span 9;
+    }
+
+    .cu-sm-row-span-auto {
+      grid-row: span auto / span auto;
+    }
+
     .cu-sm-wrap-reverse {
       flex-wrap: wrap-reverse;
-    }
-
-    .cu-sm-grid-cols-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-6 {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-7 {
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-8 {
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-9 {
-      grid-template-columns: repeat(9, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-10 {
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-11 {
-      grid-template-columns: repeat(11, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-12 {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-    }
-
-    .cu-sm-grid-cols-auto {
-      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     }
   }
 }

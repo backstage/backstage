@@ -81,14 +81,14 @@ export interface UtilityProps extends SpaceProps {
   alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
   border?: Border | Partial<Record<Breakpoint, Border>>;
   borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  colEnd?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  colSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  colStart?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
   display?: Display | Partial<Record<Breakpoint, Display>>;
   flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
   flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
   gap?: Space | Partial<Record<Breakpoint, Space>>;
   justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
-  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
   rowSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
-  colSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
-  colStart?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
-  colEnd?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
 }
