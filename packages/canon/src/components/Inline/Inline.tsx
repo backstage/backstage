@@ -17,14 +17,50 @@
 import { createElement, forwardRef } from 'react';
 import type { InlineProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
+import { JustifyContent, Breakpoint, AlignItems } from '../../types';
+
+// Function to map align values
+const mapAlignValue = (value?: InlineProps['align']) => {
+  if (typeof value === 'string') {
+    let returnedValue: JustifyContent = 'stretch';
+    if (value === 'left') returnedValue = 'start';
+    if (value === 'center') returnedValue = 'center';
+    if (value === 'right') returnedValue = 'end';
+    return returnedValue;
+  } else if (typeof value === 'object') {
+    const returnedValue: Partial<Record<Breakpoint, JustifyContent>> = {};
+    for (const [key, val] of Object.entries(value)) {
+      returnedValue[key as Breakpoint] = mapAlignValue(val) as JustifyContent;
+    }
+    return returnedValue;
+  }
+  return 'stretch';
+};
+
+const mapAlignYValue = (value?: InlineProps['alignY']) => {
+  if (typeof value === 'string') {
+    let returnedValue: AlignItems = 'stretch';
+    if (value === 'top') returnedValue = 'start';
+    if (value === 'center') returnedValue = 'center';
+    if (value === 'bottom') returnedValue = 'end';
+    return returnedValue;
+  } else if (typeof value === 'object') {
+    const returnedValue: Partial<Record<Breakpoint, AlignItems>> = {};
+    for (const [key, val] of Object.entries(value)) {
+      returnedValue[key as Breakpoint] = mapAlignYValue(val) as AlignItems;
+    }
+    return returnedValue;
+  }
+  return 'stretch';
+};
 
 /** @public */
 export const Inline = forwardRef<HTMLElement, InlineProps>((props, ref) => {
   const {
     as = 'div',
     children,
-    align = 'start',
-    alignY = 'start',
+    align = 'left',
+    alignY = 'top',
     gap = 'xs',
     className,
     style,
@@ -34,8 +70,8 @@ export const Inline = forwardRef<HTMLElement, InlineProps>((props, ref) => {
   // Generate utility class names
   const utilityClassNames = getClassNames({
     gap,
-    alignItems: alignY,
-    justifyContent: align,
+    alignItems: mapAlignYValue(alignY),
+    justifyContent: mapAlignValue(align),
     ...restProps,
   });
 

@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import type { SpaceProps, UtilityProps, AsProps } from '../../types';
+import type {
+  SpaceProps,
+  UtilityProps,
+  AsProps,
+  Breakpoint,
+} from '../../types';
 
 /** @public */
 export interface InlineProps extends SpaceProps {
   children: React.ReactNode;
   as?: AsProps;
   gap?: UtilityProps['gap'];
-  align?: Omit<
-    UtilityProps['justifyContent'],
-    'stretch' | 'around' | 'between'
-  >;
-  alignY?: UtilityProps['alignItems'];
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  alignY?:
+    | 'top'
+    | 'center'
+    | 'bottom'
+    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
   className?: string;
   style?: React.CSSProperties;
 }

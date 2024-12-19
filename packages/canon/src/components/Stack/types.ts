@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-import type { SpaceProps, UtilityProps, AsProps } from '../../types';
+import type {
+  SpaceProps,
+  UtilityProps,
+  AsProps,
+  Breakpoint,
+} from '../../types';
 
 /** @public */
 export interface StackProps extends SpaceProps {
   children: React.ReactNode;
   as?: AsProps;
   gap?: UtilityProps['gap'];
-  align?: UtilityProps['alignItems'];
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
   className?: string;
   style?: React.CSSProperties;
 }

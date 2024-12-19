@@ -17,13 +17,32 @@
 import { createElement, forwardRef } from 'react';
 import { StackProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
+import type { AlignItems, Breakpoint } from '../../types';
+
+// Function to map align values
+const mapAlignValue = (value?: StackProps['align']) => {
+  if (typeof value === 'string') {
+    let returnedValue: AlignItems = 'stretch';
+    if (value === 'left') returnedValue = 'start';
+    if (value === 'center') returnedValue = 'center';
+    if (value === 'right') returnedValue = 'end';
+    return returnedValue;
+  } else if (typeof value === 'object') {
+    const returnedValue: Partial<Record<Breakpoint, AlignItems>> = {};
+    for (const [key, val] of Object.entries(value)) {
+      returnedValue[key as Breakpoint] = mapAlignValue(val) as AlignItems;
+    }
+    return returnedValue;
+  }
+  return 'stretch';
+};
 
 /** @public */
 export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   const {
     as = 'div',
     children,
-    align = 'start',
+    align = 'left',
     gap = 'xs',
     className,
     style,
@@ -33,7 +52,7 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
   // Generate utility class names
   const utilityClassNames = getClassNames({
     gap,
-    alignItems: align === 'start' ? 'stretch' : align,
+    alignItems: mapAlignValue(align),
     ...restProps,
   });
 

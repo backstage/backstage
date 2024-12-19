@@ -38,7 +38,7 @@ const meta = {
     },
   },
   args: {
-    align: 'start',
+    align: 'left',
     gap: 'xs',
   },
 } satisfies Meta<typeof Stack>;
@@ -72,7 +72,7 @@ export const Default: Story = {
 export const AlignLeft: Story = {
   args: {
     ...Default.args,
-    align: 'start',
+    align: 'left',
   },
 };
 
@@ -86,7 +86,7 @@ export const AlignCenter: Story = {
 export const AlignRight: Story = {
   args: {
     ...Default.args,
-    align: 'end',
+    align: 'right',
   },
 };
 
@@ -94,9 +94,9 @@ export const ResponsiveAlign: Story = {
   args: {
     ...Default.args,
     align: {
-      xs: 'start',
+      xs: 'left',
       md: 'center',
-      lg: 'end',
+      lg: 'right',
     },
   },
 };

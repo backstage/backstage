@@ -46,6 +46,41 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const fakeBlockList = [
+  { width: 45, height: 60 },
+  { width: 150, height: 75 },
+  { width: 80, height: 50 },
+  { width: 120, height: 70 },
+  { width: 95, height: 65 },
+  { width: 110, height: 55 },
+  { width: 130, height: 60 },
+  { width: 100, height: 80 },
+  { width: 140, height: 45 },
+  { width: 85, height: 70 },
+  { width: 125, height: 50 },
+  { width: 105, height: 75 },
+  { width: 115, height: 65 },
+  { width: 135, height: 55 },
+  { width: 90, height: 60 },
+  { width: 145, height: 80 },
+  { width: 75, height: 45 },
+  { width: 155, height: 70 },
+  { width: 60, height: 50 },
+  { width: 160, height: 75 },
+  { width: 70, height: 65 },
+  { width: 150, height: 55 },
+  { width: 95, height: 60 },
+  { width: 120, height: 80 },
+  { width: 85, height: 45 },
+  { width: 130, height: 70 },
+  { width: 100, height: 50 },
+  { width: 140, height: 75 },
+  { width: 110, height: 65 },
+  { width: 125, height: 55 },
+  { width: 105, height: 60 },
+  { width: 145, height: 80 },
+];
+
 const FakeBox = ({
   width = 120,
   height = 80,
@@ -63,12 +98,8 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        {Array.from({ length: 32 }).map((_, index) => (
-          <FakeBox
-            key={index}
-            width={Math.floor(Math.random() * (160 - 40 + 1)) + 40}
-            height={Math.floor(Math.random() * (80 - 40 + 1)) + 40}
-          />
+        {fakeBlockList.map((block, index) => (
+          <FakeBox key={index} width={block.width} height={block.height} />
         ))}
       </>
     ),
@@ -78,7 +109,7 @@ export const Default: Story = {
 export const AlignLeft: Story = {
   args: {
     ...Default.args,
-    align: 'start',
+    align: 'left',
   },
 };
 
@@ -92,14 +123,14 @@ export const AlignCenter: Story = {
 export const AlignRight: Story = {
   args: {
     ...Default.args,
-    align: 'end',
+    align: 'right',
   },
 };
 
 export const VerticalAlignTop: Story = {
   args: {
     ...Default.args,
-    alignY: 'start',
+    alignY: 'top',
   },
 };
 
@@ -113,7 +144,7 @@ export const VerticalAlignCenter: Story = {
 export const VerticalAlignBottom: Story = {
   args: {
     ...Default.args,
-    alignY: 'end',
+    alignY: 'bottom',
   },
 };
 
