@@ -11,14 +11,7 @@ import * as React_3 from 'react';
 import { RefAttributes } from 'react';
 
 // @public (undocumented)
-export type AlignItemsProps =
-  | 'stretch'
-  | 'flex-start'
-  | 'center'
-  | 'flex-end'
-  | Partial<
-      Record<Breakpoint, 'stretch' | 'flex-start' | 'center' | 'flex-end'>
-    >;
+export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
 // @public (undocumented)
 export type AsProps =
@@ -50,12 +43,18 @@ export type Background =
     >;
 
 // @public (undocumented)
-export type BorderRadiusProps =
+export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
+
+// @public (undocumented)
+export type BorderRadius =
   | 'none'
-  | 'small'
-  | 'medium'
-  | 'full'
-  | Partial<Record<Breakpoint, 'none' | 'small' | 'medium' | 'full'>>;
+  | '2xs'
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl'
+  | '2xl';
 
 // @public (undocumented)
 export const Box: ForwardRefExoticComponent<
@@ -63,51 +62,19 @@ export const Box: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface BoxProps extends SpaceProps, ColorProps {
-  // (undocumented)
-  alignItems?: AlignItemsProps;
+export interface BoxProps extends UtilityProps {
   // (undocumented)
   as?: keyof JSX.IntrinsicElements;
-  // (undocumented)
-  borderRadius?: BorderRadiusProps;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  display?: DisplayProps;
-  // (undocumented)
-  flexDirection?: FlexDirectionProps;
-  // (undocumented)
-  flexWrap?: FlexWrapProps;
-  // (undocumented)
-  justifyContent?: JustifyContentProps;
-  // (undocumented)
   style?: React.CSSProperties;
 }
 
 // @public (undocumented)
-export type Breakpoint = keyof typeof breakpoints;
-
-// @public (undocumented)
-export const breakpoints: {
-  xs: {};
-  sm: {
-    '@media': string;
-  };
-  md: {
-    '@media': string;
-  };
-  lg: {
-    '@media': string;
-  };
-  xl: {
-    '@media': string;
-  };
-  '2xl': {
-    '@media': string;
-  };
-};
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 // @public (undocumented)
 export const Button: React_2.ForwardRefExoticComponent<
@@ -209,24 +176,13 @@ export interface ContainerProps
 }
 
 // @public (undocumented)
-export type DisplayProps =
-  | 'flex'
-  | 'none'
-  | 'inline'
-  | 'block'
-  | Partial<Record<Breakpoint, 'flex' | 'none' | 'inline' | 'block'>>;
+export type Display = 'none' | 'flex' | 'block' | 'inline';
 
 // @public (undocumented)
-export type FlexDirectionProps =
-  | 'row'
-  | 'column'
-  | Partial<Record<Breakpoint, 'row' | 'column'>>;
+export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
-export type FlexWrapProps =
-  | 'wrap'
-  | 'nowrap'
-  | Partial<Record<Breakpoint, 'wrap' | 'nowrap'>>;
+export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
 
 // @public (undocumented)
 export type Gap = Space | Partial<Record<Breakpoint, Space>>;
@@ -332,24 +288,13 @@ export interface InlineProps extends SpaceProps, ColorProps {
 }
 
 // @public (undocumented)
-export type JustifyContentProps =
+export type JustifyContent =
   | 'stretch'
-  | 'flex-start'
+  | 'start'
   | 'center'
-  | 'flex-end'
-  | 'space-around'
-  | 'space-between'
-  | Partial<
-      Record<
-        Breakpoint,
-        | 'stretch'
-        | 'flex-start'
-        | 'center'
-        | 'flex-end'
-        | 'space-around'
-        | 'space-between'
-      >
-    >;
+  | 'end'
+  | 'around'
+  | 'between';
 
 // @public (undocumented)
 export type Margin = Space | Partial<Record<Breakpoint, Space>>;
@@ -394,19 +339,7 @@ export type PaddingX = Space | Partial<Record<Breakpoint, Space>>;
 export type PaddingY = Space | Partial<Record<Breakpoint, Space>>;
 
 // @public (undocumented)
-export type Space = keyof typeof space;
-
-// @public (undocumented)
-export const space: {
-  none: number;
-  '2xs': string;
-  xs: string;
-  sm: string;
-  md: string;
-  lg: string;
-  xl: string;
-  '2xl': string;
-};
+export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 // @public (undocumented)
 export interface SpaceProps {
@@ -508,15 +441,53 @@ export const TableRow: React_3.ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export type Theme = keyof typeof themes;
+export type Theme = 'light' | 'dark';
 
 // @public (undocumented)
-export const themes: {
-  light: {
-    selector: string;
-  };
-  dark: {
-    selector: string;
-  };
-};
+export interface UtilityProps {
+  // (undocumented)
+  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
+  // (undocumented)
+  border?: Border | Partial<Record<Breakpoint, Border>>;
+  // (undocumented)
+  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  // (undocumented)
+  display?: Display | Partial<Record<Breakpoint, Display>>;
+  // (undocumented)
+  flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
+  // (undocumented)
+  flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
+  // (undocumented)
+  gap?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
+  // (undocumented)
+  margin?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  marginRight?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  marginTop?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  marginX?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  marginY?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  padding?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
+  // (undocumented)
+  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
+}
 ```

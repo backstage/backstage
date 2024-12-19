@@ -57,7 +57,7 @@ const FakeBox = ({
   height?: number;
 }) => (
   <Box
-    borderRadius="small"
+    borderRadius="xs"
     style={{ background: '#1f47ff', color: 'white', width, height }}
   />
 );

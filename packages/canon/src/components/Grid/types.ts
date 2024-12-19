@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Breakpoint, ColorProps } from '../../layout/types';
+import { ColorProps } from '../../layout/types';
 import { SpaceProps } from '../../layout/types';
-
+import type { Breakpoint } from '../../types';
 /** @public */
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 

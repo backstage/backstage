@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { breakpoints, space, themes } from './properties';
+
+import type { Breakpoint, Space } from '../types';
 
 /** @public */
-export type Breakpoint = keyof typeof breakpoints;
-
-/** @public */
-export type Space = keyof typeof space;
-
-/** @public */
-export type Theme = keyof typeof themes;
+export type Theme = 'light' | 'dark';
 
 /** @public */
 export type Gap = Space | Partial<Record<Breakpoint, Space>>;

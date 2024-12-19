@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { IconNames } from '../Icon';
-import { Breakpoint } from '../../layout/types';
-
+import type { Breakpoint } from '../../types';
 /**
  * Properties for {@link Button}
  *

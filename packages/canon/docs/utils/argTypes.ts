@@ -13,38 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { boxProperties } from '../../src/components/Box/sprinkles.css';
 import {
   colorProperties,
   spacingProperties,
 } from '../../src/layout/sprinkles.css';
-
-export const listResponsiveValues = (
-  value: keyof typeof boxProperties.styles,
-) => {
-  const values = boxProperties.styles[value];
-
-  if (!values) {
-    console.warn(`Value "${value}" not found in boxProperties.styles`);
-    return [];
-  }
-
-  if ('values' in values) {
-    return Object.keys(values.values);
-  }
-
-  return [];
-};
-
-export const listColorValues = (value: keyof typeof colorProperties.styles) => {
-  const values = colorProperties.styles[value];
-
-  if ('values' in values) {
-    return Object.keys(values.values);
-  }
-
-  return [];
-};
 
 export const argTypesSpacing = Object.keys(spacingProperties.styles).reduce<
   Record<string, any>

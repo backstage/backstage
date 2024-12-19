@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../../types';
+/* Default utilities */
+@import './utilities/xs.css';
 
-/** @public */
-export interface HeadingProps {
-  children: React.ReactNode;
-  variant?:
-    | 'display'
-    | 'title1'
-    | 'title2'
-    | 'title3'
-    | 'title4'
-    | 'title5'
-    | Partial<
-        Record<
-          Breakpoint,
-          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
-        >
-      >;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-}
+/* Min 640px */
+@import './utilities/sm.css';
+
+/* Min 768px */
+@import './utilities/md.css';
+
+/* Min 1024px */
+@import './utilities/lg.css';
+
+/* Min 1280px */
+@import './utilities/xl.css';
+
+/* Min 1536px */
+@import './utilities/2xl.css';

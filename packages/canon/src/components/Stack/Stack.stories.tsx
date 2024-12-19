@@ -53,7 +53,7 @@ const FakeBox = () => (
   <Box
     paddingX="xl"
     paddingY="md"
-    borderRadius="small"
+    borderRadius="xs"
     style={{ background: '#1f47ff', color: 'white' }}
   >
     Fake Box

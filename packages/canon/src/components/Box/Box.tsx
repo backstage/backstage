@@ -15,18 +15,18 @@
  */
 
 import { createElement, forwardRef } from 'react';
-import { boxSprinkles } from './sprinkles.css';
 import { BoxProps } from './types';
+import { getClassNames } from '../../utils/getClassNames';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { as = 'div', className, style, children, ...restProps } = props;
 
-  // Generate the list of class names
-  const sprinklesClassName = boxSprinkles(restProps);
+  // Generate utility class names
+  const utilityClassNames = getClassNames(restProps);
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['box', sprinklesClassName, className]
+  const classNames = ['canon-box', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 
