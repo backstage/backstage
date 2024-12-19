@@ -30,7 +30,7 @@ import {
 } from '../../lib/codeowners';
 import { resolvePackageName } from '../../lib/new/util';
 
-import { executePluginPackageTemplate } from '../../lib/new/tasks';
+import { executePluginPackageTemplate } from '../../lib/new/executePluginPackageTemplate';
 import {
   readCliConfig,
   templateSelector,
@@ -38,8 +38,8 @@ import {
   promptOptions,
   populateOptions,
   createDirName,
-  runAdditionalActions,
-} from './util';
+} from '../../lib/new/utils';
+import { runAdditionalActions } from '../../lib/new/additionalActions';
 
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
