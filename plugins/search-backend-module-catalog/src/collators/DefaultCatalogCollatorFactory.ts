@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
-import {
-  CatalogApi,
-  CatalogClient,
-  GetEntitiesRequest,
-} from '@backstage/catalog-client';
+import { AuthService } from '@backstage/backend-plugin-api';
+import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
@@ -35,29 +28,10 @@ import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransfo
 import { readCollatorConfigOptions } from './config';
 import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
 
-/**
- * @public
- * @deprecated This type is deprecated along with the {@link DefaultCatalogCollatorFactory}.
- */
 export type DefaultCatalogCollatorFactoryOptions = {
-  auth?: AuthService;
-  discovery: DiscoveryService;
-  tokenManager?: TokenManager;
-  /**
-   * @deprecated Use the config key `search.collators.catalog.locationTemplate` instead.
-   */
-  locationTemplate?: string;
-  /**
-   * @deprecated Use the config key `search.collators.catalog.filter` instead.
-   */
-  filter?: GetEntitiesRequest['filter'];
-  /**
-   * @deprecated Use the config key `search.collators.catalog.batchSize` instead.
-   */
-  batchSize?: number;
-  // TODO(freben): Change to required CatalogService instead when fully migrated to the new backend system.
-  catalogClient?: CatalogApi;
-  /**
+  auth: AuthService;
+  catalog: CatalogService;
+  /*
    * Allows you to customize how entities are shaped into documents.
    */
   entityTransformer?: CatalogCollatorEntityTransformer;
@@ -65,9 +39,6 @@ export type DefaultCatalogCollatorFactoryOptions = {
 
 /**
  * Collates entities from the Catalog into documents for the search backend.
- *
- * @public
- * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/building-backends/migrating | new backend system} and install this collator via module instead (see {@link https://github.com/backstage/backstage/blob/nbs10/search-deprecate-create-router/plugins/search-backend-module-catalog/README.md#installation | here} for more installation details).
  */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   public readonly type = 'software-catalog';
@@ -75,9 +46,9 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     catalogEntityReadPermission;
 
   private locationTemplate: string;
-  private filter?: GetEntitiesRequest['filter'];
+  private filter?: QueryEntitiesInitialRequest['filter'];
   private batchSize: number;
-  private readonly catalogClient: CatalogApi;
+  private readonly catalog: CatalogService;
   private entityTransformer: CatalogCollatorEntityTransformer;
   private auth: AuthService;
 
@@ -86,47 +57,37 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     options: DefaultCatalogCollatorFactoryOptions,
   ) {
     const configOptions = readCollatorConfigOptions(configRoot);
-    const { auth: adaptedAuth } = createLegacyAuthAdapters({
-      auth: options.auth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    });
     return new DefaultCatalogCollatorFactory({
-      locationTemplate:
-        options.locationTemplate ?? configOptions.locationTemplate,
-      filter: options.filter ?? configOptions.filter,
-      batchSize: options.batchSize ?? configOptions.batchSize,
+      locationTemplate: configOptions.locationTemplate,
+      filter: configOptions.filter,
+      batchSize: configOptions.batchSize,
       entityTransformer: options.entityTransformer,
-      auth: adaptedAuth,
-      discovery: options.discovery,
-      catalogClient: options.catalogClient,
+      auth: options.auth,
+      catalog: options.catalog,
     });
   }
 
   private constructor(options: {
     locationTemplate: string;
-    filter: GetEntitiesRequest['filter'];
+    filter: QueryEntitiesInitialRequest['filter'];
     batchSize: number;
     entityTransformer?: CatalogCollatorEntityTransformer;
     auth: AuthService;
-    discovery: DiscoveryService;
-    catalogClient?: CatalogApi;
+    catalog: CatalogService;
   }) {
     const {
       auth,
       batchSize,
-      discovery,
       locationTemplate,
       filter,
-      catalogClient,
+      catalog,
       entityTransformer,
     } = options;
 
     this.locationTemplate = locationTemplate;
     this.filter = filter;
     this.batchSize = batchSize;
-    this.catalogClient =
-      catalogClient || new CatalogClient({ discoveryApi: discovery });
+    this.catalog = catalog;
     this.entityTransformer =
       entityTransformer ?? defaultCatalogCollatorEntityTransformer;
     this.auth = auth;
@@ -141,17 +102,13 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     let cursor: string | undefined = undefined;
 
     do {
-      const { token } = await this.auth.getPluginRequestToken({
-        onBehalfOf: await this.auth.getOwnServiceCredentials(),
-        targetPluginId: 'catalog',
-      });
-      const response = await this.catalogClient.queryEntities(
+      const response = await this.catalog.queryEntities(
         {
           filter: this.filter,
           limit: this.batchSize,
           ...(cursor ? { cursor } : {}),
         },
-        { token },
+        { credentials: await this.auth.getOwnServiceCredentials() },
       );
       cursor = response.pageInfo.nextCursor;
       entitiesRetrieved += response.items.length;

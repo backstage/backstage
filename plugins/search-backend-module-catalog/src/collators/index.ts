@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
-export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
-
 export { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
 export type { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
