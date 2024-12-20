@@ -1,5 +1,20 @@
 # @backstage/backend-app-api
 
+## 1.1.1
+
+### Patch Changes
+
+- 02534c7: Corrected spelling mistake in error message
+- Updated dependencies
+  - @backstage/config-loader@1.9.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
 ## 1.1.0
 
 ### Minor Changes

@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.29.0
+
+### Minor Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/backend-defaults@0.6.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.5
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.1
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-scaffolder-common@1.5.8
+
 ## 1.28.0
 
 ### Minor Changes
