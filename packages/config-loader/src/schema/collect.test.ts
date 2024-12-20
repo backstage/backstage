@@ -17,7 +17,6 @@
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { collectConfigSchemas } from './collect';
 import path from 'path';
-import { dependencies } from 'webpack';
 
 // cwd must be restored
 const origDir = process.cwd();
