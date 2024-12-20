@@ -45,7 +45,7 @@ export async function collectConfigSchemas(
   packagePaths: string[],
 ): Promise<ConfigSchemaPackageEntry[]> {
   const schemas = new Array<ConfigSchemaPackageEntry>();
-  const tsSchemaPaths = new Array<string>();
+  const tsSchemaPaths = new Array<{ packageName: string; path: string }>();
   const visitedPackageVersions = new Map<string, Set<string>>(); // pkgName: [versions...]
 
   const currentDir = await fs.realpath(process.cwd());
@@ -115,22 +115,25 @@ export async function collectConfigSchemas(
           );
         }
         if (isDts) {
-          tsSchemaPaths.push(
-            relativePath(
+          tsSchemaPaths.push({
+            path: relativePath(
               currentDir,
               resolvePath(dirname(pkgPath), pkg.configSchema),
             ),
-          );
+            packageName: pkg.name,
+          });
         } else {
           const path = resolvePath(dirname(pkgPath), pkg.configSchema);
           const value = await fs.readJson(path);
           schemas.push({
+            packageName: pkg.name,
             value,
             path: relativePath(currentDir, path),
           });
         }
       } else {
         schemas.push({
+          packageName: pkg.name,
           value: pkg.configSchema,
           path: relativePath(currentDir, pkgPath),
         });
@@ -151,14 +154,27 @@ export async function collectConfigSchemas(
 
   const tsSchemas = await compileTsSchemas(tsSchemaPaths);
 
-  return schemas.concat(tsSchemas);
+  return schemas
+    .concat(tsSchemas)
+    .filter(
+      ({ packageName }, _, original) =>
+        true ||
+        !(
+          packageName === '@backstage/backend-common' &&
+          original.some(
+            ({ packageName: p }) => p === '@backstage/backend-defaults',
+          )
+        ),
+    );
 }
 
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all typescript schema definition and compile them all in one go.
 // This is much faster than compiling them separately.
-async function compileTsSchemas(paths: string[]) {
-  if (paths.length === 0) {
+async function compileTsSchemas(
+  entries: { path: string; packageName: string }[],
+) {
+  if (entries.length === 0) {
     return [];
   }
 
@@ -168,20 +184,23 @@ async function compileTsSchemas(paths: string[]) {
     'typescript-json-schema'
   );
 
-  const program = getProgramFromFiles(paths, {
-    incremental: false,
-    isolatedModules: true,
-    lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
-    noEmit: true,
-    noResolve: true,
-    skipLibCheck: true, // Skipping lib checks speeds things up
-    skipDefaultLibCheck: true,
-    strict: true,
-    typeRoots: [], // Do not include any additional types
-    types: [],
-  });
+  const program = getProgramFromFiles(
+    entries.map(({ path }) => path),
+    {
+      incremental: false,
+      isolatedModules: true,
+      lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
+      noEmit: true,
+      noResolve: true,
+      skipLibCheck: true, // Skipping lib checks speeds things up
+      skipDefaultLibCheck: true,
+      strict: true,
+      typeRoots: [], // Do not include any additional types
+      types: [],
+    },
+  );
 
-  const tsSchemas = paths.map(path => {
+  const tsSchemas = entries.map(({ path, packageName }) => {
     let value;
     try {
       const generator = buildGenerator(
@@ -228,7 +247,7 @@ async function compileTsSchemas(paths: string[]) {
     if (!value) {
       throw new Error(`Invalid schema in ${path}, missing Config export`);
     }
-    return { path, value };
+    return { path, value, packageName };
   });
 
   return tsSchemas;

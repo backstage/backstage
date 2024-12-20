@@ -93,6 +93,61 @@ describe('collectConfigSchemas', () => {
     ]);
   });
 
+  it('should not include schemas for backend-common if theres a backend-defaults package', async () => {
+    mockDir.setContent({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          configSchema: mockSchema,
+          dependencies: {},
+        }),
+        node_modules: {
+          a: {
+            'package.json': JSON.stringify({
+              name: 'a',
+              dependencies: {
+                b: '0.0.0',
+              },
+            }),
+          },
+          b: {
+            'package.json': JSON.stringify({
+              name: 'a',
+              dependencies: {
+                b: '0.0.0',
+              },
+            }),
+          },
+          '@backstage': {
+            'backend-common': {
+              'package.json': JSON.stringify({
+                name: '@backstage/backend-common',
+                configSchema: { ...mockSchema, title: 'backend-common' },
+              }),
+            },
+            'backend-defaults': {
+              'package.json': JSON.stringify({
+                name: '@backstage/backend-defaults',
+                configSchema: { ...mockSchema, title: 'backend-defaults' },
+              }),
+            },
+          },
+        },
+      },
+    });
+
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas([], [path.join('root', 'package.json')]),
+    ).resolves.toEqual([
+      {
+        path: path.join('root', 'package.json'),
+        value: mockSchema,
+      },
+    ]);
+  });
+
   it('should find schema in transitive dependencies and explicit path', async () => {
     mockDir.setContent({
       root: {
