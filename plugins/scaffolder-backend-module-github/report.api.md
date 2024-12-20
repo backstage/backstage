@@ -279,6 +279,7 @@ export function createGithubRepoCreateAction(options: {
           [key: string]: string;
         }
       | undefined;
+    subscribe?: boolean | undefined;
   },
   JsonObject
 >;
@@ -441,6 +442,7 @@ export function createPublishGithubAction(options: {
           [key: string]: string;
         }
       | undefined;
+    subscribe?: boolean | undefined;
   },
   JsonObject
 >;

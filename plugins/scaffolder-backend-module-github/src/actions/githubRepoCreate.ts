@@ -102,6 +102,7 @@ export function createGithubRepoCreateAction(options: {
     requireCommitSigning?: boolean;
     requiredLinearHistory?: boolean;
     customProperties?: { [key: string]: string };
+    subscribe?: boolean;
   }>({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
@@ -143,6 +144,7 @@ export function createGithubRepoCreateAction(options: {
           requiredCommitSigning: inputProps.requiredCommitSigning,
           requiredLinearHistory: inputProps.requiredLinearHistory,
           customProperties: inputProps.customProperties,
+          subscribe: inputProps.subscribe,
         },
       },
       output: {
@@ -176,6 +178,7 @@ export function createGithubRepoCreateAction(options: {
         secrets,
         oidcCustomization,
         customProperties,
+        subscribe,
         token: providedToken,
       } = ctx.input;
 
@@ -217,6 +220,7 @@ export function createGithubRepoCreateAction(options: {
         secrets,
         oidcCustomization,
         customProperties,
+        subscribe,
         ctx.logger,
       );
 

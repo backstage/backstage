@@ -149,6 +149,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
       }
     | undefined,
   customProperties: { [key: string]: string } | undefined,
+  subscribe: boolean | undefined,
   logger: LoggerService,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
@@ -328,6 +329,15 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         include_claim_keys: oidcCustomization.includeClaimKeys,
       },
     );
+  }
+
+  if (subscribe) {
+    await client.rest.activity.setRepoSubscription({
+      subscribed: true,
+      ignored: false,
+      owner,
+      repo,
+    });
   }
 
   return newRepo;
