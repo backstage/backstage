@@ -29,6 +29,10 @@ export type ConfigSchemaPackageEntry = {
    * The relative path that the configuration schema was discovered at.
    */
   path: string;
+  /**
+   * The package name for the package this belongs to
+   */
+  packageName: string;
 };
 
 /**
