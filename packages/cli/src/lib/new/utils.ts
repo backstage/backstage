@@ -52,7 +52,7 @@ export const resolvePackageName = (options: {
   return plugin ? `backstage-plugin-${baseName}` : baseName;
 };
 
-async function calculateBaseVersion(baseVersion: string) {
+async function calculateBaseVersion(baseVersion: string | undefined) {
   if (!baseVersion) {
     const lernaVersion = await fs
       .readJson(paths.resolveTargetRoot('lerna.json'))
