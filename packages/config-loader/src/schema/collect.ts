@@ -158,7 +158,6 @@ export async function collectConfigSchemas(
     .concat(tsSchemas)
     .filter(
       ({ packageName }, _, original) =>
-        true ||
         !(
           packageName === '@backstage/backend-common' &&
           original.some(
