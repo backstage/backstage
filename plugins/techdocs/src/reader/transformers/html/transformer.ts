@@ -21,6 +21,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { Transformer } from '../transformer';
 import { removeUnsafeIframes, removeUnsafeLinks } from './hooks';
+import { TechDocsStorageApi } from '@backstage/plugin-techdocs-react';
 
 /**
  * Returns html sanitizer configuration
@@ -36,7 +37,9 @@ const useSanitizerConfig = () => {
 /**
  * Returns a transformer that sanitizes the dom
  */
-export const useSanitizerTransformer = (): Transformer => {
+export const useSanitizerTransformer = (
+  techdocsStorageApi: TechDocsStorageApi,
+): Transformer => {
   const config = useSanitizerConfig();
 
   return useCallback(
@@ -48,7 +51,10 @@ export const useSanitizerTransformer = (): Transformer => {
 
       if (hosts) {
         tags.push('iframe');
-        DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
+        DOMPurify.addHook(
+          'beforeSanitizeElements',
+          removeUnsafeIframes(hosts, techdocsStorageApi),
+        );
       }
 
       // Only allow meta tags if they are used for refreshing the page. They are required for the redirect feature.
@@ -94,6 +100,6 @@ export const useSanitizerTransformer = (): Transformer => {
         },
       });
     },
-    [config],
+    [config, techdocsStorageApi],
   );
 };

@@ -22,6 +22,7 @@ import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { useSanitizerTransformer } from './transformer';
+import { TechDocsStorageApi } from '@backstage/plugin-techdocs-react';
 
 const configApiMock: ConfigApi = new ConfigReader({
   techdocs: {
@@ -32,6 +33,15 @@ const configApiMock: ConfigApi = new ConfigReader({
   },
 });
 
+const techdocsStorageApiMock: TechDocsStorageApi = {
+  getApiOrigin: () => Promise.resolve('http://localhost:7000'),
+  getBaseUrl: () => Promise.resolve('http://localhost:7000'),
+  getEntityDocs: () => Promise.resolve(''),
+  getBuilder: () => Promise.resolve(''),
+  getStorageUrl: () => Promise.resolve(''),
+  syncEntityDocs: () => Promise.resolve('cached'),
+};
+
 const wrapper: FC<PropsWithChildren<{}>> = ({ children }) => (
   <TestApiProvider apis={[[configApiRef, configApiMock]]}>
     {children}
@@ -40,7 +50,10 @@ const wrapper: FC<PropsWithChildren<{}>> = ({ children }) => (
 
 describe('Transformers > Html > Sanitizer Custom Elements', () => {
   it('should return a function that allows custom elements matching the pattern in the given dom element', async () => {
-    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+    const { result } = renderHook(
+      () => useSanitizerTransformer(techdocsStorageApiMock),
+      { wrapper },
+    );
 
     const dirtyDom = document.createElement('html');
     dirtyDom.innerHTML = `
@@ -59,7 +72,10 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
   });
 
   it('should return a function that removes custom elements not matching the pattern in the given dom element', async () => {
-    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+    const { result } = renderHook(
+      () => useSanitizerTransformer(techdocsStorageApiMock),
+      { wrapper },
+    );
 
     const dirtyDom = document.createElement('html');
     dirtyDom.innerHTML = `
@@ -79,7 +95,10 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
   });
 
   it('should return a function that removes custom element attributes not matching the pattern in the given dom element', async () => {
-    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+    const { result } = renderHook(
+      () => useSanitizerTransformer(techdocsStorageApiMock),
+      { wrapper },
+    );
 
     const dirtyDom = document.createElement('html');
     dirtyDom.innerHTML = `
