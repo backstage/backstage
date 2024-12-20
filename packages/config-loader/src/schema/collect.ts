@@ -153,18 +153,17 @@ export async function collectConfigSchemas(
   ]);
 
   const tsSchemas = await compileTsSchemas(tsSchemaPaths);
+  const allSchemas = schemas.concat(tsSchemas);
 
-  return schemas
-    .concat(tsSchemas)
-    .filter(
-      ({ packageName }, _, original) =>
-        !(
-          packageName === '@backstage/backend-common' &&
-          original.some(
-            ({ packageName: p }) => p === '@backstage/backend-defaults',
-          )
-        ),
-    );
+  const isMissingBackendDefaults = !allSchemas.some(
+    ({ packageName }) => packageName === '@backstage/backend-defaults',
+  );
+
+  // Filter out the backend-common schema unless the backend-defaults schema is missing
+  return allSchemas.filter(
+    ({ packageName }) =>
+      packageName !== '@backstage/backend-common' || isMissingBackendDefaults,
+  );
 }
 
 // This handles the support of TypeScript .d.ts config schema declarations.

@@ -23,6 +23,24 @@ export interface Config {
 
   backend?: {
     /**
+     * Backend configuration for when request authentication is enabled
+     *
+     * @deprecated this will be removed when the backwards compatibility is no longer needed with backend-common
+     */
+    auth?: {
+      /** Keys shared by all backends for signing and validating backend tokens. */
+      keys?: {
+        /**
+         * Secret for generating tokens. Should be a base64 string, recommended
+         * length is 24 bytes.
+         *
+         * @visibility secret
+         */
+        secret: string;
+      }[];
+    };
+
+    /**
      * The full base URL of the backend, as seen from the browser's point of
      * view as it makes calls to the backend.
      */
