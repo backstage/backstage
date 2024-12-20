@@ -53,9 +53,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import {
   defaultCatalogCollatorEntityTransformer as _defaultCatalogCollatorEntityTransformer,
-  DefaultCatalogCollatorFactory as _DefaultCatalogCollatorFactory,
   type CatalogCollatorEntityTransformer as _CatalogCollatorEntityTransformer,
-  type DefaultCatalogCollatorFactoryOptions as _DefaultCatalogCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-catalog';
 
 /**
@@ -258,21 +256,8 @@ export type AnalyzeLocationEntityField = _AnalyzeLocationEntityField;
  * @public
  * @deprecated import from `@backstage/plugin-search-backend-module-catalog` instead
  */
-export const DefaultCatalogCollatorFactory = _DefaultCatalogCollatorFactory;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-search-backend-module-catalog` instead
- */
 export const defaultCatalogCollatorEntityTransformer =
   _defaultCatalogCollatorEntityTransformer;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-search-backend-module-catalog` instead
- */
-export type DefaultCatalogCollatorFactoryOptions =
-  _DefaultCatalogCollatorFactoryOptions;
 
 /**
  * @public
