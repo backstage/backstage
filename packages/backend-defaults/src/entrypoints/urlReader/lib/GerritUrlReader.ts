@@ -90,8 +90,17 @@ export class GerritUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    const apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
+    let apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
     let response: Response;
+    const tagIndex = apiUrl.indexOf('tags');
+    if (tagIndex > 0) {
+      const parts = apiUrl.split('files');
+      response = await this.readRepository(parts[0], options);
+      let responseBody = (await response.buffer()).toString("base64");
+      const changeId = responseBody.slice(responseBody.indexOf('revision')+8, responseBody.indexOf('can/delete'));
+      const repoUrl = apiUrl.slice(0, tagIndex);
+      apiUrl = `${repoUrl}commits/${changeId}/files${parts[1]}`;
+    }
     try {
       response = await fetch(apiUrl, {
         method: 'GET',
@@ -128,6 +137,44 @@ export class GerritUrlReader implements UrlReaderService {
     }
     throw new Error(
       `${url} could not be read as ${apiUrl}, ${response.status} ${response.statusText}`,
+    );
+  }
+
+  async readRepository(
+    url: string,
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
+    let response;
+    try {
+      response = await fetch(url, {
+        method: 'GET',
+        ...getGerritRequestOptions(this.integration.config),
+        signal: options?.signal as any,
+      });
+    } catch (e) {
+      throw new Error(`Unable to read repository ${url}, ${e}`);
+    }
+
+    if (response.ok) {
+      let responseBody: string;
+      return {
+        buffer: async () => {
+          if (responseBody === undefined) {
+            responseBody = await response.text();
+          }
+          return Buffer.from(responseBody, 'base64');
+        },
+        stream: () => {
+          const readable = Readable.from(response.body);
+          return readable.pipe(new Base64Decode());
+        },
+      };
+    }
+    if (response.status === 404) {
+      throw new NotFoundError(`File ${url} not found.`);
+    }
+    throw new Error(
+      `${url} could not be read, ${response.status} ${response.statusText}`,
     );
   }
 
@@ -179,7 +226,7 @@ export class GerritUrlReader implements UrlReaderService {
     revision: string,
     options?: UrlReaderServiceReadTreeOptions,
   ) {
-    const { branch, filePath, project } = parseGerritGitilesUrl(
+    const { branch, filePath, project, tags } = parseGerritGitilesUrl(
       this.integration.config,
       url,
     );
@@ -188,6 +235,7 @@ export class GerritUrlReader implements UrlReaderService {
       project,
       branch,
       filePath,
+      tags,
     );
     const archiveResponse = await fetch(archiveUrl, {
       ...getGerritRequestOptions(this.integration.config),
