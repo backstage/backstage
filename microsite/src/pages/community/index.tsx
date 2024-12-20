@@ -101,6 +101,11 @@ const Community = () => {
       url: 'https://statusneo.com/backstage',
       logo: 'img/partner-logo-statusneo.png',
     },
+    {
+      name: 'Alauda',
+      url: 'https://www.alauda.io/community/169249',
+      logo: 'img/partner-logo-alauda.png',
+    },
   ];
   //#endregion
 
