@@ -19774,12 +19774,12 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18":
-  version: 18.3.17
-  resolution: "@types/react@npm:18.3.17"
+  version: 18.3.18
+  resolution: "@types/react@npm:18.3.18"
   dependencies:
     "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 8107f6f5cc8706a3814e6c927e135ce0c7b40a6d9ae2b8dfb071fee03c6f714456041ecdf92dece599da0db8be7f56f6dc6353d4701f47a04772c7ec0cbb0b59
+  checksum: 5933597bc9f53e282f0438f0bb76d0f0fab60faabe760ea806e05ffe6f5c61b9b4d363e1a03a8fea47c510d493c6cf926cdeeba9f7074fa97b61940c350245e7
   languageName: node
   linkType: hard
 
