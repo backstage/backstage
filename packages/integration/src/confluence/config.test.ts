@@ -29,7 +29,7 @@ describe('Confluence Integration config', () => {
     const output = readConfluenceIntegrationConfig(
       buildConfig({
         host: 'mycompany.atlassian.net',
-        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
       }),
     );
 
@@ -42,7 +42,13 @@ describe('Confluence Integration config', () => {
   it('rejects funky configs', () => {
     const valid: any = {
       host: 'mycompany.atlassian.net',
+      apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
     };
+    expect(() =>
+      readConfluenceIntegrationConfig(
+        buildConfig({ ...valid, host: 'example.backstage.net' }),
+      ),
+    ).toThrow(/host/);
     expect(() =>
       readConfluenceIntegrationConfig(buildConfig({ ...valid, host: 2 })),
     ).toThrow(/host/);
@@ -55,11 +61,11 @@ describe('Confluence Integration config', () => {
     const integrations = [
       {
         host: 'mycompany1.atlassian.net',
-        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
       },
       {
         host: 'mycompany2.atlassian.net',
-        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
       },
     ];
     const config = new ConfigReader({
@@ -69,6 +75,15 @@ describe('Confluence Integration config', () => {
     });
     const output = readConfluenceIntegrationConfigs(config);
 
-    expect(output).toEqual(integrations);
+    expect(output).toEqual([
+      {
+        host: 'mycompany1.atlassian.net',
+        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      },
+      {
+        host: 'mycompany2.atlassian.net',
+        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      },
+    ]);
   });
 });

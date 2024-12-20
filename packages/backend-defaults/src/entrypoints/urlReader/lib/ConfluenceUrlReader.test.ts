@@ -186,6 +186,14 @@ describe('ConfluenceUrlReader', () => {
       },
     })[0].reader;
 
+    it('Should fail for invalid url', async () => {
+      await expect(
+        reader.readTree(
+          `https://mycompany.atlassian.net/pages/${mockPageId}/some+page`,
+        ),
+      ).rejects.toThrow(/Invalid URL/);
+    });
+
     it('Fetches a page with attachments', async () => {
       worker.use(fetchConfluencePage(mockPageId));
       worker.use(fetchConfluencePageAttachments(mockPageId, mockAttachmentId));

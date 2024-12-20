@@ -61,12 +61,18 @@ export class ConfluenceUrlReader implements UrlReaderService {
     _url: string,
     _options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    throw new Error('Method not implemented.');
+    throw new Error('This method will be implemented in the future'); //+
   }
 
   parseUrl(url: string) {
+    // url format: https://<company-domain>/wiki/spaces/<space-id>/pages/<page-id>/<page-title>
     const regex =
       /https:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6})\/wiki\/spaces\/([A-Za-z0-9_-]+)\/pages\/(\d+)\/([A-Za-z0-9-_+]+)/;
+    if (!url.match(regex))
+      throw new Error(
+        'Invalid URL. Url should be in the format: https://<host>/wiki/spaces/<space-id>/pages/<page-id>/<page-title>',
+      );
+
     const [_string, host, space, pageId, title] = url.match(regex)!;
     const pageTitle = title.replaceAll('+', ' ');
     return {
@@ -94,7 +100,7 @@ export class ConfluenceUrlReader implements UrlReaderService {
     _url: string,
     _options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('Method not implemented.');
+    throw new Error('Confluence does not implement search');
   }
 
   async loadConfluencePage(
@@ -138,7 +144,6 @@ export class ConfluenceUrlReader implements UrlReaderService {
         docItems.push(...childPageContent);
       }
     } catch (error) {
-      console.log(error);
       this.logger.error(
         `Error reading page ${pageId} from confluence: ${error.message}`,
       );
@@ -152,6 +157,8 @@ export class ConfluenceUrlReader implements UrlReaderService {
     for (const attachment of attachments) {
       const attachmentTitle = attachment.title.replace(/ /g, '-');
       const attachmentTitleInUrl = attachment.title.replace(/ /g, '%20');
+      // If .pdf, this regex matches Markdown links in the format [link text](url)
+      // If not ![alt text](url)
       const regex = attachmentTitleInUrl.includes('.pdf')
         ? new RegExp(`(\\[.*?\\]\\()(.*?${attachmentTitleInUrl}.*?)(\\))`, 'gi')
         : new RegExp(
