@@ -23,24 +23,6 @@ export interface Config {
 
   backend?: {
     /**
-     * Backend configuration for when request authentication is enabled
-     *
-     * @deprecated this will be removed when the backwards compatibility is no longer needed with backend-common
-     */
-    auth?: {
-      /** Keys shared by all backends for signing and validating backend tokens. */
-      keys?: {
-        /**
-         * Secret for generating tokens. Should be a base64 string, recommended
-         * length is 24 bytes.
-         *
-         * @visibility secret
-         */
-        secret: string;
-      }[];
-    };
-
-    /**
      * The full base URL of the backend, as seen from the browser's point of
      * view as it makes calls to the backend.
      */
@@ -104,6 +86,19 @@ export interface Config {
      * Options used by the default auth, httpAuth and userInfo services.
      */
     auth?: {
+      /**
+       * Keys shared by all backends for signing and validating backend tokens.
+       * @deprecated this will be removed when the backwards compatibility is no longer needed with backend-common
+       */
+      keys?: {
+        /**
+         * Secret for generating tokens. Should be a base64 string, recommended
+         * length is 24 bytes.
+         *
+         * @visibility secret
+         */
+        secret: string;
+      }[];
       /**
        * This disables the otherwise default auth policy, which requires all
        * requests to be authenticated with either user or service credentials.
