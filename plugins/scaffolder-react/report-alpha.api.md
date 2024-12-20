@@ -46,14 +46,14 @@ import { UiSchema } from '@rjsf/utils';
 import { WidgetProps } from '@rjsf/utils';
 import { z } from 'zod';
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type BackstageOverrides = Overrides & {
   [Name in keyof ScaffolderReactComponentsNameToClassKey]?: Partial<
     StyleRules<ScaffolderReactComponentsNameToClassKey[Name]>
   >;
 };
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type BackstageTemplateStepperClassKey =
   | 'backButton'
   | 'footer'
@@ -296,13 +296,13 @@ export type ScaffolderPageContextMenuProps = {
   onCreateClicked?: () => void;
 };
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ScaffolderReactComponentsNameToClassKey = {
   ScaffolderReactTemplateCategoryPicker: ScaffolderReactTemplateCategoryPickerClassKey;
   BackstageTemplateStepper: BackstageTemplateStepperClassKey;
 };
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
 // @alpha

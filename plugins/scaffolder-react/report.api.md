@@ -27,6 +27,7 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -36,6 +37,7 @@ import { RegistryWidgetsType } from '@rjsf/utils';
 import { RJSFSchema } from '@rjsf/utils';
 import { RJSFValidationError } from '@rjsf/utils';
 import { StrictRJSFSchema } from '@rjsf/utils';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -62,6 +64,19 @@ export type ActionExample = {
   description: string;
   example: string;
 };
+
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof ScaffolderReactComponentsNameToClassKey]?: Partial<
+    StyleRules<ScaffolderReactComponentsNameToClassKey[Name]>
+  >;
+};
+
+// @public (undocumented)
+export type BackstageTemplateStepperClassKey =
+  | 'backButton'
+  | 'footer'
+  | 'formWrapper';
 
 // @public
 export function createScaffolderFieldExtension<
@@ -324,6 +339,15 @@ export type ScaffolderOutputText = {
   content?: string;
   default?: boolean;
 };
+
+// @public (undocumented)
+export type ScaffolderReactComponentsNameToClassKey = {
+  ScaffolderReactTemplateCategoryPicker: ScaffolderReactTemplateCategoryPickerClassKey;
+  BackstageTemplateStepper: BackstageTemplateStepperClassKey;
+};
+
+// @public (undocumented)
+export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
 // @public
 export type ScaffolderRJSFField<

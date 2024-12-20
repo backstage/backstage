@@ -56,7 +56,7 @@ import { merge } from 'lodash';
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
 
-/** @alpha */
+/** @public */
 export type BackstageTemplateStepperClassKey =
   | 'backButton'
   | 'footer'
