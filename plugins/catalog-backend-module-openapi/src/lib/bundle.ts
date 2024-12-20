@@ -57,7 +57,8 @@ export async function bundleFileWithRefs(
       return protocol === 'http' || protocol === 'https';
     },
     read: async ref => {
-      const url = resolveUrl(ref.url, baseUrl);
+      const file = ref.url.split('/');
+      const url = resolveUrl(file[file.length - 1], baseUrl);
       return await read(url);
     },
   };
