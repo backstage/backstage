@@ -15,35 +15,40 @@
  */
 
 import React from 'react';
+import { Route } from 'react-router';
+import { FlatRoutes } from '@backstage/core-app-api';
+import {
+  convertLegacyApp,
+  convertLegacyPageExtension,
+  convertLegacyPlugin,
+} from '@backstage/core-compat-api';
 import { createApp } from '@backstage/frontend-defaults';
-import { pagesPlugin } from './examples/pagesPlugin';
-import notFoundErrorPage from './examples/notFoundErrorPageExtension';
-import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin, {
-  titleExtensionDataRef,
-} from '@backstage/plugin-home/alpha';
-
 import {
   coreExtensionData,
   createExtension,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
+import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import homePlugin, {
+  titleExtensionDataRef,
+} from '@backstage/plugin-home/alpha';
+import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
+import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
+import searchPlugin from '@backstage/plugin-search/alpha';
 import {
   techdocsPlugin,
   TechDocsIndexPage,
   TechDocsReaderPage,
   EntityTechdocsContent,
 } from '@backstage/plugin-techdocs';
-import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
+import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+
+import notFoundErrorPage from './examples/notFoundErrorPageExtension';
+import { pagesPlugin } from './examples/pagesPlugin';
 import { homePage } from './HomePage';
-import { convertLegacyApp } from '@backstage/core-compat-api';
-import { FlatRoutes } from '@backstage/core-app-api';
-import { Route } from 'react-router';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import { convertLegacyPlugin } from '@backstage/core-compat-api';
-import { convertLegacyPageExtension } from '@backstage/core-compat-api';
-import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /**
  * TechDocs does support the new frontend system so this conversion is not
@@ -93,14 +98,24 @@ const collectedLegacyPlugins = convertLegacyApp(
 
 const app = createApp({
   features: [
-    pagesPlugin,
-    convertedTechdocsPlugin,
-    userSettingsPlugin,
-    homePlugin,
+    // Plugins made using new API.
     appVisualizerPlugin,
+    catalogPlugin,
+    homePlugin,
     kubernetesPlugin,
-    notFoundErrorPageModule,
+    pagesPlugin,
+    scaffolderPlugin,
+    searchPlugin,
+    userSettingsPlugin,
+
+    // Plugins converted from legacy API.
+    convertedTechdocsPlugin,
+
+    // Modules made using new API.
     customHomePageModule,
+    notFoundErrorPageModule,
+
+    // App converted from legacy API.
     ...collectedLegacyPlugins,
   ],
 });
