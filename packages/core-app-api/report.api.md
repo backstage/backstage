@@ -295,6 +295,13 @@ export type AuthApiCreateOptions = {
 };
 
 // @public
+export type AuthConnector<AuthSession> = {
+  createSession(options: CreateSessionOptions): Promise<AuthSession>;
+  refreshSession(scopes?: Set<string>): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+};
+
+// @public
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
@@ -352,6 +359,12 @@ export function createFetchApi(options: {
   baseImplementation?: typeof fetch | undefined;
   middleware?: FetchMiddleware | FetchMiddleware[] | undefined;
 }): FetchApi;
+
+// @public (undocumented)
+export type CreateSessionOptions = {
+  scopes: Set<string>;
+  instantPopup?: boolean;
+};
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
@@ -479,6 +492,15 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 }
 
 // @public
+export type LoginPopupOptions = {
+  url: string;
+  name: string;
+  origin: string;
+  width?: number;
+  height?: number;
+};
+
+// @public
 export class MicrosoftAuth {
   // (undocumented)
   static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
@@ -551,6 +573,9 @@ export class OAuth2
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
+  authConnectorFactory?: (
+    opts: OAuth2CreateOptions,
+  ) => AuthConnector<OAuth2Session>;
 };
 
 // @public
@@ -636,6 +661,9 @@ export class SamlAuth
   // (undocumented)
   signOut(): Promise<void>;
 }
+
+// @public
+export function showLoginPopup(options: LoginPopupOptions): Promise<any>;
 
 // @public
 export type SignInPageProps = PropsWithChildren<{
