@@ -37,7 +37,7 @@ describe('<UserSettingsMenu />', () => {
 
   it('handles errors that occur when signing out', async () => {
     const failingIdentityApi = mockApis.identity.mock({
-      signOut: () => Promise.reject(new Error('Logout error')),
+      signOut: () => Promise.reject<void>(new Error('Logout error')),
     });
     const mockErrorApi = new MockErrorApi({ collect: true });
     await renderInTestApp(
