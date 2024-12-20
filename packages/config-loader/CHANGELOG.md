@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 1.9.4
+
+### Patch Changes
+
+- 2a825a6: Exclude `@backstage/backend-common` from schema collection if `@backstage/backend-defaults` is present
+
 ## 1.9.3
 
 ### Patch Changes

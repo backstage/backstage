@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder
 
+## 1.27.3
+
+### Patch Changes
+
+- 9cadaf1: Fix issue with `secrets` not being forwarded properly to the backend when creating a task
+
 ## 1.27.2
 
 ### Patch Changes
