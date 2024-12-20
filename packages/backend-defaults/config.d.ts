@@ -407,16 +407,18 @@ export interface Config {
        */
       connection:
         | string
-        | {
-            /**
-             * The specific config for cloudsql connections
-             */
-            type: 'cloudsql';
-            /**
-             * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
-             */
-            instance: string;
-          }
+        // todo(blam): This config should work, but it looks like union type issues with config.d.ts
+        // causes some issues. https://github.com/backstage/backstage/issues/28170
+        // | {
+        //     /**
+        //      * The specific config for cloudsql connections
+        //      */
+        //     type: 'cloudsql';
+        //     /**
+        //      * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+        //      */
+        //     instance: string;
+        //   }
         | {
             /**
              * Password that belongs to the client User
@@ -476,16 +478,18 @@ export interface Config {
            */
           connection?:
             | string
-            | {
-                /**
-                 * The specific config for cloudsql connections
-                 */
-                type: 'cloudsql';
-                /**
-                 * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
-                 */
-                instance: string;
-              }
+            // todo(blam): This config should work, but it looks like union type issues with config.d.ts
+            // causes some issues. https://github.com/backstage/backstage/issues/28170
+            // | {
+            //     /**
+            //      * The specific config for cloudsql connections
+            //      */
+            //     type: 'cloudsql';
+            //     /**
+            //      * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
+            //      */
+            //     instance: string;
+            //   }
             | {
                 /**
                  * Password that belongs to the client User
