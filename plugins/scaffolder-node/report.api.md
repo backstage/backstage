@@ -41,6 +41,9 @@ export type ActionContext<
   ): void;
   createTemporaryDirectory(): Promise<string>;
   getInitiatorCredentials(): Promise<BackstageCredentials>;
+  task: {
+    id: string;
+  };
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
   user?: {
