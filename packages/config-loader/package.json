@@ -1,6 +1,6 @@
 {
   "name": "@backstage/config-loader",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "Config loading functionality used by Backstage backend, and CLI",
   "backstage": {
     "role": "node-library"

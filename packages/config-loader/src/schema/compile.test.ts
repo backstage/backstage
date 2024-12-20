@@ -21,10 +21,12 @@ describe('compileConfigSchemas', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a',
+        packageName: 'a',
         value: { type: 'object', properties: { a: { type: 'string' } } },
       },
       {
         path: 'b',
+        packageName: 'b',
         value: { type: 'object', properties: { b: { type: 'number' } } },
       },
     ]);
@@ -64,6 +66,7 @@ describe('compileConfigSchemas', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a1',
+        packageName: 'a1',
         value: {
           type: 'object',
           properties: {
@@ -80,6 +83,7 @@ describe('compileConfigSchemas', () => {
       },
       {
         path: 'a2',
+        packageName: 'a2',
         value: {
           type: 'object',
           properties: {
@@ -126,6 +130,7 @@ describe('compileConfigSchemas', () => {
       compileConfigSchemas([
         {
           path: 'a1',
+          packageName: 'a1',
           value: {
             type: 'object',
             properties: { a: { type: 'string', visibility: 'frontend' } },
@@ -133,6 +138,7 @@ describe('compileConfigSchemas', () => {
         },
         {
           path: 'a2',
+          packageName: 'a2',
           value: {
             type: 'object',
             properties: { a: { type: 'string', visibility: 'secret' } },
@@ -148,6 +154,7 @@ describe('compileConfigSchemas', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a1',
+        packageName: 'a1',
         value: {
           type: 'object',
           properties: {
@@ -179,6 +186,7 @@ describe('compileConfigSchemas', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a1',
+        packageName: 'a1',
         value: {
           type: 'object',
           properties: {
@@ -242,6 +250,7 @@ describe('deepVisibility', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a1',
+        packageName: 'a1',
         value: {
           type: 'object',
           properties: {
@@ -257,6 +266,7 @@ describe('deepVisibility', () => {
       },
       {
         path: 'a2',
+        packageName: 'a2',
         value: {
           type: 'object',
           deepVisibility: 'secret',
@@ -305,6 +315,7 @@ describe('deepVisibility', () => {
       compileConfigSchemas([
         {
           path: 'a1',
+          packageName: 'a1',
           value: {
             type: 'object',
             properties: {
@@ -320,6 +331,7 @@ describe('deepVisibility', () => {
         },
         {
           path: 'a2',
+          packageName: 'a2',
           value: {
             type: 'object',
             deepVisibility: 'secret',
@@ -346,6 +358,7 @@ describe('deepVisibility', () => {
       compileConfigSchemas([
         {
           path: 'a2',
+          packageName: 'a2',
           value: {
             type: 'object',
             deepVisibility: 'secret',
@@ -376,6 +389,7 @@ describe('deepVisibility', () => {
       compileConfigSchemas([
         {
           path: 'a2',
+          packageName: 'a2',
           value: {
             type: 'object',
             properties: {
@@ -398,6 +412,7 @@ describe('deepVisibility', () => {
       compileConfigSchemas([
         {
           path: 'a1',
+          packageName: 'a1',
           value: {
             type: 'object',
             properties: {
@@ -418,6 +433,7 @@ describe('deepVisibility', () => {
         },
         {
           path: 'a2',
+          packageName: 'a2',
           value: {
             type: 'object',
             deepVisibility: 'secret',
