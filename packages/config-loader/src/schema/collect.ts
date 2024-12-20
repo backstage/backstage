@@ -159,7 +159,10 @@ export async function collectConfigSchemas(
     ({ packageName }) => packageName === '@backstage/backend-defaults',
   );
 
-  // Filter out the backend-common schema unless the backend-defaults schema is missing
+  // Filter out the backend-common schema unless the backend-defaults schema is missing.
+  // This was causing issue with merging of the schemas.
+  // This should be removed when we have no need for backend-common anymore, and other
+  // packages are no longer depending on it.
   return allSchemas.filter(
     ({ packageName }) =>
       packageName !== '@backstage/backend-common' || isMissingBackendDefaults,
