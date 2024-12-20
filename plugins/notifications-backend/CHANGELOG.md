@@ -1,5 +1,23 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- cbc0e63: Remove `@backstage/backend-common` dependency
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/plugin-notifications-node@0.2.10
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-signals-node@0.1.15
+
 ## 0.5.0
 
 ### Minor Changes

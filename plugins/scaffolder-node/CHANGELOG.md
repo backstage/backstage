@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.3
+
+### Patch Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+
 ## 0.6.2
 
 ### Patch Changes
