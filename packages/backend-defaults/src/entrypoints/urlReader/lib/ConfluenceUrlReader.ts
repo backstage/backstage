@@ -186,7 +186,7 @@ export class ConfluenceUrlReader implements UrlReaderService {
     return childPages;
   }
 
-  private htmlToMardDown(html: string) {
+  private htmlToMarkDown(html: string) {
     return NodeHtmlMarkdown.translate(html);
   }
 
@@ -214,7 +214,7 @@ export class ConfluenceUrlReader implements UrlReaderService {
     const title = apiResponse.title;
     const lastModifiedAt = apiResponse.version.createdAt;
     return {
-      page: this.htmlToMardDown(pageHtml),
+      page: this.htmlToMarkDown(pageHtml),
       title,
       lastModifiedAt,
     };
