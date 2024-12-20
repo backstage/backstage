@@ -22,3 +22,9 @@ export * from './api';
 export * from './hooks';
 export * from './layouts';
 export * from './utils';
+export type {
+  BackstageOverrides,
+  ScaffolderReactComponentsNameToClassKey,
+  ScaffolderReactTemplateCategoryPickerClassKey,
+  BackstageTemplateStepperClassKey,
+} from './next';

@@ -19,13 +19,13 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { ScaffolderReactTemplateCategoryPickerClassKey } from './components/TemplateCategoryPicker/TemplateCategoryPicker';
 import { BackstageTemplateStepperClassKey } from './components/Stepper/Stepper';
 
-/** @alpha */
+/** @public */
 export type ScaffolderReactComponentsNameToClassKey = {
   ScaffolderReactTemplateCategoryPicker: ScaffolderReactTemplateCategoryPickerClassKey;
   BackstageTemplateStepper: BackstageTemplateStepperClassKey;
 };
 
-/** @alpha */
+/** @public */
 export type BackstageOverrides = Overrides & {
   [Name in keyof ScaffolderReactComponentsNameToClassKey]?: Partial<
     StyleRules<ScaffolderReactComponentsNameToClassKey[Name]>
