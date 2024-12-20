@@ -33,7 +33,7 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-/** @public */
+/** @alpha */
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
 const useStyles = makeStyles(
