@@ -65,10 +65,10 @@ const useStyles = makeStyles(
       fill: theme.palette.status.error || '#C9190B',
     },
     pending: {
-      fill: theme.palette.status.aborted || '#6A6E73',
+      fill: theme.palette.status.pending || '#FFED51',
     },
     running: {
-      fill: theme.palette.status.aborted || '#6A6E73',
+      fill: theme.palette.status.running || '#2E77D0',
     },
     aborted: {
       fill: theme.palette.status.aborted || '#6A6E73',
