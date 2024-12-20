@@ -1,0 +1,9 @@
+---
+title: Knative Event Mesh
+author: Knative Community
+authorUrl: https://github.com/knative-extensions/backstage-plugins
+category: Monitoring
+description: A plugin that provides a way to view and manage Knative Event Mesh resources.
+documentation: https://knative.dev/docs/install/installing-backstage-plugins/
+npmPackageName: '@knative-extensions/plugin-knative-event-mesh-backend'
+addedDate: '2024-12-16'
