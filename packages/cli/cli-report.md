@@ -452,6 +452,7 @@ Options:
   --successCache
   --successCacheDir <path>
   --fix
+  --quiet
   -h, --help
 ```
 
