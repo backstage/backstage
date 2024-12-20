@@ -34,11 +34,11 @@ export const useCustomFieldExtensions = <
 ) => {
   // Get custom fields created with FormFieldBlueprint
   const formFieldsApi = useApi(formFieldsApiRef);
-  const [{ result: blueprintFields }, methods] = useAsync(
-    formFieldsApi.getFormFields,
+  const [{ result: blueprintFields }, { execute }] = useAsync(
+    () => formFieldsApi.getFormFields(),
     [],
   );
-  useMountEffect(methods.execute);
+  useMountEffect(execute);
 
   // Get custom fields created with ScaffolderFieldExtensions
   const outletFields = useElementFilter(outlet, elements =>
