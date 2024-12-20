@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import { InternalServiceFactory } from './factory';
-import { InternalPlugin } from './plugins/types';
+import { cliServiceRef } from './cli';
 
-export interface BackstageCommand {
-  path: string[];
-  description: string;
-  execute: (options: { args: string[] }) => Promise<void>;
-}
-
-/** @internal */
-export type InternalFeature = InternalPlugin | InternalServiceFactory;
+export const coreServices = {
+  cli: cliServiceRef,
+};
