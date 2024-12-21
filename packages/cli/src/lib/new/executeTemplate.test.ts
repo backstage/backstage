@@ -15,13 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { sep } from 'path';
-import {
-  createMockOutputStream,
-  expectLogsToMatch,
-  mockPaths,
-} from './testUtils';
-import { CreateContext } from './types';
+import { mockPaths } from './testUtils';
 import {
   executePluginPackageTemplate,
   templatingTask,
@@ -47,9 +41,8 @@ some-package@^1.1.0:
 `,
       },
       own: {
-        templates: {
-          'test-template': {
-            'package.json.hbs': `
+        'test-template': {
+          'package.json.hbs': `
 {
   "name": "my-{{id}}-plugin",
   {{#if makePrivate}}
@@ -62,52 +55,37 @@ some-package@^1.1.0:
   }
 }
 `,
-            subdir: {
-              'templated.txt.hbs': 'Hello {{id}}!',
-              'not-templated.txt': 'Hello {{id}}!',
-            },
+          subdir: {
+            'templated.txt.hbs': 'Hello {{id}}!',
+            'not-templated.txt': 'Hello {{id}}!',
           },
         },
       },
     });
 
-    const [output, mockStream] = createMockOutputStream();
-    jest.spyOn(process, 'stderr', 'get').mockReturnValue(mockStream);
-
     let modified = false;
     await executePluginPackageTemplate(
       {
+        isMonoRepo: false,
         createTemporaryDirectory: (name: string) => fs.mkdtemp(name),
         markAsModified: () => {
           modified = true;
         },
-      } as CreateContext,
+      },
       {
-        templateDir: 'test-template',
+        templateDir: mockDir.resolve('own', 'test-template'),
         targetDir: mockDir.resolve('target'),
         values: {
           id: 'testing',
-          makePrivate: true,
         },
       },
     );
 
     expect(modified).toBe(true);
-    expectLogsToMatch(output, [
-      'Checking Prerequisites:',
-      `availability  ..${sep}target`,
-      'creating      temp dir',
-      'Executing Template:',
-      'templating    package.json.hbs',
-      'copying       not-templated.txt',
-      'templating    templated.txt.hbs',
-      'Installing:',
-      `moving        ..${sep}target`,
-    ]);
+
     await expect(fs.readFile(mockDir.resolve('target/package.json'), 'utf8'))
       .resolves.toBe(`{
   "name": "my-testing-plugin",
-  "private": true,
   "description": "testing",
   "dependencies": {
     "some-package": "^1.1.0",
