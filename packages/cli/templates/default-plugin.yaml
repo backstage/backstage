@@ -1,4 +1,3 @@
-# lib/new/factories/frontendPlugin.ts
 description: A new frontend plugin
 template: ./default-plugin
 targetPath: plugins
