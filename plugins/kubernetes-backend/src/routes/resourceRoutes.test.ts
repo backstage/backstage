@@ -169,7 +169,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'InputError', message: 'entity is a required field' },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -193,7 +193,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -216,7 +216,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -240,7 +240,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -264,7 +264,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -287,7 +287,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 500 },
         });
@@ -346,7 +346,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -370,7 +370,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -394,7 +394,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -420,7 +420,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'InputError', message: 'entity is a required field' },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -451,7 +451,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -481,7 +481,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -512,7 +512,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -543,7 +543,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -573,7 +573,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 500 },
         });
