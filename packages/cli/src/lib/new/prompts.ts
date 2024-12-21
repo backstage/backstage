@@ -101,7 +101,7 @@ export async function promptOptions({
   const answers = await inquirer.prompt(
     prompts.map((prompt: ConfigurablePrompt) => {
       if (typeof prompt === 'string') {
-        switch (prompt) {
+        switch (prompt.toLowerCase()) {
           case 'id':
             return pluginIdPrompt();
           case 'moduleid':
