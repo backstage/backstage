@@ -23,7 +23,7 @@ import { Template, TemplateLocation } from './types';
 
 import defaultTemplates from '../../../templates/all-default-templates';
 
-export async function readCliConfig(
+export function readCliConfig(
   cliConfig:
     | {
         defaults?: boolean;
@@ -72,10 +72,7 @@ export async function templateSelector(
   return answer.name;
 }
 
-export async function verifyTemplate({
-  id,
-  target,
-}: TemplateLocation): Promise<Template> {
+export function verifyTemplate({ id, target }: TemplateLocation): Template {
   if (target.startsWith('http')) {
     throw new Error('Remote templates are not supported yet');
   }

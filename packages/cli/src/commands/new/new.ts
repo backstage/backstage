@@ -47,8 +47,8 @@ export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
-  const { templates, globals } = await readCliConfig(cliConfig);
-  const template = await verifyTemplate(await templateSelector(templates));
+  const { templates, globals } = readCliConfig(cliConfig);
+  const template = verifyTemplate(await templateSelector(templates));
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 

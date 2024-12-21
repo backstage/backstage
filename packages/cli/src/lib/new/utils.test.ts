@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackageName } from './utils';
+import {
+  resolvePackageName,
+  populateOptions,
+  createDirName,
+  Options,
+} from './utils';
+import { Template } from './types';
 
 describe('resolvePackageName', () => {
   it('should generate correct name without scope', () => {
@@ -74,5 +80,95 @@ describe('resolvePackageName', () => {
         plugin: false,
       }),
     ).toEqual('@custom/myapp.test');
+  });
+});
+
+describe('populateOptions', () => {
+  it('should return default values if not provided', async () => {
+    expect(
+      await populateOptions({}, { targetPath: '/example' } as Template),
+    ).toEqual({
+      id: '',
+      private: false,
+      baseVersion: '0.0.0',
+      owner: '',
+      license: 'Apache-2.0',
+      targetPath: '/example',
+      scope: '',
+      moduleId: '',
+    });
+  });
+
+  it('should include all non-standard global and prompt values', async () => {
+    expect(
+      await populateOptions({ foo: 'bar' }, {
+        targetPath: '/example',
+      } as Template),
+    ).toEqual({
+      id: '',
+      private: false,
+      baseVersion: '0.0.0',
+      owner: '',
+      license: 'Apache-2.0',
+      targetPath: '/example',
+      scope: '',
+      moduleId: '',
+      foo: 'bar',
+    });
+  });
+
+  it('should priority global targetPath over the targetPath specified in template', async () => {
+    expect(
+      await populateOptions({ targetPath: '/global' }, {
+        targetPath: '/example',
+      } as Template),
+    ).toEqual({
+      id: '',
+      private: false,
+      baseVersion: '0.0.0',
+      owner: '',
+      license: 'Apache-2.0',
+      targetPath: '/global',
+      scope: '',
+      moduleId: '',
+    });
+  });
+});
+
+describe('createDirName', () => {
+  it('should return name in the backend-module format if backendModulePrefix is set to true', () => {
+    expect(
+      createDirName(
+        { backendModulePrefix: true } as Template,
+        {
+          id: 'foo',
+          moduleId: 'bar',
+        } as Options,
+      ),
+    ).toEqual('foo-backend-module-bar');
+  });
+
+  it('should throw an error if backendModulePrefix is configured as true but is missing moduleId', () => {
+    expect(() =>
+      createDirName(
+        { backendModulePrefix: true } as Template,
+        {
+          id: 'foo',
+          moduleId: '',
+        } as Options,
+      ),
+    ).toThrow('backendModulePrefix requires moduleId prompt');
+  });
+
+  it('should append the suffix value if one is provided', () => {
+    expect(
+      createDirName({ suffix: 'foo' } as Template, { id: 'bar' } as Options),
+    ).toEqual('bar-foo');
+  });
+
+  it('should return id if neither backendModulePrefix nor suffix is specified', () => {
+    expect(createDirName({} as Template, { id: 'foo' } as Options)).toEqual(
+      'foo',
+    );
   });
 });
