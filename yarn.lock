@@ -5735,19 +5735,15 @@ __metadata:
   resolution: "@backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^11.0.0
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     openapi-types: ^12.0.0
-    winston: ^3.2.1
     yaml: ^2.1.1
   languageName: unknown
   linkType: soft
