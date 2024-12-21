@@ -22,6 +22,8 @@ import { Notification } from '@backstage/plugin-notifications-common';
 
 const server = setupServer();
 
+const testTopic = 'test-topic';
+
 const testNotification: Partial<Notification> = {
   user: 'user:default/john.doe',
   origin: 'plugin-test',
@@ -29,6 +31,7 @@ const testNotification: Partial<Notification> = {
     title: 'Notification 1',
     link: '/catalog',
     severity: 'normal',
+    topic: testTopic,
   },
 };
 
@@ -71,6 +74,22 @@ describe('NotificationsClient', () => {
         search: 'find me',
         read: true,
         createdAfter: new Date(5),
+      });
+      expect(response).toEqual(expectedResp);
+    });
+
+    it('should fetch notifications of the topic', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/notifications`, (req, res, ctx) => {
+          expect(req.url.search).toBe(`?limit=10&offset=0&topic=${testTopic}`);
+          return res(ctx.json(expectedResp));
+        }),
+      );
+
+      const response = await client.getNotifications({
+        limit: 10,
+        offset: 0,
+        topic: testTopic,
       });
       expect(response).toEqual(expectedResp);
     });
@@ -127,6 +146,38 @@ describe('NotificationsClient', () => {
       );
       const response = await client.updateNotifications({
         ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
+      });
+      expect(response).toEqual(expectedResp);
+    });
+  });
+
+  describe('getTopics', () => {
+    const expectedResp = [testTopic];
+
+    it('should fetch topics from correct endpoint', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/topics`, (_, res, ctx) =>
+          res(ctx.json(expectedResp)),
+        ),
+      );
+      const response = await client.getTopics();
+      expect(response).toEqual(expectedResp);
+    });
+
+    it('should fetch topics with options', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/topics`, (req, res, ctx) => {
+          expect(req.url.search).toBe(
+            '?search=find+me&read=true&createdAfter=1970-01-01T00%3A00%3A00.005Z',
+          );
+          return res(ctx.json(expectedResp));
+        }),
+      );
+
+      const response = await client.getTopics({
+        search: 'find me',
+        read: true,
+        createdAfter: new Date(5),
       });
       expect(response).toEqual(expectedResp);
     });
