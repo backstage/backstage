@@ -39,12 +39,10 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  showHeader?: boolean;
-  showSupport?: boolean;
-  options?: TableOptions<DocsTableRow>;
-  title?: string;
-  subtitle?: string;
   pagination?: EntityListPagination;
+  options?: TableOptions<DocsTableRow>;
+  PageWrapper?: React.FC;
+  CustomHeader?: React.FC;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

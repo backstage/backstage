@@ -26,9 +26,7 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
  */
 export type TechDocsPageWrapperProps = {
   children?: React.ReactNode;
-  title?: string;
-  subtitle?: string;
-  showSubtitle?: boolean;
+  CustomPageWrapper?: React.FC<{ children?: React.ReactNode }>;
 };
 
 /**
@@ -37,21 +35,25 @@ export type TechDocsPageWrapperProps = {
  * @public
  */
 export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
-  const { children, title, subtitle, showSubtitle = true } = props;
+  const { children, CustomPageWrapper } = props;
   const configApi = useApi(configApiRef);
-  const generatedSubtitle =
-    subtitle ||
-    `Documentation available in ${
-      configApi.getOptionalString('organization.name') ?? 'Backstage'
-    }`;
+  const generatedSubtitle = `Documentation available in ${
+    configApi.getOptionalString('organization.name') ?? 'Backstage'
+  }`;
 
   return (
-    <PageWithHeader
-      title={title || 'Documentation'}
-      subtitle={showSubtitle ? generatedSubtitle : undefined}
-      themeId="documentation"
-    >
-      {children}
-    </PageWithHeader>
+    <>
+      {CustomPageWrapper ? (
+        <CustomPageWrapper>{children}</CustomPageWrapper>
+      ) : (
+        <PageWithHeader
+          title="Documentation"
+          subtitle={generatedSubtitle}
+          themeId="documentation"
+        >
+          {children}
+        </PageWithHeader>
+      )}
+    </>
   );
 };

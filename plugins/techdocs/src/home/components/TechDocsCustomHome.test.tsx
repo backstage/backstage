@@ -19,6 +19,7 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { PageWithHeader } from '@backstage/core-components';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
@@ -103,7 +104,7 @@ describe('TechDocsCustomHome', () => {
       await screen.findByText('Second Tab Description'),
     ).toBeInTheDocument();
   });
-  it('should render ContentHeader based on showHeader prop', async () => {
+  it('should render ContentHeader based on CustomHeader prop', async () => {
     const tabsConfig = [
       {
         label: 'First Tab',
@@ -112,7 +113,7 @@ describe('TechDocsCustomHome', () => {
             title: 'First Tab',
             description: 'First Tab Description',
             panelType: 'DocsCardGrid' as PanelType,
-            panelProps: { showHeader: false },
+            panelProps: { CustomHeader: React.Fragment },
             filterPredicate: () => true,
           },
         ],
@@ -133,71 +134,6 @@ describe('TechDocsCustomHome', () => {
     expect(
       screen.queryByText('Discover documentation in your ecosystem.'),
     ).not.toBeInTheDocument();
-  });
-  it('should render SupportButton based on showSupport prop', async () => {
-    const tabsConfig = [
-      {
-        label: 'First Tab',
-        panels: [
-          {
-            title: 'First Tab',
-            description: 'First Tab Description',
-            panelType: 'DocsCardGrid' as PanelType,
-            filterPredicate: () => true,
-            panelProps: { showSupport: false },
-          },
-        ],
-      },
-    ];
-
-    await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
-        <TechDocsCustomHome tabsConfig={tabsConfig} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-        },
-      },
-    );
-
-    expect(
-      screen.queryByText('Discover documentation in your ecosystem.'),
-    ).not.toBeInTheDocument();
-  });
-  it('should hide subtitle when showSubtitle is false', async () => {
-    const tabsConfig = [
-      {
-        label: 'First Tab',
-        panels: [
-          {
-            title: 'First Tab',
-            description: 'First Tab Description',
-            panelType: 'DocsCardGrid' as PanelType,
-            filterPredicate: () => true,
-          },
-        ],
-      },
-    ];
-
-    await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
-        <TechDocsCustomHome
-          tabsConfig={tabsConfig}
-          title="Custom Title"
-          subtitle="Custom Subtitle"
-          showSubtitle={false}
-        />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-        },
-      },
-    );
-
-    expect(screen.getByText('Custom Title')).toBeInTheDocument();
-    expect(screen.queryByText('Custom Subtitle')).not.toBeInTheDocument();
   });
   it('should render title and subtitle', async () => {
     const tabsConfig = [
@@ -218,8 +154,15 @@ describe('TechDocsCustomHome', () => {
       <ApiProvider apis={apiRegistry}>
         <TechDocsCustomHome
           tabsConfig={tabsConfig}
-          title="Custom Title"
-          subtitle="Custom Subtitle"
+          CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (
+            <PageWithHeader
+              title="Custom Title"
+              subtitle="Custom Subtitle"
+              themeId="documentation"
+            >
+              {children}
+            </PageWithHeader>
+          )}
         />
       </ApiProvider>,
       {

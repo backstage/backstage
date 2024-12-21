@@ -69,11 +69,11 @@ export type PanelType =
  * @public
  */
 export interface PanelProps {
-  showHeader?: boolean;
-  showSupport?: boolean;
   options?: TableOptions<DocsTableRow>;
   linkContent?: string | JSX.Element;
   linkDestination?: (entity: Entity) => string | undefined;
+  PageWrapper?: React.FC;
+  CustomHeader?: React.FC;
 }
 
 /**
@@ -146,17 +146,21 @@ export const CustomDocsPanel = ({
     );
   });
 
+  const Header: React.FC =
+    config.panelProps?.CustomHeader ||
+    (() => (
+      <ContentHeader title={config.title} description={config.description}>
+        {index === 0 ? (
+          <SupportButton>
+            Discover documentation in your ecosystem.
+          </SupportButton>
+        ) : null}
+      </ContentHeader>
+    ));
+
   return (
     <>
-      {(config.panelProps?.showHeader ?? true) && (
-        <ContentHeader title={config.title} description={config.description}>
-          {index === 0 && (config.panelProps?.showSupport ?? true) && (
-            <SupportButton>
-              Discover documentation in your ecosystem.
-            </SupportButton>
-          )}
-        </ContentHeader>
-      )}
+      <Header />
       <div className={classes.panelContainer}>
         <EntityListProvider>
           <Panel
@@ -178,13 +182,11 @@ export const CustomDocsPanel = ({
 export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
   filter?: EntityFilterQuery;
-  title?: string;
-  subtitle?: string;
-  showSubtitle?: boolean;
+  CustomPageWrapper?: React.FC;
 };
 
 export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
-  const { tabsConfig, filter, title, subtitle, showSubtitle = true } = props;
+  const { tabsConfig, filter, CustomPageWrapper } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 
@@ -216,11 +218,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
 
   if (loading) {
     return (
-      <TechDocsPageWrapper
-        title={title}
-        subtitle={subtitle}
-        showSubtitle={showSubtitle}
-      >
+      <TechDocsPageWrapper CustomPageWrapper={CustomPageWrapper}>
         <Content>
           <Progress />
         </Content>
@@ -230,11 +228,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
 
   if (error) {
     return (
-      <TechDocsPageWrapper
-        title={title}
-        subtitle={subtitle}
-        showSubtitle={showSubtitle}
-      >
+      <TechDocsPageWrapper CustomPageWrapper={CustomPageWrapper}>
         <Content>
           <WarningPanel
             severity="error"
@@ -248,11 +242,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
   }
 
   return (
-    <TechDocsPageWrapper
-      title={title}
-      subtitle={subtitle}
-      showSubtitle={showSubtitle}
-    >
+    <TechDocsPageWrapper CustomPageWrapper={CustomPageWrapper}>
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={index => setSelectedTab(index)}

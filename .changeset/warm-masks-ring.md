@@ -20,7 +20,7 @@ const techDocsTabsConfig = [
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
-        panelProps: { showHeader: false, showSupport: false },
+        panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
         filterPredicate: entity =>
           entity?.metadata?.tags?.includes('golden-path') ?? false,
       },
@@ -29,8 +29,7 @@ const techDocsTabsConfig = [
         description: 'Useful documentation',
         panelType: 'InfoCardGrid',
         panelProps: {
-          showHeader: false,
-          showSupport: false,
+          CustomHeader: () => <ContentHeader title='Recommended' />
           linkDestination: linkDestination,
         },
         filterPredicate: entity =>
@@ -46,7 +45,7 @@ const techDocsTabsConfig = [
         filterPredicate: filterEntity,
         panelType: 'TechDocsIndexPage',
         title: 'All',
-        panelProps: { showHeader: false, showSupport: false, options: options },
+        panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
       },
     ],
   },
@@ -59,12 +58,11 @@ const AppRoutes = () => {
       element={
         <TechDocsCustomHome
           tabsConfig={techDocsTabsConfig}
-          title="Docs"
-          showSubtitle={false}
           filter={{
             kind: ['Location', 'Resource', 'Component'],
             'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
           }}
+          CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)}
         />
       }
     />
@@ -92,10 +90,9 @@ const panels: PanelConfig[] = [
     panelType: 'InfoCardGrid',
     title: 'Standards',
     panelProps: {
-      showSupport: false,
-      linkContent: 'Read more',
-      linkDestination: entity => {},
-    },
+          CustomHeader: () => <ContentHeader title='Recommended' />
+          linkDestination: linkDestination,
+        },
   },
   {
     description: '',

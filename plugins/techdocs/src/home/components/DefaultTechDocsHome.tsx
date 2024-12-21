@@ -51,24 +51,27 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     columns,
     actions,
     ownerPickerMode,
-    showHeader = true,
-    options,
-    title,
-    subtitle,
-    showSupport = true,
     pagination,
+    options,
+    PageWrapper,
+    CustomHeader,
   } = props;
-  const Wrapper = showHeader ? TechDocsPageWrapper : React.Fragment;
+  const Wrapper: React.FC<{
+    children: React.ReactNode;
+    title?: string;
+    subtitle?: string;
+  }> = PageWrapper ? PageWrapper : TechDocsPageWrapper;
+  const Header: React.FC =
+    CustomHeader ||
+    (() => (
+      <ContentHeader title="">
+        <SupportButton>Discover documentation in your ecosystem.</SupportButton>
+      </ContentHeader>
+    ));
   return (
-    <Wrapper title={title} subtitle={subtitle}>
+    <Wrapper>
       <Content>
-        {showSupport && (
-          <ContentHeader title="">
-            <SupportButton>
-              Discover documentation in your ecosystem.
-            </SupportButton>
-          </ContentHeader>
-        )}
+        <Header />
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
