@@ -76,7 +76,7 @@ export async function populateOptions(
     baseVersion: await calculateBaseVersion(prompts.baseVersion),
     owner: prompts.owner ?? '',
     license: prompts.license ?? 'Apache-2.0',
-    targetPath: prompts.targetPath ?? template.targetPath,
+    targetPath: template.targetPath,
     scope: prompts.scope ?? '',
     moduleId: prompts.moduleId ?? '',
     ...prompts,
