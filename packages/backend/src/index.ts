@@ -61,4 +61,7 @@ backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
 
+// backend.add(eventsModuleGitlabWebhook);
+backend.add(import('@backstage/plugin-catalog-backend-module-gitlab-org'));
+
 backend.start();

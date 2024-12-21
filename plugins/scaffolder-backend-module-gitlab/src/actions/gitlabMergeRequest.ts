@@ -100,6 +100,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     projectid?: string;
     removeSourceBranch?: boolean;
     assignee?: string;
+    reviewers?: string[];
   }>({
     id: 'publish:gitlab:merge-request',
     examples,
@@ -179,6 +180,14 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             type: 'string',
             description: 'User this merge request will be assigned to',
           },
+          reviewers: {
+            title: 'Merge Request Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Users that will be assigned as reviewers',
+          },
         },
       },
       output: {
@@ -207,6 +216,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
     async handler(ctx) {
       const {
         assignee,
+        reviewers,
         branchName,
         targetBranchName,
         description,
@@ -240,6 +250,23 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             )}. Proceeding with MR creation without an assignee.`,
           );
         }
+      }
+
+      let reviewerIds: number[] | undefined;
+      if (reviewers !== undefined) {
+        reviewerIds = await Promise.all(
+          reviewers.map(async reviewer => {
+            try {
+              const reviewerUser = await api.Users.username(reviewer);
+              return reviewerUser[0].id;
+            } catch (e) {
+              ctx.logger.warn(
+                `Failed to find gitlab user id for ${reviewer}: ${e}. Proceeding with MR creation without reviewer.`,
+              );
+              return undefined;
+            }
+          }),
+        );
       }
 
       let fileRoot: string;
@@ -364,6 +391,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             description,
             removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
             assigneeId,
+            reviewerIds,
           },
         ).then(mergeRequest => mergeRequest.web_url ?? mergeRequest.webUrl);
         ctx.output('projectid', repoID);
