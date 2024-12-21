@@ -76,6 +76,9 @@ export function verifyTemplate({ id, target }: TemplateLocation): Template {
   if (target.startsWith('http')) {
     throw new Error('Remote templates are not supported yet');
   }
+  if (!fs.existsSync(target)) {
+    throw new Error(`Your CLI template does not exist: ${target}`);
+  }
   const template = parse(fs.readFileSync(target, 'utf-8'));
   const templatePath = paths.resolveTargetRoot(
     dirname(target),
