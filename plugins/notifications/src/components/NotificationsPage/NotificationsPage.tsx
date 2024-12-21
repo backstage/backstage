@@ -33,7 +33,11 @@ import {
   SortBy,
   SortByOptions,
 } from '../NotificationsFilters';
-import { GetNotificationsOptions, GetNotificationsResponse } from '../../api';
+import {
+  GetNotificationsOptions,
+  GetNotificationsResponse,
+  GetTopicsResponse,
+} from '../../api';
 import {
   NotificationSeverity,
   NotificationStatus,
@@ -76,9 +80,10 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     SortByOptions.newest.sortBy,
   );
   const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
+  const [topic, setTopic] = React.useState<string>();
 
   const { error, value, retry, loading } = useNotificationsApi<
-    [GetNotificationsResponse, NotificationStatus]
+    [GetNotificationsResponse, NotificationStatus, GetTopicsResponse]
   >(
     api => {
       const options: GetNotificationsOptions = {
@@ -94,13 +99,20 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
       if (saved !== undefined) {
         options.saved = saved;
       }
+      if (topic !== undefined) {
+        options.topic = topic;
+      }
 
       const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
       if (createdAfterDate.valueOf() > 0) {
         options.createdAfter = createdAfterDate;
       }
 
-      return Promise.all([api.getNotifications(options), api.getStatus()]);
+      return Promise.all([
+        api.getNotifications(options),
+        api.getStatus(),
+        api.getTopics(options),
+      ]);
     },
     [
       containsText,
@@ -111,6 +123,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
       sorting,
       saved,
       severity,
+      topic,
     ],
   );
 
@@ -143,6 +156,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const notifications = value?.[0]?.notifications;
   const totalCount = value?.[0]?.totalCount;
   const isUnread = !!value?.[1]?.unread;
+  const allTopics = value?.[2]?.topics;
 
   let tableTitle = `All notifications (${totalCount})`;
   if (saved) {
@@ -177,6 +191,9 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
                 onSavedChanged={setSaved}
                 severity={severity}
                 onSeverityChanged={setSeverity}
+                topic={topic}
+                onTopicChanged={setTopic}
+                allTopics={allTopics}
               />
             </Grid>
             <Grid item xs={10}>
