@@ -17,7 +17,7 @@ import fs from 'fs-extra';
 import { paths } from '../paths';
 import { Template } from './types';
 
-interface Options extends Record<string, string | boolean> {
+export interface Options extends Record<string, string | boolean> {
   id: string;
   private: boolean;
   baseVersion: string;
