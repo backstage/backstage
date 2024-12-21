@@ -19,19 +19,11 @@ import { parse } from 'yaml';
 import fs from 'fs-extra';
 
 import { paths } from '../paths';
-import { Template, TemplateLocation } from './types';
+import { Template, TemplateLocation, CliConfig } from './types';
 
 import defaultTemplates from '../../../templates/all-default-templates';
 
-export function readCliConfig(
-  cliConfig:
-    | {
-        defaults?: boolean;
-        templates?: TemplateLocation[];
-        globals?: Record<string, string>;
-      }
-    | undefined,
-) {
+export function readCliConfig(cliConfig: CliConfig) {
   let templates: TemplateLocation[] = [];
 
   if (!cliConfig || cliConfig?.defaults) {
