@@ -20,7 +20,7 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Gitlab, Types } from '@gitbeaker/core';
+import { RepositoryTreeSchema, Gitlab, CommitAction } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
@@ -43,7 +43,7 @@ async function getFileAction(
   target: { repoID: string; branch: string },
   api: Gitlab,
   logger: LoggerService,
-  remoteFiles: Types.RepositoryTreeSchema[],
+  remoteFiles: RepositoryTreeSchema[],
   defaultCommitAction:
     | 'create'
     | 'delete'
@@ -100,6 +100,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     projectid?: string;
     removeSourceBranch?: boolean;
     assignee?: string;
+    reviewers?: string[];
   }>({
     id: 'publish:gitlab:merge-request',
     examples,
@@ -179,6 +180,14 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             type: 'string',
             description: 'User this merge request will be assigned to',
           },
+          reviewers: {
+            title: 'Merge Request Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Users that will be assigned as reviewers',
+          },
         },
       },
       output: {
@@ -207,6 +216,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
     async handler(ctx) {
       const {
         assignee,
+        reviewers,
         branchName,
         targetBranchName,
         description,
@@ -240,6 +250,23 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
 
+      let reviewerIds: number[] | undefined;
+      if (reviewers !== undefined) {
+        reviewerIds = await Promise.all(
+          reviewers.map(async reviewer => {
+            try {
+              const reviewerUser = await api.Users.username(reviewer);
+              return reviewerUser[0].id;
+            } catch (e) {
+              ctx.logger.warn(
+                `Failed to find gitlab user id for ${reviewer}: ${e}. Proceeding with MR creation without reviewer.`,
+              );
+              return undefined;
+            }
+          }),
+        );
+      }
+
       let fileRoot: string;
       if (sourcePath) {
         fileRoot = resolveSafeChildPath(ctx.workspacePath, sourcePath);
@@ -262,7 +289,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         targetBranch = defaultBranch!;
       }
 
-      let remoteFiles: Types.RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.tree(repoID, {
@@ -276,7 +303,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           );
         }
       }
-      const actions: Types.CommitAction[] =
+      const actions: CommitAction[] =
         ctx.input.commitAction === 'skip'
           ? []
           : (
@@ -296,7 +323,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
                 )
               ).filter(o => o.action !== 'skip') as {
                 file: SerializedFile;
-                action: Types.CommitAction['action'];
+                action: CommitAction['action'];
               }[]
             ).map(({ file, action }) => ({
               action,
@@ -350,6 +377,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             description,
             removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
             assigneeId,
+            reviewerIds,
           },
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
