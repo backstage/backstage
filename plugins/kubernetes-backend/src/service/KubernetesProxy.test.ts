@@ -16,7 +16,6 @@
 
 import 'buffer';
 import { resolve as resolvePath } from 'path';
-import { errorHandler } from '@backstage/backend-common';
 import {
   createMockDirectory,
   mockServices,
@@ -53,6 +52,12 @@ import {
 
 import type { Request } from 'express';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -117,7 +122,7 @@ describe('KubernetesProxy', () => {
     const app = express().use(
       Router()
         .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
-        .use(errorHandler()),
+        .use(middleware.error()),
     );
 
     const requestPromise = request(app).get(proxyPath + requestPath);
@@ -924,7 +929,7 @@ describe('KubernetesProxy', () => {
           .use(
             Router()
               .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
-              .use(errorHandler()),
+              .use(middleware.error()),
           )
           .listen(0, '0.0.0.0', () => {
             proxyPort = (expressServer.address() as AddressInfo).port;

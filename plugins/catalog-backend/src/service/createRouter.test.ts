@@ -42,6 +42,12 @@ import { wrapServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -86,6 +92,7 @@ describe('createRouter readonly disabled', () => {
       locationAnalyzer,
       permissionsService,
     });
+    router.use(middleware.error());
     app = await wrapServer(express().use(router));
   });
 
@@ -965,6 +972,7 @@ describe('createRouter readonly and raw json enabled', () => {
       httpAuth: mockServices.httpAuth(),
       permissionsService,
     });
+    router.use(middleware.error());
     app = express().use(router);
   });
 
