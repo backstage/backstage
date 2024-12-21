@@ -135,7 +135,7 @@ describe('TechDocsCustomHome', () => {
       screen.queryByText('Discover documentation in your ecosystem.'),
     ).not.toBeInTheDocument();
   });
-  it('should render title and subtitle', async () => {
+  it('should render CustomPageWrapper', async () => {
     const tabsConfig = [
       {
         label: 'First Tab',

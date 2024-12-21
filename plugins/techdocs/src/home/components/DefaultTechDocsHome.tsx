@@ -58,8 +58,6 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
   } = props;
   const Wrapper: React.FC<{
     children: React.ReactNode;
-    title?: string;
-    subtitle?: string;
   }> = PageWrapper ? PageWrapper : TechDocsPageWrapper;
   const Header: React.FC =
     CustomHeader ||
