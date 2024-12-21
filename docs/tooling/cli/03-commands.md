@@ -253,35 +253,27 @@ Restores the changes made by the prepack command
 ## new
 
 The `new` command opens up an interactive guide for you to create new things
-in your app. If you do not pass in any options it is completely interactive, but
-it is possible to pre-select what you want to create using the `--select` flag,
-and provide options using `--option`, for example:
+in your app.
 
 ```bash
-backstage-cli new --select plugin --option id=foo
+backstage-cli new
 ```
 
 This command is typically added as script in the root `package.json` to be
-executed with `yarn new`, using options that are appropriate for the organization
-that owns the app repo. For example you may have it set up like this:
+executed with `yarn new`. For example you may have it set up like this:
 
 ```json
 {
   "scripts": {
-    "new": "backstage-cli new --scope internal --no-private --npm-registry https://acme.org/npm"
+    "new": "backstage-cli new"
   }
 }
 ```
 
 ```text
-Usage: backstage-cli create [options]
+Usage: backstage-cli new
 
 Options:
-  --select <name>          Select the thing you want to be creating upfront
-  --option <name>=<value>  Pre-fill options for the creation process (default: [])
-  --scope <scope>          The scope to use for new packages
-  --npm-registry <URL>     The package registry to use for new packages
-  --no-private             Do not mark new packages as private
   -h, --help               display help for command
 ```
 
