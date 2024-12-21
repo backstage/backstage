@@ -8,12 +8,7 @@
         "scope": "backstage",
         "private": false
       },
-      "templates": [
-        {
-          "id": "example cli template",
-          "target": "./example.yaml"
-        }
-      ]
+      "templates": []
     }
   },
   "private": true,
