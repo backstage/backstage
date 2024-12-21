@@ -51,6 +51,7 @@ type Props = {
   stretch?: boolean;
   noPadding?: boolean;
   className?: string;
+  as?: React.ElementType;
 };
 
 /**
@@ -59,13 +60,22 @@ type Props = {
  * @public
  *
  */
-
 export function Content(props: PropsWithChildren<Props>) {
-  const { className, stretch, noPadding, children, ...restProps } = props;
+  const {
+    className,
+    stretch,
+    noPadding,
+    children,
+    as: asElement,
+    ...restProps
+  } = props;
 
   const classes = useStyles();
+
+  const Element = asElement || 'article';
+
   return (
-    <article
+    <Element
       {...restProps}
       className={classNames(classes.root, className, {
         [classes.stretch]: stretch,
@@ -73,6 +83,6 @@ export function Content(props: PropsWithChildren<Props>) {
       })}
     >
       {children}
-    </article>
+    </Element>
   );
 }
