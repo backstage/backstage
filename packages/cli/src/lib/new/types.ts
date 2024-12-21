@@ -16,6 +16,17 @@
 
 import { Answers, DistinctQuestion } from 'inquirer';
 
+export type CliConfig =
+  | {
+      /** Setting this to false will omit default backstage-cli new templates */
+      defaults?: boolean;
+      /** Where you can explicitly declare templates */
+      templates?: TemplateLocation[];
+      /** For configuring global values that applies to all new plugins/packages */
+      globals?: Record<string, string>;
+    }
+  | undefined;
+
 export interface CreateContext {
   /** Whether we are creating something in a monorepo or not */
   isMonoRepo: boolean;
