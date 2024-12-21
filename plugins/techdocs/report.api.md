@@ -18,12 +18,14 @@ import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SyncResult as SyncResult_2 } from '@backstage/plugin-techdocs-react';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
@@ -35,6 +37,18 @@ import { TechDocsStorageApi as TechDocsStorageApi_2 } from '@backstage/plugin-te
 import { ThemeOptions } from '@material-ui/core/styles';
 import { ToolbarProps } from '@material-ui/core/Toolbar';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
+
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
+    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
+  >;
+};
+
+// @public (undocumented)
+export type CatalogReactComponentsNameToClassKey = {
+  BackstageInfoCardGrid: InfoCardGridClassKey;
+};
 
 // @public
 export type ContentStateTypes =
@@ -244,15 +258,15 @@ export interface PanelConfig {
 // @public
 export interface PanelProps {
   // (undocumented)
+  CustomHeader?: React_2.FC;
+  // (undocumented)
   linkContent?: string | JSX.Element;
   // (undocumented)
   linkDestination?: (entity: Entity) => string | undefined;
   // (undocumented)
   options?: TableOptions<DocsTableRow>;
   // (undocumented)
-  showHeader?: boolean;
-  // (undocumented)
-  showSupport?: boolean;
+  PageWrapper?: React_2.FC;
 }
 
 // @public
@@ -342,9 +356,7 @@ export const TechDocsCustomHome: (
 export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
   filter?: EntityFilterQuery;
-  title?: string;
-  subtitle?: string;
-  showSubtitle?: boolean;
+  CustomPageWrapper?: React_2.FC;
 };
 
 // @public @deprecated (undocumented)
@@ -361,12 +373,10 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  showHeader?: boolean;
-  showSupport?: boolean;
-  options?: TableOptions<DocsTableRow>;
-  title?: string;
-  subtitle?: string;
   pagination?: EntityListPagination;
+  options?: TableOptions<DocsTableRow>;
+  PageWrapper?: React_2.FC;
+  CustomHeader?: React_2.FC;
 };
 
 // @public @deprecated (undocumented)
@@ -383,9 +393,9 @@ export const TechDocsPageWrapper: (
 // @public
 export type TechDocsPageWrapperProps = {
   children?: React_2.ReactNode;
-  title?: string;
-  subtitle?: string;
-  showSubtitle?: boolean;
+  CustomPageWrapper?: React_2.FC<{
+    children?: React_2.ReactNode;
+  }>;
 };
 
 // @public
