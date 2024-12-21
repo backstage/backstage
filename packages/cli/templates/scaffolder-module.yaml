@@ -1,4 +1,3 @@
-# lib/new/factories/scaffolderModule.ts
 description: A module exporting custom actions for @backstage/plugin-scaffolder-backend
 template: ./scaffolder-module
 targetPath: plugins

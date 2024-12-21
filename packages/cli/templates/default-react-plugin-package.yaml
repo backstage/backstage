@@ -1,4 +1,3 @@
-# lib/new/factories/pluginWeb.ts
 description: A new web library plugin package
 template: ./default-react-plugin-package
 targetPath: plugins
