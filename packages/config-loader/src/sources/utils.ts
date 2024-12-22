@@ -18,21 +18,6 @@ import { Parser } from './types';
 import yaml from 'yaml';
 
 /** @internal */
-export interface SimpleDeferred<T> {
-  promise: Promise<T>;
-  resolve(value: T): void;
-}
-
-/** @internal */
-export function simpleDefer<T>(): SimpleDeferred<T> {
-  let resolve: (value: T) => void;
-  const promise = new Promise<T>(_resolve => {
-    resolve = _resolve;
-  });
-  return { promise, resolve: resolve! };
-}
-
-/** @internal */
 export async function waitOrAbort<T>(
   promise: PromiseLike<T>,
   signal?: AbortSignal | Array<AbortSignal | undefined>,

@@ -22,11 +22,9 @@ import {
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import fetch, { Response } from 'node-fetch';
 import { ReaderFactory } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { parseLastModified } from './util';
 
 const isInRange = (num: number, [start, end]: [number, number]) => {
   return num >= start && num <= end;
@@ -150,12 +148,7 @@ export class FetchUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;

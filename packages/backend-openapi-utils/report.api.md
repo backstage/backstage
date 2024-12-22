@@ -530,7 +530,6 @@ declare namespace internal {
     DocEndpointTemplate,
     TemplateToDocEndpoint,
     EndpointMapRequestMatcher,
-    TypedRouter,
   };
 }
 export { internal };
@@ -902,7 +901,8 @@ type TuplifyUnion<
 > = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
 
 // @public (undocumented)
-interface TypedRouter<GeneratedEndpointMap extends EndpointMap> extends Router {
+export interface TypedRouter<GeneratedEndpointMap extends EndpointMap>
+  extends Router {
   // (undocumented)
   delete: EndpointMapRequestMatcher<GeneratedEndpointMap, this, '_delete'>;
   // (undocumented)

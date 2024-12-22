@@ -21,7 +21,6 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import fetch from 'node-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';

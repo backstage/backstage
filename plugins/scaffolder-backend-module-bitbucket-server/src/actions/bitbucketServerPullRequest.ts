@@ -27,7 +27,6 @@ import {
   cloneRepo,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import { examples } from './bitbucketServerPullRequest.examples';

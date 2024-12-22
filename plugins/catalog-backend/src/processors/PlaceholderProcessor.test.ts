@@ -28,16 +28,12 @@ import {
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('PlaceholderProcessor', () => {
-  const reader: jest.Mocked<UrlReaderService> = {
-    readTree: jest.fn(),
-    search: jest.fn(),
-    readUrl: jest.fn(),
-  };
+  const reader = mockServices.urlReader.mock();
 
   beforeEach(() => {
     jest.resetAllMocks();

@@ -21,6 +21,7 @@ import { InternalOAuthError } from 'passport-oauth2';
 import { ProfileInfo } from '@backstage/plugin-auth-node';
 import { PassportProfile } from './types';
 import { OAuthStartResponse } from '../../providers/types';
+import { ForwardedError } from '@backstage/errors';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
@@ -66,7 +67,10 @@ export const makeProfileInfo = (
         displayName = decoded.name;
       }
     } catch (e) {
-      throw new Error(`Failed to parse id token and get profile info, ${e}`);
+      throw new ForwardedError(
+        `Failed to parse id token and get profile info`,
+        e,
+      );
     }
   }
 
@@ -176,7 +180,7 @@ export const executeRefreshTokenStrategy = async (
         params: any,
       ) => {
         if (err) {
-          reject(new Error(`Failed to refresh access token ${err.toString()}`));
+          reject(new ForwardedError(`Failed to refresh access token`, err));
         }
         if (!accessToken) {
           reject(

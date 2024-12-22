@@ -74,6 +74,9 @@ export abstract class EventRouter {
   subscribe(): Promise<void>;
 }
 
+// @public (undocumented)
+export const EVENTS_NOTIFY_TIMEOUT_HEADER = 'backstage-events-notify-timeout';
+
 // @public
 export interface EventsService {
   publish(params: EventParams): Promise<void>;

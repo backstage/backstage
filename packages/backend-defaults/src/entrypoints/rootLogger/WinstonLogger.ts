@@ -147,10 +147,17 @@ export class WinstonLogger implements RootLoggerService {
         const prefixColor = colorizer.colorize('prefix', prefix);
 
         const extraFields = Object.entries(fields)
-          .map(
-            ([key, value]) =>
-              `${colorizer.colorize('field', `${key}`)}=${value}`,
-          )
+          .map(([key, value]) => {
+            let stringValue = '';
+
+            try {
+              stringValue = `${value}`;
+            } catch (e) {
+              stringValue = '[field value not castable to string]';
+            }
+
+            return `${colorizer.colorize('field', `${key}`)}=${stringValue}`;
+          })
           .join(' ');
 
         return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;

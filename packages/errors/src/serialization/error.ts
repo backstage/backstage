@@ -60,6 +60,14 @@ export function serializeError(
 
   if (!options?.includeStack) {
     delete result.stack;
+
+    if (
+      result.cause &&
+      typeof result.cause === 'object' &&
+      'stack' in result.cause
+    ) {
+      delete result.cause.stack;
+    }
   }
 
   return result;

@@ -23,5 +23,11 @@ export {
 } from './components';
 
 export { scaffolderTranslationRef } from '../translation';
+export * from './api';
+
+export {
+  formFieldsApiRef,
+  type ScaffolderFormFieldsApi,
+} from '@backstage/plugin-scaffolder-react/alpha';
 
 export { default } from './plugin';

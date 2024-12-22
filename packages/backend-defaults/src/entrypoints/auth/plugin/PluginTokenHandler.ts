@@ -16,13 +16,12 @@
 
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { decodeJwt, importJWK, SignJWT, decodeProtectedHeader } from 'jose';
-import { AuthenticationError } from '@backstage/errors';
+import { assertError, AuthenticationError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { PluginKeySource } from './keys/types';
-import fetch from 'node-fetch';
 
 const SECONDS_IN_MS = 1000;
 
@@ -45,7 +44,22 @@ type Options = {
   algorithm?: string;
 };
 
-export class PluginTokenHandler {
+/**
+ * @public
+ * Issues and verifies {@link https://backstage.iceio/docs/auth/service-to-service-auth | service-to-service tokens}.
+ */
+export interface PluginTokenHandler {
+  verifyToken(
+    token: string,
+  ): Promise<{ subject: string; limitedUserToken?: string } | undefined>;
+  issueToken(options: {
+    pluginId: string;
+    targetPluginId: string;
+    onBehalfOf?: { limitedUserToken: string; expiresAt: Date };
+  }): Promise<{ token: string }>;
+}
+
+export class DefaultPluginTokenHandler implements PluginTokenHandler {
   private jwksMap = new Map<string, JwksClient>();
 
   // Tracking state for isTargetPluginSupported
@@ -53,7 +67,7 @@ export class PluginTokenHandler {
   private targetPluginInflightChecks = new Map<string, Promise<boolean>>();
 
   static create(options: Options) {
-    return new PluginTokenHandler(
+    return new DefaultPluginTokenHandler(
       options.logger,
       options.ownPluginId,
       options.keySource,
@@ -106,7 +120,8 @@ export class PluginTokenHandler {
         requiredClaims: ['iat', 'exp', 'sub', 'aud'],
       },
     ).catch(e => {
-      throw new AuthenticationError('Invalid plugin token', e);
+      this.logger.warn('Failed to verify incoming plugin token', e);
+      throw new AuthenticationError('Failed plugin token verification');
     });
 
     return { subject: `plugin:${payload.sub}`, limitedUserToken: payload.obo };
@@ -115,7 +130,7 @@ export class PluginTokenHandler {
   async issueToken(options: {
     pluginId: string;
     targetPluginId: string;
-    onBehalfOf?: { token: string; expiresAt: Date };
+    onBehalfOf?: { limitedUserToken: string; expiresAt: Date };
   }): Promise<{ token: string }> {
     const { pluginId, targetPluginId, onBehalfOf } = options;
     const key = await this.keySource.getPrivateSigningKey();
@@ -131,7 +146,7 @@ export class PluginTokenHandler {
         )
       : ourExp;
 
-    const claims = { sub, aud, iat, exp, obo: onBehalfOf?.token };
+    const claims = { sub, aud, iat, exp, obo: onBehalfOf?.limitedUserToken };
     const token = await new SignJWT(claims)
       .setProtectedHeader({
         typ: tokenTypes.plugin.typParam,
@@ -181,6 +196,7 @@ export class PluginTokenHandler {
         this.supportedTargetPlugins.add(targetPluginId);
         return true;
       } catch (error) {
+        assertError(error);
         this.logger.error('Unexpected failure for target JWKS check', error);
         return false;
       } finally {

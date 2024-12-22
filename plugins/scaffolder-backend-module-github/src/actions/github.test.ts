@@ -1097,6 +1097,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1126,6 +1127,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1154,6 +1156,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1181,6 +1184,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
   });
 
@@ -1269,6 +1273,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1302,6 +1307,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1335,6 +1341,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1370,6 +1377,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1405,6 +1413,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1440,6 +1449,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
   });
   it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of bypassPullRequestAllowances', async () => {
@@ -1472,6 +1482,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1503,6 +1514,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1534,6 +1546,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1565,6 +1578,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1600,6 +1614,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
 
     await action.handler({
@@ -1635,6 +1650,7 @@ describe('publish:github', () => {
       enforceAdmins: true,
       dismissStaleReviews: false,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
     });
   });
 
@@ -1661,6 +1677,11 @@ describe('publish:github', () => {
     },
     {
       inputProperty: 'requiredCommitSigning',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
+      inputProperty: 'requiredLinearHistory',
       defaultValue: false,
       overrideValue: true,
     },
@@ -1712,6 +1733,7 @@ describe('publish:github', () => {
         enforceAdmins: true,
         dismissStaleReviews: false,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         [octokitParameter || inputProperty]: defaultValue,
       });
 
@@ -1740,6 +1762,7 @@ describe('publish:github', () => {
         enforceAdmins: true,
         dismissStaleReviews: false,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         [octokitParameter || inputProperty]: overrideValue,
       });
 
@@ -1768,6 +1791,7 @@ describe('publish:github', () => {
         enforceAdmins: true,
         dismissStaleReviews: false,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         [octokitParameter || inputProperty]: defaultValue,
       });
     },

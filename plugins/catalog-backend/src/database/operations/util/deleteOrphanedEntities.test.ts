@@ -69,6 +69,7 @@ describe('deleteOrphanedEntities', () => {
       await knex<DbFinalEntitiesRow>('final_entities').insert({
         entity_id: `id-${ref}`,
         hash: 'original',
+        entity_ref: ref,
         stitch_ticket: '',
       });
     }

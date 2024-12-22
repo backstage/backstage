@@ -38,10 +38,10 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<U extends JsonValue>(
-    key: string,
-    fn: () => Promise<U>,
-  ): Promise<U>;
+  checkpoint<T extends JsonValue | void>(opts: {
+    key: string;
+    fn: () => Promise<T> | T;
+  }): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
@@ -56,6 +56,13 @@ export type ActionContext<
    * Get the credentials for the current request
    */
   getInitiatorCredentials(): Promise<BackstageCredentials>;
+
+  /**
+   * Task information
+   */
+  task: {
+    id: string;
+  };
 
   templateInfo?: TemplateInfo;
 

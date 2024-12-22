@@ -93,7 +93,7 @@ export async function getOctokitOptions(options: {
 
   if (!credentialProviderToken) {
     throw new InputError(
-      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
+      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}. Make sure GitHub auth is configured correctly. See https://backstage.io/docs/auth/github/provider for more details.`,
     );
   }
 
@@ -371,6 +371,7 @@ export async function initRepoPushAndProtect(
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
   requiredCommitSigning?: boolean,
+  requiredLinearHistory?: boolean,
 ): Promise<{ commitHash: string }> {
   const gitAuthorInfo = {
     name: gitAuthorName
@@ -416,6 +417,7 @@ export async function initRepoPushAndProtect(
         enforceAdmins: protectEnforceAdmins,
         dismissStaleReviews: dismissStaleReviews,
         requiredCommitSigning: requiredCommitSigning,
+        requiredLinearHistory: requiredLinearHistory,
       });
     } catch (e) {
       assertError(e);

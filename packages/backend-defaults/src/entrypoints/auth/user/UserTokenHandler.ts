@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import {
@@ -33,15 +33,21 @@ import { JwksClient } from '../JwksClient';
  * @internal
  */
 export class UserTokenHandler {
-  static create(options: { discovery: DiscoveryService }): UserTokenHandler {
+  static create(options: {
+    discovery: DiscoveryService;
+    logger: LoggerService;
+  }): UserTokenHandler {
     const jwksClient = new JwksClient(async () => {
       const url = await options.discovery.getBaseUrl('auth');
       return new URL(`${url}/.well-known/jwks.json`);
     });
-    return new UserTokenHandler(jwksClient);
+    return new UserTokenHandler(jwksClient, options.logger);
   }
 
-  constructor(private readonly jwksClient: JwksClient) {}
+  constructor(
+    private readonly jwksClient: JwksClient,
+    private readonly logger: LoggerService,
+  ) {}
 
   async verifyToken(token: string) {
     const verifyOpts = this.#getTokenVerificationOptions(token);
@@ -57,7 +63,8 @@ export class UserTokenHandler {
       this.jwksClient.getKey,
       verifyOpts,
     ).catch(e => {
-      throw new AuthenticationError('Invalid token', e);
+      this.logger.warn('Failed to verify incoming user token', e);
+      throw new AuthenticationError('Failed user token verification');
     });
 
     const userEntityRef = payload.sub;

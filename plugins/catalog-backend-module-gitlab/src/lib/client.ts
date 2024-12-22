@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
 } from '@backstage/integration';
-import fetch from 'node-fetch';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
 import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,
@@ -164,6 +163,15 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabGroup>> {
     return this.pagedRequest(`/groups`, options);
+  }
+
+  // https://docs.gitlab.com/ee/api/groups.html#list-group-details
+  // id can either be group id or encoded full path
+  async getGroupByPath(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    return this.nonPagedRequest(`/groups/${groupPath}`, options);
   }
 
   async listDescendantGroups(

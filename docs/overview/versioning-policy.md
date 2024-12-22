@@ -177,6 +177,8 @@ When we say _Supporting_ a Node.js release, that means the following:
 - New Backstage projects created with `@backstage/create-app` will have their `engines.node` version set accordingly.
 - Dropping compatibility with unsupported releases is not considered a breaking change. This includes using new syntax or APIs, as well as bumping dependencies that drop support for these versions.
 
+Based on the above Backstage supports Node.js 20 and 22 as of the `1.33.0` release.
+
 ## TypeScript Releases
 
 The Backstage project uses [TypeScript](https://www.typescriptlang.org/) for type checking within the project, as well as external APIs and documentation. It is important to have a clear policy for which TypeScript versions we support, since we want to be able to adopt new TypeScript features, but at the same time not break existing projects that are using older versions.

@@ -24,6 +24,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { createDeferred } from '@backstage/types';
 import express from 'express';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
@@ -35,7 +36,7 @@ import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
 } from '../types';
-import { Deferred } from '../util';
+import { EventsService } from '@backstage/plugin-events-node';
 
 /**
  * Helps in the creation of the catalog entity providers that wrap the
@@ -44,7 +45,7 @@ import { Deferred } from '../util';
 export class WrapperProviders {
   private migrate: Promise<void> | undefined;
   private numberOfProvidersToConnect = 0;
-  private readonly readySignal = new Deferred<void>();
+  private readonly readySignal = createDeferred();
 
   constructor(
     private readonly options: {
@@ -53,6 +54,7 @@ export class WrapperProviders {
       client: Knex;
       scheduler: SchedulerService;
       applyDatabaseMigrations?: typeof applyDatabaseMigrations;
+      events: EventsService;
     },
   ) {}
 
@@ -73,10 +75,11 @@ export class WrapperProviders {
     };
   }
 
-  async adminRouter(): Promise<express.Router> {
-    return await new IncrementalProviderRouter(
+  adminRouter(): express.Router {
+    return new IncrementalProviderRouter(
       new IncrementalIngestionDatabaseManager({ client: this.options.client }),
       this.options.logger,
+      this.options.config,
     ).createRouter();
   }
 
@@ -117,12 +120,17 @@ export class WrapperProviders {
         connection,
       });
 
-      const frequency = Duration.isDuration(burstInterval)
+      let frequency = Duration.isDuration(burstInterval)
         ? burstInterval
         : Duration.fromObject(burstInterval);
-      const length = Duration.isDuration(burstLength)
+      if (frequency.as('milliseconds') < 5000) {
+        frequency = Duration.fromObject({ seconds: 5 }); // don't let it be silly low, to not overload the scheduler
+      }
+
+      let length = Duration.isDuration(burstLength)
         ? burstLength
         : Duration.fromObject(burstLength);
+      length = length.plus(Duration.fromObject({ minutes: 1 })); // some margin from the actual completion
 
       await this.options.scheduler.scheduleTask({
         id: provider.getProviderName(),
@@ -130,6 +138,20 @@ export class WrapperProviders {
         frequency,
         timeout: length,
       });
+
+      const topics = engine.supportsEventTopics();
+      if (topics.length > 0) {
+        logger.info(
+          `Provider ${provider.getProviderName()} subscribing to events for topics: ${topics.join(
+            ',',
+          )}`,
+        );
+        await this.options.events.subscribe({
+          topics,
+          id: `catalog-backend-module-incremental-ingestion:${provider.getProviderName()}`,
+          onEvent: evt => engine.onEvent(evt),
+        });
+      }
     } catch (error) {
       logger.warn(
         `Failed to initialize incremental ingestion provider ${provider.getProviderName()}, ${stringifyError(

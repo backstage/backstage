@@ -75,6 +75,7 @@ export function createGithubRepoPushAction(options: {
     sourcePath?: string;
     token?: string;
     requiredCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     requireLastPushApproval?: boolean;
   }>({
     id: 'github:repo:push',
@@ -106,6 +107,7 @@ export function createGithubRepoPushAction(options: {
           sourcePath: inputProps.sourcePath,
           token: inputProps.token,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
         },
       },
       output: {
@@ -137,6 +139,7 @@ export function createGithubRepoPushAction(options: {
         requireLastPushApproval = false,
         token: providedToken,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
       } = ctx.input;
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -185,6 +188,7 @@ export function createGithubRepoPushAction(options: {
         gitAuthorEmail,
         dismissStaleReviews,
         requiredCommitSigning,
+        requiredLinearHistory,
       );
 
       ctx.output('remoteUrl', remoteUrl);

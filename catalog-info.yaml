@@ -20,4 +20,4 @@ metadata:
 spec:
   type: library
   owner: CNCF
-  lifecycle: experimental
+  lifecycle: production

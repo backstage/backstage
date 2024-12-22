@@ -23,10 +23,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
@@ -55,10 +52,7 @@ import {
 } from './KubernetesProxy';
 
 import type { Request } from 'express';
-import {
-  BackstageCredentials,
-  DiscoveryService,
-} from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -79,15 +73,8 @@ describe('KubernetesProxy', () => {
     >(),
   };
 
-  const permissionApi: jest.Mocked<PermissionEvaluator> = {
-    authorize: jest.fn(),
-    authorizeConditional: jest.fn(),
-  };
-
-  const mockDisocveryApi: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const permissionApi = mockServices.permissions.mock();
+  const mockDisocveryApi = mockServices.discovery.mock();
 
   registerMswTestHooks(worker);
 

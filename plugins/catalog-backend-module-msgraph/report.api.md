@@ -17,7 +17,6 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { OrganizationTransformer as OrganizationTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { ProviderConfigTransformer as ProviderConfigTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
-import { Response as Response_2 } from 'node-fetch';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
@@ -114,7 +113,7 @@ export class MicrosoftGraphClient {
     path: string,
     query?: ODataQuery,
     headers?: Record<string, string>,
-  ): Promise<Response_2>;
+  ): Promise<Response>;
   requestCollection<T>(
     path: string,
     query?: ODataQuery,
@@ -124,7 +123,7 @@ export class MicrosoftGraphClient {
     url: string,
     headers?: Record<string, string>,
     retryCount?: number,
-  ): Promise<Response_2>;
+  ): Promise<Response>;
 }
 
 // @public

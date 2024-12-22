@@ -22,10 +22,9 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
@@ -80,15 +79,14 @@ describe('TechDocs Collator', () => {
   registerMswTestHooks(worker);
 
   describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
-    let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
+    const mockDiscoveryApi = mockServices.discovery.mock({
+      getBaseUrl: async () => 'http://test-backend',
+    });
     let mockTokenManager: jest.Mocked<TokenManager>;
     let collator: DefaultTechDocsCollator;
 
     beforeEach(() => {
-      mockDiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-        getExternalBaseUrl: jest.fn(),
-      };
+      jest.clearAllMocks();
       mockTokenManager = {
         getToken: jest.fn().mockResolvedValue({ token: '' }),
         authenticate: jest.fn(),
@@ -106,12 +104,12 @@ describe('TechDocs Collator', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
-          (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+          () => HttpResponse.json(mockSearchDocIndex),
         ),
-        rest.get('http://test-backend/entities', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json(expectedEntities)),
+        http.get('http://test-backend/entities', () =>
+          HttpResponse.json(expectedEntities),
         ),
       );
     });
@@ -144,15 +142,13 @@ describe('TechDocs Collator', () => {
   });
 
   describe('DefaultTechDocsCollator', () => {
-    let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
+    const mockDiscoveryApi = mockServices.discovery.mock({
+      getBaseUrl: async () => 'http://test-backend',
+    });
     let mockTokenManager: jest.Mocked<TokenManager>;
     let collator: DefaultTechDocsCollator;
 
     beforeEach(() => {
-      mockDiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-        getExternalBaseUrl: jest.fn(),
-      };
       mockTokenManager = {
         getToken: jest.fn().mockResolvedValue({ token: '' }),
         authenticate: jest.fn(),
@@ -164,12 +160,12 @@ describe('TechDocs Collator', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
-          (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+          () => HttpResponse.json(mockSearchDocIndex),
         ),
-        rest.get('http://test-backend/entities', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json(expectedEntities)),
+        http.get('http://test-backend/entities', () =>
+          HttpResponse.json(expectedEntities),
         ),
       );
     });

@@ -67,6 +67,7 @@ describe('authModuleGoogleProvider', () => {
       prompt: 'consent',
       response_type: 'code',
       client_id: 'my-client-id',
+      include_granted_scopes: 'true',
       redirect_uri: `http://localhost:${server.port()}/api/auth/google/handler/frame`,
       state: expect.any(String),
       scope:

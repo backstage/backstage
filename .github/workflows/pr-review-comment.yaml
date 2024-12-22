@@ -17,7 +17,7 @@ jobs:
     steps:
       # Inspired by https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
         with:
           egress-policy: audit
 
@@ -40,7 +40,7 @@ jobs:
             const prNumber = artifact.name.slice('pr_number-'.length)
             core.setOutput('pr-number', prNumber);
 
-      - uses: backstage/actions/re-review@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+      - uses: backstage/actions/re-review@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

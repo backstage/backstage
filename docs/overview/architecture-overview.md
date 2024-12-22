@@ -323,10 +323,7 @@ backend:
   cache:
     store: redis
     connection: redis://user:pass@cache.example.com:6379
-    useRedisSets: true
 ```
-
-The useRedisSets flag is explained [here](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets).
 
 Contributions supporting other cache stores are welcome!
 

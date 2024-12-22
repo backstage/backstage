@@ -27,9 +27,7 @@ describe('parseEntityFilterParams', () => {
 
   it('supports single-string format', () => {
     const result = parseEntityFilterParams({ filter: 'a=1' })!;
-    expect(result).toEqual({
-      anyOf: [{ allOf: [{ key: 'a', values: ['1'] }] }],
-    });
+    expect(result).toEqual({ key: 'a', values: ['1'] });
   });
 
   it('supports array-of-strings format', () => {
@@ -38,8 +36,8 @@ describe('parseEntityFilterParams', () => {
     });
     expect(result).toEqual({
       anyOf: [
-        { allOf: [{ key: 'a', values: ['1'] }] },
-        { allOf: [{ key: 'b', values: ['2'] }] },
+        { key: 'a', values: ['1'] },
+        { key: 'b', values: ['2'] },
       ],
     });
   });
@@ -50,7 +48,7 @@ describe('parseEntityFilterParams', () => {
     });
     expect(result).toEqual({
       anyOf: [
-        { allOf: [{ key: 'a', values: ['1'] }] },
+        { key: 'a', values: ['1'] },
         {
           allOf: [
             { key: 'b', values: ['2', '3'] },

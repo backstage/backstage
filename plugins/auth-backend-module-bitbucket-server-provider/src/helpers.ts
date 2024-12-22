@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
 import { PassportProfile } from '@backstage/plugin-auth-node';
 
 export async function fetchProfile(options: {

@@ -33,17 +33,14 @@ const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const BACKSTAGE_AUTH_COOKIE = 'backstage-auth';
 
 function getTokenFromRequest(req: Request) {
-  // TODO: support multiple auth headers (iterate rawHeaders)
+  let token: string | undefined;
   const authHeader = req.headers.authorization;
   if (typeof authHeader === 'string') {
     const matches = authHeader.match(/^Bearer[ ]+(\S+)$/i);
-    const token = matches?.[1];
-    if (token) {
-      return token;
-    }
+    token = matches?.[1];
   }
 
-  return undefined;
+  return { token };
 }
 
 function getCookieFromRequest(req: Request) {
@@ -71,23 +68,55 @@ type RequestWithCredentials = Request & {
   [limitedCredentialsSymbol]?: Promise<BackstageCredentials>;
 };
 
-class DefaultHttpAuthService implements HttpAuthService {
+/**
+ * @public
+ * Options for creating a DefaultHttpAuthService.
+ */
+export interface DefaultHttpAuthServiceOptions {
+  auth: AuthService;
+  discovery: DiscoveryService;
+  pluginId: string;
+  /**
+   * Optionally override logic for extracting the token from the request.
+   */
+  getTokenFromRequest?: (req: Request) => { token?: string };
+}
+
+/**
+ * @public
+ * DefaultHttpAuthService is the default implementation of the HttpAuthService
+ */
+export class DefaultHttpAuthService implements HttpAuthService {
   readonly #auth: AuthService;
   readonly #discovery: DiscoveryService;
   readonly #pluginId: string;
+  readonly #getToken: (req: Request) => { token?: string };
 
-  constructor(
+  private constructor(
     auth: AuthService,
     discovery: DiscoveryService,
     pluginId: string,
+    getToken?: (req: Request) => { token?: string },
   ) {
     this.#auth = auth;
     this.#discovery = discovery;
     this.#pluginId = pluginId;
+    this.#getToken = getToken ?? getTokenFromRequest;
+  }
+
+  static create(
+    options: DefaultHttpAuthServiceOptions,
+  ): DefaultHttpAuthService {
+    return new DefaultHttpAuthService(
+      options.auth,
+      options.discovery,
+      options.pluginId,
+      options.getTokenFromRequest,
+    );
   }
 
   async #extractCredentialsFromRequest(req: Request) {
-    const token = getTokenFromRequest(req);
+    const { token } = this.#getToken(req);
     if (!token) {
       return await this.#auth.getNoneCredentials();
     }
@@ -96,7 +125,7 @@ class DefaultHttpAuthService implements HttpAuthService {
   }
 
   async #extractLimitedCredentialsFromRequest(req: Request) {
-    const token = getTokenFromRequest(req);
+    const { token } = this.#getToken(req);
     if (token) {
       return await this.#auth.authenticate(token, {
         allowLimitedAccess: true,
@@ -289,6 +318,10 @@ export const httpAuthServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
   },
   async factory({ auth, discovery, plugin }) {
-    return new DefaultHttpAuthService(auth, discovery, plugin.getId());
+    return DefaultHttpAuthService.create({
+      auth,
+      discovery,
+      pluginId: plugin.getId(),
+    });
   },
 });

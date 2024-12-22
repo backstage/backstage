@@ -25,13 +25,13 @@ const HTML_TEMPLATE_NAME = 'index.html.tmpl';
 /** @internal */
 export async function injectConfigIntoHtml(
   options: InjectOptions,
-): Promise<boolean> {
+): Promise<Buffer | undefined> {
   const { rootDir, appConfigs } = options;
 
   const templatePath = resolvePath(rootDir, HTML_TEMPLATE_NAME);
 
   if (!(await fs.exists(templatePath))) {
-    return false;
+    return undefined;
   }
 
   const templateContent = await fs.readFile(
@@ -67,13 +67,7 @@ ${JSON.stringify(appConfigs, null, 2)
 </head>`,
   );
 
-  await fs.writeFile(
-    resolvePath(rootDir, 'index.html'),
-    indexHtmlContentWithConfig,
-    'utf8',
-  );
-
-  return true;
+  return Buffer.from(indexHtmlContentWithConfig, 'utf8');
 }
 
 export function resolvePublicPath(config: Config) {

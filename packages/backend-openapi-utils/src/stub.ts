@@ -15,8 +15,8 @@
  */
 
 import PromiseRouter from 'express-promise-router';
-import { ApiRouter } from './router';
-import { EndpointMap, RequiredDoc, TypedRouter } from './types';
+import { ApiRouter, TypedRouter } from './router';
+import { EndpointMap, RequiredDoc } from './types';
 import {
   ErrorRequestHandler,
   RequestHandler,

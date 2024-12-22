@@ -262,9 +262,10 @@ export class Git {
     dir: string;
     remote: string;
     remoteRef?: string;
+    url?: string;
     force?: boolean;
   }) {
-    const { dir, remote, remoteRef, force } = options;
+    const { dir, remote, url, remoteRef, force } = options;
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
@@ -278,7 +279,9 @@ export class Git {
         force,
         headers: this.headers,
         remote,
+        url,
         onAuth: this.onAuth,
+        corsProxy: '',
       });
     } catch (ex) {
       this.config.logger?.error(

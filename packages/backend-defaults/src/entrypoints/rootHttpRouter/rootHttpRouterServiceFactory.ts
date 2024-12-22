@@ -30,6 +30,8 @@ import {
 } from './http';
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
 import { createHealthRouter } from './createHealthRouter';
+import { durationToMilliseconds } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 
 /**
  * @public
@@ -89,7 +91,8 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const middleware = MiddlewareFactory.create({ config, logger });
       const routes = router.handler();
 
-      const healthRouter = createHealthRouter({ health });
+      const healthRouter = createHealthRouter({ config, health });
+
       const server = await createHttpServer(
         app,
         readHttpServerOptions(config.getOptionalConfig('backend')),
@@ -119,6 +122,18 @@ const rootHttpRouterServiceFactoryWithOptions = (
           app.use(middleware.error());
         },
       });
+
+      if (config.has('backend.lifecycle.serverShutdownDelay')) {
+        const serverShutdownDelay = readDurationFromConfig(config, {
+          key: 'backend.lifecycle.serverShutdownDelay',
+        });
+        lifecycle.addBeforeShutdownHook(async () => {
+          const timeoutMs = durationToMilliseconds(serverShutdownDelay);
+          return await new Promise(resolve => {
+            setTimeout(resolve, timeoutMs);
+          });
+        });
+      }
 
       lifecycle.addShutdownHook(() => server.stop());
 

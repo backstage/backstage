@@ -121,8 +121,8 @@ describe('API integration tests', () => {
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
-        import('@backstage/plugin-kubernetes-backend/alpha'),
-        import('@backstage/plugin-permission-backend/alpha'),
+        import('@backstage/plugin-kubernetes-backend'),
+        import('@backstage/plugin-permission-backend'),
         import('@backstage/plugin-permission-backend-module-allow-all-policy'),
         createBackendModule({
           pluginId: 'kubernetes',
@@ -187,7 +187,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testObjectsProvider',
@@ -284,7 +284,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters([
             {
               name: 'cluster-name',
@@ -377,7 +377,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters(clusters),
           createBackendModule({
             pluginId: 'kubernetes',
@@ -440,7 +440,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters([
             {
               name: 'custom-cluster',
@@ -579,7 +579,7 @@ metadata:
         features: [
           minimalValidConfigService,
           permissionsMock.factory,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
         ],
       });
       app = server;
@@ -614,7 +614,7 @@ metadata:
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters([
             {
               name: 'custom-cluster',
@@ -689,7 +689,7 @@ metadata:
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testAuthStrategy',
@@ -741,7 +741,7 @@ metadata:
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testAuthStrategy',
@@ -796,7 +796,7 @@ metadata:
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
         ],
       }),
     ).rejects.toThrow(

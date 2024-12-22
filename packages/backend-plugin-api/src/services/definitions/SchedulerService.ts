@@ -354,19 +354,6 @@ export interface SchedulerService {
   getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]>;
 }
 
-function readDuration(config: Config, key: string): HumanDuration {
-  if (typeof config.get(key) === 'string') {
-    const value = config.getString(key);
-    const duration = Duration.fromISO(value);
-    if (!duration.isValid) {
-      throw new Error(`Invalid duration: ${value}`);
-    }
-    return duration.toObject();
-  }
-
-  return readDurationFromConfig(config, { key });
-}
-
 function readFrequency(
   config: Config,
   key: string,
@@ -382,7 +369,7 @@ function readFrequency(
     return { trigger: 'manual' };
   }
 
-  return readDuration(config, key);
+  return readDurationFromConfig(config, { key });
 }
 
 /**
@@ -396,10 +383,10 @@ export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition {
   const frequency = readFrequency(config, 'frequency');
-  const timeout = readDuration(config, 'timeout');
+  const timeout = readDurationFromConfig(config, { key: 'timeout' });
 
   const initialDelay = config.has('initialDelay')
-    ? readDuration(config, 'initialDelay')
+    ? readDurationFromConfig(config, { key: 'initialDelay' })
     : undefined;
 
   const scope = config.getOptionalString('scope');

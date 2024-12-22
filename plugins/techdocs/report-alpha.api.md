@@ -31,21 +31,6 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'api:techdocs': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
-    }>;
     'page:techdocs': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -95,6 +80,21 @@ const _default: FrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
+      };
+    }>;
+    'api:techdocs': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
       };
     }>;
     'api:techdocs/storage': ExtensionDefinition<{

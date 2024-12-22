@@ -185,12 +185,11 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
-            must: {
+            should: {
               multi_match: {
                 query: 'testTerm',
                 fields: ['*'],
                 fuzziness: 'auto',
-                minimum_should_match: 1,
               },
             },
             filter: {
@@ -198,6 +197,56 @@ describe('ElasticSearchSearchEngine', () => {
                 'kind.keyword': 'testKind',
               },
             },
+          },
+        },
+        from: 0,
+        size: 25,
+      });
+    });
+
+    it('should return translated query with phrase terms', async () => {
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        types: ['indexName'],
+        term: '"test phrase" anotherTerm "another phrase"',
+        filters: {},
+      }) as ElasticSearchConcreteQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: ['indexName'],
+        elasticSearchQuery: expect.any(Object),
+      });
+
+      const queryBody = actualTranslatedQuery.elasticSearchQuery;
+
+      expect(queryBody).toEqual({
+        query: {
+          bool: {
+            should: [
+              {
+                multi_match: {
+                  query: 'test phrase',
+                  fields: ['*'],
+                  type: 'phrase',
+                },
+              },
+              {
+                multi_match: {
+                  query: 'another phrase',
+                  fields: ['*'],
+                  type: 'phrase',
+                },
+              },
+              {
+                multi_match: {
+                  query: 'anotherTerm',
+                  fields: ['*'],
+                  fuzziness: 'auto',
+                },
+              },
+            ],
+            filter: [],
           },
         },
         from: 0,
@@ -225,12 +274,11 @@ describe('ElasticSearchSearchEngine', () => {
         query: {
           bool: {
             filter: [],
-            must: {
+            should: {
               multi_match: {
                 query: 'testTerm',
                 fields: ['*'],
                 fuzziness: 'auto',
-                minimum_should_match: 1,
               },
             },
           },
@@ -264,12 +312,11 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
-            must: {
+            should: {
               multi_match: {
                 query: 'testTerm',
                 fields: ['*'],
                 fuzziness: 'auto',
-                minimum_should_match: 1,
               },
             },
             filter: [
@@ -320,12 +367,11 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
-            must: {
+            should: {
               multi_match: {
                 query: 'testTerm',
                 fields: ['*'],
                 fuzziness: 'auto',
-                minimum_should_match: 1,
               },
             },
             filter: {
@@ -382,12 +428,11 @@ describe('ElasticSearchSearchEngine', () => {
         query: {
           bool: {
             filter: [],
-            must: {
+            should: {
               multi_match: {
                 query: 'testTerm',
                 fields: ['*'],
                 fuzziness: 'auto',
-                minimum_should_match: 1,
               },
             },
           },
@@ -708,12 +753,11 @@ describe('ElasticSearchSearchEngine', () => {
         body: {
           query: {
             bool: {
-              must: {
+              should: {
                 multi_match: {
                   query: 'testTerm',
                   fields: ['*'],
                   fuzziness: 'auto',
-                  minimum_should_match: 1,
                 },
               },
               filter: [],
@@ -747,7 +791,7 @@ describe('ElasticSearchSearchEngine', () => {
         body: {
           query: {
             bool: {
-              must: {
+              should: {
                 match_all: {},
               },
               filter: [],
@@ -782,7 +826,7 @@ describe('ElasticSearchSearchEngine', () => {
         body: {
           query: {
             bool: {
-              must: {
+              should: {
                 match_all: {},
               },
               filter: [],

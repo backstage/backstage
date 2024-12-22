@@ -25,6 +25,7 @@ import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabPipelineTrigger.examples';
+import { getErrorMessage } from './helpers';
 
 const pipelineInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
@@ -109,7 +110,9 @@ export const createTriggerGitlabPipelineAction = (options: {
           });
         }
         // Handling other errors
-        throw new InputError(`Failed to trigger Pipeline: ${error.message}`);
+        throw new InputError(
+          `Failed to trigger Pipeline: ${getErrorMessage(error)}`,
+        );
       } finally {
         // Delete the pipeline token if it was created
         if (pipelineTokenResponse && pipelineTokenResponse.id) {

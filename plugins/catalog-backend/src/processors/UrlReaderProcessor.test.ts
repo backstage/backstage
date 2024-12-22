@@ -31,7 +31,6 @@ import {
 import { defaultEntityDataParser } from '../util/parse';
 import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -193,11 +192,9 @@ describe('UrlReaderProcessor', () => {
   it('uses search when there are globs', async () => {
     const logger = mockServices.logger.mock();
 
-    const reader: jest.Mocked<UrlReaderService> = {
-      readUrl: jest.fn(),
-      readTree: jest.fn(),
-      search: jest.fn().mockImplementation(async () => []),
-    };
+    const reader = mockServices.urlReader.mock({
+      search: jest.fn().mockResolvedValue([]),
+    });
 
     const processor = new UrlReaderProcessor({ reader, logger });
 

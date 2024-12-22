@@ -86,7 +86,9 @@ describe('<EntityTypePicker/>', () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ filters: { kind: new EntityKindFilter('component') } }}
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+          }}
         >
           <EntityTypePicker />
         </MockEntityListContextProvider>
@@ -110,7 +112,7 @@ describe('<EntityTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('component') },
+            filters: { kind: new EntityKindFilter('component', 'Component') },
             updateFilters,
           }}
         >

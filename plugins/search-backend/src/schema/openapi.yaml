@@ -175,4 +175,4 @@ paths:
           allowReserved: true
           schema:
             type: object
-            additionalProperties: true
+            additionalProperties: {}

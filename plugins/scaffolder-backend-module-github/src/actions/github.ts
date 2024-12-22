@@ -115,6 +115,7 @@ export function createPublishGithubAction(options: {
       includeClaimKeys?: string[];
     };
     requiredCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     customProperties?: { [key: string]: string };
   }>({
     id: 'publish:github',
@@ -165,6 +166,7 @@ export function createPublishGithubAction(options: {
           secrets: inputProps.secrets,
           oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
           customProperties: inputProps.customProperties,
         },
       },
@@ -217,6 +219,7 @@ export function createPublishGithubAction(options: {
         token: providedToken,
         customProperties,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
       } = ctx.input;
 
       const octokitOptions = await getOctokitOptions({
@@ -289,6 +292,7 @@ export function createPublishGithubAction(options: {
         gitAuthorEmail,
         dismissStaleReviews,
         requiredCommitSigning,
+        requiredLinearHistory,
       );
 
       ctx.output('commitHash', commitResult?.commitHash);

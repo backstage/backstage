@@ -20,11 +20,11 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { createGitlabProjectDeployTokenAction } from './gitlabProjectDeployTokenCreate';
 
 const mockGitlabClient = {
-  ProjectDeployTokens: {
-    add: jest.fn(),
+  DeployTokens: {
+    create: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -66,7 +66,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   it('should work when there is a token provided through ctx.input', async () => {
-    mockGitlabClient.ProjectDeployTokens.add.mockResolvedValue({
+    mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
@@ -82,11 +82,13 @@ describe('gitlab:create-deploy-token', () => {
       },
     });
 
-    expect(mockGitlabClient.ProjectDeployTokens.add).toHaveBeenCalledWith(
-      '123',
+    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
       'tokenname',
       ['read_repository'],
-      { username: 'tokenuser' },
+      {
+        projectId: '123',
+        username: 'tokenuser',
+      },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');

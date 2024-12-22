@@ -45,6 +45,7 @@ import { SeverityIcon } from '../NotificationsTable/SeverityIcon';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 import { styled } from '@material-ui/core/styles';
 
 const StyledMaterialDesignContent = styled(MaterialDesignContent)(
@@ -253,7 +254,8 @@ export const NotificationsSidebarItem = (props?: {
     }
   }, [titleCounterEnabled, unreadCount, setNotificationCount]);
 
-  // TODO: Figure out if the count can be added to hasNotifications
+  const count = !error && !!unreadCount ? unreadCount : undefined;
+
   return (
     <>
       {snackbarEnabled && (
@@ -277,11 +279,12 @@ export const NotificationsSidebarItem = (props?: {
         onClick={() => {
           requestUserPermission();
         }}
-        hasNotifications={!error && !!unreadCount}
         text={text}
         icon={icon}
         {...restProps}
-      />
+      >
+        {count && <Chip size="small" label={count > 99 ? '99+' : count} />}
+      </SidebarItem>
     </>
   );
 };

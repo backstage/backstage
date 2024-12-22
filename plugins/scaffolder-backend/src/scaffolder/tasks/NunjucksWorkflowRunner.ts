@@ -80,6 +80,11 @@ type TemplateContext = {
     ref?: string;
   };
   each?: JsonValue;
+  context: {
+    task: {
+      id: string;
+    };
+  };
 };
 
 type CheckpointState =
@@ -364,28 +369,36 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )}`,
           );
         }
+
         await action.handler({
           input: iteration.input,
+          task: {
+            id: await task.getWorkspaceName(),
+          },
           secrets: task.secrets ?? {},
           // TODO(blam): move to LoggerService and away from Winston
           logger: loggerToWinstonLogger(taskLogger),
           logStream: streamLogger,
           workspacePath,
-          async checkpoint<U extends JsonValue>(
-            keySuffix: string,
-            fn: () => Promise<U>,
-          ) {
-            const key = `v1.task.checkpoint.${step.id}.${keySuffix}`;
+          async checkpoint<T extends JsonValue | void>(opts: {
+            key?: string;
+            fn: () => Promise<T> | T;
+          }) {
+            const { key: checkpointKey, fn } = opts;
+            const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
+
             try {
-              let prevValue: U | undefined;
+              let prevValue: T | undefined;
+
               if (prevTaskState) {
                 const prevState = (
                   prevTaskState.state?.checkpoints as {
                     [key: string]: CheckpointState;
                   }
                 )?.[key];
+
                 if (prevState && prevState.status === 'success') {
-                  prevValue = prevState.value as U;
+                  prevValue = prevState.value as T;
                 }
               }
 
@@ -395,7 +408,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 task.updateCheckpoint?.({
                   key,
                   status: 'success',
-                  value,
+                  value: value ?? {},
                 });
               }
               return value;
@@ -485,6 +498,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         parameters: task.spec.parameters,
         steps: {},
         user: task.spec.user,
+        context: {
+          task: {
+            id: taskId,
+          },
+        },
       };
 
       const [decision]: PolicyDecision[] =

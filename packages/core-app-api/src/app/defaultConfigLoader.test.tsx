@@ -29,6 +29,10 @@ describe('defaultConfigLoaderSync', () => {
     delete anyWindow.__APP_CONFIG__;
   });
 
+  it('loads nothing is config is missing', () => {
+    expect(defaultConfigLoaderSync()).toEqual([]);
+  });
+
   it('loads static config', () => {
     anyEnv.APP_CONFIG = [
       { data: { my: 'config' }, context: 'a' },
@@ -93,12 +97,6 @@ describe('defaultConfigLoaderSync', () => {
       { data: { my: 'override-config' }, context: 'b' },
     ]);
     expect(ConfigReader.fromConfigs(configs).get('my')).toBe('override-config');
-  });
-
-  it('fails to load invalid missing config', () => {
-    expect(() => defaultConfigLoaderSync()).toThrow(
-      'No static configuration provided',
-    );
   });
 
   it('fails to load invalid static config', () => {

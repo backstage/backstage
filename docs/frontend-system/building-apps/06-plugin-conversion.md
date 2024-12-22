@@ -58,7 +58,7 @@ The following are the known conversion functions provided by various libraries:
 
 ## Putting it all together
 
-Using the plugin converter along with extension converters from various libraries, we can not more fully convert our 3rd-party plugin to be able to install it in an app built with the new frontend system:
+Using the plugin converter along with extension converters from various libraries, we can now more fully convert our 3rd-party plugin to be able to install it in an app built with the new frontend system:
 
 ```ts
 import {

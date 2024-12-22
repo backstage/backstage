@@ -56,6 +56,7 @@ export const DescriptionFieldTemplate = <
       return (
         <MarkdownContent
           content={description}
+          linkTarget="_blank"
           className={classes.markdownDescription}
         />
       );

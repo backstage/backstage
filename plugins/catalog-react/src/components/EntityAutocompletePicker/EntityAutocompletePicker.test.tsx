@@ -335,7 +335,7 @@ describe('<EntityAutocompletePicker/>', () => {
         <MockEntityListContextProvider
           value={{
             filters: {
-              kind: new EntityKindFilter('Component'),
+              kind: new EntityKindFilter('component', 'Component'),
               type: new EntityTypeFilter(['service']),
             },
           }}
@@ -354,7 +354,7 @@ describe('<EntityAutocompletePicker/>', () => {
       expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
         filter: {
-          kind: 'Component',
+          kind: 'component',
         },
       }),
     );
@@ -367,7 +367,7 @@ describe('<EntityAutocompletePicker/>', () => {
         <MockEntityListContextProvider
           value={{
             filters: {
-              kind: new EntityKindFilter('Component'),
+              kind: new EntityKindFilter('component', 'Component'),
               type: new EntityTypeFilter(['service']),
             },
           }}
@@ -387,7 +387,7 @@ describe('<EntityAutocompletePicker/>', () => {
       expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
         facets: ['spec.options'],
         filter: {
-          kind: 'Component',
+          kind: 'component',
           'spec.type': ['service'],
         },
       }),

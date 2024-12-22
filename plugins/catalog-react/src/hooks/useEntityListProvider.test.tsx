@@ -87,7 +87,7 @@ const createWrapper =
       const { updateFilters } = useEntityList();
 
       useMountEffect(() => {
-        updateFilters({ kind: new EntityKindFilter('component') });
+        updateFilters({ kind: new EntityKindFilter('component', 'Component') });
       });
 
       return <>{children}</>;
@@ -252,7 +252,9 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
@@ -277,7 +279,9 @@ describe('<EntityListProvider />', () => {
 
     mockCatalogApi.getEntities!.mockRejectedValueOnce('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
@@ -443,7 +447,9 @@ describe('<EntityListProvider pagination />', () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
@@ -470,7 +476,9 @@ describe('<EntityListProvider pagination />', () => {
 
     mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
@@ -716,7 +724,9 @@ describe('<EntityListProvider pagination={{mode: offset}} />', () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
@@ -768,7 +778,9 @@ describe('<EntityListProvider pagination={{mode: offset}} />', () => {
 
     mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();

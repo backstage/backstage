@@ -15,8 +15,8 @@
  */
 
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
@@ -47,9 +47,11 @@ import {
   createFetchTemplateFileAction,
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
+  createFilesystemReadDirAction,
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
  * Scaffolder plugin
@@ -114,6 +116,7 @@ export const scaffolderPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
         catalogClient: catalogServiceRef,
+        events: eventsServiceRef,
       },
       async init({
         logger,
@@ -127,6 +130,7 @@ export const scaffolderPlugin = createBackendPlugin({
         httpAuth,
         catalogClient,
         permissions,
+        events,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -164,6 +168,7 @@ export const scaffolderPlugin = createBackendPlugin({
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
+          createFilesystemReadDirAction(),
         ];
 
         const actionIds = actions.map(action => action.id).join(', ');
@@ -189,6 +194,7 @@ export const scaffolderPlugin = createBackendPlugin({
           permissions,
           autocompleteHandlers,
           additionalWorkspaceProviders,
+          events,
         });
         httpRouter.use(router);
       },

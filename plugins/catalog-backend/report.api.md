@@ -28,8 +28,6 @@ import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } fr
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
-import { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
@@ -325,13 +323,6 @@ export class DefaultCatalogCollator {
 
 // @public @deprecated (undocumented)
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer_2;
-
-// @public @deprecated (undocumented)
-export const DefaultCatalogCollatorFactory: typeof DefaultCatalogCollatorFactory_2;
-
-// @public @deprecated (undocumented)
-export type DefaultCatalogCollatorFactoryOptions =
-  DefaultCatalogCollatorFactoryOptions_2;
 
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;

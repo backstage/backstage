@@ -115,6 +115,7 @@ import {
   UrlReaderService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
+import { entitiesResponseToObjects } from './response';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -485,6 +486,10 @@ export class CatalogBuilder {
       discovery,
     });
 
+    const disableRelationsCompatibility = config.getOptionalBoolean(
+      'catalog.disableRelationsCompatibility',
+    );
+
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const parser = this.parser || defaultEntityDataParser;
@@ -521,6 +526,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
+      disableRelationsCompatibility,
     });
 
     let permissionsService: PermissionsService;
@@ -566,7 +572,10 @@ export class CatalogBuilder {
           },
         });
 
-        const entitiesByRef = keyBy(entities, stringifyEntityRef);
+        const entitiesByRef = keyBy(
+          entitiesResponseToObjects(entities),
+          stringifyEntityRef,
+        );
 
         return resourceRefs.map(
           resourceRef =>
@@ -629,6 +638,7 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       permissionsService,
+      disableRelationsCompatibility,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

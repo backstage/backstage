@@ -530,6 +530,95 @@ describe('GithubOrgEntityProvider', () => {
       });
     });
 
+    it('should apply delta added on receive a created team without parent', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = mockServices.logger.mock();
+      const events = DefaultEventsService.create({ logger });
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+      });
+
+      entityProvider.connect(entityProviderConnection);
+
+      const expectedEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          description: 'description from the new team',
+          annotations: {
+            'backstage.io/edit-url':
+              'https://github.com/orgs/test-org/teams/new-team/edit',
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'github.com/team-slug': 'test-org/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: [],
+          profile: {
+            displayName: 'New Team',
+          },
+        },
+      };
+
+      const event: EventParams = {
+        topic: 'github.team',
+        eventPayload: {
+          action: 'created',
+          team: {
+            name: 'New Team',
+            slug: 'new-team',
+            description: 'description from the new team',
+            html_url: 'https://github.com/orgs/test-org/teams/new-team',
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+
+      await events.publish(event);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'delta',
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedEntity,
+          },
+        ],
+        removed: [],
+      });
+    });
+
     it('should apply delta removed on receive a deleted team', async () => {
       const entityProviderConnection: EntityProviderConnection = {
         applyMutation: jest.fn(),

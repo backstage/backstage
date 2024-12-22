@@ -32,7 +32,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
-import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
   AuthenticationError,
@@ -149,7 +148,7 @@ export class GiteaUrlReader implements UrlReaderService {
     const parsedUri = parseGiteaUrl(this.integration.config, url);
 
     return this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(response.body),
+      response: response,
       subpath: parsedUri.path,
       etag: lastCommitHash,
       filter: options?.filter,

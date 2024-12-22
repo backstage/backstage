@@ -21,3 +21,4 @@
  */
 
 export { catalogServiceMock } from './testUtils/catalogServiceMock';
+export type { CatalogServiceMock } from './testUtils/types';

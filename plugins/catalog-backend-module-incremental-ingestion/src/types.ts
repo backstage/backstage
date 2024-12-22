@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { PluginDatabaseManager } from '@backstage/backend-common';
-import type { Config } from '@backstage/config';
+import {
+  DatabaseService,
+  LoggerService,
+  PermissionsService,
+  RootConfigService,
+  RootLoggerService,
+  SchedulerService,
+  SchedulerServiceTaskFunction,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
-import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import type { Logger } from 'winston';
-import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
-import {
-  LoggerService,
-  UrlReaderService,
-  SchedulerService,
-  SchedulerServiceTaskFunction,
-} from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
+import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -186,12 +186,12 @@ export interface IncrementalEntityProviderOptions {
 
 /** @public */
 export type PluginEnvironment = {
-  logger: Logger;
-  database: PluginDatabaseManager;
+  logger: RootLoggerService;
+  database: DatabaseService;
   scheduler: SchedulerService;
-  config: Config;
+  config: RootConfigService;
   reader: UrlReaderService;
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService;
 };
 
 export interface IterationEngine {

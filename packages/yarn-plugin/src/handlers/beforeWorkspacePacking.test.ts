@@ -14,35 +14,24 @@
  * limitations under the License.
  */
 
-import { Manifest, Workspace } from '@yarnpkg/core';
+import {
+  Configuration,
+  Manifest,
+  Project,
+  Workspace,
+  httpUtils,
+} from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 import { beforeWorkspacePacking } from './beforeWorkspacePacking';
 
-jest.mock('@backstage/release-manifests', () => ({
-  getManifestByVersion: jest.fn().mockResolvedValue({
-    releaseVersion: '1.23.45',
-    packages: [
-      {
-        name: '@backstage/core',
-        version: '3.2.1',
-      },
-      {
-        name: '@backstage/plugin-1',
-        version: '6.5.4',
-      },
-      {
-        name: '@backstage/plugin-2',
-        version: '9.8.7',
-      },
-    ],
-  }),
-}));
-
 const makeWorkspace = (manifest: object) => {
   return {
     manifest: Manifest.fromText(JSON.stringify(manifest)),
+    project: new Project(ppath.cwd(), {
+      configuration: Configuration.create(ppath.cwd()),
+    }),
   } as Workspace;
 };
 
@@ -57,6 +46,24 @@ describe('beforeWorkspacePacking', () => {
     jest
       .spyOn(process, 'cwd')
       .mockReturnValue(npath.toPortablePath(mockDir.path));
+
+    jest.spyOn(httpUtils, 'get').mockResolvedValue({
+      releaseVersion: '1.23.45',
+      packages: [
+        {
+          name: '@backstage/core',
+          version: '3.2.1',
+        },
+        {
+          name: '@backstage/plugin-1',
+          version: '6.5.4',
+        },
+        {
+          name: '@backstage/plugin-2',
+          version: '9.8.7',
+        },
+      ],
+    });
 
     mockDir.setContent({
       'backstage.json': JSON.stringify({

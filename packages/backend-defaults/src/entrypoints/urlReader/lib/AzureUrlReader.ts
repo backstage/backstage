@@ -32,9 +32,7 @@ import {
   ScmIntegrations,
   AzureIntegration,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -101,7 +99,7 @@ export class AzureUrlReader implements UrlReaderService {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body);
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -172,7 +170,7 @@ export class AzureUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromZipArchive({
-      stream: Readable.from(archiveAzureResponse.body),
+      response: archiveAzureResponse,
       etag: commitSha,
       filter,
       subpath,

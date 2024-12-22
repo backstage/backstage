@@ -34,7 +34,6 @@ import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/al
 import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
-import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';

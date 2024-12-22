@@ -10,6 +10,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ComponentEntity } from '@backstage/catalog-model';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -121,6 +122,7 @@ export type DefaultApiExplorerPageProps = {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
 };
 
 // @public (undocumented)

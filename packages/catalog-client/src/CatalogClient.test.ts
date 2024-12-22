@@ -525,6 +525,18 @@ describe('CatalogClient', () => {
         '?cursor=prevcursor',
       );
     });
+
+    it('should handle errors', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await expect(() => client.queryEntities()).rejects.toThrow(
+        /Request failed with 401 Unauthorized/,
+      );
+    });
   });
 
   describe('getEntityByRef', () => {

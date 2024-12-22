@@ -4,6 +4,21 @@
 
 ```ts
 // @public
+export function createDeferred<
+  TResolved = void,
+  TRejected = Error,
+>(): DeferredPromise<TResolved, TRejected>;
+
+// @public
+export type DeferredPromise<
+  TResolved = void,
+  TRejected = Error,
+> = Promise<TResolved> & {
+  resolve(value: TResolved | PromiseLike<TResolved>): void;
+  reject(reason?: TRejected): void;
+};
+
+// @public
 export function durationToMilliseconds(duration: HumanDuration): number;
 
 // @public

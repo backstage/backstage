@@ -24,7 +24,9 @@ import {
 } from './FirestoreKeyStore';
 import { AnyJWK } from './types';
 
-const data = jest.fn().mockReturnValue('data');
+const data = jest
+  .fn()
+  .mockReturnValue({ key: { kid: 'something' }, kid: 'something' });
 const toDate = jest.fn().mockReturnValue('date');
 const get = jest.fn().mockReturnValue({
   docs: [{ data, createTime: { toDate } }],
@@ -145,7 +147,7 @@ describe('FirestoreKeyStore', () => {
     expect(firestoreMock.doc).toHaveBeenCalledWith(key.kid);
     expect(firestoreMock.set).toHaveBeenCalledWith({
       kid: key.kid,
-      key: JSON.stringify(key),
+      key,
     });
   });
 
@@ -180,7 +182,26 @@ describe('FirestoreKeyStore', () => {
     expect(data).toHaveBeenCalledTimes(1);
     expect(toDate).toHaveBeenCalledTimes(1);
     expect(items).toMatchObject({
-      items: [{ key: 'data', createdAt: 'date' }],
+      items: [{ key: { kid: 'something' }, createdAt: 'date' }],
+    });
+  });
+
+  it('supports older string versions of the keys', async () => {
+    data.mockReturnValue({
+      key: JSON.stringify({ kid: 'something' }),
+      kid: 'something',
+    });
+
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
+    const items = await keyStore.listKeys();
+
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(firestoreMock.collection).toHaveBeenCalledWith(path);
+    expect(firestoreMock.get).toHaveBeenCalledTimes(1);
+    expect(data).toHaveBeenCalledTimes(1);
+    expect(toDate).toHaveBeenCalledTimes(1);
+    expect(items).toMatchObject({
+      items: [{ key: { kid: 'something' }, createdAt: 'date' }],
     });
   });
 });

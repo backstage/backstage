@@ -49,6 +49,7 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
+import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * Props for {@link CatalogTable}.
@@ -60,6 +61,11 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
+  /**
+   * A static title to use for the table. If not provided, a title will be
+   * generated based on the current Kind and Type filters and total number of items.
+   */
+  title?: string;
   subtitle?: string;
 }
 
@@ -73,7 +79,16 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
-/** @public */
+/**
+ * CatalogTable is a wrapper around the Table component that is pre-configured
+ * to display catalog entities.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/features/software-catalog/catalog-customization}
+ *
+ * @public
+ */
 export const CatalogTable = (props: CatalogTableProps) => {
   const {
     columns = defaultCatalogTableColumnsFunc,
@@ -168,19 +183,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const currentKind = filters.kind?.value || '';
+  const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
-  const title = [
-    titlePreamble,
-    currentType,
-    pluralize(currentKind),
-    currentCount,
-  ]
-    .filter(s => s)
-    .join(' ');
+  const title =
+    props.title ||
+    [titlePreamble, currentType, pluralize(currentKind), currentCount]
+      .filter(s => s)
+      .join(' ');
 
   const actions = props.actions || defaultActions;
   const options = {
@@ -234,6 +246,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSize: pageSize,
         pageSizeOptions: [20, 50, 100],
         ...options,
+      }}
+      components={{
+        Toolbar: CatalogTableToolbar,
       }}
       title={title}
       data={rows}

@@ -135,13 +135,10 @@ export class DefaultCatalogProcessingEngine {
       pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
-          const { items } = await this.processingDatabase.transaction(
-            async tx => {
-              return this.processingDatabase.getProcessableEntities(tx, {
-                processBatchSize: count,
-              });
-            },
-          );
+          const { items } =
+            await this.processingDatabase.getProcessableEntities(this.knex, {
+              processBatchSize: count,
+            });
           return items;
         } catch (error) {
           this.logger.warn('Failed to load processing items', error);
@@ -295,7 +292,7 @@ export class DefaultCatalogProcessingEngine {
                 });
               oldRelationSources = new Map(
                 previous.relations.map(r => [
-                  `${r.source_entity_ref}:${r.type}`,
+                  `${r.source_entity_ref}:${r.type}->${r.target_entity_ref}`,
                   r.source_entity_ref,
                 ]),
               );
@@ -304,7 +301,11 @@ export class DefaultCatalogProcessingEngine {
             const newRelationSources = new Map<string, string>(
               result.relations.map(relation => {
                 const sourceEntityRef = stringifyEntityRef(relation.source);
-                return [`${sourceEntityRef}:${relation.type}`, sourceEntityRef];
+                const targetEntityRef = stringifyEntityRef(relation.target);
+                return [
+                  `${sourceEntityRef}:${relation.type}->${targetEntityRef}`,
+                  sourceEntityRef,
+                ];
               }),
             );
 

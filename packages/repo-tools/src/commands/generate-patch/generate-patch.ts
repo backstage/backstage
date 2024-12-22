@@ -182,8 +182,6 @@ async function loadTrimmedRootPkg(ctx: PatchContext, query?: string) {
     };
   }
 
-  const resolutionMap = await readResolutionMap(ctx);
-
   // Any existing resolution entries for the package are removed
   const entriesToRemove = Object.entries(resolutionsObj).filter(([key]) =>
     key.startsWith(`${ctx.packageName}@`),
@@ -201,29 +199,9 @@ async function loadTrimmedRootPkg(ctx: PatchContext, query?: string) {
     }
   }
 
-  // This collects the list of version descriptors that we want to apply the patch to
-  const descriptors = new Array<string>();
-  for (const [descriptor, locator] of resolutionMap) {
-    // Skip virtual and other non-npm entries
-    if (!locator.includes('@npm:')) {
-      // We know that virtual entries are fine to skip, but want to warn if we skip others
-      if (!locator.includes('@virtual:')) {
-        console.warn(`Skipping resolution for ${descriptor}, no version found`);
-      }
-      continue;
-    }
-
-    descriptors.push(descriptor);
-  }
-
   return async (patchEntry?: string) => {
-    if (descriptors.length > 0) {
-      for (const descriptor of descriptors) {
-        resolutionsObj[descriptor] = patchEntry;
-      }
-    } else {
-      resolutionsObj[ctx.packageName] = patchEntry;
-    }
+    resolutionsObj[ctx.packageName] = patchEntry;
+
     // We use the same patch for all versions of the package, if they don't
     // apply it might require manual intervention using the --query option
     await fs.writeJson(
@@ -295,41 +273,6 @@ function tryParsePatchResolution(value?: string): string | undefined {
   }
   const patchFilePath = value.split('#')[1];
   return patchFilePath;
-}
-
-// Read out the descriptors for all entries of the package in the target repo
-async function readResolutionMap(
-  ctx: PatchContext,
-): Promise<Map<string, string>> {
-  const { stdout: whyOutput } = await exec(
-    'yarn',
-    ['why', '--json', ctx.packageName],
-    {
-      cwd: ctx.targetRoot,
-      maxBuffer: 64 * 1024 * 1024,
-    },
-  );
-
-  const resolutionMap = new Map<string, string>();
-
-  for (const line of whyOutput.toString('utf8').trim().split(/\r?\n/)) {
-    for (const { locator, descriptor } of Object.values(
-      JSON.parse(line).children,
-    ) as Array<{ locator: string; descriptor: string }>) {
-      const existing = resolutionMap.get(descriptor);
-      if (existing) {
-        if (existing !== locator) {
-          throw new Error(
-            `Conflicting resolutions in target package for ${descriptor}: ${existing} vs ${locator}`,
-          );
-        }
-      } else {
-        resolutionMap.set(descriptor, locator);
-      }
-    }
-  }
-
-  return resolutionMap;
 }
 
 // Build and pack the source package to an archive in the work directory

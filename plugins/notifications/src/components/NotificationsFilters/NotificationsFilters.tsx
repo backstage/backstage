@@ -197,9 +197,9 @@ export const NotificationsFilters = ({
               value={viewValue}
               onChange={handleOnViewChanged}
             >
-              <MenuItem value="unread">New only</MenuItem>
+              <MenuItem value="unread">Unread notifications</MenuItem>
+              <MenuItem value="read">Read notifications</MenuItem>
               <MenuItem value="saved">Saved</MenuItem>
-              <MenuItem value="read">Marked as read</MenuItem>
               <MenuItem value="all">All</MenuItem>
             </Select>
           </FormControl>
@@ -207,12 +207,10 @@ export const NotificationsFilters = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-created">
-              Created after
-            </InputLabel>
+            <InputLabel id="notifications-filter-created">Sent out</InputLabel>
 
             <Select
-              label="Created after"
+              label="Sent out"
               labelId="notifications-filter-created"
               placeholder="Notifications since"
               value={createdAfter}

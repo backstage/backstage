@@ -35,6 +35,7 @@ import { AwsS3UrlReader } from './AwsS3UrlReader';
 import { GiteaUrlReader } from './GiteaUrlReader';
 import { AwsCodeCommitUrlReader } from './AwsCodeCommitUrlReader';
 import { HarnessUrlReader } from './HarnessUrlReader';
+import { AzureBlobStorageUrlReader } from './AzureBlobStorageUrlReader';
 
 /**
  * Creation options for {@link @backstage/backend-plugin-api#UrlReaderService}.
@@ -99,6 +100,7 @@ export class UrlReaders {
         GoogleGcsUrlReader.factory,
         HarnessUrlReader.factory,
         AwsS3UrlReader.factory,
+        AzureBlobStorageUrlReader.factory,
         AwsCodeCommitUrlReader.factory,
         FetchUrlReader.factory,
       ]),

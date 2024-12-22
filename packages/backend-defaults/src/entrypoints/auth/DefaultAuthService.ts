@@ -169,7 +169,10 @@ export class DefaultAuthService implements AuthService {
         return this.pluginTokenHandler.issueToken({
           pluginId: this.pluginId,
           targetPluginId,
-          onBehalfOf,
+          onBehalfOf: {
+            limitedUserToken: onBehalfOf.token,
+            expiresAt: onBehalfOf.expiresAt,
+          },
         });
       }
       default:

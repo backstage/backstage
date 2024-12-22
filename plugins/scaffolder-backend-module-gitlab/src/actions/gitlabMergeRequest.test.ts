@@ -66,19 +66,18 @@ const mockGitlabClient = {
     }),
   },
   Users: {
-    current: jest.fn(),
-    username: jest.fn(async (user: string) => {
-      if (user !== 'John Smith') throw new Error('user does not exist');
-      else
-        return [
-          {
-            id: 123,
-          },
-        ];
+    all: jest.fn(async (userOptions: { username: string }) => {
+      if (userOptions.username !== 'John Smith')
+        throw new Error('user does not exist');
+      return [
+        {
+          id: 123,
+        },
+      ];
     }),
   },
   Repositories: {
-    tree: jest.fn(
+    allRepositoryTrees: jest.fn(
       async (
         repoID: string | number,
         options: { ref: string; recursive: boolean; path: string | undefined },
@@ -123,7 +122,7 @@ const mockGitlabClient = {
   },
 };
 
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;

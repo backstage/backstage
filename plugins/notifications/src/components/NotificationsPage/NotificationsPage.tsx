@@ -144,6 +144,15 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const totalCount = value?.[0]?.totalCount;
   const isUnread = !!value?.[1]?.unread;
 
+  let tableTitle = `All notifications (${totalCount})`;
+  if (saved) {
+    tableTitle = `Saved notifications (${totalCount})`;
+  } else if (unreadOnly === true) {
+    tableTitle = `Unread notifications (${totalCount})`;
+  } else if (unreadOnly === false) {
+    tableTitle = `Read notifications (${totalCount})`;
+  }
+
   return (
     <PageWithHeader
       title={title}
@@ -172,6 +181,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
             </Grid>
             <Grid item xs={10}>
               <NotificationsTable
+                title={tableTitle}
                 isLoading={loading}
                 isUnread={isUnread}
                 markAsReadOnLinkOpen={markAsReadOnLinkOpen}

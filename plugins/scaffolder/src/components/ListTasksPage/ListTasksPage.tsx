@@ -46,6 +46,11 @@ import { scaffolderTranslationRef } from '../../translation';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    create?: boolean;
+  };
 }
 
 const ListTaskPageContent = (props: MyTaskPageProps) => {
@@ -161,10 +166,19 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
-    onEditorClicked: () => navigate(editorLink()),
-    onActionsClicked: () => navigate(actionsLink()),
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
+    onActionsClicked:
+      props?.contextMenu?.actions !== false
+        ? () => navigate(actionsLink())
+        : undefined,
     onTasksClicked: undefined,
-    onCreateClicked: () => navigate(createLink()),
+    onCreateClicked:
+      props?.contextMenu?.create !== false
+        ? () => navigate(createLink())
+        : undefined,
   };
   return (
     <Page themeId="home">

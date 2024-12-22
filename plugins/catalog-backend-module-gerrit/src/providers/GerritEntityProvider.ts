@@ -22,7 +22,6 @@ import {
   LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
-import fetch, { Response } from 'node-fetch';
 import {
   GerritIntegration,
   getGerritProjectsApiUrl,

@@ -34,6 +34,7 @@ const useStyles = makeStyles(
     root: {
       display: 'inline-flex',
       alignItems: 'center',
+      textDecoration: 'inherit',
     },
     icon: {
       marginRight: theme.spacing(0.5),
@@ -78,7 +79,6 @@ export const EntityDisplayName = (
 
   // The innermost "body" content
   let content = <>{primaryTitle}</>;
-
   // Optionally an icon, and wrapper around them both
   content = (
     <Box component="span" className={classes.root}>

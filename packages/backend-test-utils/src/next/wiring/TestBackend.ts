@@ -251,7 +251,7 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       const app = express();
 
       const middleware = MiddlewareFactory.create({ config, logger });
-      const healthRouter = createHealthRouter({ health });
+      const healthRouter = createHealthRouter({ config, health });
 
       app.use(healthRouter);
       app.use(router.handler());

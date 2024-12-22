@@ -11,7 +11,6 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Response as Response_2 } from 'node-fetch';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 
@@ -27,7 +26,7 @@ export class BitbucketServerClient {
     projectKey: string;
     repo: string;
     path: string;
-  }): Promise<Response_2>;
+  }): Promise<Response>;
   // (undocumented)
   getRepository(options: {
     projectKey: string;

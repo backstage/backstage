@@ -16,12 +16,10 @@ Add the collator to your backend instance, along with the search plugin itself:
 ```tsx
 // packages/backend/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
 
 const backend = createBackend();
-backend.add(searchPlugin);
-backend.add(searchModuleExploreCollator);
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-explore'));
 backend.start();
 ```
 

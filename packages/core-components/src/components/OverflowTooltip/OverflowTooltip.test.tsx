@@ -20,10 +20,12 @@ import { OverflowTooltip } from './OverflowTooltip';
 
 describe('<OverflowTooltip />', () => {
   it('renders without exploding', async () => {
-    render(<OverflowTooltip text="Text that may overflow" />);
+    expect(
+      render(<OverflowTooltip text="Text that may overflow" />),
+    ).toBeTruthy();
   });
 
   it('renders without exploding when the text prop is missing', async () => {
-    render(<OverflowTooltip text={undefined} />);
+    expect(render(<OverflowTooltip text={undefined} />)).toBeTruthy();
   });
 });

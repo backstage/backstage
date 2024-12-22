@@ -90,7 +90,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
             },
           },
         }),
-        import('@backstage/plugin-kubernetes-backend/alpha'),
+        import('@backstage/plugin-kubernetes-backend'),
         createBackendModule({
           pluginId: 'kubernetes',
           moduleId: 'testClusterSupplier',
@@ -261,7 +261,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testClusterSupplier',

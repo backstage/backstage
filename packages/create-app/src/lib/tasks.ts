@@ -25,7 +25,6 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
-import fetch from 'node-fetch';
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';

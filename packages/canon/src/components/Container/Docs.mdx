@@ -1,0 +1,99 @@
+import { Meta, Unstyled, Source } from '@storybook/blocks';
+import * as ContainerStories from './Container.stories';
+import { Title, Text, PropsTable, getProps } from '../../../docs/components';
+import { spacePropsList } from '../../../docs/spaceProps';
+
+<Meta of={ContainerStories} />
+
+<Unstyled>
+
+<Title type="h1">Container</Title>
+
+<Text>
+  The container component let you use our default max-width and center the
+  content on the page.
+</Text>
+
+<Title type="h2">Usage</Title>
+<Source
+  code={`import { Container } from "@backstage/canon";
+
+<Container>Hello World!</Container>
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    marginY: {
+      type: spacePropsList.marginY.type,
+      responsive: spacePropsList.marginY.responsive,
+    },
+    marginBottom: {
+      type: spacePropsList.marginBottom.type,
+      responsive: spacePropsList.marginBottom.responsive,
+    },
+    marginTop: {
+      type: spacePropsList.marginTop.type,
+      responsive: spacePropsList.marginTop.responsive,
+    },
+    paddingY: {
+      type: spacePropsList.paddingY.type,
+      responsive: spacePropsList.paddingY.responsive,
+    },
+    paddingBottom: {
+      type: spacePropsList.paddingBottom.type,
+      responsive: spacePropsList.paddingBottom.responsive,
+    },
+    paddingTop: {
+      type: spacePropsList.paddingTop.type,
+      responsive: spacePropsList.paddingTop.responsive,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Simple</Title>
+<Text>A simple example of how to use the Container component.</Text>
+
+<Source
+  code={`<Container>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Container>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive padding & margin</Title>
+<Text>
+  The Container component also supports responsive values, making it easy to
+  create responsive designs.
+</Text>
+<Source
+  code={`<Container paddingY={{ xs: 'sm', md: 'md' }}>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Container>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>

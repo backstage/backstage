@@ -45,6 +45,7 @@ import { version as errors } from '../../../errors/package.json';
 import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
+import { version as repoTools } from '../../../repo-tools/package.json';
 
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
@@ -71,6 +72,7 @@ import { version as pluginPermissionNode } from '../../../../plugins/permission-
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
+import { version as pluginScaffolderBackendModuleGithub } from '../../../../plugins/scaffolder-backend-module-github/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
 import { version as pluginSearchReact } from '../../../../plugins/search-react/package.json';
 import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
@@ -98,6 +100,7 @@ export const packageVersions = {
   '@backstage/e2e-test-utils': e2eTestUtils,
   '@backstage/errors': errors,
   '@backstage/integration-react': integrationReact,
+  '@backstage/repo-tools': repoTools,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
@@ -128,6 +131,8 @@ export const packageVersions = {
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
+  '@backstage/plugin-scaffolder-backend-module-github':
+    pluginScaffolderBackendModuleGithub,
   '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-search-react': pluginSearchReact,
   '@backstage/plugin-search-backend': pluginSearchBackend,

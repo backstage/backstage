@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { OpaqueFormField, type FormField } from './InternalFormField';
+export { OpaqueFormDecorator } from './InternalFormDecorator';

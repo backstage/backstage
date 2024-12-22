@@ -100,6 +100,7 @@ export function createGithubRepoCreateAction(options: {
       includeClaimKeys?: string[];
     };
     requireCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     customProperties?: { [key: string]: string };
   }>({
     id: 'github:repo:create',
@@ -140,6 +141,7 @@ export function createGithubRepoCreateAction(options: {
           secrets: inputProps.secrets,
           oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
           customProperties: inputProps.customProperties,
         },
       },

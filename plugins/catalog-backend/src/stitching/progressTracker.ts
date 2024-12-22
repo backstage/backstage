@@ -54,8 +54,7 @@ export function progressTracker(knex: Knex, logger: LoggerService) {
   stitchingQueueCount.addCallback(async result => {
     const total = await knex<DbRefreshStateRow>('refresh_state')
       .count({ count: '*' })
-      .whereNotNull('next_stitch_at')
-      .where('next_stitch_at', '<=', knex.fn.now());
+      .whereNotNull('next_stitch_at');
     result.observe(Number(total[0].count));
   });
 

@@ -73,6 +73,29 @@ export default createBackendFeatureLoader({
 });
 ```
 
+### Overriding service factories
+
+Service factories registered by feature loaders have lower priority than ones added directly via `backend.add`. This allows you to use a feature loader for a larger number of service implementations, but still override individual services.
+
+The ordering in which different feature loaders or service factories are added does not matter. There is also no priority between feature loaders, if two different feature loaders add a factory for the same service, the backend will fail to start.
+
+```ts
+const backend = createBackend();
+
+backend.add(
+  createBackendFeatureLoader({
+    async *loader() {
+      yield import('./commonDiscoveryService'); // discovery service
+      yield import('./commonRootLoggerService'); // root logger service
+    },
+  }),
+);
+
+backend.add(import('./myDiscoveryService')); // discovery service
+```
+
+The result of the above example is that the backend starts up with `./myDiscoveryService` as the discovery service implementation, while `./commonDiscoveryService` is ignored. The `./commonRootLoggerService` will still be used.
+
 ### Dynamic logic
 
 A feature loader can also be asynchronous, and for example fetch data from an external source to determine which features to load:

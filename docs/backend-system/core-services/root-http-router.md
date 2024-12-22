@@ -42,6 +42,29 @@ createBackendPlugin({
 
 ## Configuring the service
 
+### Via `app-config.yaml`
+
+The `app-config.yaml` file provides configurable options that can be adjusted to meet your `RootHttpRouterService` specific requirements:
+
+```yaml
+backend:
+  lifecycle:
+    # (Optional) The maximum time that paused requests will wait for the service to start, before returning an error (defaults to 5 seconds).
+    # Supported formats:
+    # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
+    # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+    # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+    startupRequestPauseTimeout: { seconds: 10 }
+    # (Optional) The minimum time that the HTTP server will delay the shutdown of the backend. During this delay health checks will be set to failing, allowing traffic to drain (defaults to 0 seconds).
+    # Supported formats:
+    # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
+    # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+    # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+    serverShutdownTimeout: { seconds: 20 }
+```
+
+### Via Code
+
 There's additional options that you can pass to configure the root HTTP Router service. These options are passed when you call `createBackend`.
 
 - `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.

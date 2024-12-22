@@ -687,5 +687,43 @@ describe('useReaderState', () => {
         expect.any(Function),
       );
     });
+
+    it('should return the same data if re-rendered', async () => {
+      techdocsStorageApi.getEntityDocs.mockResolvedValue('my content');
+      techdocsStorageApi.syncEntityDocs.mockImplementation(async () => {
+        return 'cached';
+      });
+
+      const { result, rerender } = renderHook(
+        () => useReaderState('Component', 'default', 'backstage', '/example'),
+        { wrapper: Wrapper },
+      );
+
+      expect(result.current).toEqual({
+        state: 'CHECKING',
+        path: '/example',
+        content: undefined,
+        contentErrorMessage: undefined,
+        syncErrorMessage: undefined,
+        buildLog: [],
+        contentReload: expect.any(Function),
+      });
+
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
+      });
+      const firstResult = result.current;
+
+      rerender();
+      expect(result.current).toBe(firstResult);
+    });
   });
 });

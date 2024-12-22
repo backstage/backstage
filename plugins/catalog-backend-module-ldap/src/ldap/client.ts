@@ -26,6 +26,7 @@ import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
   GoogleLdapVendor,
+  LLDAPVendor,
   FreeIpaVendor,
   LdapVendor,
 } from './vendors';
@@ -248,6 +249,8 @@ export class LdapClient {
           return AEDirVendor;
         } else if (clientHost === 'ldap.google.com') {
           return GoogleLdapVendor;
+        } else if (root && root.raw?.vendorName?.toString() === 'LLDAP') {
+          return LLDAPVendor;
         }
         return DefaultLdapVendor;
       })

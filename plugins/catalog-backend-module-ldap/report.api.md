@@ -205,7 +205,6 @@ export type LdapProviderConfig = {
 export type LdapVendor = {
   dnAttributeName: string;
   uuidAttributeName: string;
-  dnCaseSensitive?: boolean;
   decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
 };
 
@@ -275,6 +274,5 @@ export type UserTransformer = (
 export type VendorConfig = {
   dnAttributeName?: string;
   uuidAttributeName?: string;
-  dnCaseSensitive?: boolean;
 };
 ```

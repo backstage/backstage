@@ -15,15 +15,16 @@
  */
 
 import {
+  ServiceFactory,
   ServiceRef,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { Entity } from '@backstage/catalog-model';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { ServiceMock } from '@backstage/backend-test-utils';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogServiceMock } from './types';
 
 /** @internal */
 function simpleMock<TService>(
@@ -60,7 +61,7 @@ function simpleMock<TService>(
  */
 export function catalogServiceMock(options?: {
   entities?: Entity[];
-}): CatalogApi {
+}): CatalogServiceMock {
   return new InMemoryCatalogClient(options);
 }
 
@@ -80,12 +81,12 @@ export namespace catalogServiceMock {
       service: catalogServiceRef,
       deps: {},
       factory: () => new InMemoryCatalogClient(options),
-    });
+    }) as ServiceFactory<CatalogServiceMock, 'plugin', 'singleton'>;
   /**
    * Creates a catalog client whose methods are mock functions, possibly with
    * some of them overloaded by the caller.
    */
-  export const mock = simpleMock(catalogServiceRef, () => ({
+  export const mock = simpleMock<CatalogServiceMock>(catalogServiceRef, () => ({
     getEntities: jest.fn(),
     getEntitiesByRefs: jest.fn(),
     queryEntities: jest.fn(),

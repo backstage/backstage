@@ -252,7 +252,7 @@ describe('<UserListPicker />', () => {
           value={{
             updateFilters,
             queryParameters,
-            filters: { kind: new EntityKindFilter('component') },
+            filters: { kind: new EntityKindFilter('component', 'Component') },
           }}
         >
           <UserListPicker />
@@ -293,7 +293,7 @@ describe('<UserListPicker />', () => {
         <MockEntityListContextProvider
           value={{
             updateFilters,
-            filters: { kind: new EntityKindFilter('component') },
+            filters: { kind: new EntityKindFilter('component', 'Component') },
           }}
         >
           <UserListPicker />
@@ -341,7 +341,7 @@ describe('<UserListPicker />', () => {
             updateFilters,
             queryParameters: { user: ['all'], kind: 'component' },
             filters: {
-              kind: new EntityKindFilter('component'),
+              kind: new EntityKindFilter('component', 'Component'),
               user: undefined,
             },
           }}
@@ -368,7 +368,7 @@ describe('<UserListPicker />', () => {
             updateFilters,
             queryParameters: { user: ['owned'], kind: 'component' },
             filters: {
-              kind: new EntityKindFilter('component'),
+              kind: new EntityKindFilter('component', 'Component'),
               user: undefined,
             },
           }}
@@ -394,7 +394,7 @@ describe('<UserListPicker />', () => {
           value={{
             updateFilters,
             filters: filters || {
-              kind: new EntityKindFilter('component'),
+              kind: new EntityKindFilter('component', 'Component'),
             },
           }}
         >

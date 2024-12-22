@@ -1,0 +1,72 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.sb-table-wrapper {
+  border: 1px solid #e7e7e7;
+  border-radius: 4px;
+  overflow: hidden;
+
+  & .sb-table {
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-spacing: 0px;
+    border-collapse: collapse;
+  }
+
+  & .sb-table-cell {
+    padding: 12px 16px !important;
+    border: none !important;
+    text-align: left;
+    background-color: white !important;
+    font-size: 16px;
+
+    & p {
+      margin: 0;
+    }
+  }
+
+  & .sb-table-header-cell {
+    background-color: #f5f5f5 !important;
+    border-bottom: 1px solid #e7e7e7 !important;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  & .sb-table-row {
+    border: none;
+    border-bottom: 1px solid #e7e7e7;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  & .sb-table-chip {
+    display: inline-block;
+    font-size: 14px !important;
+    border: 1px solid #e7e7e7;
+    border-radius: 6px;
+    padding: 0px 6px;
+    height: 24px;
+  }
+
+  & .sb-table-type {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 8px;
+  }
+}

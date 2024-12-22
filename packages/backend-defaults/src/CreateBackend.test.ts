@@ -47,6 +47,7 @@ describe('createBackend', () => {
         deps: {},
         factory: async () => ({
           addStartupHook: () => {},
+          addBeforeShutdownHook: () => {},
           addShutdownHook: () => {},
         }),
       }),
@@ -57,6 +58,7 @@ describe('createBackend', () => {
         deps: {},
         factory: async () => ({
           addStartupHook: () => {},
+          addBeforeShutdownHook: () => {},
           addShutdownHook: () => {},
         }),
       }),

@@ -28,7 +28,6 @@ import {
   getRepoSourceDirectory,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import fetch, { Response, RequestInit } from 'node-fetch';
 import { examples } from './gerrit.examples';
 
 const createGerritProject = async (

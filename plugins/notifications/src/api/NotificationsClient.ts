@@ -71,23 +71,26 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.minimumSeverity !== undefined) {
       queryString.append('minimumSeverity', options.minimumSeverity);
     }
-    const urlSegment = `?${queryString}`;
 
-    return await this.request<GetNotificationsResponse>(urlSegment);
+    return await this.request<GetNotificationsResponse>(
+      `/notifications?${queryString}`,
+    );
   }
 
   async getNotification(id: string): Promise<Notification> {
-    return await this.request<Notification>(`${id}`);
+    return await this.request<Notification>(
+      `/notifications/${encodeURIComponent(id)}`,
+    );
   }
 
   async getStatus(): Promise<NotificationStatus> {
-    return await this.request<NotificationStatus>('status');
+    return await this.request<NotificationStatus>('/status');
   }
 
   async updateNotifications(
     options: UpdateNotificationsOptions,
   ): Promise<Notification[]> {
-    return await this.request<Notification[]>('update', {
+    return await this.request<Notification[]>('/notifications/update', {
       method: 'POST',
       body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
@@ -95,29 +98,27 @@ export class NotificationsClient implements NotificationsApi {
   }
 
   async getNotificationSettings(): Promise<NotificationSettings> {
-    return await this.request<NotificationSettings>('settings');
+    return await this.request<NotificationSettings>('/settings');
   }
 
   async updateNotificationSettings(
     settings: NotificationSettings,
   ): Promise<NotificationSettings> {
-    return await this.request<NotificationSettings>('settings', {
+    return await this.request<NotificationSettings>('/settings', {
       method: 'POST',
       body: JSON.stringify(settings),
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  private async request<T>(path: string, init?: any): Promise<T> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('notifications')}/`;
-    const url = new URL(path, baseUrl);
+  private async request<T>(path: string, init?: RequestInit): Promise<T> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('notifications');
+    const res = await this.fetchApi.fetch(`${baseUrl}${path}`, init);
 
-    const response = await this.fetchApi.fetch(url.toString(), init);
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
+    if (!res.ok) {
+      throw await ResponseError.fromResponse(res);
     }
 
-    return response.json() as Promise<T>;
+    return res.json() as Promise<T>;
   }
 }

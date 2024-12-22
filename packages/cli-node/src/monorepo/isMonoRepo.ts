@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { paths } from '../paths';
+import { paths } from '../util';
 import fs from 'fs-extra';
 
 /**

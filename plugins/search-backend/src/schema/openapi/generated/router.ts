@@ -253,7 +253,7 @@ export const spec = {
             allowReserved: true,
             schema: {
               type: 'object',
-              additionalProperties: true,
+              additionalProperties: {},
             },
           },
         ],

@@ -22,14 +22,12 @@ if (shouldUseGlobalAgent()) {
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import ora from 'ora';
 import semver from 'semver';
 import { OptionValues } from 'commander';
 import yaml from 'yaml';
 import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
-import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
 import {
   mapDependencies,
@@ -45,6 +43,8 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
+import { runYarnInstall } from './utils';
+import { run } from '../../lib/run';
 
 function shouldUseGlobalAgent(): boolean {
   // see https://www.npmjs.com/package/global-agent
@@ -119,6 +119,20 @@ export default async (opts: OptionValues) => {
       releaseLine: opts.releaseLine,
       releaseManifest,
     });
+  }
+
+  if (hasYarnPlugin) {
+    console.log();
+    console.log(
+      `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
+    );
+    console.log();
+    await run('yarn', [
+      'plugin',
+      'import',
+      `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`,
+    ]);
+    console.log();
   }
 
   // First we discover all Backstage dependencies within our own repo
@@ -507,36 +521,4 @@ async function getHasYarnPlugin() {
   return yarnRc.plugins?.some(
     plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
   );
-}
-
-export async function runYarnInstall() {
-  const spinner = ora({
-    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
-    spinner: 'arc',
-    color: 'green',
-  }).start();
-
-  const installOutput = new Array<Buffer>();
-  try {
-    await run('yarn', ['install'], {
-      env: {
-        FORCE_COLOR: 'true',
-        // We filter out all of the npm_* environment variables that are added when
-        // executing through yarn. This works around an issue where these variables
-        // incorrectly override local yarn or npm config in the project directory.
-        ...Object.fromEntries(
-          Object.entries(process.env).map(([name, value]) =>
-            name.startsWith('npm_') ? [name, undefined] : [name, value],
-          ),
-        ),
-      },
-      stdoutLogFunc: data => installOutput.push(data),
-      stderrLogFunc: data => installOutput.push(data),
-    });
-    spinner.succeed();
-  } catch (error) {
-    spinner.fail();
-    process.stdout.write(Buffer.concat(installOutput));
-    throw error;
-  }
 }

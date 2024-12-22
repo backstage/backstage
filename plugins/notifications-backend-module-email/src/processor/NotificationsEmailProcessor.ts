@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   NotificationProcessor,
   NotificationSendOptions,
@@ -75,14 +76,17 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
     this.concurrencyLimit =
       emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
-    const throttleConfig =
-      emailProcessorConfig.getOptionalConfig('throttleInterval');
-    this.throttleInterval = throttleConfig
-      ? durationToMilliseconds(readDurationFromConfig(throttleConfig))
+    this.throttleInterval = emailProcessorConfig.has('throttleInterval')
+      ? durationToMilliseconds(
+          readDurationFromConfig(emailProcessorConfig, {
+            key: 'throttleInterval',
+          }),
+        )
       : 100;
-    const cacheConfig = emailProcessorConfig.getOptionalConfig('cache.ttl');
-    this.cacheTtl = cacheConfig
-      ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
+    this.cacheTtl = emailProcessorConfig.has('cache.ttl')
+      ? durationToMilliseconds(
+          readDurationFromConfig(emailProcessorConfig, { key: 'cache.ttl' }),
+        )
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
     this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(

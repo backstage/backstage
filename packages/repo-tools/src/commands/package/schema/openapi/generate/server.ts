@@ -86,7 +86,7 @@ async function generate(abortSignal?: AbortController) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const resolvedOutputDirectory = await getRelativePathToFile(OUTPUT_PATH);
 
-  await fs.mkdirp(resolvedOutputDirectory);
+  await fs.emptyDir(resolvedOutputDirectory);
 
   await fs.writeFile(
     resolve(resolvedOutputDirectory, '.openapi-generator-ignore'),

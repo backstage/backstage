@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readAzureDevOpsConfigs } from './config';
+import { readAzureBlobStorageConfigs, readAzureDevOpsConfigs } from './config';
 
 describe('readAzureDevOpsConfigs', () => {
   it('reads all provider configs and set default values', () => {
@@ -103,6 +103,77 @@ describe('readAzureDevOpsConfigs', () => {
       path: '/catalog-info.yaml',
       repository: '*',
       id: 'provider5',
+    });
+  });
+});
+
+describe('readAzureBlobStorageConfigs', () => {
+  it('reads single and multiple Azure Blob Storage provider configs', () => {
+    const provider1 = {
+      accountName: 'account-1',
+      containerName: 'container-1',
+      schedule: {
+        frequency: 'PT30M',
+        timeout: {
+          minutes: 3,
+        },
+      },
+    };
+    const provider2 = {
+      accountName: 'account-1',
+      containerName: 'container-2',
+    };
+
+    const configSingle = {
+      catalog: {
+        providers: {
+          azureBlob: provider2,
+        },
+      },
+    };
+
+    const configMulti = {
+      catalog: {
+        providers: {
+          azureBlob: {
+            provider1,
+            provider2,
+          },
+        },
+      },
+    };
+
+    // Single provider case
+    const actualSingle = readAzureBlobStorageConfigs(
+      new ConfigReader(configSingle),
+    );
+    expect(actualSingle).toHaveLength(1);
+    expect(actualSingle[0]).toEqual({
+      id: 'default',
+      accountName: 'account-1',
+      containerName: 'container-2',
+      schedule: undefined, // no schedule provided in this case
+    });
+
+    // Multiple providers case
+    const actualMulti = readAzureBlobStorageConfigs(
+      new ConfigReader(configMulti),
+    );
+    expect(actualMulti).toHaveLength(2);
+    expect(actualMulti[0]).toEqual({
+      id: 'provider1',
+      accountName: 'account-1',
+      containerName: 'container-1',
+      schedule: {
+        ...provider1.schedule,
+        frequency: { minutes: 30 },
+      },
+    });
+    expect(actualMulti[1]).toEqual({
+      id: 'provider2',
+      accountName: 'account-1',
+      containerName: 'container-2',
+      schedule: undefined, // no schedule provided
     });
   });
 });

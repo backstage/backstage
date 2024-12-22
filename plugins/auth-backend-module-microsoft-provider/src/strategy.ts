@@ -16,7 +16,6 @@
 
 import { PassportProfile } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
-import fetch from 'node-fetch';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 
 export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
@@ -103,9 +102,9 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
           },
         },
       );
-      const data = await res.buffer();
+      const data = await res.arrayBuffer();
 
-      return `data:image/jpeg;base64,${data.toString('base64')}`;
+      return `data:image/jpeg;base64,${Buffer.from(data).toString('base64')}`;
     } catch (error) {
       return undefined;
     }

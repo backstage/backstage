@@ -90,12 +90,6 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
     }
 
     const lockfileEntries = lockfile?.get(name);
-    if (
-      name.startsWith('@types/') &&
-      lockfileEntries?.some(entry => entry.range === '*')
-    ) {
-      return '*';
-    }
 
     for (const specifier of ['^', '~', '*']) {
       const range = `workspace:${specifier}`;

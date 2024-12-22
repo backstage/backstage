@@ -283,7 +283,7 @@ describe('DefaultProcessingDatabase', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'adds deferred entities to the the refresh_state table to be picked up later, %p',
+      'adds deferred entities to the refresh_state table to be picked up later, %p',
       async databaseId => {
         const { knex, db } = await createDatabase(databaseId);
         await insertRefreshStateRow(knex, {

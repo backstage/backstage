@@ -12,10 +12,12 @@ yarn.lock                                         @backstage/maintainers @backst
 /docs                                             @backstage/maintainers @backstage/documentation-maintainers
 /docs/assets/search                               @backstage/search-maintainers
 /docs/features/search                             @backstage/search-maintainers
+/docs/dls                                         @backstage/design-system-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers
 /docs/plugins/integrating-search-into-plugins.md  @backstage/search-maintainers
 /packages/cli/src/commands/onboard                @backstage/sharks
 /packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
+/packages/canon                                   @backstage/design-system-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
 /plugins/api-docs                                 @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers

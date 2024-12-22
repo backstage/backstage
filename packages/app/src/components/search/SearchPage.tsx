@@ -117,7 +117,7 @@ const SearchPage = () => {
                   name="kind"
                   values={['Component', 'Template']}
                 />
-                <SearchFilter.Checkbox
+                <SearchFilter.Select
                   className={classes.filter}
                   label="Lifecycle"
                   name="lifecycle"

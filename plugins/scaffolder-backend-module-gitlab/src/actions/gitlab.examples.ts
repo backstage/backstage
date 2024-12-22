@@ -163,4 +163,43 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Initializes a GitLab repository with pipeline must succeed and allow merge on skipped pipeline settings.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            settings: {
+              only_allow_merge_if_pipeline_succeeds: true,
+              allow_merge_on_skipped_pipeline: true,
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Initializes a GitLab repository with setting to require all threads (discussions) on merge request to be resolved before merging.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            settings: {
+              only_allow_merge_if_all_discussions_are_resolved: true,
+            },
+          },
+        },
+      ],
+    }),
+  },
 ];

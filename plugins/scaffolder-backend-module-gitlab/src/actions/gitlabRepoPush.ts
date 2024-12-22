@@ -19,12 +19,12 @@ import {
   parseRepoUrl,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Types } from '@gitbeaker/core';
+import { CommitAction } from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { createGitlabApi } from './helpers';
+import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabRepoPush.examples';
 
 /**
@@ -141,7 +141,7 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      const actions: Types.CommitAction[] = fileContents.map(file => ({
+      const actions: CommitAction[] = fileContents.map(file => ({
         action: commitAction ?? 'create',
         filePath: targetPath
           ? path.posix.join(targetPath, file.path)
@@ -158,7 +158,9 @@ export const createGitlabRepoPushAction = (options: {
       } catch (e: any) {
         if (e.response?.statusCode !== 404) {
           throw new InputError(
-            `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${e}`,
+            `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -171,7 +173,9 @@ export const createGitlabRepoPushAction = (options: {
           await api.Branches.create(repoID, branchName, String(defaultBranch));
         } catch (e) {
           throw new InputError(
-            `The branch '${branchName}' was not found and creation failed with error. Please make sure that branch already exists or Backstage has permissions to create one. ${e}`,
+            `The branch '${branchName}' was not found and creation failed with error. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
+              e,
+            )}`,
           );
         }
       }
@@ -188,7 +192,9 @@ export const createGitlabRepoPushAction = (options: {
         ctx.output('commitHash', commit.id);
       } catch (e) {
         throw new InputError(
-          `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${e}`,
+          `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
+            e,
+          )}`,
         );
       }
     },

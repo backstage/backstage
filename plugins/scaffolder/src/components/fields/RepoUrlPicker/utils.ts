@@ -37,6 +37,9 @@ export function serializeRepoPickerUrl(data: RepoUrlPickerState) {
   if (data.project) {
     params.set('project', data.project);
   }
+  if (data.id) {
+    params.set('id', data.id);
+  }
 
   return `${data.host}?${params.toString()}`;
 }
@@ -50,6 +53,7 @@ export function parseRepoPickerUrl(
   let organization = '';
   let workspace = '';
   let project = '';
+  let id = '';
 
   try {
     if (url) {
@@ -60,9 +64,10 @@ export function parseRepoPickerUrl(
       organization = parsed.searchParams.get('organization') || '';
       workspace = parsed.searchParams.get('workspace') || '';
       project = parsed.searchParams.get('project') || '';
+      id = parsed.searchParams.get('id') || '';
     }
   } catch {
     /* ok */
   }
-  return { host, owner, repoName, organization, workspace, project };
+  return { host, owner, repoName, organization, workspace, project, id };
 }

@@ -1,0 +1,12 @@
+---
+title: Mend.io
+author: Mend.io
+authorUrl: https://www.mend.io/
+category: Security
+description: Proactive application risk management for developer and security teams directly in Backstage
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/mend/plugins/mend
+iconUrl: https://avatars.githubusercontent.com/u/105765982?s=200&v=4
+npmPackageName: '@backstage-community/plugin-mend'
+tags:
+  - security
+addedDate: '2024-10-15'
