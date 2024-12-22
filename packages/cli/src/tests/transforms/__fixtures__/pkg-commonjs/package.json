@@ -1,0 +1,7 @@
+{
+  "name": "pkg-commonjs",
+  "type": "commonjs",
+  "exports": {
+    ".": "./main.ts"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "pkg-module",
+  "type": "module",
+  "exports": {
+    ".": "./main.ts"
+  }
+}
