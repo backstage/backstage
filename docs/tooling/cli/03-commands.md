@@ -270,6 +270,10 @@ executed with `yarn new`. For example you may have it set up like this:
 }
 ```
 
+The `new` command comes with a default collection of plugins/packages, however,
+you can customize this list and even create your own CLI templates. For more
+information see [CLI Templates](./04-templates.md).
+
 ```text
 Usage: backstage-cli new
 
