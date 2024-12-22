@@ -57,7 +57,7 @@ export default async () => {
     globals,
     codeOwnersFilePath,
   });
-  const options = await populateOptions(prompts, template);
+  const options = populateOptions(prompts, template);
 
   const tempDirs = new Array<string>();
   async function createTemporaryDirectory(name: string): Promise<string> {
