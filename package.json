@@ -33,7 +33,7 @@
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:peer-deps": "backstage-repo-tools peer-deps",
     "lint:type-deps": "backstage-repo-tools type-deps",
-    "new": "backstage-cli new --scope backstage --baseVersion 0.0.0 --no-private",
+    "new": "backstage-cli new",
     "prepare": "husky",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
