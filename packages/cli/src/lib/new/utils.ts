@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
-import { paths } from '../paths';
 import { Template } from './types';
 
 export interface Options extends Record<string, string | boolean> {
@@ -52,28 +50,14 @@ export const resolvePackageName = (options: {
   return plugin ? `backstage-plugin-${baseName}` : baseName;
 };
 
-async function calculateBaseVersion(baseVersion: string | undefined) {
-  if (!baseVersion) {
-    const lernaVersion = await fs
-      .readJson(paths.resolveTargetRoot('lerna.json'))
-      .then(pkg => pkg.version)
-      .catch(() => undefined);
-    if (lernaVersion) {
-      return lernaVersion;
-    }
-    return '0.1.0';
-  }
-  return baseVersion;
-}
-
-export async function populateOptions(
+export function populateOptions(
   prompts: Record<string, string>,
   template: Template,
-): Promise<Options> {
+): Options {
   return {
     id: prompts.id ?? '',
     private: !!prompts.private,
-    baseVersion: await calculateBaseVersion(prompts.baseVersion),
+    baseVersion: prompts.baseVersion ?? '0.1.0',
     owner: prompts.owner ?? '',
     license: prompts.license ?? 'Apache-2.0',
     targetPath: template.targetPath,
