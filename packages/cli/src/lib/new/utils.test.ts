@@ -84,24 +84,24 @@ describe('resolvePackageName', () => {
 });
 
 describe('populateOptions', () => {
-  it('should return default values if not provided', async () => {
-    expect(
-      await populateOptions({}, { targetPath: '/example' } as Template),
-    ).toEqual({
-      id: '',
-      private: false,
-      baseVersion: '0.0.0',
-      owner: '',
-      license: 'Apache-2.0',
-      targetPath: '/example',
-      scope: '',
-      moduleId: '',
-    });
+  it('should return default values if not provided', () => {
+    expect(populateOptions({}, { targetPath: '/example' } as Template)).toEqual(
+      {
+        id: '',
+        private: false,
+        baseVersion: '0.0.0',
+        owner: '',
+        license: 'Apache-2.0',
+        targetPath: '/example',
+        scope: '',
+        moduleId: '',
+      },
+    );
   });
 
-  it('should include all non-standard global and prompt values', async () => {
+  it('should include all non-standard global and prompt values', () => {
     expect(
-      await populateOptions({ foo: 'bar' }, {
+      populateOptions({ foo: 'bar' }, {
         targetPath: '/example',
       } as Template),
     ).toEqual({
@@ -117,9 +117,9 @@ describe('populateOptions', () => {
     });
   });
 
-  it('should priority global targetPath over the targetPath specified in template', async () => {
+  it('should priority global targetPath over the targetPath specified in template', () => {
     expect(
-      await populateOptions({ targetPath: '/global' }, {
+      populateOptions({ targetPath: '/global' }, {
         targetPath: '/example',
       } as Template),
     ).toEqual({
