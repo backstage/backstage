@@ -479,6 +479,7 @@ module.exports = {
           'tooling/cli/overview',
           'tooling/cli/build-system',
           'tooling/cli/commands',
+          'tooling/cli/templates',
           {
             type: 'category',
             label: 'Local Development',
