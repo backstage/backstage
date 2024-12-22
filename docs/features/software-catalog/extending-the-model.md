@@ -495,8 +495,8 @@ want to have an isomorphic package that houses these types. Within the Backstage
 main repo the package naming pattern of `<plugin>-common` is used for isomorphic
 packages, and you may choose to adopt this pattern as well.
 
-You can generate an isomorphic plugin package by running:`yarn new --select plugin-common`
-or you can run `yarn new` and then select "plugin-common" from the list of options
+You can generate an isomorphic plugin package by running: `yarn new` and then
+selecting "plugin-common" from the list of options
 
 There's at this point no existing templates for generating isomorphic plugins
 using the `@backstage/cli`. Perhaps the simplest way to get started right now is
@@ -520,7 +520,7 @@ validate entities of our new kind. Just like with the definition package, you
 can find inspiration in for example the existing
 [ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-scaffolder-entity-model/src/processor/ScaffolderEntitiesProcessor.ts).
 
-The custom processor should be created as a separate module for the catalog plugin. For information on how to set that up, see the [plugin docs](../../plugins/backend-plugin.md#creating-a-backend-plugin). Use `yarn new --select backend-module` instead to create a module. For our case, the module ID will be `foobar` and the plugin ID will be `catalog`.
+The custom processor should be created as a separate module for the catalog plugin. For information on how to set that up, see the [plugin docs](../../plugins/backend-plugin.md#creating-a-backend-plugin). Use `yarn new` and select `backend-module` instead to create a module. For our case, the module ID will be `foobar` and the plugin ID will be `catalog`.
 
 We also provide a high-level example of what a catalog process for a custom
 entity might look like:
