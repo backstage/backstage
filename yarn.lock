@@ -5643,6 +5643,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
+    node-fetch: ^2.7.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft

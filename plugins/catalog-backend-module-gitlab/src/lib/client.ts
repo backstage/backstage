@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
+import fetch from 'node-fetch';
+
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
