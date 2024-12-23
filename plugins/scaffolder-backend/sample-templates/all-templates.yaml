@@ -7,6 +7,7 @@ spec:
   targets:
     - ./remote-templates.yaml
     - ./notifications-demo/template.yaml
+    - ./local-template/template.yaml
 # For local development of a template, you can reference your local templates here.
 # Examples:
 #

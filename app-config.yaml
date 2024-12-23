@@ -45,8 +45,12 @@ backend:
   listen:
     port: 7007
   database:
-    client: better-sqlite3
-    connection: ':memory:'
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
@@ -326,11 +330,11 @@ catalog:
         - allow: [Template]
 scaffolder:
   # Use to customize default commit author info used when new components are created
-  # defaultAuthor:
-  #   name: Scaffolder
-  #   email: scaffolder@backstage.io
+  defaultAuthor:
+    name: lmhinnel
+    email: lmhuong711@gmail.com
   # Use to customize the default commit message when new components are created
-  # defaultCommitMessage: 'Initial commit'
+  defaultCommitMessage: "U can't touch this"
 
 auth:
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running

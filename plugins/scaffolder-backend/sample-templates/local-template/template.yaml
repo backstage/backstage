@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: local-templates
+  description: A collection of all Backstage local templates
+spec:
+  targets:
+    - ./gin-golan-template/template.yaml

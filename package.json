@@ -23,7 +23,7 @@
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
-    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
+    "dev": "NODE_OPTIONS=--no-node-snapshot yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
     "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix --publish",
@@ -137,7 +137,7 @@
   "jest": {
     "rejectFrontendNetworkRequests": true
   },
-  "packageManager": "yarn@3.8.1",
+  "packageManager": "yarn@4.4.1",
   "engines": {
     "node": "20 || 22"
   }
