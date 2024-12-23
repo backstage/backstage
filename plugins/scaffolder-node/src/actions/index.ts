@@ -16,21 +16,31 @@
 
 export {
   createTemplateAction,
+  type TemplateActionOptionsV2,
+  type TemplateActionOptionsV1,
   type TemplateActionOptions,
-  type TemplateExample,
 } from './createTemplateAction';
 export {
   executeShellCommand,
   type ExecuteShellCommandOptions,
 } from './executeShellCommand';
 export { fetchContents, fetchFile } from './fetch';
-export { type ActionContext, type TemplateAction } from './types';
 export {
-  initRepoAndPush,
-  commitAndPushRepo,
-  commitAndPushBranch,
   addFiles,
-  createBranch,
   cloneRepo,
+  commitAndPushBranch,
+  commitAndPushRepo,
+  createBranch,
+  initRepoAndPush,
 } from './gitHelpers';
-export { parseRepoUrl, getRepoSourceDirectory } from './util';
+export type {
+  ActionContext,
+  ActionContextV1,
+  ActionContextV2,
+  InferActionType,
+  TemplateAction,
+  TemplateActionV1,
+  TemplateActionV2,
+  TemplateExample,
+} from './types';
+export { getRepoSourceDirectory, parseRepoUrl } from './util';
