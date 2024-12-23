@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { DatabaseManager } from '@backstage/backend-common';
 import {
-  DatabaseManager,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { Knex } from 'knex';
 
@@ -32,10 +32,10 @@ const migrationsDir = resolvePackagePath(
  * asked for, and runs migrations.
  */
 export class AuthDatabase {
-  readonly #database: PluginDatabaseManager;
+  readonly #database: DatabaseService;
   #promise: Promise<Knex> | undefined;
 
-  static create(database: PluginDatabaseManager): AuthDatabase {
+  static create(database: DatabaseService): AuthDatabase {
     return new AuthDatabase(database);
   }
 
@@ -60,7 +60,7 @@ export class AuthDatabase {
     });
   }
 
-  private constructor(database: PluginDatabaseManager) {
+  private constructor(database: DatabaseService) {
     this.#database = database;
   }
 
