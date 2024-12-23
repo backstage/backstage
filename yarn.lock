@@ -5350,6 +5350,7 @@ __metadata:
   resolution: "@backstage/plugin-auth-node@workspace:plugins/auth-node"
   dependencies:
     "@backstage/backend-common": ^0.25.0
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -5612,7 +5613,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gitlab-org@workspace:plugins/catalog-backend-module-gitlab-org"
   dependencies:
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6914,6 +6914,7 @@ __metadata:
   resolution: "@backstage/plugin-permission-backend@workspace:plugins/permission-backend"
   dependencies:
     "@backstage/backend-common": ^0.25.0
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6957,6 +6958,7 @@ __metadata:
   resolution: "@backstage/plugin-permission-node@workspace:plugins/permission-node"
   dependencies:
     "@backstage/backend-common": ^0.25.0
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"

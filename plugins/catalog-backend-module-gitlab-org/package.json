@@ -33,7 +33,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-backend-module-gitlab": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
