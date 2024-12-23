@@ -252,21 +252,25 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
 
-      let reviewerIds: number[] | undefined;
+      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicity passed to the Gitlab API call (e.g. assigneeId)
       if (reviewers !== undefined) {
-        reviewerIds = await Promise.all(
-          reviewers.map(async reviewer => {
-            try {
-              const reviewerUser = await api.Users.username(reviewer);
-              return reviewerUser[0].id;
-            } catch (e) {
-              ctx.logger.warn(
-                `Failed to find gitlab user id for ${reviewer}: ${e}. Proceeding with MR creation without reviewer.`,
-              );
-              return undefined;
-            }
-          }),
-        );
+        reviewerIds = (
+          await Promise.all(
+            reviewers.map(async reviewer => {
+              try {
+                const reviewerUser = await api.Users.all({
+                  username: reviewer,
+                });
+                return reviewerUser[0].id;
+              } catch (e) {
+                ctx.logger.warn(
+                  `Failed to find gitlab user id for ${reviewer}: ${e}. Proceeding with MR creation without reviewer.`,
+                );
+                return undefined;
+              }
+            }),
+          )
+        ).filter(id => id !== undefined) as number[];
       }
 
       let fileRoot: string;
