@@ -29,7 +29,7 @@ import cDefault from './c-default';
 const { default: defaultC } = cDefault;
 const { value: namedC } = cNamed;
 
-async function resolveAll(obj) {
+async function resolveAll(obj): Promise<unknown> {
   const val = await obj;
   if (typeof val !== 'object' || val === null) {
     return val;
@@ -47,7 +47,7 @@ async function resolveAll(obj) {
   );
 }
 
-resolveAll({
+export const values = resolveAll({
   depCommonJs,
   depModule,
   depDefault,
@@ -70,4 +70,4 @@ resolveAll({
     defaultB: import('./b-default').then(m => m.default),
     defaultC: import('./c-default').then(m => m.default.default),
   },
-}).then(obj => console.log(JSON.stringify(obj, null, 2)));
+});

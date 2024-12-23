@@ -65,7 +65,7 @@ function loadFixture(fixture: string) {
 
 describe('node runtime module transforms', () => {
   it('should load from commonjs format', async () => {
-    expect(loadFixture('pkg-commonjs/main.ts')).toEqual({
+    expect(loadFixture('pkg-commonjs/print.ts')).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       dynCommonJs: expectedExports.commonJs,
@@ -77,7 +77,7 @@ describe('node runtime module transforms', () => {
   });
 
   it('should load from default format', async () => {
-    expect(loadFixture('pkg-default/main.ts')).toEqual({
+    expect(loadFixture('pkg-default/print.ts')).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       dynCommonJs: expectedExports.commonJs,
@@ -89,7 +89,7 @@ describe('node runtime module transforms', () => {
   });
 
   it('should load from module format', async () => {
-    expect(loadFixture('pkg-module/main.ts')).toEqual({
+    expect(loadFixture('pkg-module/print.ts')).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       depModule: expectedExports.module,
