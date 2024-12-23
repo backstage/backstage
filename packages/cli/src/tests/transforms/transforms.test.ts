@@ -50,17 +50,16 @@ const expectedExports = {
 };
 
 function loadFixture(fixture: string) {
-  return JSON.parse(
-    execFileSync(
-      'node',
-      [
-        '--import',
-        '@backstage/cli/config/nodeTransform.cjs',
-        resolvePath(__dirname, `__fixtures__/${fixture}`),
-      ],
-      { encoding: 'utf8' },
-    ),
+  const output = execFileSync(
+    'node',
+    [
+      '--import',
+      '@backstage/cli/config/nodeTransform.cjs',
+      resolvePath(__dirname, `__fixtures__/${fixture}`),
+    ],
+    { encoding: 'utf8' },
   );
+  return JSON.parse(output);
 }
 
 describe('node runtime module transforms', () => {
@@ -90,6 +89,62 @@ describe('node runtime module transforms', () => {
 
   it('should load from module format', async () => {
     expect(loadFixture('pkg-module/print.ts')).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      depModule: expectedExports.module,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.all,
+      dyn: exportValues.all,
+    });
+  });
+});
+
+describe('Jest runtime module transforms', () => {
+  it('should load from commonjs format', async () => {
+    const values = await import('./__fixtures__/pkg-commonjs/main').then(
+      m => m.values,
+    );
+    expect(values).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.commonJs,
+      dyn: exportValues.all,
+    });
+  });
+
+  it('should load from default format', async () => {
+    const values = await import('./__fixtures__/pkg-default/main').then(
+      m => m.values,
+    );
+    expect(values).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.commonJs,
+      dyn: exportValues.all,
+    });
+  });
+
+  it('should load from module format', async () => {
+    // This uses a separate entry point with an explicit .mts extension. This is
+    // because we can't cleanly switch the Jest behavior based on type=module in
+    // package.json for .ts files in Jest. If a module type is detected we
+    // instead need to switch the transforms for the entire Jest project, which
+    // we can't do for this test. We instead use the explicit .mts extension to
+    // verify the transform behavior.
+
+    // @ts-expect-error Cannot find module './__fixtures__/pkg-module/main-explicit' or its corresponding type declarations.
+    const values = await import('./__fixtures__/pkg-module/main-explicit').then(
+      m => m.values,
+    );
+    expect(values).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       depModule: expectedExports.module,

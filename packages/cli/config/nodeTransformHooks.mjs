@@ -257,7 +257,7 @@ export async function load(url, context, nextLoad) {
   const transformed = await transformFile(fileURLToPath(url), {
     sourceMaps: 'inline',
     module: {
-      type: format === 'module' ? 'nodenext' : 'commonjs',
+      type: format === 'module' ? 'es6' : 'commonjs',
       ignoreDynamic: true,
 
       // This helps the Node.js CommonJS compat layer identify named exports.
