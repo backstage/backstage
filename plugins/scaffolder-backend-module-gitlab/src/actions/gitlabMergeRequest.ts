@@ -20,7 +20,12 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Gitlab, RepositoryTreeSchema, CommitAction } from '@gitbeaker/rest';
+import {
+  Gitlab,
+  RepositoryTreeSchema,
+  CommitAction,
+  SimpleUserSchema,
+} from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
@@ -386,7 +391,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
       try {
-        const mergeRequestUrl = await api.MergeRequests.create(
+        let mergeRequest = await api.MergeRequests.create(
           repoID,
           branchName,
           String(targetBranch),
@@ -397,11 +402,58 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             assigneeId,
             reviewerIds,
           },
-        ).then(mergeRequest => mergeRequest.web_url ?? mergeRequest.webUrl);
+        );
+
+        // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
+        // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
+        // Code owners take a moment to be processed and added to the approval rules after the MR is created.
+
+        while (
+          mergeRequest.detailed_merge_status === 'preparing' ||
+          mergeRequest.detailed_merge_status === 'approvals_syncing' ||
+          mergeRequest.detailed_merge_status === 'checking'
+        ) {
+          mergeRequest = await api.MergeRequests.show(repoID, mergeRequest.iid);
+          ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
+        }
+
+        const approvalRules = await api.MergeRequestApprovals.allApprovalRules(
+          repoID,
+          {
+            mergerequestIId: mergeRequest.iid,
+          },
+        );
+
+        // This works right away for users/groups set in the rules.
+        if (approvalRules.length !== 0) {
+          const eligibleApprovers = approvalRules
+            .filter(rule => rule.eligible_approvers !== undefined)
+            .map(rule => {
+              return rule.eligible_approvers as SimpleUserSchema[];
+            })
+            .flat();
+
+          const eligibleUserIds = new Set([
+            ...eligibleApprovers.map(user => user.id),
+            ...(reviewerIds ?? []),
+          ]);
+
+          mergeRequest = await api.MergeRequests.edit(
+            repoID,
+            mergeRequest.iid,
+            {
+              reviewerIds: Array.from(eligibleUserIds),
+            },
+          );
+        }
+
         ctx.output('projectid', repoID);
         ctx.output('targetBranchName', targetBranch);
         ctx.output('projectPath', repoID);
-        ctx.output('mergeRequestUrl', mergeRequestUrl);
+        ctx.output(
+          'mergeRequestUrl',
+          mergeRequest.web_url ?? mergeRequest.webUrl,
+        );
       } catch (e) {
         throw new InputError(
           `Merge request creation failed. ${getErrorMessage(e)}`,
