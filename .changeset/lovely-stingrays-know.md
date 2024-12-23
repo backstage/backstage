@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-gitlab': minor
+'@backstage/plugin-scaffolder-backend-module-gitlab': patch
 ---
 
-Added reviewerIds to the Gitlab Merge Request action.
+Added `reviewerIds` to the Gitlab Merge Request action.
