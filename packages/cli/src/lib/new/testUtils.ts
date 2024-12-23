@@ -18,7 +18,7 @@
 
 import { WriteStream } from 'tty';
 import { resolve as resolvePath } from 'path';
-import { paths } from '../../../paths';
+import { paths } from '../paths';
 
 export function mockPaths(options: {
   ownDir?: string;

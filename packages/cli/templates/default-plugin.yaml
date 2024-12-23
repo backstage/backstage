@@ -1,0 +1,9 @@
+description: A new frontend plugin
+template: ./default-plugin
+targetPath: plugins
+prompts:
+  - id
+  - owner
+additionalActions:
+  - install-frontend
+  - add-frontend-legacy
