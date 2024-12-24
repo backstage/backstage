@@ -33,7 +33,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
     } = props;
 
     const switchElement = (
-      <SwitchPrimitive.Root 
+      <SwitchPrimitive.Root
         ref={ref}
         className={`switch ${className}`}
         checked={checked}
@@ -57,4 +57,4 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       switchElement
     );
   },
-)
+);

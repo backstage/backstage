@@ -24,8 +24,6 @@
   color: var(--canon-text-primary);
   user-select: none;
 
-
-
   & .switch {
     position: relative;
     display: flex;
@@ -34,11 +32,15 @@
     margin: 0;
     padding: 1px;
     width: 2.25rem;
-    height: 1rem;  
+    height: 1rem;
     cursor: pointer;
     border-radius: 1.5rem;
     background-color: transparent;
-    background-image: linear-gradient(to right, var(--canon-gray-700) 35%, var(--canon-gray-200) 65%);
+    background-image: linear-gradient(
+      to right,
+      var(--canon-gray-700) 35%,
+      var(--canon-gray-200) 65%
+    );
     background-size: 6.5rem 100%;
     background-position-x: 100%;
     background-repeat: no-repeat;
