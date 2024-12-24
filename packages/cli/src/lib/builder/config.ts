@@ -233,16 +233,7 @@ export async function makeRollupConfigs(
       plugins: [
         resolve({
           mainFields,
-          extensions: [
-            '.ts',
-            '.js',
-            '.tsx',
-            '.jsx',
-            '.mts',
-            '.cts',
-            '.mjs',
-            '.cjs',
-          ],
+          extensions: SCRIPT_EXTS,
         }),
         commonjs({
           include: /node_modules/,

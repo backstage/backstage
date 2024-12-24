@@ -20,11 +20,11 @@ import * as depCommonJs from 'dep-commonjs';
 import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
 import { value as namedA } from './a-named';
-import { value as namedB } from './b-named';
-import { value as namedC } from './c-named';
+import { value as namedB } from './b-named.mts';
+import { value as namedC } from './c-named.cts';
 import defaultA from './a-default';
-import defaultB from './b-default';
-import cDefault from './c-default';
+import defaultB from './b-default.mts';
+import cDefault from './c-default.cts';
 
 const { default: defaultC } = cDefault;
 
@@ -63,10 +63,10 @@ export const values = resolveAll({
   },
   dyn: {
     namedA: import('./a-named').then(m => m.value),
-    namedB: import('./b-named').then(m => m.value),
-    namedC: import('./c-named').then(m => m.default.value),
+    namedB: import('./b-named.mts').then(m => m.value),
+    namedC: import('./c-named.cts').then(m => m.default.value),
     defaultA: import('./a-default').then(m => m.default),
-    defaultB: import('./b-default').then(m => m.default),
-    defaultC: import('./c-default').then(m => m.default.default),
+    defaultB: import('./b-default.mts').then(m => m.default),
+    defaultC: import('./c-default.cts').then(m => m.default.default),
   },
 });

@@ -20,11 +20,11 @@ import * as depCommonJs from 'dep-commonjs';
 // import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
 import { value as namedA } from './a-named';
-// import { value as namedB } from './b-named';
-import { value as namedC } from './c-named';
+// import { value as namedB } from './b-named.mts';
+import { value as namedC } from './c-named.cts';
 import { default as defaultA } from './a-default';
-// import { default as defaultB } from './b-default';
-import { default as defaultC } from './c-default';
+// import { default as defaultB } from './b-default.mts';
+import { default as defaultC } from './c-default.cts';
 
 async function resolveAll(obj): Promise<unknown> {
   const val = await obj;
@@ -61,10 +61,10 @@ export const values = resolveAll({
   },
   dyn: {
     namedA: import('./a-named').then(m => m.default.value),
-    namedB: import('./b-named').then(m => m.value),
-    namedC: import('./c-named').then(m => m.default.value),
+    namedB: import('./b-named.mts').then(m => m.value),
+    namedC: import('./c-named.cts').then(m => m.default.value),
     defaultA: import('./a-default').then(m => m.default.default),
-    defaultB: import('./b-default').then(m => m.default),
-    defaultC: import('./c-default').then(m => m.default.default),
+    defaultB: import('./b-default.mts').then(m => m.default),
+    defaultC: import('./c-default.cts').then(m => m.default.default),
   },
 });
