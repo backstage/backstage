@@ -246,11 +246,13 @@ export async function load(url, context, nextLoad) {
   // all that well though, and can lead to module loading issues in many cases,
   // especially for older code.
 
-  // This `if` block opts-out of using CommonJS compatibility mode, and instead
-  // leaves it to our existing loader to transform CommonJS.
+  // This `if` block opts-out of using CommonJS compatibility mode by default,
+  // and instead leaves it to our existing loader to transform CommonJS. We do
+  // however use compatibility mode for the more explicit .cts file extension,
+  // allows for a way to opt-in to the new behavior.
   //
   // TODO(Rugvip): Once the synchronous hooks API is available for us to use, we might be able to adopt that instead
-  if (format === 'commonjs') {
+  if (format === 'commonjs' && ext !== '.cts') {
     return nextLoad(url, { ...context, format });
   }
 

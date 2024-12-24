@@ -21,13 +21,12 @@ import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
 import { value as namedA } from './a-named';
 import { value as namedB } from './b-named';
-import * as cNamed from './c-named';
+import { value as namedC } from './c-named';
 import defaultA from './a-default';
 import defaultB from './b-default';
-import * as cDefault from './c-default';
+import cDefault from './c-default';
 
 const { default: defaultC } = cDefault;
-const { value: namedC } = cNamed;
 
 async function resolveAll(obj): Promise<unknown> {
   const val = await obj;

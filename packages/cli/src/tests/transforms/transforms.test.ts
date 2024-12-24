@@ -96,12 +96,7 @@ describe('node runtime module transforms', () => {
       dynCommonJs: expectedExports.commonJs,
       dynDefault: expectedExports.commonJs,
       dynModule: expectedExports.module,
-      // TODO(Rugvip): Fix CommonJS import compat from modules
-      dep: {
-        ...exportValues.all,
-        defaultC: { default: 'c' },
-        namedC: undefined,
-      },
+      dep: exportValues.all,
       dyn: exportValues.all,
     });
   });
@@ -226,8 +221,7 @@ describe('package build transforms', () => {
       dynCommonJs: expectedExports.commonJs,
       dynDefault: expectedExports.commonJs,
       dynModule: expectedExports.module,
-      // TODO(Rugvip): Fix CommonJS import compat from modules
-      dep: { ...exportValues.all, defaultC: { default: 'c' } },
+      dep: exportValues.all,
       dyn: exportValues.all,
     });
   });
