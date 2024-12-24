@@ -74,6 +74,9 @@ const mockOctokit = {
       createOrUpdateRepoSecret: jest.fn(),
       getRepoPublicKey: jest.fn(),
     },
+    activity: {
+      setRepoSubscription: jest.fn(),
+    },
   },
   request: jest.fn(),
 };
@@ -1796,4 +1799,26 @@ describe('publish:github', () => {
       });
     },
   );
+
+  it('should add user subscription', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        subscribe: true,
+      },
+    });
+
+    expect(mockOctokit.rest.activity.setRepoSubscription).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      subscribed: true,
+      ignored: false,
+    });
+  });
 });
