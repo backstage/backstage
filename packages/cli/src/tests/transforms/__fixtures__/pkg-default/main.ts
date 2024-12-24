@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// @ts-nocheck
-
 import * as depCommonJs from 'dep-commonjs';
 // import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
@@ -26,7 +24,7 @@ import { default as defaultA } from './a-default';
 // import { default as defaultB } from './b-default.mts';
 import { default as defaultC } from './c-default.cts';
 
-async function resolveAll(obj): Promise<unknown> {
+async function resolveAll(obj: object): Promise<unknown> {
   const val = await obj;
   if (typeof val !== 'object' || val === null) {
     return val;
@@ -60,11 +58,14 @@ export const values = resolveAll({
     defaultC,
   },
   dyn: {
+    // @ts-expect-error Default exports from CommonJS are not well supported
     namedA: import('./a-named').then(m => m.default.value),
     namedB: import('./b-named.mts').then(m => m.value),
-    namedC: import('./c-named.cts').then(m => m.default.value),
+    namedC: import('./c-named.cts').then(m => m.value),
+    // @ts-expect-error Default exports from CommonJS are not well supported
     defaultA: import('./a-default').then(m => m.default.default),
     defaultB: import('./b-default.mts').then(m => m.default),
+    // @ts-expect-error Default exports from CommonJS are not well supported
     defaultC: import('./c-default.cts').then(m => m.default.default),
   },
 });
