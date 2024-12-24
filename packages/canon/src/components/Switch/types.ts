@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-/** @public */
-export type IconNames =
-  | 'arrowDown'
-  | 'arrowLeft'
-  | 'arrowRight'
-  | 'arrowUp'
-  | 'arrowDownCircle'
-  | 'arrowLeftCircle'
-  | 'arrowRightCircle'
-  | 'arrowUpCircle'
-  | 'check'
-  | 'chevronDown'
-  | 'chevronLeft'
-  | 'chevronRight'
-  | 'chevronUp'
-  | 'cloud'
-  | 'close'
-  | 'heart'
-  | 'plus'
-  | 'trash';
+import { IconNames } from '../Icon';
+import type { Breakpoint } from '../../types';
 
 /** @public */
-export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
-
-/** @public */
-export type IconProps = {
-  name: IconNames;
-  size?: number;
-};
+export interface SwitchProps {
+  size?:
+    | 'extra-small'
+    | 'small'
+    | 'medium'
+    | 'large'
+    | Partial<Record<Breakpoint, 'extra-small' | 'small' | 'medium' | 'large'>>;
+  label?: string;
+  labelPlacement?: 'top' | 'bottom' | 'left' | 'right';
+  defaultChecked?: boolean;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
+  name?: string;
+  value?: string;
+  style?: React.CSSProperties;
+  iconStart?: IconNames;
+  iconEnd?: IconNames;
+}

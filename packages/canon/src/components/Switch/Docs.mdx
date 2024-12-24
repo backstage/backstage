@@ -1,0 +1,141 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as SwitchStories from './Switch.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable';
+
+<Meta of={SwitchStories} />
+
+<Unstyled>
+
+<Title type="h1">Switch</Title>
+<Text>A Switch component that can be used to trigger actions.</Text>
+
+<Canvas of={SwitchStories.Primary} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Switch } from "@backstage/canon";
+
+<Switch label="Switch" />
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    size: {
+      type: ['extra-small', 'small', 'medium', 'large'],
+      responsive: true,
+    },
+    label: {
+      type: 'string',
+      responsive: false,
+    },
+    labelPlacement: {
+      type: "'start' | 'end' | 'top' | 'bottom'",
+      responsive: false,
+    },
+    defaultChecked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    checked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    onChange: {
+      type: "(checked: boolean | 'indeterminate') => void",
+      responsive: false,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    required: {
+      type: 'boolean',
+      responsive: false,
+    },
+    name: {
+      type: 'string',
+      responsive: false,
+    },
+    value: {
+      type: 'string',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Sizes</Title>
+<Text>Here's a view when Switches have different sizes.</Text>
+
+<Canvas of={SwitchStories.Sizes} />
+
+<Source
+  code={`<Inline alignY="center">
+  <Switch size="extra-small">Extra Small</Button>
+  <Switch size="small">Small</Button>
+  <Switch size="medium">Medium</Button>
+  <Switch size="large">Large</Button>
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Disabled</Title>
+<Text>Here's a view when Switches are disabled.</Text>
+
+<Canvas of={SwitchStories.Disabled} />
+
+<Source code={`<Switches disabled />`} language="tsx" dark />
+
+<Title type="h3">Responsive</Title>
+<Text>Here's a view when Switches are responsive.</Text>
+
+<Canvas of={SwitchStories.Responsive} />
+
+<Source
+  code={`<Switch size={{ xs: 'small', sm: 'medium', md: 'large' }} />`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Icons</Title>
+<Text>Here's a view when Switches include Icons.</Text>
+
+<Canvas of={SwitchStories.Icons} />
+
+<Source
+  code={`<Switch iconStart="check" iconEnd="close" />`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Label Placement</Title>
+<Text>Here's a view when Switches have different label placements.</Text>
+
+<Canvas of={SwitchStories.LabelPlacement} />
+
+<Source
+  code={`<Inline alignY="center">
+  <Switch label="Start" labelPlacement="start" />
+  <Switch label="End" labelPlacement="end" />
+  <Switch label="Top" labelPlacement="top" />
+  <Switch label="Bottom" labelPlacement="bottom" />
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>

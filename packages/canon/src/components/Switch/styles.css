@@ -1,0 +1,176 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:root {
+  --base-switch-width: 3rem;
+  --base-switch-height: 1.5rem;
+}
+
+.cn-switch-label {
+  display: flex;
+  align-items: center;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--canon-font-size-xs);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-text-primary);
+  user-select: none;
+}
+
+.cn-switch-label-left {
+  flex-direction: row-reverse;
+}
+
+.cn-switch-label-right {
+  flex-direction: row;
+}
+
+.cn-switch-label-top {
+  flex-direction: column-reverse;
+}
+
+.cn-switch-label-bottom {
+  flex-direction: column;
+}
+
+.cn-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 1px;
+  border-radius: 1.5rem;
+  outline: 2px solid var(--canon-gray-500);
+
+  &[data-checked] {
+    outline-color: var(--canon-accent);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+    outline: 2px solid var(--canon-gray-400);
+  }
+
+  &:focus-visible {
+    &::before {
+      content: '';
+      inset: 0;
+      position: absolute;
+      border-radius: inherit;
+      outline: 2px solid var(--canon-accent);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.cn-switch-extra-small {
+  width: calc(var(--base-switch-width) / 1.5);
+  height: calc(var(--base-switch-height) / 1.5);
+}
+
+.cn-switch-small {
+  width: calc(var(--base-switch-width) / 1.25);
+  height: calc(var(--base-switch-height) / 1.25);
+}
+
+.cn-switch-medium {
+  width: var(--base-switch-width);
+  height: var(--base-switch-height);
+}
+
+.cn-switch-large {
+  width: calc(var(--base-switch-width) * 1.5);
+  height: calc(var(--base-switch-height) * 1.5);
+}
+
+.cn-switch-thumb {
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  border-radius: 100%;
+  transition: translate 100ms ease;
+  animation-name: grow-out, bounce-out;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0.75, 0, 1, 1),
+    cubic-bezier(0, 0, 0.3, 1.5);
+  animation-delay: 0s, 0.2s;
+  animation-fill-mode: forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--canon-gray-500);
+
+  &[data-checked] {
+    animation-name: grow-in, bounce-in;
+    background-color: var(--canon-accent);
+  }
+
+  &[data-disabled] {
+    background-color: transparent;
+    outline: 2px solid var(--canon-gray-400);
+    cursor: not-allowed;
+  }
+  svg {
+    fill: var(--canon-background);
+    height: 70%;
+    width: 70%;
+  }
+}
+
+@keyframes grow-in {
+  0% {
+    border-radius: 100%;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    border-radius: 50%;
+    transform: translateX(0.75rem) scale(1.5, 1);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    border-radius: 50%;
+    transform: translateX(0.75rem) scale(1.5, 1);
+  }
+  100% {
+    border-radius: 100%;
+    transform: translateX(calc(100% + 0.1rem)) scale(1);
+  }
+}
+
+@keyframes grow-out {
+  0% {
+    border-radius: 100%;
+    transform: translateX(calc(100% + 0.1rem)) scale(1);
+  }
+  100% {
+    border-radius: 50%;
+    transform: translateX(0.25rem) scale(1.5, 1);
+  }
+}
+
+@keyframes bounce-out {
+  0% {
+    border-radius: 50%;
+    transform: translateX(0.25rem) scale(1.5, 1);
+  }
+  100% {
+    border-radius: 100%;
+    transform: translateX(0) scale(1);
+  }
+}

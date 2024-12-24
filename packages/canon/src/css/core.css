@@ -27,6 +27,19 @@
   --canon-surface-2: #f4f4f4;
   --canon-surface-3: #f1f1f1;
 
+  /* Grays */
+  --canon-gray-50: #f9f9f9;
+  --canon-gray-100: #f2f2f2;
+  --canon-gray-200: #e6e6e6;
+  --canon-gray-300: #cccccc;
+  --canon-gray-400: #b3b3b3;
+  --canon-gray-500: #999999;
+  --canon-gray-600: #808080;
+  --canon-gray-700: #666666;
+  --canon-gray-800: #4d4d4d;
+  --canon-gray-900: #333333;
+  --canon-gray-950: #1a1a1a;
+
   /* Borders */
   --canon-border-base: rgba(0, 0, 0, 0.1);
   --canon-border-warning: #e36d05;
@@ -93,6 +106,9 @@
   /* Container */
   --canon-container-max-width: 1200px;
   --canon-container-padding: 1rem;
+
+  /* animation */
+  --animation-input: 0.2s;
 }
 
 /* Dark theme tokens */
