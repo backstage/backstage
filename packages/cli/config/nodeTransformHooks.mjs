@@ -27,7 +27,7 @@ import { existsSync } from 'fs';
 const DEFAULT_MODULE_FORMAT = 'commonjs';
 
 // Source file extensions to look for when using bundle resolution strategy
-const EXTS = ['.ts', '.js', '.mts', '.cts', '.mjs', '.cjs'];
+const SRC_EXTS = ['.ts', '.js'];
 const TS_EXTS = ['.ts', '.mts', '.cts'];
 const moduleTypeTable = {
   '.mjs': 'module',
@@ -177,7 +177,7 @@ async function findPackageJSON(startPath) {
 
 /** @type {import('module').ResolveHook} */
 async function resolveWithoutExt(specifier, context, nextResolve) {
-  for (const tryExt of EXTS) {
+  for (const tryExt of SRC_EXTS) {
     try {
       const resolved = await nextResolve(specifier + tryExt, {
         ...context,
