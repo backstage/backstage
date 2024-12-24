@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- 57e794a: Refactor to no longer use backend-common
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/integration@1.16.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+
 ## 0.2.5
 
 ### Patch Changes

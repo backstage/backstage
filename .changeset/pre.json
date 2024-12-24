@@ -195,5 +195,29 @@
     "@backstage/plugin-user-settings-backend": "0.2.28",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "big-seals-drum",
+    "calm-tigers-boil",
+    "create-app-1735034814",
+    "cuddly-lions-knock",
+    "cyan-frogs-count",
+    "famous-balloons-punch",
+    "famous-dryers-protect",
+    "gorgeous-zebras-tan",
+    "khaki-fireants-begin",
+    "lemon-students-care",
+    "metal-ravens-hammer",
+    "nervous-bottles-occur",
+    "nice-waves-count",
+    "quick-poems-cover",
+    "rich-penguins-stare",
+    "rich-vans-hope",
+    "shiny-walls-press",
+    "silly-bottles-raise",
+    "spicy-tomatoes-hammer",
+    "strong-students-beg",
+    "tall-actors-clap",
+    "twenty-laws-tie",
+    "two-wasps-mix"
+  ]
 }
