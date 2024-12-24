@@ -1,5 +1,11 @@
 # @backstage/backend-defaults
 
+## 0.6.2
+
+### Patch Changes
+
+- 81a46cf: Go back to using `node-fetch` for gitlab
+
 ## 0.6.1
 
 ### Patch Changes
