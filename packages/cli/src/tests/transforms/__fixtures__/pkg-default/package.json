@@ -1,3 +1,6 @@
 {
-  "name": "pkg-default"
+  "name": "pkg-default",
+  "exports": {
+    ".": "./main.ts"
+  }
 }
