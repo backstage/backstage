@@ -35,13 +35,13 @@ import {
   readConfluenceIntegrationConfigs,
 } from '@backstage/integration';
 import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import { InputError, NotFoundError, NotModifiedError } from '@backstage/errors';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 export class ConfluenceUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     return readConfluenceIntegrationConfigs(config).map(integration => {
-      const reader = new ConfluenceUrlReader(integration, logger, {
+      const reader = new ConfluenceUrlReader(integration, {
         treeResponseFactory,
       });
       const predicate = (url: URL) => url.host === integration.host;
@@ -51,7 +51,6 @@ export class ConfluenceUrlReader implements UrlReaderService {
 
   constructor(
     private readonly config: ConfluenceIntegrationConfig,
-    private readonly logger: LoggerService,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -64,31 +63,46 @@ export class ConfluenceUrlReader implements UrlReaderService {
     throw new Error('This method will be implemented in the future'); //+
   }
 
-  parseUrl(url: string) {
-    // url format: https://<company-domain>/wiki/spaces/<space-id>/pages/<page-id>/<page-title>
-    const regex =
-      /https:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6})\/wiki\/spaces\/([A-Za-z0-9_-]+)\/pages\/(\d+)\/([A-Za-z0-9-_+]+)/;
-    if (!url.match(regex))
-      throw new Error(
-        'Invalid URL. Url should be in the format: https://<host>/wiki/spaces/<space-id>/pages/<page-id>/<page-title>',
-      );
-
-    const [_string, host, space, pageId, title] = url.match(regex)!;
-    const pageTitle = title.replaceAll('+', ' ');
-    return {
-      host,
-      space,
-      pageId,
-      title: pageTitle,
-    };
+  parseUrl(url: string): {
+    spacekey: string;
+    title: string;
+    titleWithSpaces: string;
+  } {
+    let spacekey: string | undefined = undefined;
+    let title: string | undefined = undefined;
+    let titleWithSpaces: string | undefined = '';
+    const params = new URL(url);
+    if (params.pathname.split('/')[1] === 'display') {
+      // https://confluence.example.com/display/SPACEKEY/Page+Title
+      spacekey = params.pathname.split('/')[2];
+      title = params.pathname.split('/')[3];
+      titleWithSpaces = title?.replace(/\+/g, ' ');
+      return { spacekey, title, titleWithSpaces };
+    } else if (params.pathname.split('/')[2] === 'display') {
+      // https://confluence.example.com/prefix/display/SPACEKEY/Page+Title
+      spacekey = params.pathname.split('/')[3];
+      title = params.pathname.split('/')[4];
+      titleWithSpaces = title?.replace(/\+/g, ' ');
+      return { spacekey, title, titleWithSpaces };
+    } else if (params.pathname.split('/')[2] === 'spaces') {
+      // https://example.atlassian.net/wiki/spaces/SPACEKEY/pages/1234567/Page+Title
+      spacekey = params.pathname.split('/')[3];
+      title = params.pathname.split('/')[6];
+      titleWithSpaces = title?.replace(/\+/g, ' ');
+      return { spacekey, title, titleWithSpaces };
+    }
+    throw new InputError(
+      'The Url format for Confluence is incorrect. Acceptable format is `<CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>` or `<CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE>` for Confluence cloud',
+    );
   }
 
   async readTree(
     url: string,
     _options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
-    const { pageId } = this.parseUrl(url);
-    const pages = await this.loadConfluencePage(pageId, '/docs');
+    const { spacekey, title } = this.parseUrl(url);
+
+    const pages = await this.loadConfluencePage(spacekey, title, '/docs');
 
     const index = this.generateIndexPage(pages); // Generate index page for fetched pages
     pages.push({ data: Readable.from(index), path: `docs/index.md` });
@@ -104,49 +118,47 @@ export class ConfluenceUrlReader implements UrlReaderService {
   }
 
   async loadConfluencePage(
-    pageId: string,
+    spaceKey: string,
+    pageTitle: string,
     path: string,
   ): Promise<FromReadableArrayOptions> {
     const docItems: FromReadableArrayOptions = [];
 
-    try {
-      // fetch page
-      const { page, title, lastModifiedAt } = await this.fetchConfluencePage(
-        pageId,
-      );
+    // fetch page
+    const { pageId, page, title } = await this.fetchConfluencePage(
+      spaceKey,
+      pageTitle,
+    );
 
-      // fetch its attachments
-      const attachments: Attachment[] =
-        await this.fetchConfluencePageAttachments(pageId);
-      for (const attachment of attachments) {
-        const imageData: any = await this.fetchAttachment(attachment);
-        docItems.push({
-          data: Readable.fromWeb(imageData),
-          path: `${path}/attachments/${attachment.title.replaceAll(' ', '-')}`,
-          lastModifiedAt: new Date(attachment.version.createdAt),
-        });
-      }
-
-      const pageMarkdown = this.replaceAttachmentLinks(attachments, page);
+    // fetch its attachments
+    const attachments: Attachment[] = await this.fetchConfluencePageAttachments(
+      pageId,
+    );
+    for (const attachment of attachments) {
+      const imageData: any = await this.fetchAttachment(attachment);
       docItems.push({
-        data: Readable.from(pageMarkdown),
-        path: `${path}/${title}.md`,
-        lastModifiedAt: new Date(lastModifiedAt),
+        data: Readable.fromWeb(imageData),
+        path: `${path}/attachments/${attachment.title.replaceAll(' ', '-')}`,
+        lastModifiedAt: new Date(attachment.version.createdAt),
       });
+    }
 
-      // fetch child pages and repeat
-      const children = await this.fetchChildPages(pageId);
-      for (const childPage of children) {
-        const childPageContent = await this.loadConfluencePage(
-          childPage.id,
-          `${path}/${title.toLocaleLowerCase().replaceAll(' ', '-')}`,
-        );
-        docItems.push(...childPageContent);
-      }
-    } catch (error) {
-      this.logger.error(
-        `Error reading page ${pageId} from confluence: ${error.message}`,
+    let pageMarkdown = this.replaceAttachmentLinks(attachments, page);
+    pageMarkdown = this.replaceHyperLinks(pageMarkdown);
+    docItems.push({
+      data: Readable.from(pageMarkdown),
+      path: `${path}/${title}.md`,
+    });
+
+    // fetch child pages and repeat
+    const children = await this.fetchChildPages(pageId);
+    for (const childPage of children) {
+      const childPageContent = await this.loadConfluencePage(
+        spaceKey,
+        childPage.title,
+        `${path}/${title.toLocaleLowerCase().replaceAll(' ', '-')}`,
       );
+      docItems.push(...childPageContent);
     }
 
     return docItems;
@@ -171,6 +183,22 @@ export class ConfluenceUrlReader implements UrlReaderService {
       );
     }
     return markdownToPublish;
+  }
+
+  private replaceHyperLinks(page: string) {
+    // # Regex pattern to match and remove the word between # and -
+    const pattern = /\[([^\]]+)\]\(#.*?-(.*?)(\))/gi;
+
+    // # Replace with the new format
+    const result = page.replaceAll(pattern, (_, match) => {
+      const sanitizedMatch = match
+        .replaceAll(/ /g, '-') // remove spaces replace with -
+        .replaceAll(/[\+.\/:]/g, '') // remove special characters
+        .toLocaleLowerCase();
+      return `[${match}](#${sanitizedMatch})`;
+    });
+
+    return result;
   }
 
   private async fetchChildPages(pageId: string): Promise<ChildPage[]> {
@@ -202,21 +230,31 @@ export class ConfluenceUrlReader implements UrlReaderService {
     return response.body!;
   }
 
-  async fetchConfluencePage(pageId: string) {
+  async fetchConfluencePage(
+    spaceKey: string,
+    pageTitle: string,
+  ): Promise<{
+    pageId: string;
+    page: string;
+    title: string;
+  }> {
     const { host, apiToken } = this.config;
-    const url = `https://${host}/wiki/api/v2/pages/${pageId}?body-format=EXPORT_VIEW`;
+    const url = `https://${host}/wiki/rest/api/content?spaceKey=${spaceKey}&title=${pageTitle}&expand=body.export_view`;
     const init = { headers: { Authorization: apiToken } };
 
     const response = await this.fetchResponse(url, init);
     const apiResponse = await response.json();
 
-    const pageHtml = apiResponse.body.export_view.value;
-    const title = apiResponse.title;
-    const lastModifiedAt = apiResponse.version.createdAt;
+    if (apiResponse.size === 0) throw new NotFoundError('Page not found');
+    const page = apiResponse.results[0];
+
+    const pageId = page.id;
+    const pageHtml = page.body.export_view.value;
+    const title = page.title;
     return {
-      page: this.htmlToMarkDown(pageHtml),
+      pageId,
       title,
-      lastModifiedAt,
+      page: this.htmlToMarkDown(pageHtml),
     };
   }
 
