@@ -1,0 +1,86 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.switch-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--canon-font-size-xs);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-text-primary);
+  user-select: none;
+
+
+
+  & .switch {
+    position: relative;
+    display: flex;
+    appearance: none;
+    border: 0;
+    margin: 0;
+    padding: 1px;
+    width: 2.25rem;
+    height: 1rem;  
+    cursor: pointer;
+    border-radius: 1.5rem;
+    background-color: transparent;
+    background-image: linear-gradient(to right, var(--canon-gray-700) 35%, var(--canon-gray-200) 65%);
+    background-size: 6.5rem 100%;
+    background-position-x: 100%;
+    background-repeat: no-repeat;
+    transition-property: background-position, box-shadow;
+    transition-timing-function: cubic-bezier(0.26, 0.75, 0.38, 0.45);
+    transition-duration: 125ms;
+
+    &:active {
+      background-color: var(--canon-accent);
+    }
+
+    &[data-checked] {
+      background-position-x: 0%;
+    }
+
+    &[data-checked]:active {
+      background-color: var(--canon-accent);
+    }
+
+    &:focus-visible {
+      &::before {
+        content: '';
+        inset: 0;
+        position: absolute;
+        border-radius: inherit;
+        outline: 2px solid var(--canon-outline-hover);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  & .switch-thumb {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    scale: 1.6;
+    border-radius: 100%;
+    background-color: white;
+    transition: translate 150ms ease;
+    box-shadow: 0 1px 2px 0 var(--canon-gray-600);
+
+    &[data-checked] {
+      translate: 1.25rem 0;
+    }
+  }
+}

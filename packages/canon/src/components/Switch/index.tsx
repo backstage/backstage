@@ -13,26 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
-
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
-
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
-export * from './components/Checkbox';
-export * from './components/Table';
-export * from './components/Switch';
-
-// Types
-export * from './types';
+export { Switch } from './Switch';
+export type { SwitchProps } from './types';

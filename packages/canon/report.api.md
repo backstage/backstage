@@ -333,6 +333,35 @@ export interface StackProps extends SpaceProps {
 }
 
 // @public (undocumented)
+export const Switch: React_2.ForwardRefExoticComponent<
+  SwitchProps & React_2.RefAttributes<HTMLButtonElement>
+>;
+
+// @public (undocumented)
+export interface SwitchProps {
+  // (undocumented)
+  checked?: boolean;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  defaultChecked?: boolean;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  label?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  onChange?: (checked: boolean) => void;
+  // (undocumented)
+  required?: boolean;
+  // (undocumented)
+  style?: React.CSSProperties;
+  // (undocumented)
+  value?: string;
+}
+
+// @public (undocumented)
 export const Table: React_3.ForwardRefExoticComponent<
   React_3.HTMLAttributes<HTMLTableElement> &
     React_3.RefAttributes<HTMLTableElement>

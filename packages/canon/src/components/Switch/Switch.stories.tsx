@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Meta, StoryObj } from '@storybook/react';
+import { Switch } from './Switch';
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
+const meta = {
+  title: 'Components/Switch',
+  component: Switch,
+  parameters: {
+    layout: 'centered',
+  },
+} satisfies Meta<typeof Switch>;
 
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
-export * from './components/Checkbox';
-export * from './components/Table';
-export * from './components/Switch';
-
-// Types
-export * from './types';
+export const Primary: Story = {
+  args: {
+    label: 'Toggle me',
+  },
+};
