@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.1
+
+### Patch Changes
+
+- 81a46cf: Go back to using `node-fetch` for gitlab
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.2
+
 ## 0.6.0
 
 ### Minor Changes

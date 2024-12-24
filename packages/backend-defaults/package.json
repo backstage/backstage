@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -185,14 +185,6 @@
     "yn": "^4.0.0",
     "zod": "^3.22.4"
   },
-  "peerDependencies": {
-    "@google-cloud/cloud-sql-connector": "^1.4.0"
-  },
-  "peerDependenciesMeta": {
-    "@google-cloud/cloud-sql-connector": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
     "@backstage/backend-plugin-api": "workspace:^",
@@ -213,6 +205,14 @@
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2"
+  },
+  "peerDependencies": {
+    "@google-cloud/cloud-sql-connector": "^1.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@google-cloud/cloud-sql-connector": {
+      "optional": true
+    }
   },
   "configSchema": "config.d.ts"
 }
