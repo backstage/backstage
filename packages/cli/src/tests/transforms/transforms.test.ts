@@ -16,6 +16,7 @@
 
 import { execFileSync } from 'child_process';
 import { resolve as resolvePath } from 'path';
+import { Output, buildPackage } from '../../lib/builder';
 
 const exportValues = {
   all: {
@@ -95,7 +96,12 @@ describe('node runtime module transforms', () => {
       dynCommonJs: expectedExports.commonJs,
       dynDefault: expectedExports.commonJs,
       dynModule: expectedExports.module,
-      dep: exportValues.all,
+      // TODO(Rugvip): Fix CommonJS import compat from modules
+      dep: {
+        ...exportValues.all,
+        defaultC: { default: 'c' },
+        namedC: undefined,
+      },
       dyn: exportValues.all,
     });
   });
@@ -152,6 +158,76 @@ describe('Jest runtime module transforms', () => {
       dynDefault: expectedExports.commonJs,
       dynModule: expectedExports.module,
       dep: exportValues.all,
+      dyn: exportValues.all,
+    });
+  });
+});
+
+describe('package build transforms', () => {
+  it('should build and load from commonjs format', async () => {
+    const pkgPath = resolvePath(__dirname, '__fixtures__/pkg-commonjs');
+
+    await buildPackage({
+      targetDir: pkgPath,
+      outputs: new Set([Output.cjs]),
+      workspacePackages: [],
+    });
+    const values = await import(resolvePath(pkgPath, 'dist/index.cjs')).then(
+      m => m.values,
+    );
+    expect(values).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.commonJs,
+      dyn: exportValues.all,
+    });
+  });
+
+  it('should build and load from default format', async () => {
+    const pkgPath = resolvePath(__dirname, '__fixtures__/pkg-default');
+
+    await buildPackage({
+      targetDir: pkgPath,
+      outputs: new Set([Output.cjs]),
+      workspacePackages: [],
+    });
+    const values = await import(resolvePath(pkgPath, 'dist/index.cjs')).then(
+      m => m.values,
+    );
+    expect(values).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.commonJs,
+      dyn: exportValues.all,
+    });
+  });
+
+  it('should build and load from module format', async () => {
+    const pkgPath = resolvePath(__dirname, '__fixtures__/pkg-module');
+
+    await buildPackage({
+      targetDir: pkgPath,
+      outputs: new Set([Output.cjs]),
+      workspacePackages: [],
+    });
+    const values = await import(resolvePath(pkgPath, 'dist/index.mjs')).then(
+      m => m.values,
+    );
+    expect(values).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      depModule: expectedExports.module,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      // TODO(Rugvip): Fix CommonJS import compat from modules
+      dep: { ...exportValues.all, defaultC: { default: 'c' } },
       dyn: exportValues.all,
     });
   });

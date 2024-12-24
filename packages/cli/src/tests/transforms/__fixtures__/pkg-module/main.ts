@@ -21,10 +21,10 @@ import * as depModule from 'dep-module';
 import * as depDefault from 'dep-default';
 import { value as namedA } from './a-named';
 import { value as namedB } from './b-named';
-import cNamed from './c-named';
+import * as cNamed from './c-named';
 import defaultA from './a-default';
 import defaultB from './b-default';
-import cDefault from './c-default';
+import * as cDefault from './c-default';
 
 const { default: defaultC } = cDefault;
 const { value: namedC } = cNamed;
