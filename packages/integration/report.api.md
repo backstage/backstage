@@ -11,6 +11,30 @@ import { StorageSharedKeyCredential } from '@azure/storage-blob';
 import { TokenCredential } from '@azure/identity';
 
 // @public
+export type Attachment = {
+  pageId: string;
+  fieldId: string;
+  downloadLink: string;
+  status: string;
+  createdAt: string;
+  comment: string;
+  version: {
+    number: number;
+    message: string;
+    minorEdit: boolean;
+    authorId: string;
+    createdAt: string;
+  };
+  title: string;
+  mediaType: string;
+  id: string;
+  _links: {
+    download: string;
+    webui: string;
+  };
+};
+
+// @public
 export class AwsCodeCommitIntegration implements ScmIntegration {
   constructor(integrationConfig: AwsCodeCommitIntegrationConfig);
   // (undocumented)
@@ -306,6 +330,21 @@ export function buildGerritGitilesArchiveUrl(
   branch: string,
   filePath: string,
 ): string;
+
+// @public
+export type ChildPage = {
+  id: string;
+  status: string;
+  title: string;
+  spaceId: string;
+  childPosition: number;
+};
+
+// @public
+export type ConfluenceIntegrationConfig = {
+  host: string;
+  apiToken: string;
+};
 
 // @public
 export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
@@ -936,6 +975,11 @@ export function readBitbucketServerIntegrationConfig(
 export function readBitbucketServerIntegrationConfigs(
   configs: Config[],
 ): BitbucketServerIntegrationConfig[];
+
+// @public
+export function readConfluenceIntegrationConfigs(
+  config: Config,
+): ConfluenceIntegrationConfig[];
 
 // @public
 export function readGerritIntegrationConfig(
