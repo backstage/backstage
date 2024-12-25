@@ -16291,15 +16291,15 @@ __metadata:
   linkType: hard
 
 "@smithy/node-http-handler@npm:^3.0.0, @smithy/node-http-handler@npm:^3.2.0":
-  version: 3.3.2
-  resolution: "@smithy/node-http-handler@npm:3.3.2"
+  version: 3.3.3
+  resolution: "@smithy/node-http-handler@npm:3.3.3"
   dependencies:
     "@smithy/abort-controller": ^3.1.9
     "@smithy/protocol-http": ^4.1.8
     "@smithy/querystring-builder": ^3.0.11
     "@smithy/types": ^3.7.2
     tslib: ^2.6.2
-  checksum: f4d70ca9ba6d62ae9c3257c069a42ff9c0d3bce28625e7ebab34bc3196eb5a2a1cb2c20d3409b8d1a9c24f0a5d0b3d0809904ceea8d87c4fb991474fd0d9fd31
+  checksum: a1d13594d622a2cf7bbecabbc02f5ad2cb824a2363a02b08b89f1815f25b0516c408897def26834c9b85190eb2eb8ac6de8a20e4d19cca7e7a0eef1d29b568ee
   languageName: node
   linkType: hard
 
