@@ -33,4 +33,22 @@ module.exports = class CachingJestRuntime extends JestRuntime {
     }
     return script;
   }
+
+  // Notes(Rugvip): As far as I can tell this is the best we can currently do
+  // for runtime ESM support in Jest. What the below logic effectively does is
+  // to only allow packages to be loaded as ESM if all imports of that package
+  // are done in an ESM compatible way, as in either from ESM code or with a
+  // dynamic import.
+  cjsModules = new Set();
+  _resolveCjsModule(...args) {
+    const path = super._resolveCjsModule(...args);
+    this.cjsModules.add(path);
+    return path;
+  }
+  unstable_shouldLoadAsEsm(path, ...restArgs) {
+    if (this.cjsModules.has(path)) {
+      return false;
+    }
+    return super.unstable_shouldLoadAsEsm(path, ...restArgs);
+  }
 };
