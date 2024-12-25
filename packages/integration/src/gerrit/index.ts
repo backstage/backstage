@@ -20,6 +20,7 @@ export {
 } from './config';
 export {
   buildGerritGitilesArchiveUrl,
+  buildGerritGitilesArchiveUrlFromLocation,
   getGerritBranchApiUrl,
   getGerritCloneRepoUrl,
   getGerritFileContentsApiUrl,
