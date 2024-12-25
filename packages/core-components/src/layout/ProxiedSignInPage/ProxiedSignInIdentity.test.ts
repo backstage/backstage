@@ -295,5 +295,44 @@ describe('ProxiedSignInIdentity', () => {
       // optional header should be present when passed
       expect(req1!.headers.get('x-foo')).toEqual('bars');
     });
+
+    it('redirects to logoutRedirectUrl when set', async () => {
+      let req1: Request;
+      const getBaseUrl = jest.fn();
+      const serverCalled = jest.fn().mockImplementation(req => {
+        req1 = req;
+      });
+      const dummyLogoutRedirectResponse = {
+        redirectUrl: '/oauth2/logout',
+      };
+
+      worker.events.on('request:match', serverCalled);
+      worker.use(
+        rest.post('http://example.com/api/auth/foo/logout', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(dummyLogoutRedirectResponse),
+          ),
+        ),
+      );
+
+      const identity = new ProxiedSignInIdentity({
+        provider: 'foo',
+        discoveryApi: { getBaseUrl },
+      });
+
+      getBaseUrl.mockResolvedValue('http://example.com/api/auth');
+
+      const response = await identity.signOut();
+
+      expect(getBaseUrl).toHaveBeenCalledTimes(1);
+      expect(getBaseUrl).toHaveBeenLastCalledWith('auth');
+      expect(serverCalled).toHaveBeenCalledTimes(1);
+      expect(req1!).not.toBeUndefined();
+
+      expect(response).toBeDefined();
+      expect(response.redirectUrl).toBe('/oauth2/logout');
+    });
   });
 });

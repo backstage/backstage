@@ -191,13 +191,23 @@ export function createOAuthRouteHandlers<TProfile>(
 ): AuthProviderRouteHandlers;
 
 // @public (undocumented)
-export function createProxyAuthenticator<TContext, TResult, TProviderInfo>(
-  authenticator: ProxyAuthenticator<TContext, TResult, TProviderInfo>,
-): ProxyAuthenticator<TContext, TResult, TProviderInfo>;
+export function createProxyAuthenticator<
+  TContext,
+  TResult,
+  TProviderInfo,
+  TLogoutResult,
+>(
+  authenticator: ProxyAuthenticator<
+    TContext,
+    TResult,
+    TProviderInfo,
+    TLogoutResult
+  >,
+): ProxyAuthenticator<TContext, TResult, TProviderInfo, TLogoutResult>;
 
 // @public (undocumented)
 export function createProxyAuthProviderFactory<TResult>(options: {
-  authenticator: ProxyAuthenticator<unknown, TResult, unknown>;
+  authenticator: ProxyAuthenticator<unknown, TResult, unknown, unknown>;
   profileTransform?: ProfileTransform<TResult>;
   signInResolver?: SignInResolver<TResult>;
   signInResolverFactories?: Record<string, SignInResolverFactory>;
@@ -578,7 +588,8 @@ export type ProfileTransform<TResult> = (
 export interface ProxyAuthenticator<
   TContext,
   TResult,
-  TProviderInfo = undefined,
+  TProviderInfo,
+  TLogoutResult = undefined,
 > {
   // (undocumented)
   authenticate(
@@ -594,12 +605,22 @@ export interface ProxyAuthenticator<
   defaultProfileTransform: ProfileTransform<TResult>;
   // (undocumented)
   initialize(ctx: { config: Config }): TContext;
+  // (undocumented)
+  logout?(
+    options: {
+      req: Request_2;
+      res: Response_2;
+    },
+    ctx: {
+      logoutRedirectUrl?: string;
+    },
+  ): TLogoutResult;
 }
 
 // @public (undocumented)
 export interface ProxyAuthRouteHandlersOptions<TResult> {
   // (undocumented)
-  authenticator: ProxyAuthenticator<any, TResult, unknown>;
+  authenticator: ProxyAuthenticator<any, TResult, unknown, unknown>;
   // (undocumented)
   config: Config;
   // (undocumented)
