@@ -263,6 +263,11 @@ export interface Config {
              * the credentials belongs to a different project to the bucket.
              */
             projectId?: string;
+            /**
+             * (Optional) Location in storage bucket to save files
+             * If not set, the default location will be the root of the storage bucket
+             */
+            bucketRootPath?: string;
           };
         };
 
