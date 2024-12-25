@@ -26,6 +26,7 @@
   --canon-surface-1: #fff;
   --canon-surface-2: #f4f4f4;
   --canon-surface-3: #f1f1f1;
+  --canon-disabled: #b9b9b9;
 
   /* Grays */
   --canon-gray-50: #f9f9f9;
@@ -106,9 +107,6 @@
   /* Container */
   --canon-container-max-width: 1200px;
   --canon-container-padding: 1rem;
-
-  /* animation */
-  --animation-input: 0.2s;
 }
 
 /* Dark theme tokens */
