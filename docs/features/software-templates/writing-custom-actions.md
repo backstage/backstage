@@ -220,7 +220,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
       async init({ scaffolder /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
-        scaffolder.addActions(new createNewFileAction()); // just an example
+        scaffolder.addActions(createNewFileAction()); // just an example
       },
     });
   },
