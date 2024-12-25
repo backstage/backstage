@@ -13,85 +13,95 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCliPlugin } from '../../wiring/factory';
+import { createPlugin } from '../../wiring/factory';
 import yargs from 'yargs';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
+import { coreServices } from '../../wiring/services';
 
-export default createCliPlugin({
+export default createPlugin({
   pluginId: 'config',
-  init: async reg => {
-    reg.addCommand({
-      path: ['config:docs'],
-      description: 'Browse the configuration reference documentation',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command
-          .option(
-            '--package <name>',
-            'Only include the schema that applies to the given package',
-          )
-          .description('Browse the configuration reference documentation')
-          .action(lazy(() => import('./commands/docs').then(m => m.default)));
+  register: async reg => {
+    reg.registerInit({
+      deps: {
+        cli: coreServices.cli,
+      },
+      async init({ cli }) {
+        cli.command({
+          path: ['config:docs'],
+          description: 'Browse the configuration reference documentation',
+          execute: async ({ args }) => {
+            const command = new Command();
+            const defaultCommand = command
+              .option(
+                '--package <name>',
+                'Only include the schema that applies to the given package',
+              )
+              .description('Browse the configuration reference documentation')
+              .action(
+                lazy(() => import('./commands/docs').then(m => m.default)),
+              );
 
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
-    });
-    reg.addCommand({
-      path: ['config', 'docs'],
-      description: 'Browse the configuration reference documentation',
-      execute: async ({ args }) => {
-        const argv = await yargs
-          .options({
-            package: { type: 'string' },
-          })
-          .help()
-          .parse(args);
-        const m = await import('./commands/docs');
-        await m.default(argv);
-      },
-    });
-    reg.addCommand({
-      path: ['config:print'],
-      description: 'Print the app configuration for the current package',
-      execute: async ({ args }) => {
-        const argv = await yargs
-          .options({
-            package: { type: 'string' },
-            lax: { type: 'boolean' },
-            frontend: { type: 'boolean' },
-            'with-secrets': { type: 'boolean' },
-            format: { type: 'string' },
-            config: { type: 'string', array: true },
-          })
-          .help()
-          .parse(args);
-        const m = await import('./commands/print');
-        await m.default(argv);
-      },
-    });
-    reg.addCommand({
-      path: ['config:check'],
-      description:
-        'Validate that the given configuration loads and matches schema',
-      execute: async ({ args }) => {
-        const argv = await yargs
-          .options({
-            package: { type: 'string' },
-            lax: { type: 'boolean' },
-            frontend: { type: 'boolean' },
-            deprecated: { type: 'boolean' },
-            strict: { type: 'boolean', required: true },
-            config: {
-              type: 'string',
-              array: true,
-              default: [],
-            },
-          })
-          .help()
-          .parse(args);
-        const m = await import('./commands/validate');
-        await m.default(argv);
+            await defaultCommand.parseAsync(args, { from: 'user' });
+          },
+        });
+        cli.command({
+          path: ['config', 'docs'],
+          description: 'Browse the configuration reference documentation',
+          execute: async ({ args }) => {
+            const argv = await yargs
+              .options({
+                package: { type: 'string' },
+              })
+              .help()
+              .parse(args);
+            const m = await import('./commands/docs');
+            await m.default(argv);
+          },
+        });
+        cli.command({
+          path: ['config:print'],
+          description: 'Print the app configuration for the current package',
+          execute: async ({ args }) => {
+            const argv = await yargs
+              .options({
+                package: { type: 'string' },
+                lax: { type: 'boolean' },
+                frontend: { type: 'boolean' },
+                'with-secrets': { type: 'boolean' },
+                format: { type: 'string' },
+                config: { type: 'string', array: true },
+              })
+              .help()
+              .parse(args);
+            const m = await import('./commands/print');
+            await m.default(argv);
+          },
+        });
+        cli.command({
+          path: ['config:check'],
+          description:
+            'Validate that the given configuration loads and matches schema',
+          execute: async ({ args }) => {
+            const argv = await yargs
+              .options({
+                package: { type: 'string' },
+                lax: { type: 'boolean' },
+                frontend: { type: 'boolean' },
+                deprecated: { type: 'boolean' },
+                strict: { type: 'boolean', required: true },
+                config: {
+                  type: 'string',
+                  array: true,
+                  default: [],
+                },
+              })
+              .help()
+              .parse(args);
+            const m = await import('./commands/validate');
+            await m.default(argv);
+          },
+        });
       },
     });
   },

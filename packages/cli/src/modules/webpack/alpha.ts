@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createServiceFactory, createServiceRef } from '../../wiring/factory';
 
-import { InternalServiceFactory } from './factory';
-import { InternalPlugin } from './plugins/types';
+type WebpackService = {
+  load: () => Promise<typeof import('webpack')>;
+};
 
-export interface BackstageCommand {
-  path: string[];
-  description: string;
-  execute: (options: { args: string[] }) => Promise<void>;
-}
+export const webpackServiceRef = createServiceRef<WebpackService>({
+  id: 'webpack',
+  scope: 'root',
+});
 
-/** @internal */
-export type InternalFeature = InternalPlugin | InternalServiceFactory;
+const webpackService = createServiceFactory({
+  service: webpackServiceRef,
+  deps: {},
+  factory: async () => {
+    return {
+      load: () => import('webpack').then(module => module.default),
+    };
+  },
+});
+
+export default webpackService;

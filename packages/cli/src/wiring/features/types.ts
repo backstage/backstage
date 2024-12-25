@@ -13,16 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CommandGraph } from './CommandGraph';
-import { BackstageCommand } from './types';
 
-export class CommandRegistry {
-  private graph: CommandGraph;
-  constructor(graph: CommandGraph) {
-    this.graph = graph;
-  }
-
-  addCommand(command: BackstageCommand) {
-    this.graph.add(command);
-  }
+export interface CliFeature {
+  $$type: '@backstage/CliFeature';
 }
