@@ -18,13 +18,18 @@ const { createTransformer: createSwcTransformer } = require('@swc/jest');
 const ESM_REGEX = /\b(?:import|export)\b/;
 
 function createTransformer(config) {
-  const useModules = Boolean(config?.module);
   const swcTransformer = createSwcTransformer({
     inputSourceMap: false,
     ...config,
   });
   const process = (source, filePath, jestOptions) => {
-    if (filePath.endsWith('.js') && (useModules || !ESM_REGEX.test(source))) {
+    // Skip transformation of .js files without ESM syntax, we never transform from CJS to ESM
+    if (filePath.endsWith('.js') && !ESM_REGEX.test(source)) {
+      return { code: source };
+    }
+
+    // Skip transformation of .mjs files, they should only be used if ESM support is available
+    if (filePath.endsWith('.mjs')) {
       return { code: source };
     }
 
