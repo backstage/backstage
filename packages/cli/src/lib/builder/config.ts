@@ -193,6 +193,7 @@ export async function makeRollupConfigs(
         sourcemap: true,
         preserveModules: true,
         preserveModulesRoot: `${targetDir}/src`,
+        interop: 'compat',
         exports: 'named',
         plugins: [multiOutputFormat()],
       };
