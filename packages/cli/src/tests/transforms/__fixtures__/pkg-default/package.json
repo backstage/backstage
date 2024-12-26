@@ -1,6 +1,7 @@
 {
   "name": "pkg-default",
   "exports": {
-    ".": "./main.ts"
+    ".": "./main.ts",
+    "./print": "./print.ts"
   }
 }

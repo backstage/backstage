@@ -179,6 +179,16 @@ describe('package build transforms', () => {
       dep: exportValues.commonJs,
       dyn: exportValues.all,
     });
+
+    expect(loadFixture('pkg-commonjs/dist/print.cjs')).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.commonJs,
+      dyn: exportValues.all,
+    });
   });
 
   it('should build and load from default format', async () => {
@@ -201,6 +211,16 @@ describe('package build transforms', () => {
       dep: exportValues.commonJs,
       dyn: exportValues.all,
     });
+
+    expect(loadFixture('pkg-default/dist/print.cjs')).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.commonJs,
+      dyn: exportValues.all,
+    });
   });
 
   it('should build and load from module format', async () => {
@@ -215,6 +235,17 @@ describe('package build transforms', () => {
       m => m.values,
     );
     expect(values).toEqual({
+      depCommonJs: expectedExports.commonJs,
+      depDefault: expectedExports.commonJs,
+      depModule: expectedExports.module,
+      dynCommonJs: expectedExports.commonJs,
+      dynDefault: expectedExports.commonJs,
+      dynModule: expectedExports.module,
+      dep: exportValues.all,
+      dyn: exportValues.all,
+    });
+
+    expect(loadFixture('pkg-module/dist/print.mjs')).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       depModule: expectedExports.module,

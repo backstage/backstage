@@ -2,6 +2,7 @@
   "name": "pkg-module",
   "type": "module",
   "exports": {
-    ".": "./main.ts"
+    ".": "./main.ts",
+    "./print": "./print.ts"
   }
 }
