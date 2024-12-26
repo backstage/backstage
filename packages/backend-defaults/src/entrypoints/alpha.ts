@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/** @internal */
-type Target = string | { internal: string; external: string };
-
-/**
- * @alpha
- */
-export interface BackstageInstance {
-  url: Target;
-}
-
-/**
- * @alpha
- */
-export interface SystemMetadataService {
-  listInstances(): Promise<BackstageInstance[]>;
-}
+export * from './systemMetadata';
