@@ -23,6 +23,9 @@ import {
   SystemMetadataService,
 } from '@backstage/backend-plugin-api/alpha';
 
+/**
+ * @alpha
+ */
 export class DefaultSystemMetadataService implements SystemMetadataService {
   private readonly logger: LoggerService;
   private readonly config: RootConfigService;
