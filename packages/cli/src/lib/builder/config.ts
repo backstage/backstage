@@ -49,6 +49,7 @@ const MODULE_EXTS = ['.mjs', '.mts'];
 const COMMONJS_EXTS = ['.cjs', '.cts'];
 const MOD_EXT = '.mjs';
 const CJS_EXT = '.cjs';
+const CJS_JS_EXT = '.cjs.js';
 
 function isFileImport(source: string) {
   if (source.startsWith('.')) {
@@ -169,7 +170,7 @@ export async function makeRollupConfigs(
     // file extensions. That way we are left with a combination of .cjs and .mjs
     // files where the module format in the file matches the file extension.
     if (options.outputs.has(Output.cjs)) {
-      const defaultExt = targetPkg.type === 'module' ? MOD_EXT : CJS_EXT;
+      const defaultExt = targetPkg.type === 'module' ? MOD_EXT : CJS_JS_EXT;
       const outputOpts: OutputOptions = {
         dir: distDir,
         entryFileNames(chunkInfo) {

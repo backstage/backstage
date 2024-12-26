@@ -167,7 +167,7 @@ describe('package build transforms', () => {
       outputs: new Set([Output.cjs]),
       workspacePackages: [],
     });
-    const values = await import(resolvePath(pkgPath, 'dist/index.cjs')).then(
+    const values = await import(resolvePath(pkgPath, 'dist/index.cjs.js')).then(
       m => m.values,
     );
     expect(values).toEqual({
@@ -180,7 +180,7 @@ describe('package build transforms', () => {
       dyn: exportValues.all,
     });
 
-    expect(loadFixture('pkg-commonjs/dist/print.cjs')).toEqual({
+    expect(loadFixture('pkg-commonjs/dist/print.cjs.js')).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       dynCommonJs: expectedExports.commonJs,
@@ -199,7 +199,7 @@ describe('package build transforms', () => {
       outputs: new Set([Output.cjs]),
       workspacePackages: [],
     });
-    const values = await import(resolvePath(pkgPath, 'dist/index.cjs')).then(
+    const values = await import(resolvePath(pkgPath, 'dist/index.cjs.js')).then(
       m => m.values,
     );
     expect(values).toEqual({
@@ -212,7 +212,7 @@ describe('package build transforms', () => {
       dyn: exportValues.all,
     });
 
-    expect(loadFixture('pkg-default/dist/print.cjs')).toEqual({
+    expect(loadFixture('pkg-default/dist/print.cjs.js')).toEqual({
       depCommonJs: expectedExports.commonJs,
       depDefault: expectedExports.commonJs,
       dynCommonJs: expectedExports.commonJs,
