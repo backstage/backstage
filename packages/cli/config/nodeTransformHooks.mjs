@@ -69,11 +69,6 @@ export async function resolve(specifier, context, nextResolve) {
     return withDetectedModuleType(await nextResolve(specifier, context));
   }
 
-  // Imports with exact file extensions are handled by the default resolver
-  // if (ext !== '') {
-  // return withDetectedModuleType(await nextResolve(specifier, context));
-  // }
-
   // The rest of this function handles the case of resolving imports that do not
   // specify any extension and might point to a directory with an `index.*`
   // file. We resolve those using the same logic as most JS bundlers would, with
