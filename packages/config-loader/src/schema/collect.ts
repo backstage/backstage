@@ -164,9 +164,8 @@ async function compileTsSchemas(paths: string[]) {
 
   // Lazy loaded, because this brings up all of TypeScript and we don't
   // want that eagerly loaded in tests
-  const { getProgramFromFiles, buildGenerator } = await import(
-    'typescript-json-schema'
-  );
+  const { getProgramFromFiles, buildGenerator } =
+    require('typescript-json-schema') as typeof import('typescript-json-schema');
 
   const program = getProgramFromFiles(paths, {
     incremental: false,
