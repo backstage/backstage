@@ -1,0 +1,142 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as SliderStories from './Slider.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+
+<Meta of={SliderStories} />
+
+<Unstyled>
+
+<Title type="h1">Slider</Title>
+<Text>Range slider is used to select a value by sliding a handle.</Text>
+
+<Canvas of={SliderStories.Primary} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Slider } from "@backstage/canon";
+
+<Slider />
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    label: {
+      type: 'string',
+      description: 'The label for the slider.',
+    },
+    name: {
+      type: 'string',
+      description: 'The name attribute of the slider.',
+    },
+    min: {
+      type: 'number',
+      description: 'The minimum value of the slider.',
+    },
+    max: {
+      type: 'number',
+      description: 'The maximum value of the slider.',
+    },
+    step: {
+      type: 'number',
+      description: 'The step size for the slider.',
+    },
+    size: {
+      type: ['small', 'medium'],
+      description: 'The size of the slider.',
+    },
+    value: {
+      type: 'Array<number> | number',
+      description: 'The current value of the slider.',
+    },
+    defaultValue: {
+      type: 'Array<number> | number',
+      description: 'The default value of the slider.',
+    },
+    disabled: {
+      type: 'boolean',
+      description: 'Whether the slider is disabled.',
+    },
+    orientation: {
+      type: ['horizontal', 'vertical'],
+      description: 'The orientation of the slider.',
+    },
+    className: {
+      type: 'string',
+      description: 'The class name for the slider.',
+    },
+    labelPlacement: {
+      type: ['start', 'end', 'bottom'],
+      description: 'The placement of the label relative to the slider.',
+    },
+    largeStep: {
+      type: 'number',
+      description: 'The large step size for the slider.',
+    },
+    minStepsBetweenValues: {
+      type: 'number',
+      description: 'The minimum number of steps between values.',
+    },
+    format: {
+      type: 'Intl.NumberFormatOptions',
+      description: 'The format options for the slider value.',
+    },
+    valueLabelDisplay: {
+      type: ['on', 'off', 'auto'],
+      description: 'When to display the value label.',
+    },
+    onValueChange: {
+      type: '(value: number | number[], event: Event, activeThumbIndex: number) => void',
+      description: 'Callback function called when the value changes.',
+    },
+    onValueCommitted: {
+      type: '(value: number | number[], event: Event) => void',
+      description: 'Callback function called when the value is committed.',
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+<Text>Here are some examples of how you can use the Slider component.</Text>
+
+<Title type="h3">All Sizes</Title>
+<Text>
+  The `Slider` component has a `size` prop that can be used to change the
+  general size of the Slider.
+</Text>
+
+<Canvas of={SliderStories.Sizes} />
+
+<Title type="h3">Steps</Title>
+<Text>
+  The `Slider` component has a `step` prop that can be used to have the value of
+  the slider change in steps.
+</Text>
+
+<Canvas of={SliderStories.Steps} />
+
+<Title type="h3">Value Label</Title>
+<Text>
+  The `valueLabelDisplay` prop can be used in controlling the display of the
+  value label to either `on`,`off` or `auto`.
+</Text>
+
+<Canvas of={SliderStories.ValueLabel} />
+
+<Title type="h3">Disabled</Title>
+<Text>The `disabled` prop can be used to disable the slider.</Text>
+
+<Canvas of={SliderStories.Disabled} />
+
+<Title type="h3">Vertical Sliders</Title>
+<Text>
+  The `orientation` prop can be used to change the orientation of the slider to
+  vertical.
+</Text>
+
+<Canvas of={SliderStories.Vertical} />
+
+</Unstyled>

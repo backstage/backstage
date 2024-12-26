@@ -273,6 +273,55 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
+export const Slider: React_2.ForwardRefExoticComponent<
+  SliderProps & React_2.RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface SliderProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  defaultValue?: number | ReadonlyArray<number>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  format?: Intl.NumberFormatOptions;
+  // (undocumented)
+  label?: string;
+  // (undocumented)
+  labelPlacement?: 'left' | 'right' | 'bottom';
+  // (undocumented)
+  largeStep?: number;
+  // (undocumented)
+  max?: number;
+  // (undocumented)
+  min?: number;
+  // (undocumented)
+  minStepsBetweenValues?: number;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  onValueChange?: (
+    value: number | number[],
+    event: Event,
+    activeThumbIndex: number,
+  ) => void;
+  // (undocumented)
+  onValueCommitted?: (value: number | number[], event: Event) => void;
+  // (undocumented)
+  orientation?: 'horizontal' | 'vertical';
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  // (undocumented)
+  step?: number;
+  // (undocumented)
+  value?: number | ReadonlyArray<number>;
+  // (undocumented)
+  valueLabelDisplay?: 'on' | 'off' | 'auto';
+}
+
+// @public (undocumented)
 export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 // @public (undocumented)
