@@ -115,6 +115,16 @@ export type BackendFeatureMeta =
       moduleId: string;
     };
 
+// Warning: (ae-missing-release-tag) "BackstageInstance" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface BackstageInstance {
+  // Warning: (ae-forgotten-export) The symbol "Target" needs to be exported by the entry point alpha.d.ts
+  //
+  // (undocumented)
+  url: Target;
+}
+
 // @alpha (undocumented)
 export interface InstanceMetadataService {
   // (undocumented)
@@ -124,6 +134,23 @@ export interface InstanceMetadataService {
 // @alpha (undocumented)
 export const instanceMetadataServiceRef: ServiceRef<
   InstanceMetadataService,
+  'plugin',
+  'singleton'
+>;
+
+// Warning: (ae-missing-release-tag) "SystemMetadataService" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SystemMetadataService {
+  // (undocumented)
+  listInstances(): Promise<BackstageInstance[]>;
+}
+
+// Warning: (ae-missing-release-tag) "systemMetadataServiceRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const systemMetadataServiceRef: ServiceRef<
+  SystemMetadataService,
   'plugin',
   'singleton'
 >;
