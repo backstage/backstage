@@ -19,7 +19,7 @@ import {
   coreServices,
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
-import { systemMetadataServiceFactory } from '@backstage/backend-defaults/alpha/systemMetadata';
+import { systemMetadataServiceFactory } from '@backstage/backend-defaults/alpha';
 
 const backend = createBackend();
 

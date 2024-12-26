@@ -15,7 +15,7 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { systemMetadataServiceFactory } from '@backstage/backend-defaults/alpha/systemMetadata';
+import { systemMetadataServiceFactory } from '@backstage/backend-defaults/alpha';
 
 const backend = createBackend();
 

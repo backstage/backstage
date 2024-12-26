@@ -17,6 +17,29 @@ export const actionsRegistryServiceFactory: ServiceFactory<
 // @public (undocumented)
 export const actionsServiceFactory: ServiceFactory<
   ActionsService,
+import { BackstageInstance } from '@backstage/backend-plugin-api/alpha';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { SystemMetadataService } from '@backstage/backend-plugin-api/alpha';
+
+// Warning: (ae-missing-release-tag) "DefaultSystemMetadataService" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class DefaultSystemMetadataService implements SystemMetadataService {
+  constructor(options: { logger: LoggerService; config: RootConfigService });
+  // (undocumented)
+  static create(pluginEnv: {
+    logger: LoggerService;
+    config: RootConfigService;
+  }): DefaultSystemMetadataService;
+  // (undocumented)
+  listInstances(): Promise<BackstageInstance[]>;
+}
+
+// @alpha
+export const systemMetadataServiceFactory: ServiceFactory<
+  SystemMetadataService,
   'plugin',
   'singleton'
 >;
