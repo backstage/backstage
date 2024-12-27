@@ -31,5 +31,5 @@ export interface DryRun200Response {
    * A type representing all allowed JSON object values.
    */
   output: { [key: string]: any };
-  steps?: Array<DryRun200ResponseAllOfStepsInner>;
+  steps: Array<DryRun200ResponseAllOfStepsInner>;
 }

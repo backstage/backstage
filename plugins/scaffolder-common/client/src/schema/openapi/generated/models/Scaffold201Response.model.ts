@@ -22,5 +22,5 @@
  * @public
  */
 export interface Scaffold201Response {
-  id?: string;
+  id: string;
 }
