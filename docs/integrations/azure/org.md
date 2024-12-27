@@ -439,8 +439,7 @@ export async function myProviderConfigTransformer(
 
 Now we just need to add our new module to the Backend.
 
-```ts
-// packages/backend/src/index.ts
+```ts title="packages/backend/src/index.ts"
 // Your file will have more than this in it
 
 const backend = createBackend();
