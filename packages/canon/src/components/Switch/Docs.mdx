@@ -33,19 +33,19 @@ import { PropsTable } from '../../../docs/components/PropsTable';
       responsive: false,
     },
     labelPlacement: {
-      type: "'start' | 'end' | 'top' | 'bottom'",
+      type: ['start','end','top','bottom'],
       responsive: false,
     },
     defaultChecked: {
-      type: ['boolean', "'indeterminate'"],
+      type: 'boolean',
       responsive: false,
     },
     checked: {
-      type: ['boolean', "'indeterminate'"],
+      type: 'boolean',
       responsive: false,
     },
     onChange: {
-      type: "(checked: boolean | 'indeterminate') => void",
+      type: "(checked: boolean) => void",
       responsive: false,
     },
     disabled: {
