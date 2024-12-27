@@ -1,0 +1,154 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.cn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.25rem;
+  line-height: 1.25rem;
+  width: fit-content;
+  padding-left: 0.563rem;
+  padding-right: 0.563rem;
+  border-radius: 1.9rem;
+  background-color: var(--canon-background);
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-bold);
+  font-size: var(--canon-font-size-body);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-border-base);
+  }
+}
+
+/* Color Variants */
+.cn-badge-color-primary {
+  background-color: var(--canon-accent);
+  color: var(--canon-text-primary-on-accent);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-accent);
+    color: var(--canon-accent);
+  }
+}
+
+.cn-badge-color-secondary {
+  background-color: var(--canon-secondary, #6a1b9a);
+  color: var(--canon-text-primary-on-accent);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-secondary, #6a1b9a);
+    color: var(--canon-secondary, #6a1b9a);
+  }
+}
+
+.cn-badge-color-tertiary {
+  background-color: var(--canon-tertiary, #fbc02d);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-tertiary, #fbc02d);
+    color: var(--canon-tertiary, #fbc02d);
+  }
+}
+
+.cn-badge-color-error {
+  background-color: var(--canon-error);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-error);
+    color: var(--canon-error);
+  }
+}
+
+.cn-badge-color-warning {
+  background-color: var(--canon-warning);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-warning);
+    color: var(--canon-warning);
+  }
+}
+
+.cn-badge-color-success {
+  background-color: var(--canon-success);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-success);
+    color: var(--canon-success);
+  }
+}
+
+.cn-badge-color-info {
+  background-color: var(--canon-info);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-info);
+    color: var(--canon-info);
+  }
+}
+
+.cn-badge-color-neutral {
+  background-color: var(--canon-neutral);
+  color: var(--canon-text-primary);
+
+  &[data-outline='true'] {
+    background-color: transparent;
+    border: 2px solid var(--canon-neutral);
+    color: var(--canon-neutral);
+  }
+}
+
+/* Size Variants */
+.cn-badge-xs {
+  height: 1rem;
+  line-height: 1rem;
+  padding: 0 0.5rem;
+  font-size: var(--canon-font-size-label);
+}
+
+.cn-badge-sm {
+  height: 1.5rem;
+  line-height: 1.5rem;
+  padding: 0 0.75rem;
+  font-size: var(--canon-font-size-caption);
+}
+
+.cn-badge-md {
+  height: 2rem;
+  line-height: 2rem;
+  padding: 0 1rem;
+  font-size: var(--canon-font-size-body);
+}
+
+.cn-badge-lg {
+  height: 2.5rem;
+  line-height: 2.5rem;
+  padding: 0 1.25rem;
+  font-size: var(--canon-font-size-subtitle);
+}

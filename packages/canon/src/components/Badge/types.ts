@@ -13,16 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Breakpoint } from '../../types';
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Badge/styles.css';
+/**
+ * Properties for {@link Badge}
+ *
+ * @public
+ */
+export interface BadgeProps {
+  size?:
+    | 'xs'
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | Partial<Record<Breakpoint, 'xs' | 'sm' | 'md' | 'lg'>>;
+  color?:
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | 'neutral'
+    | 'error'
+    | 'warning'
+    | 'success'
+    | 'info';
+  children?: React.ReactNode;
+  outline?: boolean;
+}
