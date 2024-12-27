@@ -26,7 +26,8 @@ export type TaskStatus =
   | 'completed'
   | 'failed'
   | 'open'
-  | 'processing';
+  | 'processing'
+  | 'skipped';
 
 /**
  * @public
@@ -37,4 +38,5 @@ export const TaskStatus = {
   Failed: 'failed' as TaskStatus,
   Open: 'open' as TaskStatus,
   Processing: 'processing' as TaskStatus,
+  Skipped: 'skipped' as TaskStatus,
 };

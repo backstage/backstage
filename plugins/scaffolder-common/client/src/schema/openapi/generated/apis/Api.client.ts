@@ -104,11 +104,11 @@ export type ListActions = {};
  */
 export type ListTasks = {
   query: {
-    createdBy?: string;
-    limit?: number;
-    offset?: number;
-    order?: 'asc' | 'desc';
-    status?: string;
+    createdBy?: Array<string>;
+    limit?: Array<number>;
+    offset?: Array<number>;
+    order?: Array<string>;
+    status?: Array<string>;
   };
 };
 /**
@@ -339,7 +339,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<ListTasksResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/v2/tasks{?createdBy,limit,offset,order,status}`;
+    const uriTemplate = `/v2/tasks{?createdBy*,limit*,offset*,order*,status*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,

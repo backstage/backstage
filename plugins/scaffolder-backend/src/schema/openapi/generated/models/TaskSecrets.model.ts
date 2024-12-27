@@ -23,7 +23,5 @@
  * @public
  */
 export interface TaskSecrets {
-  [key: string]: any;
-
   backstageToken?: string;
 }

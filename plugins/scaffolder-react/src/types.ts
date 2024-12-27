@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
-
-import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParameterSchema as _TemplateParameterSchema } from '@backstage/plugin-scaffolder-common';
 
 /**
  * The shape of each entry of parameters which gets rendered
  * as a separate step in the wizard input
  *
  * @public
+ * @deprecated use import from {@link @backstage/plugin-scaffolder-common#TemplateParameterSchema} instead as this has now been moved.
  */
-export type TemplateParameterSchema = {
-  title: string;
-  description?: string;
-  presentation?: TemplatePresentationV1beta3;
-  steps: Array<{
-    title: string;
-    description?: string;
-    schema: JsonObject;
-  }>;
-  EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
-};
+export type TemplateParameterSchema = _TemplateParameterSchema;

@@ -49,13 +49,17 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'string',
+          type: 'array',
+          items: {
+            type: 'string',
+          },
         },
       },
       eventsAfter: {
         name: 'after',
         in: 'query',
         description: 'Offset event ID to stream events after.',
+        required: false,
         schema: {
           type: 'integer',
         },
@@ -76,8 +80,11 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'integer',
-          minimum: 0,
+          type: 'array',
+          items: {
+            type: 'integer',
+            minimum: 0,
+          },
         },
       },
       namespace: {
@@ -105,8 +112,11 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'integer',
-          minimum: 0,
+          type: 'array',
+          items: {
+            type: 'integer',
+            minimum: 0,
+          },
         },
       },
       order: {
@@ -116,8 +126,10 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'string',
-          enum: ['asc', 'desc'],
+          type: 'array',
+          items: {
+            type: 'string',
+          },
         },
       },
       status: {
@@ -127,7 +139,10 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'string',
+          type: 'array',
+          items: {
+            type: 'string',
+          },
         },
       },
       taskId: {
@@ -207,9 +222,29 @@ export const spec = {
               type: 'object',
               properties: {
                 body: {
-                  $ref: '#/components/schemas/JsonObject',
+                  allOf: [
+                    {
+                      $ref: '#/components/schemas/JsonObject',
+                    },
+                    {
+                      type: 'object',
+                      properties: {
+                        message: {
+                          type: 'string',
+                        },
+                        status: {
+                          $ref: '#/components/schemas/TaskStatus',
+                        },
+                        stepId: {
+                          type: 'string',
+                        },
+                      },
+                      required: ['message'],
+                    },
+                  ],
                 },
               },
+              required: ['body'],
             },
           },
           directoryContents: {
@@ -428,6 +463,7 @@ export const spec = {
             type: 'string',
           },
           {
+            type: 'object',
             nullable: true,
           },
         ],
@@ -488,9 +524,7 @@ export const spec = {
           },
           values: {
             type: 'object',
-            additionalProperties: {
-              $ref: '#/components/schemas/JsonValue',
-            },
+            additionalProperties: {},
           },
           secrets: {
             type: 'object',
@@ -502,194 +536,6 @@ export const spec = {
         required: ['templateRef', 'values'],
         description:
           'The input options to the `scaffold` method of the `ScaffolderClient`.',
-      },
-      Schema: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-          },
-          title: {
-            type: 'string',
-          },
-          description: {
-            type: 'string',
-          },
-          multipleOf: {
-            type: 'number',
-          },
-          maximum: {
-            type: 'number',
-          },
-          exclusiveMaximum: {
-            oneOf: [
-              {
-                type: 'number',
-              },
-              {
-                type: 'boolean',
-              },
-            ],
-          },
-          minimum: {
-            type: 'number',
-          },
-          exclusiveMinimum: {
-            oneOf: [
-              {
-                type: 'number',
-              },
-              {
-                type: 'boolean',
-              },
-            ],
-          },
-          maxLength: {
-            type: 'integer',
-          },
-          minLength: {
-            type: 'integer',
-          },
-          pattern: {
-            type: 'object',
-          },
-          additionalItems: {
-            oneOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                $ref: '#/components/schemas/Schema',
-              },
-            ],
-          },
-          items: {
-            oneOf: [
-              {
-                $ref: '#/components/schemas/Schema',
-              },
-              {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/Schema',
-                },
-              },
-            ],
-          },
-          maxItems: {
-            type: 'integer',
-          },
-          minItems: {
-            type: 'integer',
-          },
-          uniqueItems: {
-            type: 'boolean',
-          },
-          maxProperties: {
-            type: 'integer',
-          },
-          minProperties: {
-            type: 'integer',
-          },
-          required: {
-            oneOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              {
-                type: 'boolean',
-              },
-            ],
-          },
-          additionalProperties: {
-            oneOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                $ref: '#/components/schemas/Schema',
-              },
-            ],
-          },
-          definitions: {
-            type: 'object',
-            additionalProperties: {
-              $ref: '#/components/schemas/Schema',
-            },
-          },
-          properties: {
-            type: 'object',
-            additionalProperties: {
-              $ref: '#/components/schemas/Schema',
-            },
-          },
-          patternProperties: {
-            type: 'object',
-            additionalProperties: {
-              $ref: '#/components/schemas/Schema',
-            },
-          },
-          dependencies: {
-            type: 'object',
-            additionalProperties: {
-              oneOf: [
-                {
-                  $ref: '#/components/schemas/Schema',
-                },
-                {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                  },
-                },
-              ],
-            },
-          },
-          type: {
-            oneOf: [
-              {
-                type: 'string',
-              },
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            ],
-          },
-          format: {
-            type: 'string',
-          },
-          allOf: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/Schema',
-            },
-          },
-          anyOf: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/Schema',
-            },
-          },
-          oneOf: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/Schema',
-            },
-          },
-          not: {
-            $ref: '#/components/schemas/Schema',
-          },
-          then: {
-            $ref: '#/components/schemas/Schema',
-          },
-        },
-        additionalProperties: {},
       },
       SerializedFile: {
         type: 'object',
@@ -723,7 +569,26 @@ export const spec = {
             type: 'string',
           },
           body: {
-            $ref: '#/components/schemas/JsonObject',
+            allOf: [
+              {
+                $ref: '#/components/schemas/JsonObject',
+              },
+              {
+                type: 'object',
+                properties: {
+                  message: {
+                    type: 'string',
+                  },
+                  status: {
+                    $ref: '#/components/schemas/TaskStatus',
+                  },
+                  stepId: {
+                    type: 'string',
+                  },
+                },
+                required: ['message'],
+              },
+            ],
           },
           type: {
             $ref: '#/components/schemas/TaskEventType',
@@ -742,7 +607,7 @@ export const spec = {
             type: 'string',
           },
           spec: {
-            $ref: '#/components/schemas/TaskSpec',
+            type: 'object',
           },
           status: {
             $ref: '#/components/schemas/TaskStatus',
@@ -769,15 +634,12 @@ export const spec = {
       TaskEventType: {
         type: 'string',
         description: 'TaskEventType',
-        enum: ['completion', 'log', 'cancelled', 'recovered'],
+        enum: ['cancelled', 'completion', 'log', 'recovered'],
       },
       TaskRecovery: {
         type: 'object',
         description:
           "When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,\nby defining a strategy.\n\nBy default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.",
-        additionalProperties: {
-          $ref: '#/components/schemas/TaskRecoverStrategy',
-        },
       },
       TaskRecoverStrategy: {
         type: 'string',
@@ -786,78 +648,34 @@ export const spec = {
         enum: ['none', 'startOver'],
       },
       TaskSecrets: {
-        type: 'object',
-        properties: {
-          backstageToken: {
-            type: 'string',
-          },
-        },
-        description: 'TaskSecrets',
-        additionalProperties: {},
-      },
-      TaskSpec: {
-        $ref: '#/components/schemas/TaskSpecV1beta3',
-      },
-      TaskSpecV1beta3: {
-        type: 'object',
-        properties: {
-          apiVersion: {
-            type: 'string',
-            enum: ['scaffolder.backstage.io/v1beta3'],
-            description: 'The apiVersion string of the TaskSpec.',
-          },
-          parameters: {
-            $ref: '#/components/schemas/JsonObject',
-            description:
-              'This is a JSONSchema which is used to render a form in the frontend\nto collect user input and validate it against that schema. This can then be used in the `steps` part below to template\nvariables passed from the user into each action in the template.\n',
-          },
-          steps: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/TaskStep',
-            },
-            description:
-              'A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying\njavascript action and some optional input parameters that may or may not have been collected from the end user.\n',
-          },
-          output: {
+        allOf: [
+          {
             type: 'object',
             additionalProperties: {
-              $ref: '#/components/schemas/JsonValue',
+              type: 'string',
             },
-            description:
-              'The output is an object where template authors can pull out information from template actions and return them in a known standard way.\n',
           },
-          templateInfo: {
-            $ref: '#/components/schemas/TemplateInfo',
-            description:
-              'Some information about the template that is stored on the task spec.',
-          },
-          user: {
+          {
             type: 'object',
             properties: {
-              entity: {
-                type: 'object',
-                description: 'The decorated entity from the Catalog',
-              },
-              ref: {
+              backstageToken: {
                 type: 'string',
-                description: 'An entity ref for the author of the task',
               },
             },
-            description:
-              'Some decoration of the author of the task that should be available in the context',
           },
-        },
-        required: ['apiVersion', 'parameters', 'steps', 'output'],
-        description:
-          'A scaffolder task as stored in the database, generated from a v1beta3\napiVersion Template.',
-        additionalProperties: {
-          $ref: '#/components/schemas/TaskRecovery',
-        },
+        ],
+        description: 'TaskSecrets',
       },
       TaskStatus: {
         type: 'string',
-        enum: ['cancelled', 'completed', 'failed', 'open', 'processing'],
+        enum: [
+          'cancelled',
+          'completed',
+          'failed',
+          'open',
+          'processing',
+          'skipped',
+        ],
         description: 'The status of each step of the Task',
       },
       TaskStep: {
@@ -897,111 +715,6 @@ export const spec = {
           'An individual step of a scaffolder task, as stored in the database.',
         additionalProperties: {},
       },
-      TemplateEntityStepV1beta3: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          {
-            type: 'object',
-            properties: {
-              id: {
-                type: 'string',
-              },
-              name: {
-                type: 'string',
-              },
-              action: {
-                type: 'string',
-              },
-              input: {
-                $ref: '#/components/schemas/JsonObject',
-              },
-            },
-            required: ['action'],
-          },
-        ],
-        description: 'Step that is part of a Template Entity.',
-        additionalProperties: {},
-      },
-      TemplateEntityV1beta3: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/Entity',
-          },
-          {
-            type: 'object',
-            properties: {
-              apiVersion: {
-                type: 'string',
-                enum: ['scaffolder.backstage.io/v1beta3'],
-                description: 'The apiVersion string of the TaskSpec.',
-              },
-              kind: {
-                type: 'string',
-                enum: ['Template'],
-                description: 'The kind of the entity',
-              },
-              spec: {
-                type: 'object',
-                properties: {
-                  type: {
-                    type: 'string',
-                    description:
-                      'The type that the Template will create. For example service, website or library.',
-                  },
-                  presentation: {
-                    $ref: '#/components/schemas/TemplatePresentationV1beta3',
-                    description:
-                      'Template specific configuration of the presentation layer.',
-                  },
-                  parameters: {
-                    oneOf: [
-                      {
-                        $ref: '#/components/schemas/TemplateParametersV1beta3',
-                      },
-                      {
-                        type: 'array',
-                        items: {
-                          $ref: '#/components/schemas/TemplateParametersV1beta3',
-                        },
-                      },
-                    ],
-                    description:
-                      "This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend\nto collect user input and validate it against that schema. This can then be used in the `steps` part below to template\nvariables passed from the user into each action in the template.",
-                  },
-                  steps: {
-                    type: 'array',
-                    items: {
-                      $ref: '#/components/schemas/TemplateEntityStepV1beta3',
-                    },
-                    description:
-                      'A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying\njavascript action and some optional input parameters that may or may not have been collected from the end user.',
-                  },
-                  output: {
-                    type: 'object',
-                    additionalProperties: {
-                      type: 'string',
-                    },
-                    description:
-                      'The output is an object where template authors can pull out information from template actions and return them in a known standard way.',
-                  },
-                  owner: {
-                    type: 'string',
-                    description: 'The owner entityRef of the TemplateEntity',
-                  },
-                },
-                required: ['type', 'steps'],
-                description: 'The specification of the Template Entity',
-                additionalProperties: {},
-              },
-            },
-            required: ['apiVersion', 'kind', 'spec'],
-          },
-        ],
-        description:
-          'Backstage catalog Template kind Entity. Templates are used by the Scaffolder\nplugin to create new entities, such as Components.',
-      },
       TemplateInfo: {
         type: 'object',
         properties: {
@@ -1036,9 +749,6 @@ export const spec = {
           title: {
             type: 'string',
           },
-          presentation: {
-            $ref: '#/components/schemas/TemplatePresentationV1beta3',
-          },
           description: {
             type: 'string',
           },
@@ -1054,7 +764,7 @@ export const spec = {
                   $ref: '#/components/schemas/JsonValue',
                 },
                 schema: {
-                  $ref: '#/components/schemas/TemplateParametersV1beta3',
+                  type: 'object',
                 },
               },
               required: ['title', 'schema'],
@@ -1065,86 +775,6 @@ export const spec = {
         description:
           'The shape of each entry of parameters which gets rendered\nas a separate step in the wizard input',
         additionalProperties: {},
-      },
-      TemplateParametersV1beta3: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          {
-            type: 'object',
-            additionalProperties: {
-              $ref: '#/components/schemas/TemplatePermissionsV1beta3',
-            },
-          },
-        ],
-        description: 'Parameter that is part of a Template Entity.',
-      },
-      TemplatePermissionsV1beta3: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          {
-            type: 'object',
-            properties: {
-              tags: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        ],
-        description: 'Access control properties for parts of a template.',
-      },
-      TemplatePresentationV1beta3: {
-        type: 'object',
-        properties: {
-          buttonLabels: {
-            type: 'object',
-            properties: {
-              backButtonText: {
-                type: 'string',
-                description:
-                  'The text for the button which leads to the previous template page',
-              },
-              createButtonText: {
-                type: 'string',
-                description:
-                  'The text for the button which starts the execution of the template',
-              },
-              reviewButtonText: {
-                type: 'string',
-                description:
-                  "The text for the button which opens template's review/summary",
-              },
-            },
-            description: "Overrides default buttons' text",
-            additionalProperties: false,
-          },
-        },
-        description: 'The presentation of the template.',
-        additionalProperties: {},
-      },
-      TemplateRecoveryV1beta3: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          {
-            type: 'object',
-            additionalProperties: {
-              type: 'string',
-              enum: ['none', 'startOver'],
-              description:
-                'none - not recover, let the task be marked as failed\nstartOver - do recover, start the execution of the task from the first step.',
-            },
-          },
-        ],
-        description:
-          'Depends on how you designed your task you might tailor the behaviour for each of them.',
       },
       ValidationError: {
         type: 'object',
@@ -1167,16 +797,6 @@ export const spec = {
           },
           message: {
             type: 'string',
-          },
-          schema: {
-            oneOf: [
-              {
-                type: 'string',
-              },
-              {
-                $ref: '#/components/schemas/Schema',
-              },
-            ],
           },
           instance: {
             type: 'object',
@@ -1201,6 +821,7 @@ export const spec = {
           'argument',
           'stack',
         ],
+        additionalProperties: {},
       },
     },
     securitySchemes: {
@@ -1345,6 +966,7 @@ export const spec = {
                       type: 'string',
                     },
                   },
+                  required: ['id'],
                 },
               },
             },
@@ -1476,6 +1098,7 @@ export const spec = {
                       type: 'string',
                     },
                   },
+                  required: ['id'],
                 },
               },
             },
@@ -1561,13 +1184,16 @@ export const spec = {
                 type: 'object',
                 properties: {
                   template: {
-                    $ref: '#/components/schemas/TemplateEntityV1beta3',
+                    type: 'object',
                   },
                   values: {
-                    type: 'object',
+                    $ref: '#/components/schemas/JsonObject',
                   },
                   secrets: {
                     type: 'object',
+                    additionalProperties: {
+                      type: 'string',
+                    },
                   },
                   directoryContents: {
                     type: 'array',
@@ -1605,23 +1231,20 @@ export const spec = {
                         steps: {
                           type: 'array',
                           items: {
-                            allOf: [
-                              {
-                                $ref: '#/components/schemas/TemplateEntityStepV1beta3',
+                            type: 'object',
+                            properties: {
+                              id: {
+                                type: 'string',
                               },
-                              {
-                                type: 'object',
-                                properties: {
-                                  id: {
-                                    type: 'string',
-                                  },
-                                  name: {
-                                    type: 'string',
-                                  },
-                                },
-                                required: ['id', 'name'],
+                              name: {
+                                type: 'string',
                               },
-                            ],
+                              action: {
+                                type: 'string',
+                              },
+                            },
+                            required: ['id', 'name', 'action'],
+                            additionalProperties: {},
                           },
                         },
                         directoryContents: {
@@ -1643,6 +1266,7 @@ export const spec = {
                           },
                         },
                       },
+                      required: ['steps'],
                     },
                   ],
                 },
@@ -1715,10 +1339,15 @@ export const spec = {
                           title: {
                             type: 'string',
                           },
+                          id: {
+                            type: 'string',
+                          },
                         },
+                        required: ['id'],
                       },
                     },
                   },
+                  required: ['results'],
                 },
               },
             },

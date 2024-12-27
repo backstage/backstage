@@ -24,6 +24,6 @@ import { DryRun200ResponseAllOfStepsInner } from '../models/DryRun200ResponseAll
  * @public
  */
 export interface DryRun200ResponseAllOf {
-  steps?: Array<DryRun200ResponseAllOfStepsInner>;
+  steps: Array<DryRun200ResponseAllOfStepsInner>;
   directoryContents?: Array<DryRun200ResponseAllOfDirectoryContentsInner>;
 }
