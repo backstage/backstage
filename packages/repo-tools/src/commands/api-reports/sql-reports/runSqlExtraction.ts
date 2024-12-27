@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { paths as cliPaths } from '../../lib/paths';
+import { paths as cliPaths } from '../../../lib/paths';
 import { getPortPromise } from 'portfinder';
 import type { Knex } from 'knex';
 import { diff as justDiff } from 'just-diff';

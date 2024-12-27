@@ -24,7 +24,7 @@ import {
 } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
-import { runSqlExtraction } from './sql-report';
+import { runSqlExtraction } from './sql-reports';
 
 type Options = {
   ci?: boolean;
