@@ -20,7 +20,12 @@ import type {
   TemplateEntityV1beta3,
   TemplateParameterSchema,
 } from './TemplateEntityV1beta3';
-import { TaskStatus } from '../client/src/schema/openapi';
+import type {
+  TaskEventType,
+  TaskStatus as ScaffolderTaskStatus,
+} from '../client/src/schema/openapi';
+
+export type { ScaffolderTaskStatus };
 
 /**
  * Options you can pass into a Scaffolder request for additional information.
@@ -30,19 +35,6 @@ import { TaskStatus } from '../client/src/schema/openapi';
 export interface ScaffolderRequestOptions {
   token?: string;
 }
-
-/**
- * The status of each task in a Scaffolder Job
- *
- * @public
- */
-export type ScaffolderTaskStatus =
-  | 'cancelled'
-  | 'completed'
-  | 'failed'
-  | 'open'
-  | 'processing'
-  | 'skipped';
 
 /**
  * The shape of each task returned from the `scaffolder-backend`
@@ -74,10 +66,7 @@ export type ScaffolderUsageExample = {
  * @public
  * @deprecated in favor of ScaffolderUsageExample
  */
-export type ActionExample = {
-  description: string;
-  example: string;
-};
+export type ActionExample = ScaffolderUsageExample;
 
 /**
  * The response shape for a single action in the `listActions` call to the `scaffolder-backend`
@@ -183,7 +172,7 @@ export type ScaffolderTaskOutput = {
  * @public
  */
 export type LogEvent = {
-  type: 'log' | 'completion' | 'cancelled' | 'recovered';
+  type: TaskEventType;
   body: {
     message: string;
     stepId?: string;
@@ -297,7 +286,7 @@ export interface ScaffolderApi {
   cancelTask(
     taskId: string,
     options?: ScaffolderRequestOptions,
-  ): Promise<{ status?: TaskStatus }>;
+  ): Promise<{ status?: ScaffolderTaskStatus }>;
 
   /**
    * Starts the task again from the point where it failed.
