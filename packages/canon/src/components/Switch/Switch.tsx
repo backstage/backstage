@@ -95,3 +95,4 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
     );
   },
 );
+export default Switch;
