@@ -15,9 +15,9 @@
  */
 
 import React, { ReactNode } from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { DocsTableRow } from './types';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
 import {
   DefaultEntityFilters,
   EntityListContextProps,
@@ -27,7 +27,7 @@ import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 
 describe('OffsetPaginatedDocsTable', () => {
   const data = new Array(100).fill(0).map((_, index) => {
-    const name = `tectdocs-${index}`;
+    const name = `techdocs-${index}`;
     return {
       entity: {
         apiVersion: '1',
@@ -48,7 +48,6 @@ describe('OffsetPaginatedDocsTable', () => {
     {
       title: 'Title',
       field: 'entity.metadata.name',
-      searchable: true,
     },
   ];
 
@@ -69,7 +68,7 @@ describe('OffsetPaginatedDocsTable', () => {
         <OffsetPaginatedDocsTable data={data} columns={columns} />,
         {
           setOffset: jest.fn(),
-          limit: Number.MAX_SAFE_INTEGER,
+          limit: 10,
           offset: 0,
           totalItems: data.length,
         },
@@ -84,21 +83,42 @@ describe('OffsetPaginatedDocsTable', () => {
   it('should display and invoke the next and previous buttons', async () => {
     const offsetFn = jest.fn();
 
-    await renderInTestApp(
-      wrapInContext(
-        <OffsetPaginatedDocsTable data={data} columns={columns} />,
-        { setOffset: offsetFn, limit: 10, totalItems: data.length, offset: 0 },
+    const { rerender } = render(
+      wrapInTestApp(
+        wrapInContext(
+          <OffsetPaginatedDocsTable data={data} columns={columns} />,
+          {
+            setOffset: offsetFn,
+            limit: 10,
+            totalItems: data.length,
+            offset: 0,
+          },
+        ),
       ),
     );
 
-    expect(offsetFn).toHaveBeenNthCalledWith(1, 0);
+    expect(offsetFn).not.toHaveBeenCalled();
     const nextButton = screen.queryAllByRole('button', {
       name: 'Next Page',
     })[0];
     expect(nextButton).toBeEnabled();
 
     fireEvent.click(nextButton);
-    expect(offsetFn).toHaveBeenNthCalledWith(2, 10);
+    expect(offsetFn).toHaveBeenNthCalledWith(1, 10);
+
+    rerender(
+      wrapInTestApp(
+        wrapInContext(
+          <OffsetPaginatedDocsTable data={data} columns={columns} />,
+          {
+            setOffset: offsetFn,
+            limit: 10,
+            totalItems: data.length,
+            offset: 10,
+          },
+        ),
+      ),
+    );
 
     const prevButton = screen.queryAllByRole('button', {
       name: 'Previous Page',
@@ -106,6 +126,6 @@ describe('OffsetPaginatedDocsTable', () => {
     expect(prevButton).toBeEnabled();
 
     fireEvent.click(prevButton);
-    expect(offsetFn).toHaveBeenNthCalledWith(3, 0);
+    await waitFor(() => expect(offsetFn).toHaveBeenNthCalledWith(2, 0));
   });
 });
