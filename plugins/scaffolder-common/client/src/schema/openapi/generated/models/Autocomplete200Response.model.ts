@@ -23,5 +23,5 @@ import { Autocomplete200ResponseResultsInner } from '../models/Autocomplete200Re
  * @public
  */
 export interface Autocomplete200Response {
-  results?: Array<Autocomplete200ResponseResultsInner>;
+  results: Array<Autocomplete200ResponseResultsInner>;
 }
