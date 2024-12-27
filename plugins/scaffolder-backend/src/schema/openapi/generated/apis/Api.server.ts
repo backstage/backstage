@@ -92,11 +92,11 @@ export type ListActions = {
  */
 export type ListTasks = {
   query: {
-    createdBy?: string;
-    limit?: number;
-    offset?: number;
-    order?: 'asc' | 'desc';
-    status?: string;
+    createdBy?: Array<string>;
+    limit?: Array<number>;
+    offset?: Array<number>;
+    order?: Array<string>;
+    status?: Array<string>;
   };
   response: ListTasksResponse;
 };

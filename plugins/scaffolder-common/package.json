@@ -61,8 +61,15 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/types": "workspace:^"
+    "@backstage/types": "workspace:^",
+    "@microsoft/fetch-event-source": "^2.0.1",
+    "json-schema": "^0.4.0",
+    "qs": "^6.9.4",
+    "zen-observable": "^0.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

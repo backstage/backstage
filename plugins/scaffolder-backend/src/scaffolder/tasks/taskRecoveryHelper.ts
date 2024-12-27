@@ -28,7 +28,7 @@ export const trimEventsTillLastRecovery = (
   if (recoveredEventInd >= 0) {
     const ind = events.length - recoveredEventInd - 1;
     const { recoverStrategy } = events[ind].body as {
-      recoverStrategy: TaskRecoverStrategy;
+      recoverStrategy?: TaskRecoverStrategy;
     };
     if (recoverStrategy === 'startOver') {
       return {

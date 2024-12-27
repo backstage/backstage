@@ -186,7 +186,7 @@ export const OngoingTask = (props: {
   const [{ status: _ }, { execute: triggerRetry }] = useAsync(async () => {
     if (taskId) {
       analytics.captureEvent('retried', 'Template has been retried');
-      await scaffolderApi.retry?.(taskId);
+      await scaffolderApi.retry?.({ taskId });
     }
   });
 
