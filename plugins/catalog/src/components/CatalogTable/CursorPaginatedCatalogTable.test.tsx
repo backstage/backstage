@@ -48,7 +48,6 @@ describe('CursorPaginatedCatalogTable', () => {
     {
       title: 'Title',
       field: 'entity.metadata.name',
-      searchable: true,
     },
   ];
 

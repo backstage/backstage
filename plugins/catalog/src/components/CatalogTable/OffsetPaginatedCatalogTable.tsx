@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { CatalogTableToolbar } from './CatalogTableToolbar';
-
+import TablePagination from '@material-ui/core/TablePagination';
 /**
  * @internal
  */
@@ -30,17 +30,31 @@ export function OffsetPaginatedCatalogTable(
   const { columns, data, options, ...restProps } = props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
-  const [page, setPage] = React.useState(
-    offset && limit ? Math.floor(offset / limit) : 0,
-  );
+  const page = offset && limit ? Math.floor(offset / limit) : 0;
 
-  useEffect(() => {
-    if (totalItems && page * limit >= totalItems) {
-      setOffset!(Math.max(0, totalItems - limit));
-    } else {
-      setOffset!(Math.max(0, page * limit));
-    }
-  }, [setOffset, page, limit, totalItems]);
+  const Pagination = useCallback(
+    (propsPagination: {}) => {
+      return (
+        <TablePagination
+          {...propsPagination}
+          page={page}
+          rowsPerPage={limit}
+          count={totalItems || 0}
+          onPageChange={(_e, newPage) => {
+            if (totalItems && newPage * limit >= totalItems) {
+              setOffset?.(Math.max(0, totalItems - limit));
+            } else {
+              setOffset?.(Math.max(0, newPage * limit));
+            }
+          }}
+          onRowsPerPageChange={e => {
+            setLimit(parseInt(e.target.value, 10));
+          }}
+        />
+      );
+    },
+    [page, totalItems, limit, setLimit, setOffset],
+  );
 
   return (
     <Table
@@ -48,23 +62,18 @@ export function OffsetPaginatedCatalogTable(
       data={data}
       options={{
         paginationPosition: 'both',
+        paginationAlignment: 'flex-end',
+        paginationType: 'normal',
+        paging: true,
         pageSizeOptions: [5, 10, 20, 50, 100],
-        pageSize: limit,
         emptyRowsWhenPaging: false,
         ...options,
+        pageSize: Number.MAX_SAFE_INTEGER,
       }}
       components={{
+        Pagination,
         Toolbar: CatalogTableToolbar,
       }}
-      page={page}
-      onPageChange={newPage => {
-        setPage(newPage);
-      }}
-      onRowsPerPageChange={pageSize => {
-        setLimit(pageSize);
-      }}
-      totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
       {...restProps}
     />
   );

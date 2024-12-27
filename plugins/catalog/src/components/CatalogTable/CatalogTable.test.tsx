@@ -317,13 +317,10 @@ describe('CatalogTable component', () => {
         },
       );
 
-      const columnHeader = screen
-        .getAllByRole('button')
-        .filter(c => c.tagName === 'SPAN');
-      const columnHeaderLabels = columnHeader.map(c => c.textContent);
-      expect(columnHeaderLabels).toEqual(expectedColumns);
+      for (const expectedColumn of expectedColumns) {
+        expect(screen.getByText(expectedColumn)).toBeInTheDocument();
+      }
     },
-    20_000,
   );
 
   it('should render the subtitle when it is specified', async () => {
@@ -380,11 +377,9 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(expectedColumns);
+    for (const expectedColumn of expectedColumns) {
+      expect(screen.getByText(expectedColumn)).toBeInTheDocument();
+    }
 
     const labelCellValue = screen.getByText('generic');
     expect(labelCellValue).toBeInTheDocument();
@@ -440,11 +435,9 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(expectedColumns);
+    for (const expectedColumn of expectedColumns) {
+      expect(screen.getByText(expectedColumn)).toBeInTheDocument();
+    }
 
     const labelCellValue = screen.getByText('generic');
     expect(labelCellValue).toBeInTheDocument();

@@ -15,9 +15,9 @@
  */
 
 import React, { ReactNode } from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { CatalogTableRow } from './types';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
 import {
   DefaultEntityFilters,
   EntityListContextProps,
@@ -47,7 +47,6 @@ describe('OffsetPaginatedCatalogTable', () => {
     {
       title: 'Title',
       field: 'entity.metadata.name',
-      searchable: true,
     },
   ];
 
@@ -73,7 +72,7 @@ describe('OffsetPaginatedCatalogTable', () => {
         />,
         {
           setOffset: jest.fn(),
-          limit: Number.MAX_SAFE_INTEGER,
+          limit: 10,
           offset: 0,
           totalItems: data.length,
         },
@@ -90,7 +89,7 @@ describe('OffsetPaginatedCatalogTable', () => {
         <OffsetPaginatedCatalogTable data={data} columns={columns} />,
         {
           setOffset: jest.fn(),
-          limit: Number.MAX_SAFE_INTEGER,
+          limit: 10,
           offset: 0,
           totalItems: data.length,
         },
@@ -105,21 +104,44 @@ describe('OffsetPaginatedCatalogTable', () => {
   it('should display and invoke the next and previous buttons', async () => {
     const offsetFn = jest.fn();
 
-    await renderInTestApp(
-      wrapInContext(
-        <OffsetPaginatedCatalogTable data={data} columns={columns} />,
-        { setOffset: offsetFn, limit: 10, totalItems: data.length, offset: 0 },
+    const { rerender } = render(
+      wrapInTestApp(
+        wrapInContext(
+          <OffsetPaginatedCatalogTable data={data} columns={columns} />,
+          {
+            setOffset: offsetFn,
+            limit: 10,
+            totalItems: data.length,
+            offset: 0,
+          },
+        ),
       ),
     );
 
-    expect(offsetFn).toHaveBeenNthCalledWith(1, 0);
+    expect(offsetFn).not.toHaveBeenCalled();
     const nextButton = screen.queryAllByRole('button', {
       name: 'Next Page',
     })[0];
+
     expect(nextButton).toBeEnabled();
 
     fireEvent.click(nextButton);
-    expect(offsetFn).toHaveBeenNthCalledWith(2, 10);
+
+    expect(offsetFn).toHaveBeenNthCalledWith(1, 10);
+
+    rerender(
+      wrapInTestApp(
+        wrapInContext(
+          <OffsetPaginatedCatalogTable data={data} columns={columns} />,
+          {
+            setOffset: offsetFn,
+            limit: 10,
+            totalItems: data.length,
+            offset: 10,
+          },
+        ),
+      ),
+    );
 
     const prevButton = screen.queryAllByRole('button', {
       name: 'Previous Page',
@@ -127,6 +149,7 @@ describe('OffsetPaginatedCatalogTable', () => {
     expect(prevButton).toBeEnabled();
 
     fireEvent.click(prevButton);
-    expect(offsetFn).toHaveBeenNthCalledWith(3, 0);
+
+    await waitFor(() => expect(offsetFn).toHaveBeenNthCalledWith(2, 0));
   });
 });
