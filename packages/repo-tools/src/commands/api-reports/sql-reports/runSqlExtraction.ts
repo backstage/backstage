@@ -17,8 +17,9 @@
 import fs from 'fs-extra';
 import { paths as cliPaths } from '../../../lib/paths';
 import { getPortPromise } from 'portfinder';
-import type { Knex } from 'knex';
 import { diff as justDiff } from 'just-diff';
+import { SchemaInfo } from './types';
+import { getPgSchemaInfo } from './getPgSchemaInfo';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -66,9 +67,7 @@ async function runSingleSqlExtraction(
   console.log(`Extracting SQL from ${migrationDir}`);
 
   const { default: Knex } = await import('knex');
-  const { default: EmbeddedPostgres } = (await import(
-    'embedded-postgres'
-  )) as typeof import('embedded-postgres/dist/index.d.ts');
+  const { default: EmbeddedPostgres } = await import('embedded-postgres');
 
   console.log(`DEBUG: knex=`, Knex);
   console.log(`DEBUG: EmbeddedPostgres=`, EmbeddedPostgres);
@@ -122,7 +121,7 @@ async function runSingleSqlExtraction(
 
   for (const migration of migrations) {
     console.log(`DEBUG: UP ${migration}`);
-    const schemaInfo = await getPostgresSchemaInfo(knex);
+    const schemaInfo = await getPgSchemaInfo(knex);
     schemaInfoBeforeMigration.set(migration, schemaInfo);
 
     await knex.migrate.up({
@@ -131,7 +130,7 @@ async function runSingleSqlExtraction(
     });
   }
 
-  const schemaInfo = await getPostgresSchemaInfo(knex);
+  const schemaInfo = await getPgSchemaInfo(knex);
   console.log(`DEBUG: schemaInfo=`, JSON.stringify(schemaInfo, null, 2));
 
   for (const migration of migrations.toReversed()) {
@@ -140,7 +139,7 @@ async function runSingleSqlExtraction(
       directory: migrationDir,
       name: migration,
     });
-    const after = await getPostgresSchemaInfo(knex);
+    const after = await getPgSchemaInfo(knex);
     const before = schemaInfoBeforeMigration.get(migration);
     if (!before) {
       throw new Error(`No previous result for migration ${migration}`);
@@ -157,110 +156,4 @@ async function runSingleSqlExtraction(
 
   // Stop the server
   await pg.stop();
-}
-
-type SchemaColumnInfo = {
-  name: string;
-  type: string;
-  nullable: boolean;
-  maxLength: number | null;
-  defaultValue: Knex.Value;
-};
-
-type SchemaIndexInfo = {
-  name: string;
-  unique: boolean;
-  primary: boolean;
-  columns: string[];
-};
-
-type SchemaTableInfo = {
-  name: string;
-  columns: Record<string, SchemaColumnInfo>;
-  indices: Record<string, SchemaIndexInfo>;
-};
-
-type SchemaSequenceInfo = {
-  name: string;
-  type: string;
-};
-
-type SchemaInfo = {
-  tables: Record<string, SchemaTableInfo>;
-  sequences: Record<string, SchemaSequenceInfo>;
-};
-
-async function getPostgresSchemaInfo(knex: Knex): Promise<SchemaInfo> {
-  const { rows: tableNames } = await knex.raw<{ rows: { name: string }[] }>(`
-    SELECT table_name as name
-    FROM information_schema.tables
-    WHERE
-      table_schema = 'public'
-      AND table_type = 'BASE TABLE'
-      AND table_name NOT LIKE 'knex_migrations%'
-  `);
-
-  const tables = Object.fromEntries(
-    await Promise.all(
-      tableNames.map(async ({ name }) => {
-        const columns = await knex.table(name).columnInfo();
-        const { rows: indices } = await knex.raw<{
-          rows: SchemaIndexInfo[];
-        }>(
-          `
-          SELECT
-            index_class.relname as name,
-            index.indisunique as unique,
-            index.indisprimary as primary,
-            json_agg(attribute.attname ORDER BY keys.rn) as columns
-          FROM
-            pg_class table_class,
-            pg_class index_class,
-            pg_index index,
-            UNNEST(index.indkey) WITH ORDINALITY keys(id, rn)
-          INNER JOIN pg_attribute attribute
-            ON attribute.attnum = keys.id
-          WHERE
-            table_class.oid = index.indrelid
-            AND table_class.relkind = 'r'
-            AND table_class.relname = ?
-            AND index_class.oid = index.indexrelid
-            AND attribute.attrelid = table_class.oid
-          GROUP BY index_class.relname, index.indexrelid
-        `,
-          [name],
-        );
-        return [
-          name,
-          {
-            name,
-            columns: Object.entries(columns).map(
-              ([columnName, columnInfo]) => ({
-                ...columnInfo,
-                name: columnName,
-              }),
-            ),
-            indices: Object.fromEntries(
-              indices.map(index => [index.name, index]),
-            ),
-          },
-        ];
-      }),
-    ),
-  );
-
-  const { rows: sequences } = await knex.raw<{
-    rows: SchemaSequenceInfo[];
-  }>(`
-    SELECT sequence_name as name, data_type as type
-    FROM information_schema.sequences
-    WHERE
-      sequence_schema = 'public'
-      AND sequence_name NOT LIKE 'knex_migrations%'
-  `);
-
-  return {
-    tables,
-    sequences: Object.fromEntries(sequences.map(seq => [seq.name, seq])),
-  };
 }
