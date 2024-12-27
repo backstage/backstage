@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Breakpoint } from '../../types';
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Avatar/styles.css';
+export interface AvatarProps {
+  size?:
+    | 'small'
+    | 'medium'
+    | 'large'
+    | Partial<Record<Breakpoint, 'small' | 'medium' | 'large'>>;
+  radius?: string;
+  status?: 'online' | 'offline' | 'busy' | 'away' | 'none';
+  src?: string;
+  text?: string;
+  className?: string;
+}
+
+export interface AvatarGroupProps {
+  children: React.ReactNode;
+}

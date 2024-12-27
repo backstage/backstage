@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Avatar/styles.css';
+import React, { forwardRef } from 'react';
+import { AvatarGroupProps } from './types';
+
+/** @public */
+export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
+  (props: AvatarGroupProps, ref) => {
+    const { children } = props;
+    return (
+      <div ref={ref} className="cn-avatar-group">
+        {children}
+      </div>
+    );
+  },
+);
+
+export default AvatarGroup;
