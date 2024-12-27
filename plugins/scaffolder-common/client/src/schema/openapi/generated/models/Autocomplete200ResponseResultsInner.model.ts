@@ -23,4 +23,5 @@
  */
 export interface Autocomplete200ResponseResultsInner {
   title?: string;
+  id: string;
 }

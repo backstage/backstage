@@ -22,11 +22,9 @@
  * @public
  */
 export interface DryRun200ResponseAllOfStepsInner {
+  [key: string]: any;
+
   id: string;
   name: string;
   action: string;
-  /**
-   * A type representing all allowed JSON object values.
-   */
-  input?: { [key: string]: any };
 }

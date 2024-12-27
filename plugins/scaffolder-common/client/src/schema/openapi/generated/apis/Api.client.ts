@@ -22,7 +22,6 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
-
 import { Action } from '../models/Action.model';
 import { Autocomplete200Response } from '../models/Autocomplete200Response.model';
 import { AutocompleteRequest } from '../models/AutocompleteRequest.model';
@@ -53,7 +52,6 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 export interface RequestOptions {
   token?: string;
 }
-
 /**
  * @public
  */
@@ -105,11 +103,11 @@ export type ListActions = {};
  */
 export type ListTasks = {
   query: {
-    createdBy?: string;
-    limit?: number;
-    offset?: number;
-    order?: 'asc' | 'desc';
-    status?: string;
+    createdBy?: Array<string>;
+    limit?: Array<number>;
+    offset?: Array<number>;
+    order?: Array<string>;
+    status?: Array<string>;
   };
 };
 /**
@@ -150,7 +148,6 @@ export type StreamLogsPolling = {
 };
 
 /**
- * no description
  * @public
  */
 export class DefaultApiClient {
@@ -340,7 +337,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<ListTasksResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/v2/tasks{?createdBy,limit,offset,order,status}`;
+    const uriTemplate = `/v2/tasks{?createdBy*,limit*,offset*,order*,status*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
