@@ -73,7 +73,6 @@ import {
   findTemplate,
   getEntityBaseUrl,
   getWorkingDirectory,
-  parseNumberParam,
   parseStringsParam,
 } from './helpers';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -621,8 +620,7 @@ export async function createRouter(
         };
       });
 
-      const limit = parseNumberParam(req.query.limit, 'limit');
-      const offset = parseNumberParam(req.query.offset, 'offset');
+      const { limit, offset } = req.query;
 
       const tasks = await taskBroker.list({
         filters: {
