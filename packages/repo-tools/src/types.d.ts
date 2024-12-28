@@ -16,5 +16,5 @@
 
 // It's missing a types entry point, but has types in dist
 declare module 'embedded-postgres' {
-  export { default } from 'embedded-postgres/dist/index.d.ts';
+  export { default } from 'embedded-postgres/dist/index';
 }
