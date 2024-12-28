@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import fs, { readJson } from 'fs-extra';
+import { relative as relativePath } from 'path';
 import { paths as cliPaths } from '../../../lib/paths';
 import { getPortPromise } from 'portfinder';
 import { diff as justDiff } from 'just-diff';
 import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
+import { generateSqlReport } from './generateSqlReport';
+import type { Knex } from 'knex';
+import { logApiReportInstructions } from '../api-extractor';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -27,60 +31,19 @@ interface SqlExtractionOptions {
 }
 
 export async function runSqlExtraction(options: SqlExtractionOptions) {
-  for (const packageDir of options.packageDirs) {
-    const migrationDir = cliPaths.resolveTargetRoot(packageDir, 'migrations');
-    if (!(await fs.pathExists(migrationDir))) {
-      console.log(`No SQL migrations found in ${packageDir}`);
-      continue;
-    }
-
-    console.log(`Extracting SQL migrations from ${packageDir}`);
-
-    const migrationFiles = await fs.readdir(migrationDir, {
-      withFileTypes: true,
-    });
-
-    const migrationTargets = migrationFiles
-      .filter(entry => entry.isDirectory())
-      .map(entry => entry.name);
-    if (migrationFiles.some(entry => entry.isFile())) {
-      migrationTargets.push('.');
-    }
-
-    for (const migrationTarget of migrationTargets) {
-      await runSingleSqlExtraction(packageDir, migrationTarget, options);
-    }
-  }
-}
-
-async function runSingleSqlExtraction(
-  targetDir: string,
-  migrationPath: string,
-  options: SqlExtractionOptions,
-) {
-  const migrationDir = cliPaths.resolveTargetRoot(
-    targetDir,
-    'migrations',
-    migrationPath,
-  );
-
-  console.log(`Extracting SQL from ${migrationDir}`);
-
   const { default: Knex } = await import('knex');
   const { default: EmbeddedPostgres } = await import('embedded-postgres');
 
-  console.log(`DEBUG: knex=`, Knex);
-  console.log(`DEBUG: EmbeddedPostgres=`, EmbeddedPostgres);
+  const port = await getPortPromise();
 
-  const port = await getPortPromise({
-    /*  startPort: 5433, stopPort: 6543  */
-  });
-  console.log(`DEBUG: port=`, port);
-
-  const pg = new EmbeddedPostgres({
-    databaseDir: './data/db',
+  const basePgOpts = {
+    host: 'localhost',
     user: 'postgres',
     password: 'password',
+  };
+  const pg = new EmbeddedPostgres({
+    databaseDir: './data/db',
+    ...basePgOpts,
     port,
     persistent: false,
     onError(_messageOrError) {
@@ -97,18 +60,75 @@ async function runSingleSqlExtraction(
   // Start the server
   await pg.start();
 
-  await pg.createDatabase('extractor');
+  let dbIndex = 1;
 
-  const knex = Knex({
-    client: 'pg',
-    connection: {
-      host: 'localhost',
-      port,
-      user: 'postgres',
-      password: 'password',
-      database: 'extractor',
-    },
-  });
+  try {
+    for (const packageDir of options.packageDirs) {
+      const migrationDir = cliPaths.resolveTargetRoot(packageDir, 'migrations');
+      if (!(await fs.pathExists(migrationDir))) {
+        console.log(`No SQL migrations found in ${packageDir}`);
+        continue;
+      }
+
+      const { name: pkgName } = await readJson(
+        cliPaths.resolveTargetRoot(packageDir, 'package.json'),
+      );
+
+      const migrationFiles = await fs.readdir(migrationDir, {
+        withFileTypes: true,
+      });
+
+      const migrationTargets = migrationFiles
+        .filter(entry => entry.isDirectory())
+        .map(entry => entry.name);
+      if (migrationFiles.some(entry => entry.isFile())) {
+        migrationTargets.push('.');
+      }
+
+      for (const migrationTarget of migrationTargets) {
+        const database = `extractor-${dbIndex++}`;
+        await pg.createDatabase(database);
+
+        const knex = Knex({
+          client: 'pg',
+          connection: {
+            ...basePgOpts,
+            port,
+            database,
+          },
+        });
+        await runSingleSqlExtraction(
+          packageDir,
+          migrationTarget,
+          pkgName,
+          knex,
+          options,
+        );
+      }
+    }
+  } finally {
+    // Stop the server
+    await pg.stop();
+  }
+}
+
+async function runSingleSqlExtraction(
+  targetDir: string,
+  migrationTarget: string,
+  pkgName: string,
+  knex: Knex,
+  options: SqlExtractionOptions,
+) {
+  const migrationDir = cliPaths.resolveTargetRoot(
+    targetDir,
+    'migrations',
+    migrationTarget,
+  );
+
+  const reportName =
+    migrationTarget === '.' ? pkgName : `${pkgName}/${migrationTarget}`;
+
+  console.log(`Generating SQL report for ${reportName}`);
 
   const migrationsListResult = await knex.migrate.list({
     directory: migrationDir,
@@ -120,7 +140,6 @@ async function runSingleSqlExtraction(
   const schemaInfoBeforeMigration = new Map<string, SchemaInfo>();
 
   for (const migration of migrations) {
-    console.log(`DEBUG: UP ${migration}`);
     const schemaInfo = await getPgSchemaInfo(knex);
     schemaInfoBeforeMigration.set(migration, schemaInfo);
 
@@ -131,10 +150,9 @@ async function runSingleSqlExtraction(
   }
 
   const schemaInfo = await getPgSchemaInfo(knex);
-  console.log(`DEBUG: schemaInfo=`, JSON.stringify(schemaInfo, null, 2));
 
+  let failedDownMigration: string | undefined = undefined;
   for (const migration of migrations.toReversed()) {
-    console.log(`DEBUG: DOWN ${migration}`);
     await knex.migrate.down({
       directory: migrationDir,
       name: migration,
@@ -146,14 +164,57 @@ async function runSingleSqlExtraction(
     }
 
     const diff = justDiff(before, after);
-    console.log(`DEBUG: diff=`, diff);
     if (diff.length !== 0) {
-      console.log(`Migration ${migration} is not reversible`);
-      await pg.stop();
-      return;
+      console.log(
+        `Migration ${migration} is not reversible: ${JSON.stringify(
+          diff,
+          null,
+          2,
+        )}`,
+      );
+      failedDownMigration = migration;
+      break;
     }
   }
 
-  // Stop the server
-  await pg.stop();
+  const report = generateSqlReport({
+    reportName,
+    failedDownMigration,
+    schemaInfo,
+  });
+
+  const reportPath = cliPaths.resolveTargetRoot(
+    targetDir,
+    `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
+  );
+  const existingReport = await fs.readFile(reportPath, 'utf8').catch(error => {
+    if (error.code === 'ENOENT') {
+      return undefined;
+    }
+    throw error;
+  });
+  if (existingReport !== report) {
+    if (options.isLocalBuild) {
+      console.warn(`SQL report changed for ${targetDir}`);
+      await fs.writeFile(reportPath, report);
+    } else {
+      logApiReportInstructions();
+
+      if (existingReport) {
+        console.log('');
+        console.log(
+          `The conflicting file is ${relativePath(
+            cliPaths.targetRoot,
+            reportPath,
+          )}, expecting the following content:`,
+        );
+        console.log('');
+
+        console.log(report);
+
+        logApiReportInstructions();
+      }
+      throw new Error(`Report ${reportPath} is out of date`);
+    }
+  }
 }

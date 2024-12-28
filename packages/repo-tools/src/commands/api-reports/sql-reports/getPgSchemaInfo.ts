@@ -61,12 +61,7 @@ export async function getPgSchemaInfo(knex: Knex): Promise<SchemaInfo> {
           name,
           {
             name,
-            columns: Object.entries(columns).map(
-              ([columnName, columnInfo]) => ({
-                ...columnInfo,
-                name: columnName,
-              }),
-            ),
+            columns,
             indices: Object.fromEntries(
               indices.map(index => [index.name, index]),
             ),
