@@ -184,11 +184,13 @@ async function runSingleSqlExtraction(
     }
   }
 
-  const report = generateSqlReport({
-    reportName,
-    failedDownMigration,
-    schemaInfo,
-  });
+  const report = prettyReport(
+    generateSqlReport({
+      reportName,
+      failedDownMigration,
+      schemaInfo,
+    }),
+  );
 
   const reportPath = cliPaths.resolveTargetRoot(
     targetDir,
@@ -223,5 +225,19 @@ async function runSingleSqlExtraction(
       }
       throw new Error(`Report ${reportPath} is out of date`);
     }
+  }
+}
+
+function prettyReport(content: string): string {
+  try {
+    const prettier = require('prettier') as typeof import('prettier');
+
+    const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
+    return prettier.format(content, {
+      ...config,
+      parser: 'markdown',
+    });
+  } catch (e) {
+    return content;
   }
 }
