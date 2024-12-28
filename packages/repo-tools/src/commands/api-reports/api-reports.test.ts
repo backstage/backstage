@@ -38,6 +38,7 @@ jest.mock('./api-extractor', () => ({
     return {
       tsPackageDirs: p,
       cliPackageDirs: p,
+      sqlPackageDirs: [],
     };
   }),
   runApiExtraction: jest.fn(),
