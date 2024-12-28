@@ -20,6 +20,13 @@ function sortedEntries<T>(obj: Record<string, T>): [string, T][] {
   return Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
 }
 
+function code(str: unknown): string {
+  if (str === '-') {
+    return str;
+  }
+  return `\`${str}\``;
+}
+
 export function generateSqlReport(options: {
   reportName: string;
   failedDownMigration?: string;
@@ -46,23 +53,23 @@ export function generateSqlReport(options: {
     for (const [sequenceName, sequenceInfo] of sortedEntries(
       schemaInfo.sequences,
     )) {
-      output.push(`- \`${sequenceName}\` (${sequenceInfo.type})`);
+      output.push(`- ${code(sequenceName)} (${sequenceInfo.type})`);
     }
     output.push('');
   }
 
   for (const [tableName, tableInfo] of sortedEntries(schemaInfo.tables)) {
-    output.push(`## Table \`${tableName}\``);
+    output.push(`## Table ${code(tableName)}`);
     output.push('');
     output.push('  | Column | Type | Nullable | Max Length | Default |');
     output.push('  |--------|------|----------|------------|---------|');
     for (const [columnName, columnInfo] of sortedEntries(tableInfo.columns)) {
       output.push(
-        `  | \`${columnName}\` | ${columnInfo.type} | ${
+        `  | ${code(columnName)} | ${code(columnInfo.type)} | ${
           columnInfo.nullable
-        } | ${columnInfo.maxLength ?? '-'} | ${
-          columnInfo.defaultValue ?? '-'
-        } |`,
+        } | ${columnInfo.maxLength ?? '-'} | ${code(
+          columnInfo.defaultValue ?? '-',
+        )} |`,
       );
     }
     output.push('');
@@ -78,7 +85,7 @@ export function generateSqlReport(options: {
           .filter(Boolean)
           .join(' ');
         output.push(
-          `- \`${indexName}\` (\`${indexInfo.columns.join('`, `')}\`)${
+          `- ${code(indexName)} (${indexInfo.columns.map(code).join(', ')})${
             indexType ? ` ${indexType}` : ''
           }`,
         );
