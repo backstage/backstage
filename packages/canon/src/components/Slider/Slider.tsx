@@ -21,23 +21,22 @@ import { SliderProps } from './types';
 /** @public */
 export const Slider = forwardRef<HTMLDivElement, SliderProps>((props, ref) => {
   const {
-    labelPlacement = 'end',
-    defaultValue = 25,
-    orientation = 'horizontal',
-    size = 'medium',
-    label,
-    name,
     min = 0,
     max = 100,
     step = 1,
-    format,
+    largeStep = 10,
+    size = 'medium',
+    disabled = false,
+    defaultValue = 25,
+    labelPlacement = 'end',
+    orientation = 'horizontal',
+    valueLabelDisplay = 'auto',
+    label,
+    name,
     value,
     className,
-    disabled = false,
-    largeStep = 10,
     onValueChange,
     onValueCommitted,
-    valueLabelDisplay = 'auto',
     minStepsBetweenValues,
   } = props;
 
@@ -57,7 +56,6 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>((props, ref) => {
       min={min}
       max={max}
       step={step}
-      format={format}
       value={value}
       disabled={disabled}
       orientation={orientation}

@@ -29,7 +29,7 @@ const meta = {
     labelPlacement: {
       control: {
         type: 'select',
-        options: ['left', 'right', 'bottom'],
+        options: ['start', 'end', 'bottom'],
       },
     },
     size: {
@@ -42,6 +42,12 @@ const meta = {
       control: {
         type: 'select',
         options: ['horizontal', 'vertical'],
+      },
+    },
+    valueLabelDisplay: {
+      control: {
+        type: 'select',
+        options: ['on', 'off', 'auto'],
       },
     },
   },
