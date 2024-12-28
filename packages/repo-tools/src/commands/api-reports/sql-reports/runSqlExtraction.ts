@@ -53,12 +53,8 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
     ...basePgOpts,
     port,
     persistent: false,
-    onError(_messageOrError) {
-      // console.error('EmbeddedPostgres error:', messageOrError);
-    },
-    onLog(_message) {
-      // console.log('EmbeddedPostgres log:', message);
-    },
+    onError(_messageOrError) {},
+    onLog(_message) {},
   });
 
   // Create the cluster config files
