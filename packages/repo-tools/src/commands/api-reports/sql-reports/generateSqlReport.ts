@@ -16,6 +16,10 @@
 
 import { SchemaInfo } from './types';
 
+function sortedEntries<T>(obj: Record<string, T>): [string, T][] {
+  return Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
+}
+
 export function generateSqlReport(options: {
   reportName: string;
   failedDownMigration?: string;
@@ -39,7 +43,7 @@ export function generateSqlReport(options: {
   if (Object.keys(schemaInfo.sequences).length > 0) {
     output.push('## Sequences');
     output.push('');
-    for (const [sequenceName, sequenceInfo] of Object.entries(
+    for (const [sequenceName, sequenceInfo] of sortedEntries(
       schemaInfo.sequences,
     )) {
       output.push(`- \`${sequenceName}\` (${sequenceInfo.type})`);
@@ -47,12 +51,12 @@ export function generateSqlReport(options: {
     output.push('');
   }
 
-  for (const [tableName, tableInfo] of Object.entries(schemaInfo.tables)) {
+  for (const [tableName, tableInfo] of sortedEntries(schemaInfo.tables)) {
     output.push(`## Table \`${tableName}\``);
     output.push('');
     output.push('  | Column | Type | Nullable | Max Length | Default |');
     output.push('  |--------|------|----------|------------|---------|');
-    for (const [columnName, columnInfo] of Object.entries(tableInfo.columns)) {
+    for (const [columnName, columnInfo] of sortedEntries(tableInfo.columns)) {
       output.push(
         `  | \`${columnName}\` | ${columnInfo.type} | ${
           columnInfo.nullable
@@ -66,7 +70,7 @@ export function generateSqlReport(options: {
     if (Object.keys(tableInfo.indices).length > 0) {
       output.push('### Indices');
       output.push('');
-      for (const [indexName, indexInfo] of Object.entries(tableInfo.indices)) {
+      for (const [indexName, indexInfo] of sortedEntries(tableInfo.indices)) {
         const indexType = [
           indexInfo.unique && 'unique',
           indexInfo.primary && 'primary',
