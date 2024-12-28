@@ -104,7 +104,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
     });
   }
 
-  if (sqlPackageDirs.length > 0) {
+  if (sqlPackageDirs.length > 0 && opts.sqlReports) {
     console.log('# Generating package SQL reports');
     await runSqlExtraction({
       packageDirs: sqlPackageDirs,
