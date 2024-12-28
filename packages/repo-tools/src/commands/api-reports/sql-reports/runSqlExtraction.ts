@@ -32,7 +32,14 @@ interface SqlExtractionOptions {
 
 export async function runSqlExtraction(options: SqlExtractionOptions) {
   const { default: Knex } = await import('knex');
-  const { default: EmbeddedPostgres } = await import('embedded-postgres');
+  const { default: EmbeddedPostgres } = await import('embedded-postgres').catch(
+    error => {
+      throw new Error(
+        `Failed to load peer dependency 'embedded-postgres' for generating SQL reports. ` +
+          `It must be installed as an explicit dependency in your project. Caused by; ${error}`,
+      );
+    },
+  );
 
   const port = await getPortPromise();
 
