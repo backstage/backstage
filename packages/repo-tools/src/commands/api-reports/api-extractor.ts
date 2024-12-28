@@ -284,7 +284,7 @@ export async function getTsDocConfig() {
   return tsdocConfigFile;
 }
 
-function logApiReportInstructions() {
+export function logApiReportInstructions() {
   console.log('');
   console.log(
     '*************************************************************************************',
