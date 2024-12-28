@@ -25,6 +25,16 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
+  argTypes: {
+    size: {
+      control: 'select',
+      options: ['xsmall', 'small', 'medium', 'large'],
+    },
+    labelPlacement: {
+      control: 'select',
+      options: ['top', 'bottom', 'start', 'end'],
+    },
+  },
 } satisfies Meta<typeof Switch>;
 
 export default meta;
@@ -54,8 +64,8 @@ export const LabelPlacement: Story = {
     <Inline gap="xl" alignY="center">
       <Switch labelPlacement="top" label="Label Placement" />
       <Switch labelPlacement="bottom" label="Label Placement" />
-      <Switch labelPlacement="left" label="Label Placement" />
-      <Switch labelPlacement="right" label="Label Placement" />
+      <Switch labelPlacement="start" label="Label Placement" />
+      <Switch labelPlacement="end" label="Label Placement" />
     </Inline>
   ),
 };

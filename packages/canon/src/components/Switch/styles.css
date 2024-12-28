@@ -33,11 +33,11 @@
   user-select: none;
 }
 
-.cn-switch-label-left {
+.cn-switch-label-start {
   flex-direction: row-reverse;
 }
 
-.cn-switch-label-right {
+.cn-switch-label-end {
   flex-direction: row;
 }
 

@@ -338,40 +338,27 @@ export const Switch: React_2.ForwardRefExoticComponent<
   SwitchProps & React_2.RefAttributes<HTMLButtonElement>
 >;
 
-// @public (undocumented)
+// @public
 export interface SwitchProps {
-  // (undocumented)
   checked?: boolean;
-  // (undocumented)
   className?: string;
-  // (undocumented)
   defaultChecked?: boolean;
-  // (undocumented)
   disabled?: boolean;
-  // (undocumented)
   iconEnd?: IconNames;
-  // (undocumented)
   iconStart?: IconNames;
-  // (undocumented)
   label?: string;
-  // (undocumented)
-  labelPlacement?: 'top' | 'bottom' | 'left' | 'right';
-  // (undocumented)
+  labelPlacement?: 'top' | 'bottom' | 'start' | 'end';
   name?: string;
-  // (undocumented)
-  onChange?: (checked: boolean) => void;
-  // (undocumented)
+  onCheckedChange?: (checked: boolean, event: Event) => void;
+  readOnly?: boolean;
   required?: boolean;
-  // (undocumented)
   size?:
     | 'extra-small'
     | 'small'
     | 'medium'
     | 'large'
-    | Partial<Record<Breakpoint, 'extra-small' | 'small' | 'medium' | 'large'>>;
-  // (undocumented)
+    | Partial<Record<Breakpoint, 'xsmall' | 'small' | 'medium' | 'large'>>;
   style?: React.CSSProperties;
-  // (undocumented)
   value?: string;
 }
 

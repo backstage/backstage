@@ -26,18 +26,20 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
   (props, ref) => {
     const {
       size = 'medium',
-      label,
+      disabled = false,
+      required = false,
+      readOnly = false,
+      defaultChecked = false,
       labelPlacement = 'right',
-      checked,
-      onChange,
-      disabled,
-      required,
-      className,
       name,
       value,
+      label,
       style,
+      checked,
       iconEnd,
+      className,
       iconStart,
+      onCheckedChange,
     } = props;
 
     const { getResponsiveValue } = useCanon();
@@ -47,17 +49,20 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
 
     const switchElement = (
       <SwitchPrimitive.Root
+        {...props}
         ref={ref}
-        className={['cn-switch', `cn-switch-${responsiveSize}`, className].join(
-          ' ',
-        )}
-        checked={checked}
-        onCheckedChange={onChange}
-        disabled={disabled}
-        required={required}
         name={name}
         value={value}
         style={style}
+        checked={checked}
+        disabled={disabled}
+        required={required}
+        readOnly={readOnly}
+        defaultChecked={defaultChecked}
+        onCheckedChange={onCheckedChange}
+        className={['cn-switch', `cn-switch-${responsiveSize}`, className].join(
+          ' ',
+        )}
       >
         <SwitchPrimitive.Thumb
           className="cn-switch-thumb"
