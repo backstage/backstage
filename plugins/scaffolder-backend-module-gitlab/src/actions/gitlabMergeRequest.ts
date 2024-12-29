@@ -424,7 +424,6 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           },
         );
 
-        // This works right away for users/groups set in the rules.
         if (approvalRules.length !== 0) {
           const eligibleApprovers = approvalRules
             .filter(rule => rule.eligible_approvers !== undefined)

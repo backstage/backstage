@@ -42,6 +42,58 @@ const mockGitlabClient = {
         default_branch: 'main',
       };
     }),
+    show: jest.fn(async (_: any) => {
+      return {
+        default_branch: 'main',
+      };
+    }),
+    edit: jest.fn(async (_: any) => {
+      return {
+        default_branch: 'main',
+      };
+    }),
+  },
+  MergeRequestApprovals: {
+    allApprovalRules: jest.fn(async (_: any) => {
+      return [
+        {
+          id: 123,
+          name: 'rule1',
+          rule_type: 'regular',
+          eligible_approvers: [
+            {
+              id: 123,
+              username: 'John Smith',
+            },
+            {
+              id: 456,
+              username: 'Jane Doe',
+            },
+          ],
+          approvals_required: 1,
+          users: [],
+          contains_hidden_groups: false,
+          report_type: null,
+          section: null,
+          source_rule: { approvals_required: 1 },
+          overridden: false,
+        },
+        {
+          id: 456,
+          name: 'All Members',
+          rule_type: 'any_approver',
+          eligible_approvers: [],
+          approvals_required: 1,
+          users: [],
+          groups: [],
+          contains_hidden_groups: false,
+          report_type: null,
+          section: null,
+          source_rule: { approvals_required: 1 },
+          overridden: false,
+        },
+      ];
+    }),
   },
   Projects: {
     create: jest.fn(),
