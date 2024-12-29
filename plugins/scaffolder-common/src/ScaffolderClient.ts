@@ -105,8 +105,8 @@ export class ScaffolderClient implements ScaffolderApi {
               request.filterByOwnership === 'owned'
                 ? [userEntityRef]
                 : undefined,
-            limit: request.limit ? [request.limit] : undefined,
-            offset: request.offset ? [request.offset] : undefined,
+            limit: request.limit,
+            offset: request.offset,
           },
         },
         options,
