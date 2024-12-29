@@ -80,11 +80,8 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            minimum: 0,
-          },
+          type: 'integer',
+          minimum: 0,
         },
       },
       namespace: {
@@ -112,11 +109,8 @@ export const spec = {
         required: false,
         allowReserved: true,
         schema: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            minimum: 0,
-          },
+          type: 'integer',
+          minimum: 0,
         },
       },
       order: {
@@ -545,7 +539,6 @@ export const spec = {
           },
           content: {
             type: 'string',
-            format: 'byte',
           },
           executable: {
             type: 'boolean',
@@ -758,10 +751,10 @@ export const spec = {
               type: 'object',
               properties: {
                 title: {
-                  $ref: '#/components/schemas/JsonValue',
+                  type: 'string',
                 },
                 description: {
-                  $ref: '#/components/schemas/JsonValue',
+                  type: 'string',
                 },
                 schema: {
                   type: 'object',
@@ -805,7 +798,20 @@ export const spec = {
             type: 'string',
           },
           argument: {
-            type: 'object',
+            oneOf: [
+              {
+                type: 'boolean',
+              },
+              {
+                type: 'number',
+              },
+              {
+                type: 'object',
+              },
+              {
+                type: 'string',
+              },
+            ],
           },
           stack: {
             type: 'string',
@@ -1348,6 +1354,24 @@ export const spec = {
                     },
                   },
                   required: ['results'],
+                },
+              },
+            },
+          },
+          '400': {
+            description: 'Unsupported provider.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                    },
+                    name: {
+                      type: 'string',
+                    },
+                  },
                 },
               },
             },

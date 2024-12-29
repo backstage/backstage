@@ -16,6 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
@@ -65,6 +66,24 @@ import {
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import { createRouter } from './router';
 import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
+import { Server } from 'http';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
+
+const mockAccess = jest.fn();
+
+jest.mock('fs-extra', () => ({
+  ...jest.requireActual('fs-extra'),
+  access: (...args: any[]) => mockAccess(...args),
+  promises: {
+    access: (...args: any[]) => mockAccess(...args),
+  },
+  constants: {
+    F_OK: 0,
+    W_OK: 1,
+  },
+  mkdir: jest.fn(),
+  remove: jest.fn(),
+}));
 
 function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
@@ -245,7 +264,8 @@ const createTestRouter = async (
   });
 
   router.use(mockErrorHandler());
-  return { router, logger, taskBroker, permissions, catalog };
+  const app = await wrapServer(express().use(router));
+  return { router: app, logger, taskBroker, permissions, catalog };
 };
 
 describe('scaffolder router', () => {

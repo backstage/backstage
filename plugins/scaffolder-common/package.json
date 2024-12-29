@@ -61,7 +61,6 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
@@ -73,7 +72,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "cross-fetch": "^4.0.0",
+    "msw": "^1.0.0",
     "uri-template": "^2.0.0"
   }
 }
