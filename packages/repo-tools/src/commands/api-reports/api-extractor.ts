@@ -58,7 +58,6 @@ import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclara
 import { paths as cliPaths } from '../../lib/paths';
 import { minimatch } from 'minimatch';
 import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
-import { createBinRunner } from '../util';
 
 const tmpDir = cliPaths.resolveTargetRoot(
   './node_modules/.cache/api-extractor',
@@ -1259,67 +1258,4 @@ export async function categorizePackageDirs(packageDirs: string[]) {
   );
 
   return { tsPackageDirs, cliPackageDirs, sqlPackageDirs };
-}
-
-interface KnipExtractionOptions {
-  packageDirs: string[];
-  isLocalBuild: boolean;
-}
-
-export async function runKnipReports({
-  packageDirs,
-  isLocalBuild,
-}: KnipExtractionOptions) {
-  const knipDir = cliPaths.resolveTargetRoot('./node_modules/knip/bin/');
-
-  for (const packageDir of packageDirs) {
-    console.log(`## Processing ${packageDir}`);
-    const fullDir = cliPaths.resolveTargetRoot(packageDir);
-    const reportPath = resolvePath(fullDir, 'knip-report.md');
-    const run = createBinRunner(fullDir, '');
-
-    const report = await run(
-      `${knipDir}/knip.js`,
-      `--directory ${fullDir}`, // Run in the package directory
-      '--no-exit-code', // Removing this will end the process in case there are findings by knip
-      '--no-progress', // Remove unnecessary debugging from output
-      // TODO: Add more checks when dependencies start to look ok, see https://knip.dev/reference/cli#--include
-      '--include dependencies,unlisted',
-      '--reporter markdown',
-    );
-
-    const existingReport = await fs
-      .readFile(reportPath, 'utf8')
-      .catch(error => {
-        if (error.code === 'ENOENT') {
-          return undefined;
-        }
-        throw error;
-      });
-
-    if (existingReport !== report) {
-      if (isLocalBuild) {
-        console.warn(`Knip report changed for ${packageDir}`);
-        await fs.writeFile(reportPath, report);
-      } else {
-        logApiReportInstructions();
-
-        if (existingReport) {
-          console.log('');
-          console.log(
-            `The conflicting file is ${relativePath(
-              cliPaths.targetRoot,
-              reportPath,
-            )}, expecting the following content:`,
-          );
-          console.log('');
-
-          console.log(report);
-
-          logApiReportInstructions();
-        }
-        throw new Error(`Knip report changed for ${packageDir}, `);
-      }
-    }
-  }
 }
