@@ -398,6 +398,7 @@ export async function runApiExtraction({
         filename =>
           // https://regex101.com/r/QDZIV0/2
           filename !== 'knip-report.md' &&
+          !filename.endsWith('.sql.md') &&
           // this has to temporarily match all old api report formats
           filename.match(/^.*?(api-)?report(-[^.-]+)?(.*?)\.md$/),
       ),
