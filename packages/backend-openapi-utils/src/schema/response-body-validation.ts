@@ -69,15 +69,18 @@ export class ResponseBodyParser
       const jsonContentType = Object.keys(contentTypes).find(contentType =>
         contentType.split(';').includes('application/json'),
       );
-      if (!jsonContentType) {
-        throw new OperationError(
-          this.operation,
-          `No application/json content type found in response for status code ${statusCode}`,
-        );
-      } else if ('$ref' in contentTypes[jsonContentType].schema) {
+      const eventStreamContentType = Object.keys(contentTypes).find(
+        contentType => contentType.split(';').includes('text/event-stream'),
+      );
+      if (jsonContentType && '$ref' in contentTypes[jsonContentType].schema) {
         throw new OperationError(
           this.operation,
           'Reference objects are not supported',
+        );
+      } else if (!jsonContentType && !eventStreamContentType) {
+        throw new OperationError(
+          this.operation,
+          `No valid content type found in response for status code ${statusCode}`,
         );
       }
     }
@@ -113,14 +116,20 @@ export class ResponseBodyParser
     const jsonContentType = Object.keys(contentTypes ?? {}).find(contentType =>
       contentType.split(';').includes('application/json'),
     );
-    if (!jsonContentType) {
+    const eventStreamContentType = Object.keys(contentTypes ?? {}).find(
+      contentType => contentType.split(';').includes('text/event-stream'),
+    );
+    if (!jsonContentType && !eventStreamContentType) {
       throw new OperationResponseError(
         this.operation,
         response,
-        'No application/json content type found in response',
+        'No valid content type found in response',
       );
     }
-    const schema = responseSchema.content![jsonContentType].schema;
+    const schema =
+      (jsonContentType && responseSchema.content![jsonContentType].schema) ||
+      (eventStreamContentType &&
+        responseSchema.content![eventStreamContentType].schema);
     // This is a bit of type laziness. Ideally, this would be a type-narrowing function, but I wasn't able to get the types to work.
     if (!schema) {
       throw new OperationError(this.operation, 'No schema found in response');
@@ -145,6 +154,28 @@ export class ResponseBodyParser
     }
 
     const validate = this.ajv.compile(schema);
+
+    if (eventStreamContentType) {
+      const eventStreamBody = await response.text();
+
+      const jsonMatches = [...eventStreamBody.matchAll(/data:\s*(\{.*?\})/g)];
+      const jsonObjects = jsonMatches.map(match => {
+        return match[1] as any as JsonObject;
+      });
+
+      const invalid = jsonObjects.some(jsonObject => !validate(jsonObject));
+      if (invalid) {
+        throw new OperationParsingResponseError(
+          this.operation,
+          response,
+          'Response body',
+          validate.errors!,
+        );
+      }
+
+      return undefined;
+    }
+
     const jsonBody = (await response.json()) as JsonObject;
     const valid = validate(jsonBody);
     if (!valid) {
