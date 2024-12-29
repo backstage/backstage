@@ -113,7 +113,7 @@ backend.add(
       });
 
       router.use(createAuthIntegrationRouter({ auth }));
-      router.use(createLifecycleMiddleware({ lifecycle }));
+      router.use(createLifecycleMiddleware({ config, lifecycle }));
       router.use(credentialsBarrier.middleware);
       router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 

@@ -1,5 +1,23 @@
 # @backstage/plugin-home
 
+## 0.8.4-next.0
+
+### Patch Changes
+
+- 7932f1e: Exported `QuickStartCard` component.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/core-app-api@1.15.3
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-home-react@0.1.21
+
 ## 0.8.3
 
 ### Patch Changes

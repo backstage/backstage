@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -446,6 +445,5 @@ export async function createRouter(
     });
   }
 
-  router.use(errorHandler());
   return router;
 }

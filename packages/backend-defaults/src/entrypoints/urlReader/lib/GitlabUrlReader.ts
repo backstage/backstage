@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
+import fetch, { Response } from 'node-fetch';
+
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
@@ -34,8 +37,10 @@ import {
 import parseGitUrl from 'git-url-parse';
 import { trimEnd, trimStart } from 'lodash';
 import { Minimatch } from 'minimatch';
+import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
+import { parseLastModified } from './util';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
@@ -98,7 +103,12 @@ export class GitlabUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromResponse(response);
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
+        etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
+      });
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -220,7 +230,7 @@ export class GitlabUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      response: archiveGitLabResponse,
+      stream: Readable.from(archiveGitLabResponse.body),
       subpath: filepath,
       etag: commitSha,
       filter: options?.filter,

@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './deprecated';
 export { signalsPlugin as default } from './plugin';

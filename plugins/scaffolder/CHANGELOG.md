@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder
 
+## 1.27.4-next.0
+
+### Patch Changes
+
+- 3f09ef4: Fix issue with `secrets` not being forwarded properly to the backend when creating a task
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.14.3-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/errors@1.2.6
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/integration@1.16.0
+  - @backstage/integration-react@1.2.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-permission-react@0.4.29
+  - @backstage/plugin-scaffolder-common@1.5.8
+
 ## 1.27.2
 
 ### Patch Changes

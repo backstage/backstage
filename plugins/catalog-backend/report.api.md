@@ -56,7 +56,6 @@ import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from '@backstage/plugin-catalog-node';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -283,7 +282,7 @@ export function createRandomProcessingInterval(options: {
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
   constructor(options: {
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: GetEntitiesRequest['filter'];
@@ -297,7 +296,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   protected readonly catalogClient: CatalogApi;
   // (undocumented)
-  protected discovery: PluginEndpointDiscovery;
+  protected discovery: DiscoveryService;
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
@@ -306,7 +305,7 @@ export class DefaultCatalogCollator {
   static fromConfig(
     _config: Config,
     options: {
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       tokenManager: TokenManager;
       filter?: GetEntitiesRequest['filter'];
     },

@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
+
 import { JsonValue } from '@backstage/types';
-import { processingResult } from '@backstage/plugin-catalog-node';
+import {
+  PlaceholderResolverParams,
+  processingResult,
+} from '@backstage/plugin-catalog-node';
 import { bundleFileWithRefs } from './lib';
 
 /** @public */

@@ -20,7 +20,6 @@ import {
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
-import { createRootLogger } from '@backstage/backend-common';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 
 const mockDir = createMockDirectory();
@@ -28,9 +27,6 @@ overridePackagePathResolution({
   packageName: 'app',
   path: mockDir.path,
 });
-
-// Make sure root logger is initialized ahead of FS mock
-createRootLogger();
 
 describe('appPlugin', () => {
   afterEach(() => {
