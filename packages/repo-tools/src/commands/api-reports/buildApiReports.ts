@@ -15,16 +15,16 @@
  */
 
 import { OptionValues } from 'commander';
-import {
-  buildDocs,
-  categorizePackageDirs,
-  createTemporaryTsConfig,
-  runApiExtraction,
-  runCliExtraction,
-} from './api-extractor';
+import { categorizePackageDirs } from './categorizePackageDirs';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
-import { generateTypeDeclarations } from './generateTypeDeclarations';
 import { runSqlExtraction } from './sql-reports';
+import { runCliExtraction } from './cli-reports';
+import {
+  runApiExtraction,
+  buildDocs,
+  createTemporaryTsConfig,
+  generateTypeDeclarations,
+} from './api-reports/index';
 
 type Options = {
   ci?: boolean;
@@ -36,7 +36,7 @@ type Options = {
   validateReleaseTags?: boolean;
 } & OptionValues;
 
-export const buildApiReports = async (paths: string[] = [], opts: Options) => {
+export async function buildApiReports(paths: string[] = [], opts: Options) {
   const tmpDir = cliPaths.resolveTargetRoot(
     './node_modules/.cache/api-extractor',
   );
@@ -119,7 +119,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
       outputDir: cliPaths.resolveTargetRoot('docs/reference'),
     });
   }
-};
+}
 
 /**
  * Splits the input string on comma, and returns an array of the resulting substrings.

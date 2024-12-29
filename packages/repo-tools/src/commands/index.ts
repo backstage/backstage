@@ -194,7 +194,7 @@ export function registerCommands(program: Command) {
       'Turn on release tag validation for the public, beta, and alpha APIs',
     )
     .description('Generate an API report for selected packages')
-    .action(lazy(() => import('./api-reports/api-reports'), 'buildApiReports'));
+    .action(lazy(() => import('./api-reports'), 'buildApiReports'));
 
   program
     .command('type-deps')
