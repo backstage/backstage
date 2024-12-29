@@ -105,7 +105,6 @@ import {
   findTemplate,
   getEntityBaseUrl,
   getWorkingDirectory,
-  parseNumberParam,
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
@@ -515,8 +514,10 @@ export async function createRouter(
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
             steps: parameters.map(schema => ({
-              title: schema.title ?? 'Please enter the following information',
-              description: schema.description,
+              title:
+                (schema.title as string) ??
+                'Please enter the following information',
+              description: schema.description as string,
               schema,
             })),
             EXPERIMENTAL_formDecorators:
@@ -709,8 +710,7 @@ export async function createRouter(
           };
         });
 
-        const limit = parseNumberParam(req.query.limit, 'limit');
-        const offset = parseNumberParam(req.query.offset, 'offset');
+        const { limit, offset } = req.query;
 
         const tasks = await taskBroker.list({
           filters: {
@@ -719,8 +719,8 @@ export async function createRouter(
           },
           order,
           pagination: {
-            limit: limit ? limit[0] : undefined,
-            offset: offset ? offset[0] : undefined,
+            limit,
+            offset,
           },
         });
 

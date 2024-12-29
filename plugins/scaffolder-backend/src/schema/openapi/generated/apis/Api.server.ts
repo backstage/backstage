@@ -21,6 +21,7 @@
 // ******************************************************************
 import { Action } from '../models/Action.model';
 import { Autocomplete200Response } from '../models/Autocomplete200Response.model';
+import { Autocomplete400Response } from '../models/Autocomplete400Response.model';
 import { AutocompleteRequest } from '../models/AutocompleteRequest.model';
 import { CancelTask200Response } from '../models/CancelTask200Response.model';
 import { DryRun200Response } from '../models/DryRun200Response.model';
@@ -42,7 +43,7 @@ export type Autocomplete = {
     resource: string;
   };
   body: AutocompleteRequest;
-  response: Autocomplete200Response;
+  response: Autocomplete200Response | Autocomplete400Response;
 };
 /**
  * @public
@@ -92,8 +93,8 @@ export type ListActions = {
 export type ListTasks = {
   query: {
     createdBy?: Array<string>;
-    limit?: Array<number>;
-    offset?: Array<number>;
+    limit?: number;
+    offset?: number;
     order?: Array<string>;
     status?: Array<string>;
   };
