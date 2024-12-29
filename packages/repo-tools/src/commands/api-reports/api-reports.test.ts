@@ -18,16 +18,13 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { normalize } from 'path';
 import * as pathsLib from '../../lib/paths';
 
-import {
-  buildDocs,
-  categorizePackageDirs,
-  runApiExtraction,
-} from './api-extractor';
+import { categorizePackageDirs } from './api-extractor';
 
 import { buildApiReports } from './api-reports';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 import { PackageGraph } from '@backstage/cli-node';
 import { runCliExtraction } from './cli-reports';
+import { runApiExtraction, buildDocs } from './api-reports/index';
 
 jest.mock('./generateTypeDeclarations');
 // create mocks for the dependencies of the `buildApiReports` function

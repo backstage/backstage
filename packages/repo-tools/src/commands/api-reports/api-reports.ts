@@ -15,16 +15,16 @@
  */
 
 import { OptionValues } from 'commander';
-import {
-  buildDocs,
-  categorizePackageDirs,
-  createTemporaryTsConfig,
-  runApiExtraction,
-} from './api-extractor';
+import { categorizePackageDirs } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 import { runSqlExtraction } from './sql-reports';
 import { runCliExtraction } from './cli-reports';
+import {
+  runApiExtraction,
+  buildDocs,
+  createTemporaryTsConfig,
+} from './api-reports/index';
 
 type Options = {
   ci?: boolean;
