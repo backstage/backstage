@@ -31,7 +31,9 @@ export type IconNames =
   | 'chevronUp'
   | 'cloud'
   | 'heart'
+  | 'moon'
   | 'plus'
+  | 'sun'
   | 'trash';
 
 /** @public */

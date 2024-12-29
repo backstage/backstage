@@ -35,6 +35,8 @@ import {
   RiArrowRightCircleLine,
   RiArrowUpCircleLine,
   RiCheckLine,
+  RiMoonLine,
+  RiSunLine,
 } from '@remixicon/react';
 
 // List of default icons
@@ -54,6 +56,8 @@ export const defaultIcons: IconMap = {
   chevronRight: RiArrowRightSLine,
   cloud: RiCloudFill,
   heart: RiHeartFill,
+  moon: RiMoonLine,
   plus: RiAddLine,
+  sun: RiSunLine,
   trash: RiDeleteBin6Line,
 };

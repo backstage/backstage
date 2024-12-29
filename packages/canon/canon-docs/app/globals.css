@@ -1,0 +1,11 @@
+body {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--canon-background);
+  color: var(--canon-text-primary);
+}
+
+iframe {
+  border: none;
+  width: 100%;
+}
