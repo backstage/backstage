@@ -20,11 +20,11 @@ import {
   categorizePackageDirs,
   createTemporaryTsConfig,
   runApiExtraction,
-  runCliExtraction,
 } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 import { runSqlExtraction } from './sql-reports';
+import { runCliExtraction } from './cli-reports';
 
 type Options = {
   ci?: boolean;

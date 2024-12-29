@@ -22,12 +22,12 @@ import {
   buildDocs,
   categorizePackageDirs,
   runApiExtraction,
-  runCliExtraction,
 } from './api-extractor';
 
 import { buildApiReports } from './api-reports';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 import { PackageGraph } from '@backstage/cli-node';
+import { runCliExtraction } from './cli-reports';
 
 jest.mock('./generateTypeDeclarations');
 // create mocks for the dependencies of the `buildApiReports` function
