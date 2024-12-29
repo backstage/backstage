@@ -31,6 +31,7 @@ export const TabsTheme = () => {
   const onValueChange = (value: string) => {
     current.set('theme', value);
     router.push(`/?${current.toString()}`);
+    document.documentElement.setAttribute('data-theme', value);
   };
 
   return (
