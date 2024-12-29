@@ -44,10 +44,8 @@ components:
       required: false
       allowReserved: true
       schema:
-        type: array
-        items:
-          type: integer
-          minimum: 0
+        type: integer
+        minimum: 0
     namespace:
       name: namespace
       in: path
@@ -69,10 +67,8 @@ components:
       required: false
       allowReserved: true
       schema:
-        type: array
-        items:
-          type: integer
-          minimum: 0
+        type: integer
+        minimum: 0
     order:
       name: order
       in: query
@@ -534,7 +530,7 @@ components:
           type: string
         content:
           type: string
-          format: byte
+          # format: byte
         executable:
           type: boolean
         symlink:
@@ -869,9 +865,11 @@ components:
             type: object
             properties:
               title:
-                $ref: '#/components/schemas/JsonValue'
+                type: string
+                # $ref: '#/components/schemas/JsonValue'
               description:
-                $ref: '#/components/schemas/JsonValue'
+                type: string
+                # $ref: '#/components/schemas/JsonValue'
               schema:
                 type: object
                 # additionalProperties: {}
@@ -971,7 +969,11 @@ components:
         name:
           type: string
         argument:
-          type: object
+          oneOf:
+            - type: boolean
+            - type: number
+            - type: object
+            - type: string
         stack:
           type: string
       required:
@@ -1324,6 +1326,17 @@ paths:
                         - id
                 required:
                   - results
+        '400':
+          description: Unsupported provider.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  name:
+                    type: string
       parameters:
         - in: path
           name: provider

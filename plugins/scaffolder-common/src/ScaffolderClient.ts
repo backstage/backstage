@@ -15,11 +15,6 @@
  */
 
 import { parseEntityRef } from '@backstage/catalog-model';
-import {
-  DiscoveryApi,
-  FetchApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Observable } from '@backstage/types';
@@ -50,6 +45,9 @@ import {
   TaskStatus,
   TypedResponse,
 } from '../client/src/schema/openapi';
+import { DiscoveryApi } from '../client/src/schema/openapi/generated/types/discovery';
+import { FetchApi } from '../client/src/schema/openapi/generated/types/fetch';
+import { IdentityApi } from './types/IdentityApi';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -106,8 +104,8 @@ export class ScaffolderClient implements ScaffolderApi {
               request.filterByOwnership === 'owned'
                 ? [userEntityRef]
                 : undefined,
-            limit: request.limit ? [request.limit] : undefined,
-            offset: request.offset ? [request.offset] : undefined,
+            limit: request.limit,
+            offset: request.offset,
           },
         },
         options,
