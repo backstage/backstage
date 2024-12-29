@@ -17,7 +17,7 @@
 import { ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { Program } from 'typescript';
-import { paths as cliPaths } from '../../../lib/paths';
+import { tryRunPrettier } from '../common';
 
 let applied = false;
 
@@ -158,16 +158,6 @@ export function patchApiReportGeneration() {
         ...moreArgs,
       );
 
-      try {
-        const prettier = require('prettier') as typeof import('prettier');
-
-        const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
-        return prettier.format(content, {
-          ...config,
-          parser: 'markdown',
-        });
-      } catch (e) {
-        return content;
-      }
+      return tryRunPrettier(content);
     };
 }

@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-export { runApiExtraction } from './runApiExtraction';
-export { buildDocs } from './buildDocs';
-export { createTemporaryTsConfig } from './createTemporaryTsConfig';
-export { generateTypeDeclarations } from './generateTypeDeclarations';
+import { paths as cliPaths } from '../../../lib/paths';
+import type { Config } from 'prettier';
+
+export function tryRunPrettier(
+  content: string,
+  extraConfig: Config = { parser: 'markdown' },
+): string {
+  try {
+    const prettier = require('prettier') as typeof import('prettier');
+
+    const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
+    return prettier.format(content, {
+      ...config,
+      ...extraConfig,
+    });
+  } catch (e) {
+    return content;
+  }
+}

@@ -24,7 +24,7 @@ import { createBinRunner } from '../../util';
 import { CliHelpPage, CliModel } from './types';
 import { paths as cliPaths } from '../../../lib/paths';
 import { generateCliReport } from './generateCliReport';
-import { logApiReportInstructions } from '../api-extractor';
+import { logApiReportInstructions } from '../common';
 
 function parseHelpPage(helpPageContent: string) {
   const [, usage] = helpPageContent.match(/^\s*Usage: (.*)$/im) ?? [];

@@ -17,23 +17,6 @@
 import fs from 'fs-extra';
 import { paths as cliPaths } from '../../lib/paths';
 
-export function logApiReportInstructions() {
-  console.log('');
-  console.log(
-    '*************************************************************************************',
-  );
-  console.log(
-    '* You have uncommitted changes to the public API or reports of a package.           *',
-  );
-  console.log(
-    '* To solve this, run `yarn build:api-reports` and commit all md file changes.       *',
-  );
-  console.log(
-    '*************************************************************************************',
-  );
-  console.log('');
-}
-
 export async function categorizePackageDirs(packageDirs: string[]) {
   const dirs = packageDirs.slice();
   const tsPackageDirs = new Array<string>();

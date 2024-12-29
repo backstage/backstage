@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-export { runApiExtraction } from './runApiExtraction';
-export { buildDocs } from './buildDocs';
-export { createTemporaryTsConfig } from './createTemporaryTsConfig';
-export { generateTypeDeclarations } from './generateTypeDeclarations';
+export function logApiReportInstructions() {
+  console.log('');
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log(
+    '* You have uncommitted changes to the public API or reports of a package.           *',
+  );
+  console.log(
+    '* To solve this, run `yarn build:api-reports` and commit all md file changes.       *',
+  );
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log('');
+}

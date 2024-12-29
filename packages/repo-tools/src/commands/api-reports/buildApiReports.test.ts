@@ -18,18 +18,29 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { normalize } from 'path';
 import * as pathsLib from '../../lib/paths';
 
-import { categorizePackageDirs } from './api-extractor';
+import { categorizePackageDirs } from './categorizePackageDirs';
 
-import { buildApiReports } from './api-reports';
-import { generateTypeDeclarations } from './generateTypeDeclarations';
+import { buildApiReports } from './buildApiReports';
+import { generateTypeDeclarations } from './api-reports';
 import { PackageGraph } from '@backstage/cli-node';
 import { runCliExtraction } from './cli-reports';
 import { runApiExtraction, buildDocs } from './api-reports/index';
 
-jest.mock('./generateTypeDeclarations');
 // create mocks for the dependencies of the `buildApiReports` function
-jest.mock('./api-extractor', () => ({
+jest.mock('./api-reports', () => ({
+  generateTypeDeclarations: jest.fn(),
   createTemporaryTsConfig: jest.fn(),
+  runApiExtraction: jest.fn(),
+  runCliExtraction: jest.fn(),
+  buildDocs: jest.fn(),
+}));
+jest.mock('./cli-reports', () => ({
+  runCliExtraction: jest.fn(),
+}));
+jest.mock('./sql-reports', () => ({
+  runSqlExtraction: jest.fn(),
+}));
+jest.mock('./categorizePackageDirs', () => ({
   categorizePackageDirs: jest.fn().mockImplementation(async (p: string[]) => {
     console.log('categorizePackageDirs', p);
     return {
@@ -38,9 +49,6 @@ jest.mock('./api-extractor', () => ({
       sqlPackageDirs: [],
     };
   }),
-  runApiExtraction: jest.fn(),
-  runCliExtraction: jest.fn(),
-  buildDocs: jest.fn(),
 }));
 
 const projectPaths = pathsLib.paths;

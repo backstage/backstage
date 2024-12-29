@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export { runApiExtraction } from './runApiExtraction';
-export { buildDocs } from './buildDocs';
-export { createTemporaryTsConfig } from './createTemporaryTsConfig';
-export { generateTypeDeclarations } from './generateTypeDeclarations';
+export { tryRunPrettier } from './tryRunPrettier';
+export { logApiReportInstructions } from './logApiReportInstructions';

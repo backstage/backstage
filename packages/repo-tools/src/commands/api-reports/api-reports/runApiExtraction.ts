@@ -28,7 +28,7 @@ import { minimatch } from 'minimatch';
 import { join, relative as relativePath, resolve as resolvePath } from 'path';
 import { getPackageExportDetails } from '../../../lib/getPackageExportDetails';
 import { paths as cliPaths } from '../../../lib/paths';
-import { logApiReportInstructions } from '../api-extractor';
+import { logApiReportInstructions } from '../common';
 import { patchApiReportGeneration } from './patchApiReportGeneration';
 
 const tmpDir = cliPaths.resolveTargetRoot(
