@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { Sidebar } from '../components/Sidebar';
 import './globals.css';
-import { CanonProvider } from '@backstage/canon';
 
 import '../../packages/canon/src/css/core.css';
 import '../../packages/canon/src/css/components.css';
 import styles from './page.module.css';
+import { Global } from '@/components/Global';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'Canon',
@@ -18,14 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <CanonProvider>
-          <>
+        <Providers>
+          <Global>
             <Sidebar />
             <div className={styles.container}>{children}</div>
-          </>
-        </CanonProvider>
+          </Global>
+        </Providers>
       </body>
     </html>
   );

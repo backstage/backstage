@@ -1,4 +1,5 @@
 import { LayoutComponents } from '@/components/LayoutComponents';
+import { CodeBlock } from '@/components/CodeBlock';
 
 # Layout
 
@@ -19,7 +20,19 @@ that will be consistent with the rest of your Backstage instance. These
 components are opinionated and use TypeScript to ensure that the props you
 provide are the ones coming from the theme.
 
-```tsx title=boom
+<CodeBlock
+  title="Layout components"
+  code={`<Stack direction="column" gap="md">
+    <Box>Hello World</Box>
+    <Inline gap="sm">
+      <Box>Project 1</Box>
+      <Box>Project 2</Box>
+    </Inline>
+  </Stack>
+`}
+/>
+
+```tsx
 <Stack direction="column" gap="md">
   <Box>Hello World</Box>
   <Inline gap="sm">

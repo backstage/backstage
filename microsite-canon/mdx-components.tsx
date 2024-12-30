@@ -4,6 +4,7 @@ import { ReactNode, ReactElement } from 'react';
 import type { BundledLanguage } from 'shiki';
 import { codeToHtml } from 'shiki';
 import React from 'react';
+import { CodeBlock } from '@/components/CodeBlock';
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -47,8 +48,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </p>
     ),
     pre: ({ children }) => {
-      console.log(children);
-      return <CodeBlock lang="ts">{children as ReactNode}</CodeBlock>;
+      const codeContent = React.isValidElement(children)
+        ? (children.props as { children: string }).children
+        : '';
+
+      return <CodeBlock lang="ts" code={codeContent} />;
     },
     img: props => (
       <Image
@@ -59,24 +63,4 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     ...components,
   };
-}
-
-interface CodeBlockProps {
-  children: ReactNode;
-  lang: BundledLanguage;
-}
-
-async function CodeBlock({ children, lang }: CodeBlockProps) {
-  const codeContent = React.isValidElement(children)
-    ? (children.props as { children: string }).children
-    : '';
-  const out = await codeToHtml(codeContent, {
-    lang: lang,
-    themes: {
-      light: 'vitesse-light',
-      dark: 'vitesse-dark',
-    },
-  });
-
-  return <div dangerouslySetInnerHTML={{ __html: out }} />;
 }

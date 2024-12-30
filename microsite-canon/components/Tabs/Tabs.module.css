@@ -3,6 +3,7 @@
   flex: 1;
   width: 100%;
   background-color: var(--canon-surface-2);
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .list {
@@ -69,4 +70,5 @@
   transition-property: translate, width;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
+  transition: background-color 0.2s ease-in-out;
 }

@@ -5,6 +5,8 @@ import { Tabs } from '@base-ui-components/react/tabs';
 import { Icon } from '@backstage/canon';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 export const TabsVersion = () => {
   return (
@@ -23,21 +25,22 @@ export const TabsVersion = () => {
 };
 
 export const TabsTheme = () => {
-  const searchParams = useSearchParams();
-  const theme = searchParams.get('theme') === 'dark' ? 'dark' : 'light';
-  const current = new URLSearchParams(Array.from(searchParams.entries()));
-  const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const onValueChange = (value: string) => {
-    current.set('theme', value);
-    router.push(`/?${current.toString()}`);
-    document.documentElement.setAttribute('data-theme', value);
+    setTheme(value);
   };
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <Tabs.Root
       className={styles.tabs}
-      value={theme}
+      value={isClient ? theme : 'light'}
       onValueChange={onValueChange}
     >
       <Tabs.List className={styles.list}>

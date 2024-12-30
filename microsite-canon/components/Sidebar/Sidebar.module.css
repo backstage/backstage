@@ -9,6 +9,7 @@
   border-right: 1px solid var(--canon-border-base);
   padding-left: 20px;
   padding-right: 20px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .sidebar svg path {

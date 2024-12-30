@@ -1199,6 +1199,7 @@ __metadata:
     eslint: ^9
     eslint-config-next: 15.1.3
     next: 15.1.3
+    next-themes: ^0.4.4
     react: ^19.0.0
     react-dom: ^19.0.0
     shiki: ^1.24.4
@@ -3424,6 +3425,16 @@ __metadata:
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
+  languageName: node
+  linkType: hard
+
+"next-themes@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "next-themes@npm:0.4.4"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+  checksum: 9107fd68152eec5e4681e18c7ddbf17f8d4d65abc0ff3b17f6f5d8ee61d2b2106ee5f26d93942da52799214354eed3bb5d4a76a8bf2c7274e73ac09467441390
   languageName: node
   linkType: hard
 
