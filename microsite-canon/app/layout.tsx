@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
-import { Sidebar } from '../components/sidebar';
-import '../../src/css/core.css';
-import '../../src/css/components.css';
+import { Sidebar } from '../components/Sidebar';
 import './globals.css';
-import { CanonProvider } from '../../src/contexts/canon';
+import { CanonProvider } from '@backstage/canon';
+
+import '../../packages/canon/src/css/core.css';
+import '../../packages/canon/src/css/components.css';
+import styles from './page.module.css';
 
 export const metadata: Metadata = {
   title: 'Canon',
@@ -21,7 +23,7 @@ export default function RootLayout({
         <CanonProvider>
           <>
             <Sidebar />
-            {children}
+            <div className={styles.container}>{children}</div>
           </>
         </CanonProvider>
       </body>

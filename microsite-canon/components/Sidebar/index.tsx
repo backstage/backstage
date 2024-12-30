@@ -1,8 +1,8 @@
 import styles from './Sidebar.module.css';
 import Image from 'next/image';
 import { TabsVersion, TabsTheme, TabsPages } from '../Tabs';
-import { Grid } from '../../../src/components/Grid';
 import Link from 'next/link';
+import { components, coreConcepts } from '@/data';
 
 export const Sidebar = () => {
   return (
@@ -24,15 +24,17 @@ export const Sidebar = () => {
         <TabsPages />
         <div className={styles.menu}>
           <h2 className={styles.title}>Core Concepts</h2>
-          <Link href="/docs/core-concepts/introduction">Iconography</Link>
-          <Link href="/docs/core-concepts/components">Layout</Link>
-          <Link href="/docs/core-concepts/accessibility">Responsive</Link>
-          <Link href="/docs/core-concepts/theming">Theming</Link>
+          {coreConcepts.map(concept => (
+            <Link href={`/core-concepts/${concept.slug}`} key={concept.slug}>
+              {concept.title}
+            </Link>
+          ))}
           <h2 className={styles.title}>Components</h2>
-          <Link href="/docs/components/button">Button</Link>
-          <Link href="/docs/components/card">Card</Link>
-          <Link href="/docs/components/input">Input</Link>
-          <Link href="/docs/components/select">Select</Link>
+          {components.map(component => (
+            <Link href={`/components/${component.slug}`} key={component.slug}>
+              {component.title}
+            </Link>
+          ))}
         </div>
       </div>
     </div>

@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: monospace;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 0px 8px;
+  height: 24px;
+  margin-right: 4px;
+  background-color: #f0f0f0;
+  color: #5d5d5d;
 
-// Providers
-export * from './contexts/canon';
-
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
-
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
-export * from './components/Checkbox';
-export * from './components/Table';
-
-// Types
-export * from './types';
+  &.head {
+    background-color: #eaf2fd;
+    color: #2563eb;
+  }
+}

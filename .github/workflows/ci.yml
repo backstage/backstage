@@ -4,6 +4,7 @@ on:
   pull_request:
     paths-ignore:
       - 'microsite/**'
+      - 'microsite-canon/**'
       - 'beps/**'
 
 concurrency:

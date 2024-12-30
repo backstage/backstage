@@ -243,6 +243,7 @@ memoized
 microservice
 microservices
 microsite
+microsite-canon
 microtasks
 middleware
 minikube

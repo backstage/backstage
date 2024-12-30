@@ -1,0 +1,8 @@
+.container {
+  padding-left: 280px;
+  width: 100%;
+}
+
+.page {
+  flex: 1;
+}

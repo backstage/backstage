@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Components used by Backstage plugins and apps
- *
- * @packageDocumentation
- */
+import React from 'react';
 
-// Providers
-export * from './contexts/canon';
-
-// Layout components
-export * from './components/Box';
-export * from './components/Grid';
-export * from './components/Stack';
-export * from './components/Inline';
-export * from './components/Container';
-
-// UI components
-export * from './components/Button';
-export * from './components/Icon';
-export * from './components/Checkbox';
-export * from './components/Table';
-
-// Types
-export * from './types';
+export const Chip = ({
+  children,
+  head = false,
+}: {
+  children: React.ReactNode;
+  head?: boolean;
+}) => {
+  return <span className={`chip ${head ? 'head' : ''}`}>{children}</span>;
+};

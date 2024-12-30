@@ -2,7 +2,7 @@
 
 import styles from './Tabs.module.css';
 import { Tabs } from '@base-ui-components/react/tabs';
-import { Icon } from '../../../src/components/Icon';
+import { Icon } from '@backstage/canon';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
