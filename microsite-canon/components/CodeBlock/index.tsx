@@ -12,10 +12,10 @@ interface CodeBlockProps {
 
 export async function CodeBlock({ lang, title, code }: CodeBlockProps) {
   const out = await codeToHtml(code || '', {
-    lang: lang || 'ts',
+    lang: lang || 'tsx',
     themes: {
-      light: 'vitesse-light',
-      dark: 'vitesse-dark',
+      light: 'min-light',
+      dark: 'min-dark',
     },
   });
 

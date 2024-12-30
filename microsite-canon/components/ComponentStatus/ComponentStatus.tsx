@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import styles from './styles.module.css';
 
 export const ComponentStatus = ({
   name,
@@ -28,15 +29,15 @@ export const ComponentStatus = ({
   link?: string;
 }) => {
   return (
-    <div className="component-status" style={style}>
+    <div className={styles.componentStatus} style={style}>
       {link ? (
-        <a href={link} className="title">
+        <a href={link} className={styles.title}>
           {name}
         </a>
       ) : (
-        <span className="title">{name}</span>
+        <span className={styles.title}>{name}</span>
       )}
-      <span className={`pill ${status}`}>
+      <span className={`${styles.pill} ${styles[status]}`}>
         {status === 'notStarted' && 'Not Started'}
         {status === 'inProgress' && 'In Progress'}
         {status === 'alpha' && 'Alpha'}

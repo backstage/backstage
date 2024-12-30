@@ -1,8 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
 import Image, { ImageProps } from 'next/image';
 import { ReactNode, ReactElement } from 'react';
-import type { BundledLanguage } from 'shiki';
-import { codeToHtml } from 'shiki';
 import React from 'react';
 import { CodeBlock } from '@/components/CodeBlock';
 
@@ -66,7 +64,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         ? (children.props as { children: string }).children
         : '';
 
-      return <CodeBlock lang="ts" code={codeContent} />;
+      return <CodeBlock lang="tsx" code={codeContent} />;
     },
     img: props => (
       <Image

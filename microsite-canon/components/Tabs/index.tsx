@@ -75,10 +75,22 @@ export const TabsPages = () => {
       onValueChange={onValueChange}
     >
       <Tabs.List className={styles.list}>
-        <Tabs.Tab className={styles.tab} value="docs">
+        <Tabs.Tab
+          className={styles.tab}
+          value="docs"
+          onClick={() => {
+            router.push('/');
+          }}
+        >
           Documentation
         </Tabs.Tab>
-        <Tabs.Tab className={styles.tab} value="playground">
+        <Tabs.Tab
+          className={styles.tab}
+          value="playground"
+          onClick={() => {
+            router.push('/playground');
+          }}
+        >
           Playground
         </Tabs.Tab>
         <Tabs.Indicator className={styles.indicator} />
