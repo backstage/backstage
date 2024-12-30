@@ -67,11 +67,13 @@
     "@backstage/types": "workspace:^",
     "@microsoft/fetch-event-source": "^2.0.1",
     "json-schema": "^0.4.0",
+    "msw": "^1.0.0",
     "qs": "^6.9.4",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "cross-fetch": "^4.0.0",
     "uri-template": "^2.0.0"
   }
