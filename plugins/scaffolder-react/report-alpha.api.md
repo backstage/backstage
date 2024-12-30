@@ -39,6 +39,7 @@ import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-common';
 import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 import { UiSchema } from '@rjsf/utils';
@@ -486,7 +487,7 @@ export const useFormDataFromQuery: (
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest?: TemplateParameterSchema;
+  manifest?: TemplateParameterSchema_2;
   loading: boolean;
   error?: Error;
 };

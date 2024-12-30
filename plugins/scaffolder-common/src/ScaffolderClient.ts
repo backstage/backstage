@@ -45,9 +45,6 @@ import {
   TaskStatus,
   TypedResponse,
 } from '../client/src/schema/openapi';
-import { DiscoveryApi } from '../client/src/schema/openapi/generated/types/discovery';
-import { FetchApi } from '../client/src/schema/openapi/generated/types/fetch';
-import { IdentityApi } from './types/IdentityApi';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -56,16 +53,30 @@ import { IdentityApi } from './types/IdentityApi';
  */
 export class ScaffolderClient implements ScaffolderApi {
   private readonly apiClient: DefaultApiClient;
-  private readonly discoveryApi: DiscoveryApi;
+  private readonly discoveryApi: {
+    getBaseUrl(pluginId: string): Promise<string>;
+  };
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
-  private readonly fetchApi: FetchApi;
-  private readonly identityApi?: IdentityApi;
+  private readonly fetchApi: { fetch: typeof fetch };
+  private readonly identityApi?: {
+    getBackstageIdentity(): Promise<{
+      type: 'user';
+      userEntityRef: string;
+      ownershipEntityRefs: string[];
+    }>;
+  };
   private readonly useLongPollingLogs: boolean;
 
   constructor(options: {
-    discoveryApi: DiscoveryApi;
-    fetchApi: FetchApi;
-    identityApi?: IdentityApi;
+    discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
+    fetchApi: { fetch: typeof fetch };
+    identityApi?: {
+      getBackstageIdentity(): Promise<{
+        type: 'user';
+        userEntityRef: string;
+        ownershipEntityRefs: string[];
+      }>;
+    };
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   }) {
