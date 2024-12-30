@@ -152,6 +152,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   );
 
   const [{ value, loading }, handleFetch, cache] = useFetchEntities({
+    filters,
     mode,
     initialSelectedOwnersRefs: selectedOwners,
   });

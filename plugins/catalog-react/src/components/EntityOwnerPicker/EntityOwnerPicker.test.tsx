@@ -21,7 +21,11 @@ import {
   MockEntityListContextProvider,
   catalogApiMock,
 } from '@backstage/plugin-catalog-react/testUtils';
-import { EntityOwnerFilter } from '../../filters';
+import {
+  EntityKindFilter,
+  EntityOwnerFilter,
+  EntityTypeFilter,
+} from '../../filters';
 import { EntityOwnerPicker } from './EntityOwnerPicker';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
@@ -413,7 +417,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
       },
     );
 
-    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(2);
 
     fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
 
@@ -466,6 +470,69 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     );
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
       facets: ['relations.ownedBy'],
+      filter: {},
+    });
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    await waitFor(() => screen.getByText('some-owner'));
+
+    fireEvent.click(screen.getByText('some-owner'));
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
+    });
+  });
+
+  it('adds kind to filters', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+      facets: ['relations.ownedBy'],
+      filter: { kind: 'component' },
+    });
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    await waitFor(() => screen.getByText('some-owner'));
+
+    fireEvent.click(screen.getByText('some-owner'));
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
+    });
+  });
+
+  it('adds type to filters', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { type: new EntityTypeFilter('service') },
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+      facets: ['relations.ownedBy'],
+      filter: { 'spec.type': ['service'] },
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,

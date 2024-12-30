@@ -16,8 +16,11 @@
 import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { DefaultEntityFilters } from '../../hooks';
+import { EntityFilter } from '../../types';
+import { reduceBackendCatalogFilters } from '../../utils/filters';
 
 type FacetsCursor = {
   start: number;
@@ -41,17 +44,37 @@ type FacetsInitialRequest = {
  * hook, which is also used by EntityOwnerPicker.
  * In this mode, the EntityOwnerPicker won't show detailed information of the owners.
  */
-export function useFacetsEntities({ enabled }: { enabled: boolean }) {
+export function useFacetsEntities({
+  filters,
+  enabled,
+}: {
+  filters?: DefaultEntityFilters;
+  enabled: boolean;
+}) {
   const catalogApi = useApi(catalogApiRef);
 
-  const [facetsPromise] = useState(async () => {
+  const facetsPromise = useMemo(async () => {
     if (!enabled) {
       return [];
     }
     const facet = 'relations.ownedBy';
 
+    const filtersForAvailableValues: (keyof DefaultEntityFilters)[] = [
+      'kind',
+      'type',
+    ];
+
+    const availableValuesFilters = (filtersForAvailableValues ?? []).map(
+      f => (filters?.[f] as EntityFilter) || undefined,
+    );
+
     return catalogApi
-      .getEntityFacets({ facets: [facet] })
+      .getEntityFacets({
+        filter: reduceBackendCatalogFilters(
+          availableValuesFilters.filter(Boolean) as EntityFilter[],
+        ),
+        facets: [facet],
+      })
       .then(response =>
         response.facets[facet]
           .map(e => e.value)
@@ -74,7 +97,7 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
           ),
       )
       .catch(() => []);
-  });
+  }, [catalogApi, filters, enabled]);
 
   return useAsyncFn<
     (
@@ -92,7 +115,6 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
       }
 
       const limit = options?.limit ?? 20;
-
       const { text, start } = decodeCursor(request);
       const filteredRefs = facets.filter(e => filterEntity(text, e));
       const end = start + limit;
