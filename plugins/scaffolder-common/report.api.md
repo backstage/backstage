@@ -7,14 +7,368 @@ import { Entity } from '@backstage/catalog-model';
 import type { EntityMeta } from '@backstage/catalog-model';
 import type { JsonArray } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import type { JsonValue } from '@backstage/types';
+import { JSONSchema7 } from 'json-schema';
+import { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
+import { Observable } from '@backstage/types';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import type { UserEntity } from '@backstage/catalog-model';
+
+// @public
+export type Action = {
+  id: string;
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    output?: JSONSchema7;
+  };
+  examples?: ActionExample[];
+};
+
+// @public
+export interface ActionExample {
+  // (undocumented)
+  description: string;
+  // (undocumented)
+  example: string;
+}
 
 // @public
 export const isTemplateEntityV1beta3: (
   entity: Entity,
 ) => entity is TemplateEntityV1beta3;
+
+// @public
+export type ListActionsResponse = Array<Action>;
+
+// @public
+export type LogEvent = {
+  type: TaskEventType;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: ScaffolderTaskStatus;
+  };
+  createdAt: string;
+  id: number;
+  taskId: string;
+};
+
+// @public
+export interface ScaffolderApi {
+  // (undocumented)
+  autocomplete?(
+    request: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    results: {
+      title?: string;
+      id: string;
+    }[];
+  }>;
+  cancelTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    status?: ScaffolderTaskStatus;
+  }>;
+  // (undocumented)
+  dryRun?(
+    request: ScaffolderDryRunOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+  // (undocumented)
+  getTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    templateRef: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<TemplateParameterSchema>;
+  listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks?(
+    request: {
+      filterByOwnership: 'owned' | 'all';
+      limit?: number;
+      offset?: number;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    tasks: ScaffolderTask[];
+    totalTasks?: number;
+  }>;
+  retry?(
+    {
+      secrets,
+      taskId,
+    }: {
+      secrets?: Record<string, string>;
+      taskId: string;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    id: string;
+  }>;
+  scaffold(
+    request: ScaffolderScaffoldOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+  // (undocumented)
+  streamLogs(
+    request: ScaffolderStreamLogsOptions,
+    options?: ScaffolderRequestOptions,
+  ): Observable<LogEvent>;
+}
+
+// @public
+export class ScaffolderClient implements ScaffolderApi {
+  constructor(options: {
+    discoveryApi: {
+      getBaseUrl(pluginId: string): Promise<string>;
+    };
+    fetchApi: {
+      fetch: typeof fetch;
+    };
+    identityApi?: {
+      getBackstageIdentity(): Promise<{
+        type: 'user';
+        userEntityRef: string;
+        ownershipEntityRefs: string[];
+      }>;
+    };
+    scmIntegrationsApi: ScmIntegrationRegistry;
+    useLongPollingLogs?: boolean;
+  });
+  autocomplete({
+    token,
+    resource,
+    provider,
+    context,
+  }: {
+    token: string;
+    provider: string;
+    resource: string;
+    context: Record<string, string>;
+  }): Promise<{
+    results: {
+      title?: string;
+      id: string;
+    }[];
+  }>;
+  cancelTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    status?: ScaffolderTaskStatus;
+  }>;
+  // (undocumented)
+  dryRun(
+    request: ScaffolderDryRunOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+  // (undocumented)
+  getTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    templateRef: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<TemplateParameterSchema>;
+  listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(
+    request: {
+      filterByOwnership: 'owned' | 'all';
+      limit?: number;
+      offset?: number;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    tasks: ScaffolderTask[];
+    totalTasks?: number;
+  }>;
+  retry?(
+    {
+      secrets,
+      taskId,
+    }: {
+      secrets?: Record<string, string>;
+      taskId: string;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    id: string;
+  }>;
+  scaffold(
+    request: ScaffolderScaffoldOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+  // (undocumented)
+  streamLogs(
+    request: ScaffolderStreamLogsOptions,
+    options?: ScaffolderRequestOptions,
+  ): Observable<LogEvent>;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunOptions {
+  // (undocumented)
+  directoryContents: {
+    path: string;
+    base64Content: string;
+  }[];
+  // (undocumented)
+  secrets?: Record<string, string>;
+  // (undocumented)
+  template: TemplateEntityV1beta3;
+  // (undocumented)
+  values: JsonObject;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunResponse {
+  // (undocumented)
+  directoryContents: Array<{
+    path: string;
+    base64Content: string;
+    executable?: boolean;
+  }>;
+  // (undocumented)
+  log: Array<Pick<LogEvent, 'body'>>;
+  // (undocumented)
+  output: ScaffolderTaskOutput;
+  // (undocumented)
+  steps: TaskStep[];
+}
+
+// @public
+export interface ScaffolderGetIntegrationsListOptions {
+  // (undocumented)
+  allowedHosts: string[];
+}
+
+// @public
+export interface ScaffolderGetIntegrationsListResponse {
+  // (undocumented)
+  integrations: {
+    type: string;
+    title: string;
+    host: string;
+  }[];
+}
+
+// @public (undocumented)
+export type ScaffolderOutputLink = {
+  title?: string;
+  icon?: string;
+  url?: string;
+  entityRef?: string;
+};
+
+// @public (undocumented)
+export type ScaffolderOutputText = {
+  title?: string;
+  icon?: string;
+  content?: string;
+  default?: boolean;
+};
+
+// @public
+export interface ScaffolderRequestOptions {
+  // (undocumented)
+  token?: string;
+}
+
+// @public
+export interface ScaffolderScaffoldOptions {
+  // (undocumented)
+  secrets?: Record<string, string>;
+  // (undocumented)
+  templateRef: string;
+  // (undocumented)
+  values: Record<string, JsonValue>;
+}
+
+// @public
+export interface ScaffolderScaffoldResponse {
+  // (undocumented)
+  taskId: string;
+}
+
+// @public
+export interface ScaffolderStreamLogsOptions {
+  // (undocumented)
+  after?: number;
+  // (undocumented)
+  isTaskRecoverable?: boolean;
+  // (undocumented)
+  taskId: string;
+}
+
+// @public
+export type ScaffolderTask = {
+  id: string;
+  spec: TaskSpec;
+  status: ScaffolderTaskStatus;
+  lastHeartbeatAt?: string;
+  createdAt: string;
+};
+
+// @public (undocumented)
+export type ScaffolderTaskOutput = {
+  links?: ScaffolderOutputLink[];
+  text?: ScaffolderOutputText[];
+} & {
+  [key: string]: unknown;
+};
+
+// @public (undocumented)
+export type ScaffolderTaskStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing'
+  | 'skipped';
+
+// @public (undocumented)
+export const ScaffolderTaskStatus: {
+  Cancelled: ScaffolderTaskStatus;
+  Completed: ScaffolderTaskStatus;
+  Failed: ScaffolderTaskStatus;
+  Open: ScaffolderTaskStatus;
+  Processing: ScaffolderTaskStatus;
+  Skipped: ScaffolderTaskStatus;
+};
+
+// @public (undocumented)
+export type TaskEventType = 'cancelled' | 'completion' | 'log' | 'recovered';
+
+// @public (undocumented)
+export const TaskEventType: {
+  Cancelled: TaskEventType;
+  Completion: TaskEventType;
+  Log: TaskEventType;
+  Recovered: TaskEventType;
+};
 
 // @public
 export type TaskRecoverStrategy = 'none' | 'startOver';
@@ -101,6 +455,22 @@ export type TemplateInfo = {
   entity?: {
     metadata: EntityMeta;
   };
+};
+
+// @public
+export type TemplateParameterSchema = {
+  title: string;
+  description?: string;
+  presentation?: TemplatePresentationV1beta3;
+  steps: Array<{
+    title: string;
+    description?: string;
+    schema: JsonObject;
+  }>;
+  EXPERIMENTAL_formDecorators?: {
+    id: string;
+    input?: JsonObject;
+  }[];
 };
 
 // @public
