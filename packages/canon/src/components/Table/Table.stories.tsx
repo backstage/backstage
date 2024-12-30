@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableCell,
-  TableBody,
-  TableFooter,
-} from '../Table';
-
-const meta = {
-  title: 'Components/Table/Examples/Simple',
-  component: Table,
-} satisfies Meta<typeof Table>;
-
 const invoices = [
   {
     invoice: 'INV001',
@@ -75,6 +58,31 @@ const invoices = [
     paymentMethod: 'Credit Card',
   },
 ];
+
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../Table';
+
+const meta = {
+  title: 'Table',
+  component: Table,
+  subcomponents: {
+    TableBody: TableBody as React.ComponentType<unknown>,
+    TableCell: TableCell as React.ComponentType<unknown>,
+    TableFooter: TableFooter as React.ComponentType<unknown>,
+    TableHead: TableHead as React.ComponentType<unknown>,
+    TableHeader: TableHeader as React.ComponentType<unknown>,
+    TableRow: TableRow as React.ComponentType<unknown>,
+  },
+} satisfies Meta<typeof Table>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

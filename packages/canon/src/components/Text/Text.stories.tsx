@@ -20,7 +20,7 @@ import { Text } from './Text';
 import { Stack } from '../Stack';
 
 const meta = {
-  title: 'Components/Text',
+  title: 'Text',
   component: Text,
 } satisfies Meta<typeof Text>;
 

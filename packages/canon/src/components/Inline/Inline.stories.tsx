@@ -20,7 +20,7 @@ import { Inline } from './Inline';
 import { Box } from '../Box/Box';
 
 const meta = {
-  title: 'Components/Inline',
+  title: 'Inline',
   component: Inline,
   argTypes: {
     align: {

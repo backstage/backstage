@@ -20,7 +20,7 @@ import { Heading } from './Heading';
 import { Stack } from '../Stack';
 
 const meta = {
-  title: 'Components/Heading',
+  title: 'Heading',
   component: Heading,
 } satisfies Meta<typeof Heading>;
 
