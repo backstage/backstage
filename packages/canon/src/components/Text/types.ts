@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import type { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
 
 /** @public */
 export interface TextProps {
-  children: React.ReactNode;
+  children: ReactNode;
   variant?:
     | 'subtitle'
     | 'body'

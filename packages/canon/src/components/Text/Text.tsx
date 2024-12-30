@@ -1,3 +1,5 @@
+'use client';
+
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -18,6 +20,7 @@ import React, { forwardRef } from 'react';
 import { TextProps } from './types';
 import { useCanon } from '../../contexts/canon';
 
+/** @public */
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
     const {

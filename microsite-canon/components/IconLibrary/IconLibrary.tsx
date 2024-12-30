@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Icon } from '@backstage/canon';
 import type { IconNames } from '@backstage/canon';
-import { defaultIcons } from '../../../src/components/Icon/icons';
-import { Text } from '../Text/Text';
+import { icons, Text } from '@backstage/canon';
+import styles from './styles.module.css';
 
 export const IconLibrary = () => {
-  const icons = Object.keys(defaultIcons);
+  const list = Object.keys(icons);
 
   return (
-    <div className="icon-library">
-      {icons.map(icon => (
-        <div key={icon} className="icon-library-item">
-          <div className="icon-library-item-icon">
+    <div className={styles.library}>
+      {list.map(icon => (
+        <div key={icon} className={styles.item}>
+          <div className={styles.icon}>
             <Icon name={icon as IconNames} />
           </div>
-          <Text>{icon}</Text>
+          <span>{icon}</span>
         </div>
       ))}
     </div>

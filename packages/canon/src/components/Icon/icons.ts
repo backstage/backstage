@@ -39,8 +39,8 @@ import {
   RiSunLine,
 } from '@remixicon/react';
 
-// List of default icons
-export const defaultIcons: IconMap = {
+/** @public */
+export const icons: IconMap = {
   arrowDown: RiArrowDownFill,
   arrowLeft: RiArrowLeftFill,
   arrowRight: RiArrowRightFill,
