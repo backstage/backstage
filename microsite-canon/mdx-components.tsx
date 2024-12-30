@@ -36,12 +36,26 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children as ReactNode}
       </h2>
     ),
+    h3: ({ children }) => (
+      <h3
+        style={{
+          color: 'var(--canon-text-primary)',
+          fontSize: '1.25rem',
+          marginTop: '2.5rem',
+          marginBottom: '0.5rem',
+        }}
+      >
+        {children as ReactNode}
+      </h3>
+    ),
     p: ({ children }) => (
       <p
         style={{
           color: 'var(--canon-text-primary)',
           fontSize: '1rem',
           lineHeight: '1.5rem',
+          marginTop: '0',
+          marginBottom: '1rem',
         }}
       >
         {children as ReactNode}

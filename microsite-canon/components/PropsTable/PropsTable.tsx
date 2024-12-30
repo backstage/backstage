@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import * as Table from '..';
-import { Chip } from '..';
+import * as Table from '../Table';
+import { Chip } from '../Chip';
 
 // Modify the PropsTable component to accept a generic type
 export const PropsTable = <T extends Record<string, any>>({

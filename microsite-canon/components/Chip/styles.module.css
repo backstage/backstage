@@ -13,4 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { PropsTable } from './PropsTable';
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: monospace;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 0px 8px;
+  height: 24px;
+  margin-right: 4px;
+  background-color: #f0f0f0;
+  color: #5d5d5d;
+}
+
+.head {
+  background-color: #eaf2fd;
+  color: #2563eb;
+}

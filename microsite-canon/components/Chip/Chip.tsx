@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import styles from './styles.module.css';
 
 export const Chip = ({
   children,
@@ -23,5 +24,9 @@ export const Chip = ({
   children: React.ReactNode;
   head?: boolean;
 }) => {
-  return <span className={`chip ${head ? 'head' : ''}`}>{children}</span>;
+  return (
+    <span className={`${styles.chip} ${head ? styles.head : ''}`}>
+      {children}
+    </span>
+  );
 };

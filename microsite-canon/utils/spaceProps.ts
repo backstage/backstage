@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  font-family: monospace;
-  font-size: 13px;
-  border-radius: 6px;
-  padding: 0px 8px;
-  height: 24px;
-  margin-right: 4px;
-  background-color: #f0f0f0;
-  color: #5d5d5d;
-
-  &.head {
-    background-color: #eaf2fd;
-    color: #2563eb;
-  }
-}
+export const spacePropsList = [
+  'margin',
+  'marginBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginX',
+  'marginY',
+  'padding',
+  'paddingBottom',
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingX',
+  'paddingY',
+].reduce(
+  (acc: { [key: string]: { type: string[]; responsive: boolean } }, prop) => {
+    acc[prop] = {
+      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
+      responsive: true,
+    };
+    return acc;
+  },
+  {},
+);

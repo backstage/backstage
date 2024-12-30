@@ -1,0 +1,7 @@
+.container {
+  width: 100%;
+  border: 1px solid var(--canon-border-base);
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
