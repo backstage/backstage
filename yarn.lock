@@ -7751,7 +7751,6 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
