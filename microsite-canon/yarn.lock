@@ -582,6 +582,58 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shikijs/core@npm:1.24.4":
+  version: 1.24.4
+  resolution: "@shikijs/core@npm:1.24.4"
+  dependencies:
+    "@shikijs/engine-javascript": 1.24.4
+    "@shikijs/engine-oniguruma": 1.24.4
+    "@shikijs/types": 1.24.4
+    "@shikijs/vscode-textmate": ^9.3.1
+    "@types/hast": ^3.0.4
+    hast-util-to-html: ^9.0.4
+  checksum: 33dfa6b183def624812f5d736ae09ebb6e9880839278ddef8498312064d7724316e4d8bd26273c8cad55aa5218d422ddc76f8baf3cf90a993ca8f62761a89db8
+  languageName: node
+  linkType: hard
+
+"@shikijs/engine-javascript@npm:1.24.4":
+  version: 1.24.4
+  resolution: "@shikijs/engine-javascript@npm:1.24.4"
+  dependencies:
+    "@shikijs/types": 1.24.4
+    "@shikijs/vscode-textmate": ^9.3.1
+    oniguruma-to-es: 0.8.1
+  checksum: 528be972df1386bfcd8364d3875db91e561ad480b18bd5dbe36388365eac2856b6564441a4da312d31a579d9267272fa7d13ea54b4d583961492cef831685037
+  languageName: node
+  linkType: hard
+
+"@shikijs/engine-oniguruma@npm:1.24.4":
+  version: 1.24.4
+  resolution: "@shikijs/engine-oniguruma@npm:1.24.4"
+  dependencies:
+    "@shikijs/types": 1.24.4
+    "@shikijs/vscode-textmate": ^9.3.1
+  checksum: 05cd0d82cad1ac9e93aedbd63859feed5d98c14144c263453ece2359c56d26c1e88750fcfccf6a62df716a6fe2b4b6eecf076573b383292cefd180afd639d312
+  languageName: node
+  linkType: hard
+
+"@shikijs/types@npm:1.24.4":
+  version: 1.24.4
+  resolution: "@shikijs/types@npm:1.24.4"
+  dependencies:
+    "@shikijs/vscode-textmate": ^9.3.1
+    "@types/hast": ^3.0.4
+  checksum: 6af64511df37312329f1cc88eb0d5be688cb302be220edaf3cbe332d27b03c16e445655ad7a57a809939dca2f4ac56be45fcf048ed0fef6bfdea8e73f3aa28ac
+  languageName: node
+  linkType: hard
+
+"@shikijs/vscode-textmate@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "@shikijs/vscode-textmate@npm:9.3.1"
+  checksum: 42fc9cba3619eee72d8863def0cb128ce463145cf4b2665f00249481ecbed39dd8e2726e25ade684ab2a020705eebf4d28646121f8bb9aadb350a307a7c04f94
+  languageName: node
+  linkType: hard
+
 "@swc/counter@npm:0.1.3":
   version: 0.1.3
   resolution: "@swc/counter@npm:0.1.3"
@@ -632,7 +684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hast@npm:^3.0.0":
+"@types/hast@npm:^3.0.0, @types/hast@npm:^3.0.4":
   version: 3.0.4
   resolution: "@types/hast@npm:3.0.4"
   dependencies:
@@ -1149,6 +1201,7 @@ __metadata:
     next: 15.1.3
     react: ^19.0.0
     react-dom: ^19.0.0
+    shiki: ^1.24.4
     typescript: ^5
   languageName: unknown
   linkType: soft
@@ -1419,6 +1472,13 @@ __metadata:
     es-errors: ^1.3.0
     gopd: ^1.2.0
   checksum: 149207e36f07bd4941921b0ca929e3a28f1da7bd6b6ff8ff7f4e2f2e460675af4576eeba359c635723dc189b64cdd4787e0255897d5b135ccc5d15cb8685fc90
+  languageName: node
+  linkType: hard
+
+"emoji-regex-xs@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "emoji-regex-xs@npm:1.0.0"
+  checksum: c33be159da769836f83281f2802d90169093ebf3c2c1643d6801d891c53beac5ef785fd8279f9b02fa6dc6c47c367818e076949f1e13bd1b3f921b416de4cbea
   languageName: node
   linkType: hard
 
@@ -2270,6 +2330,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hast-util-to-html@npm:^9.0.4":
+  version: 9.0.4
+  resolution: "hast-util-to-html@npm:9.0.4"
+  dependencies:
+    "@types/hast": ^3.0.0
+    "@types/unist": ^3.0.0
+    ccount: ^2.0.0
+    comma-separated-tokens: ^2.0.0
+    hast-util-whitespace: ^3.0.0
+    html-void-elements: ^3.0.0
+    mdast-util-to-hast: ^13.0.0
+    property-information: ^6.0.0
+    space-separated-tokens: ^2.0.0
+    stringify-entities: ^4.0.0
+    zwitch: ^2.0.4
+  checksum: 6b97f641bca4c1de66bd74dd5a965bc5fd5c4b8e09328448c4952226ebd691c107cc990ce4e29ccb1e6bfff0278d8956fc8159533456c167f94ae067b4b42b11
+  languageName: node
+  linkType: hard
+
 "hast-util-to-jsx-runtime@npm:^2.0.0":
   version: 2.3.2
   resolution: "hast-util-to-jsx-runtime@npm:2.3.2"
@@ -2299,6 +2378,13 @@ __metadata:
   dependencies:
     "@types/hast": ^3.0.0
   checksum: 41d93ccce218ba935dc3c12acdf586193c35069489c8c8f50c2aa824c00dec94a3c78b03d1db40fa75381942a189161922e4b7bca700b3a2cc779634c351a1e4
+  languageName: node
+  linkType: hard
+
+"html-void-elements@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "html-void-elements@npm:3.0.0"
+  checksum: 59be397525465a7489028afa064c55763d9cccd1d7d9f630cca47137317f0e897a9ca26cef7e745e7cff1abc44260cfa407742b243a54261dfacd42230e94fce
   languageName: node
   linkType: hard
 
@@ -3483,6 +3569,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oniguruma-to-es@npm:0.8.1":
+  version: 0.8.1
+  resolution: "oniguruma-to-es@npm:0.8.1"
+  dependencies:
+    emoji-regex-xs: ^1.0.0
+    regex: ^5.0.2
+    regex-recursion: ^5.0.0
+  checksum: 88e1936ba0ffd09850e6a96fefcb0efc257013b42d139e0076a46b31fe75f2c36ca4152df08765cafd8b52554a739a3b2c4aa4ddc47df12bc3c0fdde40103104
+  languageName: node
+  linkType: hard
+
 "optionator@npm:^0.9.3":
   version: 0.9.4
   resolution: "optionator@npm:0.9.4"
@@ -3724,6 +3821,32 @@ __metadata:
   version: 0.14.1
   resolution: "regenerator-runtime@npm:0.14.1"
   checksum: 9f57c93277b5585d3c83b0cf76be47b473ae8c6d9142a46ce8b0291a04bb2cf902059f0f8445dcabb3fb7378e5fe4bb4ea1e008876343d42e46d3b484534ce38
+  languageName: node
+  linkType: hard
+
+"regex-recursion@npm:^5.0.0":
+  version: 5.1.1
+  resolution: "regex-recursion@npm:5.1.1"
+  dependencies:
+    regex: ^5.1.1
+    regex-utilities: ^2.3.0
+  checksum: 4f203ae8f4a2ebf9004f4e4119df5106ba07b39bd3778d7040a83b17f3a82fe22c202661adc3f5586e4eb782fece77e8a01eba8b7033f92147ad7a1e7e1531d7
+  languageName: node
+  linkType: hard
+
+"regex-utilities@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "regex-utilities@npm:2.3.0"
+  checksum: 41408777df45cefe1b276281030213235aa1143809c4c10eb5573d2cc27ff2c4aa746c6f4d4c235e3d2f4830eff76b28906ce82fbe72895beca8e15204c2da51
+  languageName: node
+  linkType: hard
+
+"regex@npm:^5.0.2, regex@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "regex@npm:5.1.1"
+  dependencies:
+    regex-utilities: ^2.3.0
+  checksum: bff664d0c001bf2929c2a5c92399419f719ef5ac9e7198bce653695d37628a3bd21595cea571f93ee13b55c5bbeff7fbab307a9ef569e36b149caf09601d4a31
   languageName: node
   linkType: hard
 
@@ -4024,6 +4147,20 @@ __metadata:
   version: 3.0.0
   resolution: "shebang-regex@npm:3.0.0"
   checksum: 1a2bcae50de99034fcd92ad4212d8e01eedf52c7ec7830eedcf886622804fe36884278f2be8be0ea5fde3fd1c23911643a4e0f726c8685b61871c8908af01222
+  languageName: node
+  linkType: hard
+
+"shiki@npm:^1.24.4":
+  version: 1.24.4
+  resolution: "shiki@npm:1.24.4"
+  dependencies:
+    "@shikijs/core": 1.24.4
+    "@shikijs/engine-javascript": 1.24.4
+    "@shikijs/engine-oniguruma": 1.24.4
+    "@shikijs/types": 1.24.4
+    "@shikijs/vscode-textmate": ^9.3.1
+    "@types/hast": ^3.0.4
+  checksum: dee2af812f67e11985882469a82540dd4cd91ea5e966d8dc52854df82471e5f5dad30c971c2512766f1f55ddd88f8033ff3ae472676fcb053297a5f6b8707449
   languageName: node
   linkType: hard
 
@@ -4634,7 +4771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zwitch@npm:^2.0.0":
+"zwitch@npm:^2.0.0, zwitch@npm:^2.0.4":
   version: 2.0.4
   resolution: "zwitch@npm:2.0.4"
   checksum: f22ec5fc2d5f02c423c93d35cdfa83573a3a3bd98c66b927c368ea4d0e7252a500df2a90a6b45522be536a96a73404393c958e945fdba95e6832c200791702b6

@@ -22,7 +22,8 @@ import { defaultIcons } from '../components/Icon/icons';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import type { Breakpoint } from '../types';
 
-interface CanonContextProps {
+/** @public */
+export interface CanonContextProps {
   icons: IconMap;
   breakpoint: Breakpoint;
   getResponsiveValue: (
@@ -36,7 +37,8 @@ const CanonContext = createContext<CanonContextProps>({
   getResponsiveValue: () => '',
 });
 
-interface CanonProviderProps {
+/** @public */
+export interface CanonProviderProps {
   children?: ReactNode;
   overrides?: Partial<Record<IconNames, React.ComponentType>>;
 }
