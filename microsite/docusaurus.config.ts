@@ -23,7 +23,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
-import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
+import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -59,9 +59,9 @@ const defaultOpenApiOptions = {
   hideSendButton: true,
   sidebarOptions: {
     groupPathsBy: 'tag',
-    categoryLinkSource: 'tag'
+    categoryLinkSource: 'tag',
   },
-} satisfies OpenApiPlugin.Options
+} satisfies OpenApiPlugin.Options;
 
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
@@ -119,7 +119,7 @@ const config: Config = {
                 },
               }
             : undefined),
-          docItemComponent: "@theme/ApiItem",
+          docItemComponent: '@theme/ApiItem',
         },
         blog: {
           path: 'blog',
@@ -279,24 +279,24 @@ const config: Config = {
     [
       'docusaurus-plugin-openapi-docs',
       {
-        id: "api", // plugin id
-        docsPluginId: "classic", // configured for preset-classic
+        id: 'api', // plugin id
+        docsPluginId: 'classic', // configured for preset-classic
         config: {
           catalog: {
             ...defaultOpenApiOptions,
-            specPath: "../plugins/catalog-backend/src/schema/openapi.yaml",
-            outputDir: "../docs/features/software-catalog/api",
+            specPath: '../plugins/catalog-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-catalog/api',
           } satisfies OpenApiPlugin.Options,
           search: {
             ...defaultOpenApiOptions,
-            specPath: "../plugins/search-backend/src/schema/openapi.yaml",
-            outputDir: "../docs/features/search/api",
+            specPath: '../plugins/search-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/search/api',
           } satisfies OpenApiPlugin.Options,
-        }
+        },
       },
-    ]
+    ],
   ],
-  themes: ["docusaurus-theme-openapi-docs"],
+  themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
     colorMode: {
       defaultMode: 'dark',

@@ -1,15 +1,19 @@
 import { releases } from './releases';
 
-function tryToLoadCustomSidebar(ref){
-  try{
-    return require(ref)
+function tryToLoadCustomSidebar(ref) {
+  try {
+    return require(ref);
   } catch (e) {
-    return []
+    return [];
   }
 }
 
-const catalogSidebar = tryToLoadCustomSidebar("../docs/features/software-catalog/api/sidebar.ts")
-const searchSidebar = tryToLoadCustomSidebar("../docs/features/search/api/sidebar.ts")
+const catalogSidebar = tryToLoadCustomSidebar(
+  '../docs/features/software-catalog/api/sidebar.ts',
+);
+const searchSidebar = tryToLoadCustomSidebar(
+  '../docs/features/search/api/sidebar.ts',
+);
 
 export default {
   docs: {
@@ -148,16 +152,19 @@ export default {
           'features/search/getting-started',
           'features/search/concepts',
           {
-            type: "category",
-            label: "API",
-            link: searchSidebar.length > 0 ? {
-              type: "generated-index",
-              title: "Search API",
-              slug: "/category/search-api",
-            } : {
-              type: "doc",
-              id: "openapi/generated-docs/404",
-            },
+            type: 'category',
+            label: 'API',
+            link:
+              searchSidebar.length > 0
+                ? {
+                    type: 'generated-index',
+                    title: 'Search API',
+                    slug: '/category/search-api',
+                  }
+                : {
+                    type: 'doc',
+                    id: 'openapi/generated-docs/404',
+                  },
             items: searchSidebar,
           },
           'features/search/architecture',
@@ -183,16 +190,19 @@ export default {
           'features/software-catalog/external-integrations',
           'features/software-catalog/catalog-customization',
           {
-            type: "category",
-            label: "API",
-            link: catalogSidebar.length > 0 ? {
-              type: "generated-index",
-              title: "Catalog API",
-              slug: "/category/catalog-api",
-            }: {
-              type: "doc",
-              id: "openapi/generated-docs/404",
-            },
+            type: 'category',
+            label: 'API',
+            link:
+              catalogSidebar.length > 0
+                ? {
+                    type: 'generated-index',
+                    title: 'Catalog API',
+                    slug: '/category/catalog-api',
+                  }
+                : {
+                    type: 'doc',
+                    id: 'openapi/generated-docs/404',
+                  },
             items: catalogSidebar,
           },
           'features/software-catalog/creating-the-catalog-graph',
