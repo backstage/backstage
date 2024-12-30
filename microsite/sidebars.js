@@ -549,7 +549,11 @@ module.exports = {
       },
       'api/deprecations',
       'references/glossary',
-      'overview/threat-model',
+      {
+        'Security': [
+          'overview/threat-model',
+        ]
+      },
       'api/utility-apis',
       'overview/versioning-policy',
       'reference/index',
