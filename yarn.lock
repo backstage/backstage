@@ -7901,7 +7901,9 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
@@ -7952,6 +7954,7 @@ __metadata:
     react-window: ^1.8.10
     swr: ^2.0.0
     yaml: ^2.0.0
+    zen-observable: ^0.10.0
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
   peerDependencies:
