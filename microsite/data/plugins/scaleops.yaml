@@ -1,0 +1,9 @@
+title: ScaleOps
+author: terasky.com
+authorUrl: https://github.com/terasky-oss
+category: Kubernetes
+description: View Rightsizing and resource usage data for your Kubernetes workloads right from within Backstage!
+documentation: https://github.com/TeraSky-OSS/backstage-plugins/tree/main/plugins/scaleops-frontend
+iconUrl: https://parsers.vc/logo/71a9c12c-230f-4f96-8d2a-70c637b024ef-3.png
+npmPackageName: '@terasky/backstage-plugin-scaleops-frontend'
+addedDate: '2024-12-30'
