@@ -67,8 +67,7 @@
   height: 1.8rem;
   border-radius: 0.25rem;
   background-color: var(--canon-surface-1);
-  transition-property: translate, width;
+  transition-property: translate, width, background-color;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
-  transition: background-color 0.2s ease-in-out;
 }

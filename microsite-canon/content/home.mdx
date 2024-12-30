@@ -1,7 +1,7 @@
 import { Banner } from '@/components/Banner';
 import { ComponentStatus } from '@/components/ComponentStatus';
 
-<img src="header.png" style={{ width: '100%', marginBottom: '64px' }} />
+<img src="header.png" style={{ width: '100%', marginBottom: '32px' }} />
 
 Welcome to the Canon, the new design library for Backstage plugins. This
 project is still under active development but we will make sure to document
@@ -21,54 +21,4 @@ components. You can use the statuses below to see what is ready and what is
 coming soon. If there is a component missing that you need, please let us know
 by opening an issue on GitHub.
 
-<div
-  style={{
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '0px 64px',
-  }}
->
-  <ComponentStatus
-    name="Box"
-    status="alpha"
-    link="/?path=/docs/components-box--docs"
-  />
-  <ComponentStatus
-    name="Button"
-    status="inProgress"
-    link="/?path=/docs/components-button--docs"
-  />
-  <ComponentStatus name="Checkbox" status="notStarted" />
-  <ComponentStatus
-    name="Container"
-    status="alpha"
-    link="/?path=/docs/components-container--docs"
-  />
-  <ComponentStatus
-    name="Grid"
-    status="alpha"
-    link="/?path=/story/components-grid--docs"
-  />
-  <ComponentStatus name="Header" status="notStarted" />
-  <ComponentStatus
-    name="Icon"
-    status="alpha"
-    link="/?path=/docs/components-icon--docs"
-  />
-  <ComponentStatus
-    name="Inline"
-    status="alpha"
-    link="/?path=/story/components-inline--default"
-  />
-  <ComponentStatus name="Input" status="notStarted" />
-  <ComponentStatus name="Radio" status="notStarted" />
-  <ComponentStatus name="Select" status="notStarted" />
-  <ComponentStatus
-    name="Stack"
-    status="alpha"
-    link="/?path=/docs/components-stack--default"
-  />
-  <ComponentStatus name="Switch" status="notStarted" />
-  <ComponentStatus name="Tabs" status="notStarted" />
-  <ComponentStatus name="Tooltip" status="notStarted" />
-</div>
+<ComponentStatus />

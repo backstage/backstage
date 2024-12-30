@@ -17,7 +17,57 @@
 import React from 'react';
 import styles from './styles.module.css';
 
-export const ComponentStatus = ({
+export const ComponentStatus = () => {
+  return (
+    <div className={styles.container}>
+      <Component
+        name="Box"
+        status="alpha"
+        link="/?path=/docs/components-box--docs"
+      />
+      <Component
+        name="Button"
+        status="inProgress"
+        link="/?path=/docs/components-button--docs"
+      />
+      <Component name="Checkbox" status="inProgress" />
+      <Component
+        name="Container"
+        status="alpha"
+        link="/?path=/docs/components-container--docs"
+      />
+      <Component
+        name="Grid"
+        status="alpha"
+        link="/?path=/story/components-grid--docs"
+      />
+      <Component name="Header" status="notStarted" />
+      <Component
+        name="Icon"
+        status="alpha"
+        link="/?path=/docs/components-icon--docs"
+      />
+      <Component
+        name="Inline"
+        status="alpha"
+        link="/?path=/story/components-inline--default"
+      />
+      <Component name="Input" status="inProgress" />
+      <Component name="Radio" status="notStarted" />
+      <Component name="Select" status="notStarted" />
+      <Component
+        name="Stack"
+        status="alpha"
+        link="/?path=/docs/components-stack--default"
+      />
+      <Component name="Switch" status="notStarted" />
+      <Component name="Tabs" status="notStarted" />
+      <Component name="Tooltip" status="notStarted" />
+    </div>
+  );
+};
+
+export const Component = ({
   name,
   status = 'notStarted',
   style,
