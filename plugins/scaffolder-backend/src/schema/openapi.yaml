@@ -763,7 +763,7 @@ components:
     #           description: The apiVersion string of the TaskSpec.
     #         kind:
     #           type: string
-    #           enum: 
+    #           enum:
     #             - Template
     #           description: The kind of the entity
     #         spec:
