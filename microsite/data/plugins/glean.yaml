@@ -1,0 +1,10 @@
+---
+title: Glean
+author: Mark Shields
+authorUrl: https://github.com/beejiujitsu
+category: Search
+description: Index Backstage TechDocs-enabled Entities into Glean, the AI-powered work assistant
+documentation: https://github.com/beejiujitsu/wealthsimple-backstage-plugins/tree/master/plugins/glean-backend
+iconUrl: /img/glean-logo-circular-white.png
+npmPackageName: '@beejiujitsu/backstage-plugin-glean-backend'
+addedDate: '2024-12-30'
