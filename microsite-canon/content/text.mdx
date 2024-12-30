@@ -1,0 +1,78 @@
+import { CodeBlock } from '../components/CodeBlock';
+import { PropsTable } from '../components/PropsTable';
+import { Story } from '../components/Story';
+
+# Text
+
+The `Text` component is used to display content on your page.
+
+<Story id="components-text--default" />
+
+<CodeBlock
+  code={`import { Text } from "@backstage/canon";
+
+<Text>Hello World!</Text>`} />
+
+## API reference
+
+<PropsTable
+  data={{
+    variant: {
+      type: ['display', 'title1', 'title2', 'title3', 'title4', 'title5'],
+      responsive: true,
+    },
+    weight: {
+      type: ['regular', 'bold'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### All variants
+
+The `Text` component has a `variant` prop that can be used to change the
+appearance of the text.
+
+<CodeBlock
+  code={`<Stack gap="md">
+    <Text variant="subtitle">Subtitle Lorem ipsum dolor sit amet consectetur...</Text>
+    <Text variant="body">Body Lorem ipsum dolor sit amet consectetur...</Text>
+    <Text variant="caption">Caption Lorem ipsum dolor sit amet consectetur...</Text>
+    <Text variant="label">Label Lorem ipsum dolor sit amet consectetur...</Text>
+</Stack>`}
+/>
+
+### All weights
+
+The `Text` component has a `weight` prop that can be used to change the
+appearance of the text.
+
+<CodeBlock
+  code={`<Stack gap="md">
+    <Text weight="regular">Regular Lorem ipsum dolor sit amet consectetur...</Text>
+    <Text weight="bold">Bold Lorem ipsum dolor sit amet consectetur...</Text>
+</Stack>`}
+/>
+
+### Responsive
+
+You can also use the `variant` prop to change the appearance of the text based
+on the screen size.
+
+<CodeBlock
+  code={`<Text variant={{ xs: 'label', md: 'body' }}>Responsive</Text>`}
+/>

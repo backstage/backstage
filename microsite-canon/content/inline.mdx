@@ -1,0 +1,104 @@
+import { Story } from '../components/Story';
+import { CodeBlock } from '../components/CodeBlock';
+import { PropsTable } from '../components/PropsTable';
+import { spacePropsList } from '../utils/spaceProps';
+
+# Inline
+
+The Inline component is used to create a horizontal layout of elements. By
+default it uses flex and flexWrap to make sure that your content always flows
+responsively.
+
+<CodeBlock
+  code={`import { Inline } from "@backstage/canon";
+
+<Inline>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Inline>
+`} />
+
+## API reference
+
+<PropsTable
+  data={{
+    align: {
+      type: 'start | center | end',
+      responsive: true,
+    },
+    alignY: {
+      type: 'start | center | end',
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+The grid component also accepts all the spacing props from the Box component.
+
+<PropsTable data={spacePropsList} />
+
+## Examples
+
+### Simple
+
+A simple example of how to use the Inline component.
+
+<CodeBlock
+  code={`<Inline>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>
+
+### Responsive
+
+The Inline component also supports responsive values, making it easy to create
+responsive designs.
+
+<CodeBlock
+  code={`<Inline gap={{ xs: 'sm', md: 'md' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>
+
+### Align
+
+The Inline component also supports responsive alignment, making it easy to
+create responsive designs.
+
+<CodeBlock
+  code={`<Inline align={{ xs: 'left', md: 'center' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>
+
+### Align vertically
+
+The Inline component also supports responsive vertical alignment, making it
+easy to create responsive designs.
+
+<CodeBlock
+  code={`<Inline alignY={{ xs: 'top', md: 'center' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>

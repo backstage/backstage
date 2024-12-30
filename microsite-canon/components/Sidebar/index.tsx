@@ -2,7 +2,7 @@ import styles from './Sidebar.module.css';
 import Image from 'next/image';
 import { TabsVersion, TabsTheme, TabsPages } from '../Tabs';
 import Link from 'next/link';
-import { components, coreConcepts } from '@/data';
+import { components, coreConcepts } from '@/utils/data';
 
 export const Sidebar = () => {
   return (

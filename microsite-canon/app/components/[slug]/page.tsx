@@ -1,4 +1,4 @@
-import { components } from '@/data';
+import { components } from '@/utils/data';
 import { notFound } from 'next/navigation';
 import fs from 'fs';
 import path from 'path';

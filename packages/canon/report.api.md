@@ -439,7 +439,7 @@ export { Text_2 as Text };
 // @public (undocumented)
 export interface TextProps {
   // (undocumented)
-  children: React.ReactNode;
+  children: ReactNode;
   // (undocumented)
   variant?:
     | 'subtitle'

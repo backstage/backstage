@@ -1,4 +1,4 @@
-import { coreConcepts } from '@/data';
+import { coreConcepts } from '@/utils/data';
 import { notFound } from 'next/navigation';
 import fs from 'fs';
 import path from 'path';

@@ -1,0 +1,62 @@
+import { Story } from '../components/Story';
+import { CodeBlock } from '../components/CodeBlock';
+import { PropsTable } from '../components/PropsTable';
+
+# Checkbox
+
+A checkbox component that can be used to trigger actions.
+
+<Story id="components-checkbox--primary" />
+
+<CodeBlock
+  code={`import { Checkbox } from "@backstage/canon";
+
+<Checkbox label="Checkbox" />
+`} />
+
+## API reference
+
+<PropsTable
+  data={{
+    label: {
+      type: 'string',
+      responsive: false,
+    },
+    defaultChecked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    checked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    onChange: {
+      type: "(checked: boolean | 'indeterminate') => void",
+      responsive: false,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    required: {
+      type: 'boolean',
+      responsive: false,
+    },
+    name: {
+      type: 'string',
+      responsive: false,
+    },
+    value: {
+      type: 'string',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
