@@ -90,6 +90,7 @@
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
+    "embedded-postgres": "^17.2.0-beta.15",
     "esbuild": "^0.24.0",
     "esbuild-loader": "^4.0.0",
     "eslint": "^8.6.0",
@@ -128,6 +129,7 @@
     "p-limit": "^3.1.0",
     "p-queue": "^6.6.2",
     "pirates": "^4.0.6",
+    "portfinder": "^1.0.32",
     "postcss": "^8.1.0",
     "process": "^0.11.10",
     "raw-loader": "^4.0.2",
@@ -194,6 +196,7 @@
     "@types/yarnpkg__lockfile": "^1.1.4",
     "@vitejs/plugin-react": "^4.3.1",
     "del": "^8.0.0",
+    "embedded-postgres": "17.2.0-beta.15",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
     "vite": "^5.0.0",
@@ -206,6 +209,7 @@
     "@rspack/dev-server": "^1.0.9",
     "@rspack/plugin-react-refresh": "^1.0.0",
     "@vitejs/plugin-react": "^4.0.4",
+    "embedded-postgres": "17.2.0-beta.15",
     "vite": "^5.0.0",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-node-polyfills": "^0.22.0"
@@ -224,6 +228,9 @@
       "optional": true
     },
     "@vitejs/plugin-react": {
+      "optional": true
+    },
+    "embedded-postgres": {
       "optional": true
     },
     "vite": {
