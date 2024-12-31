@@ -1,5 +1,14 @@
 # example-backend-legacy
 
+## 0.2.106-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-signals-backend@0.3.0-next.1
+  - @backstage/plugin-techdocs-backend@1.11.5-next.1
+  - @backstage/plugin-scaffolder-backend@1.29.0-next.1
+
 ## 0.2.106-next.0
 
 ### Patch Changes

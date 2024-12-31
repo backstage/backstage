@@ -1,5 +1,13 @@
 # @backstage/dev-utils
 
+## 1.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/integration-react@1.2.2
+
 ## 1.1.5
 
 ### Patch Changes

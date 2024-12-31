@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.11.5-next.1
+
+### Patch Changes
+
+- 29a4aa8: fix(config): add missing parameters in config schema
+
 ## 1.11.5-next.0
 
 ### Patch Changes

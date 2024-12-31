@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.6-next.1
+
+### Patch Changes
+
+- 29a4aa8: fix(config): add missing parameters in config schema
+
 ## 0.6.6-next.0
 
 ### Patch Changes
