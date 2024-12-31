@@ -33,7 +33,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 /** @public */
 export interface HasSubdomainsCardProps {
   variant?: InfoCardVariants;
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<DomainEntity>;
   columns?: TableColumn<DomainEntity>[];
   title?: string;
 }

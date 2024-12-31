@@ -117,23 +117,22 @@ describe('DefaultApiExplorerPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultApiExplorerPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const expectedHeaders = [
+      'Name',
+      'System',
+      'Owner',
+      'Type',
+      'Lifecycle',
+      'Description',
+      'Tags',
+      'Actions',
+    ];
 
-    await waitFor(() =>
-      expect(columnHeaderLabels).toEqual([
-        'Name',
-        'System',
-        'Owner',
-        'Type',
-        'Lifecycle',
-        'Description',
-        'Tags',
-        'Actions',
-      ]),
-    );
+    for (const header of expectedHeaders) {
+      expect(
+        await screen.findByRole('button', { name: header }),
+      ).toBeInTheDocument();
+    }
   });
 
   it('should render the custom column passed as prop', async () => {
@@ -144,14 +143,13 @@ describe('DefaultApiExplorerPage', () => {
     ];
     await renderWrapped(<DefaultApiExplorerPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const expectedHeaders = ['Foo', 'Bar', 'Baz', 'Actions'];
 
-    await waitFor(() =>
-      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']),
-    );
+    for (const header of expectedHeaders) {
+      expect(
+        await screen.findByRole('button', { name: header }),
+      ).toBeInTheDocument();
+    }
   });
 
   it('should render the default actions of an item in the grid', async () => {

@@ -35,7 +35,7 @@ export interface HasResourcesCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ResourceEntity>[];
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<ResourceEntity>;
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {

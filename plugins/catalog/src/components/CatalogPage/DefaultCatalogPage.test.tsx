@@ -186,19 +186,10 @@ describe('DefaultCatalogPage', () => {
       },
     );
 
-  // TODO(freben): The test timeouts are bumped in this file, because it seems
-  // page and table rerenders accumulate to occasionally go over the default
-  // limit. We should investigate why these timeouts happen.
-
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-
-    expect(columnHeaderLabels).toEqual([
+    const expectedHeaders = [
       'Name',
       'System',
       'Owner',
@@ -207,8 +198,12 @@ describe('DefaultCatalogPage', () => {
       'Description',
       'Tags',
       'Actions',
-    ]);
-  }, 20_000);
+    ];
+
+    for (const header of expectedHeaders) {
+      expect(screen.getByRole('button', { name: header })).toBeInTheDocument();
+    }
+  });
 
   it('should render the custom column passed as prop', async () => {
     const columns: TableColumn<CatalogTableRow>[] = [
@@ -218,12 +213,12 @@ describe('DefaultCatalogPage', () => {
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
-  }, 20_000);
+    const expectedHeaders = ['Foo', 'Bar', 'Baz', 'Actions'];
+
+    for (const header of expectedHeaders) {
+      expect(screen.getByRole('button', { name: header })).toBeInTheDocument();
+    }
+  });
 
   it('should render the custom column function passed as prop', async () => {
     const columns: CatalogTableColumnsFunc = ({ filters, entities }) => {
@@ -237,12 +232,11 @@ describe('DefaultCatalogPage', () => {
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
-  }, 20_000);
+    const expectedHeaders = ['Foo', 'Bar', 'Baz', 'Actions'];
+    for (const header of expectedHeaders) {
+      expect(screen.getByRole('button', { name: header })).toBeInTheDocument();
+    }
+  });
 
   it('should render the default actions of an item in the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
@@ -257,7 +251,7 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByTitle(/Add to favorites/),
     ).resolves.toBeInTheDocument();
-  }, 20_000);
+  });
 
   it('should render the custom actions of an item passed as prop', async () => {
     const actions: TableProps<CatalogTableRow>['actions'] = [
@@ -291,7 +285,7 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByTitle(/Bar Action/).then(e => e.firstChild),
     ).resolves.toBeDisabled();
-  }, 20_000);
+  });
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
@@ -309,14 +303,14 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/All components \(2\)/),
     ).resolves.toBeInTheDocument();
-  }, 20_000);
+  });
 
   it('should set initial filter correctly', async () => {
     await renderWrapped(<DefaultCatalogPage initiallySelectedFilter="all" />);
     await expect(
       screen.findByText(/All components \(2\)/),
     ).resolves.toBeInTheDocument();
-  }, 20_000);
+  });
 
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
@@ -354,7 +348,7 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Starred components \(1\)/),
     ).resolves.toBeInTheDocument();
-  }, 20_000);
+  });
 
   it('should wrap filter in drawer on smaller screens', async () => {
     mockBreakpoint({ matches: true });
@@ -365,5 +359,5 @@ describe('DefaultCatalogPage', () => {
     ).toBeInTheDocument();
     fireEvent.click(button);
     expect(screen.getByRole('presentation')).toBeVisible();
-  }, 20_000);
+  });
 });

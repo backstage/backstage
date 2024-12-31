@@ -517,7 +517,7 @@ export type EntitySourceLocation = {
 
 // @public
 export const EntityTable: {
-  <T extends Entity>(props: EntityTableProps<T>): React_2.JSX.Element;
+  <T extends Entity>(props: EntityTableProps<T, T>): React_2.JSX.Element;
   columns: Readonly<{
     createEntityRefColumn<T_1 extends Entity>(options: {
       defaultKind?: string | undefined;
@@ -544,7 +544,7 @@ export const EntityTable: {
 };
 
 // @public
-export interface EntityTableProps<T extends Entity> {
+export interface EntityTableProps<T extends Entity, RowData extends object> {
   // (undocumented)
   columns: TableColumn<T>[];
   // (undocumented)
@@ -552,7 +552,7 @@ export interface EntityTableProps<T extends Entity> {
   // (undocumented)
   entities: T[];
   // (undocumented)
-  tableOptions?: TableOptions;
+  tableOptions?: TableOptions<RowData>;
   // (undocumented)
   title: string;
   // (undocumented)

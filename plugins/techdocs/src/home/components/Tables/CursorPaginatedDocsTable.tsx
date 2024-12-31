@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { DocsTableRow } from './types';
+import { MTablePagination } from '@material-table/core';
 
 type PaginatedDocsTableProps = {
   prev?(): void;
@@ -29,46 +30,48 @@ type PaginatedDocsTableProps = {
  */
 
 export function CursorPaginatedDocsTable(props: PaginatedDocsTableProps) {
-  const {
-    actions,
-    columns,
-    data,
-    next,
-    prev,
-    title,
-    isLoading,
-    options,
-    ...restProps
-  } = props;
+  const { columns, data, next, prev, options, ...restProps } = props;
+
+  const Pagination = useCallback(
+    (propsPagination: {}) => {
+      return (
+        <MTablePagination
+          {...propsPagination}
+          page={prev ? 1 : 0}
+          count={next ? Number.MAX_VALUE : 0}
+          showFirstLastPageButtons={false}
+          localization={{ labelDisplayedRows: '' }}
+          onPageChange={(_e: MouseEvent, page: number) => {
+            if (page > 0) {
+              next?.();
+            } else {
+              prev?.();
+            }
+          }}
+        />
+      );
+    },
+    [prev, next],
+  );
 
   return (
     <Table
-      title={isLoading ? '' : title}
       columns={columns}
       data={data}
       options={{
+        paginationAlignment: 'flex-end',
         paginationPosition: 'both',
-        ...options,
-        // These settings are configured to force server side pagination
-        pageSizeOptions: [],
-        showFirstLastPageButtons: false,
-        pageSize: Number.MAX_SAFE_INTEGER,
         emptyRowsWhenPaging: false,
-        actionsColumnIndex: -1,
+        ...options,
+        // The following props are configured to force server side pagination
+        pageSizeOptions: [],
+        pageSize: Number.MAX_SAFE_INTEGER,
+        showFirstLastPageButtons: false,
+        paging: true,
       }}
-      onPageChange={page => {
-        if (page > 0) {
-          next?.();
-        } else {
-          prev?.();
-        }
+      components={{
+        Pagination,
       }}
-      /* this will enable the prev button accordingly */
-      page={prev ? 1 : 0}
-      /* this will enable the next button accordingly */
-      totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
-      isLoading={isLoading}
       {...restProps}
     />
   );
