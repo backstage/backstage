@@ -7758,6 +7758,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@microsoft/fetch-event-source": ^2.0.1
+    "@types/json-schema": ^7.0.9
     cross-fetch: ^4.0.0
     json-schema: ^0.4.0
     msw: ^1.0.0
