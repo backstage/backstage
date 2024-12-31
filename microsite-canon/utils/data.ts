@@ -21,18 +21,10 @@ export const coreConcepts = [
   },
 ];
 
-export const components = [
+export const layoutComponents = [
   {
     title: 'Box',
     slug: 'box',
-  },
-  {
-    title: 'Button',
-    slug: 'button',
-  },
-  {
-    title: 'Checkbox',
-    slug: 'checkbox',
   },
   {
     title: 'Container',
@@ -43,20 +35,31 @@ export const components = [
     slug: 'grid',
   },
   {
-    title: 'Heading',
-    slug: 'heading',
-  },
-  {
-    title: 'Icon',
-    slug: 'icon',
-  },
-  {
     title: 'Inline',
     slug: 'inline',
   },
   {
     title: 'Stack',
     slug: 'stack',
+  },
+];
+
+export const components = [
+  {
+    title: 'Button',
+    slug: 'button',
+  },
+  {
+    title: 'Checkbox',
+    slug: 'checkbox',
+  },
+  {
+    title: 'Heading',
+    slug: 'heading',
+  },
+  {
+    title: 'Icon',
+    slug: 'icon',
   },
   {
     title: 'Table',

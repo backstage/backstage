@@ -1,4 +1,4 @@
-import { components } from '@/utils/data';
+import { components, layoutComponents } from '@/utils/data';
 import { notFound } from 'next/navigation';
 import fs from 'fs';
 import path from 'path';
@@ -24,7 +24,9 @@ export default async function Page({
 }
 
 export function generateStaticParams() {
-  return components.map(component => ({ slug: component.slug }));
+  return [...components, ...layoutComponents].map(component => ({
+    slug: component.slug,
+  }));
 }
 
 export const dynamicParams = false;

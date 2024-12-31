@@ -10,6 +10,7 @@
   padding-left: 20px;
   padding-right: 20px;
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  overflow: hidden;
 }
 
 .sidebar svg path {
@@ -29,11 +30,28 @@
 }
 
 .menu {
-  margin-top: 48px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
 }
 
 .menu a {
-  display: block;
+  display: flex;
   text-decoration: none;
-  height: 1.75rem;
+  height: 28px;
+  align-items: center;
+}
+
+.section {
+  width: 100%;
+}
+
+.line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 28px;
 }

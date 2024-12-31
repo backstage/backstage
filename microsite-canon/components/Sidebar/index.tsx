@@ -1,11 +1,16 @@
+'use client';
+
 import styles from './Sidebar.module.css';
-import Image from 'next/image';
 import { TabsVersion, TabsTheme, TabsPages } from '../Tabs';
-import Link from 'next/link';
-import { components, coreConcepts } from '@/utils/data';
-import { Box, Text } from '@backstage/canon';
+import { usePathname } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
+import { Docs } from './docs';
+import { Playground } from './playground';
 
 export const Sidebar = () => {
+  const pathname = usePathname();
+  const isPlayground = pathname.includes('/playground');
+
   return (
     <div className={styles.sidebar}>
       <div className={styles.content}>
@@ -24,26 +29,8 @@ export const Sidebar = () => {
         </div>
         <TabsPages />
         <div className={styles.menu}>
-          <Box marginTop="md" marginBottom="xs">
-            <Text variant="subtitle" weight="bold">
-              Core Concepts
-            </Text>
-          </Box>
-          {coreConcepts.map(concept => (
-            <Link href={`/core-concepts/${concept.slug}`} key={concept.slug}>
-              <Text variant="body">{concept.title}</Text>
-            </Link>
-          ))}
-          <Box marginTop="md" marginBottom="xs">
-            <Text variant="subtitle" weight="bold">
-              Components
-            </Text>
-          </Box>
-          {components.map(component => (
-            <Link href={`/components/${component.slug}`} key={component.slug}>
-              <Text variant="body">{component.title}</Text>
-            </Link>
-          ))}
+          <Docs />
+          <Playground />
         </div>
       </div>
     </div>
