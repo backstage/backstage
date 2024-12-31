@@ -60,6 +60,7 @@ export const spec = {
         in: 'query',
         description: 'Offset event ID to stream events after.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'integer',
         },
@@ -172,7 +173,7 @@ export const spec = {
           description: {
             type: 'string',
           },
-          examples: {
+          "'examples'": {
             type: 'array',
             items: {
               $ref: '#/components/schemas/ActionExample',
@@ -252,139 +253,6 @@ export const spec = {
           },
         },
         required: ['log', 'directoryContents', 'output'],
-      },
-      EntityLink: {
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            description:
-              'An optional value to categorize links into specific groups',
-          },
-          icon: {
-            type: 'string',
-            description:
-              'An optional semantic key that represents a visual icon.',
-          },
-          title: {
-            type: 'string',
-            description: 'An optional descriptive title for the link.',
-          },
-          url: {
-            type: 'string',
-            description: 'The url to the external site, document, etc.',
-          },
-        },
-        required: ['url'],
-        description:
-          'A link to external information that is related to the entity.',
-        additionalProperties: false,
-      },
-      EntityMeta: {
-        type: 'object',
-        properties: {
-          links: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/EntityLink',
-            },
-            description: 'A list of external hyperlinks related to the entity.',
-          },
-          tags: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'A list of single-valued strings, to for example classify catalog entities in\nvarious ways.',
-          },
-          annotations: {
-            $ref: '#/components/schemas/MapStringString',
-          },
-          labels: {
-            $ref: '#/components/schemas/MapStringString',
-          },
-          description: {
-            type: 'string',
-            description:
-              'A short (typically relatively few words, on one line) description of the\nentity.',
-          },
-          title: {
-            type: 'string',
-            description:
-              'A display name of the entity, to be presented in user interfaces instead\nof the `name` property above, when available.\nThis field is sometimes useful when the `name` is cumbersome or ends up\nbeing perceived as overly technical. The title generally does not have\nas stringent format requirements on it, so it may contain special\ncharacters and be more explanatory. Do keep it very short though, and\navoid situations where a title can be confused with the name of another\nentity, or where two entities share a title.\nNote that this is only for display purposes, and may be ignored by some\nparts of the code. Entity references still always make use of the `name`\nproperty, not the title.',
-          },
-          namespace: {
-            type: 'string',
-            description: 'The namespace that the entity belongs to.',
-          },
-          name: {
-            type: 'string',
-            description:
-              'The name of the entity.\nMust be unique within the catalog at any given point in time, for any\ngiven namespace + kind pair. This value is part of the technical\nidentifier of the entity, and as such it will appear in URLs, database\ntables, entity references, and similar. It is subject to restrictions\nregarding what characters are allowed.\nIf you want to use a different, more human readable string with fewer\nrestrictions on it in user interfaces, see the `title` field below.',
-          },
-          etag: {
-            type: 'string',
-            description:
-              'An opaque string that changes for each update operation to any part of\nthe entity, including metadata.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, and the server will then reject the\noperation if it does not match the current stored value.',
-          },
-          uid: {
-            type: 'string',
-            description:
-              'A globally unique ID for the entity.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, but the server is free to reject requests\nthat do so in such a way that it breaks semantics.',
-          },
-        },
-        required: ['name'],
-        description: 'Metadata fields common to all versions/kinds of entity.',
-        additionalProperties: {},
-      },
-      EntityRelation: {
-        type: 'object',
-        properties: {
-          targetRef: {
-            type: 'string',
-            description: 'The entity ref of the target of this relation.',
-          },
-          type: {
-            type: 'string',
-            description: 'The type of the relation.',
-          },
-        },
-        required: ['targetRef', 'type'],
-        description:
-          'A relation of a specific type to another entity in the catalog.',
-        additionalProperties: false,
-      },
-      Entity: {
-        type: 'object',
-        properties: {
-          relations: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/EntityRelation',
-            },
-            description:
-              'The relations that this entity has with other entities.',
-          },
-          spec: {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          metadata: {
-            $ref: '#/components/schemas/EntityMeta',
-          },
-          kind: {
-            type: 'string',
-            description: 'The high level entity type being described.',
-          },
-          apiVersion: {
-            type: 'string',
-            description:
-              'The version of specification format for this particular entity that\nthis is written against.',
-          },
-        },
-        required: ['metadata', 'kind', 'apiVersion'],
-        description:
-          "The parts of the format that's common to all versions/kinds of entity.",
       },
       Error: {
         type: 'object',
@@ -501,14 +369,6 @@ export const spec = {
         required: ['tasks'],
         description:
           'The response shape for the `listTasks` call to the `scaffolder-backend`',
-      },
-      MapStringString: {
-        type: 'object',
-        properties: {},
-        additionalProperties: {
-          type: 'string',
-        },
-        description: 'Construct a type with a set of properties K of type T',
       },
       ScaffolderScaffoldOptions: {
         type: 'object',
@@ -629,17 +489,6 @@ export const spec = {
         description: 'TaskEventType',
         enum: ['cancelled', 'completion', 'log', 'recovered'],
       },
-      TaskRecovery: {
-        type: 'object',
-        description:
-          "When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,\nby defining a strategy.\n\nBy default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.",
-      },
-      TaskRecoverStrategy: {
-        type: 'string',
-        description:
-          '- none: not recover, let the task be marked as failed\n- startOver: do recover, start the execution of the task from the first step.\n',
-        enum: ['none', 'startOver'],
-      },
       TaskSecrets: {
         allOf: [
           {
@@ -670,71 +519,6 @@ export const spec = {
           'skipped',
         ],
         description: 'The status of each step of the Task',
-      },
-      TaskStep: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            description: 'A unique identifier for this step.',
-          },
-          name: {
-            type: 'string',
-            description: 'A display name to show the user.',
-          },
-          action: {
-            type: 'string',
-            description:
-              'The underlying action ID that will be called as part of running this step.',
-          },
-          input: {
-            $ref: '#/components/schemas/JsonObject',
-            description: 'Additional data that will be passed to the action.',
-          },
-          each: {
-            oneOf: [
-              {
-                type: 'string',
-              },
-              {
-                $ref: '#/components/schemas/JsonArray',
-              },
-            ],
-            description: 'Run step repeatedly.',
-          },
-        },
-        required: ['id', 'name', 'action'],
-        description:
-          'An individual step of a scaffolder task, as stored in the database.',
-        additionalProperties: {},
-      },
-      TemplateInfo: {
-        type: 'object',
-        properties: {
-          entityRef: {
-            type: 'string',
-            description: 'The entityRef of the template.',
-          },
-          baseUrl: {
-            type: 'string',
-            description:
-              'Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.',
-          },
-          entity: {
-            type: 'object',
-            properties: {
-              metadata: {
-                $ref: '#/components/schemas/EntityMeta',
-                description: 'The metadata of the Template.',
-              },
-            },
-            required: ['metadata'],
-            description: 'The Template entity.',
-          },
-        },
-        required: ['entityRef'],
-        description:
-          'Information about a template that is stored on a task specification.\nIncludes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition',
       },
       TemplateParameterSchema: {
         type: 'object',
