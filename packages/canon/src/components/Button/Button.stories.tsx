@@ -19,13 +19,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
 import { Inline } from '../Inline';
 import { Stack } from '../Stack';
-
+import { Text } from '../Text';
 const meta = {
   title: 'Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     size: {
       control: 'select',
@@ -124,4 +121,22 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
+};
+
+export const Playground: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: args => (
+    <Stack>
+      <Stack>
+        <Text>Primary</Text>
+        <Inline alignY="center">
+          <Button {...args} iconStart="cloud" />
+          <Button {...args} iconEnd="chevronRight" />
+          <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
+        </Inline>
+      </Stack>
+    </Stack>
+  ),
 };

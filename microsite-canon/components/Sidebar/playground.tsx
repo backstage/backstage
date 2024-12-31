@@ -1,18 +1,11 @@
-import Link from 'next/link';
+'use client';
+
 import { components } from '@/utils/data';
 import { Box, Checkbox, Text } from '@backstage/canon';
 import { motion } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
-
-const breakpoints = [
-  { title: 'XSmall', slug: 'xs' },
-  { title: 'Small', slug: 'sm' },
-  { title: 'Medium', slug: 'md' },
-  { title: 'Large', slug: 'lg' },
-  { title: 'XLarge', slug: 'xl' },
-  { title: 'XXLarge', slug: '2xl' },
-];
+import { screenSizes } from '@/utils/data';
 
 export const Playground = () => {
   const pathname = usePathname();
@@ -40,18 +33,18 @@ export const Playground = () => {
         </Text>
       </Box>
       {components.map(({ slug, title }) => (
-        <div className={styles.line}>
+        <div className={styles.line} key={slug}>
           <Text variant="body">{title}</Text>
           <Checkbox />
         </div>
       ))}
       <Box marginTop="md" marginBottom="xs">
         <Text variant="subtitle" weight="bold">
-          Breakpoints
+          Screen sizes
         </Text>
       </Box>
-      {breakpoints.map(({ title }) => (
-        <div className={styles.line}>
+      {screenSizes.map(({ slug, title }) => (
+        <div className={styles.line} key={slug}>
           <Text variant="body">{title}</Text>
           <Checkbox />
         </div>

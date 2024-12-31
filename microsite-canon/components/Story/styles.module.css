@@ -1,7 +1,7 @@
 .container {
-  width: 100%;
-  border: 1px solid var(--canon-border-base);
+  width: 1px;
+  min-width: 100%;
   margin-bottom: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 4px;
   overflow: hidden;
 }

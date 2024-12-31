@@ -2,7 +2,14 @@
 
 import { useTheme } from 'next-themes';
 import styles from './styles.module.css';
-export const Story = ({ id, height }: { id: string; height?: number }) => {
+import IframeResizer from '@iframe-resizer/react';
+
+interface StoryProps {
+  id: string;
+  border?: boolean;
+}
+
+export const Story = ({ id, border = true }: StoryProps) => {
   const { theme } = useTheme();
 
   const localTheme = theme === 'dark' ? 'Dark' : 'Light';
@@ -13,11 +20,14 @@ export const Story = ({ id, height }: { id: string; height?: number }) => {
   const iframeUrl = `${url}?globals=theme%3A${localTheme}&args=&id=${id}`;
 
   return (
-    <div
+    <IframeResizer
+      src={iframeUrl}
+      license="GPLv3"
+      checkOrigin={false}
       className={styles.container}
-      style={{ height: height ? `${height}px` : '120px' }}
-    >
-      <iframe src={iframeUrl} width="100%" height="100%" />
-    </div>
+      style={{
+        border: border ? '1px solid var(--canon-border-base)' : 'none',
+      }}
+    />
   );
 };

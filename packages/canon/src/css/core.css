@@ -29,6 +29,7 @@
 
   /* Borders */
   --canon-border-base: rgba(0, 0, 0, 0.1);
+  --canon-border-hover: rgba(0, 0, 0, 0.2);
   --canon-border-warning: #e36d05;
   --canon-border-error: #e22b2b;
   --canon-border-selected: #1db954;

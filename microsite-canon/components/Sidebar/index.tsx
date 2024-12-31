@@ -1,16 +1,9 @@
-'use client';
-
 import styles from './Sidebar.module.css';
 import { TabsVersion, TabsTheme, TabsPages } from '../Tabs';
-import { usePathname } from 'next/navigation';
-import { AnimatePresence } from 'framer-motion';
 import { Docs } from './docs';
 import { Playground } from './playground';
 
 export const Sidebar = () => {
-  const pathname = usePathname();
-  const isPlayground = pathname.includes('/playground');
-
   return (
     <div className={styles.sidebar}>
       <div className={styles.content}>
