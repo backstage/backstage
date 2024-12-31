@@ -24,6 +24,7 @@ import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
 import { logApiReportInstructions } from '../api-extractor';
+import { PgLiteClient } from './pglite';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -32,36 +33,6 @@ interface SqlExtractionOptions {
 
 export async function runSqlExtraction(options: SqlExtractionOptions) {
   const { default: Knex } = await import('knex');
-  const { default: EmbeddedPostgres } = await import('embedded-postgres').catch(
-    error => {
-      throw new Error(
-        `Failed to load peer dependency 'embedded-postgres' for generating SQL reports. ` +
-          `It must be installed as an explicit dependency in your project. Caused by; ${error}`,
-      );
-    },
-  );
-
-  const port = await getPortPromise();
-
-  const basePgOpts = {
-    host: 'localhost',
-    user: 'postgres',
-    password: 'password',
-  };
-  const pg = new EmbeddedPostgres({
-    databaseDir: './data/db',
-    ...basePgOpts,
-    port,
-    persistent: false,
-    onError(_messageOrError) {},
-    onLog(_message) {},
-  });
-
-  // Create the cluster config files
-  await pg.initialise();
-
-  // Start the server
-  await pg.start();
 
   let dbIndex = 1;
 
@@ -90,16 +61,17 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
 
       for (const migrationTarget of migrationTargets) {
         const database = `extractor-${dbIndex++}`;
-        await pg.createDatabase(database);
 
         const knex = Knex({
-          client: 'pg',
+          client: PgLiteClient,
+          dialect: 'postgres',
           connection: {
-            ...basePgOpts,
-            port,
             database,
           },
         });
+
+        await knex.raw(`CREATE DATABASE "${database}"`);
+
         await runSingleSqlExtraction(
           packageDir,
           migrationTarget,
@@ -109,9 +81,9 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
         );
       }
     }
-  } finally {
-    // Stop the server
-    await pg.stop();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
   }
 }
 
