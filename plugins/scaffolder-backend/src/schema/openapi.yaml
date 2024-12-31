@@ -28,6 +28,7 @@ components:
       in: query
       description: Offset event ID to stream events after.
       required: false
+      allowReserved: true
       schema:
         type: integer
     kind:
@@ -112,7 +113,7 @@ components:
           type: string
         description:
           type: string
-        examples:
+        '''examples''':
           type: array
           items:
             $ref: '#/components/schemas/ActionExample'
@@ -170,139 +171,139 @@ components:
         - log
         - directoryContents
         - output
-    EntityLink:
-      type: object
-      properties:
-        type:
-          type: string
-          description: An optional value to categorize links into specific groups
-        icon:
-          type: string
-          description: An optional semantic key that represents a visual icon.
-        title:
-          type: string
-          description: An optional descriptive title for the link.
-        url:
-          type: string
-          description: The url to the external site, document, etc.
-      required:
-        - url
-      description: A link to external information that is related to the entity.
-      additionalProperties: false
-    EntityMeta:
-      type: object
-      properties:
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityLink'
-          description: A list of external hyperlinks related to the entity.
-        tags:
-          type: array
-          items:
-            type: string
-          description: |-
-            A list of single-valued strings, to for example classify catalog entities in
-            various ways.
-        annotations:
-          $ref: '#/components/schemas/MapStringString'
-        labels:
-          $ref: '#/components/schemas/MapStringString'
-        description:
-          type: string
-          description: |-
-            A short (typically relatively few words, on one line) description of the
-            entity.
-        title:
-          type: string
-          description: |-
-            A display name of the entity, to be presented in user interfaces instead
-            of the `name` property above, when available.
-            This field is sometimes useful when the `name` is cumbersome or ends up
-            being perceived as overly technical. The title generally does not have
-            as stringent format requirements on it, so it may contain special
-            characters and be more explanatory. Do keep it very short though, and
-            avoid situations where a title can be confused with the name of another
-            entity, or where two entities share a title.
-            Note that this is only for display purposes, and may be ignored by some
-            parts of the code. Entity references still always make use of the `name`
-            property, not the title.
-        namespace:
-          type: string
-          description: The namespace that the entity belongs to.
-        name:
-          type: string
-          description: |-
-            The name of the entity.
-            Must be unique within the catalog at any given point in time, for any
-            given namespace + kind pair. This value is part of the technical
-            identifier of the entity, and as such it will appear in URLs, database
-            tables, entity references, and similar. It is subject to restrictions
-            regarding what characters are allowed.
-            If you want to use a different, more human readable string with fewer
-            restrictions on it in user interfaces, see the `title` field below.
-        etag:
-          type: string
-          description: |-
-            An opaque string that changes for each update operation to any part of
-            the entity, including metadata.
-            This field can not be set by the user at creation time, and the server
-            will reject an attempt to do so. The field will be populated in read
-            operations. The field can (optionally) be specified when performing
-            update or delete operations, and the server will then reject the
-            operation if it does not match the current stored value.
-        uid:
-          type: string
-          description: |-
-            A globally unique ID for the entity.
-            This field can not be set by the user at creation time, and the server
-            will reject an attempt to do so. The field will be populated in read
-            operations. The field can (optionally) be specified when performing
-            update or delete operations, but the server is free to reject requests
-            that do so in such a way that it breaks semantics.
-      required:
-        - name
-      description: Metadata fields common to all versions/kinds of entity.
-      additionalProperties: {}
-    EntityRelation:
-      type: object
-      properties:
-        targetRef:
-          type: string
-          description: The entity ref of the target of this relation.
-        type:
-          type: string
-          description: The type of the relation.
-      required:
-        - targetRef
-        - type
-      description: A relation of a specific type to another entity in the catalog.
-      additionalProperties: false
-    Entity:
-      type: object
-      properties:
-        relations:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityRelation'
-          description: The relations that this entity has with other entities.
-        spec:
-          $ref: '#/components/schemas/JsonObject'
-        metadata:
-          $ref: '#/components/schemas/EntityMeta'
-        kind:
-          type: string
-          description: The high level entity type being described.
-        apiVersion:
-          type: string
-          description: |-
-            The version of specification format for this particular entity that
-            this is written against.
-      required:
-        - metadata
-        - kind
-        - apiVersion
-      description: The parts of the format that's common to all versions/kinds of entity.
+    # EntityLink:
+    #   type: object
+    #   properties:
+    #     type:
+    #       type: string
+    #       description: An optional value to categorize links into specific groups
+    #     icon:
+    #       type: string
+    #       description: An optional semantic key that represents a visual icon.
+    #     title:
+    #       type: string
+    #       description: An optional descriptive title for the link.
+    #     url:
+    #       type: string
+    #       description: The url to the external site, document, etc.
+    #   required:
+    #     - url
+    #   description: A link to external information that is related to the entity.
+    #   additionalProperties: false
+    # EntityMeta:
+    #   type: object
+    #   properties:
+    #     links:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/EntityLink'
+    #       description: A list of external hyperlinks related to the entity.
+    #     tags:
+    #       type: array
+    #       items:
+    #         type: string
+    #       description: |-
+    #         A list of single-valued strings, to for example classify catalog entities in
+    #         various ways.
+    #     annotations:
+    #       $ref: '#/components/schemas/MapStringString'
+    #     labels:
+    #       $ref: '#/components/schemas/MapStringString'
+    #     description:
+    #       type: string
+    #       description: |-
+    #         A short (typically relatively few words, on one line) description of the
+    #         entity.
+    #     title:
+    #       type: string
+    #       description: |-
+    #         A display name of the entity, to be presented in user interfaces instead
+    #         of the `name` property above, when available.
+    #         This field is sometimes useful when the `name` is cumbersome or ends up
+    #         being perceived as overly technical. The title generally does not have
+    #         as stringent format requirements on it, so it may contain special
+    #         characters and be more explanatory. Do keep it very short though, and
+    #         avoid situations where a title can be confused with the name of another
+    #         entity, or where two entities share a title.
+    #         Note that this is only for display purposes, and may be ignored by some
+    #         parts of the code. Entity references still always make use of the `name`
+    #         property, not the title.
+    #     namespace:
+    #       type: string
+    #       description: The namespace that the entity belongs to.
+    #     name:
+    #       type: string
+    #       description: |-
+    #         The name of the entity.
+    #         Must be unique within the catalog at any given point in time, for any
+    #         given namespace + kind pair. This value is part of the technical
+    #         identifier of the entity, and as such it will appear in URLs, database
+    #         tables, entity references, and similar. It is subject to restrictions
+    #         regarding what characters are allowed.
+    #         If you want to use a different, more human readable string with fewer
+    #         restrictions on it in user interfaces, see the `title` field below.
+    #     etag:
+    #       type: string
+    #       description: |-
+    #         An opaque string that changes for each update operation to any part of
+    #         the entity, including metadata.
+    #         This field can not be set by the user at creation time, and the server
+    #         will reject an attempt to do so. The field will be populated in read
+    #         operations. The field can (optionally) be specified when performing
+    #         update or delete operations, and the server will then reject the
+    #         operation if it does not match the current stored value.
+    #     uid:
+    #       type: string
+    #       description: |-
+    #         A globally unique ID for the entity.
+    #         This field can not be set by the user at creation time, and the server
+    #         will reject an attempt to do so. The field will be populated in read
+    #         operations. The field can (optionally) be specified when performing
+    #         update or delete operations, but the server is free to reject requests
+    #         that do so in such a way that it breaks semantics.
+    #   required:
+    #     - name
+    #   description: Metadata fields common to all versions/kinds of entity.
+    #   additionalProperties: {}
+    # EntityRelation:
+    #   type: object
+    #   properties:
+    #     targetRef:
+    #       type: string
+    #       description: The entity ref of the target of this relation.
+    #     type:
+    #       type: string
+    #       description: The type of the relation.
+    #   required:
+    #     - targetRef
+    #     - type
+    #   description: A relation of a specific type to another entity in the catalog.
+    #   additionalProperties: false
+    # Entity:
+    #   type: object
+    #   properties:
+    #     relations:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/EntityRelation'
+    #       description: The relations that this entity has with other entities.
+    #     spec:
+    #       $ref: '#/components/schemas/JsonObject'
+    #     metadata:
+    #       $ref: '#/components/schemas/EntityMeta'
+    #     kind:
+    #       type: string
+    #       description: The high level entity type being described.
+    #     apiVersion:
+    #       type: string
+    #       description: |-
+    #         The version of specification format for this particular entity that
+    #         this is written against.
+    #   required:
+    #     - metadata
+    #     - kind
+    #     - apiVersion
+    #   description: The parts of the format that's common to all versions/kinds of entity.
     Error:
       type: object
       properties:
@@ -382,12 +383,12 @@ components:
       required:
         - tasks
       description: The response shape for the `listTasks` call to the `scaffolder-backend`
-    MapStringString:
-      type: object
-      properties: {}
-      additionalProperties:
-        type: string
-      description: Construct a type with a set of properties K of type T
+    # MapStringString:
+    #   type: object
+    #   properties: {}
+    #   additionalProperties:
+    #     type: string
+    #   description: Construct a type with a set of properties K of type T
     ScaffolderScaffoldOptions:
       type: object
       properties:
@@ -606,24 +607,24 @@ components:
         - completion
         - log
         - recovered
-    TaskRecovery:
-      type: object
-      # properties:
-      #   EXPERIMENTAL_strategy:
-      #     $ref: '#/components/schemas/TaskRecoverStrategy'
-      description: |-
-        When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
-        by defining a strategy.
+    # TaskRecovery:
+    #   type: object
+    #   # properties:
+    #   #   EXPERIMENTAL_strategy:
+    #   #     $ref: '#/components/schemas/TaskRecoverStrategy'
+    #   description: |-
+    #     When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
+    #     by defining a strategy.
 
-        By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
-    TaskRecoverStrategy:
-      type: string
-      description: |
-        - none: not recover, let the task be marked as failed
-        - startOver: do recover, start the execution of the task from the first step.
-      enum:
-        - none
-        - startOver
+    #     By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
+    # TaskRecoverStrategy:
+    #   type: string
+    #   description: |
+    #     - none: not recover, let the task be marked as failed
+    #     - startOver: do recover, start the execution of the task from the first step.
+    #   enum:
+    #     - none
+    #     - startOver
     TaskSecrets:
       allOf:
         - type: object
@@ -697,37 +698,37 @@ components:
         - processing
         - skipped
       description: The status of each step of the Task
-    TaskStep:
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique identifier for this step.
-        name:
-          type: string
-          description: A display name to show the user.
-        action:
-          type: string
-          description: The underlying action ID that will be called as part of running this step.
-        input:
-          $ref: '#/components/schemas/JsonObject'
-          description: Additional data that will be passed to the action.
-        # if:
-        #   oneOf:
-        #     - type: string
-        #     - type: boolean
-        #   description: When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
-        each:
-          oneOf:
-            - type: string
-            - $ref: '#/components/schemas/JsonArray'
-          description: Run step repeatedly.
-      required:
-        - id
-        - name
-        - action
-      description: An individual step of a scaffolder task, as stored in the database.
-      additionalProperties: {}
+    # TaskStep:
+    #   type: object
+    #   properties:
+    #     id:
+    #       type: string
+    #       description: A unique identifier for this step.
+    #     name:
+    #       type: string
+    #       description: A display name to show the user.
+    #     action:
+    #       type: string
+    #       description: The underlying action ID that will be called as part of running this step.
+    #     input:
+    #       $ref: '#/components/schemas/JsonObject'
+    #       description: Additional data that will be passed to the action.
+    #     # if:
+    #     #   oneOf:
+    #     #     - type: string
+    #     #     - type: boolean
+    #     #   description: When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
+    #     each:
+    #       oneOf:
+    #         - type: string
+    #         - $ref: '#/components/schemas/JsonArray'
+    #       description: Run step repeatedly.
+    #   required:
+    #     - id
+    #     - name
+    #     - action
+    #   description: An individual step of a scaffolder task, as stored in the database.
+    #   additionalProperties: {}
     # TemplateEntityStepV1beta3:
     #   allOf:
     #     - $ref: '#/components/schemas/JsonObject'
@@ -825,29 +826,29 @@ components:
     #   description: |-
     #     Backstage catalog Template kind Entity. Templates are used by the Scaffolder
     #     plugin to create new entities, such as Components.
-    TemplateInfo:
-      type: object
-      properties:
-        entityRef:
-          type: string
-          description: The entityRef of the template.
-        baseUrl:
-          type: string
-          description: Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
-        entity:
-          type: object
-          properties:
-            metadata:
-              $ref: '#/components/schemas/EntityMeta'
-              description: The metadata of the Template.
-          required:
-            - metadata
-          description: The Template entity.
-      required:
-        - entityRef
-      description: |-
-        Information about a template that is stored on a task specification.
-        Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
+    # TemplateInfo:
+    #   type: object
+    #   properties:
+    #     entityRef:
+    #       type: string
+    #       description: The entityRef of the template.
+    #     baseUrl:
+    #       type: string
+    #       description: Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
+    #     entity:
+    #       type: object
+    #       properties:
+    #         metadata:
+    #           $ref: '#/components/schemas/EntityMeta'
+    #           description: The metadata of the Template.
+    #       required:
+    #         - metadata
+    #       description: The Template entity.
+    #   required:
+    #     - entityRef
+    #   description: |-
+    #     Information about a template that is stored on a task specification.
+    #     Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
     TemplateParameterSchema:
       type: object
       properties:
