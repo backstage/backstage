@@ -317,6 +317,12 @@ const customProperties = {
   type: 'object',
 };
 
+const subscribe = {
+  title: 'Subscribe to repository',
+  description: `Subscribe to the repository. The default value is 'false'`,
+  type: 'boolean',
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -357,3 +363,4 @@ export { repoVariables };
 export { secrets };
 export { oidcCustomization };
 export { customProperties };
+export { subscribe };
