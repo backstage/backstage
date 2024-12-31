@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.5.5-next.1
+
+### Patch Changes
+
+- edaf925: Updates to allow users to subscribe to the newly created repository within GitHub to mimic similar functionality found within the GitHub UI.
+
 ## 0.5.5-next.0
 
 ### Patch Changes
