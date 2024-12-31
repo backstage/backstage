@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import React from 'react';
 import type { BundledLanguage } from 'shiki';
 import { codeToHtml } from 'shiki';
-import React from 'react';
+import { Text } from '@backstage/canon';
 import styles from './styles.module.css';
 
 interface CodeBlockProps {
@@ -21,7 +21,11 @@ export async function CodeBlock({ lang, title, code }: CodeBlockProps) {
 
   return (
     <div className={styles.codeBlock}>
-      {title && <div className={styles.title}>{title}</div>}
+      {title && (
+        <div className={styles.title}>
+          <Text variant="body">{title}</Text>
+        </div>
+      )}
       <div dangerouslySetInnerHTML={{ __html: out }} className={styles.code} />
     </div>
   );

@@ -3,61 +3,35 @@ import Image, { ImageProps } from 'next/image';
 import { ReactNode, ReactElement } from 'react';
 import React from 'react';
 import { CodeBlock } from '@/components/CodeBlock';
-
-// This file allows you to provide custom React components
-// to be used in MDX files. You can import and use any
-// React component you want, including inline styles,
-// components from other libraries, and more.
+import { Heading, Text, Box } from '@backstage/canon';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     // Allows customizing built-in components, e.g. to add styling.
     h1: ({ children }) => (
-      <h1
-        style={{
-          color: 'var(--canon-text-primary)',
-          fontSize: '3rem',
-          marginTop: '64px',
-        }}
-      >
-        {children as ReactNode}
-      </h1>
+      <Box marginBottom="md" style={{ marginTop: '4rem' }}>
+        <Heading variant="title2">{children as ReactNode}</Heading>
+      </Box>
     ),
     h2: ({ children }) => (
-      <h2
-        style={{
-          color: 'var(--canon-text-primary)',
-          fontSize: '1.75rem',
-          marginTop: '3rem',
-        }}
-      >
-        {children as ReactNode}
-      </h2>
+      <Box marginTop="xl" marginBottom="md">
+        <Heading variant="title3">{children as ReactNode}</Heading>
+      </Box>
     ),
     h3: ({ children }) => (
-      <h3
-        style={{
-          color: 'var(--canon-text-primary)',
-          fontSize: '1.25rem',
-          marginTop: '2.5rem',
-          marginBottom: '0.5rem',
-        }}
-      >
-        {children as ReactNode}
-      </h3>
+      <Box marginTop="lg" marginBottom="xs">
+        <Heading variant="title4">{children as ReactNode}</Heading>
+      </Box>
     ),
     p: ({ children }) => (
-      <p
-        style={{
-          color: 'var(--canon-text-primary)',
-          fontSize: '1rem',
-          lineHeight: '1.5rem',
-          marginTop: '0',
-          marginBottom: '1rem',
-        }}
-      >
+      <Box marginBottom="md">
+        <Text variant="subtitle">{children as ReactNode}</Text>
+      </Box>
+    ),
+    a: ({ children, href }) => (
+      <a href={href} style={{ color: 'var(--canon-text-primary)' }}>
         {children as ReactNode}
-      </p>
+      </a>
     ),
     pre: ({ children }) => {
       const codeContent = React.isValidElement(children)

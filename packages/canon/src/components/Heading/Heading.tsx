@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import React, { forwardRef } from 'react';
 import { HeadingProps } from './types';
 import { useCanon } from '../../contexts/canon';

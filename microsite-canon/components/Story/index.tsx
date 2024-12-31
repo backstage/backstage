@@ -8,7 +8,9 @@ export const Story = ({ id, height }: { id: string; height?: number }) => {
   const localTheme = theme === 'dark' ? 'Dark' : 'Light';
   const chromaticId = '67584b7e8c2eb09c0422c27e-dmfbzicnkw';
   const chromaticUrl = `https://${chromaticId}.chromatic.com/iframe.html`;
-  const iframeUrl = `${chromaticUrl}?globals=theme%3A${localTheme}&args=&id=${id}`;
+  const localUrl = 'http://localhost:6006/iframe.html';
+  const url = process.env.NODE_ENV === 'development' ? localUrl : chromaticUrl;
+  const iframeUrl = `${url}?globals=theme%3A${localTheme}&args=&id=${id}`;
 
   return (
     <div

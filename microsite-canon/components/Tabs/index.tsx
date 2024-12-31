@@ -2,7 +2,7 @@
 
 import styles from './Tabs.module.css';
 import { Tabs } from '@base-ui-components/react/tabs';
-import { Icon } from '@backstage/canon';
+import { Icon, Text } from '@backstage/canon';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -13,10 +13,14 @@ export const TabsVersion = () => {
     <Tabs.Root className={styles.tabs} defaultValue="v1">
       <Tabs.List className={styles.list}>
         <Tabs.Tab className={styles.tab} value="v1">
-          V1
+          <Text variant="caption" weight="bold">
+            V1
+          </Text>
         </Tabs.Tab>
         <Tabs.Tab className={styles.tab} value="v2">
-          V2
+          <Text variant="caption" weight="bold">
+            V2
+          </Text>
         </Tabs.Tab>
         <Tabs.Indicator className={styles.indicator} />
       </Tabs.List>
@@ -82,7 +86,9 @@ export const TabsPages = () => {
             router.push('/');
           }}
         >
-          Documentation
+          <Text variant="caption" weight="bold">
+            Documentation
+          </Text>
         </Tabs.Tab>
         <Tabs.Tab
           className={styles.tab}
@@ -91,7 +97,9 @@ export const TabsPages = () => {
             router.push('/playground');
           }}
         >
-          Playground
+          <Text variant="caption" weight="bold">
+            Playground
+          </Text>
         </Tabs.Tab>
         <Tabs.Indicator className={styles.indicator} />
       </Tabs.List>

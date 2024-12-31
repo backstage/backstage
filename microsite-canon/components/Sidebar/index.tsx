@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { TabsVersion, TabsTheme, TabsPages } from '../Tabs';
 import Link from 'next/link';
 import { components, coreConcepts } from '@/utils/data';
+import { Box, Text } from '@backstage/canon';
 
 export const Sidebar = () => {
   return (
@@ -23,16 +24,24 @@ export const Sidebar = () => {
         </div>
         <TabsPages />
         <div className={styles.menu}>
-          <h2 className={styles.title}>Core Concepts</h2>
+          <Box marginTop="md" marginBottom="xs">
+            <Text variant="subtitle" weight="bold">
+              Core Concepts
+            </Text>
+          </Box>
           {coreConcepts.map(concept => (
             <Link href={`/core-concepts/${concept.slug}`} key={concept.slug}>
-              {concept.title}
+              <Text variant="body">{concept.title}</Text>
             </Link>
           ))}
-          <h2 className={styles.title}>Components</h2>
+          <Box marginTop="md" marginBottom="xs">
+            <Text variant="subtitle" weight="bold">
+              Components
+            </Text>
+          </Box>
           {components.map(component => (
             <Link href={`/components/${component.slug}`} key={component.slug}>
-              {component.title}
+              <Text variant="body">{component.title}</Text>
             </Link>
           ))}
         </div>

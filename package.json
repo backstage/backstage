@@ -9,7 +9,8 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*"
+      "plugins/*",
+      "microsite-canon"
     ]
   },
   "scripts": {

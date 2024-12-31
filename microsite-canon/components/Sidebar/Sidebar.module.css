@@ -32,23 +32,8 @@
   margin-top: 48px;
 }
 
-.title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 12px;
-  margin-top: 32px;
-}
-
 .menu a {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.25rem;
-  color: var(--canon-text-secondary);
   text-decoration: none;
   height: 1.75rem;
-
-  &:hover {
-    color: var(--canon-text-primary);
-  }
 }

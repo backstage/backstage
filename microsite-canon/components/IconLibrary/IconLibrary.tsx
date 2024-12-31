@@ -30,7 +30,7 @@ export const IconLibrary = () => {
           <div className={styles.icon}>
             <Icon name={icon as IconNames} />
           </div>
-          <span>{icon}</span>
+          <Text variant="body">{icon}</Text>
         </div>
       ))}
     </div>
