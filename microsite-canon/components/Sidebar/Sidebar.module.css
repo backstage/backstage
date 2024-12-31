@@ -13,7 +13,7 @@
   overflow: hidden;
 }
 
-.sidebar svg path {
+.logo path {
   fill: var(--canon-text-primary);
 }
 

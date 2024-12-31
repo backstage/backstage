@@ -6,6 +6,10 @@
   overflow-x: scroll;
 }
 
+.containerEmpty {
+  padding: 24px;
+}
+
 .breakpointContainer {
   flex-shrink: 0;
   margin-top: 40px;

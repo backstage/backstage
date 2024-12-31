@@ -1,15 +1,32 @@
 'use client';
 
-import styles from './styles.module.css';
-import { Text } from '@backstage/canon';
+import { Inline, Stack, Text } from '@backstage/canon';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
-import { Stack, Inline, Button } from '@backstage/canon';
+import { usePlayground } from '@/utils/playground-context';
+import { ButtonPlayground } from './button';
+import { CheckboxPlayground } from './checkbox';
+import styles from './styles.module.css';
+import { ReactNode } from 'react';
 
 export default function PlaygroundPage() {
+  const { selectedScreenSizes, selectedComponents } = usePlayground();
+
+  const filteredScreenSizes = screenSizes.filter(item =>
+    selectedScreenSizes.includes(item.slug),
+  );
+
+  if (filteredScreenSizes.length === 0) {
+    return (
+      <div className={styles.containerEmpty}>
+        <Content />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
-      {screenSizes.map(screenSize => (
+      {filteredScreenSizes.map(screenSize => (
         <div
           className={styles.breakpointContainer}
           style={{ width: screenSize.width }}
@@ -20,27 +37,7 @@ export default function PlaygroundPage() {
           </Text>
           <div className={styles.breakpointContent}>
             <Frame>
-              <Stack>
-                <Stack>
-                  <Text>Button - Primary - Small</Text>
-                  <Inline alignY="center">
-                    <Button iconStart="cloud">Button</Button>
-                    <Button iconEnd="chevronRight">Button</Button>
-                    <Button iconStart="cloud" iconEnd="chevronRight">
-                      Button
-                    </Button>
-                    <Button iconStart="cloud" iconEnd="chevronRight">
-                      Button
-                    </Button>
-                    <Button iconStart="cloud" iconEnd="chevronRight">
-                      Button
-                    </Button>
-                    <Button iconStart="cloud" iconEnd="chevronRight">
-                      Button
-                    </Button>
-                  </Inline>
-                </Stack>
-              </Stack>
+              <Content />
             </Frame>
           </div>
         </div>
@@ -48,3 +45,29 @@ export default function PlaygroundPage() {
     </div>
   );
 }
+
+const Content = () => {
+  const { selectedComponents } = usePlayground();
+
+  return (
+    <Stack gap="xl">
+      {selectedComponents.find(c => c === 'button') && (
+        <Line content={<ButtonPlayground />} title="Button" />
+      )}
+      {selectedComponents.find(c => c === 'checkbox') && (
+        <Line content={<CheckboxPlayground />} title="Checkbox" />
+      )}
+    </Stack>
+  );
+};
+
+const Line = ({ content, title }: { content: ReactNode; title: string }) => {
+  return (
+    <Inline gap={{ xs: 'xs', md: 'xl' }}>
+      <div style={{ width: '100px' }}>
+        <Text>{title}</Text>
+      </div>
+      {content}
+    </Inline>
+  );
+};

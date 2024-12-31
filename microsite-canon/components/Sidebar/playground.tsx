@@ -5,11 +5,38 @@ import { Box, Checkbox, Text } from '@backstage/canon';
 import { motion } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
-import { screenSizes } from '@/utils/data';
+import { screenSizes, ScreenSize } from '@/utils/data';
+import { usePlayground } from '@/utils/playground-context';
 
 export const Playground = () => {
   const pathname = usePathname();
   const isPlayground = pathname.includes('/playground');
+  const {
+    selectedScreenSizes,
+    setSelectedScreenSizes,
+    selectedComponents,
+    setSelectedComponents,
+  } = usePlayground();
+
+  const handleComponentCheckboxChange = (slug: string) => {
+    if (selectedComponents.find(item => item === slug)) {
+      const res = selectedComponents.filter(item => item !== slug);
+      setSelectedComponents(res);
+    } else {
+      setSelectedComponents([...selectedComponents, slug]);
+    }
+  };
+
+  const handleCheckboxChange = (slug: string) => {
+    if (selectedScreenSizes.find(item => item === slug)) {
+      const res = selectedScreenSizes.filter(item => item !== slug);
+      setSelectedScreenSizes(res);
+    } else {
+      setSelectedScreenSizes([...selectedScreenSizes, slug]);
+    }
+  };
+
+  console.log(selectedComponents);
 
   return (
     <motion.div
@@ -35,7 +62,10 @@ export const Playground = () => {
       {components.map(({ slug, title }) => (
         <div className={styles.line} key={slug}>
           <Text variant="body">{title}</Text>
-          <Checkbox />
+          <Checkbox
+            checked={selectedComponents.includes(slug)}
+            onChange={() => handleComponentCheckboxChange(slug)}
+          />
         </div>
       ))}
       <Box marginTop="md" marginBottom="xs">
@@ -46,7 +76,10 @@ export const Playground = () => {
       {screenSizes.map(({ slug, title }) => (
         <div className={styles.line} key={slug}>
           <Text variant="body">{title}</Text>
-          <Checkbox />
+          <Checkbox
+            checked={selectedScreenSizes.includes(slug)}
+            onChange={() => handleCheckboxChange(slug)}
+          />
         </div>
       ))}
     </motion.div>
