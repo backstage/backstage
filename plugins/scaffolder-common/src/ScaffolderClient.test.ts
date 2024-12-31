@@ -365,21 +365,18 @@ describe('api', () => {
 
     it('should list tasks with limit and offset', async () => {
       server.use(
-        rest.get(
-          `${mockBaseUrl}/v2/tasks?limit=5&offset=0`,
-          (_req, res, ctx) => {
-            return res(
-              ctx.json([
-                {
-                  createdBy: null,
-                },
-                {
-                  createdBy: null,
-                },
-              ]),
-            );
-          },
-        ),
+        rest.get(`${mockBaseUrl}/v2/tasks`, (_req, res, ctx) => {
+          return res(
+            ctx.json([
+              {
+                createdBy: null,
+              },
+              {
+                createdBy: null,
+              },
+            ]),
+          );
+        }),
       );
 
       const result = await apiClient.listTasks({
