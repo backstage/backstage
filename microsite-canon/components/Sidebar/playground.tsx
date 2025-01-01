@@ -36,8 +36,6 @@ export const Playground = () => {
     }
   };
 
-  console.log(selectedComponents);
-
   return (
     <motion.div
       className={styles.section}

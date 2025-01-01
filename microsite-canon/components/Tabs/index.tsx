@@ -3,14 +3,21 @@
 import styles from './Tabs.module.css';
 import { Tabs } from '@base-ui-components/react/tabs';
 import { Icon, Text } from '@backstage/canon';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { setThemeCookie, setVersionCookie } from './actions';
 
-export const TabsVersion = () => {
+export const TabsVersion = ({
+  version,
+}: {
+  version?: { value: string; name: string };
+}) => {
   return (
-    <Tabs.Root className={styles.tabs} defaultValue="v1">
+    <Tabs.Root
+      className={styles.tabs}
+      onValueChange={setVersionCookie}
+      value={version?.value || 'v2'}
+    >
       <Tabs.List className={styles.list}>
         <Tabs.Tab className={styles.tab} value="v1">
           <Text variant="caption" weight="bold">
@@ -28,24 +35,16 @@ export const TabsVersion = () => {
   );
 };
 
-export const TabsTheme = () => {
-  const { theme, setTheme } = useTheme();
-
-  const onValueChange = (value: string) => {
-    setTheme(value);
-  };
-
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
+export const TabsTheme = ({
+  theme,
+}: {
+  theme?: { value: string; name: string };
+}) => {
   return (
     <Tabs.Root
       className={styles.tabs}
-      value={isClient ? theme : 'light'}
-      onValueChange={onValueChange}
+      onValueChange={setThemeCookie}
+      value={theme?.value || 'light'}
     >
       <Tabs.List className={styles.list}>
         <Tabs.Tab className={styles.tab} value="light">
