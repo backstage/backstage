@@ -1,15 +1,4 @@
-[data-theme='backstage-light'] {
-  /* Colors */
-  --canon-accent: #2e77d0;
-  --canon-background: #f8f8f8;
-  --canon-surface-1: #fff;
-  --canon-surface-2: #f4f4f4;
-
-  /* Text colors */
-  --canon-text-primary: #000;
-  --canon-text-primary-on-accent: #fff;
-  --canon-text-secondary: #646464;
-
+:root {
   --canon-font-regular: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
 
   .cn-button {
@@ -62,12 +51,34 @@
   }
 }
 
-[data-theme='backstage-dark'] {
+[data-theme='backstage-light'] {
   /* Colors */
   --canon-accent: #2e77d0;
+  --canon-background: #f8f8f8;
+  --canon-surface-1: #fff;
+  --canon-surface-2: #f4f4f4;
+
+  /* Text colors */
+  --canon-text-primary: #000;
+  --canon-text-primary-on-accent: #fff;
+  --canon-text-secondary: #646464;
+}
+
+[data-theme='backstage-dark'] {
+  /* Colors */
+  --canon-accent: #fff;
   --canon-background: #000;
   --canon-surface-1: #121212;
   --canon-surface-2: #1a1a1a;
+
+  /* Borders */
+  --canon-border-base: rgba(255, 255, 255, 0.2);
+  --canon-border-warning: #f50000;
+  --canon-border-error: #f87503;
+  --canon-border-selected: #25d262;
+
+  /* States - Add more states */
+  --canon-error: #f50000;
 
   /* Text colors */
   --canon-text-primary: #fff;

@@ -1,3 +1,7 @@
+.global {
+  width: 100%;
+}
+
 .container {
   padding-left: 280px;
   width: 100%;

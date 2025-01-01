@@ -10,6 +10,11 @@ const source1 = path.join(__dirname, `${source}/core.css`);
 const destination1 = path.join(__dirname, `${destination}/core.css`);
 const source2 = path.join(__dirname, `${source}/components.css`);
 const destination2 = path.join(__dirname, `${destination}/components.css`);
+const source3 = path.join(
+  __dirname,
+  `../../packages/canon/.storybook/themes/backstage.css`,
+);
+const destination3 = path.join(__dirname, `${destination}/backstage.css`);
 
 // Function to bundle and copy the CSS file
 const bundleAndCopyFile = async (source, destination) => {
@@ -38,6 +43,13 @@ chokidar.watch(source2).on('change', () => {
   bundleAndCopyFile(source2, destination2);
 });
 
+// Watch the backstage.css file for changes
+chokidar.watch(source3).on('change', () => {
+  console.log('Detected change in backstage.css, bundling and copying...');
+  bundleAndCopyFile(source3, destination3);
+});
+
 // Initial bundle and copy
 bundleAndCopyFile(source1, destination1);
 bundleAndCopyFile(source2, destination2);
+bundleAndCopyFile(source3, destination3);

@@ -20,33 +20,6 @@
 
 /* Light theme tokens */
 :root {
-  /* Colors */
-  --canon-accent: #000;
-  --canon-background: #f8f8f8;
-  --canon-surface-1: #fff;
-  --canon-surface-2: #f4f4f4;
-  --canon-surface-3: #f1f1f1;
-
-  /* Borders */
-  --canon-border-base: rgba(0, 0, 0, 0.1);
-  --canon-border-hover: rgba(0, 0, 0, 0.2);
-  --canon-border-warning: #e36d05;
-  --canon-border-error: #e22b2b;
-  --canon-border-selected: #1db954;
-
-  /* States - Add more states */
-  --canon-error: #f50000;
-
-  /* Text colors */
-  --canon-text-primary: #000;
-  --canon-text-primary-on-accent: #fff;
-  --canon-text-secondary: #646464;
-
-  /* Box shadows */
-  /* --canon-box-shadow-small: 0 0 0 1px rgba(0, 0, 0, 0.05); */
-  /* --canon-box-shadow-medium: 0 0 0 1px rgba(0, 0, 0, 0.1); */
-  /* --canon-box-shadow-large: 0 0 0 1px rgba(0, 0, 0, 0.2); */
-
   /* Font families */
   --canon-font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -95,6 +68,30 @@
   /* Container */
   --canon-container-max-width: 1200px;
   --canon-container-padding: 1rem;
+}
+
+[data-theme='light'] {
+  /* Colors */
+  --canon-accent: #000;
+  --canon-background: #f8f8f8;
+  --canon-surface-1: #fff;
+  --canon-surface-2: #f4f4f4;
+  --canon-surface-3: #f1f1f1;
+
+  /* Borders */
+  --canon-border-base: rgba(0, 0, 0, 0.1);
+  --canon-border-hover: rgba(0, 0, 0, 0.2);
+  --canon-border-warning: #e36d05;
+  --canon-border-error: #e22b2b;
+  --canon-border-selected: #1db954;
+
+  /* States - Add more states */
+  --canon-error: #f50000;
+
+  /* Text colors */
+  --canon-text-primary: #000;
+  --canon-text-primary-on-accent: #fff;
+  --canon-text-secondary: #646464;
 }
 
 /* Dark theme tokens */

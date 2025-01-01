@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { Sidebar } from '../components/Sidebar';
-import './globals.css';
 
-import '../../packages/canon/src/css/core.css';
-import '../../packages/canon/src/css/components.css';
 import styles from './page.module.css';
-import { Global } from '@/components/Global';
 import { Providers } from './providers';
 import { cookies } from 'next/headers';
-import { setDefaultThemeCookie, setDefaultVersionCookie } from './actions';
+
+import './globals.css';
+import '../../packages/canon/src/css/core.css';
+import '../../packages/canon/src/css/components.css';
+import '../../packages/canon/.storybook/themes/backstage.css';
 
 export const metadata: Metadata = {
   title: 'Canon',
@@ -34,10 +34,10 @@ export default async function RootLayout({
     <html lang="en" data-theme={dataTheme}>
       <body>
         <Providers>
-          <Global>
+          <div className={styles.global}>
             <Sidebar />
             <div className={styles.container}>{children}</div>
-          </Global>
+          </div>
         </Providers>
       </body>
     </html>
