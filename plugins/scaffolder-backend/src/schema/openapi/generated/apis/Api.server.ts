@@ -121,18 +121,6 @@ export type Scaffold = {
 /**
  * @public
  */
-export type StreamLogsEventStream = {
-  path: {
-    taskId: string;
-  };
-  query: {
-    after?: number;
-  };
-  response: string;
-};
-/**
- * @public
- */
 export type StreamLogsPolling = {
   path: {
     taskId: string;
@@ -161,8 +149,6 @@ export type EndpointMap = {
   '#post|/v2/tasks/{taskId}/retry': Retry;
 
   '#post|/v2/tasks': Scaffold;
-
-  '#get|/v2/tasks/{taskId}/eventstream': StreamLogsEventStream;
 
   '#get|/v2/tasks/{taskId}/events': StreamLogsPolling;
 };

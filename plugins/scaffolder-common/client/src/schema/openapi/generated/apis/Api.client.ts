@@ -129,17 +129,6 @@ export type Scaffold = {
 /**
  * @public
  */
-export type StreamLogsEventStream = {
-  path: {
-    taskId: string;
-  };
-  query: {
-    after?: number;
-  };
-};
-/**
- * @public
- */
 export type StreamLogsPolling = {
   path: {
     taskId: string;
@@ -404,34 +393,6 @@ export class DefaultApiClient {
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Get event stream for a task by ID.
-   * @param taskId -
-   * @param after - Offset event ID to stream events after.
-   */
-  public async streamLogsEventStream(
-    // @ts-ignore
-    request: StreamLogsEventStream,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<string>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/tasks/{taskId}/eventstream{?after}`;
-
-    const uri = parser.parse(uriTemplate).expand({
-      taskId: request.path.taskId,
-      ...request.query,
-    });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
     });
   }
 

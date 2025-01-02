@@ -907,32 +907,6 @@ export const spec = {
         ],
       },
     },
-    '/v2/tasks/{taskId}/eventstream': {
-      get: {
-        operationId: 'StreamLogsEventStream',
-        description: 'Get event stream for a task by ID.',
-        responses: {
-          '200': {
-            description: 'Ok',
-            content: {
-              'text/event-stream': {
-                schema: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
-        parameters: [
-          {
-            $ref: '#/components/parameters/eventsAfter',
-          },
-          {
-            $ref: '#/components/parameters/taskId',
-          },
-        ],
-      },
-    },
     '/v2/tasks/{taskId}/events': {
       get: {
         operationId: 'StreamLogsPolling',
