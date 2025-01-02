@@ -175,6 +175,19 @@ export namespace coreServices {
   >({ id: 'core.permissions' });
 
   /**
+   * Permission system integration for registering resources and permissions.
+   *
+   * See {@link PermissionIntegrationsService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/permission-integrations | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const permissionIntegrations = createServiceRef<
+    import('./PermissionIntegrationsService').PermissionIntegrationsService
+  >({ id: 'core.permissionIntegrations' });
+
+  /**
    * Built-in service for accessing metadata about the current plugin.
    *
    * See {@link PluginMetadataService}

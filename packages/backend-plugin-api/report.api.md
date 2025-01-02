@@ -16,8 +16,10 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
@@ -184,6 +186,11 @@ export namespace coreServices {
   const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
   const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
   const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
+  const permissionIntegrations: ServiceRef<
+    PermissionIntegrationsService,
+    'plugin',
+    'singleton'
+  >;
   const pluginMetadata: ServiceRef<
     PluginMetadataService,
     'plugin',
@@ -424,6 +431,28 @@ export interface LoggerService {
   // (undocumented)
   warn(message: string, meta?: Error | JsonObject): void;
 }
+
+// @public
+export interface PermissionIntegrationsService {
+  addPermissions(permissions: Permission[]): void;
+  addResourceType<const TResourceType extends string, TResource>(
+    options: PermissionIntegrationsServiceAddResourceTypeOptions<
+      TResourceType,
+      TResource
+    >,
+  ): void;
+}
+
+// @public
+export type PermissionIntegrationsServiceAddResourceTypeOptions<
+  TResourceType extends string,
+  TResource,
+> = {
+  resourceType: TResourceType;
+  permissions?: Array<Permission>;
+  rules: PermissionRule<TResource, any, NoInfer_2<TResourceType>>[];
+  getResources?(resourceRefs: string[]): Promise<Array<TResource | undefined>>;
+};
 
 // @public
 export interface PermissionsService extends PermissionEvaluator {
