@@ -164,13 +164,6 @@ const mockGitlabClient = {
         default:
           throw new Error('user does not exist');
       }
-      // if (userOptions.username !== 'John Smith')
-      //   throw new Error('user does not exist');
-      // return [
-      //   {
-      //     id: 123,
-      //   },
-      // ];
     }),
   },
   Repositories: {
