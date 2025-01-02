@@ -39,6 +39,32 @@ describe('Confluence Integration config', () => {
     });
   });
 
+  it('should accept both on perm and cloud host', () => {
+    const output = readConfluenceIntegrationConfig(
+      buildConfig({
+        host: 'mycompany.atlassian.net',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      }),
+    );
+
+    expect(output).toEqual({
+      host: 'mycompany.atlassian.net',
+      apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+    });
+
+    const output2 = readConfluenceIntegrationConfig(
+      buildConfig({
+        host: 'confluence.mycompany.com',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      }),
+    );
+
+    expect(output2).toEqual({
+      host: 'confluence.mycompany.com',
+      apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+    });
+  });
+
   it('rejects funky configs', () => {
     const valid: any = {
       host: 'mycompany.atlassian.net',

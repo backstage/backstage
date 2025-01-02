@@ -51,8 +51,12 @@ export function readConfluenceIntegrationConfig(
   const host = config.getString('host');
   const apiToken = `Basic ${config.getString('apiToken')}`;
 
-  const atlassianHostRegex = /^[a-zA-Z0-9-]+(?<!-)\.atlassian\.net$/; // should match <your-company>.atlassian.net
-  if (!isValidHost(host) || !host.match(atlassianHostRegex)) {
+  const atlassianHostRegex = /^[a-zA-Z0-9-]+(?<!-)\.atlassian\.net$/; // match <your-company>.atlassian.net
+  const onpermHostRegex = /^confluence.[a-zA-Z0-9-]+(?<!-)\.com$/; // match confluence.<your-company>.com
+  if (
+    !isValidHost(host) ||
+    !(host.match(atlassianHostRegex) || host.match(onpermHostRegex))
+  ) {
     throw new Error(
       `Invalid Confluence integration config, '${host}' is not a valid host`,
     );
