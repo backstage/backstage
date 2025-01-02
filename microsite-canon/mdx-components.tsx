@@ -14,17 +14,17 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Box>
     ),
     h2: ({ children }) => (
-      <Box marginTop="xl" marginBottom="md">
-        <Heading variant="title3">{children as ReactNode}</Heading>
-      </Box>
-    ),
-    h3: ({ children }) => (
-      <Box marginTop="lg" marginBottom="xs">
+      <Box marginTop="2xl" marginBottom="md">
         <Heading variant="title4">{children as ReactNode}</Heading>
       </Box>
     ),
+    h3: ({ children }) => (
+      <Box marginTop="xl" marginBottom="xs">
+        <Heading variant="title5">{children as ReactNode}</Heading>
+      </Box>
+    ),
     p: ({ children }) => (
-      <Box marginBottom="md">
+      <Box marginBottom="sm">
         <Text variant="subtitle">{children as ReactNode}</Text>
       </Box>
     ),

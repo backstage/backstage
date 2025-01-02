@@ -5,26 +5,26 @@ import { Tabs } from '@base-ui-components/react/tabs';
 import { Icon, Text } from '@backstage/canon';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { setThemeCookie, setVersionCookie } from './actions';
+import { setThemeCookie, setThemeNameCookie } from './actions';
 
 export const TabsVersion = ({
-  version,
+  themeName,
 }: {
-  version?: { value: string; name: string };
+  themeName?: { value: string; name: string };
 }) => {
   return (
     <Tabs.Root
       className={styles.tabs}
-      onValueChange={setVersionCookie}
-      value={version?.value || 'v2'}
+      onValueChange={setThemeNameCookie}
+      value={themeName?.value || 'default'}
     >
       <Tabs.List className={styles.list}>
-        <Tabs.Tab className={styles.tab} value="v1">
+        <Tabs.Tab className={styles.tab} value="legacy">
           <Text variant="caption" weight="bold">
             Theme 1
           </Text>
         </Tabs.Tab>
-        <Tabs.Tab className={styles.tab} value="v2">
+        <Tabs.Tab className={styles.tab} value="default">
           <Text variant="caption" weight="bold">
             Theme 2
           </Text>

@@ -1,4 +1,5 @@
-:root {
+[data-theme-name='legacy'][data-theme='light'],
+[data-theme-name='legacy'][data-theme='dark'] {
   --canon-font-regular: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
 
   .cn-button {
@@ -51,7 +52,7 @@
   }
 }
 
-[data-theme='backstage-light'] {
+[data-theme-name='legacy'][data-theme='light'] {
   /* Colors */
   --canon-accent: #2e77d0;
   --canon-background: #f8f8f8;
@@ -64,7 +65,7 @@
   --canon-text-secondary: #646464;
 }
 
-[data-theme='backstage-dark'] {
+[data-theme-name='legacy'][data-theme='dark'] {
   /* Colors */
   --canon-accent: #fff;
   --canon-background: #000;

@@ -22,10 +22,10 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value || 'light';
-  const version = cookieStore.get('version')?.value || 'v2';
+  const themeName = cookieStore.get('theme-name')?.value || 'default';
 
   return (
-    <html lang="en" data-theme={theme} data-version={version}>
+    <html lang="en" data-theme={theme} data-theme-name={themeName}>
       <body>
         <Providers>
           <div className={styles.global}>

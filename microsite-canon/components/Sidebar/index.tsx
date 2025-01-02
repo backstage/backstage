@@ -7,7 +7,7 @@ import { cookies } from 'next/headers';
 export const Sidebar = async () => {
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme');
-  const version = cookieStore.get('version');
+  const themeName = cookieStore.get('theme-name');
 
   return (
     <div className={styles.sidebar}>
@@ -23,7 +23,7 @@ export const Sidebar = async () => {
           <path d="M14.037 16.729a4.237 4.237 0 0 0 4.234-4.24 4.237 4.237 0 0 0-4.234-4.242 4.237 4.237 0 0 0-4.234 4.241 4.237 4.237 0 0 0 4.234 4.24Z" />
         </svg>
         <div className={styles.actions}>
-          <TabsVersion version={version} />
+          <TabsVersion themeName={themeName} />
           <TabsTheme theme={theme} />
         </div>
         <TabsPages />

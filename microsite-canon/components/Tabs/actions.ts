@@ -13,13 +13,13 @@ export async function setThemeCookie() {
   }
 }
 
-export async function setVersionCookie() {
+export async function setThemeNameCookie() {
   const cookieStore = await cookies();
-  const version = cookieStore.get('version');
+  const themeName = cookieStore.get('theme-name');
 
-  if (version?.value === 'v1') {
-    cookieStore.set('version', 'v2');
+  if (themeName?.value === 'legacy') {
+    cookieStore.set('theme-name', 'default');
   } else {
-    cookieStore.set('version', 'v1');
+    cookieStore.set('theme-name', 'legacy');
   }
 }
