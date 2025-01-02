@@ -27,7 +27,6 @@ import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
-import { hasReactDomClient } from './hasReactDomClient';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -54,17 +53,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
   let webpackServer: WebpackDevServer | undefined = undefined;
-  // @ts-ignore
-  let viteServer: import('vite').ViteDevServer | undefined = undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];
 
   /** Triggers a full reload of all clients */
   const triggerReload = () => {
-    if (viteServer) {
-      viteServer.restart();
-    }
-
     if (webpackServer) {
       webpackServer.invalidate();
 
@@ -147,167 +140,84 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     moduleFederation: options.moduleFederation,
   });
 
-  if (process.env.EXPERIMENTAL_VITE) {
-    const vite = require('vite') as typeof import('vite');
-    const { default: viteReact } =
-      require('@vitejs/plugin-react') as typeof import('@vitejs/plugin-react');
-    const { default: viteYaml } =
-      require('@modyfi/vite-plugin-yaml') as typeof import('@modyfi/vite-plugin-yaml');
-    const { nodePolyfills: viteNodePolyfills } =
-      require('vite-plugin-node-polyfills') as typeof import('vite-plugin-node-polyfills');
-    const { createHtmlPlugin: viteHtml } =
-      require('vite-plugin-html') as typeof import('vite-plugin-html');
+  const bundler = (rspack ?? webpack) as typeof webpack;
+  const DevServer: typeof WebpackDevServer = rspack
+    ? require('@rspack/dev-server').RspackDevServer
+    : WebpackDevServer;
 
-    viteServer = await vite.createServer({
-      define: {
-        'process.argv': JSON.stringify(process.argv),
-        'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
-        // This allows for conditional imports of react-dom/client, since there's no way
-        // to check for presence of it in source code without module resolution errors.
-        'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
-      },
-      optimizeDeps: {
-        esbuildOptions: {
-          plugins: [
-            {
-              name: 'custom-define',
-              setup(build) {
-                const define = (build.initialOptions.define ||= {});
-                define['process.env.HAS_REACT_DOM_CLIENT'] = JSON.stringify(
-                  hasReactDomClient(),
-                );
-                define['process.env.NODE_ENV'] = JSON.stringify('development');
-              },
-            },
-          ],
-        },
-      },
-      plugins: [
-        viteReact(),
-        viteNodePolyfills({
-          include: [
-            'buffer',
-            'events',
-            'fs',
-            'http',
-            'https',
-            'os',
-            'path',
-            'process',
-            'querystring',
-            'stream',
-            'url',
-            'util',
-            'zlib',
-          ],
-          globals: {
-            global: true,
-            Buffer: true,
-            process: true,
-          },
-        }),
-        viteYaml(),
-        viteHtml({
-          entry: paths.targetEntry,
-          // todo(blam): we should look at contributing to thPe plugin here
-          // to support absolute paths, but works in the interim at least.
-          template: 'public/index.html',
-          inject: {
-            data: {
-              config: frontendConfig,
-              publicPath: config.output?.publicPath,
-            },
-          },
-        }),
-      ],
-      server: {
-        host,
-        port,
-      },
-      publicDir: paths.targetPublic,
-      root: paths.targetPath,
-    });
-  } else {
-    const bundler = (rspack ?? webpack) as typeof webpack;
-    const DevServer: typeof WebpackDevServer = rspack
-      ? require('@rspack/dev-server').RspackDevServer
-      : WebpackDevServer;
-
-    if (rspack) {
-      console.log(
-        chalk.yellow(`⚠️  WARNING: Using experimental RSPack dev server.`),
-      );
-    }
-
-    const publicPaths = await resolveOptionalBundlingPaths({
-      entry: 'src/index-public-experimental',
-      dist: 'dist/public',
-    });
-    if (publicPaths) {
-      console.log(
-        chalk.yellow(
-          `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
-        ),
-      );
-    }
-    const compiler = publicPaths
-      ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
-      : bundler(config);
-
-    webpackServer = new DevServer(
-      {
-        hot: !process.env.CI,
-        devMiddleware: {
-          publicPath: config.output?.publicPath as string,
-          stats: 'errors-warnings',
-        },
-        static: paths.targetPublic
-          ? {
-              publicPath: config.output?.publicPath as string,
-              directory: paths.targetPublic,
-            }
-          : undefined,
-        historyApiFallback:
-          options.moduleFederation?.mode === 'remote'
-            ? false
-            : {
-                // Paths with dots should still use the history fallback.
-                // See https://github.com/facebookincubator/create-react-app/issues/387.
-                disableDotRule: true,
-
-                // The index needs to be rewritten relative to the new public path, including subroutes.
-                index: `${config.output?.publicPath}index.html`,
-              },
-        server:
-          url.protocol === 'https:'
-            ? {
-                type: 'https',
-                options: {
-                  cert: fullConfig.getString('app.https.certificate.cert'),
-                  key: fullConfig.getString('app.https.certificate.key'),
-                },
-              }
-            : {},
-        host,
-        port,
-        proxy: targetPkg.proxy,
-        // When the dev server is behind a proxy, the host and public hostname differ
-        allowedHosts: [url.hostname],
-        client: {
-          webSocketURL: { hostname: host, port },
-        },
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          'Access-Control-Allow-Headers':
-            'X-Requested-With, content-type, Authorization',
-        },
-      },
-      compiler,
+  if (rspack) {
+    console.log(
+      chalk.yellow(`⚠️  WARNING: Using experimental RSPack dev server.`),
     );
   }
 
-  await viteServer?.listen();
+  const publicPaths = await resolveOptionalBundlingPaths({
+    entry: 'src/index-public-experimental',
+    dist: 'dist/public',
+  });
+  if (publicPaths) {
+    console.log(
+      chalk.yellow(
+        `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
+      ),
+    );
+  }
+  const compiler = publicPaths
+    ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
+    : bundler(config);
+
+  webpackServer = new DevServer(
+    {
+      hot: !process.env.CI,
+      devMiddleware: {
+        publicPath: config.output?.publicPath as string,
+        stats: 'errors-warnings',
+      },
+      static: paths.targetPublic
+        ? {
+            publicPath: config.output?.publicPath as string,
+            directory: paths.targetPublic,
+          }
+        : undefined,
+      historyApiFallback:
+        options.moduleFederation?.mode === 'remote'
+          ? false
+          : {
+              // Paths with dots should still use the history fallback.
+              // See https://github.com/facebookincubator/create-react-app/issues/387.
+              disableDotRule: true,
+
+              // The index needs to be rewritten relative to the new public path, including subroutes.
+              index: `${config.output?.publicPath}index.html`,
+            },
+      server:
+        url.protocol === 'https:'
+          ? {
+              type: 'https',
+              options: {
+                cert: fullConfig.getString('app.https.certificate.cert'),
+                key: fullConfig.getString('app.https.certificate.key'),
+              },
+            }
+          : {},
+      host,
+      port,
+      proxy: targetPkg.proxy,
+      // When the dev server is behind a proxy, the host and public hostname differ
+      allowedHosts: [url.hostname],
+      client: {
+        webSocketURL: { hostname: host, port },
+      },
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers':
+          'X-Requested-With, content-type, Authorization',
+      },
+    },
+    compiler,
+  );
+
   await new Promise<void>(async (resolve, reject) => {
     if (webpackServer) {
       webpackServer.startCallback((err?: Error) => {
@@ -330,7 +240,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
         webpackServer?.stop();
-        viteServer?.close();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
       });
