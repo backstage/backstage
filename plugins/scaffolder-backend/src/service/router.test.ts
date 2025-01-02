@@ -91,6 +91,7 @@ const config = new ConfigReader({});
 
 describe('createRouter', () => {
   let app: express.Express | Server;
+  let regularApp: express.Express;
   let loggerSpy: jest.SpyInstance;
   let taskBroker: TaskBroker;
   const catalogClient = catalogServiceMock.mock();
@@ -218,7 +219,8 @@ describe('createRouter', () => {
         discovery,
         events,
       });
-      app = await wrapServer(express().use(router));
+      regularApp = express().use(router);
+      app = await wrapServer(regularApp);
 
       catalogClient.getEntityByRef.mockImplementation(async ref => {
         const { kind } = parseEntityRef(ref);
@@ -534,7 +536,7 @@ describe('createRouter', () => {
         let headers: any = {};
         const responseDataFn = jest.fn();
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .set('accept', 'text/event-stream')
           .parse((res, _) => {
@@ -600,7 +602,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         let statusCode: any = undefined;
         let headers: any = {};
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .query({ after: 10 })
           .set('accept', 'text/event-stream')
@@ -767,7 +769,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         httpAuth,
         discovery,
       });
-      app = await wrapServer(express().use(router));
+      regularApp = express().use(router);
+      app = await wrapServer(regularApp);
 
       catalogClient.getEntityByRef.mockImplementation(async ref => {
         const { kind } = parseEntityRef(ref);
@@ -1336,7 +1339,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         let headers: any = {};
         const responseDataFn = jest.fn();
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .set('accept', 'text/event-stream')
           .parse((res, _) => {
@@ -1402,7 +1405,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         let statusCode: any = undefined;
         let headers: any = {};
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .query({ after: 10 })
           .set('accept', 'text/event-stream')
