@@ -748,6 +748,7 @@ export async function createRouter(
         throw err;
       }
     })
+    // @ts-ignore - Skipping SSE for now
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
 
@@ -773,6 +774,7 @@ export async function createRouter(
         });
 
         const after =
+          // @ts-ignore
           req.query.after !== undefined ? Number(req.query.after) : undefined;
 
         logger.debug(`Event stream observing taskId '${taskId}' opened`);
