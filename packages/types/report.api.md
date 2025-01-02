@@ -22,6 +22,20 @@ export type DeferredPromise<
 export function durationToMilliseconds(duration: HumanDuration): number;
 
 // @public
+export type Expand<T> = T extends infer O
+  ? {
+      [K in keyof O]: O[K];
+    }
+  : never;
+
+// @public
+export type ExpandRecursive<T> = T extends infer O
+  ? {
+      [K in keyof O]: ExpandRecursive<O[K]>;
+    }
+  : never;
+
+// @public
 export type HumanDuration = {
   years?: number;
   months?: number;

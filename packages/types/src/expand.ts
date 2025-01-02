@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,17 @@
  */
 
 /**
- * Common TypeScript types used within Backstage
- *
- * @packageDocumentation
+ * Utility type to expand type aliases into their equivalent type.
+ * @public
  */
 
-export { createDeferred, type DeferredPromise } from './deferred';
-export type { JsonArray, JsonObject, JsonPrimitive, JsonValue } from './json';
-export type { Observable, Observer, Subscription } from './observable';
-export { type HumanDuration, durationToMilliseconds } from './time';
-export { type Expand, type ExpandRecursive } from './expand';
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+/**
+ * Helper type that expands type hints recursively
+ *
+ * @public
+ */
+export type ExpandRecursive<T> = T extends infer O
+  ? { [K in keyof O]: ExpandRecursive<O[K]> }
+  : never;
