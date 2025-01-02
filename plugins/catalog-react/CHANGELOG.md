@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-react
 
+## 1.15.1-next.0
+
+### Patch Changes
+
+- cbfc0a4: Fixed an issue where the `<EntityListProvider />` in `offset` mode would unnecessarily re-fetch data when the filter didn't change, causing a flicker effect.
+- Updated dependencies
+  - @backstage/integration-react@1.2.2
+  - @backstage/core-compat-api@0.3.4
+
 ## 1.15.0
 
 ### Minor Changes

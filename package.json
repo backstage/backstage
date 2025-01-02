@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.35.0-next.0",
+  "version": "1.35.0-next.1",
   "private": true,
   "repository": {
     "type": "git",
@@ -85,6 +85,9 @@
     ]
   },
   "prettier": "@backstage/cli/config/prettier",
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
   "resolutions": {
     "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
@@ -134,9 +137,6 @@
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
     "typescript": "~5.2.0"
-  },
-  "jest": {
-    "rejectFrontendNetworkRequests": true
   },
   "packageManager": "yarn@3.8.1",
   "engines": {

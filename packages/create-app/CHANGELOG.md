@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.5.24-next.1
+
+### Patch Changes
+
+- 828c993: Added `-j 2` to `dev` script to help cases where the backend does not start up during local development
+
 ## 0.5.24-next.0
 
 ### Patch Changes
