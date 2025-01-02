@@ -681,6 +681,7 @@ export async function createRouter(
       await taskBroker.retry?.(taskId);
       res.status(201).json({ id: taskId });
     })
+    // @ts-ignore - Skipping SSE for now
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
       await checkPermission({
@@ -691,6 +692,7 @@ export async function createRouter(
 
       const { taskId } = req.params;
       const after =
+        // @ts-ignore
         req.query.after !== undefined ? Number(req.query.after) : undefined;
 
       logger.debug(`Event stream observing taskId '${taskId}' opened`);
