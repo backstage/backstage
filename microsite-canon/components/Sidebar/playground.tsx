@@ -52,8 +52,8 @@ export const Playground = () => {
       transition={{ duration: 0.2 }}
       style={{ position: 'absolute' }}
     >
-      <Box marginTop="md" marginBottom="xs">
-        <Text variant="subtitle" weight="bold">
+      <Box marginTop="lg" marginBottom="2xs">
+        <Text variant="body" weight="bold">
           Components
         </Text>
       </Box>
@@ -66,8 +66,8 @@ export const Playground = () => {
           />
         </div>
       ))}
-      <Box marginTop="md" marginBottom="xs">
-        <Text variant="subtitle" weight="bold">
+      <Box marginTop="lg" marginBottom="2xs">
+        <Text variant="body" weight="bold">
           Screen sizes
         </Text>
       </Box>

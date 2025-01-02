@@ -1,4 +1,5 @@
 import styles from './page.module.css';
+
 export default async function Page() {
   const { default: Post } = await import(`@/content/home.mdx`);
 
@@ -8,5 +9,3 @@ export default async function Page() {
     </div>
   );
 }
-
-export const dynamicParams = false;

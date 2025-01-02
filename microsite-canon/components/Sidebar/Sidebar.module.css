@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 280px;
+  width: 300px;
   height: 100vh;
   color: var(--canon-text-primary);
   background-color: var(--canon-surface-1);
@@ -30,7 +30,6 @@
 }
 
 .menu {
-  margin-top: 20px;
   display: flex;
   flex-direction: row;
   position: relative;

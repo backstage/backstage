@@ -27,6 +27,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       children,
       variant = 'body',
       weight = 'regular',
+      style,
       ...restProps
     } = props;
 
@@ -39,10 +40,11 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     return (
       <p
         ref={ref}
-        {...restProps}
         className={`text ${
           responsiveVariant ? `text-${responsiveVariant}` : ''
         } ${responsiveWeight ? `text-${responsiveWeight}` : ''}`}
+        style={style}
+        {...restProps}
       >
         {children}
       </p>

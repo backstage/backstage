@@ -1,7 +1,13 @@
 .tabs {
   border-radius: 0.375rem;
-  flex: 1;
   width: 100%;
+  background-color: var(--canon-surface-2);
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.tabsTheme {
+  width: 142px;
+  border-radius: 0.375rem;
   background-color: var(--canon-surface-2);
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
@@ -23,7 +29,7 @@
   outline: 0;
   background: none;
   appearance: none;
-  color: var(--canon-text-secondary);
+  color: var(--canon-text-secondary) !important;
   font-family: inherit;
   font-size: 0.75rem;
   line-height: 1.25rem;
@@ -34,7 +40,11 @@
   cursor: pointer;
 
   &[data-selected] {
-    color: var(--canon-text-primary);
+    color: var(--canon-text-primary) !important;
+
+    & p {
+      color: var(--canon-text-primary) !important;
+    }
   }
 
   @media (hover: hover) {
@@ -55,6 +65,10 @@
       outline-offset: -1px;
     }
   }
+}
+
+.tab p {
+  color: var(--canon-text-secondary) !important;
 }
 
 .indicator {

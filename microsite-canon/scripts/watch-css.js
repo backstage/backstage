@@ -21,7 +21,7 @@ const bundleAndCopyFile = async (source, destination) => {
   try {
     const result = await bundle({
       filename: source,
-      minify: true, // Optional: Minify the output
+      minify: false,
     });
 
     fs.writeFileSync(destination, result.code);

@@ -21,12 +21,12 @@ export const TabsVersion = ({
       <Tabs.List className={styles.list}>
         <Tabs.Tab className={styles.tab} value="v1">
           <Text variant="caption" weight="bold">
-            V1
+            Theme 1
           </Text>
         </Tabs.Tab>
         <Tabs.Tab className={styles.tab} value="v2">
           <Text variant="caption" weight="bold">
-            V2
+            Theme 2
           </Text>
         </Tabs.Tab>
         <Tabs.Indicator className={styles.indicator} />
@@ -42,7 +42,7 @@ export const TabsTheme = ({
 }) => {
   return (
     <Tabs.Root
-      className={styles.tabs}
+      className={styles.tabsTheme}
       onValueChange={setThemeCookie}
       value={theme?.value || 'light'}
     >

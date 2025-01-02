@@ -1,11 +1,35 @@
 'use client';
 
 import Link from 'next/link';
-import { components, coreConcepts, layoutComponents } from '@/utils/data';
+import { components, overview, layoutComponents, theme } from '@/utils/data';
 import { Box, Text } from '@backstage/canon';
 import { motion } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
+import { Fragment } from 'react';
+
+const data = [
+  {
+    title: 'Overview',
+    content: overview,
+    url: '',
+  },
+  {
+    title: 'Theme',
+    content: theme,
+    url: '/theme',
+  },
+  {
+    title: 'Layout Components',
+    content: layoutComponents,
+    url: '/components',
+  },
+  {
+    title: 'Components',
+    content: components,
+    url: '/components',
+  },
+];
 
 export const Docs = () => {
   const pathname = usePathname();
@@ -26,35 +50,33 @@ export const Docs = () => {
       }}
       transition={{ duration: 0.2 }}
     >
-      <Box marginTop="md" marginBottom="xs">
-        <Text variant="subtitle" weight="bold">
-          Core Concepts
-        </Text>
-      </Box>
-      {coreConcepts.map(concept => (
-        <Link href={`/core-concepts/${concept.slug}`} key={concept.slug}>
-          <Text variant="body">{concept.title}</Text>
-        </Link>
-      ))}
-      <Box marginTop="md" marginBottom="xs">
-        <Text variant="subtitle" weight="bold">
-          Layout Components
-        </Text>
-      </Box>
-      {layoutComponents.map(component => (
-        <Link href={`/components/${component.slug}`} key={component.slug}>
-          <Text variant="body">{component.title}</Text>
-        </Link>
-      ))}
-      <Box marginTop="md" marginBottom="xs">
-        <Text variant="subtitle" weight="bold">
-          Components
-        </Text>
-      </Box>
-      {components.map(component => (
-        <Link href={`/components/${component.slug}`} key={component.slug}>
-          <Text variant="body">{component.title}</Text>
-        </Link>
+      {data.map(section => (
+        <Fragment key={section.title}>
+          <Box marginTop="lg" marginBottom="2xs">
+            <Text variant="body" weight="bold">
+              {section.title}
+            </Text>
+          </Box>
+          {section.content.map(item => (
+            <Link
+              href={`${section.url}/${item.slug}`}
+              key={item.slug}
+              className={styles.line}
+            >
+              <Text variant="body">{item.title}</Text>
+              <Text
+                variant="body"
+                style={{ color: 'var(--canon-text-secondary)' }}
+              >
+                {item.status === 'alpha' && 'Alpha'}
+                {item.status === 'beta' && 'Beta'}
+                {item.status === 'inProgress' && 'In Progress'}
+                {item.status === 'stable' && 'Stable'}
+                {item.status === 'deprecated' && 'Deprecated'}
+              </Text>
+            </Link>
+          ))}
+        </Fragment>
       ))}
     </motion.div>
   );

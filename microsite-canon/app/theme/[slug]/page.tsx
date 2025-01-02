@@ -1,8 +1,9 @@
-import { coreConcepts } from '@/utils/data';
+import { theme } from '@/utils/data';
 import { notFound } from 'next/navigation';
 import fs from 'fs';
 import path from 'path';
-import styles from './page.module.css';
+import styles from '../../page.module.css';
+
 export default async function Page({
   params,
 }: {
@@ -14,7 +15,7 @@ export default async function Page({
   if (fs.existsSync(filePath)) {
     const { default: Post } = await import(`@/content/${slug}.mdx`);
     return (
-      <div className={styles.container}>
+      <div className={styles.pageContainer}>
         <Post />
       </div>
     );
@@ -24,7 +25,9 @@ export default async function Page({
 }
 
 export function generateStaticParams() {
-  return coreConcepts.map(concept => ({ slug: concept.slug }));
+  return theme.map(component => ({
+    slug: component.slug,
+  }));
 }
 
 export const dynamicParams = false;

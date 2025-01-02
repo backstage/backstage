@@ -3,7 +3,7 @@
 }
 
 .container {
-  padding-left: 280px;
+  padding-left: 300px;
   width: 100%;
 }
 
@@ -34,4 +34,11 @@
 .header img {
   width: 100%;
   height: auto;
+}
+
+.pageContainer {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
 }
