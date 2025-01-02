@@ -53,4 +53,14 @@
   justify-content: space-between;
   align-items: center;
   height: 28px;
+  padding: 0 12px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: var(--canon-surface-2);
+  }
+}
+
+.line.active {
+  background-color: var(--canon-surface-2);
 }

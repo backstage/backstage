@@ -50,34 +50,40 @@ export const Docs = () => {
       }}
       transition={{ duration: 0.2 }}
     >
-      {data.map(section => (
-        <Fragment key={section.title}>
-          <Box marginTop="lg" marginBottom="2xs">
-            <Text variant="body" weight="bold">
-              {section.title}
-            </Text>
-          </Box>
-          {section.content.map(item => (
-            <Link
-              href={`${section.url}/${item.slug}`}
-              key={item.slug}
-              className={styles.line}
-            >
-              <Text variant="body">{item.title}</Text>
-              <Text
-                variant="body"
-                style={{ color: 'var(--canon-text-secondary)' }}
-              >
-                {item.status === 'alpha' && 'Alpha'}
-                {item.status === 'beta' && 'Beta'}
-                {item.status === 'inProgress' && 'In Progress'}
-                {item.status === 'stable' && 'Stable'}
-                {item.status === 'deprecated' && 'Deprecated'}
+      {data.map(section => {
+        return (
+          <Fragment key={section.title}>
+            <Box marginTop="lg" marginBottom="2xs">
+              <Text variant="body" weight="bold">
+                {section.title}
               </Text>
-            </Link>
-          ))}
-        </Fragment>
-      ))}
+            </Box>
+            {section.content.map(item => {
+              const isActive = pathname === `${section.url}/${item.slug}`;
+
+              return (
+                <Link
+                  href={`${section.url}/${item.slug}`}
+                  key={item.slug}
+                  className={`${styles.line} ${isActive ? styles.active : ''}`}
+                >
+                  <Text variant="body">{item.title}</Text>
+                  <Text
+                    variant="body"
+                    style={{ color: 'var(--canon-text-secondary)' }}
+                  >
+                    {item.status === 'alpha' && 'Alpha'}
+                    {item.status === 'beta' && 'Beta'}
+                    {item.status === 'inProgress' && 'In Progress'}
+                    {item.status === 'stable' && 'Stable'}
+                    {item.status === 'deprecated' && 'Deprecated'}
+                  </Text>
+                </Link>
+              );
+            })}
+          </Fragment>
+        );
+      })}
     </motion.div>
   );
 };

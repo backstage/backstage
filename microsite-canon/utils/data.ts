@@ -70,7 +70,7 @@ export const components: Page[] = [
   {
     title: 'Button',
     slug: 'button',
-    status: 'alpha',
+    status: 'inProgress',
   },
   {
     title: 'Checkbox',

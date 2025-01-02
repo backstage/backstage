@@ -1,16 +1,19 @@
 'use client';
 
-import { Inline, Stack, Text } from '@backstage/canon';
+import { ReactNode } from 'react';
+import { Grid, Stack, Text } from '@backstage/canon';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';
-import { ButtonPlayground } from './button';
-import { CheckboxPlayground } from './checkbox';
+import { ButtonPlayground } from '@/snippets/button';
+import { CheckboxPlayground } from '@/snippets/checkbox';
+import { HeadingPlayground } from '@/snippets/heading';
+import { TextPlayground } from '@/snippets/text';
+
 import styles from './styles.module.css';
-import { ReactNode } from 'react';
 
 export default function PlaygroundPage() {
-  const { selectedScreenSizes, selectedComponents } = usePlayground();
+  const { selectedScreenSizes } = usePlayground();
 
   const filteredScreenSizes = screenSizes.filter(item =>
     selectedScreenSizes.includes(item.slug),
@@ -57,17 +60,23 @@ const Content = () => {
       {selectedComponents.find(c => c === 'checkbox') && (
         <Line content={<CheckboxPlayground />} title="Checkbox" />
       )}
+      {selectedComponents.find(c => c === 'heading') && (
+        <Line content={<HeadingPlayground />} title="Heading" />
+      )}
+      {selectedComponents.find(c => c === 'text') && (
+        <Line content={<TextPlayground />} title="Text" />
+      )}
     </Stack>
   );
 };
 
 const Line = ({ content, title }: { content: ReactNode; title: string }) => {
   return (
-    <Inline gap={{ xs: 'xs', md: 'xl' }}>
-      <div style={{ width: '100px' }}>
+    <Grid gap={{ xs: 'xs', md: 'xl' }}>
+      <Grid.Item colSpan={2}>
         <Text>{title}</Text>
-      </div>
-      {content}
-    </Inline>
+      </Grid.Item>
+      <Grid.Item colSpan={10}>{content}</Grid.Item>
+    </Grid>
   );
 };

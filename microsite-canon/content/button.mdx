@@ -1,16 +1,33 @@
-import { Story } from '../components/Story';
-import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
+import { Snippet } from '../components/Snippet';
+import {
+  Button1,
+  Button2,
+  Button3,
+  Button4,
+  Button5,
+  Button6,
+} from '../snippets/button';
 
 # Button
 
 A button component that can be used to trigger actions.
 
-<Story id="button--primary" />
-
-<CodeBlock
-  code={`<Button>Click me</Button>
-`}
+<Snippet
+  align="center"
+  py={4}
+  preview={<Button1 />}
+  code={`<Inline alignY="center">
+  <Button iconStart="cloud" variant="primary">
+    Button
+  </Button>
+  <Button iconStart="cloud" variant="secondary">
+    Button
+  </Button>
+  <Button iconStart="cloud" variant="tertiary">
+    Button
+  </Button>
+</Inline>`}
 />
 
 ## API reference
@@ -50,14 +67,21 @@ A button component that can be used to trigger actions.
 
 Here's a view when buttons have different variants.
 
-<Story id="button--variants" />
-
-<CodeBlock
-  title="Usage"
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Button1 />}
   code={`<Inline alignY="center">
-    <Button variant="primary">Primary</Button>
-    <Button variant="secondary">Secondary</Button>
-    <Button variant="tertiary">Tertiary</Button>
+  <Button iconStart="cloud" variant="primary">
+    Button
+  </Button>
+  <Button iconStart="cloud" variant="secondary">
+    Button
+  </Button>
+  <Button iconStart="cloud" variant="tertiary">
+    Button
+  </Button>
 </Inline>`}
 />
 
@@ -65,10 +89,11 @@ Here's a view when buttons have different variants.
 
 Here's a view when buttons have different sizes.
 
-<Story id="button--sizes" />
-
-<CodeBlock
-  title="Usage"
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Button2 />}
   code={`<Inline alignY="center">
     <Button size="small">Small</Button>
     <Button size="medium">Medium</Button>
@@ -79,10 +104,11 @@ Here's a view when buttons have different sizes.
 
 Here's a view when buttons have icons.
 
-<Story id="button--with-icons" />
-
-<CodeBlock
-  title="Usage"
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Button3 />}
   code={`<Inline alignY="center">
     <Button iconStart="cloud">Button</Button>
     <Button iconEnd="chevronRight">Button</Button>
@@ -94,9 +120,11 @@ Here's a view when buttons have icons.
 
 Here's a view when buttons are full width.
 
-<Story id="button--full-width" />
-
-<CodeBlock
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Button4 />}
   code={`<Stack style={{ width: '300px' }}>
     <Button fullWidth>Full width</Button>
 </Stack>`}
@@ -106,17 +134,23 @@ Here's a view when buttons are full width.
 
 Here's a view when buttons are disabled.
 
-<Story id="button--disabled" />
-
-<CodeBlock title="Usage" code={`<Button disabled>Button</Button>`} />
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Button5 />}
+  code={`<Button disabled>Button</Button>`}
+/>
 
 ### Responsive
 
 Here's a view when buttons are responsive.
 
-<Story id="button--responsive" />
-
-<CodeBlock
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Button6 />}
   code={`<Button
     variant={{ xs: 'primary', sm: 'secondary', md: 'tertiary' }}
     size={{ xs: 'small', sm: 'medium' }}>
