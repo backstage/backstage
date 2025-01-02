@@ -52,7 +52,7 @@ export function readConfluenceIntegrationConfig(
   const apiToken = `Basic ${config.getString('apiToken')}`;
 
   const atlassianHostRegex = /^[a-zA-Z0-9-]+(?<!-)\.atlassian\.net$/; // match <your-company>.atlassian.net
-  const onpermHostRegex = /^confluence.[a-zA-Z0-9-]+(?<!-)\.com$/; // match confluence.<your-company>.com
+  const onpermHostRegex = /^confluence\.[a-zA-Z0-9-]+(?<!-)\.com$/; // match confluence.<your-company>.com
   if (
     !isValidHost(host) ||
     !(host.match(atlassianHostRegex) || host.match(onpermHostRegex))
