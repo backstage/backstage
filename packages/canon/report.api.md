@@ -8,6 +8,7 @@
 import { ForwardRefExoticComponent } from 'react';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
+import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 
 // @public (undocumented)
@@ -89,6 +90,29 @@ export interface ButtonProps {
     | 'secondary'
     | 'tertiary'
     | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+}
+
+// @public (undocumented)
+export interface CanonContextProps {
+  // (undocumented)
+  breakpoint: Breakpoint;
+  // (undocumented)
+  getResponsiveValue: (
+    value: string | Partial<Record<Breakpoint, string>>,
+  ) => string;
+  // (undocumented)
+  icons: IconMap;
+}
+
+// @public (undocumented)
+export const CanonProvider: (props: CanonProviderProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export interface CanonProviderProps {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  overrides?: Partial<Record<IconNames, React_2.ComponentType>>;
 }
 
 // @public (undocumented)
@@ -201,6 +225,33 @@ export interface GridProps extends SpaceProps {
 }
 
 // @public (undocumented)
+export const Heading: React_2.ForwardRefExoticComponent<
+  HeadingProps & React_2.RefAttributes<HTMLHeadingElement>
+>;
+
+// @public (undocumented)
+export interface HeadingProps {
+  // (undocumented)
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  variant?:
+    | 'display'
+    | 'title1'
+    | 'title2'
+    | 'title3'
+    | 'title4'
+    | 'title5'
+    | Partial<
+        Record<
+          Breakpoint,
+          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
+        >
+      >;
+}
+
+// @public (undocumented)
 export const Icon: (props: IconProps) => React_2.JSX.Element;
 
 // @public (undocumented)
@@ -223,7 +274,9 @@ export type IconNames =
   | 'chevronUp'
   | 'cloud'
   | 'heart'
+  | 'moon'
   | 'plus'
+  | 'sun'
   | 'trash';
 
 // @public (undocumented)
@@ -231,6 +284,9 @@ export type IconProps = {
   name: IconNames;
   size?: number;
 };
+
+// @public (undocumented)
+export const icons: IconMap;
 
 // @public (undocumented)
 export const Inline: ForwardRefExoticComponent<
@@ -373,6 +429,30 @@ export const TableRow: React_3.ForwardRefExoticComponent<
   React_3.HTMLAttributes<HTMLTableRowElement> &
     React_3.RefAttributes<HTMLTableRowElement>
 >;
+
+// @public (undocumented)
+const Text_2: React_2.ForwardRefExoticComponent<
+  TextProps & React_2.RefAttributes<HTMLParagraphElement>
+>;
+export { Text_2 as Text };
+
+// @public (undocumented)
+export interface TextProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  // (undocumented)
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+}
+
+// @public (undocumented)
+export const useCanon: () => CanonContextProps;
 
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {

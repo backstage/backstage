@@ -21,7 +21,7 @@ import { Stack } from '../Stack';
 import { Inline } from '../Inline';
 
 const meta = {
-  title: 'Components/Box',
+  title: 'Box',
   component: Box,
   parameters: {
     layout: 'centered',

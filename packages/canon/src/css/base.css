@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-@layer base {
-  @import './normalize.css';
+@import './normalize.css';
 
+@layer base {
   *,
   html,
   body {

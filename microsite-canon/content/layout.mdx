@@ -1,0 +1,42 @@
+import { LayoutComponents } from '@/components/LayoutComponents';
+import { CodeBlock } from '@/components/CodeBlock';
+
+# Layout
+
+Canon is made for extensibility. We built this library to make it easy for any
+Backstage plugin creator to be able to build their ideas at speed ensuring
+consistency across the rest of your ecosystem. Each component is designed to
+be editable to match your need but sometimes you want to have more control
+over the layout of your page. To help you with that, we created a set of
+layout components that you can use to build your own layouts. All of these
+components are built to extend on our theming system, making it easy for you
+to build your own layouts. Sometimes these components are not enough so we
+created a set of helpers to be used with any CSS-in-JS library.
+
+## Layout Components
+
+We built a couple of layout components to help you build responsive elements
+that will be consistent with the rest of your Backstage instance. These
+components are opinionated and use TypeScript to ensure that the props you
+provide are the ones coming from the theme.
+
+<CodeBlock
+  title="Layout components"
+  code={`<Stack direction="column" gap="md">
+    <Box>Hello World</Box>
+    <Inline gap="sm">
+      <Box>Project 1</Box>
+      <Box>Project 2</Box>
+    </Inline>
+  </Stack>
+`}
+/>
+
+<LayoutComponents />
+
+## Layout Helpers
+
+Sometimes you want to use global tokens dynamically outside of React
+components. To help you with that we would like to provide a set of helpers
+that you can use in your code. These helpers are not available just yet but we
+are working on it.

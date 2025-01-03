@@ -23,36 +23,36 @@
   &.text-display {
     font-size: var(--canon-font-size-display);
     line-height: 100%;
-    font-weight: var(--canon-font-bold);
+    font-weight: var(--canon-font-weight-bold);
   }
 
   &.text-title1 {
     font-size: var(--canon-font-size-title1);
     line-height: 100%;
-    font-weight: var(--canon-font-bold);
+    font-weight: var(--canon-font-weight-bold);
   }
 
   &.text-title2 {
     font-size: var(--canon-font-size-title2);
     line-height: 100%;
-    font-weight: var(--canon-font-bold);
+    font-weight: var(--canon-font-weight-bold);
   }
 
   &.text-title3 {
     font-size: var(--canon-font-size-title3);
     line-height: 100%;
-    font-weight: var(--canon-font-bold);
+    font-weight: var(--canon-font-weight-bold);
   }
 
   &.text-title4 {
     font-size: var(--canon-font-size-title4);
     line-height: 100%;
-    font-weight: var(--canon-font-bold);
+    font-weight: var(--canon-font-weight-bold);
   }
 
   &.text-title5 {
     font-size: var(--canon-font-size-title5);
     line-height: 100%;
-    font-weight: var(--canon-font-bold);
+    font-weight: var(--canon-font-weight-bold);
   }
 }

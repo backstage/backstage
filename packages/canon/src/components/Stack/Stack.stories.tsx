@@ -20,7 +20,7 @@ import { Stack } from './Stack';
 import { Box } from '../Box/Box';
 
 const meta = {
-  title: 'Components/Stack',
+  title: 'Stack',
   component: Stack,
   argTypes: {
     align: {

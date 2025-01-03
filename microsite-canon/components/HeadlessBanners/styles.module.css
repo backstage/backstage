@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  background-color: var(--canon-surface-1);
+  padding: var(--canon-spacing-md);
+  border-radius: var(--canon-border-radius-xs);
+  border: 1px solid var(--canon-border-base);
+  margin-bottom: var(--canon-spacing-md);
+  gap: var(--canon-spacing-md);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.icon path {
+  fill: var(--canon-text-primary);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.description {
+  max-width: 700px;
+}
+
+.button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: var(--canon-surface-2);
+  border: 1px solid var(--canon-border-base);
+  border-radius: var(--canon-border-radius-xs);
+  padding: 0 var(--canon-spacing-xs);
+  height: 28px;
+  border-radius: 100px;
+  margin-top: var(--canon-spacing-xs);
+  font-size: var(--canon-font-size-body);
+  color: var(--canon-text-primary);
+  gap: var(--canon-spacing-2xs);
+}

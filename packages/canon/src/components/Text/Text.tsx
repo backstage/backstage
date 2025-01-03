@@ -1,3 +1,5 @@
+'use client';
+
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -18,12 +20,14 @@ import React, { forwardRef } from 'react';
 import { TextProps } from './types';
 import { useCanon } from '../../contexts/canon';
 
+/** @public */
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
     const {
       children,
       variant = 'body',
       weight = 'regular',
+      style,
       ...restProps
     } = props;
 
@@ -36,10 +40,11 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     return (
       <p
         ref={ref}
-        {...restProps}
         className={`text ${
           responsiveVariant ? `text-${responsiveVariant}` : ''
         } ${responsiveWeight ? `text-${responsiveWeight}` : ''}`}
+        style={style}
+        {...restProps}
       >
         {children}
       </p>

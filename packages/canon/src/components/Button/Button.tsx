@@ -29,6 +29,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconStart,
       iconEnd,
       children,
+      style,
+      ...rest
     } = props;
 
     const { getResponsiveValue } = useCanon();
@@ -39,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
-        {...props}
+        {...rest}
         ref={ref}
         disabled={disabled}
         className={[
@@ -47,6 +49,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           `cn-button-${responsiveSize}`,
           `cn-button-${responsiveVariant}`,
         ].join(' ')}
+        style={style}
       >
         <span
           className={[

@@ -3,6 +3,7 @@
 .yarn/install-state.gz
 docs
 microsite
+microsite-canon
 node_modules
 packages/*/src
 packages/*/node_modules
