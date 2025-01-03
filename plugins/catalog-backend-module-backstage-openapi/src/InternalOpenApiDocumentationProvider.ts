@@ -155,8 +155,10 @@ const loadSpecs = async ({
   return mergeSpecs({ baseUrl, specs });
 };
 
-
-const formatDefinition = (definition: any, format: string | 'json' | 'yaml') => {
+const formatDefinition = (
+  definition: any,
+  format: string | 'json' | 'yaml',
+) => {
   if (format === 'json') {
     return JSON.stringify(definition, null, 2);
   }
@@ -164,7 +166,7 @@ const formatDefinition = (definition: any, format: string | 'json' | 'yaml') => 
     return yaml.stringify(definition);
   }
   throw new Error(`Unsupported format type: ${format}`);
-}
+};
 
 export class InternalOpenApiDocumentationProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
@@ -247,9 +249,10 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const configToMerge = this.config.getOptional(
       'catalog.providers.backstageOpenapi.entityOverrides',
     );
-    const formatConfig = this.config.getOptionalString(
-      'catalog.providers.backstageOpenapi.definitionFormat',
-    ) ?? 'json';
+    const formatConfig =
+      this.config.getOptionalString(
+        'catalog.providers.backstageOpenapi.definitionFormat',
+      ) ?? 'json';
 
     const baseConfig = {
       metadata: {
@@ -263,9 +266,6 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     };
 
     logger.info(`Loading specs from ${pluginsToMerge}.`);
-
-
-
     const requiredConfig = {
       apiVersion: 'backstage.io/v1beta1',
       kind: 'API',
