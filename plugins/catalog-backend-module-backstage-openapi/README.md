@@ -28,6 +28,7 @@ catalog:
         - catalog
         - todo
         - search
+      definitionFormat: "yaml" # Optional, defaults to "json"
       entityOverrides: # All optional
         metadata:
           name: 'my name'
