@@ -21,17 +21,21 @@ import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { useMountEffect } from '@react-hookz/web';
+import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
 
 export function useFetchEntities({
+  filters,
   mode,
   initialSelectedOwnersRefs,
 }: {
+  filters: DefaultEntityFilters;
   mode: 'owners-only' | 'all';
   initialSelectedOwnersRefs: string[];
 }) {
   const isOwnersOnlyMode = mode === 'owners-only';
   const queryEntitiesResponse = useQueryEntities();
   const facetsEntitiesResponse = useFacetsEntities({
+    filters,
     enabled: isOwnersOnlyMode,
   });
 
