@@ -20,7 +20,12 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Gitlab, RepositoryTreeSchema, CommitAction } from '@gitbeaker/rest';
+import {
+  Gitlab,
+  RepositoryTreeSchema,
+  CommitAction,
+  SimpleUserSchema,
+} from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
@@ -100,6 +105,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     projectid?: string;
     removeSourceBranch?: boolean;
     assignee?: string;
+    reviewers?: string[];
   }>({
     id: 'publish:gitlab:merge-request',
     examples,
@@ -179,6 +185,14 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             type: 'string',
             description: 'User this merge request will be assigned to',
           },
+          reviewers: {
+            title: 'Merge Request Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Users that will be assigned as reviewers',
+          },
         },
       },
       output: {
@@ -207,6 +221,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
     async handler(ctx) {
       const {
         assignee,
+        reviewers,
         branchName,
         targetBranchName,
         description,
@@ -240,6 +255,27 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             )}. Proceeding with MR creation without an assignee.`,
           );
         }
+      }
+
+      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicity passed to the Gitlab API call (e.g. assigneeId)
+      if (reviewers !== undefined) {
+        reviewerIds = (
+          await Promise.all(
+            reviewers.map(async reviewer => {
+              try {
+                const reviewerUser = await api.Users.all({
+                  username: reviewer,
+                });
+                return reviewerUser[0].id;
+              } catch (e) {
+                ctx.logger.warn(
+                  `Failed to find gitlab user id for ${reviewer}: ${e}. Proceeding with MR creation without reviewer.`,
+                );
+                return undefined;
+              }
+            }),
+          )
+        ).filter(id => id !== undefined) as number[];
       }
 
       let fileRoot: string;
@@ -355,7 +391,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
       try {
-        const mergeRequestUrl = await api.MergeRequests.create(
+        let mergeRequest = await api.MergeRequests.create(
           repoID,
           branchName,
           String(targetBranch),
@@ -364,12 +400,59 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             description,
             removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
             assigneeId,
+            reviewerIds,
           },
-        ).then(mergeRequest => mergeRequest.web_url ?? mergeRequest.webUrl);
+        );
+
+        // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
+        // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
+        // Code owners take a moment to be processed and added to the approval rules after the MR is created.
+
+        while (
+          mergeRequest.detailed_merge_status === 'preparing' ||
+          mergeRequest.detailed_merge_status === 'approvals_syncing' ||
+          mergeRequest.detailed_merge_status === 'checking'
+        ) {
+          mergeRequest = await api.MergeRequests.show(repoID, mergeRequest.iid);
+          ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
+        }
+
+        const approvalRules = await api.MergeRequestApprovals.allApprovalRules(
+          repoID,
+          {
+            mergerequestIId: mergeRequest.iid,
+          },
+        );
+
+        if (approvalRules.length !== 0) {
+          const eligibleApprovers = approvalRules
+            .filter(rule => rule.eligible_approvers !== undefined)
+            .map(rule => {
+              return rule.eligible_approvers as SimpleUserSchema[];
+            })
+            .flat();
+
+          const eligibleUserIds = new Set([
+            ...eligibleApprovers.map(user => user.id),
+            ...(reviewerIds ?? []),
+          ]);
+
+          mergeRequest = await api.MergeRequests.edit(
+            repoID,
+            mergeRequest.iid,
+            {
+              reviewerIds: Array.from(eligibleUserIds),
+            },
+          );
+        }
+
         ctx.output('projectid', repoID);
         ctx.output('targetBranchName', targetBranch);
         ctx.output('projectPath', repoID);
-        ctx.output('mergeRequestUrl', mergeRequestUrl);
+        ctx.output(
+          'mergeRequestUrl',
+          mergeRequest.web_url ?? mergeRequest.webUrl,
+        );
       } catch (e) {
         throw new InputError(
           `Merge request creation failed. ${getErrorMessage(e)}`,

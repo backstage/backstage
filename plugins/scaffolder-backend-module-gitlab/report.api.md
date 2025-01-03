@@ -202,6 +202,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
   },
   JsonObject
 >;
