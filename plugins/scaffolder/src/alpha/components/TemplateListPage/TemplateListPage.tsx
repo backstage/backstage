@@ -49,6 +49,7 @@ import {
   registerComponentRouteRef,
   scaffolderListTaskRouteRef,
   selectedTemplateRouteRef,
+  templateExtensionsRouteRef,
   viewTechDocRouteRef,
 } from '../../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
@@ -72,6 +73,8 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    templateFilters?: boolean;
+    templateGlobals?: boolean;
   };
   headerOptions?: {
     pageTitleOverride?: string;
@@ -108,6 +111,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
+  const templateExtensionsLink = useRouteRef(templateExtensionsRouteRef);
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -132,6 +136,10 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     onTasksClicked:
       props?.contextMenu?.tasks !== false
         ? () => navigate(tasksLink())
+        : undefined,
+    onTemplateExtensionsClicked:
+      props?.contextMenu?.templateFilters !== false
+        ? () => navigate(templateExtensionsLink())
         : undefined,
   };
 
