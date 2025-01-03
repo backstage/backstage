@@ -545,6 +545,18 @@ techdocs:
 This way, all iframes where the host in the src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
 
+Sometimes you might need to add custom attributes to an iframe in order to allow
+the iframe to function, an example of this is with Structurizr which needs an
+`apikey` attribute. To do this you can modify the config to accept an object:
+
+```yaml
+techdocs:
+  sanitizer:
+    allowedIframeHosts:
+      - src: structurizr.com
+        allowedAttributes: ['apikey']
+```
+
 ## How to enable custom elements in TechDocs
 
 TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to
