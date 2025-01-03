@@ -5797,6 +5797,7 @@ __metadata:
     openapi-merge: ^1.3.2
     openapi3-ts: ^3.1.2
     uuid: ^11.0.0
+    yaml: ^2.7.0
   languageName: unknown
   linkType: soft
 
