@@ -1,5 +1,5 @@
 import styles from './Sidebar.module.css';
-import { TabsVersion, TabsPages, TabsTheme } from '../Tabs';
+import { TabsVersion, TabsPages, TabsTheme } from './tabs';
 import { Docs } from './docs';
 import { Playground } from './playground';
 import { cookies } from 'next/headers';

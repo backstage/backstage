@@ -63,6 +63,7 @@ export const Button5 = () => {
 };
 
 export const Button6 = () => {
+  // TODO: Add responsive button
   return null;
   return (
     <Button

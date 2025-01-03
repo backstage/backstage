@@ -1,17 +1,50 @@
-import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
-import { Story } from '../components/Story';
+import {
+  TextPreview,
+  TextAllVariants,
+  TextResponsive,
+  TextAllWeights,
+} from '../snippets/text';
+import { Snippet } from '../components/Snippet';
+import { Tabs } from '../components/Tabs';
+import { CodeBlock } from '../components/CodeBlock';
 
 # Text
 
 The `Text` component is used to display content on your page.
 
-<Story id="text--default" />
+<Snippet
+  py={4}
+  preview={<TextPreview />}
+  code={`<Text style={{ maxWidth: '600px' }}>
+    A man looks at a painting in a museum and says, “Brothers and sisters I
+    have none, but that man&apos;s father is my father&apos;s son.” Who is in
+    the painting?
+  </Text>`}
+/>
 
-<CodeBlock
-  code={`import { Text } from "@backstage/canon";
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Text } from '@backstage/canon';
 
-<Text>Hello World!</Text>`} />
+<Text />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Text className="text" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
 
 ## API reference
 
@@ -47,13 +80,31 @@ The `Text` component is used to display content on your page.
 The `Text` component has a `variant` prop that can be used to change the
 appearance of the text.
 
-<CodeBlock
+<Snippet
+  open
+  preview={<TextAllVariants />}
   code={`<Stack gap="md">
-    <Text variant="subtitle">Subtitle Lorem ipsum dolor sit amet consectetur...</Text>
-    <Text variant="body">Body Lorem ipsum dolor sit amet consectetur...</Text>
-    <Text variant="caption">Caption Lorem ipsum dolor sit amet consectetur...</Text>
-    <Text variant="label">Label Lorem ipsum dolor sit amet consectetur...</Text>
-</Stack>`}
+    <Text variant="subtitle" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="body" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="caption" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="label" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+  </Stack>`}
 />
 
 ### All weights
@@ -61,11 +112,21 @@ appearance of the text.
 The `Text` component has a `weight` prop that can be used to change the
 appearance of the text.
 
-<CodeBlock
+<Snippet
+  open
+  preview={<TextAllWeights />}
   code={`<Stack gap="md">
-    <Text weight="regular">Regular Lorem ipsum dolor sit amet consectetur...</Text>
-    <Text weight="bold">Bold Lorem ipsum dolor sit amet consectetur...</Text>
-</Stack>`}
+    <Text weight="regular" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text weight="bold" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+  </Stack>`}
 />
 
 ### Responsive
@@ -73,6 +134,8 @@ appearance of the text.
 You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
-<CodeBlock
+<Snippet
+  open
+  preview={<TextResponsive />}
   code={`<Text variant={{ xs: 'label', md: 'body' }}>Responsive</Text>`}
 />

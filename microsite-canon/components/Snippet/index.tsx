@@ -23,16 +23,18 @@ export const Snippet = ({
 }: SnippetProps) => {
   return (
     <Collapsible.Root className={styles.container} defaultOpen={open}>
-      <div
-        className={`${styles.preview} ${styles[align]}`}
-        style={{ padding: `${py}rem ${px}rem` }}
-      >
-        {preview}
+      <div className={styles.preview}>
+        <div
+          className={`${styles.previewContent} ${styles[align]}`}
+          style={{ padding: `${py}rem ${px}rem` }}
+        >
+          {preview}
+        </div>
         <Collapsible.Trigger className={styles.trigger}>
           <Text variant="body">View code</Text>
         </Collapsible.Trigger>
       </div>
-      <Collapsible.Panel className={styles.Panel}>
+      <Collapsible.Panel className={styles.panel}>
         <CodeBlock code={code} />
       </Collapsible.Panel>
     </Collapsible.Root>

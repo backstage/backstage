@@ -55,6 +55,7 @@
   height: 28px;
   padding: 0 12px;
   border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
 
   &:hover {
     background-color: var(--canon-surface-2);

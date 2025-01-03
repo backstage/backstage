@@ -1,18 +1,45 @@
-import { Story } from '../components/Story';
-import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
+import {
+  HeadingPreview,
+  HeadingAllVariants,
+  HeadingResponsive,
+} from '../snippets/heading';
+import { Snippet } from '../components/Snippet';
+import { Tabs } from '../components/Tabs';
+import { CodeBlock } from '../components/CodeBlock';
 
 # Heading
 
 Headings are used to structure the content of your page.
 
-<Story id="heading--title-1" />
+<Snippet
+  py={4}
+  preview={<HeadingPreview />}
+  code={`<Heading variant="title1">Hello World!</Heading>`}
+/>
 
-<CodeBlock
-  code={`import { Heading } from "@backstage/canon";
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Heading } from '@backstage/canon';
 
-<Heading variant="title1">Hello World!</Heading>
-`} />
+<Heading />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Heading className="heading" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
 
 ## API reference
 
@@ -44,9 +71,10 @@ Headings are used to structure the content of your page.
 The `Heading` component has a `variant` prop that can be used to change the
 appearance of the heading.
 
-<Story id="heading--all-variants" />
-
-<CodeBlock
+<Snippet
+  py={2}
+  open
+  preview={<HeadingAllVariants />}
   code={`<Stack gap="md">
     <Heading variant="display">Display</Heading>
     <Heading variant="title1">Title 1</Heading>
@@ -61,6 +89,9 @@ appearance of the heading.
 You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
-<CodeBlock
+<Snippet
+  py={4}
+  open
+  preview={<HeadingResponsive />}
   code={`<Heading variant={{ xs: 'title1', md: 'title2' }}>Responsive</Heading>`}
 />

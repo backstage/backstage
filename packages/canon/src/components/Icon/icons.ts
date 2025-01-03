@@ -37,6 +37,7 @@ import {
   RiCheckLine,
   RiMoonLine,
   RiSunLine,
+  RiExternalLinkLine,
 } from '@remixicon/react';
 
 /** @public */
@@ -55,6 +56,7 @@ export const icons: IconMap = {
   chevronLeft: RiArrowLeftSLine,
   chevronRight: RiArrowRightSLine,
   cloud: RiCloudFill,
+  externalLink: RiExternalLinkLine,
   heart: RiHeartFill,
   moon: RiMoonLine,
   plus: RiAddLine,

@@ -1,17 +1,33 @@
-import { Story } from '../components/Story';
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { spacePropsList } from '../utils/spaceProps';
+import { Tabs } from '../components/Tabs';
+import { Snippet } from '../components/Snippet';
+import { BoxPreview } from '../snippets/box';
 
 # Box
 
-Box is the lowest-level component in Canon. We use it internally to build all
-of our components. It provides a consistent API for styling and layout.
+Box is the lowest-level component in Canon. It provides a consistent API for styling and layout.
 
-<CodeBlock
-  code={`import { Box } from "@backstage/canon";
+<Snippet
+  py={4}
+  preview={<BoxPreview />}
+  code={`<Box>
+    <DecorativeBox />
+</Box>`}
+  align="center"
+/>
 
-<Box>Hello World!</Box>`} />
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock code={`import { Box } from "@backstage/canon";
+
+<Box />`} />
+  </Tabs.Panel>
+</Tabs.Root>
 
 ## API reference
 
@@ -81,10 +97,7 @@ avoid collapsing margins but both are available.
 
 A simple example of how to use the Box component.
 
-<CodeBlock
-  title="Usage"
-  code={`<Box padding="md" borderRadius="md">Hello World</Box>`}
-/>
+<CodeBlock code={`<Box padding="md" borderRadius="md">Hello World</Box>`} />
 
 ### Responsive
 

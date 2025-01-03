@@ -1,22 +1,37 @@
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { spacePropsList } from '../utils/spaceProps';
+import { Tabs } from '../components/Tabs';
+import { Snippet } from '../components/Snippet';
+import { InlinePreview } from '../snippets/inline';
 
 # Inline
 
-The Inline component is used to create a horizontal layout of elements. By
-default it uses flex and flexWrap to make sure that your content always flows
-responsively.
+The Inline component is used to create a horizontal layout of elements.
 
-<CodeBlock
-  code={`import { Inline } from "@backstage/canon";
+<Snippet
+  py={4}
+  preview={<InlinePreview />}
+  code={`<Inline>
+    <DecorativeBox />
+    <DecorativeBox />
+    <DecorativeBox />
+</Inline>`}
+/>
 
-<Inline>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-</Inline>
-`} />
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Inline } from '@backstage/canon';
+
+<Inline />
+`}
+    />
+  </Tabs.Panel>
+</Tabs.Root>
 
 ## API reference
 

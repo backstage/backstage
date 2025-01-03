@@ -1,19 +1,34 @@
 import { CodeBlock } from '../components/CodeBlock';
 import { PropsTable } from '../components/PropsTable';
 import { spacePropsList } from '../utils/spaceProps';
+import { Tabs } from '../components/Tabs';
+import { grid } from './_snippets';
+import { Snippet } from '../components/Snippet';
+import { GridPreview } from '../snippets/grid';
 
 # Grid
 
 A layout component that helps to create simple column-based layouts as well as
 more complex ones.
 
-<CodeBlock
-  code={`import { Grid } from "@backstage/canon";
+<Snippet
+  py={4}
+  preview={<GridPreview />}
+  code={`<Grid>
+    <DecorativeBox />
+    <DecorativeBox />
+    <DecorativeBox />
+</Grid>`}
+/>
 
-<Grid>
-  <Grid.Item>Hello World</Grid.Item>
-</Grid>
-`} />
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock code={grid} />
+  </Tabs.Panel>
+</Tabs.Root>
 
 ## API reference
 

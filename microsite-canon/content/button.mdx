@@ -1,5 +1,7 @@
 import { PropsTable } from '../components/PropsTable';
 import { Snippet } from '../components/Snippet';
+import { Tabs } from '../components/Tabs';
+import { CodeBlock } from '../components/CodeBlock';
 import {
   Button1,
   Button2,
@@ -8,6 +10,7 @@ import {
   Button5,
   Button6,
 } from '../snippets/button';
+import { buttonVariants } from './_snippets';
 
 # Button
 
@@ -29,6 +32,29 @@ A button component that can be used to trigger actions.
   </Button>
 </Inline>`}
 />
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Button } from '@backstage/canon';
+
+<Button />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Button className="button" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
 
 ## API reference
 
@@ -72,17 +98,7 @@ Here's a view when buttons have different variants.
   py={4}
   open
   preview={<Button1 />}
-  code={`<Inline alignY="center">
-  <Button iconStart="cloud" variant="primary">
-    Button
-  </Button>
-  <Button iconStart="cloud" variant="secondary">
-    Button
-  </Button>
-  <Button iconStart="cloud" variant="tertiary">
-    Button
-  </Button>
-</Inline>`}
+  code={buttonVariants}
 />
 
 ### Sizes
