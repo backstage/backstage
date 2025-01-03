@@ -47628,6 +47628,7 @@ __metadata:
     fs-extra: ^11.2.0
     nodemon: ^3.0.1
     semver: ^7.6.0
+    yaml: ^2.0.0
   languageName: unknown
   linkType: soft
 
