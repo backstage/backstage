@@ -263,6 +263,8 @@ check the App Registration you created:
   basically the same thing.
 - `prompt`: Recommended to use `auto` so the browser will request login to the IDP if the
   user has no active session.
+- `sessionDuration` (optional): Lifespan of the refresh token cookie and granted scopes cookie
+  issued during the authentication process.
 
 Note that for the time being, any change in this yaml file requires a restart of the app,
 also you need to have the `session.secret` part to use OIDC (some other providers might
