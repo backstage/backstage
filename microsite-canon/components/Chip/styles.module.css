@@ -25,9 +25,19 @@
   margin-right: 4px;
   background-color: #f0f0f0;
   color: #5d5d5d;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .head {
   background-color: #eaf2fd;
   color: #2563eb;
+}
+
+[data-theme='dark'] .chip {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+[data-theme='dark'] .chip.head {
+  background-color: #26417b;
 }

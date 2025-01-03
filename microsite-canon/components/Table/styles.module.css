@@ -43,7 +43,6 @@
 }
 
 .tableHeaderCell {
-  /* background-color: #f5f5f5 !important; */
   border-bottom: 1px solid var(--canon-border-base) !important;
   font-weight: 500;
   font-size: 14px;

@@ -17,11 +17,10 @@ iframe {
 
 .shiki,
 .shiki span {
-  background-color: var(--canon-surface-1) !important;
+  background-color: transparent !important;
   font-family: var(--canon-font-monospace);
   font-size: 0.875rem;
   line-height: 1.7;
-  transition: background-color 0.2s ease-in-out;
 }
 
 [data-theme='dark'] .shiki,
