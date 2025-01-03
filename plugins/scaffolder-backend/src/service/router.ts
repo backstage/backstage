@@ -50,7 +50,6 @@ import {
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
-import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
@@ -69,11 +68,11 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { createOpenApiRouter } from '../schema/openapi';
 import {
   findTemplate,
   getEntityBaseUrl,
   getWorkingDirectory,
-  parseNumberParam,
   parseStringsParam,
 } from './helpers';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -275,7 +274,7 @@ const readDuration = (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = Router();
+  const router = await createOpenApiRouter();
   // Be generous in upload size to support a wide range of templates in dry-run mode.
   router.use(express.json({ limit: '10MB' }));
 
@@ -477,8 +476,10 @@ export async function createRouter(
           description: template.metadata.description,
           'ui:options': template.metadata['ui:options'],
           steps: parameters.map(schema => ({
-            title: schema.title ?? 'Please enter the following information',
-            description: schema.description,
+            title:
+              (schema.title as string) ??
+              'Please enter the following information',
+            description: schema.description as string,
             schema,
           })),
           EXPERIMENTAL_formDecorators:
@@ -621,8 +622,7 @@ export async function createRouter(
         };
       });
 
-      const limit = parseNumberParam(req.query.limit, 'limit');
-      const offset = parseNumberParam(req.query.offset, 'offset');
+      const { limit, offset } = req.query;
 
       const tasks = await taskBroker.list({
         filters: {
@@ -631,8 +631,8 @@ export async function createRouter(
         },
         order,
         pagination: {
-          limit: limit ? limit[0] : undefined,
-          offset: offset ? offset[0] : undefined,
+          limit,
+          offset,
         },
       });
 
@@ -681,6 +681,7 @@ export async function createRouter(
       await taskBroker.retry?.(taskId);
       res.status(201).json({ id: taskId });
     })
+    // @ts-ignore - Skipping SSE for now
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
       await checkPermission({
@@ -691,6 +692,7 @@ export async function createRouter(
 
       const { taskId } = req.params;
       const after =
+        // @ts-ignore
         req.query.after !== undefined ? Number(req.query.after) : undefined;
 
       logger.debug(`Event stream observing taskId '${taskId}' opened`);

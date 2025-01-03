@@ -15,7 +15,11 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TaskSpec, TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import {
+  ScaffolderTaskStatus,
+  TaskSpec,
+  TemplateInfo,
+} from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
 import { fileURLToPath } from 'url';
 import { Logger } from 'winston';
@@ -51,7 +55,13 @@ interface DryRunInput {
 }
 
 interface DryRunResult {
-  log: Array<{ body: JsonObject }>;
+  log: Array<{
+    body: {
+      message: string;
+      stepId?: string;
+      status?: ScaffolderTaskStatus;
+    };
+  }>;
   directoryContents: SerializedFile[];
   output: JsonObject;
 }
@@ -102,7 +112,13 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     const contentsPath = path.dirname(basePath);
     const dryRunId = uuid();
 
-    const log = new Array<{ body: JsonObject }>();
+    const log = new Array<{
+      body: {
+        message: string;
+        stepId?: string;
+        status?: ScaffolderTaskStatus;
+      };
+    }>();
 
     try {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);

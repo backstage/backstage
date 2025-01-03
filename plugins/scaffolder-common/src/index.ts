@@ -30,7 +30,12 @@ export type {
   TemplatePresentationV1beta3,
   TemplateEntityV1beta3,
   TemplateEntityStepV1beta3,
+  TemplateParameterSchema,
   TemplateParametersV1beta3,
   TemplatePermissionsV1beta3,
   TemplateRecoveryV1beta3,
 } from './TemplateEntityV1beta3';
+
+export * from './ScaffolderClient';
+
+export * from './api';

@@ -54,6 +54,7 @@
     "build": "backstage-cli package build",
     "build:assets": "node scripts/build-nunjucks.js",
     "clean": "backstage-cli package clean",
+    "generate": "backstage-repo-tools package schema openapi generate --server",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
@@ -63,6 +64,7 @@
   "dependencies": {
     "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -121,6 +123,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
+    "@backstage/repo-tools": "workspace:^",
     "@types/fs-extra": "^11.0.0",
     "@types/nunjucks": "^3.1.4",
     "@types/supertest": "^2.0.8",

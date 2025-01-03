@@ -299,7 +299,11 @@ export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
   taskId: string;
-  body: JsonObject;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: TaskStatus;
+  } & JsonObject;
   type: TaskEventType;
   createdAt: string;
 };
@@ -434,7 +438,8 @@ export type TaskStatus =
   | 'completed'
   | 'failed'
   | 'open'
-  | 'processing';
+  | 'processing'
+  | 'skipped';
 
 // @public (undocumented)
 export type TemplateAction<
