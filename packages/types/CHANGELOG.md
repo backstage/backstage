@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+
 ## 1.2.0
 
 ### Minor Changes
