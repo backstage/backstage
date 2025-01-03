@@ -1,0 +1,14 @@
+---
+title: Cyclops Modules
+author: Cyclops UI
+authorUrl: https://cyclops-ui.com/
+category: App Delivery
+description: Manage Cyclops Modules through Backstage catalog
+documentation: https://github.com/cyclops-ui/backstage-plugins#readme
+iconUrl: /img/cyclops.svg
+npmPackageName: '@cyclopsui/backstage-plugin-cyclops-modules'
+tags:
+  - Kubernetes
+  - Productivity
+  - Delivery
+addedDate: '2024-01-02'
