@@ -104,7 +104,7 @@ export default async ({ fix }: { fix: boolean }) => {
   const packagesWithRelevantDependencies = [];
 
   for (const pkg of packages) {
-    if (pkg.dir.includes('packages/canon-website')) {
+    if (pkg.dir.includes('canon-website')) {
       // Canon website is a special case and should not be checked.
       continue;
     }
