@@ -124,14 +124,19 @@ describe('<StructuredMetadataTable />', () => {
     };
 
     it('should make keys human readable', async () => {
-      const rendered = render(<StructuredMetadataTable metadata={metadata} />);
+      const rendered = render(
+        <StructuredMetadataTable
+          metadata={metadata}
+          options={{ nestedValuesAsYaml: true }}
+        />,
+      );
       expect(rendered.queryByText(/^Test A/)).toBeInTheDocument();
       expect(rendered.queryByText(/^Test B/)).toBeInTheDocument();
       expect(rendered.queryByText(/^Test D/)).toBeInTheDocument();
 
       // nested content is displayed as yaml, so not affected by formatting
       expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
-      expect(rendered.queryByText(/^testE/)).toBeInTheDocument();
+      expect(rendered.queryByText(/testE: stuff/)).toBeInTheDocument();
     });
 
     it('should be possible to disable it', async () => {
@@ -163,7 +168,7 @@ describe('<StructuredMetadataTable />', () => {
       const rendered = render(
         <StructuredMetadataTable
           metadata={metadata}
-          options={{ titleFormat: spongeBobCase }}
+          options={{ titleFormat: spongeBobCase, nestedValuesAsYaml: true }}
         />,
       );
       expect(rendered.queryByText(/^tEsTa/)).toBeInTheDocument();
