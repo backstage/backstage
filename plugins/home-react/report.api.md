@@ -17,6 +17,7 @@ export type CardConfig = {
 // @public (undocumented)
 export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
+  description?: string;
 } & T;
 
 // @public (undocumented)
@@ -65,6 +66,7 @@ export function createCardExtension<T>(options: {
 // @public (undocumented)
 export type RendererProps = {
   title?: string;
+  description?: string;
 } & ComponentParts;
 
 // @public (undocumented)
