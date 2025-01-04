@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-/** @internal */
-type Target = string | { internal: string; external: string };
+/** @alpha */
+export type Target = string | { internal: string; external: string };
 
 /**
  * @alpha
