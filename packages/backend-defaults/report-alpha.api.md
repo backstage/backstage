@@ -9,9 +9,7 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { SystemMetadataService } from '@backstage/backend-plugin-api/alpha';
 
-// Warning: (ae-missing-release-tag) "DefaultSystemMetadataService" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha (undocumented)
 export class DefaultSystemMetadataService implements SystemMetadataService {
   constructor(options: { logger: LoggerService; config: RootConfigService });
   // (undocumented)
