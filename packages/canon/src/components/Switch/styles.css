@@ -1,0 +1,174 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:root {
+  --base-switch-width: 3rem;
+  --base-switch-height: 1.5rem;
+  --base-switch-color: var(--canon-gray-400);
+  --base-switch-color-checked: var(--canon-accent);
+  --base-switch-color-disabled: var(--canon-disabled);
+  --base-switch-opacity-disabled: 0.6;
+}
+
+.cn-switch-label {
+  display: flex;
+  align-items: center;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--canon-font-size-xs);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-text-primary);
+  user-select: none;
+}
+
+.cn-switch-label-start {
+  flex-direction: row-reverse;
+}
+
+.cn-switch-label-end {
+  flex-direction: row;
+}
+
+.cn-switch-label-top {
+  flex-direction: column-reverse;
+}
+
+.cn-switch-label-bottom {
+  flex-direction: column;
+}
+
+.cn-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  appearance: none;
+  cursor: pointer;
+  border: 0;
+  margin: 0;
+  padding: 1px;
+  outline: 1px solid var(--base-switch-color);
+
+  &[data-checked] {
+    outline-color: var(--base-switch-color-checked);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    outline-color: var(--base-switch-color-disabled);
+    opacity: var(--base-switch-opacity-disabled);
+  }
+}
+
+.cn-switch-extra-small {
+  --base-border-radius: var(--canon-border-radius-sm);
+  border-radius: var(--base-border-radius);
+  width: calc(var(--base-switch-width) / 1.5);
+  height: calc(var(--base-switch-height) / 1.5);
+}
+
+.cn-switch-small {
+  --base-border-radius: var(--canon-border-radius-md);
+  border-radius: var(--base-border-radius);
+  width: calc(var(--base-switch-width) / 1.25);
+  height: calc(var(--base-switch-height) / 1.25);
+}
+
+.cn-switch-medium {
+  --base-border-radius: var(--canon-border-radius-md);
+  border-radius: var(--base-border-radius);
+  width: var(--base-switch-width);
+  height: var(--base-switch-height);
+}
+
+.cn-switch-large {
+  --base-border-radius: var(--canon-border-radius-lg);
+  border-radius: var(--base-border-radius);
+  width: calc(var(--base-switch-width) * 1.5);
+  height: calc(var(--base-switch-height) * 1.5);
+}
+
+.cn-switch-thumb {
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  background-color: var(--base-switch-color);
+  transition: translate 100ms ease;
+  animation: grow-out 0.2s cubic-bezier(0.75, 0, 1, 1) 0s forwards,
+    bounce-out 0.2s cubic-bezier(0, 0, 0.3, 1.5) 0.2s forwards;
+
+  &[data-checked] {
+    animation-name: grow-in, bounce-in;
+    background-color: var(--base-switch-color-checked);
+  }
+
+  &[data-disabled] {
+    background-color: transparent;
+    outline: 1px solid var(--base-switch-color-disabled);
+    opacity: var(--base-switch-opacity-disabled);
+  }
+
+  svg {
+    fill: var(--canon-background);
+    height: 70%;
+    width: 70%;
+  }
+}
+
+@keyframes grow-in {
+  0% {
+    border-radius: 100%;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    border-radius: 50%;
+    transform: translateX(0.75rem) scale(1.5, 1);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    border-radius: 50%;
+    transform: translateX(0.75rem) scale(1.5, 1);
+  }
+  100% {
+    border-radius: 100%;
+    transform: translateX(calc(100% + 0.1rem)) scale(1);
+  }
+}
+
+@keyframes grow-out {
+  0% {
+    border-radius: 100%;
+    transform: translateX(calc(100% + 0.1rem)) scale(1);
+  }
+  100% {
+    border-radius: 50%;
+    transform: translateX(0.25rem) scale(1.5, 1);
+  }
+}
+
+@keyframes bounce-out {
+  0% {
+    border-radius: 50%;
+    transform: translateX(0.25rem) scale(1.5, 1);
+  }
+  100% {
+    border-radius: 100%;
+    transform: translateX(0) scale(1);
+  }
+}

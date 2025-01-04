@@ -32,6 +32,7 @@ export * from './components/Button';
 export * from './components/Icon';
 export * from './components/Checkbox';
 export * from './components/Table';
+export * from './components/Switch';
 
 // Types
 export * from './types';

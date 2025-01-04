@@ -14,32 +14,5 @@
  * limitations under the License.
  */
 
-/** @public */
-export type IconNames =
-  | 'arrowDown'
-  | 'arrowLeft'
-  | 'arrowRight'
-  | 'arrowUp'
-  | 'arrowDownCircle'
-  | 'arrowLeftCircle'
-  | 'arrowRightCircle'
-  | 'arrowUpCircle'
-  | 'check'
-  | 'chevronDown'
-  | 'chevronLeft'
-  | 'chevronRight'
-  | 'chevronUp'
-  | 'cloud'
-  | 'close'
-  | 'heart'
-  | 'plus'
-  | 'trash';
-
-/** @public */
-export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
-
-/** @public */
-export type IconProps = {
-  name: IconNames;
-  size?: number;
-};
+export { Switch } from './Switch';
+export type { SwitchProps } from './types';

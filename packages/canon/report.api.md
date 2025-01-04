@@ -222,6 +222,7 @@ export type IconNames =
   | 'chevronRight'
   | 'chevronUp'
   | 'cloud'
+  | 'close'
   | 'heart'
   | 'plus'
   | 'trash';
@@ -330,6 +331,35 @@ export interface StackProps extends SpaceProps {
   gap?: UtilityProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
+}
+
+// @public (undocumented)
+export const Switch: React_2.ForwardRefExoticComponent<
+  SwitchProps & React_2.RefAttributes<HTMLButtonElement>
+>;
+
+// @public
+export interface SwitchProps {
+  checked?: boolean;
+  className?: string;
+  defaultChecked?: boolean;
+  disabled?: boolean;
+  iconEnd?: IconNames;
+  iconStart?: IconNames;
+  label?: string;
+  labelPlacement?: 'top' | 'bottom' | 'start' | 'end';
+  name?: string;
+  onCheckedChange?: (checked: boolean, event: Event) => void;
+  readOnly?: boolean;
+  required?: boolean;
+  size?:
+    | 'extra-small'
+    | 'small'
+    | 'medium'
+    | 'large'
+    | Partial<Record<Breakpoint, 'xsmall' | 'small' | 'medium' | 'large'>>;
+  style?: React.CSSProperties;
+  value?: string;
 }
 
 // @public (undocumented)
