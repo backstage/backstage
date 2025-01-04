@@ -1,0 +1,134 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as AvatarStories from './Avatar.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+
+<Meta of={AvatarStories} />
+
+<Unstyled>
+
+<Title type="h1">Avatar</Title>
+<Text>A Avatar component.</Text>
+
+<Canvas of={AvatarStories.Primary} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Avatar } from "@backstage/canon";
+
+<Avatar src="https://example.com/avatar.jpg" />
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    size: {
+      type: ['small', 'medium', 'large'],
+      description: 'The size of the avatar.',
+      responsive: true,
+    },
+    radius: {
+      type: 'string',
+      description: 'The border radius of the avatar.',
+      responsive: false,
+    },
+    status: {
+      type: ['online', 'offline', 'busy', 'away', 'none'],
+      description: 'The status indicator for the avatar.',
+      responsive: false,
+    },
+    src: {
+      type: 'string',
+      description: 'The source URL of the avatar image.',
+      responsive: false,
+    },
+    text: {
+      type: 'string',
+      description: 'The text to display in the avatar.',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      description: 'The class name to apply to the avatar.',
+      responsive: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Sizes</Title>
+<Text>Here's a view when Avatar have different sizes.</Text>
+
+<Canvas of={AvatarStories.Sizes} />
+
+<Source
+  code={`<Inline alignY="center">
+  <Avatar size="small" />
+  <Avatar size="medium" />
+  <Avatar size="large" />
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Status</Title>
+<Text>Here's a view when Avatar have different status.</Text>
+
+<Canvas of={AvatarStories.Status} />
+
+<Source
+  code={`<Inline alignY="center">
+  <Avatar status="online" />
+  <Avatar status="offline" />
+  <Avatar status="away" />
+  <Avatar status="busy" />
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Placeholder</Title>
+<Text>Text can be used as a placeholder along with images</Text>
+
+<Canvas of={AvatarStories.Placeholder} />
+
+<Source code={`<Avatar text="PG" />`} language="tsx" dark />
+
+<Title type="h3">Radius</Title>
+<Text>Here's a view when Avatar have different radius.</Text>
+
+<Canvas of={AvatarStories.Radius} />
+
+<Source
+  code={`<Inline alignY="center">
+  <Avatar radius="0%" />
+  <Avatar radius="25%" />
+  <Avatar radius="100%" />
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Group</Title>
+<Text>
+  Here's a view when Avatar can be grouped together using the `AvatarGroup`
+  component.
+</Text>
+
+<Canvas of={AvatarStories.Group} />
+
+<Source
+  code={`<AvatarGroup>
+  <Avatar/>
+  <Avatar/>
+  <Avatar/>
+  <Avatar/>
+</AvatarGroup>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>

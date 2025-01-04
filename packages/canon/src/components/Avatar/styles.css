@@ -1,0 +1,112 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.cn-avatar {
+  position: relative;
+  display: inline-flex;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: var(--canon-surface-2);
+    border: 1px solid var(--canon-border-base);
+
+    &[data-placeholder='true'] {
+      align-items: center;
+      justify-content: center;
+    }
+
+    > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &[data-status]:not([data-status='none'])::before {
+      content: '';
+      top: 8%;
+      right: 8%;
+      width: 15%;
+      height: 15%;
+      z-index: 9999;
+      position: absolute;
+      border-radius: 100%;
+      outline: 2px solid var(--canon-background);
+    }
+
+    &[data-status='online']::before {
+      background-color: var(--canon-success);
+    }
+
+    &[data-status='offline']::before {
+      background-color: var(--canon-neutral);
+    }
+
+    &[data-status='busy']::before {
+      background-color: var(--canon-error);
+    }
+
+    &[data-status='away']::before {
+      background-color: var(--canon-warning);
+    }
+  }
+}
+
+.cn-avatar-small {
+  width: 3rem;
+  height: 3rem;
+  --base-text-size: var(--canon-font-size-label);
+}
+
+.cn-avatar-medium {
+  width: 6rem;
+  height: 6rem;
+  --base-text-size: calc(var(--canon-font-size-label) * 2);
+}
+
+.cn-avatar-large {
+  width: 9rem;
+  height: 9rem;
+  --base-text-size: calc(var(--canon-font-size-label) * 3);
+}
+
+.cn-avatar-text {
+  color: var(--canon-text-primary);
+  font-size: var(--base-text-size);
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.cn-avatar-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .cn-avatar {
+    margin-left: -12%;
+    border: 4px solid var(--canon-background);
+    border-radius: 100%;
+    overflow: hidden;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
