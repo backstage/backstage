@@ -302,9 +302,7 @@ export type BitbucketServerIntegrationConfig = {
 // @public
 export function buildGerritGitilesArchiveUrl(
   config: GerritIntegrationConfig,
-  project: string,
-  branch: string,
-  filePath: string,
+  url: string,
 ): string;
 
 // @public
