@@ -1,0 +1,82 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as RadioStories from './Radio.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+
+<Meta of={RadioStories} />
+
+<Unstyled>
+
+<Title type="h1">Radio</Title>
+<Text>A button component that can be used to trigger actions.</Text>
+
+<Canvas of={RadioStories.Primary} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Radio } from "@backstage/canon";
+
+<Radio groupLabel="Radio Group" name="radio" options={['option1', 'option2']} />
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Sizes</Title>
+<Text>Here's a view when Radio have different sizes.</Text>
+
+<Canvas of={RadioStories.Sizes} />
+
+<Source
+  code={`<Inline alignY="center" gap="lg">
+  <Radio groupLabel="small" name="radio-small" size="small" options={["option1", "option2"]}/>
+  <Radio groupLabel="medium" name="radio-medium" size="medium" options={["option1", "option2"]}/>
+  <Radio groupLabel="large" name="radio-large" size="large" options={["option1", "option2"]}/>
+</Inline>`}
+  language="tsx"
+  dark
+/>{' '}
+
+<Title type="h3">Label Placement</Title>
+<Text>Here's a view when Radio have different label placements.</Text>
+
+<Canvas of={RadioStories.LabelPlacement} />
+
+<Source
+  code={`<Inline alignY="center" gap="xl">
+  <Radio groupLabel="start" name="radio-start" optionsLabelPlacement="start" options={["option1", "option2"]}/>
+  <Radio groupLabel="top" name="radio-top" optionsLabelPlacement="top" options={["option1", "option2"]}/>
+  <Radio groupLabel="bottom" name="radio-bottom" optionsLabelPlacement="bottom" options={["option1", "option2"]}/>
+  <Radio groupLabel="end" name="radio-end" optionsLabelPlacement="end" options={["option1", "option2"]}/>
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive</Title>
+<Text>Here's a view when Radio have different responsive sizes.</Text>
+
+<Canvas of={RadioStories.Responsive} />
+
+<Source
+  code={`<Inline alignY="center" gap="xl">
+  <Radio groupLabel="responsive" name="radio-responsive" size={{ base: "small", md: "medium", lg: "large" }} options={["option1", "option2"]}/>
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Disabled</Title>
+<Text>Here's a view when Radio is disabled.</Text>
+
+<Canvas of={RadioStories.Disabled} />
+
+<Source
+  code={`<Radio groupLabel="disabled" name="radio-disabled" disabled options={["option1", "option2"]}/>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>

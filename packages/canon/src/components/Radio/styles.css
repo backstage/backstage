@@ -1,0 +1,157 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.cn-radio-group {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--canon-spacing-xs);
+  color: var(--color-gray-900);
+}
+
+/* color */
+.cn-radio-color-primary {
+  --cn-radio-color: var(--canon-accent);
+}
+
+.cn-radio-color-secondary {
+  --cn-radio-color: var(--canon-secondary, #6a1b9a);
+}
+
+.cn-radio-color-tertiary {
+  --cn-radio-color: var(--canon-tertiary, #fbc02d);
+}
+
+.cn-radio-color-error {
+  --cn-radio-color: var(--canon-error);
+}
+
+.cn-radio-color-warning {
+  --cn-radio-color: var(--canon-warning);
+}
+
+.cn-radio-color-success {
+  --cn-radio-color: var(--canon-success);
+}
+
+.cn-radio-color-info {
+  --cn-radio-color: var(--canon-info);
+}
+
+.cn-radio-color-neutral {
+  --cn-radio-color: var(--canon-neutral);
+}
+
+/* Sizes */
+.cn-radio-small {
+  --cn-radio-size: 0.75rem;
+  --cn-radio-font-size: var(--canon-font-size-label);
+}
+
+.cn-radio-medium {
+  --cn-radio-size: 1rem;
+  --cn-radio-font-size: var(--canon-font-size-caption);
+}
+
+.cn-radio-large {
+  --cn-radio-size: 1.25rem;
+  --cn-radio-font-size: var(--canon-font-size-body);
+}
+
+.cn-radio-caption {
+  display: flex;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--cn-radio-font-size);
+  color: var(--canon-text-secondary);
+  font-weight: var(--canon-font-weight-bold);
+  user-select: none;
+}
+
+.cn-radio-item {
+  display: flex;
+  align-items: center;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--cn-radio-font-size);
+  color: var(--canon-text-primary);
+  user-select: none;
+
+  &[data-label-placement='start'] {
+    flex-direction: row-reverse;
+  }
+
+  &[data-label-placement='end'] {
+    flex-direction: row;
+  }
+
+  &[data-label-placement='top'] {
+    flex-direction: column;
+  }
+
+  &[data-label-placement='bottom'] {
+    flex-direction: column-reverse;
+  }
+}
+
+.cn-radio {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  width: var(--cn-radio-size);
+  height: var(--cn-radio-size);
+  outline: 2px solid var(--canon-gray-500);
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    outline-color: var(--canon-disabled);
+    opacity: 0.5;
+  }
+
+  &[data-unchecked] {
+    background-color: transparent;
+  }
+
+  &[data-checked]::not([data-disabled]) {
+    outline-color: var(--cn-radio-color);
+  }
+}
+
+.cn-radio-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &[data-unchecked] {
+    display: none;
+  }
+
+  &[data-disabled]::before {
+    background-color: var(--canon-disabled);
+    opacity: 0.5;
+  }
+
+  &::before {
+    content: '';
+    border-radius: 100%;
+    width: calc(var(--cn-radio-size) - 0.25rem);
+    height: calc(var(--cn-radio-size) - 0.25rem);
+    background-color: var(--cn-radio-color);
+  }
+}
