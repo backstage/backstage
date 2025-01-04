@@ -1,6 +1,6 @@
 'use client';
 
-import * as TextStories from '../../canon/src/components/Text/Text.stories';
+import * as TextStories from '../../packages/canon/src/components/Text/Text.stories';
 import { composeStories } from '@storybook/react';
 
 export const TextPreview = () => {
