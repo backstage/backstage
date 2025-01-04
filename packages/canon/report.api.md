@@ -273,6 +273,38 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
+export const Slider: React_2.ForwardRefExoticComponent<
+  SliderProps & React_2.RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface SliderProps {
+  className?: string;
+  defaultValue?: number | ReadonlyArray<number>;
+  disabled?: boolean;
+  label?: string;
+  labelPlacement?: 'start' | 'end' | 'bottom';
+  largeStep?: number;
+  max?: number;
+  min?: number;
+  minStepsBetweenValues?: number;
+  name?: string;
+  onValueChange?: (
+    value: number | number[],
+    event: Event,
+    activeThumbIndex: number,
+  ) => void;
+  onValueCommitted?: (value: number | number[], event: Event) => void;
+  orientation?: 'horizontal' | 'vertical';
+  rootRef?: React.Ref<Element>;
+  size?: 'small' | 'medium';
+  step?: number;
+  tabIndex?: number;
+  value?: number | ReadonlyArray<number>;
+  valueLabelDisplay?: 'on' | 'off' | 'auto';
+}
+
+// @public (undocumented)
 export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 // @public (undocumented)
