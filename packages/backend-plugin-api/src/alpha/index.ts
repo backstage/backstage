@@ -26,6 +26,10 @@ export { actionsRegistryServiceRef, actionsServiceRef } from './refs';
 
 import { createServiceRef } from '@backstage/backend-plugin-api';
 
+/**
+ * EXPERIMENTAL: System metadata service.
+ * @alpha
+ */
 export const systemMetadataServiceRef = createServiceRef<
   import('./services/definitions/SystemMetadataService').SystemMetadataService
 >({
@@ -35,4 +39,5 @@ export const systemMetadataServiceRef = createServiceRef<
 export type {
   BackstageInstance,
   SystemMetadataService,
+  Target,
 } from './services/definitions/SystemMetadataService';
