@@ -259,6 +259,13 @@ export type ProfileInfo = {
   picture?: string;
 };
 
+export type LogoutResponse = {
+  /**
+   * The url to redirect to upon logout.
+   */
+  redirectUrl?: string;
+};
+
 /**
  * Session state values passed to subscribers of the SessionApi.
  *
@@ -289,7 +296,7 @@ export type SessionApi = {
   /**
    * Sign out from the current session. This will reload the page.
    */
-  signOut(): Promise<void>;
+  signOut(): Promise<LogoutResponse> | Promise<void>;
 
   /**
    * Observe the current state of the auth session. Emits the current state on subscription.

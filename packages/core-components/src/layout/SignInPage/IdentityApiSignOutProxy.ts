@@ -17,6 +17,7 @@
 import {
   BackstageUserIdentity,
   IdentityApi,
+  LogoutResponse,
   ProfileInfo,
 } from '@backstage/core-plugin-api';
 
@@ -75,7 +76,7 @@ export class IdentityApiSignOutProxy implements IdentityApi {
     return this.config.identityApi.getCredentials();
   }
 
-  signOut(): Promise<void> {
+  signOut(): Promise<LogoutResponse> | Promise<void> {
     return this.config.signOut();
   }
 }
