@@ -1,10 +1,10 @@
-import { Container } from '@backstage/canon';
-import { DecorativeBox } from '../components/DecorativeBox';
+'use client';
+
+import { composeStories } from '@storybook/react';
+import * as ContainerStories from '../../packages/canon/src/components/Container/Container.stories';
 
 export const ContainerPreview = () => {
-  return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <DecorativeBox />
-    </div>
-  );
+  const { Preview } = composeStories(ContainerStories);
+
+  return <Preview />;
 };

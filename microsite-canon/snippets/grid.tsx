@@ -1,12 +1,10 @@
-import { Grid } from '@backstage/canon';
-import { DecorativeBox } from '../components/DecorativeBox';
+'use client';
+
+import { composeStories } from '@storybook/react';
+import * as GridStories from '../../packages/canon/src/components/Grid/Grid.stories';
 
 export const GridPreview = () => {
-  return (
-    <Grid>
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-    </Grid>
-  );
+  const { Default } = composeStories(GridStories);
+
+  return <Default />;
 };

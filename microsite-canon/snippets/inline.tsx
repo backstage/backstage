@@ -1,26 +1,10 @@
-import { Inline } from '@backstage/canon';
-import { DecorativeBox } from '../components/DecorativeBox';
+'use client';
+
+import * as InlineStories from '../../packages/canon/src/components/Inline/Inline.stories';
+import { composeStories } from '@storybook/react';
 
 export const InlinePreview = () => {
-  return (
-    <Inline>
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-    </Inline>
-  );
+  const { Default } = composeStories(InlineStories);
+
+  return <Default />;
 };

@@ -1,14 +1,10 @@
-import { Stack } from '@backstage/canon';
-import { DecorativeBox } from '../components/DecorativeBox';
+'use client';
+
+import * as StackStories from '../../packages/canon/src/components/Stack/Stack.stories';
+import { composeStories } from '@storybook/react';
 
 export const StackPreview = () => {
-  return (
-    <div style={{ maxWidth: '320px', margin: '0 auto' }}>
-      <Stack>
-        <DecorativeBox />
-        <DecorativeBox />
-        <DecorativeBox />
-      </Stack>
-    </div>
-  );
+  const { Default } = composeStories(StackStories);
+
+  return <Default />;
 };

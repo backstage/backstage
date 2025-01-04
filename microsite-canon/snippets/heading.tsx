@@ -1,39 +1,30 @@
-import { Text, Heading } from '@backstage/canon';
-import { Stack } from '@backstage/canon';
+'use client';
+
+import * as HeadingStories from '../../packages/canon/src/components/Heading/Heading.stories';
+import { composeStories } from '@storybook/react';
 
 export const HeadingPreview = () => {
-  return <Heading variant="title1">Look mum, no hands!</Heading>;
+  const { Title1 } = composeStories(HeadingStories);
+
+  return <Title1 />;
 };
 
 export const HeadingAllVariants = () => {
-  return (
-    <Stack>
-      <Heading variant="display">Display</Heading>
-      <Heading variant="title1">Title 1</Heading>
-      <Heading variant="title2">Title 2</Heading>
-      <Heading variant="title3">Title 3</Heading>
-      <Heading variant="title4">Title 4</Heading>
-      <Heading variant="title5">Title 5</Heading>
-    </Stack>
-  );
+  const { AllVariants } = composeStories(HeadingStories);
+
+  return <AllVariants />;
 };
 
 export const HeadingResponsive = () => {
+  const { Responsive } = composeStories(HeadingStories);
+
   // TODO: Add responsive heading
   return null;
-  return <Heading variant={{ xs: 'title1', md: 'title2' }}>Responsive</Heading>;
+  return <Responsive />;
 };
 
 export const HeadingPlayground = () => {
-  return (
-    <Stack>
-      <Text>All variants</Text>
-      <Heading variant="display">Display</Heading>
-      <Heading variant="title1">Title 1</Heading>
-      <Heading variant="title2">Title 2</Heading>
-      <Heading variant="title3">Title 3</Heading>
-      <Heading variant="title4">Title 4</Heading>
-      <Heading variant="title5">Title 5</Heading>
-    </Stack>
-  );
+  const { Playground } = composeStories(HeadingStories);
+
+  return <Playground />;
 };

@@ -1,93 +1,36 @@
-import { Text } from '@backstage/canon';
-import { Stack } from '@backstage/canon';
+'use client';
+
+import * as TextStories from '../../packages/canon/src/components/Text/Text.stories';
+import { composeStories } from '@storybook/react';
 
 export const TextPreview = () => {
-  return (
-    <Text style={{ maxWidth: '600px' }}>
-      A man looks at a painting in a museum and says, “Brothers and sisters I
-      have none, but that man&apos;s father is my father&apos;s son.” Who is in
-      the painting?
-    </Text>
-  );
+  const { Default } = composeStories(TextStories);
+
+  return <Default />;
 };
 
 export const TextAllVariants = () => {
-  return (
-    <Stack gap="md">
-      <Text variant="subtitle" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text variant="body" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text variant="caption" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text variant="label" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-    </Stack>
-  );
+  const { AllVariants } = composeStories(TextStories);
+
+  return <AllVariants />;
 };
 
 export const TextAllWeights = () => {
-  return (
-    <Stack gap="md">
-      <Text weight="regular" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text weight="bold" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-    </Stack>
-  );
+  const { AllWeights } = composeStories(TextStories);
+
+  return <AllWeights />;
 };
 
 export const TextResponsive = () => {
+  const { Responsive } = composeStories(TextStories);
+
   // TODO: Add responsive text
   return null;
-  return <Text variant={{ xs: 'label', md: 'body' }}>Responsive</Text>;
+  return <Responsive />;
 };
 
 export const TextPlayground = () => {
-  return (
-    <Stack>
-      <Text>Subtitle</Text>
-      <Text variant="subtitle" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text>Body</Text>
-      <Text variant="body" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text>Caption</Text>
-      <Text variant="caption" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text>Label</Text>
-      <Text variant="label" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-    </Stack>
-  );
+  const { Playground } = composeStories(TextStories);
+
+  return <Playground />;
 };

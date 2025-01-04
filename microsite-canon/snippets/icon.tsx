@@ -1,10 +1,10 @@
-import { Icon } from '@backstage/canon';
-import { Stack } from '@backstage/canon';
+'use client';
+
+import * as IconStories from '../../packages/canon/src/components/Icon/Icon.stories';
+import { composeStories } from '@storybook/react';
 
 export const IconPreview = () => {
-  return (
-    <Stack>
-      <Icon name="heart" />
-    </Stack>
-  );
+  const { Default } = composeStories(IconStories);
+
+  return <Default />;
 };

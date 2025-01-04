@@ -3,12 +3,12 @@ import { Snippet } from '../components/Snippet';
 import { Tabs } from '../components/Tabs';
 import { CodeBlock } from '../components/CodeBlock';
 import {
-  Button1,
-  Button2,
-  Button3,
-  Button4,
-  Button5,
-  Button6,
+  ButtonPreview,
+  ButtonSizes,
+  ButtonWithIcons,
+  ButtonFullWidth,
+  ButtonDisabled,
+  ButtonResponsive,
 } from '../snippets/button';
 import { buttonVariants } from './_snippets';
 
@@ -19,7 +19,7 @@ A button component that can be used to trigger actions.
 <Snippet
   align="center"
   py={4}
-  preview={<Button1 />}
+  preview={<ButtonPreview />}
   code={`<Inline alignY="center">
   <Button iconStart="cloud" variant="primary">
     Button
@@ -97,7 +97,7 @@ Here's a view when buttons have different variants.
   align="center"
   py={4}
   open
-  preview={<Button1 />}
+  preview={<ButtonPreview />}
   code={buttonVariants}
 />
 
@@ -109,7 +109,7 @@ Here's a view when buttons have different sizes.
   align="center"
   py={4}
   open
-  preview={<Button2 />}
+  preview={<ButtonSizes />}
   code={`<Inline alignY="center">
     <Button size="small">Small</Button>
     <Button size="medium">Medium</Button>
@@ -124,7 +124,7 @@ Here's a view when buttons have icons.
   align="center"
   py={4}
   open
-  preview={<Button3 />}
+  preview={<ButtonWithIcons />}
   code={`<Inline alignY="center">
     <Button iconStart="cloud">Button</Button>
     <Button iconEnd="chevronRight">Button</Button>
@@ -140,7 +140,7 @@ Here's a view when buttons are full width.
   align="center"
   py={4}
   open
-  preview={<Button4 />}
+  preview={<ButtonFullWidth />}
   code={`<Stack style={{ width: '300px' }}>
     <Button fullWidth>Full width</Button>
 </Stack>`}
@@ -154,7 +154,7 @@ Here's a view when buttons are disabled.
   align="center"
   py={4}
   open
-  preview={<Button5 />}
+  preview={<ButtonDisabled />}
   code={`<Button disabled>Button</Button>`}
 />
 
@@ -166,7 +166,7 @@ Here's a view when buttons are responsive.
   align="center"
   py={4}
   open
-  preview={<Button6 />}
+  preview={<ButtonResponsive />}
   code={`<Button
     variant={{ xs: 'primary', sm: 'secondary', md: 'tertiary' }}
     size={{ xs: 'small', sm: 'medium' }}>

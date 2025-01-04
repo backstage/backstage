@@ -1,10 +1,10 @@
-import { Box } from '@backstage/canon';
-import { DecorativeBox } from '../components/DecorativeBox';
+'use client';
+
+import * as BoxStories from '../../packages/canon/src/components/Box/Box.stories';
+import { composeStories } from '@storybook/react';
 
 export const BoxPreview = () => {
-  return (
-    <Box>
-      <DecorativeBox />
-    </Box>
-  );
+  const { Default } = composeStories(BoxStories);
+
+  return <Default />;
 };

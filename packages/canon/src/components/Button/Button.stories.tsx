@@ -20,6 +20,8 @@ import { Button } from './Button';
 import { Inline } from '../Inline';
 import { Stack } from '../Stack';
 import { Text } from '../Text';
+import { ButtonProps } from './types';
+
 const meta = {
   title: 'Button',
   component: Button,
@@ -37,12 +39,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-  args: {
-    children: 'Primary button',
-  },
-};
-
 export const Variants: Story = {
   args: {
     children: 'Button',
@@ -56,9 +52,15 @@ export const Variants: Story = {
   },
   render: () => (
     <Inline alignY="center">
-      <Button variant="primary">Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="tertiary">Tertiary</Button>
+      <Button iconStart="cloud" variant="primary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="secondary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="tertiary">
+        Button
+      </Button>
     </Inline>
   ),
 };
@@ -123,20 +125,46 @@ export const Responsive: Story = {
   },
 };
 
+const variants: string[] = ['primary', 'secondary', 'tertiary'];
+
 export const Playground: Story = {
   args: {
     children: 'Button',
   },
-  render: args => (
+  render: () => (
     <Stack>
-      <Stack>
-        <Text>Primary</Text>
-        <Inline alignY="center">
-          <Button {...args} iconStart="cloud" />
-          <Button {...args} iconEnd="chevronRight" />
-          <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
-        </Inline>
-      </Stack>
+      {variants.map(variant => (
+        <Stack key={variant}>
+          <Text>{variant}</Text>
+          {['small', 'medium'].map(size => (
+            <Inline alignY="center" key={size}>
+              <Button
+                iconStart="cloud"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd="chevronRight"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconStart="cloud"
+                iconEnd="chevronRight"
+                style={{ width: '200px' }}
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+            </Inline>
+          ))}
+        </Stack>
+      ))}
     </Stack>
   ),
 };
