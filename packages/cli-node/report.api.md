@@ -72,6 +72,8 @@ export interface BackstagePackageJson {
     [key: string]: string;
   };
   // (undocumented)
+  type?: 'module' | 'commonjs';
+  // (undocumented)
   types?: string;
   // (undocumented)
   typesVersions?: Record<string, Record<string, string[]>>;

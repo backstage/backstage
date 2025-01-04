@@ -24,6 +24,6 @@ import chalk from 'chalk';
     ),
   );
   const initializer = new CliInitializer();
-  initializer.add(import('./modules/config/alpha').then(m => m.default));
+  initializer.add(import('./modules/config/alpha'));
   await initializer.run();
 })();

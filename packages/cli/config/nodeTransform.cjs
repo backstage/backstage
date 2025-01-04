@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const { pathToFileURL } = require('url');
 const { transformSync } = require('@swc/core');
 const { addHook } = require('pirates');
 const { Module } = require('module');
@@ -55,7 +56,10 @@ addHook(
     const transformed = transformSync(code, {
       filename,
       sourceMaps: 'inline',
-      module: { type: 'commonjs' },
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true,
+      },
       jsc: {
         target: 'es2022',
         parser: {
@@ -76,3 +80,8 @@ addHook(
   },
   { extensions: ['.js', '.cjs'], ignoreNodeModules: true },
 );
+
+// Register module hooks, used by "type": "module" in package.json, .mjs and
+// .mts files, as well as dynamic import(...)s, although dynamic imports will be
+// handled be the CommonJS hooks in this file if what it points to is CommonJS.
+Module.register('./nodeTransformHooks.mjs', pathToFileURL(__filename));
