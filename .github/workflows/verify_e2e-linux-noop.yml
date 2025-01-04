@@ -9,7 +9,6 @@ on:
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
-      - 'microsite-canon/**'
       - 'beps/**'
 
 concurrency:

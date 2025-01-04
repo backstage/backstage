@@ -7,7 +7,6 @@ on:
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
-      - 'microsite-canon/**'
       - 'beps/**'
   push:
     branches: [master]
