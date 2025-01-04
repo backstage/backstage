@@ -5,7 +5,13 @@
     "role": "web-library"
   },
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/canon-website"
+  },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "scripts": {
     "build": "next build",
     "dev": "concurrently \"next dev\" \"yarn watch-css\"",
