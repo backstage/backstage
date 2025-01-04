@@ -1,0 +1,14 @@
+backend:
+  baseUrl: http://localhost:7008
+  listen:
+    port: 7008
+
+discovery:
+  endpoints:
+    - target: http://localhost:7007/api/{{pluginId}}
+      plugins: [proxy]
+    - target: http://localhost:7008/api/{{pluginId}}
+      plugins: [catalog]
+  instances:
+    - baseUrl: http://localhost:7007
+    - baseUrl: http://localhost:7008

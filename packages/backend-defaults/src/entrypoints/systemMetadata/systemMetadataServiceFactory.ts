@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
-  createBackendPlugin,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { DefaultSystemMetadataService } from './lib/DefaultSystemMetadataService';
+import { systemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
-// Example usage of the instance metadata service to log the installed features.
-export default createBackendPlugin({
-  pluginId: 'instance-metadata-logging',
-  register(env) {
-    env.registerInit({
-      deps: {
-        instanceMetadata: instanceMetadataServiceRef,
-        logger: coreServices.logger,
-      },
-      async init({ instanceMetadata, logger }) {
-        logger.info(
-          `Installed features on this instance: ${instanceMetadata
-            .getInstalledFeatures()
-            .join(', ')}`,
-        );
-      },
+/**
+ * Metadata about an entire Backstage system, a collection of Backstage instances.
+ *
+ * @alpha
+ */
+export const systemMetadataServiceFactory = createServiceFactory({
+  service: systemMetadataServiceRef,
+  deps: {
+    logger: coreServices.logger,
+    config: coreServices.rootConfig,
+  },
+  async factory({ logger, config }) {
+    return DefaultSystemMetadataService.create({
+      logger,
+      config,
     });
   },
 });
