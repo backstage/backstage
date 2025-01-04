@@ -14,50 +14,138 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from 'react';
+import React, { Fragment, ReactElement } from 'react';
 import startCase from 'lodash/startCase';
 import Typography from '@material-ui/core/Typography';
 
-import { MetadataTable, MetadataTableItem } from './MetadataTable';
+import {
+  MetadataList,
+  MetadataListItem,
+  MetadataTable,
+  MetadataTableItem,
+} from './MetadataTable';
 import { CodeSnippet } from '../CodeSnippet';
 import jsyaml from 'js-yaml';
+import {
+  Theme,
+  createStyles,
+  WithStyles,
+  withStyles,
+} from '@material-ui/core/styles';
 
 export type StructuredMetadataTableListClassKey = 'root';
 
-export type StructuredMetadataTableNestedListClassKey = 'root';
+const listStyle = createStyles({
+  root: {
+    margin: '0 0',
+    listStyleType: 'none',
+  },
+});
 
-function toValue(value: object | Array<any> | boolean | string) {
+export type StructuredMetadataTableNestedListClassKey = 'root';
+const nestedListStyle = (theme: Theme) =>
+  createStyles({
+    root: {
+      ...listStyle.root,
+      paddingLeft: theme.spacing(1),
+    },
+  });
+
+interface StyleProps extends WithStyles {
+  children?: React.ReactNode;
+}
+// Sub Components
+const StyledList = withStyles(listStyle, {
+  name: 'BackstageStructuredMetadataTableList',
+})(({ classes, children }: StyleProps) => (
+  <MetadataList classes={classes}>{children}</MetadataList>
+));
+const StyledNestedList = withStyles(nestedListStyle, {
+  name: 'BackstageStructuredMetadataTableNestedList',
+})(({ classes, children }: StyleProps) => (
+  <MetadataList classes={classes}>{children}</MetadataList>
+));
+
+function renderList(list: Array<any>, options: Options, nested: boolean) {
+  const values = list.map((item: any, index: number) => (
+    <MetadataListItem key={index}>
+      {toValue(item, options, nested)}
+    </MetadataListItem>
+  ));
+  return nested ? (
+    <StyledNestedList>{values}</StyledNestedList>
+  ) : (
+    <StyledList>{values}</StyledList>
+  );
+}
+
+function renderMap(
+  map: { [key: string]: any },
+  options: Options,
+  nested: boolean,
+) {
+  const values = Object.keys(map).map(key => {
+    const value = toValue(map[key], options, true);
+    return (
+      <MetadataListItem key={key}>
+        <Typography variant="body2" component="span">
+          {`${options.titleFormat(key)}: `}
+        </Typography>
+        {value}
+      </MetadataListItem>
+    );
+  });
+
+  return nested ? (
+    <StyledNestedList>{values}</StyledNestedList>
+  ) : (
+    <StyledList>{values}</StyledList>
+  );
+}
+
+function toValue(
+  value: ReactElement | object | Array<any> | boolean,
+  options: Options,
+  nested: boolean,
+) {
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
-
   if (value !== null && typeof value === 'object') {
-    return (
-      <CodeSnippet
-        language="yaml"
-        text={jsyaml.dump(value)}
-        customStyle={{
-          background: 'transparent',
-          lineHeight: '1.4',
-          padding: '0',
-          margin: 0,
-        }}
-      />
-    );
+    if (options.nestedValuesAsYaml) {
+      return (
+        <CodeSnippet
+          language="yaml"
+          text={jsyaml.dump(value)}
+          customStyle={{
+            background: 'transparent',
+            lineHeight: '1.4',
+            padding: '0',
+            margin: 0,
+          }}
+        />
+      );
+    }
+    if (!Array.isArray(value)) {
+      return renderMap(value, options, nested);
+    }
+  }
+
+  if (Array.isArray(value)) {
+    return renderList(value, options, nested);
   }
 
   if (typeof value === 'boolean') {
     return <Fragment>{value ? '✅' : '❌'}</Fragment>;
   }
-
   return (
     <Typography variant="body2" component="span">
       {value}
     </Typography>
   );
 }
-const ItemValue = ({ value }: { value: any }) => (
-  <Fragment>{toValue(value)}</Fragment>
+const ItemValue = ({ value, options }: { value: any; options: Options }) => (
+  <Fragment>{toValue(value, options, false)}</Fragment>
 );
 
 const TableItem = ({
@@ -71,7 +159,7 @@ const TableItem = ({
 }) => {
   return (
     <MetadataTableItem title={options.titleFormat(title)}>
-      <ItemValue value={value} />
+      <ItemValue value={value} options={options} />
     </MetadataTableItem>
   );
 };
@@ -94,6 +182,7 @@ export interface StructuredMetadataTableProps {
      * @returns Formatted key
      */
     titleFormat?: (key: string) => string;
+    nestedValuesAsYaml?: boolean;
   };
 }
 
@@ -101,9 +190,10 @@ type Options = Required<NonNullable<StructuredMetadataTableProps['options']>>;
 
 /** @public */
 export function StructuredMetadataTable(props: StructuredMetadataTableProps) {
-  const { metadata, dense = true, options = {} } = props;
+  const { metadata, dense = true, options } = props;
   const metadataItems = mapToItems(metadata, {
     titleFormat: startCase,
+    nestedValuesAsYaml: options?.nestedValuesAsYaml ?? false,
     ...options,
   });
   return <MetadataTable dense={dense}>{metadataItems}</MetadataTable>;

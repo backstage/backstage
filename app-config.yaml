@@ -322,6 +322,8 @@ catalog:
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    - type: file
+      target: ../../plugins/scaffolder-backend/sample-templates/big-review-step.yaml
       rules:
         - allow: [Template]
 scaffolder:
