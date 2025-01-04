@@ -20,6 +20,7 @@ import {
   DatabaseNotificationsStore,
   normalizeSeverity,
   NotificationGetOptions,
+  TopicGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -246,24 +247,10 @@ export async function createRouter(
     }
   };
 
-  // TODO: Move to use OpenAPI router instead
-  const router = Router();
-  router.use(express.json());
-
-  const listNotificationsHandler = async (req: Request, res: Response) => {
-    const user = await getUser(req);
-    const opts: NotificationGetOptions = {
-      user: user,
-    };
-    if (req.query.offset) {
-      opts.offset = Number.parseInt(req.query.offset.toString(), 10);
-    }
-    if (req.query.limit) {
-      opts.limit = Number.parseInt(req.query.limit.toString(), 10);
-    }
-    if (req.query.orderField) {
-      opts.orderField = parseEntityOrderFieldParams(req.query);
-    }
+  const appendCommonOptions = (
+    req: Request,
+    opts: NotificationGetOptions | TopicGetOptions,
+  ) => {
     if (req.query.search) {
       opts.search = req.query.search.toString();
     }
@@ -272,10 +259,6 @@ export async function createRouter(
     } else if (req.query.read === 'false') {
       opts.read = false;
       // or keep undefined
-    }
-
-    if (req.query.topic) {
-      opts.topic = req.query.topic.toString();
     }
 
     if (req.query.saved === 'true') {
@@ -296,6 +279,32 @@ export async function createRouter(
         req.query.minimumSeverity.toString(),
       );
     }
+  };
+
+  // TODO: Move to use OpenAPI router instead
+  const router = Router();
+  router.use(express.json());
+
+  const listNotificationsHandler = async (req: Request, res: Response) => {
+    const user = await getUser(req);
+    const opts: NotificationGetOptions = {
+      user: user,
+    };
+    if (req.query.offset) {
+      opts.offset = Number.parseInt(req.query.offset.toString(), 10);
+    }
+    if (req.query.limit) {
+      opts.limit = Number.parseInt(req.query.limit.toString(), 10);
+    }
+    if (req.query.orderField) {
+      opts.orderField = parseEntityOrderFieldParams(req.query);
+    }
+
+    if (req.query.topic) {
+      opts.topic = req.query.topic.toString();
+    }
+
+    appendCommonOptions(req, opts);
 
     const [notifications, totalCount] = await Promise.all([
       store.getNotifications(opts),
@@ -356,6 +365,21 @@ export async function createRouter(
     }
     res.json(notifications[0]);
   };
+
+  // Get topics
+  const listTopicsHandler = async (req: Request, res: Response) => {
+    const user = await getUser(req);
+    const opts: TopicGetOptions = {
+      user: user,
+    };
+
+    appendCommonOptions(req, opts);
+
+    const topics = await store.getTopics(opts);
+    res.json(topics);
+  };
+
+  router.get('/topics', listTopicsHandler);
 
   // Make sure this is the last "GET" handler
   router.get('/:id', getNotificationHandler); // Deprecated endpoint
