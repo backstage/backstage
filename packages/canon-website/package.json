@@ -1,6 +1,9 @@
 {
-  "name": "canon-microsite",
+  "name": "canon-website",
   "version": "0.0.0",
+  "backstage": {
+    "role": "web-library"
+  },
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
@@ -37,5 +40,16 @@
     "lightningcss": "^1.28.2",
     "shiki": "^1.24.4",
     "typescript": "^5"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

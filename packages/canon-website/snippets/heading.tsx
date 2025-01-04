@@ -1,6 +1,6 @@
 'use client';
 
-import * as HeadingStories from '../../packages/canon/src/components/Heading/Heading.stories';
+import * as HeadingStories from '../../canon/src/components/Heading/Heading.stories';
 import { composeStories } from '@storybook/react';
 
 export const HeadingPreview = () => {

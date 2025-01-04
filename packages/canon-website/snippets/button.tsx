@@ -1,6 +1,6 @@
 'use client';
 
-import * as ButtonStories from '../../packages/canon/src/components/Button/Button.stories';
+import * as ButtonStories from '../../canon/src/components/Button/Button.stories';
 import { composeStories } from '@storybook/react';
 
 export const ButtonPreview = () => {

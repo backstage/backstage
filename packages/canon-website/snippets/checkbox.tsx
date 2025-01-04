@@ -1,6 +1,6 @@
 'use client';
 
-import * as CheckboxStories from '../../packages/canon/src/components/Checkbox/Checkbox.stories';
+import * as CheckboxStories from '../../canon/src/components/Checkbox/Checkbox.stories';
 import { composeStories } from '@storybook/react';
 
 export const CheckboxPreview = () => {

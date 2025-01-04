@@ -3,7 +3,7 @@ const path = require('path');
 const chokidar = require('chokidar');
 const { bundle } = require('lightningcss');
 
-const source = '../../packages/canon/src/css';
+const source = '../../canon/src/css';
 const destination = '../public';
 
 const source1 = path.join(__dirname, `${source}/core.css`);
@@ -12,7 +12,7 @@ const source2 = path.join(__dirname, `${source}/components.css`);
 const destination2 = path.join(__dirname, `${destination}/components.css`);
 const source3 = path.join(
   __dirname,
-  `../../packages/canon/.storybook/themes/backstage.css`,
+  `../../canon/.storybook/themes/backstage.css`,
 );
 const destination3 = path.join(__dirname, `${destination}/backstage.css`);
 

@@ -24612,9 +24612,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canon-microsite@workspace:microsite-canon":
+"canon-website@workspace:packages/canon-website":
   version: 0.0.0-use.local
-  resolution: "canon-microsite@workspace:microsite-canon"
+  resolution: "canon-website@workspace:packages/canon-website"
   dependencies:
     "@backstage/canon": "workspace:^"
     "@base-ui-components/react": ^1.0.0-alpha.4
@@ -24640,6 +24640,14 @@ __metadata:
     react-frame-component: ^5.2.7
     shiki: ^1.24.4
     typescript: ^5
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
