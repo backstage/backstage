@@ -1,0 +1,127 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as BadgeStories from './Badge.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+
+<Meta of={BadgeStories} />
+
+<Unstyled>
+
+<Title type="h1">Badge</Title>
+<Text>A Badge component.</Text>
+
+<Canvas of={BadgeStories.Primary} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Badge } from "@backstage/canon";
+
+<Badge text="Primary Badge">
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    size: {
+      type: ['sx', 'sm', 'md', 'lg'],
+      responsive: true,
+    },
+    variant: {
+      type: [
+        'default',
+        'primary',
+        'secondary',
+        'tertiary',
+        'neutral',
+        'error',
+        'warning',
+        'success',
+        'info',
+      ],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    outline: {
+      type: 'boolean',
+      responsive: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Colors</Title>
+<Text>Badges can be colored using the `color` prop.</Text>
+
+<Canvas of={BadgeStories.Colors} />
+
+<Source
+  code={`<Inline>
+  <Badge color="default">Default</Badge>
+  <Badge color="primary">Primary</Badge>
+  <Badge color="secondary">Secondary</Badge>
+  <Badge color="tertiary">Tertiary</Badge>
+  <Badge color="neutral">Neutral</Badge>
+  <Badge color="error">Error</Badge>
+  <Badge color="warning">Warning</Badge>
+  <Badge color="success">Success</Badge>
+  <Badge color="info">Info</Badge>
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Empty</Title>
+<Text>Badges can be used as a single component.</Text>
+
+<Canvas of={BadgeStories.Empty} />
+
+<Source
+  code={`<Inline alignY="center">
+  <Badge size="lg" />
+  <Badge size="md" />
+  <Badge size="sm" />
+  <Badge size="xs" />
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Outline</Title>
+<Text>Badges can be outlined using the `outline` prop.</Text>
+
+<Canvas of={BadgeStories.Outline} />
+
+<Source
+  code={`<Inline>
+  <Badge outline color="default">Default</Badge>
+  <Badge outline color="primary">Primary</Badge>
+  <Badge outline color="secondary">Secondary</Badge>
+  <Badge outline color="tertiary">Tertiary</Badge>
+  <Badge outline color="neutral">Neutral</Badge>
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Sizes</Title>
+<Text>Badges can be sized using the `size` prop.</Text>
+
+<Canvas of={BadgeStories.Sizes} />
+
+<Source
+  code={`<Inline>
+  <Badge size="small">Small</Badge>
+  <Badge size="medium">Medium</Badge>
+  <Badge size="large">Large</Badge>
+</Inline>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>
