@@ -816,9 +816,10 @@ export async function createRouter(
         await auditorEvent?.fail({ error: err });
         throw err;
       }
-    })
-    // @ts-ignore - Skipping SSE for now
-    .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
+    });
+  (router as express.Router).get(
+    '/v2/tasks/:taskId/eventstream',
+    async (req, res) => {
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
@@ -839,7 +840,6 @@ export async function createRouter(
         });
 
         const after =
-          // @ts-ignore
           req.query.after !== undefined ? Number(req.query.after) : undefined;
 
         logger.debug(`Event stream observing taskId '${taskId}' opened`);
@@ -890,7 +890,9 @@ export async function createRouter(
         await auditorEvent?.fail({ error: err });
         throw err;
       }
-    })
+    },
+  );
+  router
     .get('/v2/tasks/:taskId/events', async (req, res) => {
       const { taskId } = req.params;
 
