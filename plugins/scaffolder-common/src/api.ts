@@ -24,7 +24,7 @@ import type {
   ActionExample,
   TaskEventType,
   TaskStatus as ScaffolderTaskStatus,
-} from '../client/src/schema/openapi';
+} from './schema/openapi';
 
 export type { ActionExample, ScaffolderTaskStatus, TaskEventType };
 
