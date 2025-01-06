@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { CustomErrorBase } from '@backstage/errors';
@@ -97,7 +96,6 @@ export class HttpPostIngressEventPublisher {
       this.addRouteForTopic(router, topic, ingresses[topic].validator),
     );
 
-    router.use(errorHandler());
     return router;
   }
 

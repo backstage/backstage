@@ -6,7 +6,6 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
-import { ActionPermissionRuleInput as ActionPermissionRuleInput_2 } from '@backstage/plugin-scaffolder-node/alpha';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
@@ -37,10 +36,12 @@ import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
-import { ScaffolderPermissionRule } from '@backstage/plugin-scaffolder-node/alpha';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -60,9 +61,10 @@ import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
-import { TemplatePermissionRuleInput as TemplatePermissionRuleInput_2 } from '@backstage/plugin-scaffolder-node/alpha';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { ZodType } from 'zod';
@@ -71,8 +73,15 @@ import { ZodTypeDef } from 'zod';
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
 
-// @public @deprecated (undocumented)
-export type ActionPermissionRuleInput = ActionPermissionRuleInput_2;
+// @public (undocumented)
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;
 
 // @public
 export const createBuiltinActions: (
@@ -510,7 +519,7 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public
 export type DatabaseTaskStoreOptions = {
-  database: PluginDatabaseManager | Knex;
+  database: DatabaseService | Knex;
   events?: EventsService;
 };
 
@@ -554,7 +563,9 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: ScaffolderPermissionRule[];
+  permissionRules?: Array<
+    TemplatePermissionRuleInput | ActionPermissionRuleInput
+  >;
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
@@ -847,6 +858,13 @@ export type TemplateFilter = TemplateFilter_2;
 // @public @deprecated (undocumented)
 export type TemplateGlobal = TemplateGlobal_2;
 
-// @public @deprecated (undocumented)
-export type TemplatePermissionRuleInput = TemplatePermissionRuleInput_2;
+// @public (undocumented)
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 ```

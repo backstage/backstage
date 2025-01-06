@@ -16,9 +16,7 @@
 
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
-import { ConfigReader } from '@backstage/config';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
 const eventsServiceMock = mockServices.events.mock();
@@ -36,7 +34,8 @@ describe('createRouter', () => {
       events: eventsServiceMock,
       discovery,
       userInfo,
-      config: new ConfigReader({}),
+      config: mockServices.rootConfig(),
+      lifecycle: mockServices.lifecycle.mock(),
       auth: mockServices.auth(),
     });
     app = express().use(router).use(mockErrorHandler());

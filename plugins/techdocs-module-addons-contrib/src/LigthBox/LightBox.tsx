@@ -28,7 +28,7 @@ export const LightBoxAddon = () => {
   useEffect(() => {
     let dataSourceImages: DataSource | null = null;
 
-    let lightbox = new PhotoSwipeLightbox({
+    let lightbox: PhotoSwipeLightbox | null = new PhotoSwipeLightbox({
       pswpModule: PhotoSwipe,
       initialZoomLevel: 1,
       secondaryZoomLevel: (zoomLevelObject: ZoomLevel) => {
@@ -71,14 +71,14 @@ export const LightBoxAddon = () => {
             };
           });
         }
-        lightbox.loadAndOpen(index, dataSourceImages);
+        lightbox?.loadAndOpen(index, dataSourceImages);
         return false;
       };
     });
     lightbox.init();
 
     return () => {
-      lightbox.destroy();
+      lightbox?.destroy();
       lightbox = null;
     };
   }, [images]);

@@ -173,7 +173,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       : 'none';
   };
 
-  const paginationMode: PaginationMode = getPaginationMode();
+  const paginationMode = getPaginationMode();
   const paginationLimit =
     typeof props.pagination === 'object' ? props.pagination.limit ?? 20 : 20;
 
@@ -227,7 +227,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
-        pageInfo: paginationMode === 'cursor' ? {} : undefined,
+        pageInfo: {},
         offset,
         limit,
       };
@@ -279,7 +279,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           );
 
           if (
-            paginationMode === 'offset' ||
+            (paginationMode === 'offset' &&
+              (outputState.limit !== limit || outputState.offset !== offset)) ||
             !isEqual(previousBackendFilter, backendFilter)
           ) {
             const response = await catalogApi.queryEntities({
