@@ -37,6 +37,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 
 /**
  * MyGroupsSidebarItem can be added to your sidebar providing quick access to groups the logged in user is a member of
@@ -66,7 +67,7 @@ export const MyGroupsSidebarItem = (props: {
           ...(filter ?? {}),
         },
       ],
-      fields: ['metadata', 'kind'],
+      fields: ['metadata', 'kind', 'spec'],
     });
 
     return response.items;
@@ -96,7 +97,7 @@ export const MyGroupsSidebarItem = (props: {
         {groups?.map(function groupsMap(group) {
           return (
             <SidebarSubmenuItem
-              title={group.metadata.title || group.metadata.name}
+              title={<EntityDisplayName entityRef={group} />}
               subtitle={
                 group.metadata.namespace !== DEFAULT_NAMESPACE
                   ? group.metadata.namespace
