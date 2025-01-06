@@ -195,6 +195,7 @@ describe('MyGroupsSidebarItem Test', () => {
 
       expect(rendered.getByLabelText('My Squads')).toBeInTheDocument();
       expect(rendered.getByLabelText('Team B')).toBeInTheDocument();
+      expect(rendered.getByLabelText('Team A')).not.toBeInTheDocument();
       expect(rendered.getByLabelText('Team C')).toHaveAttribute(
         'href',
         '/catalog/default/Group/team-c',
