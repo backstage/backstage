@@ -40,11 +40,7 @@ import {
   ScaffolderStreamLogsOptions,
   ScaffolderTask,
 } from './api';
-import {
-  DefaultApiClient,
-  TaskStatus,
-  TypedResponse,
-} from '../client/src/schema/openapi';
+import { DefaultApiClient, TaskStatus, TypedResponse } from './schema/openapi';
 
 /**
  * An API to interact with the scaffolder backend.
