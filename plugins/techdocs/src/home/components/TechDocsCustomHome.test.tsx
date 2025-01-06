@@ -19,7 +19,7 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import { PageWithHeader } from '@backstage/core-components';
+import { ContentHeader, PageWithHeader } from '@backstage/core-components';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
@@ -113,7 +113,14 @@ describe('TechDocsCustomHome', () => {
             title: 'First Tab',
             description: 'First Tab Description',
             panelType: 'DocsCardGrid' as PanelType,
-            panelProps: { CustomHeader: React.Fragment },
+            panelProps: {
+              CustomHeader: () => (
+                <ContentHeader
+                  title="Custom Header"
+                  description="useful docs"
+                />
+              ),
+            },
             filterPredicate: () => true,
           },
         ],
@@ -131,9 +138,7 @@ describe('TechDocsCustomHome', () => {
       },
     );
 
-    expect(
-      screen.queryByText('Discover documentation in your ecosystem.'),
-    ).not.toBeInTheDocument();
+    expect(screen.getByText('Custom Header')).toBeInTheDocument();
   });
   it('should render CustomPageWrapper', async () => {
     const tabsConfig = [

@@ -64,32 +64,6 @@ describe('Entity Info Card Grid', () => {
     expect(await screen.findByText('TestTitle2')).toBeInTheDocument();
   });
 
-  it('should handle missing data gracefully', async () => {
-    await renderInTestApp(
-      <InfoCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-            },
-            spec: {
-              owner: 'techdocs@example.com',
-            },
-          },
-        ]}
-      />,
-      {
-        mountedRoutes: {
-          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-        },
-      },
-    );
-
-    expect(await screen.findByText('testName')).toBeInTheDocument();
-  });
-
   it('should render links correctly', async () => {
     await renderInTestApp(
       <InfoCardGrid

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { rootDocsRouteRef } from '../../../routes';
-import { toLowerMaybe } from '../../../helpers';
+import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
 import { ItemCardGrid, InfoCard, Link } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { rootDocsRouteRef } from '../../../routes';
+import { toLowerMaybe } from '../../../helpers';
 
 /** @public */
 export type InfoCardGridClassKey = 'linkSpacer' | 'readMoreLink';
