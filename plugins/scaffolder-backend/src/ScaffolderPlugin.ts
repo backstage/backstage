@@ -31,7 +31,7 @@ import {
   AutocompleteHandler,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
-  ScaffolderPermissionRule,
+  ScaffolderPermissionRuleInput,
   scaffolderPermissionsExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
@@ -48,8 +48,8 @@ import {
   createFetchTemplateAction,
   createFetchTemplateFileAction,
   createFilesystemDeleteAction,
-  createFilesystemRenameAction,
   createFilesystemReadDirAction,
+  createFilesystemRenameAction,
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
@@ -63,9 +63,9 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',
   register(env) {
-    const addedRules = new Array<ScaffolderPermissionRule>();
+    const addedRules = new Array<ScaffolderPermissionRuleInput>();
     env.registerExtensionPoint(scaffolderPermissionsExtensionPoint, {
-      addPermissionRule(...newRules) {
+      addPermissionRules(...newRules) {
         addedRules.push(...newRules);
       },
     });

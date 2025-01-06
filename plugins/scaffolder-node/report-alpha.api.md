@@ -43,16 +43,6 @@ export type AutocompleteHandler = ({
   }[];
 }>;
 
-// @alpha (undocumented)
-export function isActionPermissionRuleInput(
-  permissionRule: ScaffolderPermissionRule,
-): permissionRule is ActionPermissionRuleInput;
-
-// @alpha (undocumented)
-export function isTemplatePermissionRuleInput(
-  permissionRule: ScaffolderPermissionRule,
-): permissionRule is TemplatePermissionRuleInput;
-
 // @alpha
 export const restoreWorkspace: (opts: {
   path: string;
@@ -84,14 +74,14 @@ export interface ScaffolderAutocompleteExtensionPoint {
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
 // @alpha (undocumented)
-export type ScaffolderPermissionRule<
+export type ScaffolderPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = TemplatePermissionRuleInput<TParams> | ActionPermissionRuleInput<TParams>;
 
 // @alpha
 export interface ScaffolderPermissionsExtensionPoint {
   // (undocumented)
-  addPermissionRule(...rules: ScaffolderPermissionRule[]): void;
+  addPermissionRules(...rules: ScaffolderPermissionRuleInput[]): void;
 }
 
 // @alpha

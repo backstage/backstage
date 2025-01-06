@@ -61,27 +61,9 @@ export type ActionPermissionRuleInput<
 /**
  * @alpha
  */
-export type ScaffolderPermissionRule<
+export type ScaffolderPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = TemplatePermissionRuleInput<TParams> | ActionPermissionRuleInput<TParams>;
-
-/**
- * @alpha
- */
-export function isTemplatePermissionRuleInput(
-  permissionRule: ScaffolderPermissionRule,
-): permissionRule is TemplatePermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
-}
-
-/**
- * @alpha
- */
-export function isActionPermissionRuleInput(
-  permissionRule: ScaffolderPermissionRule,
-): permissionRule is ActionPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
-}
 
 /**
  * Extension point for managing scaffolder permissions.
@@ -89,7 +71,7 @@ export function isActionPermissionRuleInput(
  * @alpha
  */
 export interface ScaffolderPermissionsExtensionPoint {
-  addPermissionRule(...rules: ScaffolderPermissionRule[]): void;
+  addPermissionRules(...rules: ScaffolderPermissionRuleInput[]): void;
 }
 
 /**

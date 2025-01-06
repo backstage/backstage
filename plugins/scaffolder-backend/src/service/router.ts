@@ -100,16 +100,19 @@ import { checkPermission } from '../util/checkPermissions';
 import {
   ActionPermissionRuleInput,
   AutocompleteHandler,
-  isActionPermissionRuleInput,
-  isTemplatePermissionRuleInput,
-  ScaffolderPermissionRule,
+  ScaffolderPermissionRuleInput,
   TemplatePermissionRuleInput,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { EventsService } from '@backstage/plugin-events-node';
-import { scaffolderActionRules, scaffolderTemplateRules } from '../permissions';
+import {
+  isActionPermissionRuleInput,
+  isTemplatePermissionRuleInput,
+  scaffolderActionRules,
+  scaffolderTemplateRules,
+} from '../permissions';
 
 /**
  * RouterOptions
@@ -141,7 +144,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
-  permissionRules?: ScaffolderPermissionRule[];
+  permissionRules?: ScaffolderPermissionRuleInput[];
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
