@@ -89,20 +89,6 @@ export const createGitlabProjectDeployTokenAction: (options: {
 >;
 
 // @public
-export const createGitlabProjectMigrateAction: (options: {
-  integrations: ScmIntegrationRegistry;
-}) => TemplateAction<
-  {
-    destinationAccessToken: string;
-    destinationUrl: string;
-    sourceAccessToken: string;
-    sourceFullPath: string;
-    sourceUrl: string;
-  },
-  JsonObject
->;
-
-// @public
 export const createGitlabProjectVariableAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<

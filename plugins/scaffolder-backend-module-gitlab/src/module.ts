@@ -24,7 +24,6 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGitlabGroupEnsureExistsAction,
-  createGitlabProjectMigrateAction,
   createGitlabIssueAction,
   createGitlabProjectAccessTokenAction,
   createGitlabProjectDeployTokenAction,
@@ -35,6 +34,7 @@ import {
   createTriggerGitlabPipelineAction,
   editGitlabIssueAction,
 } from './actions';
+import { createGitlabProjectMigrateAction } from './actions/gitlabProjectMigrate';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 
 /**
