@@ -23,7 +23,7 @@ import type {
 import type {
   TaskEventType,
   TaskStatus as ScaffolderTaskStatus,
-} from '../client/src/schema/openapi';
+} from './schema/openapi';
 
 export type { ScaffolderTaskStatus, TaskEventType };
 
