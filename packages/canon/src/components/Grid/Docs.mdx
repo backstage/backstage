@@ -1,0 +1,199 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as GridStories from './Grid.stories';
+import { Title, Text, PropsTable } from '../../../docs/components';
+import { spacePropsList } from '../../../docs/spaceProps';
+
+<Meta of={GridStories} />
+
+<Unstyled>
+
+<Title type="h1">Grid</Title>
+<Text>
+  A layout component that helps to create simple column-based layouts as well as
+  more complex ones.
+</Text>
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Grid } from "@backstage/canon";
+
+<Grid>
+  <Grid.Item>Hello World</Grid.Item>
+</Grid>
+`} language="tsx" dark />
+
+<Title type="h2">API reference</Title>
+
+<Title type="h3">Grid</Title>
+<Text>
+  This is the grid container component. It will help to define the number of
+  columns that will be used in the grid. You can also define the gap between the
+  columns. All values are responsive.
+</Text>
+
+<PropsTable
+  data={{
+    columns: {
+      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      responsive: true,
+    },
+    gap: {
+      type: ['xs', 'sm', 'md', 'lg', 'xl'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      required: false,
+    },
+    className: {
+      type: 'string',
+      required: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      required: false,
+    },
+  }}
+/>
+
+<Text style={{ marginTop: '16px' }}>
+  The grid component also accepts all the spacing props from the Box component.
+</Text>
+
+<PropsTable data={spacePropsList} />
+
+<Title type="h3">Grid Item</Title>
+<Text>
+  If you need more control over the columns, you can use the grid item
+  component. This will give you access to `rowSpan`, `colSpan`, `start` and
+  `end`. All values are responsive. This component is optional, you can use any
+  elements directly if you prefer.
+</Text>
+
+<PropsTable
+  data={{
+    colSpan: {
+      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'full'],
+      responsive: true,
+    },
+    rowSpan: {
+      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'full'],
+      responsive: true,
+    },
+    start: {
+      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      responsive: true,
+    },
+    end: {
+      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      required: false,
+    },
+    className: {
+      type: 'string',
+      required: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      required: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+
+<Title type="h3">Simple grid</Title>
+<Text>This is a simple grid with 3 columns and a gap of md.</Text>
+<Source
+  code={`<Grid columns={3} gap="md">
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Grid>
+`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Complex grid</Title>
+<Text>
+  You can also use the grid item to create more complex layouts. In this example
+  the first column will span 1 column and the second column will span 2 columns.
+</Text>
+
+<Source
+  code={`<Grid columns={3} gap="md">
+  <Grid.Item colSpan={1}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+  <Grid.Item colSpan={2}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+</Grid>
+`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Mixing rows and columns</Title>
+<Text>
+  The grid item component also supports the `rowSpan` prop, which allows you to
+  span multiple rows within the grid layout. In this example, the first item
+  will span 2 rows to achieve a dynamic and flexible grid structure.
+</Text>
+
+<Source
+  code={`<Grid columns={3} gap="md">
+  <Grid.Item colSpan={1} rowSpan={2}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+  <Grid.Item colSpan={2}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+  <Grid.Item colSpan={2}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+</Grid>
+`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive</Title>
+<Text>
+  The grid component also supports responsive values. In this example the grid
+  will have 1 column on small screens and 3 on large screens, with a gap of xs
+  on small screens and md on large screens.
+</Text>
+<Source
+  code={`<Grid columns={{ xs: 1, md: 3 }} gap={{ xs: 'xs', md: 'md' }}>
+  <Grid.Item colSpan={{ xs: 1, md: 2 }}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+  <Grid.Item colSpan={{ xs: 1, md: 1 }}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+</Grid>
+`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Start and End</Title>
+<Text>
+  The start and end props can be used to position the item in the grid.
+</Text>
+<Source
+  code={`<Grid columns={3} gap="md">
+  <Grid.Item start={2} end={4}>
+    <Box>Hello World</Box>
+  </Grid.Item>
+</Grid>
+`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>
