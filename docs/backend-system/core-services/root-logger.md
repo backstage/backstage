@@ -16,7 +16,7 @@ If you want to override the implementation for logging across all of the backend
 The following example is how you can override the root logger service to add additional metadata to all log lines.
 
 ```ts
-import { coreServices } from '@backstage/backend-plugin-api';
+import { coreServices, createServiceFactory } from '@backstage/backend-plugin-api';
 import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
 import { createConfigSecretEnumerator } from '@backstage/backend-defaults/rootConfig';
 
