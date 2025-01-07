@@ -3821,7 +3821,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/canon@workspace:^, @backstage/canon@workspace:packages/canon":
+"@backstage/canon@workspace:packages/canon":
   version: 0.0.0-use.local
   resolution: "@backstage/canon@workspace:packages/canon"
   dependencies:
@@ -25055,7 +25055,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "canon-website@workspace:canon-website"
   dependencies:
-    "@backstage/canon": "workspace:^"
     "@base-ui-components/react": ^1.0.0-alpha.4
     "@eslint/eslintrc": ^3
     "@iframe-resizer/react": ^5.3.2
@@ -25079,14 +25078,6 @@ __metadata:
     react-frame-component: ^5.2.7
     shiki: ^1.24.4
     typescript: ^5
-  peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
   languageName: unknown
   linkType: soft
 

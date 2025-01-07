@@ -1,5 +1,6 @@
 import styles from './styles.module.css';
-import { Text, Icon } from '@backstage/canon';
+import { Text } from '../../../packages/canon/src/components/Text';
+import { Icon } from '../../../packages/canon/src/components/Icon';
 
 interface BaseUIProps {
   href: string;

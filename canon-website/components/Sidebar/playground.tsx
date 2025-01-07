@@ -1,7 +1,9 @@
 'use client';
 
 import { components } from '@/utils/data';
-import { Box, Checkbox, Text } from '@backstage/canon';
+import { Box } from '../../../packages/canon/src/components/Box';
+import { Checkbox } from '../../../packages/canon/src/components/Checkbox';
+import { Text } from '../../../packages/canon/src/components/Text';
 import { motion } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';

@@ -3,7 +3,9 @@ import Image, { ImageProps } from 'next/image';
 import { ReactNode, ReactElement } from 'react';
 import React from 'react';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Heading, Text, Box } from '@backstage/canon';
+import { Heading } from '../packages/canon/src/components/Heading';
+import { Text } from '../packages/canon/src/components/Text';
+import { Box } from '../packages/canon/src/components/Box';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {

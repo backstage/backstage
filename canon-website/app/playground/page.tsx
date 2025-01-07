@@ -1,7 +1,9 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Grid, Stack, Text } from '@backstage/canon';
+import { Grid } from '../../../packages/canon/src/components/Grid';
+import { Stack } from '../../../packages/canon/src/components/Stack';
+import { Text } from '../../../packages/canon/src/components/Text';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';

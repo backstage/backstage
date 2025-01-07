@@ -1,9 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: canon-website
-  title: canon-website
-spec:
-  lifecycle: experimental
-  type: backstage-web-library
-  owner: maintainers

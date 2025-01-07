@@ -2,7 +2,7 @@
 
 import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
 import styles from './styles.module.css';
-import { Text } from '@backstage/canon';
+import { Text } from '../../../packages/canon/src/components/Text';
 
 export const Root = ({
   className,

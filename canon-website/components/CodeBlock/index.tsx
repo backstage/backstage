@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BundledLanguage } from 'shiki';
 import { codeToHtml } from 'shiki';
-import { Text } from '@backstage/canon';
+import { Text } from '../../../packages/canon/src/components/Text';
 import styles from './styles.module.css';
 
 interface CodeBlockProps {

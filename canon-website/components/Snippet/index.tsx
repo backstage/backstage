@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { CodeBlock } from '../CodeBlock';
-import { Text } from '@backstage/canon';
+import { Text } from '../../../packages/canon/src/components/Text';
 import { Collapsible } from '@base-ui-components/react/collapsible';
 import styles from './styles.module.css';
 

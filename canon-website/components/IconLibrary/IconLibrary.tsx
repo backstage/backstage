@@ -15,9 +15,10 @@
  */
 
 import React from 'react';
-import { Icon } from '@backstage/canon';
-import type { IconNames } from '@backstage/canon';
-import { icons, Text } from '@backstage/canon';
+import { Icon } from '../../../packages/canon/src/components/Icon';
+import type { IconNames } from '../../../packages/canon/src/components/Icon';
+import { Text } from '../../../packages/canon/src/components/Text';
+import { icons } from '../../../packages/canon/src/components/Icon/icons';
 import styles from './styles.module.css';
 
 export const IconLibrary = () => {

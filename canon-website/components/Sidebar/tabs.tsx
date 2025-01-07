@@ -2,7 +2,8 @@
 
 import styles from './Tabs.module.css';
 import { Tabs } from '@base-ui-components/react/tabs';
-import { Icon, Text } from '@backstage/canon';
+import { Icon } from '../../../packages/canon/src/components/Icon';
+import { Text } from '../../../packages/canon/src/components/Text';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { setThemeCookie, setThemeNameCookie } from './actions';
