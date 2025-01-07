@@ -9,8 +9,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*",
-      "canon-website"
+      "plugins/*"
     ]
   },
   "scripts": {

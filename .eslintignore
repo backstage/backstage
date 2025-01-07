@@ -7,7 +7,6 @@
 **/.git/**
 **/public/**
 **/microsite/**
-**/canon-website/**
 **/templates/**
 **/sample-templates/**
 playwright.config.ts
