@@ -377,6 +377,10 @@
       margin: var(--canon-spacing-2xl);
     }
 
+    .cu-md-m-2xs {
+      margin: var(--canon-spacing-2xs);
+    }
+
     .cu-md-m-lg {
       margin: var(--canon-spacing-lg);
     }
@@ -403,6 +407,10 @@
 
     .cu-md-mb-2xl {
       margin-bottom: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-mb-2xs {
+      margin-bottom: var(--canon-spacing-2xs);
     }
 
     .cu-md-mb-lg {
@@ -433,6 +441,10 @@
       margin-left: var(--canon-spacing-2xl);
     }
 
+    .cu-md-ml-2xs {
+      margin-left: var(--canon-spacing-2xs);
+    }
+
     .cu-md-ml-lg {
       margin-left: var(--canon-spacing-lg);
     }
@@ -459,6 +471,10 @@
 
     .cu-md-mr-2xl {
       margin-right: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-mr-2xs {
+      margin-right: var(--canon-spacing-2xs);
     }
 
     .cu-md-mr-lg {
@@ -489,6 +505,10 @@
       margin-top: var(--canon-spacing-2xl);
     }
 
+    .cu-md-mt-2xs {
+      margin-top: var(--canon-spacing-2xs);
+    }
+
     .cu-md-mt-lg {
       margin-top: var(--canon-spacing-lg);
     }
@@ -516,6 +536,11 @@
     .cu-md-mx-2xl {
       margin-left: var(--canon-spacing-2xl);
       margin-right: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-mx-2xs {
+      margin-left: var(--canon-spacing-2xs);
+      margin-right: var(--canon-spacing-2xs);
     }
 
     .cu-md-mx-lg {
@@ -553,6 +578,11 @@
       margin-bottom: var(--canon-spacing-2xl);
     }
 
+    .cu-md-my-2xs {
+      margin-top: var(--canon-spacing-2xs);
+      margin-bottom: var(--canon-spacing-2xs);
+    }
+
     .cu-md-my-lg {
       margin-top: var(--canon-spacing-lg);
       margin-bottom: var(--canon-spacing-lg);
@@ -587,6 +617,10 @@
       padding: var(--canon-spacing-2xl);
     }
 
+    .cu-md-p-2xs {
+      padding: var(--canon-spacing-2xs);
+    }
+
     .cu-md-p-lg {
       padding: var(--canon-spacing-lg);
     }
@@ -613,6 +647,10 @@
 
     .cu-md-pb-2xl {
       padding-bottom: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-pb-2xs {
+      padding-bottom: var(--canon-spacing-2xs);
     }
 
     .cu-md-pb-lg {
@@ -643,6 +681,10 @@
       padding-left: var(--canon-spacing-2xl);
     }
 
+    .cu-md-pl-2xs {
+      padding-left: var(--canon-spacing-2xs);
+    }
+
     .cu-md-pl-lg {
       padding-left: var(--canon-spacing-lg);
     }
@@ -669,6 +711,10 @@
 
     .cu-md-pr-2xl {
       padding-right: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-pr-2xs {
+      padding-right: var(--canon-spacing-2xs);
     }
 
     .cu-md-pr-lg {
@@ -699,6 +745,10 @@
       padding-top: var(--canon-spacing-2xl);
     }
 
+    .cu-md-pt-2xs {
+      padding-top: var(--canon-spacing-2xs);
+    }
+
     .cu-md-pt-lg {
       padding-top: var(--canon-spacing-lg);
     }
@@ -726,6 +776,11 @@
     .cu-md-px-2xl {
       padding-left: var(--canon-spacing-2xl);
       padding-right: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-px-2xs {
+      padding-left: var(--canon-spacing-2xs);
+      padding-right: var(--canon-spacing-2xs);
     }
 
     .cu-md-px-lg {
@@ -761,6 +816,11 @@
     .cu-md-py-2xl {
       padding-top: var(--canon-spacing-2xl);
       padding-bottom: var(--canon-spacing-2xl);
+    }
+
+    .cu-md-py-2xs {
+      padding-top: var(--canon-spacing-2xs);
+      padding-bottom: var(--canon-spacing-2xs);
     }
 
     .cu-md-py-lg {
