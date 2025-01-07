@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import type { CSSProperties } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
@@ -84,6 +85,8 @@ export interface ButtonProps {
   iconStart?: IconNames;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  // (undocumented)
+  style?: React.CSSProperties;
   // (undocumented)
   variant?:
     | 'primary'
@@ -273,6 +276,7 @@ export type IconNames =
   | 'chevronRight'
   | 'chevronUp'
   | 'cloud'
+  | 'externalLink'
   | 'heart'
   | 'moon'
   | 'plus'
@@ -440,6 +444,8 @@ export { Text_2 as Text };
 export interface TextProps {
   // (undocumented)
   children: ReactNode;
+  // (undocumented)
+  style?: CSSProperties;
   // (undocumented)
   variant?:
     | 'subtitle'

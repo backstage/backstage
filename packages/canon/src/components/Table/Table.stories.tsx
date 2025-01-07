@@ -72,7 +72,7 @@ import {
 } from '../Table';
 
 const meta = {
-  title: 'Table',
+  title: 'Components/Table',
   component: Table,
   subcomponents: {
     TableBody: TableBody as React.ComponentType<unknown>,

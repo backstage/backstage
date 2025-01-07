@@ -16,15 +16,15 @@
 import React from 'react';
 import { Icon } from '@backstage/canon';
 import type { IconNames } from '@backstage/canon';
-import { defaultIcons } from '../../../src/components/Icon/icons';
+import { icons } from '../../../src/components/Icon/icons';
 import { Text } from '../Text/Text';
 
 export const IconLibrary = () => {
-  const icons = Object.keys(defaultIcons);
+  const iconsList = Object.keys(icons);
 
   return (
     <div className="icon-library">
-      {icons.map(icon => (
+      {iconsList.map(icon => (
         <div key={icon} className="icon-library-item">
           <div className="icon-library-item-icon">
             <Icon name={icon as IconNames} />
