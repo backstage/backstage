@@ -21,6 +21,8 @@ import yaml from 'yaml';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
+jest.setTimeout(30_000);
+
 const mockDir = createMockDirectory();
 
 const executeCommand = (
@@ -148,7 +150,7 @@ describe('Backstage yarn plugin', () => {
           cwd: mockDir.path,
         },
       );
-    }, 30_000);
+    });
 
     beforeEach(() => {
       mockDir.addContent({
@@ -181,7 +183,7 @@ describe('Backstage yarn plugin', () => {
       await expect(
         fs.readFile(joinPath(mockDir.path, 'yarn.lock'), 'utf-8'),
       ).resolves.toEqual(initialLockFileContent);
-    }, 30_000);
+    });
 
     describe('with backstage:^ dependencies', () => {
       beforeEach(async () => {
@@ -202,7 +204,7 @@ describe('Backstage yarn plugin', () => {
         });
 
         await runYarnInstall();
-      }, 30_000);
+      });
 
       it('retains existing lockfile entries', async () => {
         const lockFileContent = await fs.readFile(
@@ -238,7 +240,7 @@ describe('Backstage yarn plugin', () => {
         // Versions from new manifest have been added to lockfile
         expect(lockFile['@backstage/cli-common@npm:^0.1.8']).toBeDefined();
         expect(lockFile['@backstage/config@npm:^1.0.0']).toBeDefined();
-      }, 30_000);
+      });
 
       describe('after removing backstage:^ dependencies', () => {
         beforeEach(async () => {
@@ -259,7 +261,7 @@ describe('Backstage yarn plugin', () => {
           });
 
           await runYarnInstall();
-        }, 30_000);
+        });
 
         it('restores the original yarn.lock content', async () => {
           const lockFileContent = await fs.readFile(
@@ -296,7 +298,7 @@ describe('Backstage yarn plugin', () => {
             expect(stdout).toContain(
               `Package ${packageName} not found in manifest for Backstage v0.9.0`,
             );
-          }, 30_000);
+          });
         },
       );
     });
