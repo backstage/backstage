@@ -16,11 +16,12 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { IconMap, IconNames } from '../components/Icon/types';
-import { defaultIcons } from '../components/Icon/icons';
+import { icons } from '../components/Icon/icons';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import type { Breakpoint } from '../types';
 
-interface CanonContextProps {
+/** @public */
+export interface CanonContextProps {
   icons: IconMap;
   breakpoint: Breakpoint;
   getResponsiveValue: (
@@ -29,12 +30,13 @@ interface CanonContextProps {
 }
 
 const CanonContext = createContext<CanonContextProps>({
-  icons: defaultIcons,
+  icons,
   breakpoint: 'md',
   getResponsiveValue: () => '',
 });
 
-interface CanonProviderProps {
+/** @public */
+export interface CanonProviderProps {
   children?: ReactNode;
   overrides?: Partial<Record<IconNames, React.ComponentType>>;
 }
@@ -44,7 +46,7 @@ export const CanonProvider = (props: CanonProviderProps) => {
   const { children, overrides } = props;
 
   // Merge provided overrides with default icons
-  const combinedIcons = { ...defaultIcons, ...overrides };
+  const combinedIcons = { ...icons, ...overrides };
 
   const isBreakpointSm = useMediaQuery(`(min-width: 640px)`);
   const isBreakpointMd = useMediaQuery(`(min-width: 768px)`);
