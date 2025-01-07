@@ -4,8 +4,7 @@ title: CLI Templates
 description: Overview of the new CLI Declarative Templates
 ---
 
-The `backstage-cli new` command is now configurable through your root `package.json`.
-You can also create and add your own CLI templates.
+The behavior of the `backstage-cli new` command is configurable through your root `package.json`, and you can also create and add custom CLI templates to suit your needs.
 
 ## Basic Configuration
 
