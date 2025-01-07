@@ -96,7 +96,7 @@ async function installFrontend(options: AdditionalActionsOptions) {
         paths.resolveTargetRoot('packages/app/package.json'),
         {
           dependencies: {
-            [options.name]: `^${options.version}`,
+            [options.name]: `workspace:^`,
           },
         },
       );
@@ -146,7 +146,7 @@ async function installBackend(options: AdditionalActionsOptions) {
         paths.resolveTargetRoot('packages/backend/package.json'),
         {
           dependencies: {
-            [options.name]: `^${options.version}`,
+            [options.name]: `workspace:^`,
           },
         },
       );
