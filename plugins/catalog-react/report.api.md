@@ -824,7 +824,7 @@ export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
   hidden?: boolean;
-  resetFiltersWhenNoResultsFound?: boolean;
+  alwaysKeepFilters?: boolean;
 };
 
 // @public (undocumented)
