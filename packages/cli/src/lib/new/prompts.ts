@@ -101,12 +101,12 @@ export async function promptOptions({
   const answers = await inquirer.prompt(
     prompts.map((prompt: ConfigurablePrompt) => {
       if (typeof prompt === 'string') {
-        switch (prompt.toLowerCase()) {
+        switch (prompt) {
           case 'id':
             return pluginIdPrompt();
-          case 'moduleid':
+          case 'moduleId':
             return moduleIdIdPrompt();
-          case 'npmregistry':
+          case 'npmRegistry':
             return npmRegistryPrompt();
           case 'owner':
             return ownerPrompt(codeOwnersFilePath);
