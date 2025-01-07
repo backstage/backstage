@@ -156,7 +156,7 @@ export const catalogTranslationRef = createTranslationRef({
     },
     systemDiagramCard: {
       title: 'System Diagram',
-      description: 'Use pinch & zoo to move around the diagram.',
+      description: 'Use pinch & zoom to move around the diagram.',
       edgeLabels: {
         partOf: 'part of',
         provides: 'provides',
