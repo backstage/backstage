@@ -546,7 +546,7 @@ describe('<UserListPicker />', () => {
         );
       });
 
-      it('doesn\nt reset the filter to "all" when entities are loaded and resetFiltersWhenNoResultsFound is set to false', async () => {
+      it('doesn\nt reset the filter to "all" when entities are loaded and alwaysKeepFilters is set to true', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(async request => {
           if (
             (
@@ -562,10 +562,7 @@ describe('<UserListPicker />', () => {
         });
 
         await renderInTestApp(
-          <Picker
-            initialFilter="starred"
-            resetFiltersWhenNoResultsFound={false}
-          />,
+          <Picker initialFilter="starred" alwaysKeepFilters />,
         );
 
         await waitFor(() =>

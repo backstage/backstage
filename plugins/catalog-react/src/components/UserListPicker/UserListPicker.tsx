@@ -123,17 +123,12 @@ export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
   hidden?: boolean;
-  resetFiltersWhenNoResultsFound?: boolean;
+  alwaysKeepFilters?: boolean;
 };
 
 /** @public */
 export const UserListPicker = (props: UserListPickerProps) => {
-  const {
-    initialFilter,
-    availableFilters,
-    hidden,
-    resetFiltersWhenNoResultsFound = true,
-  } = props;
+  const { initialFilter, availableFilters, hidden, alwaysKeepFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(catalogReactTranslationRef);
@@ -206,7 +201,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
       !!selectedUserFilter &&
       selectedUserFilter !== 'all' &&
       filterCounts[selectedUserFilter] === 0 &&
-      resetFiltersWhenNoResultsFound
+      !alwaysKeepFilters
     ) {
       setSelectedUserFilter('all');
     }
@@ -215,7 +210,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
     filterCounts,
     selectedUserFilter,
     setSelectedUserFilter,
-    resetFiltersWhenNoResultsFound,
+    alwaysKeepFilters,
   ]);
 
   useEffect(() => {
