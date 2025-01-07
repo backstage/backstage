@@ -18,6 +18,7 @@ import { join as joinPath } from 'path';
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import fs from 'fs-extra';
 import yaml from 'yaml';
+import { buildDepTreeFromFiles } from 'snyk-nodejs-lockfile-parser';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -301,6 +302,23 @@ describe('Backstage yarn plugin', () => {
           });
         },
       );
+
+      it('successfully parses the lockfile with snyk-nodejs-lockfile-parser', async () => {
+        await expect(
+          buildDepTreeFromFiles(
+            mockDir.path,
+            'packages/b/package.json',
+            'yarn.lock',
+          ),
+        ).resolves.toEqual(
+          expect.objectContaining({
+            dependencies: expect.objectContaining({
+              '@backstage/cli-common': expect.anything(),
+              '@backstage/config': expect.anything(),
+            }),
+          }),
+        );
+      });
     });
   });
 });
