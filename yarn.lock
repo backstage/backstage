@@ -43237,14 +43237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rfc4648@npm:^1.3.0":
-  version: 1.4.0
-  resolution: "rfc4648@npm:1.4.0"
-  checksum: 10/a130355f484a09ead1421c97e8661ccea11b0b4097230604681484066799745fe64a0260b2c5b0e65e9877571bf208ca0fcf4a864449155e3be42c9f1f18ca5b
-  languageName: node
-  linkType: hard
-
-"rfc4648@npm:^1.5.1":
+"rfc4648@npm:^1.3.0, rfc4648@npm:^1.5.1":
   version: 1.5.4
   resolution: "rfc4648@npm:1.5.4"
   checksum: 10/425ec5a732dad1eed69ebc0217d36e00bd6a3a03dd3da94721bb943d979bb85f4c96e75706437540e726c7cb92ff5c05987ad38b82a1ed9343bb9a6fbfb43224
@@ -47657,16 +47650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.0, uuid@npm:^11.0.2":
-  version: 11.0.5
-  resolution: "uuid@npm:11.0.5"
-  bin:
-    uuid: dist/esm/bin/uuid
-  checksum: 10/0594ecdff3051e15d4a2c614b4c72e73af373bde0a5d156512353c01156975295d024ae8d7151846d7bd4d22ccd251b16ed51b4318fa71505fb20ad984102dc1
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^11.0.3":
+"uuid@npm:^11.0.0, uuid@npm:^11.0.2, uuid@npm:^11.0.3":
   version: 11.0.4
   resolution: "uuid@npm:11.0.4"
   bin:
@@ -48812,6 +48796,7 @@ __metadata:
     "@yarnpkg/builder": "npm:^4.0.0"
     "@yarnpkg/core": "npm:^4.0.3"
     "@yarnpkg/fslib": "npm:^3.0.2"
+    "@yarnpkg/plugin-npm": "npm:^3.0.1"
     "@yarnpkg/plugin-pack": "npm:^4.0.0"
     fs-extra: "npm:^11.2.0"
     nodemon: "npm:^3.0.1"
