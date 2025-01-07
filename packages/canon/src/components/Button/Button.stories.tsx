@@ -23,7 +23,7 @@ import { Text } from '../Text';
 import { ButtonProps } from './types';
 
 const meta = {
-  title: 'Button',
+  title: 'Components/Button',
   component: Button,
   argTypes: {
     size: {

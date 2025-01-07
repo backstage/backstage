@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Stack } from './Stack';
 
 const meta = {
-  title: 'Stack',
+  title: 'Components/Stack',
   component: Stack,
   argTypes: {
     align: {

@@ -22,7 +22,7 @@ import { Stack } from '../Stack';
 import { Text } from '../Text';
 
 const meta = {
-  title: 'Checkbox',
+  title: 'Components/Checkbox',
   component: Checkbox,
   parameters: {
     layout: 'centered',

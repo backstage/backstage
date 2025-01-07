@@ -20,7 +20,7 @@ import { Heading } from './Heading';
 import { Stack } from '../Stack';
 import { Text } from '../Text';
 const meta = {
-  title: 'Heading',
+  title: 'Components/Heading',
   component: Heading,
   args: {
     children: 'Heading',

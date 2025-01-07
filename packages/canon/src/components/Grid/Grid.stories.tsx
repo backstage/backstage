@@ -22,7 +22,7 @@ import { Box } from '../Box/Box';
 import { Stack } from '../Stack';
 
 const meta = {
-  title: 'Grid',
+  title: 'Components/Grid',
   component: Grid,
   argTypes: {
     children: {

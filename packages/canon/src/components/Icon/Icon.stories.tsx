@@ -21,7 +21,7 @@ import { CanonProvider } from '../../contexts/canon';
 import { icons } from './icons';
 
 const meta = {
-  title: 'Icon',
+  title: 'Components/Icon',
   component: Icon,
   parameters: {
     layout: 'centered',

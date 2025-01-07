@@ -20,7 +20,7 @@ import { Text } from './Text';
 import { Stack } from '../Stack';
 
 const meta = {
-  title: 'Text',
+  title: 'Components/Text',
   component: Text,
   args: {
     children: 'Text',

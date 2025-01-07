@@ -20,7 +20,7 @@ import { Box } from '../Box/Box';
 import { Container } from './Container';
 
 const meta = {
-  title: 'Container',
+  title: 'Components/Container',
   component: Container,
   argTypes: {
     children: {
