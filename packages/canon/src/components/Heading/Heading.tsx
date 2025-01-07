@@ -20,6 +20,7 @@ import React, { forwardRef } from 'react';
 import { HeadingProps } from './types';
 import { useCanon } from '../../contexts/canon';
 
+/** @public */
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
     const { children, variant = 'title1', as = 'h1', ...restProps } = props;
