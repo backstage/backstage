@@ -48448,6 +48448,7 @@ __metadata:
     "@yarnpkg/builder": "npm:^4.0.0"
     "@yarnpkg/core": "npm:^4.0.3"
     "@yarnpkg/fslib": "npm:^3.0.2"
+    "@yarnpkg/plugin-npm": "npm:^3.0.1"
     "@yarnpkg/plugin-pack": "npm:^4.0.0"
     fs-extra: "npm:^11.2.0"
     nodemon: "npm:^3.0.1"

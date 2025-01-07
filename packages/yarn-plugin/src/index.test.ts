@@ -67,10 +67,10 @@ const runYarnInstall = () =>
 const nonWorkspaceEntries = (lockFileString: string = '') => {
   const lockFile = yaml.parse(lockFileString);
 
-  const result: Record<string, string> = {};
+  const result = [];
   for (const key of Object.keys(lockFile)) {
     if (lockFile[key].version !== '0.0.0-use.local') {
-      result[key] = lockFile[key];
+      result.push(lockFile[key]);
     }
   }
 
@@ -232,15 +232,17 @@ describe('Backstage yarn plugin', () => {
           'utf-8',
         );
 
-        const lockFile = yaml.parse(lockFileContent);
+        const descriptors = Object.keys(yaml.parse(lockFileContent)).flatMap(
+          entry => entry.split(', '),
+        );
 
         // Versions from old manifest no longer appear in lockfile
-        expect(lockFile['@backstage/cli-common@npm:^0.1.1']).toBeUndefined();
-        expect(lockFile['@backstage/config@npm:^0.1.2']).toBeUndefined();
+        expect(descriptors).not.toContain('@backstage/cli-common@npm:^0.1.1');
+        expect(descriptors).not.toContain('@backstage/config@npm:^0.1.2');
 
         // Versions from new manifest have been added to lockfile
-        expect(lockFile['@backstage/cli-common@npm:^0.1.8']).toBeDefined();
-        expect(lockFile['@backstage/config@npm:^1.0.0']).toBeDefined();
+        expect(descriptors).toContain('@backstage/cli-common@npm:^0.1.8');
+        expect(descriptors).toContain('@backstage/config@npm:^1.0.0');
       });
 
       describe('after removing backstage:^ dependencies', () => {
