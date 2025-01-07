@@ -47,7 +47,6 @@ import search from './plugins/search';
 import techdocs from './plugins/techdocs';
 import app from './plugins/app';
 import permission from './plugins/permission';
-import signals from './plugins/signals';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -137,7 +136,6 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
-  const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -149,7 +147,6 @@ async function main() {
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
-  apiRouter.use('/signals', await signals(signalsEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

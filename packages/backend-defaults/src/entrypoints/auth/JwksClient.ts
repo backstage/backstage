@@ -22,7 +22,7 @@ import {
   FlattenedJWSInput,
   JWSHeaderParameters,
 } from 'jose';
-import { GetKeyFunction } from 'jose/dist/types/types';
+import { GetKeyFunction } from 'jose';
 
 const CLOCK_MARGIN_S = 10;
 

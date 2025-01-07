@@ -27,11 +27,11 @@ import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 // Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   InternalBackendFeature,
   InternalBackendRegistrations,
-} from '@backstage/backend-plugin-api/src/wiring/types';
+} from '../../../../backend-plugin-api/src/wiring/types';
 import {
   DefaultRootHttpRouter,
   ExtendedHttpServer,

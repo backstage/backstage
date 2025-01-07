@@ -35,6 +35,7 @@ export {
   HomePageTopVisited,
   HomePageRecentlyVisited,
   FeaturedDocsCard,
+  QuickStartCard,
 } from './plugin';
 export * from './components';
 export * from './assets';

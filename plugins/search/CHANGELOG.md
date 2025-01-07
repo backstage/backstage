@@ -1,5 +1,13 @@
 # @backstage/plugin-search
 
+## 1.4.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/core-compat-api@0.3.4
+
 ## 1.4.21
 
 ### Patch Changes

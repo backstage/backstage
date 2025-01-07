@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend
 
+## 1.30.0-next.0
+
+### Minor Changes
+
+- dd515e3: Removed the long-deprecated `DefaultCatalogCollatorFactory` and `DefaultCatalogCollatorFactoryOptions` exports, which now no longer exist in the search plugin's offerings. If you were using these, you want to migrate to [the new backend system](https://backstage.io/docs/backend-system/) and use the [catalog collator](https://backstage.io/docs/features/search/collators#catalog) directly.
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- be0aae7: Improved concurrency of the `entities` endpoint when using the streamed query mode behind the `catalog.disableRelationsCompatibility` flag.
+- 3d475a0: Updated condition in `resolveCodeOwner` to fix a bug where `normalizeCodeOwner` could potentially be called with an invalid argument causing an error in `CodeOwnersProcessor`
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.3.0-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/backend-openapi-utils@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+  - @backstage/plugin-permission-common@0.8.3
+
 ## 1.29.0
 
 ### Minor Changes

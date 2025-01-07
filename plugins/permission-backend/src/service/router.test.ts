@@ -27,6 +27,7 @@ import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
@@ -60,6 +61,11 @@ const policy = {
   }),
 };
 
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -75,7 +81,7 @@ describe('createRouter', () => {
       userInfo: mockServices.userInfo(),
       policy,
     });
-
+    router.use(middleware.error());
     app = express().use(router);
   });
 

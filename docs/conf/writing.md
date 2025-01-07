@@ -239,4 +239,7 @@ privateKey: |
   -----END RSA PRIVATE KEY-----
 ```
 
-**Warning: Sensitive information, such as private keys, should not be hard coded**. We recommend that this entire file should be a secret and stored as such in a secure storage solution like Vault, to ensure they are neither exposed nor misused. This example key part only shows the format on how to use the yaml | syntax to make sure that the key is valid.
+> [!WARNING]
+> Sensitive information, such as private keys, should not be hard coded.
+
+We recommend that this entire file should be a secret and stored as such in a secure storage solution like Vault, to ensure they are neither exposed nor misused. This example key part only shows the format on how to use the yaml | syntax to make sure that the key is valid.

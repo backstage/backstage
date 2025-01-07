@@ -6,6 +6,7 @@
 import { BackstageIdentityResponse as BackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult as BackstageSignInResult_2 } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import express from 'express';
@@ -13,7 +14,6 @@ import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
@@ -265,7 +265,7 @@ export class IdentityClient {
 
 // @public
 export type IdentityClientOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   issuer?: string;
   algorithms?: string[];
 };
