@@ -97,7 +97,7 @@ export const MyGroupsSidebarItem = (props: {
         {groups?.map(function groupsMap(group) {
           return (
             <SidebarSubmenuItem
-              title={<EntityDisplayName entityRef={group} />}
+              title={<EntityDisplayName entityRef={group} hideIcon />}
               subtitle={
                 group.metadata.namespace !== DEFAULT_NAMESPACE
                   ? group.metadata.namespace
