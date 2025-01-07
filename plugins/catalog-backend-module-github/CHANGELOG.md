@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- 4ab00e4: Fixes an issue in `GithubMultiOrgEntityProvider` that caused an error when processing teams without a parent.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/plugin-catalog-backend@1.30.0-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+  - @backstage/integration@1.16.1-next.0
+
 ## 0.7.9-next.0
 
 ### Patch Changes
