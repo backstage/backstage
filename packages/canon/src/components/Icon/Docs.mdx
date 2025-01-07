@@ -2,7 +2,7 @@ import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
 import * as IconStories from './Icon.stories';
 import { Title, Text } from '../../../docs/components';
 import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
-import { defaultIcons } from './icons';
+import { icons } from './icons';
 
 <Meta of={IconStories} />
 
@@ -12,7 +12,7 @@ import { defaultIcons } from './icons';
 
 <Text>Icons are used to represent an action or a state.</Text>
 
-<Canvas of={IconStories.Primary} />
+<Canvas of={IconStories.Default} />
 
 <Title type="h2">Usage</Title>
 <Source code={`import { Icon } from "@backstage/canon";
@@ -27,7 +27,7 @@ import { defaultIcons } from './icons';
 <PropsTable
   data={{
     name: {
-      type: Object.keys(defaultIcons),
+      type: Object.keys(icons),
       responsive: false,
     },
     size: {
