@@ -40,3 +40,9 @@ export const searchResultListItemDataRef = createExtensionDataRef<{
   predicate?: SearchResultItemExtensionPredicate;
   component: SearchResultItemExtensionComponent;
 }>().with({ id: 'search.search-result-list-item.item' });
+
+export const searchResultTypeDataRef = createExtensionDataRef<{
+  value: string;
+  name: string;
+  icon: JSX.Element;
+}>().with({ id: 'search.filters.result-types.type' });

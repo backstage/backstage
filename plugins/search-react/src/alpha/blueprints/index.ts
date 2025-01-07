@@ -23,3 +23,8 @@ export {
   type SearchResultItemExtensionComponent,
   type SearchResultItemExtensionPredicate,
 } from './types';
+
+export {
+  SearchFilterResultTypeBlueprint,
+  type SearchFilterResultTypeBlueprintParams,
+} from './SearchFilterResultTypeBlueprint';

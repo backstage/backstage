@@ -61,7 +61,10 @@ import {
 } from '@backstage/plugin-search-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchResultListItemBlueprint,
+  SearchFilterResultTypeBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
@@ -106,6 +109,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
   inputs: {
     items: createExtensionInput([SearchResultListItemBlueprint.dataRefs.item]),
+    resultTypes: createExtensionInput([
+      SearchFilterResultTypeBlueprint.dataRefs.resultType,
+    ]),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
@@ -123,6 +129,10 @@ export const searchPage = PageBlueprint.makeWithOverrides({
             DefaultResultListItem
           );
         };
+
+        const resultTypes = inputs.resultTypes.map(item =>
+          item.get(SearchFilterResultTypeBlueprint.dataRefs.resultType),
+        );
 
         const Component = () => {
           const classes = useSearchPageStyles();
@@ -155,7 +165,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                             name: 'Documentation',
                             icon: <DocsIcon />,
                           },
-                        ]}
+                        ].concat(resultTypes)}
                       />
                       <Paper className={classes.filters}>
                         {types.includes('techdocs') && (
