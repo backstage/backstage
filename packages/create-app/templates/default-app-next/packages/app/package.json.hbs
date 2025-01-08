@@ -1,32 +1,18 @@
 {
-  "name": "app",
+  "name": "app-next",
   "version": "0.0.0",
+  "private": true,
+  "bundled": true,
   "backstage": {
     "role": "frontend"
   },
-  "private": true,
-  "files": [
-    "dist"
-  ]
-  "scripts": {
+"scripts": {
+    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "lint": "backstage-cli package lint",
-    "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
-    "test": "backstage-cli package test"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint"
+},
   "dependencies": {
     "@backstage/app-defaults": "^{{version '@backstage/app-defaults'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
@@ -81,6 +67,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
+    "@playwright/test": "^1.32.3",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
@@ -91,5 +78,19 @@
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0"
   },
-  "bundled": true,
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist"
+  ]
 }
