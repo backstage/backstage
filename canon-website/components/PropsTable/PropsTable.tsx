@@ -1,25 +1,15 @@
-/*
- * Copyright 2024 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import React from 'react';
 import * as Table from '../Table';
 import { Chip } from '../Chip';
 
-// Modify the PropsTable component to accept a generic type
-export const PropsTable = <T extends Record<string, any>>({
+// Define a more specific type for the data object
+type PropData = {
+  type: string | string[];
+  responsive: boolean;
+};
+
+// Modify the PropsTable component to use the new type
+export const PropsTable = <T extends Record<string, PropData>>({
   data,
 }: {
   data: T;
@@ -41,7 +31,7 @@ export const PropsTable = <T extends Record<string, any>>({
             </Table.Cell>
             <Table.Cell>
               {Array.isArray(data[n].type) ? (
-                data[n].type.map((t: any) => <Chip key={t}>{t}</Chip>)
+                data[n].type.map((t) => <Chip key={t}>{t}</Chip>)
               ) : (
                 <Chip>{data[n].type}</Chip>
               )}

@@ -11,7 +11,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "next build",
-    "dev": "concurrently \"next dev\" \"yarn watch-css\"",
+    "dev": "next dev",
+    "dev-all": "concurrently \"next dev\" \"yarn watch-css\"",
     "lint": "next lint",
     "start": "next start",
     "watch-css": "node scripts/watch-css.js"

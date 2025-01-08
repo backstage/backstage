@@ -1,9 +1,8 @@
+/* eslint-disable @next/next/no-css-tags */
 'use client';
 
 import { useEffect, useState } from 'react';
 import ReactFrame from 'react-frame-component';
-import '../../../packages/canon/src/css/core.css';
-import '../../../packages/canon/src/css/components.css';
 
 export const Frame = ({ children }: { children: React.ReactNode }) => {
   const [show, setShow] = useState(false);
