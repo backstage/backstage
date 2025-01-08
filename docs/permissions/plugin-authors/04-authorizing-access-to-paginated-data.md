@@ -84,14 +84,41 @@ export const todoListPermissions = [
 
 ## Using conditional policy decisions
 
+As usual, we'll start by updating the permission integration to include the new permission:
+
+```ts title="plugins/todo-list-backend/src/plugin.ts"
+import {
+  TODO_LIST_RESOURCE_TYPE,
+  todoListCreatePermission,
+  todoListUpdatePermission,
+  /* highlight-add-next-line */
+  todoListReadPermission,
+} from '@internal/plugin-todo-list-common';
+
+// ...
+
+permissionIntegrations.addResourceType({
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+  /* highlight-remove-next-line */
+  permissions: [todoListCreatePermission, todoListUpdatePermission],
+  /* highlight-add-next-line */
+  permissions: [
+    todoListCreatePermission,
+    todoListUpdatePermission,
+    todoListReadPermission,
+  ],
+  rules: Object.values(rules),
+  getResources: async resourceRefs => {
+    return Promise.all(resourceRefs.map(getTodo));
+  },
+});
+```
+
 So far we've only used the `PermissionsService.authorize` method, which will evaluate conditional decisions before returning a result. In this step, we want to evaluate conditional decisions within our plugin, so we'll use `PermissionsService.authorizeConditional` instead.
 
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
-/* highlight-remove-next-line */
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 /* highlight-add-start */
 import {
-  createPermissionIntegrationRouter,
   createConditionTransformer,
   ConditionTransformer,
 } from '@backstage/plugin-permission-node';
@@ -101,26 +128,11 @@ import { add, getAll, getTodo, update } from './todos';
 /* highlight-add-next-line */
 import { add, getAll, getTodo, TodoFilter, update } from './todos';
 import {
-  TODO_LIST_RESOURCE_TYPE,
   todoListCreatePermission,
   todoListUpdatePermission,
   /* highlight-add-next-line */
   todoListReadPermission,
 } from './permissions';
-
-// ...
-
-const permissionIntegrationRouter = createPermissionIntegrationRouter({
-  /* highlight-remove-next-line */
-  permissions: [todoListCreatePermission, todoListUpdatePermission],
-  /* highlight-add-next-line */
-  permissions: [todoListCreatePermission, todoListUpdatePermission, todoListReadPermission],
-  getResources: async resourceRefs => {
-    return resourceRefs.map(getTodo);
-  },
-  resourceType: TODO_LIST_RESOURCE_TYPE,
-  rules: Object.values(rules),
-});
 
 // ...
 
