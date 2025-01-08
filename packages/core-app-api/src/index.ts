@@ -23,7 +23,10 @@
 export * from './apis';
 export * from './app';
 export * from './routing';
-export type { AuthConnector } from './lib';
-export type { CreateSessionOptions } from './lib';
-export { showLoginPopup } from './lib';
-export type { LoginPopupOptions } from './lib';
+export type {
+  AuthConnector,
+  AuthConnectorCreateSessionOptions,
+  AuthConnectorRefreshSessionOptions,
+  openLoginPopup,
+  OpenLoginPopupOptions,
+} from './lib';

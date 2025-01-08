@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { AuthProviderInfo, DiscoveryApi } from '@backstage/core-plugin-api';
-import { showLoginPopup } from '../loginPopup';
+import { openLoginPopup } from '../loginPopup';
 
 type Options = {
   discoveryApi: DiscoveryApi;
@@ -36,13 +36,12 @@ export class DirectAuthConnector<DirectAuthResponse> {
 
   async createSession(): Promise<DirectAuthResponse> {
     const popupUrl = await this.buildUrl('/start');
-    const payload = await showLoginPopup({
+    const payload = (await openLoginPopup({
       url: popupUrl,
       name: `${this.provider.title} Login`,
-      origin: new URL(popupUrl).origin,
       width: 450,
       height: 730,
-    });
+    })) as any;
 
     return {
       ...payload,

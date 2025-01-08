@@ -137,9 +137,9 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
       return this.refreshPromise;
     }
 
-    this.refreshPromise = this.connector.refreshSession(
-      this.helper.getExtendedScope(this.currentSession, scopes),
-    );
+    this.refreshPromise = this.connector.refreshSession({
+      scopes: this.helper.getExtendedScope(this.currentSession, scopes),
+    });
 
     try {
       const session = await this.refreshPromise;

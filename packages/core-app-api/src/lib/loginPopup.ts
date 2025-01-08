@@ -19,7 +19,7 @@
  *
  * @public
  */
-export type LoginPopupOptions = {
+export type OpenLoginPopupOptions = {
   /**
    * The URL that the auth popup should point to
    */
@@ -29,11 +29,6 @@ export type LoginPopupOptions = {
    * The name of the popup, as in second argument to window.open
    */
   name: string;
-
-  /**
-   * The origin of the final popup page that will post a message to this window.
-   */
-  origin: string;
 
   /**
    * The width of the popup in pixels, defaults to 500
@@ -70,12 +65,16 @@ type AuthResult =
  *
  * @public
  */
-export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
+export function openLoginPopup(
+  options: OpenLoginPopupOptions,
+): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const width = options.width || 500;
     const height = options.height || 700;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
+
+    const origin = new URL(options.url).origin;
 
     const popup = window.open(
       options.url,
@@ -96,7 +95,7 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       if (event.source !== popup) {
         return;
       }
-      if (event.origin !== options.origin) {
+      if (event.origin !== origin) {
         return;
       }
       const { data } = event;

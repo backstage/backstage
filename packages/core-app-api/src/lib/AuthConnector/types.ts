@@ -17,9 +17,16 @@
 /**
  * @public
  */
-export type CreateSessionOptions = {
+export type AuthConnectorCreateSessionOptions = {
   scopes: Set<string>;
   instantPopup?: boolean;
+};
+
+/**
+ * @public
+ */
+export type AuthConnectorRefreshSessionOptions = {
+  scopes: Set<string>;
 };
 
 /**
@@ -29,8 +36,12 @@ export type CreateSessionOptions = {
  * @public
  */
 export type AuthConnector<AuthSession> = {
-  createSession(options: CreateSessionOptions): Promise<AuthSession>;
-  refreshSession(scopes?: Set<string>): Promise<AuthSession>;
+  createSession(
+    options: AuthConnectorCreateSessionOptions,
+  ): Promise<AuthSession>;
+  refreshSession(
+    options?: AuthConnectorRefreshSessionOptions,
+  ): Promise<AuthSession>;
   removeSession(): Promise<void>;
 };
 

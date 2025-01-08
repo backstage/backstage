@@ -16,6 +16,7 @@
 
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 import { SessionState } from '@backstage/core-plugin-api';
+import { AuthConnectorRefreshSessionOptions } from '../AuthConnector';
 
 const defaultOptions = {
   sessionScopes: (session: { scopes: Set<string> }) => session.scopes,
@@ -47,7 +48,7 @@ describe('RefreshingAuthSessionManager', () => {
     await manager.getSession({});
     expect(createSession).toHaveBeenCalledTimes(1);
 
-    expect(refreshSession).toHaveBeenCalledWith(new Set());
+    expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set() });
     expect(stateSubscriber.mock.calls).toEqual([
       [SessionState.SignedOut],
       [SessionState.SignedIn],
@@ -103,7 +104,7 @@ describe('RefreshingAuthSessionManager', () => {
 
     await manager.getSession({ scopes: new Set(['a']) });
     expect(createSession).toHaveBeenCalledTimes(1);
-    expect(refreshSession).toHaveBeenCalledWith(new Set(['a']));
+    expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set(['a']) });
 
     await manager.getSession({ scopes: new Set(['a']) });
     expect(createSession).toHaveBeenCalledTimes(1);
@@ -134,7 +135,7 @@ describe('RefreshingAuthSessionManager', () => {
 
     expect(await manager.getSession({ optional: true })).toBe(undefined);
     expect(createSession).toHaveBeenCalledTimes(0);
-    expect(refreshSession).toHaveBeenCalledWith(new Set());
+    expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set() });
   });
 
   it('should forward option to instantly show auth popup and not attempt refresh', async () => {
@@ -168,10 +169,12 @@ describe('RefreshingAuthSessionManager', () => {
 
   it('should handle two simultaneous session refreshes with same scopes', async () => {
     const createSession = jest.fn();
-    const refreshSession = jest.fn(async (scopes?: Set<string>) => ({
-      scopes: scopes ?? new Set(),
-      expired: false,
-    }));
+    const refreshSession = jest.fn(
+      async (options?: AuthConnectorRefreshSessionOptions) => ({
+        scopes: options?.scopes ?? new Set(),
+        expired: false,
+      }),
+    );
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,
@@ -192,10 +195,12 @@ describe('RefreshingAuthSessionManager', () => {
 
   it('should handle two simultaneous session refreshes with different scopes', async () => {
     const createSession = jest.fn();
-    const refreshSession = jest.fn(async (scopes?: Set<string>) => ({
-      scopes: scopes ?? new Set(),
-      expired: false,
-    }));
+    const refreshSession = jest.fn(
+      async (options?: AuthConnectorRefreshSessionOptions) => ({
+        scopes: options?.scopes ?? new Set(),
+        expired: false,
+      }),
+    );
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,
@@ -216,10 +221,12 @@ describe('RefreshingAuthSessionManager', () => {
 
   it('should handle multiple simultaneous session refreshes with different scopes', async () => {
     const createSession = jest.fn();
-    const refreshSession = jest.fn(async (scopes?: Set<string>) => ({
-      scopes: scopes ?? new Set(),
-      expired: false,
-    }));
+    const refreshSession = jest.fn(
+      async (options?: AuthConnectorRefreshSessionOptions) => ({
+        scopes: options?.scopes ?? new Set(),
+        expired: false,
+      }),
+    );
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,

@@ -296,9 +296,24 @@ export type AuthApiCreateOptions = {
 
 // @public
 export type AuthConnector<AuthSession> = {
-  createSession(options: CreateSessionOptions): Promise<AuthSession>;
-  refreshSession(scopes?: Set<string>): Promise<AuthSession>;
+  createSession(
+    options: AuthConnectorCreateSessionOptions,
+  ): Promise<AuthSession>;
+  refreshSession(
+    options?: AuthConnectorRefreshSessionOptions,
+  ): Promise<AuthSession>;
   removeSession(): Promise<void>;
+};
+
+// @public (undocumented)
+export type AuthConnectorCreateSessionOptions = {
+  scopes: Set<string>;
+  instantPopup?: boolean;
+};
+
+// @public (undocumented)
+export type AuthConnectorRefreshSessionOptions = {
+  scopes: Set<string>;
 };
 
 // @public
@@ -359,12 +374,6 @@ export function createFetchApi(options: {
   baseImplementation?: typeof fetch | undefined;
   middleware?: FetchMiddleware | FetchMiddleware[] | undefined;
 }): FetchApi;
-
-// @public (undocumented)
-export type CreateSessionOptions = {
-  scopes: Set<string>;
-  instantPopup?: boolean;
-};
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
@@ -492,15 +501,6 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 }
 
 // @public
-export type LoginPopupOptions = {
-  url: string;
-  name: string;
-  origin: string;
-  width?: number;
-  height?: number;
-};
-
-// @public
 export class MicrosoftAuth {
   // (undocumented)
   static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
@@ -573,9 +573,7 @@ export class OAuth2
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
-  authConnectorFactory?: (
-    opts: OAuth2CreateOptions,
-  ) => AuthConnector<OAuth2Session>;
+  authConnector?: AuthConnector<OAuth2Session>;
 };
 
 // @public
@@ -628,6 +626,19 @@ export type OneLoginAuthCreateOptions = {
 };
 
 // @public
+export function openLoginPopup(
+  options: OpenLoginPopupOptions,
+): Promise<unknown>;
+
+// @public
+export type OpenLoginPopupOptions = {
+  url: string;
+  name: string;
+  width?: number;
+  height?: number;
+};
+
+// @public
 export type PopupOptions = {
   size?:
     | {
@@ -661,9 +672,6 @@ export class SamlAuth
   // (undocumented)
   signOut(): Promise<void>;
 }
-
-// @public
-export function showLoginPopup(options: LoginPopupOptions): Promise<any>;
 
 // @public
 export type SignInPageProps = PropsWithChildren<{

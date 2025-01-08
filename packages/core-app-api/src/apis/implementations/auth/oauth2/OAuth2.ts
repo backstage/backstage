@@ -44,9 +44,7 @@ import { OAuthApiCreateOptions } from '../types';
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
-  authConnectorFactory?: (
-    opts: OAuth2CreateOptions,
-  ) => AuthConnector<OAuth2Session>;
+  authConnector?: AuthConnector<OAuth2Session>;
 };
 
 export type OAuth2Response = {
@@ -83,72 +81,61 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  private static createDefaultAuthConnector(options: OAuth2CreateOptions) {
-    const {
-      configApi,
-      discoveryApi,
-      environment,
-      provider,
-      oauthRequestApi,
-      scopeTransform,
-      popupOptions,
-    } = options;
-
-    return new DefaultAuthConnector({
-      configApi,
-      discoveryApi,
-      environment: environment!,
-      provider: provider!,
-      oauthRequestApi: oauthRequestApi,
-      sessionTransform({
-        backstageIdentity,
-        ...res
-      }: OAuth2Response): OAuth2Session {
-        const session: OAuth2Session = {
-          ...res,
-          providerInfo: {
-            idToken: res.providerInfo.idToken,
-            accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(
-              scopeTransform!,
-              res.providerInfo.scope,
-            ),
-            expiresAt: res.providerInfo.expiresInSeconds
-              ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
-              : undefined,
-          },
-        };
-        if (backstageIdentity) {
-          session.backstageIdentity = {
-            token: backstageIdentity.token,
-            identity: backstageIdentity.identity,
-            expiresAt: backstageIdentity.expiresInSeconds
-              ? new Date(Date.now() + backstageIdentity.expiresInSeconds * 1000)
-              : undefined,
-          };
-        }
-        return session;
-      },
-      popupOptions,
-    });
-  }
-
   static create(options: OAuth2CreateOptions) {
     const {
+      configApi,
+      discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
       defaultScopes = [],
       scopeTransform = x => x,
-      authConnectorFactory = (opts: OAuth2CreateOptions) =>
-        OAuth2.createDefaultAuthConnector(opts),
+      popupOptions,
     } = options;
 
-    const connector = authConnectorFactory({
-      ...options,
-      scopeTransform,
-      environment,
-      provider,
-    });
+    const connector =
+      options.authConnector ??
+      new DefaultAuthConnector({
+        configApi,
+        discoveryApi,
+        environment,
+        provider,
+        oauthRequestApi: oauthRequestApi,
+        sessionTransform({
+          backstageIdentity,
+          ...res
+        }: OAuth2Response): OAuth2Session {
+          const session: OAuth2Session = {
+            ...res,
+            providerInfo: {
+              idToken: res.providerInfo.idToken,
+              accessToken: res.providerInfo.accessToken,
+              scopes: OAuth2.normalizeScopes(
+                scopeTransform,
+                res.providerInfo.scope,
+              ),
+              expiresAt: res.providerInfo.expiresInSeconds
+                ? new Date(
+                    Date.now() + res.providerInfo.expiresInSeconds * 1000,
+                  )
+                : undefined,
+            },
+          };
+          if (backstageIdentity) {
+            session.backstageIdentity = {
+              token: backstageIdentity.token,
+              identity: backstageIdentity.identity,
+              expiresAt: backstageIdentity.expiresInSeconds
+                ? new Date(
+                    Date.now() + backstageIdentity.expiresInSeconds * 1000,
+                  )
+                : undefined,
+            };
+          }
+          return session;
+        },
+        popupOptions,
+      });
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
