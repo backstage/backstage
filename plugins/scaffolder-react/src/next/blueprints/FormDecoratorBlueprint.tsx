@@ -30,7 +30,7 @@ const formDecoratorExtensionDataRef =
  * */
 export const FormDecoratorBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-form-decorator',
-  attachTo: { id: 'api:scaffolder/form-decorator', input: 'formDecorators' },
+  attachTo: { id: 'api:scaffolder/form-decorators', input: 'formDecorators' },
   dataRefs: {
     formDecoratorLoader: formDecoratorExtensionDataRef,
   },
