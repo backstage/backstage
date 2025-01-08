@@ -66,6 +66,7 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/plugin-kubernetes-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
     "@kubernetes-models/apimachinery": "^2.0.0",
     "@kubernetes-models/base": "^5.0.0",
     "@kubernetes/client-node": "1.0.0-rc7",
