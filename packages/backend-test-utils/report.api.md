@@ -33,6 +33,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { PermissionIntegrationsService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
@@ -253,6 +254,19 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<LoggerService> | undefined,
       ) => ServiceMock<LoggerService>;
+  }
+  // (undocumented)
+  export namespace permissionIntegrations {
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        PermissionIntegrationsService,
+        'plugin',
+        'singleton'
+      >;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<PermissionIntegrationsService> | undefined,
+      ) => ServiceMock<PermissionIntegrationsService>;
   }
   // (undocumented)
   export namespace permissions {
