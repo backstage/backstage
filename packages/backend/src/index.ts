@@ -15,9 +15,32 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import {
+  createBackendFeatureLoader,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import {
+  CatalogCollatorEntityTransformer,
+  catalogCollatorExtensionPoint,
+  defaultCatalogCollatorEntityTransformer,
+} from '@backstage/plugin-search-backend-module-catalog';
+import { Entity } from '@backstage/catalog-model';
 
 const backend = createBackend();
+
+const adobeEntityTransformer: CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => {
+  console.log('hi from adobeEntityTransformer');
+  return {
+    ...defaultCatalogCollatorEntityTransformer(entity),
+    metadata: {
+      annotations: {
+        ...entity.metadata?.annotations,
+      },
+    },
+  };
+};
 
 // An example of how to group together and load multiple features. You can also
 // access root-scoped services by adding `deps`.
@@ -30,6 +53,20 @@ const searchLoader = createBackendFeatureLoader({
   },
 });
 
+backend.add(
+  createBackendModule({
+    pluginId: 'search',
+    moduleId: 'adobe-collator-options',
+    register(reg) {
+      reg.registerInit({
+        deps: { collator: catalogCollatorExtensionPoint },
+        async init({ collator }) {
+          collator.setEntityTransformer(adobeEntityTransformer);
+        },
+      });
+    },
+  }),
+);
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
