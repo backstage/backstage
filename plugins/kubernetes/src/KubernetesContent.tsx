@@ -28,13 +28,18 @@ import {
 import {
   DetectedError,
   detectErrors,
+  kubernetesClustersPermission,
+  kubernetesResourcesPermission,
 } from '@backstage/plugin-kubernetes-common';
 import {
   Content,
   EmptyState,
   Page,
   Progress,
+  WarningPanel,
 } from '@backstage/core-components';
+import { useKubernetesClustersPermission } from './hooks/useKubernetesClustersPermission';
+import { useKubernetesResourcesPermission } from './hooks/useKubernetesResourcesPermission';
 
 type KubernetesContentProps = {
   entity: Entity;
@@ -46,10 +51,26 @@ export const KubernetesContent = ({
   entity,
   refreshIntervalMs,
 }: KubernetesContentProps) => {
+  const hasKubernetesClustersPermission = useKubernetesClustersPermission();
+  const hasKubernetesResourcesPermission = useKubernetesResourcesPermission();
   const { kubernetesObjects, error } = useKubernetesObjects(
     entity,
     refreshIntervalMs,
   );
+
+  if (!hasKubernetesClustersPermission || !hasKubernetesResourcesPermission) {
+    return (
+      <Page themeId="tool">
+        <Content>
+          <WarningPanel
+            title="Permission required"
+            message={`To view Kubernetes objects, contact your administrator to give you the 
+              '${kubernetesClustersPermission.name}' and '${kubernetesResourcesPermission.name}' permission.`}
+          />
+        </Content>
+      </Page>
+    );
+  }
 
   const clusters = kubernetesObjects?.items.map(item => item.cluster) ?? [];
 
