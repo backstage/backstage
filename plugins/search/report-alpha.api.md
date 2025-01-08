@@ -12,6 +12,7 @@ import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 
@@ -85,6 +86,19 @@ const _default: FrontendPlugin<
               icon: JSX.Element;
             },
             'search.filters.result-types.type',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        searchFilters: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              component: SearchFilterExtensionComponent;
+            },
+            'search.filters.filter',
             {}
           >,
           {
@@ -207,6 +221,19 @@ export const searchPage: ExtensionDefinition<{
           icon: JSX.Element;
         },
         'search.filters.result-types.type',
+        {}
+      >,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+    searchFilters: ExtensionInput<
+      ConfigurableExtensionDataRef<
+        {
+          component: SearchFilterExtensionComponent;
+        },
+        'search.filters.filter',
         {}
       >,
       {

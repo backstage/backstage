@@ -64,6 +64,7 @@ import { searchApiRef } from '@backstage/plugin-search-react';
 import {
   SearchResultListItemBlueprint,
   SearchFilterResultTypeBlueprint,
+  SearchFilterBlueprint,
 } from '@backstage/plugin-search-react/alpha';
 
 import { rootRouteRef } from './plugin';
@@ -112,6 +113,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
     resultTypes: createExtensionInput([
       SearchFilterResultTypeBlueprint.dataRefs.resultType,
     ]),
+    searchFilters: createExtensionInput([
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    ]),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
@@ -132,6 +136,11 @@ export const searchPage = PageBlueprint.makeWithOverrides({
 
         const resultTypes = inputs.resultTypes.map(item =>
           item.get(SearchFilterResultTypeBlueprint.dataRefs.resultType),
+        );
+
+        const additionalSearchFilters = inputs.searchFilters.map(
+          item =>
+            item.get(SearchFilterBlueprint.dataRefs.searchFilters).component,
         );
 
         const Component = () => {
@@ -203,6 +212,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           name="lifecycle"
                           values={['experimental', 'production']}
                         />
+                        {additionalSearchFilters.map(SearchFilterComponent => (
+                          <SearchFilterComponent className={classes.filter} />
+                        ))}
                       </Paper>
                     </Grid>
                   )}

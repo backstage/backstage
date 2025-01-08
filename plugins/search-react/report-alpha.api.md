@@ -18,6 +18,48 @@ export type BaseSearchResultListItemProps<T = {}> = T & {
 } & Omit<ListItemProps, 'button'>;
 
 // @alpha (undocumented)
+export const SearchFilterBlueprint: ExtensionBlueprint<{
+  kind: 'search-filter';
+  name: undefined;
+  params: SearchFilterBlueprintParams;
+  output: ConfigurableExtensionDataRef<
+    {
+      component: SearchFilterExtensionComponent;
+    },
+    'search.filters.filter',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    searchFilters: ConfigurableExtensionDataRef<
+      {
+        component: SearchFilterExtensionComponent;
+      },
+      'search.filters.filter',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface SearchFilterBlueprintParams {
+  // (undocumented)
+  component: SearchFilterExtensionComponent;
+}
+
+// @alpha (undocumented)
+export type SearchFilterExtensionComponent = (
+  props: SearchFilterExtensionComponentProps,
+) => JSX.Element;
+
+// @alpha (undocumented)
+export type SearchFilterExtensionComponentProps = {
+  className: string;
+};
+
+// @alpha (undocumented)
 export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
   kind: 'search-filter-result-type';
   name: undefined;
