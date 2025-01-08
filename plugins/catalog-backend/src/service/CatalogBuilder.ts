@@ -114,6 +114,7 @@ import {
   RootConfigService,
   UrlReaderService,
   SchedulerService,
+  PermissionIntegrationsService,
 } from '@backstage/backend-plugin-api';
 import { entitiesResponseToObjects } from './response';
 
@@ -136,6 +137,7 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
+  permissionIntegrations?: PermissionIntegrationsService;
   scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
@@ -478,6 +480,7 @@ export class CatalogBuilder {
       logger,
       permissions,
       scheduler,
+      permissionIntegrations,
       discovery = HostDiscovery.fromConfig(config),
     } = this.env;
 
@@ -554,7 +557,8 @@ export class CatalogBuilder {
       permissionsService,
       createConditionTransformer(this.permissionRules),
     );
-    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+
+    const catalogPermissionResource = {
       resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
       getResources: async (resourceRefs: string[]) => {
         const { entities } = await unauthorizedEntitiesCatalog.entities({
@@ -584,7 +588,18 @@ export class CatalogBuilder {
       },
       permissions: this.permissions,
       rules: this.permissionRules,
-    });
+    } as const;
+
+    let permissionIntegrationRouter:
+      | ReturnType<typeof createPermissionIntegrationRouter>
+      | undefined;
+    if (permissionIntegrations) {
+      permissionIntegrations.addResourceType(catalogPermissionResource);
+    } else {
+      permissionIntegrationRouter = createPermissionIntegrationRouter(
+        catalogPermissionResource,
+      );
+    }
 
     const locationStore = new DefaultLocationStore(dbClient);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
