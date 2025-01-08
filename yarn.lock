@@ -24666,20 +24666,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.0.2, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2":
+"chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.0.2, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2, chalk@npm:~4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
   checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
-  languageName: node
-  linkType: hard
-
-"chalk@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "chalk@npm:5.4.1"
-  checksum: 0c656f30b782fed4d99198825c0860158901f449a6b12b818b0aabad27ec970389e7e8767d0e00762175b23620c812e70c4fd92c0210e55fc2d993638b74e86e
   languageName: node
   linkType: hard
 
@@ -29772,10 +29765,10 @@ __metadata:
   linkType: hard
 
 "find-process@npm:^1.4.5":
-  version: 1.4.8
-  resolution: "find-process@npm:1.4.8"
+  version: 1.4.9
+  resolution: "find-process@npm:1.4.9"
   dependencies:
-    chalk: ^5.4.1
+    chalk: ~4.1.2
     commander: ^12.1.0
     debug: ^4.4.0
     eslint: ^9.17.0
@@ -29784,7 +29777,7 @@ __metadata:
     rimraf: ^6.0.1
   bin:
     find-process: bin/find-process.js
-  checksum: 99a675ad0d8fc3b9175c922def1450d37a93010f96f87cd5dd2aacefdb13c86c591c34bc6a8f498ce2496845150f52cbf7915d65f60b6cc04aadba4ec37dd691
+  checksum: 907fe8387bad87cab9cb103b0b3602d85771c72cce83a35c44c5ad05f5c5c40cbd322d77944afed682b591beb449e228d4a6e6d18751b22da8743f215c7fca12
   languageName: node
   linkType: hard
 
