@@ -21266,24 +21266,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@useoptic/json-pointer-helpers@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@useoptic/json-pointer-helpers@npm:1.0.4"
+"@useoptic/json-pointer-helpers@npm:1.0.5":
+  version: 1.0.5
+  resolution: "@useoptic/json-pointer-helpers@npm:1.0.5"
   dependencies:
     jsonpointer: ^5.0.1
     minimatch: 9.0.3
-  checksum: 7a10083bc0111cc2fb4734f666be8fea87447c61725c09ceb08876dcbf642056c60f36e48070961150d9d9b4a1c533e9b7cd007ed574956a23377b8afcf077e5
+  checksum: a91e2a84dc1fe87d5f5675caeccd15b403f85c6c7be8e17f83621d2ba74934eac754aa2f81c4dc9b12e3f39889f1b20b01f3b5cc55c69f72032750af3737bffd
   languageName: node
   linkType: hard
 
-"@useoptic/openapi-io@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@useoptic/openapi-io@npm:1.0.4"
+"@useoptic/openapi-io@npm:1.0.5":
+  version: 1.0.5
+  resolution: "@useoptic/openapi-io@npm:1.0.5"
   dependencies:
     "@apidevtools/json-schema-ref-parser": 9.0.9
     "@jsdevtools/ono": ^7.1.3
-    "@useoptic/json-pointer-helpers": 1.0.4
-    "@useoptic/openapi-utilities": 1.0.4
+    "@useoptic/json-pointer-helpers": 1.0.5
+    "@useoptic/openapi-utilities": 1.0.5
     ajv: 8.17.1
     ajv-errors: ~3.0.0
     ajv-formats: ~2.1.0
@@ -21301,15 +21301,15 @@ __metadata:
     upath: ^2.0.1
     yaml: ^2.3.2
     yaml-ast-parser: ^0.0.43
-  checksum: 418ce7ebc332334a97d3f684753e608b591a72ff555f5766ac2e6ceb141865447ec8cdbff46e3e51e7afab0070aa28c7e9547ef48bc3cf568dced80834765d1b
+  checksum: 5ad10f19089dae08116cc208c4df5b5f7aee121a1163c5b7b761c3b4d21685573afdda26ea3c62e54b4e7e32d5d37aa6cd8db36125258f3fd7067626a5921f71
   languageName: node
   linkType: hard
 
-"@useoptic/openapi-utilities@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@useoptic/openapi-utilities@npm:1.0.4"
+"@useoptic/openapi-utilities@npm:1.0.5":
+  version: 1.0.5
+  resolution: "@useoptic/openapi-utilities@npm:1.0.5"
   dependencies:
-    "@useoptic/json-pointer-helpers": 1.0.4
+    "@useoptic/json-pointer-helpers": 1.0.5
     ajv: ^8.6.0
     ajv-errors: ~3.0.0
     ajv-formats: ~2.1.0
@@ -21326,7 +21326,7 @@ __metadata:
     ts-invariant: ^0.9.3
     url-join: ^4.0.1
     yaml-ast-parser: ^0.0.43
-  checksum: 2a900d51378f10dbd1f21c8ee0da4988656c4ecfa1bf7a61692001118afe28633805be69024b979001b0f5afc2e40599c0f2c95359cec69bdb968d05907dc490
+  checksum: 9adfab3beabe1ca80c119d053e4767998a55640ff6c8472915fdfc367d84fb8b1670afb3111db0f00fa108996bbda581e2c4bc58c1f3232c4ec7997e5bfc3216
   languageName: node
   linkType: hard
 
@@ -21356,8 +21356,8 @@ __metadata:
   linkType: hard
 
 "@useoptic/optic@npm:^1.0.0":
-  version: 1.0.4
-  resolution: "@useoptic/optic@npm:1.0.4"
+  version: 1.0.5
+  resolution: "@useoptic/optic@npm:1.0.5"
   dependencies:
     "@babel/runtime": ^7.20.6
     "@httptoolkit/httpolyglot": ^2.0.1
@@ -21367,10 +21367,10 @@ __metadata:
     "@sentry/node": ^7.74.0
     "@sinclair/typebox": 0.31.28
     "@stoplight/spectral-core": ^1.8.1
-    "@useoptic/openapi-io": 1.0.4
-    "@useoptic/openapi-utilities": 1.0.4
-    "@useoptic/rulesets-base": 1.0.4
-    "@useoptic/standard-rulesets": 1.0.4
+    "@useoptic/openapi-io": 1.0.5
+    "@useoptic/openapi-utilities": 1.0.5
+    "@useoptic/rulesets-base": 1.0.5
+    "@useoptic/standard-rulesets": 1.0.5
     ajv: 8.17.1
     ajv-formats: ~2.1.0
     async-exit-hook: ^2.0.1
@@ -21427,34 +21427,34 @@ __metadata:
     yaml: ^2.3.4
   bin:
     optic: build/index.js
-  checksum: a202e87bed38fb4304d7a2f93c3228660b4b039ce1d6f0ac4b2e9fc271cbcb4d5a8592033f30a399cb7aeaad1db161c2c592a378cd9c58e852bd875c06ac2556
+  checksum: 67964bce63e4ae27a965d2f83bb03b1efd67191b1a3ed4e993ec24784b40f6316cb7089a7907841f4c07ed2f0b7a773b8f6b26b3142cb0f5fd73e30145cb0a23
   languageName: node
   linkType: hard
 
-"@useoptic/rulesets-base@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@useoptic/rulesets-base@npm:1.0.4"
+"@useoptic/rulesets-base@npm:1.0.5":
+  version: 1.0.5
+  resolution: "@useoptic/rulesets-base@npm:1.0.5"
   dependencies:
     "@stoplight/spectral-core": ^1.8.1
     "@stoplight/spectral-rulesets": ^1.14.1
-    "@useoptic/json-pointer-helpers": 1.0.4
-    "@useoptic/openapi-utilities": 1.0.4
+    "@useoptic/json-pointer-helpers": 1.0.5
+    "@useoptic/openapi-utilities": 1.0.5
     ajv: ^8.6.0
     lodash.pick: ^4.4.0
     node-fetch: ^2.6.7
     semver: ^7.5.4
   bin:
     rulesets-base: build/index.js
-  checksum: 06a4b885bf429b7804e003eeb2c4de9bb1153dc14e747a6031d535351e933665c554000790071a12d00734b7a58df07717b5c2c6412354fd43ccbca3339a5c81
+  checksum: 87ae2da07efb7cacc46d09cd554c0fe1a1a126c222e1c3f6adfe1c2874437a62a5fb481f74ad2661cd58af93ca782ea26ad470c69abf35d68383ce516b720f8e
   languageName: node
   linkType: hard
 
-"@useoptic/standard-rulesets@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@useoptic/standard-rulesets@npm:1.0.4"
+"@useoptic/standard-rulesets@npm:1.0.5":
+  version: 1.0.5
+  resolution: "@useoptic/standard-rulesets@npm:1.0.5"
   dependencies:
-    "@useoptic/openapi-utilities": 1.0.4
-    "@useoptic/rulesets-base": 1.0.4
+    "@useoptic/openapi-utilities": 1.0.5
+    "@useoptic/rulesets-base": 1.0.5
     ajv: ^8.6.0
     ajv-draft-04: ^1.0.0
     ajv-formats: ~2.1.0
@@ -21465,7 +21465,7 @@ __metadata:
     whatwg-mimetype: ^3.0.0
   bin:
     standard-rulesets: build/index.js
-  checksum: 9948d3930ed6e83fa06d385cb4639928a21e7aaaa81c9dc793563324dd03ab7c3c98175841855b290f5e6c56b7232dee6837b830ff2c5096cacadbd67d6e22a0
+  checksum: cd251ae71a9d488a15b6fca7a21df91c1532972e57d4a5e9edad11bbaeb80621c5c19d17fa906360a2628fab6543a257ab74fcb039198c076741460f9fd4e9e2
   languageName: node
   linkType: hard
 
