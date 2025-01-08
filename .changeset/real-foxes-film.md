@@ -1,8 +1,10 @@
 ---
 '@backstage/plugin-kubernetes-backend': minor
+'@backstage/plugin-kubernetes-cluster': minor
 '@backstage/plugin-kubernetes-common': minor
+'@backstage/plugin-kubernetes': minor
 ---
 
-The `/clusters` endpoint is now protected by the `kubernetes.clusters` permission.
-The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources` permission.
-The `/resources` endpoints are now protected by the `kubernetes.resources` permission.
+**BREAKING** The `/clusters` endpoint is now protected by the `kubernetes.clusters` permission.
+**BREAKING** The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources` permission.
+**BREAKING** The `/resources` endpoints are now protected by the `kubernetes.resources` permission.
