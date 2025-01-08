@@ -65,9 +65,17 @@ export default async (opts: OptionValues): Promise<void> => {
     },
   ]);
 
+  // Use `default-app-next` as default template when `--experimental-frontend` is specified.
+  // Otherwise, use `default-app`.
+  const defaultTemplatePath = opts.experimentalFrontend
+    ? 'templates/default-app-next'
+    : 'templates/default-app';
+
+  // Use `--template-path` argument as template when specified.
+  // Otherwise, use the default template.
   const templateDir = opts.templatePath
     ? paths.resolveTarget(opts.templatePath)
-    : paths.resolveOwn('templates/default-app');
+    : paths.resolveOwn(defaultTemplatePath);
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`

@@ -9,6 +9,7 @@ Usage: backstage-create-app [options]
 
 Options:
   -V, --version
+  --experimental-frontend
   --path [directory]
   --skip-install
   --template-path [directory]
