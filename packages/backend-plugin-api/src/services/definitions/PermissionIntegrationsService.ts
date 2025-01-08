@@ -78,6 +78,21 @@ export interface PermissionIntegrationsService {
   addPermissions(permissions: Permission[]): void;
 
   /**
+   * Adds a set of permission rules to the permission system for a resource type
+   * that is owned by this plugin.
+   *
+   * @remarks
+   *
+   * Rules should be created using corresponding `create*PermissionRule`
+   * functions exported by plugins, who in turn are created with
+   * `makeCreatePermissionRule`.
+   *
+   * Rules can be added either directly by the plugin itself or through a plugin
+   * module.
+   */
+  addPermissionRules(rules: PermissionRule<any, any, string>[]): void;
+
+  /**
    * Add a new resource type that is owned by this plugin to the permission
    * system.
    *

@@ -1006,14 +1006,19 @@ describe('createPermissionIntegrationRouter', () => {
       resourceType: 'test-resource',
       permissions: [testPermission],
       getResources: defaultMockedGetResources1,
-      rules: [testRule1, testRule2],
+      rules: [testRule1],
     });
+
+    router.addPermissionRules([testRule2]);
+
+    // This one is for the resource added below, it should be possible to add rules before the resource typeof
+    router.addPermissionRules([testRule3]);
 
     router.addResourceType({
       resourceType: 'test-resource-2',
       permissions: [testPermission2],
       getResources: defaultMockedGetResources2,
-      rules: [testRule3],
+      rules: [],
     });
 
     const responseAfter = await request(express().use(router)).get(

@@ -62,6 +62,14 @@ export const permissionIntegrationsServiceFactory = createServiceFactory({
         }
         router.addPermissions(permissions);
       },
+      addPermissionRules(rules) {
+        if (started) {
+          throw new Error(
+            'Cannot add permission rules after the plugin has started',
+          );
+        }
+        router.addPermissionRules(rules);
+      },
     };
   },
 });

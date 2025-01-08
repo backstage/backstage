@@ -142,6 +142,7 @@ export function createPermissionIntegrationRouter<
       >,
 ): express.Router & {
   addPermissions(permissions: Permission[]): void;
+  addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]): void;
   addResourceType<const TResourceType extends string, TResource>(
     resource: CreatePermissionIntegrationRouterResourceOptions<
       TResourceType,

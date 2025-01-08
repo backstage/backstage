@@ -308,6 +308,28 @@ class PermissionIntegrationMetadataStore {
     }
   }
 
+  addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]) {
+    for (const rule of rules) {
+      const rulesByName =
+        this.#rulesByTypeByName.get(rule.resourceType) ?? new Map();
+      this.#rulesByTypeByName.set(rule.resourceType, rulesByName);
+
+      if (rulesByName.has(rule.name)) {
+        throw new Error(
+          `Refused to add permission rule for type '${rule.resourceType}' with name '${rule.name}' because it already exists`,
+        );
+      }
+      rulesByName.set(rule.name, rule);
+
+      this.#serializedRules.push({
+        name: rule.name,
+        description: rule.description,
+        resourceType: rule.resourceType,
+        paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
+      });
+    }
+  }
+
   addResourceType(
     resource: CreatePermissionIntegrationRouterResourceOptions<string, unknown>,
   ) {
@@ -320,24 +342,8 @@ class PermissionIntegrationMetadataStore {
     }
     this.#resourcesByType.set(resourceType, resource);
 
-    for (const rule of resource.rules) {
-      const rulesByName =
-        this.#rulesByTypeByName.get(resourceType) ?? new Map();
-      this.#rulesByTypeByName.set(resourceType, rulesByName);
-
-      if (rulesByName.has(rule.name)) {
-        throw new Error(
-          `Refused to add permission rule for type '${resourceType}' with name '${rule.name}' because it already exists`,
-        );
-      }
-      rulesByName.set(rule.name, rule);
-
-      this.#serializedRules.push({
-        name: rule.name,
-        description: rule.description,
-        resourceType: rule.resourceType,
-        paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
-      });
+    if (resource.rules) {
+      this.addPermissionRules(resource.rules);
     }
 
     if (resource.permissions) {
@@ -411,6 +417,7 @@ export function createPermissionIntegrationRouter<
       >,
 ): express.Router & {
   addPermissions(permissions: Permission[]): void;
+  addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]): void;
   addResourceType<const TResourceType extends string, TResource>(
     resource: CreatePermissionIntegrationRouterResourceOptions<
       TResourceType,
@@ -494,6 +501,9 @@ export function createPermissionIntegrationRouter<
   return Object.assign(router, {
     addPermissions(permissions: Permission[]) {
       store.addPermissions(permissions);
+    },
+    addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]) {
+      store.addPermissionRules(rules);
     },
     addResourceType<const TResourceType extends string, TResource>(
       resource: CreatePermissionIntegrationRouterResourceOptions<

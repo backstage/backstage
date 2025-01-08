@@ -434,6 +434,7 @@ export interface LoggerService {
 
 // @public
 export interface PermissionIntegrationsService {
+  addPermissionRules(rules: PermissionRule<any, any, string>[]): void;
   addPermissions(permissions: Permission[]): void;
   addResourceType<const TResourceType extends string, TResource>(
     options: PermissionIntegrationsServiceAddResourceTypeOptions<
