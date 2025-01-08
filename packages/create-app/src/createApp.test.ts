@@ -96,6 +96,27 @@ describe('command entrypoint', () => {
     expect(buildAppMock).toHaveBeenCalled();
   });
 
+  it('should call expected tasks when `experimentalFrontend` is supplied', async () => {
+    const cmd = { experimentalFrontend: true } as unknown as Command;
+    await createApp(cmd);
+    expect(checkAppExistsMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
+    expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget(
+        'packages',
+        'create-app',
+        'templates',
+        'default-app-next',
+      ),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toContain(
+      path.join(tmpdir(), 'MyApp'),
+    );
+    expect(moveAppMock).toHaveBeenCalled();
+    expect(buildAppMock).toHaveBeenCalled();
+  });
+
   it('should call expected tasks with relative --template-path option', async () => {
     const cmd = {
       path: 'myDirectory',
