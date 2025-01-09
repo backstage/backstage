@@ -1,22 +1,32 @@
 'use client';
 
-import * as CheckboxStories from '../../../packages/canon/src/components/Checkbox/Checkbox.stories';
-import { composeStories } from '@storybook/react';
+import { Inline, Checkbox, Stack, Text } from '../../../packages/canon';
 
 export const CheckboxPreview = () => {
-  const { Default } = composeStories(CheckboxStories);
-
-  return <Default />;
+  return <Checkbox label="Accept terms and conditions" />;
 };
 
 export const CheckboxAllVariants = () => {
-  const { AllVariants } = composeStories(CheckboxStories);
-
-  return <AllVariants />;
+  return (
+    <Inline alignY="center">
+      <Checkbox />
+      <Checkbox checked />
+      <Checkbox label="Checkbox" />
+      <Checkbox label="Checkbox" checked />
+    </Inline>
+  );
 };
 
 export const CheckboxPlayground = () => {
-  const { Playground } = composeStories(CheckboxStories);
-
-  return <Playground />;
+  return (
+    <Stack>
+      <Text>All variants</Text>
+      <Inline alignY="center">
+        <Checkbox />
+        <Checkbox checked />
+        <Checkbox label="Checkbox" />
+        <Checkbox label="Checkbox" checked />
+      </Inline>
+    </Stack>
+  );
 };

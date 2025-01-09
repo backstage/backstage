@@ -14,12 +14,14 @@
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.1.4",
+    "@storybook/react": "^8.4.7",
     "@types/mdx": "^2.0.13",
     "next": "14.2.23",
     "react": "^18",
     "react-dom": "^18",
     "react-frame-component": "^5.2.7",
-    "shiki": "^1.26.1"
+    "shiki": "^1.26.1",
+    "storybook": "^8.4.7"
   },
   "devDependencies": {
     "@types/node": "^20",

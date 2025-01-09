@@ -1,10 +1,7 @@
 'use client';
 
-import * as IconStories from '../../../packages/canon/src/components/Icon/Icon.stories';
-import { composeStories } from '@storybook/react';
+import { Icon } from '../../../packages/canon';
 
 export const IconPreview = () => {
-  const { Default } = composeStories(IconStories);
-
-  return <Default />;
+  return <Icon name="heart" />;
 };

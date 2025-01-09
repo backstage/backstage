@@ -1,50 +1,108 @@
 'use client';
 
-import * as ButtonStories from '../../../packages/canon/src/components/Button/Button.stories';
-import { composeStories } from '@storybook/react';
+import {
+  Inline,
+  Button,
+  Stack,
+  ButtonProps,
+  Text,
+} from '../../../packages/canon';
 
 export const ButtonPreview = () => {
-  const { Variants } = composeStories(ButtonStories);
-
-  return <Variants />;
+  return (
+    <Inline alignY="center">
+      <Button iconStart="cloud" variant="primary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="secondary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="tertiary">
+        Button
+      </Button>
+    </Inline>
+  );
 };
 
 export const ButtonSizes = () => {
-  const { Sizes } = composeStories(ButtonStories);
-
-  return <Sizes />;
+  return (
+    <Inline alignY="center">
+      <Button size="medium">Medium</Button>
+      <Button size="small">Small</Button>
+    </Inline>
+  );
 };
 
 export const ButtonWithIcons = () => {
-  const { WithIcons } = composeStories(ButtonStories);
-
-  return <WithIcons />;
+  return (
+    <Inline alignY="center">
+      <Button iconStart="cloud">Button</Button>
+      <Button iconEnd="chevronRight">Button</Button>
+      <Button iconStart="cloud" iconEnd="chevronRight">
+        Button
+      </Button>
+    </Inline>
+  );
 };
 
 export const ButtonFullWidth = () => {
-  const { FullWidth } = composeStories(ButtonStories);
-
-  return <FullWidth />;
+  return (
+    <Stack style={{ width: '300px' }}>
+      <Button iconStart="cloud">Button</Button>
+      <Button iconEnd="chevronRight">Button</Button>
+      <Button iconStart="cloud" iconEnd="chevronRight">
+        Button
+      </Button>
+    </Stack>
+  );
 };
 
 export const ButtonDisabled = () => {
-  const { Disabled } = composeStories(ButtonStories);
-
-  return <Disabled />;
+  return <Button disabled>Button</Button>;
 };
 
 export const ButtonResponsive = () => {
-  const { Responsive } = composeStories(ButtonStories);
-
   // TODO: Add responsive button
   return null;
-  return <Responsive />;
 };
 
 export const ButtonPlayground = () => {
-  // const { Playground } = composeStories(ButtonStories);
+  const variants: string[] = ['primary', 'secondary', 'tertiary'];
 
-  // return <Playground />;
-
-  return <div>werg</div>;
+  return (
+    <Stack>
+      {variants.map(variant => (
+        <Stack key={variant}>
+          <Text>{variant}</Text>
+          {['small', 'medium'].map(size => (
+            <Inline alignY="center" key={size}>
+              <Button
+                iconStart="cloud"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd="chevronRight"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconStart="cloud"
+                iconEnd="chevronRight"
+                style={{ width: '200px' }}
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+            </Inline>
+          ))}
+        </Stack>
+      ))}
+    </Stack>
+  );
 };
