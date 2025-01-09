@@ -795,8 +795,8 @@ metadata:
     expect(response.body).toMatchObject({
       permissions: [
         { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
-        { type: 'basic', name: 'kubernetes.resources', attributes: {} },
-        { type: 'basic', name: 'kubernetes.clusters', attributes: {} },
+        { type: 'basic', name: 'kubernetes.resources.read', attributes: {} },
+        { type: 'basic', name: 'kubernetes.clusters.read', attributes: {} },
       ],
       rules: [],
     });

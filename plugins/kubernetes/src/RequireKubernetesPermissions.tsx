@@ -15,8 +15,8 @@
  */
 import React, { ReactNode } from 'react';
 import {
-  kubernetesClustersPermission,
-  kubernetesResourcesPermission,
+  kubernetesClustersReadPermission,
+  kubernetesResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { Content, Page, WarningPanel } from '@backstage/core-components';
@@ -29,10 +29,10 @@ export function RequireKubernetesPermissions(
   props: RequireKubernetesPermissionProps,
 ): JSX.Element | null {
   const kubernetesClustersPermissionResult = usePermission({
-    permission: kubernetesClustersPermission,
+    permission: kubernetesClustersReadPermission,
   });
   const kubernetesResourcesPermissionResult = usePermission({
-    permission: kubernetesResourcesPermission,
+    permission: kubernetesResourcesReadPermission,
   });
 
   if (
@@ -55,7 +55,7 @@ export function RequireKubernetesPermissions(
         <WarningPanel
           title="Permission required"
           message={`To view Kubernetes objects, contact your administrator to give you the 
-              '${kubernetesClustersPermission.name}' and '${kubernetesResourcesPermission.name}' permission.`}
+              '${kubernetesClustersReadPermission.name}' and '${kubernetesResourcesReadPermission.name}' permission.`}
         />
       </Content>
     </Page>
