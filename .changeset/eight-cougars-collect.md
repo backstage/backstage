@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-`StructuredMetadataTable` now renders data as yaml, improving readability.
+Added `nestedValuesAsYaml` option to `StructuredMetadataTable` to render data as yaml.
