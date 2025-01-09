@@ -28,18 +28,14 @@ import {
 import {
   DetectedError,
   detectErrors,
-  kubernetesClustersPermission,
-  kubernetesResourcesPermission,
 } from '@backstage/plugin-kubernetes-common';
 import {
   Content,
   EmptyState,
   Page,
   Progress,
-  WarningPanel,
 } from '@backstage/core-components';
-import { useKubernetesClustersPermission } from './hooks/useKubernetesClustersPermission';
-import { useKubernetesResourcesPermission } from './hooks/useKubernetesResourcesPermission';
+import { RequireKubernetesPermissions } from './RequireKubernetesPermissions';
 
 type KubernetesContentProps = {
   entity: Entity;
@@ -51,26 +47,10 @@ export const KubernetesContent = ({
   entity,
   refreshIntervalMs,
 }: KubernetesContentProps) => {
-  const hasKubernetesClustersPermission = useKubernetesClustersPermission();
-  const hasKubernetesResourcesPermission = useKubernetesResourcesPermission();
   const { kubernetesObjects, error } = useKubernetesObjects(
     entity,
     refreshIntervalMs,
   );
-
-  if (!hasKubernetesClustersPermission || !hasKubernetesResourcesPermission) {
-    return (
-      <Page themeId="tool">
-        <Content>
-          <WarningPanel
-            title="Permission required"
-            message={`To view Kubernetes objects, contact your administrator to give you the 
-              '${kubernetesClustersPermission.name}' and '${kubernetesResourcesPermission.name}' permission.`}
-          />
-        </Content>
-      </Page>
-    );
-  }
 
   const clusters = kubernetesObjects?.items.map(item => item.cluster) ?? [];
 
@@ -83,89 +63,93 @@ export const KubernetesContent = ({
       : new Map<string, DetectedError[]>();
 
   return (
-    <DetectedErrorsContext.Provider value={[...detectedErrors.values()].flat()}>
-      <Page themeId="tool">
-        <Content>
-          {kubernetesObjects === undefined && error === undefined && (
-            <Progress />
-          )}
+    <RequireKubernetesPermissions>
+      <DetectedErrorsContext.Provider
+        value={[...detectedErrors.values()].flat()}
+      >
+        <Page themeId="tool">
+          <Content>
+            {kubernetesObjects === undefined && error === undefined && (
+              <Progress />
+            )}
 
-          {/* errors retrieved from the kubernetes clusters */}
-          {clustersWithErrors.length > 0 && (
-            <Grid container spacing={3} direction="column">
-              <Grid item>
-                <ErrorPanel
-                  entityName={entity.metadata.name}
-                  clustersWithErrors={clustersWithErrors}
-                />
+            {/* errors retrieved from the kubernetes clusters */}
+            {clustersWithErrors.length > 0 && (
+              <Grid container spacing={3} direction="column">
+                <Grid item>
+                  <ErrorPanel
+                    entityName={entity.metadata.name}
+                    clustersWithErrors={clustersWithErrors}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          )}
+            )}
 
-          {/* other errors */}
-          {error !== undefined && (
-            <Grid container spacing={3} direction="column">
-              <Grid item>
-                <ErrorPanel
-                  entityName={entity.metadata.name}
-                  errorMessage={error}
-                />
+            {/* other errors */}
+            {error !== undefined && (
+              <Grid container spacing={3} direction="column">
+                <Grid item>
+                  <ErrorPanel
+                    entityName={entity.metadata.name}
+                    errorMessage={error}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          )}
+            )}
 
-          {kubernetesObjects && (
-            <Grid container spacing={3} direction="column">
-              <Grid item>
-                <ErrorReporting
-                  detectedErrors={detectedErrors}
-                  clusters={clusters}
-                />
-              </Grid>
-              <Grid item>
-                <Typography variant="h3">Your Clusters</Typography>
-              </Grid>
-              <Grid item container>
-                {kubernetesObjects?.items.length <= 0 && (
-                  <Grid
-                    container
-                    justifyContent="space-around"
-                    direction="row"
-                    alignItems="center"
-                    spacing={2}
-                  >
-                    <Grid item xs={8}>
-                      <EmptyState
-                        missing="data"
-                        title="No Kubernetes resources"
-                        description={`No resources on any known clusters for ${entity.metadata.name}`}
-                      />
-                    </Grid>
-                  </Grid>
-                )}
-                {kubernetesObjects?.items.length > 0 &&
-                  kubernetesObjects?.items.map((item, i) => {
-                    const podsWithErrors = new Set<string>(
-                      detectedErrors
-                        .get(item.cluster.name)
-                        ?.filter(de => de.sourceRef.kind === 'Pod')
-                        .map(de => de.sourceRef.name),
-                    );
-
-                    return (
-                      <Grid item key={i} xs={12}>
-                        <Cluster
-                          clusterObjects={item}
-                          podsWithErrors={podsWithErrors}
+            {kubernetesObjects && (
+              <Grid container spacing={3} direction="column">
+                <Grid item>
+                  <ErrorReporting
+                    detectedErrors={detectedErrors}
+                    clusters={clusters}
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography variant="h3">Your Clusters</Typography>
+                </Grid>
+                <Grid item container>
+                  {kubernetesObjects?.items.length <= 0 && (
+                    <Grid
+                      container
+                      justifyContent="space-around"
+                      direction="row"
+                      alignItems="center"
+                      spacing={2}
+                    >
+                      <Grid item xs={8}>
+                        <EmptyState
+                          missing="data"
+                          title="No Kubernetes resources"
+                          description={`No resources on any known clusters for ${entity.metadata.name}`}
                         />
                       </Grid>
-                    );
-                  })}
+                    </Grid>
+                  )}
+                  {kubernetesObjects?.items.length > 0 &&
+                    kubernetesObjects?.items.map((item, i) => {
+                      const podsWithErrors = new Set<string>(
+                        detectedErrors
+                          .get(item.cluster.name)
+                          ?.filter(de => de.sourceRef.kind === 'Pod')
+                          .map(de => de.sourceRef.name),
+                      );
+
+                      return (
+                        <Grid item key={i} xs={12}>
+                          <Cluster
+                            clusterObjects={item}
+                            podsWithErrors={podsWithErrors}
+                          />
+                        </Grid>
+                      );
+                    })}
+                </Grid>
               </Grid>
-            </Grid>
-          )}
-        </Content>
-      </Page>
-    </DetectedErrorsContext.Provider>
+            )}
+          </Content>
+        </Page>
+      </DetectedErrorsContext.Provider>
+    </RequireKubernetesPermissions>
   );
 };
