@@ -37,6 +37,7 @@ import { Config } from '@backstage/config';
 
 /**
  * Retrieves the account ID for the given credential provider from STS.
+ * Include the region if present, otherwise use the default region.
  */
 async function fillInAccountId(credProvider: AwsCredentialProvider) {
   if (credProvider.accountId) {
@@ -44,7 +45,7 @@ async function fillInAccountId(credProvider: AwsCredentialProvider) {
   }
 
   const client = new STSClient({
-    region: credProvider.stsRegion,
+    region: credProvider.stsRegion ?? 'us-east-1',
     customUserAgent: 'backstage-aws-credentials-manager',
     credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
   });
