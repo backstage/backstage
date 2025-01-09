@@ -92,6 +92,18 @@ describe('DefaultAwsCredentialsManager', () => {
     });
 
     stsMock
+      .on(GetCallerIdentityCommand)
+      .callsFake(async (_input, getClient) => {
+        const client = getClient();
+        const region = await client.config.region();
+        if (!region) {
+          throw new Error('Region is missing');
+        }
+        return {
+          Account: '123456789012',
+        };
+      });
+    stsMock
       .on(AssumeRoleCommand, {
         RoleArn: 'arn:aws:iam::111111111111:role/hello',
         RoleSessionName: 'backstage',
