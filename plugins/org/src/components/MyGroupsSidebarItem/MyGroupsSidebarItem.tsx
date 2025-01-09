@@ -37,7 +37,8 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
-import { EntityDisplayName } from '@backstage/plugin-catalog-react';
+
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 /**
  * MyGroupsSidebarItem can be added to your sidebar providing quick access to groups the logged in user is a member of
@@ -55,6 +56,7 @@ export const MyGroupsSidebarItem = (props: {
   const identityApi = useApi(identityApiRef);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
   const { value: groups } = useAsync(async () => {
     const profile = await identityApi.getBackstageIdentity();
@@ -67,13 +69,11 @@ export const MyGroupsSidebarItem = (props: {
           ...(filter ?? {}),
         },
       ],
-      fields: ['metadata', 'kind', 'spec'],
+      fields: ['metadata', 'kind'],
     });
-
     return response.items;
   }, []);
 
-  // Not a member of any groups
   if (!groups?.length) {
     return null;
   }
@@ -94,10 +94,11 @@ export const MyGroupsSidebarItem = (props: {
   return (
     <SidebarItem icon={icon} text={pluralTitle}>
       <SidebarSubmenu title={pluralTitle}>
-        {groups?.map(function groupsMap(group) {
+        {groups?.map(group => {
+          const entityDisplayName = entityPresentationApi.forEntity(group);
           return (
             <SidebarSubmenuItem
-              title={<EntityDisplayName entityRef={group} hideIcon />}
+              title={entityDisplayName.snapshot.primaryTitle}
               subtitle={
                 group.metadata.namespace !== DEFAULT_NAMESPACE
                   ? group.metadata.namespace
