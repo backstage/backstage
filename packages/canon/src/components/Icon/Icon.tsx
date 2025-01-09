@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import React from 'react';
 import { useCanon } from '../../contexts/canon';
 import type { IconProps } from './types';
