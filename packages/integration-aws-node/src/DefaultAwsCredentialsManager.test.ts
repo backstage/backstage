@@ -500,5 +500,21 @@ describe('DefaultAwsCredentialsManager', () => {
         },
       });
     });
+
+    it('passes mainAccount region to fillInAccountId for account ID lookup during fallback', async () => {
+      const region = 'us-west-2';
+      const configWithRegion = new ConfigReader({
+        aws: {
+          mainAccount: {
+            region,
+          },
+        },
+      });
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithRegion);
+      await provider.getCredentialProvider({ accountId: '123456789012' });
+
+      expect(await stsMock.call(0).thisValue.config.region()).toEqual(region);
+    });
   });
 });
