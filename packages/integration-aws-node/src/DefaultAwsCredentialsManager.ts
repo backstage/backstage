@@ -175,6 +175,7 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
       awsConfig.mainAccount,
     );
     const mainAccountCredProvider: AwsCredentialProvider = {
+      stsRegion: awsConfig.mainAccount.region,
       sdkCredentialProvider: mainAccountSdkCredProvider,
     };
 
