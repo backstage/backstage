@@ -1,5 +1,28 @@
 # @backstage/errors
 
+## 1.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+
+## 1.2.6
+
+### Patch Changes
+
+- 1d4b5b9: Trim `error.cause.stack` in addition to `error.stack` when trimming stack traces from serialized errors.
+- Updated dependencies
+  - @backstage/types@1.2.0
+
+## 1.2.6-next.0
+
+### Patch Changes
+
+- 1d4b5b9: Trim `error.cause.stack` in addition to `error.stack` when trimming stack traces from serialized errors.
+- Updated dependencies
+  - @backstage/types@1.2.0
+
 ## 1.2.5
 
 ### Patch Changes

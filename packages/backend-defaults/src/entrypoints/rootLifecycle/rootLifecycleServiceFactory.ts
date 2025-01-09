@@ -65,6 +65,39 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     );
   }
 
+  #hasBeforeShutdown = false;
+  #beforeShutdownTasks: Array<{ hook: () => void | Promise<void> }> = [];
+
+  addBeforeShutdownHook(hook: () => void): void {
+    if (this.#hasBeforeShutdown) {
+      throw new Error(
+        'Attempt to add before shutdown hook after shutdown has started',
+      );
+    }
+    this.#beforeShutdownTasks.push({ hook });
+  }
+
+  async beforeShutdown(): Promise<void> {
+    if (this.#hasBeforeShutdown) {
+      return;
+    }
+    this.#hasBeforeShutdown = true;
+
+    this.logger.debug(
+      `Running ${this.#beforeShutdownTasks.length} before shutdown tasks...`,
+    );
+    await Promise.all(
+      this.#beforeShutdownTasks.map(async ({ hook }) => {
+        try {
+          await hook();
+          this.logger.debug(`Before shutdown hook succeeded`);
+        } catch (error) {
+          this.logger.error(`Before shutdown hook failed, ${error}`);
+        }
+      }),
+    );
+  }
+
   #hasShutdown = false;
   #shutdownTasks: Array<{
     hook: LifecycleServiceShutdownHook;

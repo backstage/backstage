@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-msgraph",
-  "version": "0.6.5-next.1",
+  "version": "0.6.6-next.2",
   "description": "A Backstage catalog backend module that helps integrate towards Microsoft Graph",
   "backstage": {
     "role": "backend-plugin-module",

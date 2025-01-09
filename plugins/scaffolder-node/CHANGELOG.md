@@ -1,5 +1,57 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9-next.0
+  - @backstage/integration@1.16.1-next.0
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+- 7dd0013: Deprecate the `logStream` option in `executeShellCommand`, replacing it with a logger instance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+
+## 0.6.2
+
+### Patch Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 1a23421: Make sure that isomorphic git push commands are not proxied.
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/types@1.2.0
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
 ## 0.6.2-next.1
 
 ### Patch Changes

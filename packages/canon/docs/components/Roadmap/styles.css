@@ -4,7 +4,6 @@
 }
 
 .roadmap .roadmap-item {
-  font-family: 'Geist', sans-serif;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -60,7 +59,6 @@
 }
 
 .roadmap .roadmap-item .title {
-  font-weight: 300;
   font-size: 16px;
 }
 

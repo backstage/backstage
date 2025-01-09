@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.2.4-next.1",
+  "version": "0.3.0-next.2",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
@@ -37,14 +37,12 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "http-proxy-middleware": "^2.0.0",
@@ -60,6 +58,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
+    "@types/express": "^4.17.6",
     "@types/supertest": "^2.0.8",
     "@types/ws": "^8.5.10",
     "msw": "^1.0.0",

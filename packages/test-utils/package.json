@@ -1,6 +1,6 @@
 {
   "name": "@backstage/test-utils",
-  "version": "1.7.3-next.0",
+  "version": "1.7.4-next.0",
   "description": "Utilities to test Backstage plugins and apps.",
   "backstage": {
     "role": "web-library"

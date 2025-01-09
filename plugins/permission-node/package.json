@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-node",
-  "version": "0.8.6-next.1",
+  "version": "0.8.7-next.1",
   "description": "Common permission and authorization utilities for backend plugins",
   "backstage": {
     "role": "node-library",
@@ -69,6 +69,7 @@
     "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",

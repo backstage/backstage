@@ -14,44 +14,57 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
+import { createElement, forwardRef } from 'react';
 import { StackProps } from './types';
-import { stackSprinkles } from './sprinkles.css';
+import { getClassNames } from '../../utils/getClassNames';
+import type { AlignItems, Breakpoint } from '../../types';
 
-const alignToFlexAlign = (align: StackProps['align']) => {
-  if (align === 'left') return 'stretch';
-  if (align === 'center') return 'center';
-  if (align === 'right') return 'flex-end';
-  return undefined;
+// Function to map align values
+const mapAlignValue = (value?: StackProps['align']) => {
+  if (typeof value === 'string') {
+    let returnedValue: AlignItems = 'stretch';
+    if (value === 'left') returnedValue = 'stretch';
+    if (value === 'center') returnedValue = 'center';
+    if (value === 'right') returnedValue = 'end';
+    return returnedValue;
+  } else if (typeof value === 'object') {
+    const returnedValue: Partial<Record<Breakpoint, AlignItems>> = {};
+    for (const [key, val] of Object.entries(value)) {
+      returnedValue[key as Breakpoint] = mapAlignValue(val) as AlignItems;
+    }
+    return returnedValue;
+  }
+  return 'stretch';
 };
 
-export const Stack = ({
-  as = 'div',
-  children,
-  align = 'left',
-  gap = 'xs',
-  className,
-  style,
-  ...restProps
-}: StackProps) => {
-  // Transform the align prop
-  const flexAlign = alignToFlexAlign(align);
+/** @public */
+export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
+  const {
+    as = 'div',
+    children,
+    align = 'left',
+    gap = 'xs',
+    className,
+    style,
+    ...restProps
+  } = props;
 
-  // Generate the list of class names
-  const sprinklesClassName = stackSprinkles({
-    ...restProps,
+  // Generate utility class names
+  const utilityClassNames = getClassNames({
     gap,
-    alignItems: flexAlign,
+    alignItems: mapAlignValue(align),
+    ...restProps,
   });
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['stack', sprinklesClassName, className]
+  const classNames = ['canon-stack', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 
   return createElement(as, {
+    ref,
     className: classNames,
     style,
     children,
   });
-};
+});

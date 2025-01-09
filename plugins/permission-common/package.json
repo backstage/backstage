@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-common",
-  "version": "0.8.2",
+  "version": "0.8.4-next.0",
   "description": "Isomorphic types and client for Backstage permissions and authorization",
   "backstage": {
     "role": "common-library",

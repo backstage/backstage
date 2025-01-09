@@ -26,16 +26,40 @@ import {
   RiArrowUpFill,
   RiDeleteBin6Line,
   RiAddLine,
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
+  RiArrowDownCircleLine,
+  RiArrowLeftCircleLine,
+  RiArrowRightCircleLine,
+  RiArrowUpCircleLine,
+  RiCheckLine,
+  RiMoonLine,
+  RiSunLine,
+  RiExternalLinkLine,
 } from '@remixicon/react';
 
-// List of default icons
-export const defaultIcons: IconMap = {
+/** @public */
+export const icons: IconMap = {
   arrowDown: RiArrowDownFill,
   arrowLeft: RiArrowLeftFill,
   arrowRight: RiArrowRightFill,
   arrowUp: RiArrowUpFill,
+  arrowDownCircle: RiArrowDownCircleLine,
+  arrowLeftCircle: RiArrowLeftCircleLine,
+  arrowRightCircle: RiArrowRightCircleLine,
+  arrowUpCircle: RiArrowUpCircleLine,
+  check: RiCheckLine,
+  chevronDown: RiArrowDownSLine,
+  chevronUp: RiArrowUpSLine,
+  chevronLeft: RiArrowLeftSLine,
+  chevronRight: RiArrowRightSLine,
   cloud: RiCloudFill,
+  externalLink: RiExternalLinkLine,
   heart: RiHeartFill,
+  moon: RiMoonLine,
   plus: RiAddLine,
+  sun: RiSunLine,
   trash: RiDeleteBin6Line,
 };

@@ -1,5 +1,83 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-kubernetes-common@0.9.2-next.0
+  - @backstage/plugin-kubernetes-node@0.2.2-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/integration-aws-node@0.1.15-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration-aws-node@0.1.14
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-kubernetes-common@0.9.1
+  - @backstage/plugin-kubernetes-node@0.2.2-next.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.19.1
+
+### Patch Changes
+
+- cbfc69e: Create a `dev/index.ts` entrypoint for `yarn start`
+- 928db6a: Support fetch pod metrics with custom resources
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-kubernetes-node@0.2.1
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/integration-aws-node@0.1.14
+  - @backstage/types@1.2.0
+  - @backstage/plugin-kubernetes-common@0.9.1
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.19.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-kubernetes-node@0.2.1-next.2
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration-aws-node@0.1.14-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-kubernetes-common@0.9.1-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 0.19.1-next.1
 
 ### Patch Changes

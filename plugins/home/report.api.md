@@ -188,6 +188,11 @@ export type LayoutConfiguration = {
 export type Operators = '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
 
 // @public
+export const QuickStartCard: (
+  props: CardExtensionProps_2<QuickStartCardProps>,
+) => JSX_2.Element;
+
+// @public
 export type QuickStartCardProps = {
   modalTitle?: string | React_2.JSX.Element;
   docsLinkTitle?: string;

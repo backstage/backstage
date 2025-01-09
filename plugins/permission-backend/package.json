@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-backend",
-  "version": "0.5.52-next.1",
+  "version": "0.5.53-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "permission",
@@ -67,6 +67,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",

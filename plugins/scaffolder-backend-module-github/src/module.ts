@@ -51,8 +51,9 @@ export const githubModule = createBackendModule({
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
+        auth: coreServices.auth,
       },
-      async init({ scaffolder, config, discovery }) {
+      async init({ scaffolder, config, discovery, auth }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
@@ -75,6 +76,7 @@ export const githubModule = createBackendModule({
           createGithubEnvironmentAction({
             integrations,
             catalogClient,
+            auth,
           }),
           createGithubIssuesLabelAction({
             integrations,

@@ -1,5 +1,106 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-app-api@1.1.1-next.1
+  - @backstage/backend-defaults@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/cli-node@0.2.12-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-backend@1.30.0-next.1
+  - @backstage/plugin-events-backend@0.4.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/plugin-search-common@1.2.17-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/plugin-search-backend-node@1.3.7-next.1
+  - @backstage/plugin-app-node@0.1.29-next.1
+  - @backstage/cli-common@0.1.15
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.0
+  - @backstage/backend-app-api@1.1.1-next.0
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/plugin-catalog-backend@1.30.0-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/plugin-events-backend@0.4.1-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-app-node@0.1.29-next.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-search-backend-node@1.3.7-next.0
+  - @backstage/plugin-search-common@1.2.16
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/plugin-catalog-backend@1.29.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/backend-app-api@1.1.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/cli-node@0.2.11
+  - @backstage/plugin-events-backend@0.4.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/plugin-search-backend-node@1.3.6
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-app-node@0.1.28
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-search-common@1.2.16
+
+## 0.5.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/plugin-catalog-backend@1.29.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/backend-app-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-events-backend@0.4.0-next.2
+  - @backstage/plugin-search-backend-node@1.3.6-next.2
+  - @backstage/plugin-app-node@0.1.28-next.2
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/cli-node@0.2.11-next.1
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+  - @backstage/plugin-search-common@1.2.16-next.0
+
 ## 0.5.2-next.1
 
 ### Patch Changes

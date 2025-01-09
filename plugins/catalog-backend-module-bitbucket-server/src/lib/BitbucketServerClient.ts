@@ -19,6 +19,19 @@ import {
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
+import pThrottle from 'p-throttle';
+
+// 1 per second
+const throttle = pThrottle({
+  limit: 1,
+  interval: 1000,
+});
+
+const throttledFetch = throttle(
+  async (url: RequestInfo, options?: RequestInit) => {
+    return await fetch(url, options);
+  },
+);
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -65,7 +78,7 @@ export class BitbucketServerClient {
     path: string;
   }): Promise<Response> {
     const base = new URL(this.config.apiBaseUrl);
-    return fetch(
+    return throttledFetch(
       `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -76,7 +89,7 @@ export class BitbucketServerClient {
     repo: string;
   }): Promise<BitbucketServerRepository> {
     const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}`;
-    const response = await fetch(
+    const response = await throttledFetch(
       request,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -117,16 +130,17 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
-      (response: Response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-          );
-        }
-        return response;
-      },
-    );
+    return throttledFetch(
+      req,
+      getBitbucketServerRequestOptions(this.config),
+    ).then((response: Response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
+        );
+      }
+      return response;
+    });
   }
 }
 

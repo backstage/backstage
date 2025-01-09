@@ -1,5 +1,33 @@
 # @backstage/integration
 
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+
+## 1.16.0
+
+### Minor Changes
+
+- 277092a: Add the integration for Azure blob storage to read the credentials to access the storage account and provide the default credential provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/config@1.3.1-next.0
+
 ## 1.16.0-next.0
 
 ### Minor Changes

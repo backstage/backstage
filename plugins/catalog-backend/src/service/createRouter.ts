@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -23,11 +22,11 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError, NotFoundError, serializeError } from '@backstage/errors';
+import { InputError, serializeError } from '@backstage/errors';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
-import { EntitiesCatalog } from '../catalog/types';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import {
@@ -57,6 +56,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
+import {
+  createEntityArrayJsonStream,
+  writeEntitiesResponse,
+  writeSingleEntityResponse,
+} from './response';
 
 /**
  * Options used by {@link createRouter}.
@@ -77,6 +81,7 @@ export interface RouterOptions {
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
+  disableRelationsCompatibility?: boolean;
 }
 
 /**
@@ -104,6 +109,7 @@ export async function createRouter(
     permissionsService,
     auth,
     httpAuth,
+    disableRelationsCompatibility = false,
   } = options;
 
   const readonlyEnabled =
@@ -135,24 +141,79 @@ export async function createRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
-        const { entities, pageInfo } = await entitiesCatalog.entities({
-          filter: parseEntityFilterParams(req.query),
-          fields: parseEntityTransformParams(req.query),
-          order: parseEntityOrderParams(req.query),
-          pagination: parseEntityPaginationParams(req.query),
-          credentials: await httpAuth.credentials(req),
-        });
+        const filter = parseEntityFilterParams(req.query);
+        const fields = parseEntityTransformParams(req.query);
+        const order = parseEntityOrderParams(req.query);
+        const pagination = parseEntityPaginationParams(req.query);
+        const credentials = await httpAuth.credentials(req);
 
-        // Add a Link header to the next page
-        if (pageInfo.hasNextPage) {
-          const url = new URL(`http://ignored${req.url}`);
-          url.searchParams.delete('offset');
-          url.searchParams.set('after', pageInfo.endCursor);
-          res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+        // When pagination parameters are passed in, use the legacy slow path
+        // that loads all entities into memory
+
+        if (pagination || disableRelationsCompatibility !== true) {
+          const { entities, pageInfo } = await entitiesCatalog.entities({
+            filter,
+            fields,
+            order,
+            pagination,
+            credentials,
+          });
+
+          // Add a Link header to the next page
+          if (pageInfo.hasNextPage) {
+            const url = new URL(`http://ignored${req.url}`);
+            url.searchParams.delete('offset');
+            url.searchParams.set('after', pageInfo.endCursor);
+            res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+          }
+
+          await writeEntitiesResponse({
+            res,
+            items: entities,
+            alwaysUseObjectMode: !disableRelationsCompatibility,
+          });
+          return;
         }
 
-        // TODO(freben): encode the pageInfo in the response
-        res.json(entities);
+        const responseStream = createEntityArrayJsonStream(res);
+        const limit = 10000;
+        let cursor: Cursor | undefined;
+
+        try {
+          let currentWrite: Promise<boolean> | undefined = undefined;
+          do {
+            const result = await entitiesCatalog.queryEntities(
+              !cursor
+                ? {
+                    credentials,
+                    fields,
+                    limit,
+                    filter,
+                    orderFields: order,
+                    skipTotalItems: true,
+                  }
+                : { credentials, fields, limit, cursor },
+            );
+
+            // Wait for previous write to complete
+            if (await currentWrite) {
+              return; // Client closed connection
+            }
+
+            if (result.items.entities.length) {
+              currentWrite = responseStream.send(result.items);
+            }
+
+            cursor = result.pageInfo?.nextCursor;
+          } while (cursor);
+
+          // Wait for last write to complete
+          await currentWrite;
+
+          responseStream.complete();
+        } finally {
+          responseStream.close();
+        }
       })
       .get('/entities/by-query', async (req, res) => {
         const { items, pageInfo, totalItems } =
@@ -163,17 +224,22 @@ export async function createRouter(
             credentials: await httpAuth.credentials(req),
           });
 
-        res.json({
+        await writeEntitiesResponse({
+          res,
           items,
-          totalItems,
-          pageInfo: {
-            ...(pageInfo.nextCursor && {
-              nextCursor: encodeCursor(pageInfo.nextCursor),
-            }),
-            ...(pageInfo.prevCursor && {
-              prevCursor: encodeCursor(pageInfo.prevCursor),
-            }),
-          },
+          alwaysUseObjectMode: !disableRelationsCompatibility,
+          responseWrapper: entities => ({
+            items: entities,
+            totalItems,
+            pageInfo: {
+              ...(pageInfo.nextCursor && {
+                nextCursor: encodeCursor(pageInfo.nextCursor),
+              }),
+              ...(pageInfo.prevCursor && {
+                prevCursor: encodeCursor(pageInfo.prevCursor),
+              }),
+            },
+          }),
         });
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
@@ -182,10 +248,7 @@ export async function createRouter(
           filter: basicEntityFilter({ 'metadata.uid': uid }),
           credentials: await httpAuth.credentials(req),
         });
-        if (!entities.length) {
-          throw new NotFoundError(`No entity with uid ${uid}`);
-        }
-        res.status(200).json(entities[0]);
+        writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -196,20 +259,15 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const { entities } = await entitiesCatalog.entities({
-          filter: basicEntityFilter({
-            kind: kind,
-            'metadata.namespace': namespace,
-            'metadata.name': name,
-          }),
+        const { items } = await entitiesCatalog.entitiesBatch({
+          entityRefs: [stringifyEntityRef({ kind, namespace, name })],
           credentials: await httpAuth.credentials(req),
         });
-        if (!entities.length) {
-          throw new NotFoundError(
-            `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
-          );
-        }
-        res.status(200).json(entities[0]);
+        writeSingleEntityResponse(
+          res,
+          items,
+          `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+        );
       })
       .get(
         '/entities/by-name/:kind/:namespace/:name/ancestry',
@@ -224,13 +282,20 @@ export async function createRouter(
       )
       .post('/entities/by-refs', async (req, res) => {
         const request = entitiesBatchRequest(req);
-        const response = await entitiesCatalog.entitiesBatch({
+        const { items } = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query, request.fields),
           credentials: await httpAuth.credentials(req),
         });
-        res.status(200).json(response);
+        await writeEntitiesResponse({
+          res,
+          items,
+          alwaysUseObjectMode: !disableRelationsCompatibility,
+          responseWrapper: entities => ({
+            items: entities,
+          }),
+        });
       })
       .get('/entity-facets', async (req, res) => {
         const response = await entitiesCatalog.facets({
@@ -380,6 +445,5 @@ export async function createRouter(
     });
   }
 
-  router.use(errorHandler());
   return router;
 }

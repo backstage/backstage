@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-node",
-  "version": "0.4.6-next.1",
+  "version": "0.4.7-next.1",
   "description": "The plugin-events-node module for @backstage/plugin-events-backend",
   "backstage": {
     "role": "node-library",

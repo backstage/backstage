@@ -1,5 +1,57 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.7-next.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.6
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.6
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.6-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 0.5.3-next.1
 
 ### Patch Changes

@@ -147,7 +147,11 @@ export interface KubernetesFanOutHandlerOptions
 export interface KubernetesRequestBody extends ObjectsByEntityRequest {}
 
 const isPodFetchResponse = (fr: FetchResponse): fr is PodFetchResponse =>
-  fr.type === 'pods';
+  fr.type === 'pods' ||
+  (fr.type === 'customresources' &&
+    fr.resources.length > 0 &&
+    fr.resources[0].apiVersion === 'v1' &&
+    fr.resources[0].kind === 'Pod');
 const isString = (str: string | undefined): str is string => str !== undefined;
 
 const numberOrBigIntToNumberOrString = (

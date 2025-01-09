@@ -158,6 +158,10 @@ nav:
       - Reading Backstage Configuration: 'conf/reading.md'
       - Writing Backstage Configuration: 'conf/writing.md'
       - Defining Configuration for your Plugin: 'conf/defining.md'
+  - Notifications:
+      - Getting Started: 'notifications/index.md'
+      - Usage: 'notifications/usage.md'
+      - Processors: 'notifications/processors.md'
   - Authentication and identity:
       - Adding Authentication: 'auth/index.md'
       - Included providers:

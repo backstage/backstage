@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration-aws-node",
-  "version": "0.1.13",
+  "version": "0.1.15-next.0",
   "description": "Helpers for fetching AWS account credentials",
   "backstage": {
     "role": "node-library"

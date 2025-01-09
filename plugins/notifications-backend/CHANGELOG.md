@@ -1,5 +1,85 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-signals-node@0.1.16-next.1
+  - @backstage/plugin-notifications-node@0.2.11-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-notifications-common@0.0.8-next.0
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- cbc0e63: Remove `@backstage/backend-common` dependency
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-notifications-node@0.2.11-next.0
+  - @backstage/plugin-signals-node@0.1.16-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- fc15b77: **BREAKING**: Removed redundant `/health` endpoint, switch to using [the built-in endpoint instead](https://backstage.io/docs/backend-system/core-services/root-health).
+
+### Patch Changes
+
+- fc15b77: Deprecated root '/' endpoints, moving them under `/notifications` instead.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-notifications-node@0.2.10
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-signals-node@0.1.15
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- fc15b77: **BREAKING**: Removed redundant `/health` endpoint, switch to using [the built-in endpoint instead](https://backstage.io/docs/backend-system/core-services/root-health).
+
+### Patch Changes
+
+- fc15b77: Deprecated root '/' endpoints, moving them under `/notifications` instead.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-notifications-node@0.2.10-next.2
+  - @backstage/plugin-signals-node@0.1.15-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/plugin-notifications-common@0.0.7-next.0
+
 ## 0.4.4-next.1
 
 ### Patch Changes

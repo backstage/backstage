@@ -1,0 +1,70 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as CheckboxStories from './Checkbox.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable';
+
+<Meta of={CheckboxStories} />
+
+<Unstyled>
+
+<Title type="h1">Checkbox</Title>
+<Text>A checkbox component that can be used to trigger actions.</Text>
+
+<Canvas of={CheckboxStories.Default} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Checkbox } from "@backstage/canon";
+
+<Checkbox label="Checkbox" />
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    label: {
+      type: 'string',
+      responsive: false,
+    },
+    defaultChecked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    checked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    onChange: {
+      type: "(checked: boolean | 'indeterminate') => void",
+      responsive: false,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    required: {
+      type: 'boolean',
+      responsive: false,
+    },
+    name: {
+      type: 'string',
+      responsive: false,
+    },
+    value: {
+      type: 'string',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+</Unstyled>

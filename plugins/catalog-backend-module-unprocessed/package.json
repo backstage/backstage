@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-unprocessed",
-  "version": "0.5.3-next.1",
+  "version": "0.5.4-next.1",
   "description": "Backstage Catalog module to view unprocessed entities",
   "backstage": {
     "role": "backend-plugin-module",

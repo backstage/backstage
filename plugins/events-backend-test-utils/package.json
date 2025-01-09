@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-test-utils",
-  "version": "0.1.39-next.1",
+  "version": "0.1.40-next.1",
   "description": "The plugin-events-backend-test-utils for @backstage/plugin-events-node",
   "backstage": {
     "role": "node-library",

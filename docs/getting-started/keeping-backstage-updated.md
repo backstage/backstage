@@ -30,9 +30,10 @@ yarn backstage-cli versions:bump
 The reason for bumping all `@backstage` packages at once is to maintain the
 dependencies that they have between each other.
 
+<a name="plugin"></a>
 :::tip
 
-To make the the version bump process even easier and more streamlined we highly recommend using the [Backstage yarn plugin](#managing-package-versions-with-the-backstage-yarn-plugin)
+To make the version bump process even easier and more streamlined we highly recommend using the [Backstage yarn plugin](#managing-package-versions-with-the-backstage-yarn-plugin)
 
 :::
 
@@ -142,10 +143,17 @@ down the number of duplicate packages.
 
 The Backstage CLI uses [global-agent](https://www.npmjs.com/package/global-agent) to configure HTTP/HTTPS proxy settings using environment variables. This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
 
+Additionally, yarn needs a proxy too (sometimes), when in environments with restricted internet access. It uses different settings than the global-agent module. If you decide to use the backstage yarn plugin [mentioned above](#plugin), you will need to set additional proxy values.
+If you will always need proxy settings in all environments and situations, you can add `httpProxy` and `httpsProxy` values to [the yarnrc.yml file](https://yarnpkg.com/configuration/yarnrc). If some environments need it (say a developer workstation) but other environments do not (perhaps a CI build server running on AWS), then you may not want to update the yarnrc.yml file but just set environment variables `YARN_HTTP_PROXY` and `YARN_HTTPS_PROXY` in the environments/situations where you need to proxy.
+
+**If you plan to use the backstage yarn plugin, you will need these extra yarn proxy settings to both install the plugin and run the `versions:bump` command**. If you do not plan to use the backstage yarn plugin, it seems like the global agent proxy settings alone are sufficient.
+
 ### Example Configuration
 
 ```bash
 export GLOBAL_AGENT_HTTP_PROXY=http://proxy.company.com:8080
 export GLOBAL_AGENT_HTTPS_PROXY=https://secure-proxy.company.com:8080
 export GLOBAL_AGENT_NO_PROXY=localhost,internal.company.com
+export YARN_HTTP_PROXY=http://proxy.company.com:8080                      # optional
+export YARN_HTTPS_PROXY=https://secure-proxy.company.com:8080             # optional
 ```

@@ -75,7 +75,7 @@ export const useFormDecorators = ({
       secrets: Record<string, string>;
     }) => {
       let formState: Record<string, JsonValue> = { ...opts.formState };
-      let secrets: Record<string, string> = {};
+      let secrets: Record<string, string> = { ...opts.secrets };
 
       if (manifest?.EXPERIMENTAL_formDecorators) {
         // for each of the form decorators, go and call the decorator with the context

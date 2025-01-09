@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gitlab-org",
-  "version": "0.2.4-next.1",
+  "version": "0.2.5-next.1",
   "description": "The gitlab-org backend module for the catalog plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -33,7 +33,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-backend-module-gitlab": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",

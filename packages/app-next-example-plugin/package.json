@@ -1,6 +1,6 @@
 {
   "name": "app-next-example-plugin",
-  "version": "0.0.18-next.1",
+  "version": "0.0.19-next.0",
   "description": "Backstage internal example plugin",
   "backstage": {
     "role": "frontend-plugin",

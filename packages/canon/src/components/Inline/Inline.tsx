@@ -14,50 +14,76 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
-import { inlineSprinkles } from './sprinkles.css';
+import { createElement, forwardRef } from 'react';
 import type { InlineProps } from './types';
+import { getClassNames } from '../../utils/getClassNames';
+import { JustifyContent, Breakpoint, AlignItems } from '../../types';
 
-const alignYToFlexAlign = (alignY: InlineProps['alignY']) => {
-  if (alignY === 'top') return 'flex-start';
-  if (alignY === 'center') return 'center';
-  if (alignY === 'bottom') return 'flex-end';
-  return undefined;
+// Function to map align values
+const mapAlignValue = (value?: InlineProps['align']) => {
+  if (typeof value === 'string') {
+    let returnedValue: JustifyContent = 'stretch';
+    if (value === 'left') returnedValue = 'start';
+    if (value === 'center') returnedValue = 'center';
+    if (value === 'right') returnedValue = 'end';
+    return returnedValue;
+  } else if (typeof value === 'object') {
+    const returnedValue: Partial<Record<Breakpoint, JustifyContent>> = {};
+    for (const [key, val] of Object.entries(value)) {
+      returnedValue[key as Breakpoint] = mapAlignValue(val) as JustifyContent;
+    }
+    return returnedValue;
+  }
+  return 'stretch';
 };
 
-const alignToFlexAlignY = (align: InlineProps['align']) => {
-  if (align === 'left') return 'flex-start';
-  if (align === 'center') return 'center';
-  if (align === 'right') return 'flex-end';
-  return undefined;
+const mapAlignYValue = (value?: InlineProps['alignY']) => {
+  if (typeof value === 'string') {
+    let returnedValue: AlignItems = 'stretch';
+    if (value === 'top') returnedValue = 'start';
+    if (value === 'center') returnedValue = 'center';
+    if (value === 'bottom') returnedValue = 'end';
+    return returnedValue;
+  } else if (typeof value === 'object') {
+    const returnedValue: Partial<Record<Breakpoint, AlignItems>> = {};
+    for (const [key, val] of Object.entries(value)) {
+      returnedValue[key as Breakpoint] = mapAlignYValue(val) as AlignItems;
+    }
+    return returnedValue;
+  }
+  return 'stretch';
 };
 
-export const Inline = ({
-  as = 'div',
-  children,
-  align = 'left',
-  alignY = 'top',
-  gap = 'xs',
-  className,
-  style,
-  ...restProps
-}: InlineProps) => {
-  // Generate the list of class names
-  const sprinklesClassName = inlineSprinkles({
-    ...restProps,
+/** @public */
+export const Inline = forwardRef<HTMLElement, InlineProps>((props, ref) => {
+  const {
+    as = 'div',
+    children,
+    align = 'left',
+    alignY = 'top',
+    gap = 'xs',
+    className,
+    style,
+    ...restProps
+  } = props;
+
+  // Generate utility class names
+  const utilityClassNames = getClassNames({
     gap,
-    alignItems: alignYToFlexAlign(alignY),
-    justifyContent: alignToFlexAlignY(align),
+    alignItems: mapAlignYValue(alignY),
+    justifyContent: mapAlignValue(align),
+    ...restProps,
   });
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['inline', sprinklesClassName, className]
+  const classNames = ['canon-inline', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 
   return createElement(as, {
+    ref,
     className: classNames,
     style,
     children,
   });
-};
+});

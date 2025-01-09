@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-unprocessed-entities",
-  "version": "0.2.12-next.1",
+  "version": "0.2.13-next.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-unprocessed-entities",

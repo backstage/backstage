@@ -28,7 +28,7 @@ jobs:
     name: Storybook
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
         with:
           egress-policy: audit
 
@@ -42,20 +42,23 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
       - name: storybook yarn install
         run: yarn install --immutable
         working-directory: storybook
 
+        # Only for verification, the canon one is what we upload to Chromatic
       - run: yarn build-storybook
 
-      - uses: chromaui/action@0efa3230f403b7848d5d65c6ce140b617fb68380 # v11
+      - run: yarn --cwd packages/canon build-storybook
+
+      - uses: chromaui/action@64a9c0ca3bfb724389b0d536e544f56b7b5ff5b3 # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
-          projectToken: 9tzak77m9nj
-          workingDir: storybook
-          storybookBuildDir: dist
+          projectToken: chpt_dab72dc0f97d55b
+          workingDir: packages/canon
+          storybookBuildDir: storybook-static

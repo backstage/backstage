@@ -1,5 +1,50 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/integration-react@1.2.3-next.0
+  - @backstage/plugin-techdocs-react@1.2.13-next.0
+  - @backstage/integration@1.16.1-next.0
+
+## 1.1.20-next.0
+
+### Patch Changes
+
+- b664b2a: Internal refactor for safer handling of possible null value.
+- Updated dependencies
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/integration@1.16.0
+  - @backstage/integration-react@1.2.2
+  - @backstage/plugin-techdocs-react@1.2.12
+
+## 1.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/integration-react@1.2.2
+  - @backstage/plugin-techdocs-react@1.2.12
+
+## 1.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/integration-react@1.2.2-next.1
+  - @backstage/plugin-techdocs-react@1.2.12-next.2
+
 ## 1.1.19-next.1
 
 ### Patch Changes

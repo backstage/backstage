@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.6.0-next.1",
+  "version": "0.7.0-next.1",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -169,13 +169,13 @@
     "node-fetch": "^2.7.0",
     "node-forge": "^1.3.1",
     "p-limit": "^3.1.0",
+    "p-throttle": "^4.1.1",
     "path-to-regexp": "^8.0.0",
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
     "pg-format": "^1.0.4",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
-    "stoppable": "^1.1.0",
     "tar": "^6.1.12",
     "triple-beam": "^1.4.1",
     "uuid": "^11.0.0",

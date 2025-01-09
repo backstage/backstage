@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github-org",
-  "version": "0.3.5-next.1",
+  "version": "0.3.6-next.1",
   "description": "The github-org backend module for the catalog plugin.",
   "backstage": {
     "role": "backend-plugin-module",

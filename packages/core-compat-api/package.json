@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.3.4-next.1",
+  "version": "0.3.5-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -46,7 +46,7 @@
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@oriflame/backstage-plugin-score-card": "^0.8.0",
+    "@oriflame/backstage-plugin-score-card": "^0.9.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

@@ -78,7 +78,9 @@ describe('<EntityKindPicker/>', () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ filters: { kind: new EntityKindFilter('component') } }}
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+          }}
         >
           <EntityKindPicker />
         </MockEntityListContextProvider>
@@ -106,7 +108,7 @@ describe('<EntityKindPicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('component') },
+            filters: { kind: new EntityKindFilter('component', 'Component') },
             updateFilters,
           }}
         >
@@ -121,7 +123,7 @@ describe('<EntityKindPicker/>', () => {
     fireEvent.click(screen.getByText('Domain'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('domain'),
+      kind: new EntityKindFilter('domain', 'Domain'),
     });
   });
 
@@ -143,7 +145,7 @@ describe('<EntityKindPicker/>', () => {
     );
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('group'),
+      kind: new EntityKindFilter('group', 'Group'),
     });
   });
 

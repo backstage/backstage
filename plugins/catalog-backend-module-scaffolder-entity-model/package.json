@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-scaffolder-entity-model",
-  "version": "0.2.3-next.1",
+  "version": "0.2.4-next.1",
   "description": "Adds support for the scaffolder specific entity model (e.g. the Template kind) to the catalog backend plugin.",
   "backstage": {
     "role": "backend-plugin-module",

@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles/withStyles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -132,9 +133,12 @@ export type DocsTableRow = {
 };
 
 // @public
-export const EmbeddedDocsRouter: (
-  props: PropsWithChildren<{}>,
-) => React_2.JSX.Element;
+export const EmbeddedDocsRouter: ({
+  children,
+  withSearch,
+}: React_2.PropsWithChildren<{
+  withSearch?: boolean | undefined;
+}>) => React_2.JSX.Element;
 
 // @public
 export const EntityListDocsGrid: (
@@ -190,9 +194,12 @@ export type EntityListDocsTableProps = {
 };
 
 // @public
-export const EntityTechdocsContent: (props: {
-  children?: ReactNode;
-}) => JSX_2.Element;
+export const EntityTechdocsContent: ({
+  children,
+  withSearch,
+}: PropsWithChildren<{
+  withSearch?: boolean | undefined;
+}>) => JSX_2.Element;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
@@ -309,6 +316,7 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
 };
 
 // @public @deprecated (undocumented)

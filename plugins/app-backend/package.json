@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-backend",
-  "version": "0.4.3-next.1",
+  "version": "0.4.4-next.1",
   "description": "A Backstage backend plugin that serves the Backstage frontend app",
   "backstage": {
     "role": "backend-plugin",
@@ -57,7 +57,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",

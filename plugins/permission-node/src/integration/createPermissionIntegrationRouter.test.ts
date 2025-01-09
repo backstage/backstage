@@ -29,6 +29,8 @@ import {
   PermissionIntegrationRouterOptions,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const testPermission: Permission = createPermission({
   name: 'test.permission',
@@ -109,6 +111,11 @@ const mockedOptionResources: PermissionIntegrationRouterOptions = {
   ],
 };
 
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
+
 const createApp = (
   mockedGetResources:
     | typeof defaultMockedGetResources1 = defaultMockedGetResources1,
@@ -122,7 +129,7 @@ const createApp = (
       })
     : createPermissionIntegrationRouter({ permissions: [testPermission] });
 
-  return express().use(router);
+  return express().use(router.use(middleware.error()));
 };
 
 describe('createPermissionIntegrationRouter', () => {
@@ -453,7 +460,9 @@ describe('createPermissionIntegrationRouter', () => {
 
       beforeEach(async () => {
         const app = express().use(
-          createPermissionIntegrationRouter(mockedOptionResources),
+          createPermissionIntegrationRouter(mockedOptionResources).use(
+            middleware.error(),
+          ),
         );
 
         response = await request(app)
@@ -765,7 +774,7 @@ describe('createPermissionIntegrationRouter', () => {
             resourceType: 'test-resource',
             permissions: [testPermission],
             rules: [testRule1, testRule2],
-          }),
+          }).use(middleware.error()),
         ),
       )
         .post('/.well-known/backstage/permissions/apply-conditions')
@@ -904,7 +913,7 @@ describe('createPermissionIntegrationRouter', () => {
     const response = await request(
       express().use(
         createPermissionIntegrationRouter({
-          permissions: [aPermission],
+          permissions: [aPermission, testPermission],
           resources: [
             {
               resourceType: 'test-resource',

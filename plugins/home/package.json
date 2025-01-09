@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home",
-  "version": "0.8.3-next.1",
+  "version": "0.8.4-next.2",
   "description": "A Backstage plugin that helps you build a home page",
   "backstage": {
     "role": "frontend-plugin",
@@ -70,10 +70,10 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@rjsf/core": "5.23.1",
-    "@rjsf/material-ui": "5.23.1",
-    "@rjsf/utils": "5.23.1",
-    "@rjsf/validator-ajv8": "5.23.1",
+    "@rjsf/core": "5.23.2",
+    "@rjsf/material-ui": "5.23.2",
+    "@rjsf/utils": "5.23.2",
+    "@rjsf/validator-ajv8": "5.23.2",
     "lodash": "^4.17.21",
     "luxon": "^3.4.3",
     "react-grid-layout": "1.3.4",

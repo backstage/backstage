@@ -3,10 +3,8 @@ import { create } from '@storybook/theming';
 
 const theme = create({
   base: 'light',
-  brandTitle: 'My custom Storybook',
-  brandUrl: 'https://example.com',
+  brandTitle: 'Canon',
   brandImage: 'logo.svg',
-  brandTarget: '_self',
 });
 
 addons.setConfig({

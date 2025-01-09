@@ -1,5 +1,76 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-defaults@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-devtools-common@0.1.15-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/cli-common@0.1.15
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- ec547b8: Remove the error handler middleware, since that is now provided by the framework
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0-next.0
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-devtools-common@0.1.14
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.5.0
+
+### Minor Changes
+
+- c781a9a: **BREAKING** Removed support for what is known as the legacy backend, please use the New Backend System.
+
+### Patch Changes
+
+- 1e624ca: Restrict `@types/express` version range from `*` to `^4.17.6`.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-devtools-common@0.1.14
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-devtools-common@0.1.14-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 0.5.0-next.1
 
 ### Minor Changes

@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { AsProps, Breakpoint, ColorProps } from '../../layout/types';
-import { SpaceProps } from '../../layout/types';
+import type {
+  SpaceProps,
+  UtilityProps,
+  AsProps,
+  Breakpoint,
+} from '../../types';
 
-export interface InlineProps extends SpaceProps, ColorProps {
+/** @public */
+export interface InlineProps extends SpaceProps {
   children: React.ReactNode;
   as?: AsProps;
+  gap?: UtilityProps['gap'];
   align?:
     | 'left'
     | 'center'

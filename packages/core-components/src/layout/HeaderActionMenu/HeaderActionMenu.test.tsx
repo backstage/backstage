@@ -22,7 +22,14 @@ import userEvent from '@testing-library/user-event';
 
 describe('<ComponentContextMenu />', () => {
   it('renders without any items and without exploding', async () => {
-    await renderInTestApp(<HeaderActionMenu actionItems={[]} />);
+    const rendered = await renderInTestApp(
+      <HeaderActionMenu actionItems={[]} />,
+    );
+
+    expect(rendered.queryByTestId('header-action-menu')).toBeInTheDocument();
+    expect(
+      rendered.queryByTestId('header-action-item'),
+    ).not.toBeInTheDocument();
   });
 
   it('can open the menu and click menu items', async () => {

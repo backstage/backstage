@@ -14,44 +14,70 @@
  * limitations under the License.
  */
 
-:root {
-  --button-primary-background-color: #1ed760;
-  --button-primary-background-color-hover: #3be477;
-  --button-primary-background-color-active: #1abc54;
-  --button-primary-border-color: #1ed760;
-  --button-primary-border-color-hover: #3be477;
-  --button-primary-border-color-active: #1abc54;
-  --button-primary-text-color: #000;
-  --button-primary-border-radius: 9999px;
-  --button-secondary-background-color: transparent;
-  --button-secondary-background-color-hover: transparent;
-  --button-secondary-background-color-active: rgba(0, 0, 0, 0.03);
-  --button-secondary-border-color: #000;
-  --button-secondary-border-color-hover: #000;
-  --button-secondary-border-color-active: #000;
-  --button-secondary-text-color: #000;
-  --button-secondary-border-radius: 9999px;
-  --button-size-small: 32px;
-  --button-size-medium: 48px;
+.cn-button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-bold);
+  font-size: var(--canon-font-size-body);
+  padding: 0;
+  transition: all 150ms ease;
+  cursor: pointer;
+  border-radius: 8px;
 }
 
-[data-theme='dark'] {
-  --button-primary-background-color: #1ed760;
-  --button-primary-background-color-hover: #3be477;
-  --button-primary-background-color-active: #1abc54;
-  --button-primary-border-color: #1ed760;
-  --button-primary-border-color-hover: #3be477;
-  --button-primary-border-color-active: #1abc54;
-  --button-primary-text-color: #000;
-  --button-primary-border-radius: 9999px;
-  --button-secondary-background-color: transparent;
-  --button-secondary-background-color-hover: transparent;
-  --button-secondary-background-color-active: rgba(255, 255, 255, 0.1);
-  --button-secondary-border-color: #fff;
-  --button-secondary-border-color-hover: #fff;
-  --button-secondary-border-color-active: #fff;
-  --button-secondary-text-color: #fff;
-  --button-secondary-border-radius: 9999px;
-  --button-size-small: 32px;
-  --button-size-medium: 48px;
+.cn-button-primary {
+  background-color: var(--canon-accent);
+  color: var(--canon-text-primary-on-accent);
+
+  &:hover {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--canon-border-focus);
+    color: var(--canon-text-primary);
+  }
+}
+
+.cn-button-secondary {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--canon-border-base);
+  color: var(--canon-text-primary);
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px var(--canon-border-hover);
+  }
+}
+
+.cn-button-tertiary {
+  background-color: transparent;
+  color: var(--canon-text-primary);
+
+  &:hover {
+    color: var(--canon-text-secondary);
+  }
+}
+
+.cn-button-small {
+  padding-left: 6px;
+  padding-right: 6px;
+  height: 32px;
+}
+
+.cn-button-medium {
+  padding-left: 8px;
+  padding-right: 8px;
+  height: 40px;
+}
+
+.cn-button-content {
+  display: flex;
+  align-items: center;
+  gap: var(--canon-spacing-xs);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.cn-button-content-icon-both {
+  flex: 1;
 }

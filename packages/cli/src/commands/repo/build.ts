@@ -31,6 +31,11 @@ import { createScriptOptionsParser } from './optionsParser';
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
+  const shouldUseRspack = Boolean(process.env.EXPERIMENTAL_RSPACK);
+
+  const rspack = shouldUseRspack
+    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
+    : undefined;
 
   if (opts.since) {
     const graph = PackageGraph.fromPackages(packages);
@@ -111,6 +116,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           targetDir: pkg.dir,
           configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),
+          rspack,
         });
       },
     });

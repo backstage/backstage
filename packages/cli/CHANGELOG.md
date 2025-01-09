@@ -1,5 +1,86 @@
 # @backstage/cli
 
+## 0.29.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/cli-node@0.2.12-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/cli-common@0.1.15
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1-next.0
+
+## 0.29.5-next.0
+
+### Patch Changes
+
+- e937ce0: Fixed incompatible `@typescript-eslint` versions with current `eslint@8.x.x`
+- Updated dependencies
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.0
+
+## 0.29.4
+
+### Patch Changes
+
+- 2b6c1ea: If the Backstage yarn plugin is installed, it will now be automatically updated as part of `versions:bump`.
+- 7dcff85: Remove special-casing for `@types` packages when generating dependency entries
+  during templating
+- 3c3a7e6: Revert `css-loader@v7` bump
+- 0aff006: Bumped the version range for `html-webpack-plugin` to fix the `htmlPluginExports.getCompilationHooks is not a function` error when using experimental Rspack.
+- 583f3d4: Added `@backstage/cli/config/prettier` as a replacement for `@spotify/prettier-config`, but with the same configuration.
+- 62a9062: Updated dependency `@module-federation/enhanced` to `^0.8.0`.
+- 5f04976: Update `rollup` to avoid issues with build output when running `backstage-cli package build`.
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- a49030a: Add support for `--output-file` option from ESLint to `package lint` and `repo lint` commands.
+- 96331fa: Enhance the behavior of the experimental support for module federation in the backstage CLI,
+  by using the `package.json` exports (when present) to complete the list of exposed modules.
+  This allows, for example, using exported `alpha` definitions through module federation.
+- 5c9cc05: Use native fetch instead of node-fetch
+- dcd99d2: added experimental RSPack support for build command in the repo scope
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/cli-node@0.2.11
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.0
+
+## 0.29.3-next.2
+
+### Patch Changes
+
+- 62a9062: Updated dependency `@module-federation/enhanced` to `^0.8.0`.
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/cli-node@0.2.11-next.1
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/release-manifests@0.0.12-next.1
+  - @backstage/types@1.2.0
+
 ## 0.29.3-next.1
 
 ### Patch Changes

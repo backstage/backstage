@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  DatabaseManager,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  TestDatabases,
+  mockCredentials,
+  mockErrorHandler,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
-function createDatabase(): PluginDatabaseManager {
-  return DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('notifications');
-}
-
 describe('createRouter', () => {
+  const databases = TestDatabases.create();
+
   let app: express.Express;
 
   const signalService: jest.Mocked<SignalsService> = {
@@ -58,9 +47,10 @@ describe('createRouter', () => {
   const catalog = catalogServiceMock();
 
   beforeAll(async () => {
+    const knex = await databases.init('SQLITE_3');
     const router = await createRouter({
       logger: mockServices.logger.mock(),
-      database: createDatabase(),
+      database: { getClient: async () => knex },
       signals: signalService,
       userInfo,
       config,
@@ -68,26 +58,17 @@ describe('createRouter', () => {
       auth,
       catalog,
     });
-    app = express().use(router);
+    app = express().use(router).use(mockErrorHandler());
   });
 
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  describe('GET /health', () => {
-    it('returns ok', async () => {
-      const response = await request(app).get('/health');
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
-    });
-  });
-
-  describe('POST /', () => {
+  describe('POST /notifications', () => {
     const sendNotification = async (data: NotificationSendOptions) =>
       request(app)
-        .post('/')
+        .post('/notifications')
         .send(data)
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json');

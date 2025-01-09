@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gitlab",
-  "version": "0.5.1-next.1",
+  "version": "0.6.2-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards GitLab",
   "backstage": {
     "role": "backend-plugin-module",
@@ -61,6 +61,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@gitbeaker/rest": "^40.0.3",
     "lodash": "^4.17.21",
+    "node-fetch": "^2.7.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

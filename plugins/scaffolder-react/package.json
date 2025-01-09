@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-react",
-  "version": "1.14.2-next.1",
+  "version": "1.14.3-next.2",
   "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
   "backstage": {
     "role": "web-library",
@@ -73,10 +73,10 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "@rjsf/core": "5.23.1",
-    "@rjsf/material-ui": "5.23.1",
-    "@rjsf/utils": "5.23.1",
-    "@rjsf/validator-ajv8": "5.23.1",
+    "@rjsf/core": "5.23.2",
+    "@rjsf/material-ui": "5.23.2",
+    "@rjsf/utils": "5.23.2",
+    "@rjsf/validator-ajv8": "5.23.2",
     "@types/json-schema": "^7.0.9",
     "ajv-errors": "^3.0.0",
     "classnames": "^2.2.6",

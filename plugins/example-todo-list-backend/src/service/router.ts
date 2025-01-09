@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { add, getAll, update } from './todos';
@@ -75,7 +74,6 @@ export async function createRouter(
     res.json(update(req.body));
   });
 
-  router.use(errorHandler());
   return router;
 }
 

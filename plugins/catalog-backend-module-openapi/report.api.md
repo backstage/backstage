@@ -5,12 +5,12 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
-import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
-import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { PlaceholderResolverParams } from '@backstage/plugin-catalog-node';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -30,14 +30,14 @@ export const openApiPlaceholderResolver: typeof jsonSchemaRefPlaceholderResolver
 export class OpenApiRefProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
-    logger: Logger;
+    logger: LoggerService;
     reader: UrlReaderService;
   });
   // (undocumented)
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       reader: UrlReaderService;
     },
   ): OpenApiRefProcessor;

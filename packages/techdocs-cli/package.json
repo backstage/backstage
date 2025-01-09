@@ -1,6 +1,6 @@
 {
   "name": "@techdocs/cli",
-  "version": "1.8.24-next.1",
+  "version": "1.8.25-next.1",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
   "backstage": {
     "role": "cli"

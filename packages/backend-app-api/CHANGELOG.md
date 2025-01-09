@@ -1,5 +1,76 @@
 # @backstage/backend-app-api
 
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/cli-common@0.1.15
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 02534c7: Corrected spelling mistake in error message
+- Updated dependencies
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 1.1.0
+
+### Minor Changes
+
+- ebf083d: Service factories added by feature loaders now have lower priority and will be ignored if a factory for the same service is added directly by `backend.add(serviceFactory)`.
+- 12eac85: **EXPERIMENTAL**: Adds a new `instanceMetadataService` to hold information about a specific backend instance.
+
+### Patch Changes
+
+- eef3ef1: Removed unused `express` dependencies.
+- ae2408b: Add a `toString` on the default `BackendFeatureMeta` implementations
+- 5c9cc05: Use native fetch instead of node-fetch
+- 0e9c9fa: As soon as a backend termination signal is received, call before shutting down root lifecycle hooks.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- ebf083d: Service factories added by feature loaders now have lower priority and will be ignored if a factory for the same service is added directly by `backend.add(serviceFactory)`.
+
+### Patch Changes
+
+- 0e9c9fa: As soon as a backend termination signal is received, call before shutting down root lifecycle hooks.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
 ## 1.1.0-next.1
 
 ### Minor Changes

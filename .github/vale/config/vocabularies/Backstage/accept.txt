@@ -72,6 +72,7 @@ config
 Config
 configmaps
 configs
+conformant
 const
 cookiecutter
 corepack
@@ -80,6 +81,8 @@ cron
 cronjobs
 crontab
 css
+cve
+CVEs
 daemonsets
 Datadog
 dataflow
@@ -95,6 +98,7 @@ deliverables
 denormalized
 dependabot
 deps
+deserialization
 destructured
 destructuring
 Deutsche
@@ -339,6 +343,8 @@ rebase
 rebasing
 Recharts
 Redash
+redis
+reimplement
 renderer
 renderers
 replicasets
@@ -378,6 +384,7 @@ sdks
 seb
 semlas
 semver
+sendmail
 serializable
 Serverless
 shoutout
@@ -402,6 +409,7 @@ src
 statefulsets
 stdout
 storable
+storages
 stringified
 stringify
 subcommand

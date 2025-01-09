@@ -1,6 +1,6 @@
 {
   "name": "@backstage/app-defaults",
-  "version": "1.5.15-next.1",
+  "version": "1.5.16-next.0",
   "description": "Provides the default wiring of a Backstage App",
   "backstage": {
     "role": "web-library"

@@ -1,5 +1,29 @@
 # @backstage/plugin-signals-react
 
+## 0.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+
+## 0.0.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/types@1.2.0
+
 ## 0.0.7
 
 ### Patch Changes

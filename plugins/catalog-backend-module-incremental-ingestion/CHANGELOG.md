@@ -1,5 +1,79 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-defaults@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-catalog-backend@1.30.0-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- ec547b8: Remove the error handler middleware, since that is now provided by the framework
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0-next.0
+  - @backstage/plugin-catalog-backend@1.30.0-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.6.1
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- cce9cae: Deprecate old-backend-system `IncrementalCatalogBuilder`
+- fe87fbf: Add task metrics as two gauges that track the last start and end timestamps as epoch seconds.
+- 5aa44d2: Wire up the events together in the new backend system
+- d42ecb0: Remove backend-common package from incremental-ingestion plugin and update related code
+- cbfc69e: Create a `dev/index.ts` entrypoint for `yarn start`
+- 3ca5f70: Ensure that the scheduled worker task doesn't run at an unreasonably high frequency
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/plugin-catalog-backend@1.29.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- d42ecb0: Remove backend-common package from incremental-ingestion plugin and update related code
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/plugin-catalog-backend@1.29.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 0.6.1-next.1
 
 ### Patch Changes

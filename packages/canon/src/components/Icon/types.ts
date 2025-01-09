@@ -20,10 +20,28 @@ export type IconNames =
   | 'arrowLeft'
   | 'arrowRight'
   | 'arrowUp'
+  | 'arrowDownCircle'
+  | 'arrowLeftCircle'
+  | 'arrowRightCircle'
+  | 'arrowUpCircle'
+  | 'check'
+  | 'chevronDown'
+  | 'chevronLeft'
+  | 'chevronRight'
+  | 'chevronUp'
   | 'cloud'
+  | 'externalLink'
   | 'heart'
+  | 'moon'
   | 'plus'
+  | 'sun'
   | 'trash';
 
 /** @public */
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
+
+/** @public */
+export type IconProps = {
+  name: IconNames;
+  size?: number;
+};

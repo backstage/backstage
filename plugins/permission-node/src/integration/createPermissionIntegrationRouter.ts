@@ -19,7 +19,6 @@ import Router from 'express-promise-router';
 import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { InputError } from '@backstage/errors';
-import { errorHandler } from '@backstage/backend-common';
 import {
   AuthorizeResult,
   DefinitivePolicyDecision,
@@ -328,11 +327,16 @@ export function createPermissionIntegrationRouter<
         >
       ).rules || [],
   );
-  const allPermissions = [
-    ...((options as { permissions: Permission[] }).permissions || []),
-    ...(optionsWithResources.resources?.flatMap(o => o.permissions || []) ||
-      []),
-  ];
+
+  const allPermissions = Array.from(
+    new Map(
+      [
+        ...((options as { permissions: Permission[] }).permissions || []),
+        ...(optionsWithResources.resources?.flatMap(o => o.permissions || []) ||
+          []),
+      ].map(i => [i.name, i]),
+    ).values(),
+  );
 
   const allResourceTypes = allOptions.reduce((acc, option) => {
     if (
@@ -477,9 +481,6 @@ export function createPermissionIntegrationRouter<
       });
     },
   );
-
-  // TODO(belugas): Remove this when dropping support to the legacy backend system because setting the error handler manually is no logger required in the new system.
-  router.use(errorHandler());
 
   return router;
 }

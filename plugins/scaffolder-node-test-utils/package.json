@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-node-test-utils",
-  "version": "0.1.17-next.1",
+  "version": "0.1.18-next.1",
   "backstage": {
     "role": "node-library",
     "pluginId": "scaffolder",

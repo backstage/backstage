@@ -1,6 +1,6 @@
 {
   "name": "example-backend-legacy",
-  "version": "0.2.105-next.1",
+  "version": "0.2.106-next.2",
   "backstage": {
     "role": "backend"
   },

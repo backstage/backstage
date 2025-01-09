@@ -14,46 +14,58 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { button } from './button.css';
-import { Icon } from '../Icon/Icon';
-import type { IconNames } from '../Icon/types';
-
-/**
- * Properties for {@link Button}
- *
- * @public
- */
-export interface ButtonProps {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary';
-  children: React.ReactNode;
-  disabled?: boolean;
-  iconStart?: IconNames;
-  iconEnd?: IconNames;
-}
+import React, { forwardRef } from 'react';
+import { Icon } from '../Icon';
+import { ButtonProps } from './types';
+import { useCanon } from '../../contexts/canon';
 
 /** @public */
-export const Button = ({
-  size = 'medium',
-  variant = 'primary',
-  children,
-  disabled,
-  iconStart,
-  iconEnd,
-  ...props
-}: ButtonProps) => {
-  return (
-    <button
-      {...props}
-      disabled={disabled}
-      className={button({ size, variant, disabled })}
-    >
-      {iconStart && <Icon name={iconStart} />}
-      {children}
-      {iconEnd && <Icon name={iconEnd} />}
-    </button>
-  );
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (props: ButtonProps, ref) => {
+    const {
+      size = 'medium',
+      variant = 'primary',
+      disabled,
+      iconStart,
+      iconEnd,
+      children,
+      style,
+      ...rest
+    } = props;
+
+    const { getResponsiveValue } = useCanon();
+
+    // Get the responsive value for the variant
+    const responsiveSize = getResponsiveValue(size);
+    const responsiveVariant = getResponsiveValue(variant);
+
+    return (
+      <button
+        {...rest}
+        ref={ref}
+        disabled={disabled}
+        className={[
+          'cn-button',
+          `cn-button-${responsiveSize}`,
+          `cn-button-${responsiveVariant}`,
+        ].join(' ')}
+        style={style}
+      >
+        <span
+          className={[
+            'cn-button-content',
+            iconStart && iconEnd ? 'cn-button-content-icon-both' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {iconStart && <Icon name={iconStart} />}
+          {children}
+        </span>
+        {iconEnd && <Icon name={iconEnd} />}
+      </button>
+    );
+  },
+);
 
 export default Button;

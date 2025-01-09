@@ -1,0 +1,5 @@
+.canon-container {
+  max-width: var(--canon-container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--canon-container-padding);
+}
