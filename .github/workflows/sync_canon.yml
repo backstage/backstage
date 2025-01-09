@@ -26,11 +26,11 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v20.x
 
-      - name: Checkout backstage/canon-docs
+      - name: Checkout backstage/canon-storybook
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          repository: backstage/canon-docs
-          path: canon-docs
+          repository: backstage/canon-storybook
+          path: canon-external-docs
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Configure Git
@@ -43,14 +43,14 @@ jobs:
         run: |
           yarn build
 
-      - name: Replace contents of canon-docs repo with docs build output
-        working-directory: canon-docs
+      - name: Replace contents of canon-external-docs repo with docs build output
+        working-directory: canon-external-docs
         run: |
           git rm -rf .
-          cp -R out/. .
+          cp -R ../canon-docs/out/. .
 
-      - name: Commit to canon-docs repo
-        working-directory: canon-docs
+      - name: Commit to canon-storybook repo
+        working-directory: canon-external-docs
         run: |
           git add .
           git commit -am "Canon Docs build for backstage/backstage@${{ github.sha }}"
