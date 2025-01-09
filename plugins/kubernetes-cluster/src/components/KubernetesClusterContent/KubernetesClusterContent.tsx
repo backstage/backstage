@@ -24,8 +24,8 @@ import {
   useKubernetesClusterError,
 } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
 import { WarningPanel } from '@backstage/core-components';
-import { useKubernetesClustersPermission } from '../../hooks/useKubernetesClustersPermission';
 import { kubernetesClustersPermission } from '@backstage/plugin-kubernetes-common';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 
 const ContentGrid = () => {
   const { error } = useKubernetesClusterError();
@@ -59,17 +59,20 @@ const ContentGrid = () => {
  * @public
  */
 export const KubernetesClusterContent = () => {
-  const hasKubernetesClustersPermission = useKubernetesClustersPermission();
-
-  return !hasKubernetesClustersPermission ? (
-    <WarningPanel
-      title="Permission required"
-      message={`To view Kubernetes objects, contact your administrator to give you the 
-                    '${kubernetesClustersPermission.name}' permission.`}
-    />
-  ) : (
-    <KubernetesClusterErrorProvider>
-      <ContentGrid />
-    </KubernetesClusterErrorProvider>
+  return (
+    <RequirePermission
+      permission={kubernetesClustersPermission}
+      errorPage={
+        <WarningPanel
+          title="Permission required"
+          message={`To view Kubernetes objects, contact your administrator to give you the
+                        '${kubernetesClustersPermission.name}' permission.`}
+        />
+      }
+    >
+      <KubernetesClusterErrorProvider>
+        <ContentGrid />
+      </KubernetesClusterErrorProvider>
+    </RequirePermission>
   );
 };
