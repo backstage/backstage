@@ -31,7 +31,7 @@ export const PropsTable = <T extends Record<string, PropData>>({
             </Table.Cell>
             <Table.Cell>
               {Array.isArray(data[n].type) ? (
-                data[n].type.map((t) => <Chip key={t}>{t}</Chip>)
+                data[n].type.map(t => <Chip key={t}>{t}</Chip>)
               ) : (
                 <Chip>{data[n].type}</Chip>
               )}

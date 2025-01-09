@@ -1,6 +1,8 @@
 .yarn
 dist
 microsite
+canon-docs/.next
+canon-docs/public
 coverage
 *.hbs
 templates
