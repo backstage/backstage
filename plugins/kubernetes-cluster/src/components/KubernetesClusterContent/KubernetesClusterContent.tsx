@@ -24,7 +24,7 @@ import {
   useKubernetesClusterError,
 } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
 import { WarningPanel } from '@backstage/core-components';
-import { kubernetesClustersPermission } from '@backstage/plugin-kubernetes-common';
+import { kubernetesClustersReadPermission } from '@backstage/plugin-kubernetes-common';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
 const ContentGrid = () => {
@@ -61,12 +61,12 @@ const ContentGrid = () => {
 export const KubernetesClusterContent = () => {
   return (
     <RequirePermission
-      permission={kubernetesClustersPermission}
+      permission={kubernetesClustersReadPermission}
       errorPage={
         <WarningPanel
           title="Permission required"
           message={`To view Kubernetes objects, contact your administrator to give you the
-                        '${kubernetesClustersPermission.name}' permission.`}
+                        '${kubernetesClustersReadPermission.name}' permission.`}
         />
       }
     >

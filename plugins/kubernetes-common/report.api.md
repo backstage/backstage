@@ -318,7 +318,7 @@ export interface JobsFetchResponse {
 }
 
 // @public
-export const kubernetesClustersPermission: BasicPermission;
+export const kubernetesClustersReadPermission: BasicPermission;
 
 // @public (undocumented)
 export type KubernetesErrorTypes =
@@ -351,7 +351,7 @@ export interface KubernetesRequestBody {
 }
 
 // @public
-export const kubernetesResourcesPermission: BasicPermission;
+export const kubernetesResourcesReadPermission: BasicPermission;
 
 // @public (undocumented)
 export interface LimitRangeFetchResponse {
