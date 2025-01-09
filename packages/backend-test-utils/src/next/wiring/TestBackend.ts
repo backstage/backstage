@@ -75,7 +75,7 @@ export const defaultServiceFactories = [
   mockServices.lifecycle.factory(),
   mockServices.logger.factory(),
   mockServices.permissions.factory(),
-  mockServices.permissionIntegrations.factory(),
+  mockServices.permissionsRegistry.factory(),
   mockServices.rootHealth.factory(),
   mockServices.rootLifecycle.factory(),
   mockServices.rootLogger.factory(),

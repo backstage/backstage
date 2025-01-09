@@ -186,8 +186,8 @@ export namespace coreServices {
   const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
   const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
   const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
-  const permissionIntegrations: ServiceRef<
-    PermissionIntegrationsService,
+  const permissionsRegistry: ServiceRef<
+    PermissionsRegistryService,
     'plugin',
     'singleton'
   >;
@@ -433,11 +433,11 @@ export interface LoggerService {
 }
 
 // @public
-export interface PermissionIntegrationsService {
+export interface PermissionsRegistryService {
   addPermissionRules(rules: PermissionRule<any, any, string>[]): void;
   addPermissions(permissions: Permission[]): void;
   addResourceType<const TResourceType extends string, TResource>(
-    options: PermissionIntegrationsServiceAddResourceTypeOptions<
+    options: PermissionsRegistryServiceAddResourceTypeOptions<
       TResourceType,
       TResource
     >,
@@ -445,7 +445,7 @@ export interface PermissionIntegrationsService {
 }
 
 // @public
-export type PermissionIntegrationsServiceAddResourceTypeOptions<
+export type PermissionsRegistryServiceAddResourceTypeOptions<
   TResourceType extends string,
   TResource,
 > = {

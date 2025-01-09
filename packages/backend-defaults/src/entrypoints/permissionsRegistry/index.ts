@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { permissionIntegrationsServiceFactory } from './permissionIntegrationsServiceFactory';
+export { permissionsRegistryServiceFactory } from './permissionsRegistryServiceFactory';

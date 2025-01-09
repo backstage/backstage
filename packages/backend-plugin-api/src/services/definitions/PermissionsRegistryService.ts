@@ -30,7 +30,7 @@ type NoInfer<T> = T extends infer S ? S : never;
  *
  * @public
  */
-export type PermissionIntegrationsServiceAddResourceTypeOptions<
+export type PermissionsRegistryServiceAddResourceTypeOptions<
   TResourceType extends string,
   TResource,
 > = {
@@ -71,7 +71,7 @@ export type PermissionIntegrationsServiceAddResourceTypeOptions<
  *
  * @public
  */
-export interface PermissionIntegrationsService {
+export interface PermissionsRegistryService {
   /**
    * Add permissions for this plugin to the permission system.
    */
@@ -117,13 +117,13 @@ export interface PermissionIntegrationsService {
    * The `getResources` argument should load resources based on a reference
    * identifier. For the catalog, this is an
    * {@link @backstage/catalog-model#EntityRef}. For other plugins, this can be
-   * any serialized format. This is used to add a permission integrations API
+   * any serialized format. This is used to add a permissions registry API
    * via the HTTP router service. This API will be called by the
    * `permission-backend` when authorization conditions relating to this plugin
    * need to be evaluated.
    */
   addResourceType<const TResourceType extends string, TResource>(
-    options: PermissionIntegrationsServiceAddResourceTypeOptions<
+    options: PermissionsRegistryServiceAddResourceTypeOptions<
       TResourceType,
       TResource
     >,

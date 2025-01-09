@@ -28,7 +28,7 @@
     "./httpRouter": "./src/entrypoints/httpRouter/index.ts",
     "./lifecycle": "./src/entrypoints/lifecycle/index.ts",
     "./logger": "./src/entrypoints/logger/index.ts",
-    "./permissionIntegrations": "./src/entrypoints/permissionIntegrations/index.ts",
+    "./permissionsRegistry": "./src/entrypoints/permissionsRegistry/index.ts",
     "./permissions": "./src/entrypoints/permissions/index.ts",
     "./rootConfig": "./src/entrypoints/rootConfig/index.ts",
     "./rootHealth": "./src/entrypoints/rootHealth/index.ts",
@@ -68,8 +68,8 @@
       "logger": [
         "src/entrypoints/logger/index.ts"
       ],
-      "permissionIntegrations": [
-        "src/entrypoints/permissionIntegrations/index.ts"
+      "permissionsRegistry": [
+        "src/entrypoints/permissionsRegistry/index.ts"
       ],
       "permissions": [
         "src/entrypoints/permissions/index.ts"

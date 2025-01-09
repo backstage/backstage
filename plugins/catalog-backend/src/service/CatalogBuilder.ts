@@ -114,7 +114,7 @@ import {
   RootConfigService,
   UrlReaderService,
   SchedulerService,
-  PermissionIntegrationsService,
+  PermissionsRegistryService,
 } from '@backstage/backend-plugin-api';
 import { entitiesResponseToObjects } from './response';
 
@@ -137,7 +137,7 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  permissionIntegrations?: PermissionIntegrationsService;
+  permissionsRegistry?: PermissionsRegistryService;
   scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
@@ -480,7 +480,7 @@ export class CatalogBuilder {
       logger,
       permissions,
       scheduler,
-      permissionIntegrations,
+      permissionsRegistry,
       discovery = HostDiscovery.fromConfig(config),
     } = this.env;
 
@@ -593,8 +593,8 @@ export class CatalogBuilder {
     let permissionIntegrationRouter:
       | ReturnType<typeof createPermissionIntegrationRouter>
       | undefined;
-    if (permissionIntegrations) {
-      permissionIntegrations.addResourceType(catalogPermissionResource);
+    if (permissionsRegistry) {
+      permissionsRegistry.addResourceType(catalogPermissionResource);
     } else {
       permissionIntegrationRouter = createPermissionIntegrationRouter(
         catalogPermissionResource,

@@ -62,9 +62,9 @@ import {
 // ...
 
 /* highlight-remove-next-line */
-permissionIntegrations.addPermissions([todoListCreatePermission]);
+permissionsRegistry.addPermissions([todoListCreatePermission]);
 /* highlight-add-start */
-permissionIntegrations.addPermissions([
+permissionsRegistry.addPermissions([
   todoListCreatePermission,
   todoListUpdatePermission,
 ]);
@@ -171,7 +171,7 @@ Specifically, the `apply` function is used to understand whether the passed reso
 Let's skip the `toQuery` function for now, we'll come back to that in the next section.
 
 Now, let's add the new resource type to the permissions system via the
-`PermissionIntegrationsService`. You'll need to supply:
+`PermissionsRegistryService`. You'll need to supply:
 
 - `getResources`: a function that accepts an array of `resourceRefs` in the same format you expect to be passed to `authorize`, and returns an array of the corresponding resources.
 - `resourceType`: the same value used in the permission rule above.
@@ -199,13 +199,13 @@ import { rules } from './rules';
 // ...
 
 /* highlight-remove-start */
-permissionIntegrations.addPermissions([
+permissionsRegistry.addPermissions([
   todoListCreatePermission,
   todoListUpdatePermission,
 ]);
 /* highlight-remove-end */
 /* highlight-add-start */
-permissionIntegrations.addResourceType({
+permissionsRegistry.addResourceType({
   resourceType: TODO_LIST_RESOURCE_TYPE,
   permissions: [todoListCreatePermission, todoListUpdatePermission],
   rules: Object.values(rules),

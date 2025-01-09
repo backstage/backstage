@@ -33,10 +33,10 @@ describe('catalogPlugin', () => {
           register(reg) {
             reg.registerInit({
               deps: {
-                permissionIntegrations: coreServices.permissionIntegrations,
+                permissionsRegistry: coreServices.permissionsRegistry,
               },
-              async init({ permissionIntegrations }) {
-                permissionIntegrations.addPermissionRules([
+              async init({ permissionsRegistry }) {
+                permissionsRegistry.addPermissionRules([
                   createCatalogPermissionRule({
                     name: 'test',
                     resourceType: 'catalog-entity',

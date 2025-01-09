@@ -138,7 +138,7 @@ export const catalogModelExtensionPoint =
 
 /**
  * @alpha
- * @deprecated Use the `coreServices.permissionIntegrations` instead.
+ * @deprecated Use the `coreServices.permissionsRegistry` instead.
  */
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
@@ -146,7 +146,7 @@ export type CatalogPermissionRuleInput<
 
 /**
  * @alpha
- * @deprecated Use the `coreServices.permissionIntegrations` instead.
+ * @deprecated Use the `coreServices.permissionsRegistry` instead.
  */
 export interface CatalogPermissionExtensionPoint {
   addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
@@ -159,7 +159,7 @@ export interface CatalogPermissionExtensionPoint {
 
 /**
  * @alpha
- * @deprecated Use the `coreServices.permissionIntegrations` instead.
+ * @deprecated Use the `coreServices.permissionsRegistry` instead.
  */
 export const catalogPermissionExtensionPoint =
   createExtensionPoint<CatalogPermissionExtensionPoint>({

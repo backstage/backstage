@@ -97,7 +97,7 @@ import {
 
 // ...
 
-permissionIntegrations.addResourceType({
+permissionsRegistry.addResourceType({
   resourceType: TODO_LIST_RESOURCE_TYPE,
   /* highlight-remove-next-line */
   permissions: [todoListCreatePermission, todoListUpdatePermission],

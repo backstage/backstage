@@ -145,14 +145,14 @@ export const exampleTodoListPlugin = createBackendPlugin({
         /* highlight-add-next-line */
         permissions: coreServices.permissions,
         /* highlight-add-next-line */
-        permissionIntegrations: coreServices.permissionIntegrations,
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       /* highlight-remove-next-line */
       async init({ logger, httpAuth, httpRouter }) {
       /* highlight-add-next-line */
-      async init({ httpAuth, logger, httpRouter, permissions, permissionIntegrations }) {
+      async init({ httpAuth, logger, httpRouter, permissions, permissionsRegistry }) {
         /* highlight-add-next-line */
-        permissionIntegrations.addPermissions([todoListCreatePermission]);
+        permissionsRegistry.addPermissions([todoListCreatePermission]);
 
         httpRouter.use(
           await createRouter({

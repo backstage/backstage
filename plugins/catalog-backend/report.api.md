@@ -49,9 +49,9 @@ import { locationSpecToMetadataName as locationSpecToMetadataName_2 } from '@bac
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { PermissionIntegrationsService } from '@backstage/backend-plugin-api';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
@@ -199,7 +199,7 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  permissionIntegrations?: PermissionIntegrationsService;
+  permissionsRegistry?: PermissionsRegistryService;
   scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;

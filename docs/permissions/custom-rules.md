@@ -141,11 +141,11 @@ Now that we have a custom rule defined and added to our policy, we need provide 
 
 :::warning Warning
 
-The `PermissionIntegrationsService` is a fairly new addition and not yet supported by all plugins as they might still be using the old `createPermissionIntegrationRouter` that cannot be extended. If you encounter errors when installing custom rules for a plugin, the plugin may need to be switched to using the `PermissionIntegrationsService` first.
+The `PermissionsRegistryService` is a fairly new addition and not yet supported by all plugins as they might still be using the old `createPermissionIntegrationRouter` that cannot be extended. If you encounter errors when installing custom rules for a plugin, the plugin may need to be switched to using the `PermissionsRegistryService` first.
 
 :::
 
-To install custom rules in a plugin, we need to use the [`PermissionIntegrationsService`](../backend-system/core-services/permissionIntegrations.md). Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
+To install custom rules in a plugin, we need to use the [`PermissionsRegistryService`](../backend-system/core-services/permissionsRegistry.md). Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
 
 1. We will be using the `@backstage/plugin-catalog-node` package as it contains the extension point we need. Run this to add it:
 
@@ -166,9 +166,9 @@ To install custom rules in a plugin, we need to use the [`PermissionIntegrations
      moduleId: 'permission-rules',
      register(reg) {
        reg.registerInit({
-         deps: { permissionIntegrations: coreServices.permissionIntegrations },
-         async init({ permissionIntegrations }) {
-           permissionIntegrations.addPermissionRules([isInSystemRule]);
+         deps: { permissionsRegistry: coreServices.permissionsRegistry },
+         async init({ permissionsRegistry }) {
+           permissionsRegistry.addPermissionRules([isInSystemRule]);
          },
        });
      },
