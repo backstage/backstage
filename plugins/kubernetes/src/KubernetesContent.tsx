@@ -63,12 +63,12 @@ export const KubernetesContent = ({
       : new Map<string, DetectedError[]>();
 
   return (
-    <RequireKubernetesPermissions>
-      <DetectedErrorsContext.Provider
-        value={[...detectedErrors.values()].flat()}
-      >
-        <Page themeId="tool">
-          <Content>
+    <Page themeId="tool">
+      <Content>
+        <RequireKubernetesPermissions>
+          <DetectedErrorsContext.Provider
+            value={[...detectedErrors.values()].flat()}
+          >
             {kubernetesObjects === undefined && error === undefined && (
               <Progress />
             )}
@@ -147,9 +147,9 @@ export const KubernetesContent = ({
                 </Grid>
               </Grid>
             )}
-          </Content>
-        </Page>
-      </DetectedErrorsContext.Provider>
-    </RequireKubernetesPermissions>
+          </DetectedErrorsContext.Provider>
+        </RequireKubernetesPermissions>
+      </Content>
+    </Page>
   );
 };

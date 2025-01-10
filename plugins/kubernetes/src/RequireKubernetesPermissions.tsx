@@ -19,7 +19,7 @@ import {
   kubernetesResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { Content, Page, WarningPanel } from '@backstage/core-components';
+import { WarningPanel } from '@backstage/core-components';
 
 export type RequireKubernetesPermissionProps = {
   children: ReactNode;
@@ -50,14 +50,10 @@ export function RequireKubernetesPermissions(
   }
 
   return (
-    <Page themeId="tool">
-      <Content>
-        <WarningPanel
-          title="Permission required"
-          message={`To view Kubernetes objects, contact your administrator to give you the 
+    <WarningPanel
+      title="Permission required"
+      message={`To view Kubernetes objects, contact your administrator to give you the 
               '${kubernetesClustersReadPermission.name}' and '${kubernetesResourcesReadPermission.name}' permission.`}
-        />
-      </Content>
-    </Page>
+    />
   );
 }
