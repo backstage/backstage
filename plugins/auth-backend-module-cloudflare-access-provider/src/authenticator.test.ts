@@ -25,7 +25,7 @@ describe('authenticator', () => {
 
     const profile = await auth.defaultProfileTransform(
       {
-        cfIdentity: { name: 'Name' } as any,
+        cfIdentity: { name: 'Name', email: 'hello@example.com' } as any,
         claims: { email: 'hello@example.com' } as any,
         token: 'fake',
       },
