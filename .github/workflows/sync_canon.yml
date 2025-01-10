@@ -1,4 +1,4 @@
-name: Sync Canon Storybook
+name: Sync Canon Docs
 on:
   push:
     branches: [master]
@@ -30,27 +30,28 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: backstage/canon-storybook
-          path: canon-storybook
+          path: canon-external-docs
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Configure Git
         run: |
           git config --global user.email noreply@backstage.io
-          git config --global user.name 'Github Canon Storybook workflow'
+          git config --global user.name 'Github Canon Docs workflow'
 
-      - name: Build Canon Storybook
+      - name: Build Canon Docs
+        working-directory: canon-docs
         run: |
-          yarn workspace @backstage/canon run build-storybook
+          yarn build
 
-      - name: Replace contents of canon-storybook repo with Storybook build output
-        working-directory: canon-storybook
+      - name: Replace contents of canon-external-docs repo with docs build output
+        working-directory: canon-external-docs
         run: |
           git rm -rf .
-          cp -R ../packages/canon/storybook-static/. .
+          cp -R ../canon-docs/dist/. .
 
       - name: Commit to canon-storybook repo
-        working-directory: canon-storybook
+        working-directory: canon-external-docs
         run: |
           git add .
-          git commit -am "Canon Storybook build for backstage/backstage@${{ github.sha }}"
+          git commit -am "Canon Docs build for backstage/backstage@${{ github.sha }}"
           git push

@@ -1,0 +1,67 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  color: var(--canon-text-primary);
+  background-color: var(--canon-surface-1);
+  border-right: 1px solid var(--canon-border-base);
+  padding-left: 20px;
+  padding-right: 20px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.logo path {
+  fill: var(--canon-text-primary);
+}
+
+.content {
+  padding-top: 20px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.menu a {
+  display: flex;
+  text-decoration: none;
+  height: 28px;
+  align-items: center;
+}
+
+.section {
+  width: 100%;
+}
+
+.line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--canon-surface-2);
+  }
+}
+
+.line.active {
+  background-color: var(--canon-surface-2);
+}
