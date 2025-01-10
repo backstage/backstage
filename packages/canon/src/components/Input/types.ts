@@ -13,4 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Field } from './Field';
+
+import { Field } from '@base-ui-components/react/field';
+
+export interface InputProps
+  extends React.ComponentPropsWithoutRef<typeof Field.Root> {
+  label?: string;
+  description?: string;
+  size?: 'sm' | 'md';
+  placeholder?: string;
+  match?: Field.Error.Props['match'];
+  error?: string;
+  required?: boolean;
+}

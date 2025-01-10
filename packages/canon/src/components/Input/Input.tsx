@@ -13,22 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
-import { Input as InputPrimitive } from '@base-ui-components/react/input';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
+import { Field } from '@base-ui-components/react/field';
+import type { InputProps } from './types';
 
 /** @public */
-const Input = React.forwardRef<
-  React.ElementRef<typeof InputPrimitive>,
-  React.ComponentPropsWithoutRef<typeof InputPrimitive>
->(({ className, ...props }, ref) => (
-  <InputPrimitive
-    ref={ref}
-    className={clsx('canon-input', className)}
-    {...props}
-  />
-));
-Input.displayName = InputPrimitive.displayName;
+const Input = forwardRef<HTMLDivElement, InputProps>((props, ref) => {
+  const {
+    className,
+    label,
+    description,
+    match = 'valueMissing',
+    validationMode = 'onChange',
+    size = 'md',
+    placeholder,
+    error = 'Please enter your a value',
+    required = false,
+    ...rest
+  } = props;
+
+  return (
+    <Field.Root
+      ref={ref}
+      className={clsx('canon-input-root', className)}
+      validationMode={validationMode}
+      {...rest}
+    >
+      {label && (
+        <Field.Label className="canon-input-label">{label}</Field.Label>
+      )}
+
+      <Field.Control
+        placeholder={placeholder}
+        required={required}
+        className={clsx('canon-input-control', {
+          'canon-input-control-sm': size === 'sm',
+          'canon-input-control-md': size === 'md',
+        })}
+      />
+
+      <Field.Error className="canon-input-error" match={match}>
+        {error}
+      </Field.Error>
+
+      {description && (
+        <Field.Description className="canon-input-description">
+          {description}
+        </Field.Description>
+      )}
+    </Field.Root>
+  );
+});
+
+Input.displayName = 'Input';
 
 export { Input };

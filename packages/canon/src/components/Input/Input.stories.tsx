@@ -17,18 +17,85 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Input } from './Input';
+import { Inline } from '../Inline';
 
 const meta = {
   title: 'Components/Input',
   component: Input,
-  parameters: {
-    layout: 'centered',
+  decorators: [
+    Story => (
+      <div style={{ maxWidth: '400px' }}>
+        <Story />
+      </div>
+    ),
+  ],
+  argTypes: {
+    label: {
+      control: 'text',
+    },
+    description: {
+      control: 'text',
+    },
+    placeholder: {
+      control: 'text',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md'],
+    },
   },
 } satisfies Meta<typeof Input>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-  render: () => <Input />,
+export const Default: Story = {};
+
+export const WithPlaceholder: Story = {
+  args: {
+    placeholder: 'Enter your name',
+  },
+};
+
+export const WithLabel: Story = {
+  args: {
+    label: 'Name',
+  },
+};
+
+export const WithDescription: Story = {
+  args: {
+    description: 'Visible on your profile',
+  },
+};
+
+export const WithLabelAndDescription: Story = {
+  args: {
+    label: 'Name',
+    description: 'Visible on your profile',
+  },
+};
+
+export const Sizes: Story = {
+  args: {
+    label: 'Name',
+    description: 'Visible on your profile',
+  },
+  render: args => (
+    <Inline>
+      <Input size="sm" {...args} />
+      <Input size="md" {...args} />
+    </Inline>
+  ),
+};
+
+export const WithError: Story = {
+  args: {
+    invalid: true,
+    validate: value => (value ? null : 'Please enter your name'),
+    required: true,
+    label: 'Name',
+    description: 'Visible on your profile',
+    error: 'Please enter your name',
+  },
 };
