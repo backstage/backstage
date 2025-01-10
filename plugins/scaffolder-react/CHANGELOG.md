@@ -1,5 +1,52 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.3-next.2
+
+### Patch Changes
+
+- 91bb99a: Fix field extension validation not working when field is in dependencies in an array field
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-permission-react@0.4.30-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9-next.0
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/version-bridge@1.0.10
+
+## 1.14.3-next.1
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+
+## 1.14.3-next.0
+
+### Patch Changes
+
+- 37421bc: Fixed scaffolder form fields not resolving correctly in the `useCustomFieldExtensions` hook.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-permission-react@0.4.29
+  - @backstage/plugin-scaffolder-common@1.5.8
+
 ## 1.14.2
 
 ### Patch Changes

@@ -18,7 +18,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Icon } from './Icon';
 import { CanonProvider } from '../../contexts/canon';
-import { defaultIcons } from './icons';
+import { icons } from './icons';
 
 const meta = {
   title: 'Components/Icon',
@@ -29,7 +29,7 @@ const meta = {
   argTypes: {
     name: {
       control: 'select',
-      options: Object.keys(defaultIcons),
+      options: Object.keys(icons),
     },
   },
   args: {
@@ -40,7 +40,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
     name: 'heart',
   },

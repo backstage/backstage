@@ -46,6 +46,14 @@ describe('resolveCodeOwner', () => {
       ),
     ).toBe('team-foo');
   });
+  it('should return undefined if the codeowners file contains no names', () => {
+    expect(
+      resolveCodeOwner(
+        `*`,
+        'https://github.com/acme/repo/tree/docs/catalog-info.yaml',
+      ),
+    ).toBe(undefined);
+  });
 });
 
 describe('normalizeCodeOwner', () => {

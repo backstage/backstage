@@ -15,7 +15,7 @@
  */
 
 import { AppNode } from '../apis';
-import { Expand } from '../types';
+import { Expand } from '@backstage/types';
 import { ResolvedExtensionInput } from './createExtension';
 import {
   ExtensionDataContainer,

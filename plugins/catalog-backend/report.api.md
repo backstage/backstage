@@ -28,8 +28,6 @@ import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } fr
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
-import { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
@@ -58,7 +56,6 @@ import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from '@backstage/plugin-catalog-node';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -285,7 +282,7 @@ export function createRandomProcessingInterval(options: {
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
   constructor(options: {
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: GetEntitiesRequest['filter'];
@@ -299,7 +296,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   protected readonly catalogClient: CatalogApi;
   // (undocumented)
-  protected discovery: PluginEndpointDiscovery;
+  protected discovery: DiscoveryService;
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
@@ -308,7 +305,7 @@ export class DefaultCatalogCollator {
   static fromConfig(
     _config: Config,
     options: {
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       tokenManager: TokenManager;
       filter?: GetEntitiesRequest['filter'];
     },
@@ -325,13 +322,6 @@ export class DefaultCatalogCollator {
 
 // @public @deprecated (undocumented)
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer_2;
-
-// @public @deprecated (undocumented)
-export const DefaultCatalogCollatorFactory: typeof DefaultCatalogCollatorFactory_2;
-
-// @public @deprecated (undocumented)
-export type DefaultCatalogCollatorFactoryOptions =
-  DefaultCatalogCollatorFactoryOptions_2;
 
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;

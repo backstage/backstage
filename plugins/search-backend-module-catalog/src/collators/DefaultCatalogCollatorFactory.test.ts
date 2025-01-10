@@ -16,7 +16,6 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { Readable } from 'stream';
@@ -54,9 +53,7 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultCatalogCollatorFactory', () => {
   const config = mockServices.rootConfig();
-  const discovery = mockServices.discovery.mock({
-    getBaseUrl: async () => 'http://localhost:7007',
-  });
+  const auth = mockServices.auth();
   const catalog = catalogServiceMock({ entities: expectedEntities });
 
   describe('getCollator', () => {
@@ -65,8 +62,8 @@ describe('DefaultCatalogCollatorFactory', () => {
 
     beforeEach(async () => {
       factory = DefaultCatalogCollatorFactory.fromConfig(config, {
-        discovery,
-        catalogClient: catalog,
+        auth,
+        catalog,
       });
       collator = await factory.getCollator();
     });
@@ -117,8 +114,8 @@ describe('DefaultCatalogCollatorFactory', () => {
 
     it('maps a returned entity to an expected CatalogEntityDocument with custom transformer', async () => {
       const customFactory = DefaultCatalogCollatorFactory.fromConfig(config, {
-        discovery,
-        catalogClient: catalog,
+        auth,
+        catalog,
         entityTransformer: entity => ({
           title: `custom-title-${
             entity.metadata.title ?? entity.metadata.name
@@ -173,11 +170,19 @@ describe('DefaultCatalogCollatorFactory', () => {
 
     it('maps a returned entity with a custom locationTemplate', async () => {
       // Provide an alternate location template.
-      factory = DefaultCatalogCollatorFactory.fromConfig(new ConfigReader({}), {
-        discovery: discovery,
-        catalogClient: catalog,
-        locationTemplate: '/software/:name',
-      });
+      factory = DefaultCatalogCollatorFactory.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            search: {
+              collators: { catalog: { locationTemplate: '/software/:name' } },
+            },
+          },
+        }),
+        {
+          auth,
+          catalog,
+        },
+      );
       collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
@@ -189,13 +194,19 @@ describe('DefaultCatalogCollatorFactory', () => {
 
     it('allows filtering of the retrieved catalog entities', async () => {
       // Provide a custom filter.
-      factory = DefaultCatalogCollatorFactory.fromConfig(new ConfigReader({}), {
-        discovery: discovery,
-        catalogClient: catalog,
-        filter: {
-          kind: ['Foo', 'Bar'],
+      factory = DefaultCatalogCollatorFactory.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            search: {
+              collators: { catalog: { filter: { kind: ['Foo', 'Bar'] } } },
+            },
+          },
+        }),
+        {
+          auth,
+          catalog,
         },
-      });
+      );
       collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
@@ -206,11 +217,19 @@ describe('DefaultCatalogCollatorFactory', () => {
     });
 
     it('paginates through catalog entities using batchSize', async () => {
-      factory = DefaultCatalogCollatorFactory.fromConfig(config, {
-        discovery,
-        catalogClient: catalog,
-        batchSize: 1,
-      });
+      factory = DefaultCatalogCollatorFactory.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            search: {
+              collators: { catalog: { batchSize: 1 } },
+            },
+          },
+        }),
+        {
+          auth,
+          catalog,
+        },
+      );
       collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);

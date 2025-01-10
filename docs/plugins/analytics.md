@@ -51,7 +51,7 @@ learn how to contribute the integration yourself!
 [ga4]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-ga4/README.md
 [newrelic-browser]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-newrelic-browser/README.md
 [qm]: https://github.com/quantummetric/analytics-module-qm/blob/main/README.md
-[matomo]: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/analytics-module-matomo/README.md
+[matomo]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-matomo/README.md
 [add-tool]: https://github.com/backstage/backstage/issues/new?assignees=&labels=plugin&template=plugin_template.md&title=%5BAnalytics+Module%5D+THE+ANALYTICS+TOOL+TO+INTEGRATE
 [int-howto]: #writing-integrations
 [analytics-api-type]: https://backstage.io/docs/reference/core-plugin-api.analyticsapi

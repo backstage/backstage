@@ -31,4 +31,5 @@ export interface ButtonProps {
   disabled?: boolean;
   iconStart?: IconNames;
   iconEnd?: IconNames;
+  style?: React.CSSProperties;
 }

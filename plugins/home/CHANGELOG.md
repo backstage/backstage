@@ -1,5 +1,53 @@
 # @backstage/plugin-home
 
+## 0.8.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-app-api@1.15.4-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-home-react@0.1.22-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/theme@0.6.3
+
+## 0.8.4-next.1
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/plugin-home-react@0.1.22-next.0
+  - @backstage/core-compat-api@0.3.4
+
+## 0.8.4-next.0
+
+### Patch Changes
+
+- 7932f1e: Exported `QuickStartCard` component.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/core-app-api@1.15.3
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-home-react@0.1.21
+
 ## 0.8.3
 
 ### Patch Changes
