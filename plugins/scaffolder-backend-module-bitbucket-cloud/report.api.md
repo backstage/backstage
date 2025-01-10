@@ -14,6 +14,24 @@ const bitbucketCloudModule: BackendFeature;
 export default bitbucketCloudModule;
 
 // @public
+export function createBitbucketCloudBranchRestrictionAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    kind: string;
+    branchMatchKind?: string | undefined;
+    branchType?: string | undefined;
+    pattern?: string | undefined;
+    value?: number | undefined;
+    users?: object[] | undefined;
+    groups?: object[] | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export const createBitbucketPipelinesRunAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
