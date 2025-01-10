@@ -27,7 +27,7 @@ export type AnyRouteRef = RouteRef | SubRouteRef | ExternalRouteRef;
 
 /**
  * A duplicate of the react-router RouteObject, but with routeRef added
- * @internal
+ * @public
  */
 export interface BackstageRouteObject {
   caseSensitive: boolean;

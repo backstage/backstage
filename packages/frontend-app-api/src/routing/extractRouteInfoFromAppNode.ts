@@ -40,6 +40,13 @@ export function joinPaths(...paths: string[]): string {
   return normalized;
 }
 
+/**
+ * A utility function that given an AppNode from
+ * the AppTree, return route information about the
+ * node.
+ *
+ * @public
+ */
 export function extractRouteInfoFromAppNode(node: AppNode): {
   routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;

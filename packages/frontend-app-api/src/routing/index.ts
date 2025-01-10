@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
+export { extractRouteInfoFromAppNode } from './extractRouteInfoFromAppNode';
 export { type CreateAppRouteBinder } from './resolveRouteBindings';
+export { type BackstageRouteObject } from './types';
