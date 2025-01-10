@@ -47,7 +47,7 @@ jobs:
         working-directory: canon-external-docs
         run: |
           git rm -rf .
-          cp -R ../canon-docs/out/. .
+          cp -R ../canon-docs/dist/. .
 
       - name: Commit to canon-storybook repo
         working-directory: canon-external-docs

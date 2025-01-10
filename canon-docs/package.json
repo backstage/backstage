@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
-    "dev-all": "concurrently \"next dev\" \"yarn watch-css\"",
     "lint": "next lint",
-    "start": "next start",
+    "start": "concurrently \"next dev\" \"yarn watch-css\"",
     "watch-css": "node scripts/watch-css.js"
   },
   "dependencies": {
