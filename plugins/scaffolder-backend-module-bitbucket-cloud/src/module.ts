@@ -25,6 +25,7 @@ import {
   createBitbucketPipelinesRunAction,
   createPublishBitbucketCloudAction,
   createPublishBitbucketCloudPullRequestAction,
+  createBitbucketCloudBranchRestrictionAction,
 } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { handleAutocompleteRequest } from './autocomplete/autocomplete';
@@ -52,6 +53,9 @@ export const bitbucketCloudModule = createBackendModule({
           createPublishBitbucketCloudPullRequestAction({
             integrations,
             config,
+          }),
+          createBitbucketCloudBranchRestrictionAction({
+            integrations,
           }),
         );
 
