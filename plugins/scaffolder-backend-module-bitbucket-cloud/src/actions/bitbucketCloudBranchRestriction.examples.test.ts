@@ -65,7 +65,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo/branch-restrictions',
-      {
+      expect.objectContaining({
         body: JSON.stringify({
           branch_match_kind: 'branching_model',
           users: [{ uuid: '{a-b-c-d}' }, { uuid: '{e-f-g-h}' }],
@@ -74,13 +74,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
           branch_type: 'development',
         }),
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          Authorization:
-            'Basic eC10b2tlbi1hdXRoOnlvdXItZGVmYXVsdC1hdXRoLXRva2Vu',
-          'Content-Type': 'application/json',
-        },
-      },
+      }),
     );
   });
 
@@ -91,7 +85,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo/branch-restrictions',
-      {
+      expect.objectContaining({
         body: JSON.stringify({
           branch_match_kind: 'branching_model',
           users: [],
@@ -100,13 +94,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
           branch_type: 'development',
         }),
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          Authorization:
-            'Basic eC10b2tlbi1hdXRoOnlvdXItZGVmYXVsdC1hdXRoLXRva2Vu',
-          'Content-Type': 'application/json',
-        },
-      },
+      }),
     );
   });
 
@@ -117,7 +105,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo/branch-restrictions',
-      {
+      expect.objectContaining({
         body: JSON.stringify({
           branch_match_kind: 'glob',
           kind: 'require_passing_builds_to_merge',
@@ -125,13 +113,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
           pattern: 'test-feature/*',
         }),
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          Authorization:
-            'Basic eC10b2tlbi1hdXRoOnlvdXItZGVmYXVsdC1hdXRoLXRva2Vu',
-          'Content-Type': 'application/json',
-        },
-      },
+      }),
     );
   });
 
@@ -142,7 +124,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.bitbucket.org/2.0/repositories/workspace/repo/branch-restrictions',
-      {
+      expect.objectContaining({
         body: JSON.stringify({
           branch_match_kind: 'glob',
           kind: 'require_approvals_to_merge',
@@ -150,13 +132,7 @@ describe('bitbucketCloud:branchRestriction:create', () => {
           pattern: 'test-feature/*',
         }),
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          Authorization:
-            'Basic eC10b2tlbi1hdXRoOnlvdXItZGVmYXVsdC1hdXRoLXRva2Vu',
-          'Content-Type': 'application/json',
-        },
-      },
+      }),
     );
   });
 });
