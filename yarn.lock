@@ -8293,6 +8293,7 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@electric-sql/pglite": ^0.2.15
     "@manypkg/get-packages": ^1.1.3
     "@microsoft/api-documenter": ^7.25.7
     "@microsoft/api-extractor": ^7.47.2
@@ -8313,13 +8314,13 @@ __metadata:
     codeowners-utils: ^1.0.2
     command-exists: ^1.2.9
     commander: ^12.0.0
-    embedded-postgres: 17.2.0-beta.15
     fs-extra: ^11.2.0
     glob: ^8.0.3
     is-glob: ^4.0.3
     js-yaml: ^4.1.0
     just-diff: ^6.0.2
     knex: ^3.0.0
+    knex-pglite: ^0.11.0
     lodash: ^4.17.21
     minimatch: ^9.0.0
     p-limit: ^3.0.2
@@ -8332,12 +8333,9 @@ __metadata:
     "@microsoft/tsdoc": "*"
     "@microsoft/tsdoc-config": "*"
     "@useoptic/optic": ^1.0.0
-    embedded-postgres: 17.2.0-beta.15
     prettier: ^2.8.1
     typescript: "> 3.0.0"
   peerDependenciesMeta:
-    embedded-postgres:
-      optional: true
     prettier:
       optional: true
   bin:
@@ -8964,59 +8962,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@embedded-postgres/darwin-arm64@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/darwin-arm64@npm:17.2.0-beta.15"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/darwin-x64@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/darwin-x64@npm:17.2.0-beta.15"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/linux-arm64@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/linux-arm64@npm:17.2.0-beta.15"
-  conditions: os=linux & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/linux-arm@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/linux-arm@npm:17.2.0-beta.15"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/linux-ia32@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/linux-ia32@npm:17.2.0-beta.15"
-  conditions: os=linux & cpu=ia32
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/linux-ppc64@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/linux-ppc64@npm:17.2.0-beta.15"
-  conditions: os=linux & cpu=ppc64
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/linux-x64@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/linux-x64@npm:17.2.0-beta.15"
-  conditions: os=linux & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@embedded-postgres/windows-x64@npm:^17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "@embedded-postgres/windows-x64@npm:17.2.0-beta.15"
-  conditions: os=win32 & cpu=x64
+"@electric-sql/pglite@npm:^0.2.14, @electric-sql/pglite@npm:^0.2.15":
+  version: 0.2.15
+  resolution: "@electric-sql/pglite@npm:0.2.15"
+  checksum: 714136449bdbef92ffc8475ba2237418bbdcef3bdbeb0eb43ab2e9f5fc4c2d9c67c41cbcd1e5ad7ba758d22f1bfb996a3f372745509845e55d9f69349f396aca
   languageName: node
   linkType: hard
 
@@ -26898,41 +26847,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"embedded-postgres@npm:17.2.0-beta.15":
-  version: 17.2.0-beta.15
-  resolution: "embedded-postgres@npm:17.2.0-beta.15"
-  dependencies:
-    "@embedded-postgres/darwin-arm64": ^17.2.0-beta.15
-    "@embedded-postgres/darwin-x64": ^17.2.0-beta.15
-    "@embedded-postgres/linux-arm": ^17.2.0-beta.15
-    "@embedded-postgres/linux-arm64": ^17.2.0-beta.15
-    "@embedded-postgres/linux-ia32": ^17.2.0-beta.15
-    "@embedded-postgres/linux-ppc64": ^17.2.0-beta.15
-    "@embedded-postgres/linux-x64": ^17.2.0-beta.15
-    "@embedded-postgres/windows-x64": ^17.2.0-beta.15
-    async-exit-hook: ^2.0.1
-    pg: ^8.7.3
-  dependenciesMeta:
-    "@embedded-postgres/darwin-arm64":
-      optional: true
-    "@embedded-postgres/darwin-x64":
-      optional: true
-    "@embedded-postgres/linux-arm":
-      optional: true
-    "@embedded-postgres/linux-arm64":
-      optional: true
-    "@embedded-postgres/linux-ia32":
-      optional: true
-    "@embedded-postgres/linux-ppc64":
-      optional: true
-    "@embedded-postgres/linux-x64":
-      optional: true
-    "@embedded-postgres/windows-x64":
-      optional: true
-  checksum: 53b261693dcc83cea6cc2589794dbc69bcf4cae508f2021d4686d7fb08e686e93db97392ebd28dfd2bb0126060b54fa609487d9929a4fee19da6d66dc568863f
-  languageName: node
-  linkType: hard
-
 "emittery@npm:^0.13.1":
   version: 0.13.1
   resolution: "emittery@npm:0.13.1"
@@ -33807,7 +33721,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:3, knex@npm:^3.0.0":
+"knex-pglite@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "knex-pglite@npm:0.11.0"
+  dependencies:
+    "@electric-sql/pglite": ^0.2.14
+    knex: 3.1.0
+  checksum: 680de87b9c567bfc3009c81e85584e4e634ede8b98f14acd4d4463e1eae084cdfc0eed05979db742ee2af1bd6f857bb23ca28c4175abdf27b3d6e3e2dfcba4df
+  languageName: node
+  linkType: hard
+
+"knex@npm:3, knex@npm:3.1.0, knex@npm:^3.0.0":
   version: 3.1.0
   resolution: "knex@npm:3.1.0"
   dependencies:
@@ -38487,7 +38411,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.11.3, pg@npm:^8.7.3, pg@npm:^8.9.0":
+"pg@npm:^8.11.3, pg@npm:^8.9.0":
   version: 8.13.1
   resolution: "pg@npm:8.13.1"
   dependencies:

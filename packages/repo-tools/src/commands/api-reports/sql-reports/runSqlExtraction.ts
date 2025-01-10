@@ -17,14 +17,12 @@
 import fs, { readJson } from 'fs-extra';
 import { relative as relativePath } from 'path';
 import { paths as cliPaths } from '../../../lib/paths';
-import { getPortPromise } from 'portfinder';
 import { diff as justDiff } from 'just-diff';
 import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
 import { logApiReportInstructions } from '../api-extractor';
-import { PgLiteClient } from './pglite';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -33,57 +31,60 @@ interface SqlExtractionOptions {
 
 export async function runSqlExtraction(options: SqlExtractionOptions) {
   const { default: Knex } = await import('knex');
+  const { default: ClientPgLite } = await import('knex-pglite');
+
+  // Since we're passing this as the client we need to replace the `config.client` with `pg` afterwards
+  class WrappedClientPgLite extends ClientPgLite {
+    constructor(config: any) {
+      super({ ...config, client: 'pg' });
+    }
+  }
 
   let dbIndex = 1;
 
-  try {
-    for (const packageDir of options.packageDirs) {
-      const migrationDir = cliPaths.resolveTargetRoot(packageDir, 'migrations');
-      if (!(await fs.pathExists(migrationDir))) {
-        console.log(`No SQL migrations found in ${packageDir}`);
-        continue;
-      }
+  for (const packageDir of options.packageDirs) {
+    const migrationDir = cliPaths.resolveTargetRoot(packageDir, 'migrations');
+    if (!(await fs.pathExists(migrationDir))) {
+      console.log(`No SQL migrations found in ${packageDir}`);
+      continue;
+    }
 
-      const { name: pkgName } = await readJson(
-        cliPaths.resolveTargetRoot(packageDir, 'package.json'),
-      );
+    const { name: pkgName } = await readJson(
+      cliPaths.resolveTargetRoot(packageDir, 'package.json'),
+    );
 
-      const migrationFiles = await fs.readdir(migrationDir, {
-        withFileTypes: true,
+    const migrationFiles = await fs.readdir(migrationDir, {
+      withFileTypes: true,
+    });
+
+    const migrationTargets = migrationFiles
+      .filter(entry => entry.isDirectory())
+      .map(entry => entry.name);
+    if (migrationFiles.some(entry => entry.isFile())) {
+      migrationTargets.push('.');
+    }
+
+    for (const migrationTarget of migrationTargets) {
+      const database = `extractor-${dbIndex++}`;
+
+      const knex = Knex({
+        client: WrappedClientPgLite,
+        dialect: 'postgres',
+        connection: {
+          database,
+        },
       });
 
-      const migrationTargets = migrationFiles
-        .filter(entry => entry.isDirectory())
-        .map(entry => entry.name);
-      if (migrationFiles.some(entry => entry.isFile())) {
-        migrationTargets.push('.');
-      }
+      await knex.raw(`CREATE DATABASE "${database}"`);
 
-      for (const migrationTarget of migrationTargets) {
-        const database = `extractor-${dbIndex++}`;
-
-        const knex = Knex({
-          client: PgLiteClient,
-          dialect: 'postgres',
-          connection: {
-            database,
-          },
-        });
-
-        await knex.raw(`CREATE DATABASE "${database}"`);
-
-        await runSingleSqlExtraction(
-          packageDir,
-          migrationTarget,
-          pkgName,
-          knex,
-          options,
-        );
-      }
+      await runSingleSqlExtraction(
+        packageDir,
+        migrationTarget,
+        pkgName,
+        knex,
+        options,
+      );
     }
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
   }
 }
 
