@@ -107,6 +107,10 @@ const createBitbucketCloudBranchRestriction = async (opts: {
   return response;
 };
 
+/**
+ * Creates a new action that adds a branch restriction to a Bitbucket Cloud repository.
+ * @public
+ */
 export function createBitbucketCloudBranchRestrictionAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
