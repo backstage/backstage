@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { TabsVersion, TabsTheme } from './tabs';
+import { ThemeSelector } from './theme';
+import { ThemeNameSelector } from './theme-name';
 import styles from './styles.module.css';
 import { Nav } from './nav';
 
@@ -10,8 +10,8 @@ export const Toolbar = () => {
         <Nav />
       </div>
       <div className={styles.actions}>
-        <TabsVersion />
-        <TabsTheme />
+        <ThemeNameSelector />
+        <ThemeSelector />
       </div>
     </div>
   );

@@ -13,39 +13,26 @@
   display: flex;
   position: relative;
   z-index: 0;
-  gap: 1.5rem;
+  gap: var(--canon-spacing-lg);
 }
 
 .tab {
+  all: unset;
   height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  margin: 0;
-  outline: 0;
-  background: none;
-  appearance: none;
-  color: var(--canon-text-secondary) !important;
-  font-family: inherit;
-  font-size: 0.75rem;
-  line-height: 1.25rem;
-  font-weight: 500;
-  user-select: none;
-  flex: 1;
+  color: var(--canon-text-secondary);
+  font-size: var(--canon-font-size-body);
+  font-weight: var(--canon-font-weight-bold);
   cursor: pointer;
-  padding: 0;
+  transition: color 0.2s ease-in-out;
 
-  &[data-selected] {
-    color: var(--canon-text-primary) !important;
-
-    & p {
-      color: var(--canon-text-primary) !important;
-    }
+  &:hover {
+    color: var(--canon-text-primary);
   }
 
-  @media (hover: hover) {
-    &:hover {
+  &[data-selected] {
+    color: var(--canon-text-primary);
+
+    & p {
       color: var(--canon-text-primary);
     }
   }

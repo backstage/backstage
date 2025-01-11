@@ -1,7 +1,6 @@
 'use client';
 
 import { Tabs } from '@base-ui-components/react/tabs';
-import { Text } from '../../../../packages/canon';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import styles from './nav.module.css';
@@ -32,9 +31,7 @@ export const Nav = () => {
             router.push('/');
           }}
         >
-          <Text variant="caption" weight="bold">
-            Documentation
-          </Text>
+          Documentation
         </Tabs.Tab>
         <Tabs.Tab
           className={styles.tab}
@@ -43,9 +40,7 @@ export const Nav = () => {
             router.push('/playground');
           }}
         >
-          <Text variant="caption" weight="bold">
-            Playground
-          </Text>
+          Playground
         </Tabs.Tab>
         <Tabs.Indicator className={styles.indicator} />
       </Tabs.List>
