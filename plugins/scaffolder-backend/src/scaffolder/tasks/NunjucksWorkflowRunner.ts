@@ -304,13 +304,21 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           return;
         }
       }
+
+      const resolvedEach =
+        step.each && this.render(step.each, context, renderTemplate);
+
+      if (step.each && !resolvedEach) {
+        throw new InputError(
+          `Invalid each value passed to action ${action.id}, "${step.each}" cannot be resolved to a value`,
+        );
+      }
+
       const iterations = (
-        step.each
-          ? Object.entries(this.render(step.each, context, renderTemplate)).map(
-              ([key, value]) => ({
-                each: { key, value },
-              }),
-            )
+        resolvedEach
+          ? Object.entries(resolvedEach).map(([key, value]) => ({
+              each: { key, value },
+            }))
           : [{}]
       ).map(i => ({
         ...i,
