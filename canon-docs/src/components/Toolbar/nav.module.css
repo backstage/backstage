@@ -19,6 +19,7 @@
 .tab {
   all: unset;
   height: 60px;
+  font-family: var(--docs-font);
   color: var(--canon-text-secondary);
   font-size: var(--canon-font-size-body);
   font-weight: var(--canon-font-weight-bold);

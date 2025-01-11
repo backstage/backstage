@@ -55,9 +55,7 @@ export const Docs = () => {
         return (
           <Fragment key={section.title}>
             <Box marginTop="lg" marginBottom="2xs">
-              <Text variant="body" weight="bold">
-                {section.title}
-              </Text>
+              <div className={styles.sectionTitle}>{section.title}</div>
             </Box>
             {section.content.map(item => {
               const isActive = pathname === `${section.url}/${item.slug}`;
@@ -68,17 +66,14 @@ export const Docs = () => {
                   key={item.slug}
                   className={`${styles.line} ${isActive ? styles.active : ''}`}
                 >
-                  <Text variant="body">{item.title}</Text>
-                  <Text
-                    variant="body"
-                    style={{ color: 'var(--canon-text-secondary)' }}
-                  >
+                  <div className={styles.lineTitle}>{item.title}</div>
+                  <div className={styles.lineStatus}>
                     {item.status === 'alpha' && 'Alpha'}
                     {item.status === 'beta' && 'Beta'}
                     {item.status === 'inProgress' && 'In Progress'}
                     {item.status === 'stable' && 'Stable'}
                     {item.status === 'deprecated' && 'Deprecated'}
-                  </Text>
+                  </div>
                 </Link>
               );
             })}

@@ -39,6 +39,13 @@
   width: 100%;
 }
 
+.sectionTitle {
+  font-family: var(--docs-font);
+  font-size: var(--canon-font-size-body);
+  font-weight: var(--canon-font-weight-bold);
+  padding: 12px 0;
+}
+
 .line {
   width: 100%;
   display: flex;
@@ -57,4 +64,17 @@
 
 .line.active {
   background-color: var(--canon-surface-2);
+}
+
+.lineTitle {
+  font-family: var(--docs-font);
+  font-size: var(--canon-font-size-body);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-text-primary);
+}
+
+.lineStatus {
+  font-family: var(--docs-font);
+  font-size: var(--canon-font-size-body);
+  color: var(--canon-text-secondary);
 }
