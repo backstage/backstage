@@ -13,20 +13,13 @@
   overflow: hidden;
 }
 
+.logoContainer {
+  padding-left: 6px;
+  padding-top: 32px;
+}
+
 .logo path {
   fill: var(--canon-text-primary);
-}
-
-.content {
-  padding-top: 20px;
-}
-
-.actions {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  margin-top: 20px;
-  margin-bottom: 12px;
 }
 
 .menu {
