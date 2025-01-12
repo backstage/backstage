@@ -13,6 +13,7 @@ import '/public/backstage.css';
 export const metadata: Metadata = {
   title: 'Canon',
   description: 'UI library for Backstage',
+  metadataBase: new URL('https://canon.backstage.io'),
 };
 
 export default function RootLayout({
