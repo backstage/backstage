@@ -4,7 +4,8 @@
 
 @media (min-width: 768px) {
   .sidebar {
-    display: fixed;
+    display: block;
+    position: fixed;
     top: 0;
     left: 0;
     width: 300px;
