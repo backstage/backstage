@@ -74,7 +74,7 @@ export class CacheManager {
 
     if (config.has('backend.cache.useRedisSets')) {
       logger?.warn(
-        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' library no longer supports redis sets.",
+        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/valkey' library no longer supports redis sets.",
       );
     }
 
@@ -139,12 +139,12 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis').default;
-    const stores: Record<string, typeof KeyvRedis> = {};
+    const KeyvValkey = require('@keyv/valkey').default;
+    const stores: Record<string, typeof KeyvValkey> = {};
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        stores[pluginId] = new KeyvRedis(this.connection, {
+        stores[pluginId] = new KeyvValkey(this.connection, {
           keyPrefixSeparator: ':',
         });
         // Always provide an error handler to avoid stopping the process
