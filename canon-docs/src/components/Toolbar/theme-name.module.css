@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  height: 2.5rem;
+  height: 2rem;
   padding-left: 0.875rem;
   padding-right: 0.75rem;
   margin: 0;
@@ -30,6 +30,15 @@
   display: flex;
 }
 
+.SelectValue {
+  font-size: var(--canon-font-size-body);
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.Positioner {
+  z-index: 20;
+}
+
 .Popup {
   box-sizing: border-box;
   padding-block: 0.25rem;
@@ -37,7 +46,7 @@
   background-color: canvas;
   color: var(--color-gray-900);
   border: 1px solid var(--canon-border-base);
-
+  padding-inline: 0.25rem;
   transform-origin: var(--transform-origin);
   transition: transform 150ms, opacity 150ms;
 
@@ -81,6 +90,9 @@
   grid-template-columns: 0.75rem 1fr;
   cursor: default;
   user-select: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
 
   [data-side='none'] & {
     font-size: 1rem;
@@ -92,6 +104,7 @@
     z-index: 0;
     position: relative;
     color: var(--color-gray-50);
+    background-color: var(--canon-surface-2);
   }
 
   &[data-highlighted]::before {
@@ -107,6 +120,10 @@
 
 .ItemIndicator {
   grid-column-start: 1;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
 }
 
 .ItemIndicatorIcon {
@@ -117,13 +134,4 @@
 
 .ItemText {
   grid-column-start: 2;
-}
-
-.SelectValue {
-  font-size: var(--canon-font-size-body);
-  font-weight: var(--canon-font-weight-bold);
-}
-
-.Positioner {
-  z-index: 20;
 }
