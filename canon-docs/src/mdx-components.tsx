@@ -1,33 +1,64 @@
+import React, { ReactNode } from 'react';
 import type { MDXComponents } from 'mdx/types';
 import Image, { ImageProps } from 'next/image';
-import { ReactNode } from 'react';
-import React from 'react';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Heading } from '../../packages/canon/src/components/Heading';
-import { Text } from '../../packages/canon/src/components/Text';
 import { Box } from '../../packages/canon/src/components/Box';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     // Allows customizing built-in components, e.g. to add styling.
     h1: ({ children }) => (
-      <Box marginBottom="md" style={{ marginTop: '4rem' }}>
-        <Heading variant="title2">{children as ReactNode}</Heading>
+      <Box style={{ marginTop: '4rem' }}>
+        <h1
+          style={{
+            fontFamily: 'var(--docs-font)',
+            fontSize: '3rem',
+            fontWeight: 'var(--canon-font-weight-bold)',
+            margin: 0,
+          }}
+        >
+          {children as ReactNode}
+        </h1>
       </Box>
     ),
     h2: ({ children }) => (
       <Box marginTop="2xl" marginBottom="md">
-        <Heading variant="title4">{children as ReactNode}</Heading>
+        <h2
+          style={{
+            fontFamily: 'var(--docs-font)',
+            fontSize: '1.5rem',
+            fontWeight: 'var(--canon-font-weight-bold)',
+          }}
+        >
+          {children as ReactNode}
+        </h2>
       </Box>
     ),
     h3: ({ children }) => (
       <Box marginTop="xl" marginBottom="xs">
-        <Heading variant="title5">{children as ReactNode}</Heading>
+        <h3
+          style={{
+            fontFamily: 'var(--docs-font)',
+            fontSize: '1.25rem',
+            fontWeight: 'var(--canon-font-weight-bold)',
+          }}
+        >
+          {children as ReactNode}
+        </h3>
       </Box>
     ),
     p: ({ children }) => (
       <Box marginBottom="sm">
-        <Text variant="subtitle">{children as ReactNode}</Text>
+        <p
+          style={{
+            fontFamily: 'var(--docs-font)',
+            fontSize: '1rem',
+            lineHeight: '1.5',
+          }}
+        >
+          {children as ReactNode}
+        </p>
       </Box>
     ),
     a: ({ children, href }) => (
@@ -42,6 +73,21 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
       return <CodeBlock lang="tsx" code={codeContent} />;
     },
+    code: ({ children }) => (
+      <code
+        style={{
+          fontFamily: 'var(--canon-font-monospace)',
+          backgroundColor: 'var(--canon-surface-1)',
+          padding: '0.2rem 0.375rem',
+          borderRadius: '0.25rem',
+          color: 'var(--canon-text-secondary)',
+          border: '1px solid var(--canon-border-base)',
+          fontSize: '0.875rem',
+        }}
+      >
+        {children}
+      </code>
+    ),
     img: props => (
       <Image
         sizes="100vw"
