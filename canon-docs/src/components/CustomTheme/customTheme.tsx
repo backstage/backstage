@@ -7,10 +7,43 @@ import styles from './styles.module.css';
 import { usePlayground } from '@/utils/playground-context';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Icon } from '../../../../packages/canon';
+import { createTheme } from '@uiw/codemirror-themes';
+import { tags as t } from '@lezer/highlight';
 
 const defaultTheme = `:root {
   --canon-accent: #000;
 }`;
+
+const myTheme = createTheme({
+  theme: 'light',
+  settings: {
+    background: 'var(--canon-surface-1)',
+    backgroundImage: '',
+    foreground: '#6182B8',
+    caret: '#5d00ff',
+    selection: '#036dd626',
+    selectionMatch: '#036dd626',
+    lineHighlight: '#8a91991a',
+    gutterBackground: '#fff',
+    gutterForeground: '#8a919966',
+  },
+  styles: [
+    { tag: t.comment, color: '#787b8099' },
+    { tag: t.variableName, color: '#0080ff' },
+    { tag: [t.string, t.special(t.brace)], color: '#6182B8' },
+    { tag: t.number, color: '#6182B8' },
+    { tag: t.bool, color: '#6182B8' },
+    { tag: t.null, color: '#6182B8' },
+    { tag: t.keyword, color: '#6182B8' },
+    { tag: t.operator, color: '#6182B8' },
+    { tag: t.className, color: '#6182B8' },
+    { tag: t.definition(t.typeName), color: '#6182B8' },
+    { tag: t.typeName, color: '#6182B8' },
+    { tag: t.angleBracket, color: '#6182B8' },
+    { tag: t.tagName, color: '#6182B8' },
+    { tag: t.attributeName, color: '#6182B8' },
+  ],
+});
 
 export const CustomTheme = () => {
   const [isClient, setIsClient] = useState(false);
@@ -104,6 +137,7 @@ export const CustomTheme = () => {
               onChange={handleChange}
               className={styles.editor}
               basicSetup={{ foldGutter: false }}
+              theme={myTheme}
             />
           </div>
         </motion.div>

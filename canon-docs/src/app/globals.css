@@ -36,6 +36,10 @@ iframe {
   text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 
+.cm-editor {
+  transition: background-color 0.2s ease-in-out;
+}
+
 .ͼ2 .cm-gutters {
   background-color: var(--canon-surface-2);
   border-right: 1px solid var(--canon-border-base);
@@ -64,9 +68,4 @@ iframe {
 
 .cm-focused {
   outline: none !important;
-}
-
-.cm-editor {
-  background-color: var(--canon-surface-1);
-  transition: background-color 0.2s ease-in-out;
 }

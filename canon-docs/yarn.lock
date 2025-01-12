@@ -406,7 +406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/highlight@npm:^1.0.0":
+"@lezer/highlight@npm:^1.0.0, @lezer/highlight@npm:^1.2.1":
   version: 1.2.1
   resolution: "@lezer/highlight@npm:1.2.1"
   dependencies:
@@ -1108,6 +1108,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@uiw/codemirror-themes@npm:^4.23.7":
+  version: 4.23.7
+  resolution: "@uiw/codemirror-themes@npm:4.23.7"
+  dependencies:
+    "@codemirror/language": ^6.0.0
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+  peerDependencies:
+    "@codemirror/language": ">=6.0.0"
+    "@codemirror/state": ">=6.0.0"
+    "@codemirror/view": ">=6.0.0"
+  checksum: 8c2a9a7ee8df2de3f09ad1f18979c4b407f7dd03e1f6ddfe47837b9e4769b566a70259ec8c398473b6b6db79cdb8809d4acc2f2ed7851743e13ff95308f52e33
+  languageName: node
+  linkType: hard
+
 "@uiw/react-codemirror@npm:^4.23.7":
   version: 4.23.7
   resolution: "@uiw/react-codemirror@npm:4.23.7"
@@ -1481,6 +1496,7 @@ __metadata:
   resolution: "canon-docs@workspace:."
   dependencies:
     "@codemirror/lang-sass": ^6.0.2
+    "@lezer/highlight": ^1.2.1
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
     "@next/mdx": ^15.1.4
@@ -1489,6 +1505,7 @@ __metadata:
     "@types/node": ^20
     "@types/react": ^18
     "@types/react-dom": ^18
+    "@uiw/codemirror-themes": ^4.23.7
     "@uiw/react-codemirror": ^4.23.7
     concurrently: ^9.1.2
     eslint: ^8
