@@ -197,6 +197,10 @@ export function registerCommands(program: Command) {
       'Optional sub-directory to store files in Amazon S3',
     )
     .option(
+      '--awsMaxAttempts <AWS MAX ATTEMPTS>',
+      'Optional maximum number of retries for AWS S3 operations. If not specified, default value of 3 is used.',
+    )
+    .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
