@@ -1,16 +1,22 @@
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 300px;
-  height: 100vh;
-  color: var(--canon-text-primary);
-  background-color: var(--canon-surface-1);
-  border-right: 1px solid var(--canon-border-base);
-  padding-left: 20px;
-  padding-right: 20px;
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  overflow: hidden;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    color: var(--canon-text-primary);
+    background-color: var(--canon-surface-1);
+    border-right: 1px solid var(--canon-border-base);
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    overflow: hidden;
+  }
 }
 
 .logoContainer {
