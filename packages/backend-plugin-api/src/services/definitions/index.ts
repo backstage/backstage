@@ -15,9 +15,10 @@
  */
 
 export type {
-  AuditorCreateEvent,
-  AuditorEventSeverityLevel,
   AuditorService,
+  AuditorServiceCreateEventOptions,
+  AuditorServiceEvent,
+  AuditorServiceEventSeverityLevel,
 } from './AuditorService';
 export type {
   AuthService,
@@ -33,7 +34,6 @@ export type {
   CacheServiceOptions,
   CacheServiceSetOptions,
 } from './CacheService';
-export { coreServices } from './coreServices';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
 export type { HttpAuthService } from './HttpAuthService';
@@ -86,3 +86,4 @@ export type {
   UrlReaderServiceSearchResponseFile,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
+export { coreServices } from './coreServices';

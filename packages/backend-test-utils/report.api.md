@@ -36,7 +36,6 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import type { RootAuditorOptions } from '@backstage/backend-defaults/auditor';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -155,19 +154,11 @@ export function mockErrorHandler(): ErrorRequestHandler<
 
 // @public
 export namespace mockServices {
-  export function auditor(
-    options?: auditor.Options & {
-      pluginId?: string;
-    },
-  ): AuditorService;
+  export function auditor(options?: { pluginId?: string }): AuditorService;
   // (undocumented)
   export namespace auditor {
-    // (undocumented)
-    export type Options = RootAuditorOptions;
     const // (undocumented)
-      factory: (
-        options?: auditor.Options,
-      ) => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
+      factory: () => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<AuditorService> | undefined,

@@ -589,7 +589,13 @@ export async function createRouter(
           const result = validate(values, parameters);
 
           if (!result.valid) {
-            await auditorEvent?.fail({ errors: result.errors });
+            await auditorEvent?.fail({
+              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+              error: (AggregateError as any)(
+                result.errors,
+                'Could not create entity',
+              ),
+            });
 
             res.status(400).json({ errors: result.errors });
             return;
@@ -987,7 +993,11 @@ export async function createRouter(
           const result = validate(body.values, parameters);
           if (!result.valid) {
             await auditorEvent?.fail({
-              errors: result.errors,
+              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+              error: (AggregateError as any)(
+                result.errors,
+                'Could not execute dry run',
+              ),
               meta: {
                 templateRef: templateRef,
                 parameters: template.spec.parameters,

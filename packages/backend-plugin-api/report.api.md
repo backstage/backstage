@@ -26,39 +26,34 @@ import { Readable } from 'stream';
 import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
 
-// @public (undocumented)
-export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
-  eventId: string;
-  severityLevel?: AuditorEventSeverityLevel;
-  request?: Request_2<any, any, any, any, any>;
-  meta?: TRootMeta;
-  suppressInitialEvent?: boolean;
-}) => Promise<{
-  success<TMeta extends JsonObject>(options?: { meta?: TMeta }): Promise<void>;
-  fail<TMeta extends JsonObject, TError extends Error>(
-    options: {
-      meta?: TMeta;
-    } & (
-      | {
-          error: TError;
-        }
-      | {
-          errors: TError[];
-        }
-    ),
-  ): Promise<void>;
-}>;
-
-// @public
-export type AuditorEventSeverityLevel = 'low' | 'medium' | 'high' | 'critical';
-
 // @public
 export interface AuditorService {
   // (undocumented)
-  createEvent<TMeta extends JsonObject>(
-    options: Parameters<AuditorCreateEvent<TMeta>>[0],
-  ): ReturnType<AuditorCreateEvent<TMeta>>;
+  createEvent(
+    options: AuditorServiceCreateEventOptions,
+  ): Promise<AuditorServiceEvent>;
 }
+
+// @public (undocumented)
+export type AuditorServiceCreateEventOptions = {
+  eventId: string;
+  severityLevel?: AuditorServiceEventSeverityLevel;
+  request?: Request_2<any, any, any, any, any>;
+  meta?: JsonObject;
+};
+
+// @public (undocumented)
+export type AuditorServiceEvent = {
+  success(options?: { meta?: JsonObject }): Promise<void>;
+  fail(options: { meta?: JsonObject; error: Error }): Promise<void>;
+};
+
+// @public
+export type AuditorServiceEventSeverityLevel =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'critical';
 
 // @public
 export interface AuthService {

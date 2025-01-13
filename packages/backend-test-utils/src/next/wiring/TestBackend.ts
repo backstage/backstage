@@ -16,24 +16,22 @@
 
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import {
+  createServiceFactory,
   BackendFeature,
   ExtensionPoint,
   coreServices,
   createBackendModule,
   createBackendPlugin,
-  createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-import { mockServices } from '../services';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   InternalBackendFeature,
   InternalBackendRegistrations,
 } from '../../../../backend-plugin-api/src/wiring/types';
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import {
   DefaultRootHttpRouter,
   ExtendedHttpServer,
@@ -41,8 +39,7 @@ import {
   createHealthRouter,
   createHttpServer,
 } from '@backstage/backend-defaults/rootHttpRouter';
-// Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {

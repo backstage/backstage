@@ -19,17 +19,19 @@ import type {
   AuditorEventOptions,
 } from '@backstage/backend-defaults/auditor';
 import type {
-  AuditorCreateEvent,
   AuditorService,
+  AuditorServiceCreateEventOptions,
+  AuditorServiceEvent,
   AuthService,
   BackstageCredentials,
   HttpAuthService,
   PluginMetadataService,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
 import type { JsonObject } from '@backstage/types';
 import type { Request } from 'express';
-import type { mockServices } from './mockServices';
+import { mockServices } from './mockServices';
 
 export class MockAuditorService implements AuditorService {
   private readonly impl: MockRootAuditorService;
@@ -69,12 +71,10 @@ export class MockAuditorService implements AuditorService {
     this.impl.log(auditEvent);
   }
 
-  async createEvent<TMeta extends JsonObject>(
-    options: Parameters<AuditorCreateEvent<TMeta>>[0],
-  ): ReturnType<AuditorCreateEvent<TMeta>> {
-    if (!options.suppressInitialEvent) {
-      await this.log({ ...options, status: 'initiated' });
-    }
+  async createEvent(
+    options: AuditorServiceCreateEventOptions,
+  ): Promise<AuditorServiceEvent> {
+    await this.log({ ...options, status: 'initiated' });
 
     return {
       success: async params => {
@@ -164,20 +164,29 @@ export class MockAuditorService implements AuditorService {
 }
 
 export class MockRootAuditorService {
-  private readonly options: mockServices.auditor.Options;
+  private readonly impl: RootLoggerService;
 
-  private constructor(options?: mockServices.auditor.Options) {
-    this.options = options ?? {};
+  private constructor() {
+    this.impl = mockServices.rootLogger();
   }
 
-  static create(
-    options?: mockServices.auditor.Options,
-  ): MockRootAuditorService {
-    return new MockRootAuditorService(options);
+  static create(): MockRootAuditorService {
+    return new MockRootAuditorService();
   }
 
-  async log(auditEvent: AuditorEvent): Promise<void> {
-    this.#log(...auditEvent);
+  async log(auditorEvent: AuditorEvent): Promise<void> {
+    const [eventId, meta] = auditorEvent;
+
+    // change `error` type to a string for logging purposes
+    let fields: Omit<AuditorEvent[1], 'error'> & { error?: string };
+
+    if ('error' in meta) {
+      fields = { ...meta, error: meta.error.toString() };
+    } else {
+      fields = meta;
+    }
+
+    this.impl.info(eventId, fields);
   }
 
   forPlugin(deps: {
@@ -185,11 +194,7 @@ export class MockRootAuditorService {
     httpAuth: HttpAuthService;
     plugin: PluginMetadataService;
   }): AuditorService {
-    const impl = new MockRootAuditorService(this.options);
+    const impl = new MockRootAuditorService();
     return MockAuditorService.create(impl, deps);
-  }
-
-  #log(message: string, meta?: AuditorEvent[1]) {
-    console.log(message, JSON.stringify(meta));
   }
 }

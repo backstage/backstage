@@ -18,23 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import type { Config } from '@backstage/config';
-import * as winston from 'winston';
-import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
-import {
-  DefaultRootAuditorService,
-  auditorFieldFormat,
-  defaultProdFormat,
-} from './Auditor';
-
-const transports = {
-  auditorConsole: (config?: Config) => {
-    if (!config?.getOptionalBoolean('console.enabled')) {
-      return [];
-    }
-    return [defaultConsoleTransport];
-  },
-};
+import { DefaultRootAuditorService } from './Auditor';
 
 /**
  * Plugin-level auditing.
@@ -48,26 +32,13 @@ const transports = {
 export const auditorServiceFactory = createServiceFactory({
   service: coreServices.auditor,
   deps: {
-    config: coreServices.rootConfig,
+    rootLogger: coreServices.rootLogger,
     auth: coreServices.auth,
     httpAuth: coreServices.httpAuth,
     plugin: coreServices.pluginMetadata,
   },
-  async createRootContext({ config }) {
-    const auditorConfig = config.getOptionalConfig('backend.auditor');
-
-    const auditor = DefaultRootAuditorService.create({
-      meta: {
-        service: 'backstage',
-      },
-      format: winston.format.combine(
-        auditorFieldFormat,
-        process.env.NODE_ENV === 'production'
-          ? defaultProdFormat
-          : DefaultRootAuditorService.colorFormat(),
-      ),
-      transports: [...transports.auditorConsole(auditorConfig)],
-    });
+  async createRootContext({ rootLogger }) {
+    const auditor = DefaultRootAuditorService.create({ rootLogger });
 
     return auditor;
   },

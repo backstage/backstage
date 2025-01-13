@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { RootAuditorOptions } from '@backstage/backend-defaults/auditor';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -227,12 +226,7 @@ export namespace mockServices {
   /**
    * Creates a mock implementation of the `AuditorService`.
    */
-  export function auditor(
-    options?: auditor.Options & {
-      pluginId?: string;
-    },
-  ): AuditorService {
-    const service = 'backstage';
+  export function auditor(options?: { pluginId?: string }): AuditorService {
     const pluginId = options?.pluginId ?? 'test';
     const mockAuth = new MockAuthService({
       pluginId,
@@ -247,9 +241,7 @@ export namespace mockServices {
       getId: () => pluginId,
     };
 
-    const auditorMock = MockRootAuditorService.create({
-      meta: options?.meta ? { ...options.meta, service } : { service },
-    });
+    const auditorMock = MockRootAuditorService.create();
 
     return auditorMock.forPlugin({
       auth: mockAuth,
@@ -259,9 +251,7 @@ export namespace mockServices {
   }
 
   export namespace auditor {
-    export type Options = RootAuditorOptions;
-
-    export const factory = (options?: auditor.Options) =>
+    export const factory = () =>
       createServiceFactory({
         service: coreServices.auditor,
         deps: {
@@ -270,11 +260,7 @@ export namespace mockServices {
           plugin: coreServices.pluginMetadata,
         },
         createRootContext() {
-          const service = 'backstage';
-
-          return MockRootAuditorService.create({
-            meta: options?.meta ? { ...options.meta, service } : { service },
-          });
+          return MockRootAuditorService.create();
         },
         factory(
           { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },

@@ -15,21 +15,22 @@
  */
 
 import type {
-  AuditorCreateEvent,
-  AuditorEventSeverityLevel,
   AuditorService,
+  AuditorServiceCreateEventOptions,
+  AuditorServiceEvent,
+  AuditorServiceEventSeverityLevel,
   AuthService,
   BackstageCredentials,
   HttpAuthService,
   PluginMetadataService,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
 import type { JsonObject } from '@backstage/types';
 import type { Request } from 'express';
 import type { Format } from 'logform';
 import * as winston from 'winston';
-import { colorFormat } from '../../lib/colorFormat';
-import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
+import { WinstonLogger } from '../rootLogger';
 
 /** @public */
 export type AuditorEventActorDetails = {
@@ -46,12 +47,13 @@ export type AuditorEventRequest = {
 };
 
 /** @public */
-export type AuditorEventStatus<TError extends Error = Error> =
+export type AuditorEventStatus =
   | { status: 'initiated' }
   | { status: 'succeeded' }
-  | ({
+  | {
       status: 'failed';
-    } & ({ error: TError } | { errors: TError[] }));
+      error: Error;
+    };
 
 /**
  * Options for creating an auditor event.
@@ -66,7 +68,7 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
    */
   eventId: string;
 
-  severityLevel?: AuditorEventSeverityLevel;
+  severityLevel?: AuditorServiceEventSeverityLevel;
 
   /** (Optional) The associated HTTP request, if applicable. */
   request?: Request<any, any, any, any, any>;
@@ -83,7 +85,7 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
 export type AuditorEvent = [
   eventId: string,
   meta: {
-    severityLevel: AuditorEventSeverityLevel;
+    severityLevel: AuditorServiceEventSeverityLevel;
     actor: AuditorEventActorDetails;
     meta?: JsonObject;
     request?: AuditorEventRequest;
@@ -91,7 +93,7 @@ export type AuditorEvent = [
 ];
 
 /** @public */
-export const defaultProdFormat = winston.format.combine(
+export const defaultFormatter = winston.format.combine(
   winston.format.timestamp({
     format: 'YYYY-MM-DD HH:mm:ss',
   }),
@@ -108,13 +110,6 @@ export const defaultProdFormat = winston.format.combine(
 export const auditorFieldFormat = winston.format(info => {
   return { ...info, isAuditorEvent: true };
 })();
-
-/** @public */
-export interface RootAuditorOptions {
-  meta?: JsonObject;
-  format?: Format;
-  transports?: winston.transport[];
-}
 
 /**
  * A {@link @backstage/backend-plugin-api#AuditorService} implementation based on winston.
@@ -162,12 +157,10 @@ export class DefaultAuditorService implements AuditorService {
     this.impl.log(auditEvent);
   }
 
-  async createEvent<TMeta extends JsonObject>(
-    options: Parameters<AuditorCreateEvent<TMeta>>[0],
-  ): ReturnType<AuditorCreateEvent<TMeta>> {
-    if (!options.suppressInitialEvent) {
-      await this.log({ ...options, status: 'initiated' });
-    }
+  async createEvent(
+    options: AuditorServiceCreateEventOptions,
+  ): Promise<AuditorServiceEvent> {
+    await this.log({ ...options, status: 'initiated' });
 
     return {
       success: async params => {
@@ -256,11 +249,28 @@ export class DefaultAuditorService implements AuditorService {
   }
 }
 
+/**
+ * Options for creating a root auditor.
+ * If `rootLogger` is provided, the root auditor will default to using it.
+ * Otherwise, a new logger will be created using the provided `meta`, `format`, and `transports`.
+ *
+ * @public
+ */
+export type RootAuditorOptions =
+  | {
+      meta?: JsonObject;
+      format?: Format;
+      transports?: winston.transport[];
+    }
+  | {
+      rootLogger: RootLoggerService;
+    };
+
 /** @public */
 export class DefaultRootAuditorService {
-  private readonly impl: winston.Logger;
+  private readonly impl: WinstonLogger;
 
-  private constructor(impl: winston.Logger) {
+  private constructor(impl: WinstonLogger) {
     this.impl = impl;
   }
 
@@ -268,35 +278,44 @@ export class DefaultRootAuditorService {
    * Creates a {@link DefaultRootAuditorService} instance.
    */
   static create(options?: RootAuditorOptions): DefaultRootAuditorService {
-    const defaultFormatter =
-      process.env.NODE_ENV === 'production'
-        ? defaultProdFormat
-        : DefaultRootAuditorService.colorFormat();
+    if (options && 'rootLogger' in options) {
+      return new DefaultRootAuditorService(
+        options.rootLogger.child({ isAuditorEvent: true }) as WinstonLogger,
+      );
+    }
 
-    let auditor = winston.createLogger({
+    let auditor = WinstonLogger.create({
+      meta: {
+        service: 'backstage',
+      },
       level: 'info',
       format: winston.format.combine(
         auditorFieldFormat,
         options?.format ?? defaultFormatter,
       ),
-      transports: options?.transports ?? defaultConsoleTransport,
+      transports: options?.transports,
     });
 
     if (options?.meta) {
-      auditor = auditor.child(options.meta);
+      auditor = auditor.child(options.meta) as WinstonLogger;
     }
+
     return new DefaultRootAuditorService(auditor);
   }
 
-  /**
-   * Creates a pretty printed winston log formatter.
-   */
-  static colorFormat(): Format {
-    return colorFormat();
-  }
+  async log(auditorEvent: AuditorEvent): Promise<void> {
+    const [eventId, meta] = auditorEvent;
 
-  async log(auditEvent: AuditorEvent): Promise<void> {
-    this.impl.info(...auditEvent);
+    // change `error` type to a string for logging purposes
+    let fields: Omit<AuditorEvent[1], 'error'> & { error?: string };
+
+    if ('error' in meta) {
+      fields = { ...meta, error: meta.error.toString() };
+    } else {
+      fields = meta;
+    }
+
+    this.impl.info(eventId, fields);
   }
 
   forPlugin(deps: {
@@ -304,7 +323,9 @@ export class DefaultRootAuditorService {
     httpAuth: HttpAuthService;
     plugin: PluginMetadataService;
   }): AuditorService {
-    const impl = new DefaultRootAuditorService(this.impl.child({}));
+    const impl = new DefaultRootAuditorService(
+      this.impl.child({}) as WinstonLogger,
+    );
     return DefaultAuditorService.create(impl, deps);
   }
 }

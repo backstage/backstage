@@ -634,7 +634,6 @@ export class TaskManager implements TaskContext_2 {
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
-    auditor?: AuditorService,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;

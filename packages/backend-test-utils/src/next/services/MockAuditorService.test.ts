@@ -25,31 +25,8 @@ describe('MockAuditorService', () => {
     jest.resetAllMocks();
   });
 
-  it('should log', async () => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    const pluginId = 'test-plugin';
-
-    const auditor = MockRootAuditorService.create().forPlugin({
-      plugin: {
-        getId: () => pluginId,
-      },
-      auth: new MockAuthService({
-        pluginId,
-        disableDefaultAuthPolicy: false,
-      }),
-      httpAuth: new MockHttpAuthService(pluginId, mockCredentials.user()),
-    });
-
-    await auditor.createEvent({
-      eventId: 'test-event',
-    });
-
-    expect(console.log).toHaveBeenCalled();
-  });
-
   it('should send initiated log with createEvent', async () => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    const spy = jest.spyOn(MockRootAuditorService.prototype, 'log');
 
     const pluginId = 'test-plugin';
 
@@ -68,11 +45,11 @@ describe('MockAuditorService', () => {
       eventId: 'test-event',
     });
 
-    expect(console.log).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should send succeeded log with createEvent', async () => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    const spy = jest.spyOn(MockRootAuditorService.prototype, 'log');
 
     const pluginId = 'test-plugin';
 
@@ -93,11 +70,11 @@ describe('MockAuditorService', () => {
 
     await auditorEvent.success();
 
-    expect(console.log).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   it('should send failed log with createEvent', async () => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    const spy = jest.spyOn(MockRootAuditorService.prototype, 'log');
 
     const pluginId = 'test-plugin';
 
@@ -118,6 +95,6 @@ describe('MockAuditorService', () => {
 
     await auditorEvent.fail({ error: new Error('error') as ErrorLike });
 
-    expect(console.log).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 });

@@ -632,18 +632,6 @@ export interface Config {
         paths?: string[];
       }>;
     };
-    auditor?: {
-      /**
-       * Configuration for the auditing to the console
-       */
-      console: {
-        /**
-         * Enables auditing to console
-         * @default true
-         */
-        enabled: boolean;
-      };
-    };
   };
 
   /**

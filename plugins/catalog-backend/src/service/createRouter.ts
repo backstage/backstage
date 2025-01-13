@@ -330,10 +330,23 @@ export async function createRouter(
           });
 
           writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
-          
+
           await auditorEvent?.success({
             meta: {
-              entities: entities,
+              // stringify to entity refs
+              entities: entities.entities.reduce((arr, element) => {
+                if (!element) {
+                  return arr;
+                }
+
+                if (typeof element === 'string') {
+                  arr.push(element);
+                  return arr;
+                }
+
+                arr.push(stringifyEntityRef(element));
+                return arr;
+              }, [] as string[]),
             },
           });
         } catch (err) {
@@ -793,7 +806,8 @@ export async function createRouter(
           const errors = processingResult.errors.map(e => serializeError(e));
 
           await auditorEvent?.fail({
-            errors: errors,
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(errors, 'Could not validate entity'),
           });
 
           res.status(400).json({

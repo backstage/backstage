@@ -15,13 +15,12 @@
  */
 
 import {
-  coreServices,
   createServiceFactory,
+  coreServices,
 } from '@backstage/backend-plugin-api';
-import { format } from 'winston';
-import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
-import { createConfigSecretEnumerator } from '../rootConfig/createConfigSecretEnumerator';
+import { transports, format } from 'winston';
 import { WinstonLogger } from '../rootLogger/WinstonLogger';
+import { createConfigSecretEnumerator } from '../rootConfig/createConfigSecretEnumerator';
 
 /**
  * Root-level logging.
@@ -47,7 +46,7 @@ export const rootLoggerServiceFactory = createServiceFactory({
         process.env.NODE_ENV === 'production'
           ? format.json()
           : WinstonLogger.colorFormat(),
-      transports: [defaultConsoleTransport],
+      transports: [new transports.Console()],
     });
 
     const secretEnumerator = await createConfigSecretEnumerator({ logger });

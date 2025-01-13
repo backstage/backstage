@@ -174,7 +174,7 @@ export class TaskWorker {
   }
 
   async runOneTask(task: TaskContext) {
-    await this.auditor?.createEvent({
+    const auditorEvent = await this.auditor?.createEvent({
       eventId: 'task',
       severityLevel: 'medium',
       meta: {
@@ -197,8 +197,12 @@ export class TaskWorker {
       );
 
       await task.complete('completed', { output });
+      await auditorEvent?.success();
     } catch (error) {
       assertError(error);
+      await auditorEvent?.fail({
+        error,
+      });
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });

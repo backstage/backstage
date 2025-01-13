@@ -75,7 +75,6 @@ export class TaskManager implements TaskContext {
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
-    auditor?: AuditorService,
   ) {
     const workspaceService = DefaultWorkspaceService.create(
       task,
@@ -91,7 +90,6 @@ export class TaskManager implements TaskContext {
       logger,
       workspaceService,
       auth,
-      auditor,
     );
     agent.startTimeout();
     return agent;
@@ -105,7 +103,6 @@ export class TaskManager implements TaskContext {
     private readonly logger: Logger,
     private readonly workspaceService: WorkspaceService,
     private readonly auth?: AuthService,
-    private readonly auditor?: AuditorService,
   ) {}
 
   get spec() {
@@ -203,26 +200,6 @@ export class TaskManager implements TaskContext {
     this.isDone = true;
     if (this.heartbeatTimeoutId) {
       clearTimeout(this.heartbeatTimeoutId);
-    }
-
-    const auditorEvent = await this.auditor?.createEvent({
-      eventId: 'task',
-      severityLevel: 'medium',
-      meta: {
-        actionType: 'execution',
-        taskId: this.task.taskId,
-        taskParameters: this.task.spec.parameters,
-      },
-      // The initial event is created in TaskWorker
-      suppressInitialEvent: true,
-    });
-
-    if (result === 'failed') {
-      await auditorEvent?.fail({
-        error: metadata?.error as any,
-      });
-    } else {
-      await auditorEvent?.success();
     }
   }
 
@@ -396,7 +373,6 @@ export class StorageTaskBroker implements TaskBroker {
           this.auth,
           this.config,
           this.additionalWorkspaceProviders,
-          this.auditor,
         );
       }
 

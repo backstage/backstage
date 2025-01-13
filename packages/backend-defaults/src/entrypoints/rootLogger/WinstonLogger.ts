@@ -19,11 +19,16 @@ import {
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { Format } from 'logform';
-import { Logger, transport as Transport, createLogger, format } from 'winston';
-import { colorFormat } from '../../lib/colorFormat';
-import { defaultConsoleTransport } from '../../lib/defaultConsoleTransport';
-import { redacterFormat } from '../../lib/redacterFormat';
+import { Format, TransformableInfo } from 'logform';
+import {
+  Logger,
+  format,
+  createLogger,
+  transports,
+  transport as Transport,
+} from 'winston';
+import { MESSAGE } from 'triple-beam';
+import { escapeRegExp } from '../../lib/escapeRegExp';
 
 /**
  * @public
@@ -60,7 +65,7 @@ export class WinstonLogger implements RootLoggerService {
         options.format ?? defaultFormatter,
         redacter.format,
       ),
-      transports: options.transports ?? defaultConsoleTransport,
+      transports: options.transports ?? new transports.Console(),
     });
 
     if (options.meta) {
@@ -77,14 +82,87 @@ export class WinstonLogger implements RootLoggerService {
     format: Format;
     add: (redactions: Iterable<string>) => void;
   } {
-    return redacterFormat();
+    const redactionSet = new Set<string>();
+
+    let redactionPattern: RegExp | undefined = undefined;
+
+    return {
+      format: format((obj: TransformableInfo) => {
+        if (!redactionPattern || !obj) {
+          return obj;
+        }
+
+        obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '***');
+
+        return obj;
+      })(),
+      add(newRedactions) {
+        let added = 0;
+        for (const redactionToTrim of newRedactions) {
+          // Trimming the string ensures that we don't accdentally get extra
+          // newlines or other whitespace interfering with the redaction; this
+          // can happen for example when using string literals in yaml
+          const redaction = redactionToTrim.trim();
+          // Exclude secrets that are empty or just one character in length. These
+          // typically mean that you are running local dev or tests, or using the
+          // --lax flag which sets things to just 'x'.
+          if (redaction.length <= 1) {
+            continue;
+          }
+          if (!redactionSet.has(redaction)) {
+            redactionSet.add(redaction);
+            added += 1;
+          }
+        }
+        if (added > 0) {
+          const redactions = Array.from(redactionSet)
+            .map(r => escapeRegExp(r))
+            .join('|');
+          redactionPattern = new RegExp(`(${redactions})`, 'g');
+        }
+      },
+    };
   }
 
   /**
    * Creates a pretty printed winston log formatter.
    */
   static colorFormat(): Format {
-    return colorFormat();
+    const colorizer = format.colorize();
+
+    return format.combine(
+      format.timestamp(),
+      format.colorize({
+        colors: {
+          timestamp: 'dim',
+          prefix: 'blue',
+          field: 'cyan',
+          debug: 'grey',
+        },
+      }),
+      format.printf((info: TransformableInfo) => {
+        const { timestamp, level, message, plugin, service, ...fields } = info;
+        const prefix = plugin || service;
+        const timestampColor = colorizer.colorize('timestamp', timestamp);
+        const prefixColor = colorizer.colorize('prefix', prefix);
+
+        const extraFields = Object.entries(fields)
+          .map(([key, value]) => {
+            let stringValue = '';
+
+            try {
+              stringValue = `${value}`;
+            } catch (e) {
+              stringValue = '[field value not castable to string]';
+            }
+
+            return `${colorizer.colorize('field', `${key}`)}=${stringValue}`;
+          })
+          .join(' ');
+
+        return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
+      }),
+    );
   }
 
   private constructor(

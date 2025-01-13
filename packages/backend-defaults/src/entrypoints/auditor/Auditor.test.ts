@@ -15,9 +15,6 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { format } from 'logform';
-import { MESSAGE } from 'triple-beam';
-import Transport from 'winston-transport';
 import { DefaultAuditorService, DefaultRootAuditorService } from './Auditor';
 
 describe('Auditor', () => {
@@ -36,44 +33,6 @@ describe('Auditor', () => {
       },
     });
     expect(childLogger).toBeInstanceOf(DefaultAuditorService);
-  });
-
-  it('should log', async () => {
-    const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
-    });
-
-    const pluginId = 'test-plugin';
-
-    const auditor = DefaultRootAuditorService.create({
-      format: format.json(),
-      transports: [mockTransport],
-    }).forPlugin({
-      auth: mockServices.auth.mock(),
-      httpAuth: mockServices.httpAuth.mock(),
-      plugin: {
-        getId: () => pluginId,
-      },
-    });
-
-    await auditor.createEvent({
-      eventId: 'test-event',
-    });
-
-    expect(mockTransport.log).toHaveBeenCalledWith(
-      expect.objectContaining({
-        [MESSAGE]: JSON.stringify({
-          actor: {},
-          isAuditorEvent: true,
-          level: 'info',
-          message: 'test-plugin.test-event',
-          severityLevel: 'low',
-          status: 'initiated',
-        }),
-      }),
-      expect.any(Function),
-    );
   });
 
   it('should log a status "initiated" using createEvent', async () => {

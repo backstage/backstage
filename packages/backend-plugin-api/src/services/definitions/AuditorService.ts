@@ -24,10 +24,14 @@ import type { Request } from 'express';
  * critical: root permission changes
  * @public
  */
-export type AuditorEventSeverityLevel = 'low' | 'medium' | 'high' | 'critical';
+export type AuditorServiceEventSeverityLevel =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'critical';
 
 /** @public */
-export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
+export type AuditorServiceCreateEventOptions = {
   /**
    * Use kebab-case to name audit events (e.g., "user-login", "file-download", "fetch"). Represents a logical group of similar events or operations. For example, "fetch" could be used as an eventId encompassing various fetch methods like "by-id" or "by-location".
    *
@@ -36,7 +40,7 @@ export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
   eventId: string;
 
   /** (Optional) The severity level for the audit event. */
-  severityLevel?: AuditorEventSeverityLevel;
+  severityLevel?: AuditorServiceEventSeverityLevel;
 
   /** (Optional) The associated HTTP request, if applicable. */
   request?: Request<any, any, any, any, any>;
@@ -46,18 +50,14 @@ export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
    * This could include a `queryType` field, using kebab-case, for variations within the main event (e.g., "by-id", "by-user").
    * For example, if the `eventId` is "fetch", the `queryType` in `meta` could be "by-id" or "by-location".
    */
-  meta?: TRootMeta;
+  meta?: JsonObject;
+};
 
-  /** (Optional) Suppresses the automatic initial event. */
-  suppressInitialEvent?: boolean;
-}) => Promise<{
-  success<TMeta extends JsonObject>(options?: { meta?: TMeta }): Promise<void>;
-  fail<TMeta extends JsonObject, TError extends Error>(
-    options: {
-      meta?: TMeta;
-    } & ({ error: TError } | { errors: TError[] }),
-  ): Promise<void>;
-}>;
+/** @public */
+export type AuditorServiceEvent = {
+  success(options?: { meta?: JsonObject }): Promise<void>;
+  fail(options: { meta?: JsonObject; error: Error }): Promise<void>;
+};
 
 /**
  * A service that provides an auditor facility.
@@ -67,7 +67,7 @@ export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
  * @public
  */
 export interface AuditorService {
-  createEvent<TMeta extends JsonObject>(
-    options: Parameters<AuditorCreateEvent<TMeta>>[0],
-  ): ReturnType<AuditorCreateEvent<TMeta>>;
+  createEvent(
+    options: AuditorServiceCreateEventOptions,
+  ): Promise<AuditorServiceEvent>;
 }
