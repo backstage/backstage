@@ -26,7 +26,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 jest.setTimeout(600_000);
 
 const databases = TestDatabases.create({
-  ids: [/* 'MYSQL_8', */ 'POSTGRES_16', /* 'POSTGRES_12',*/ 'SQLITE_3'],
+  ids: [/* 'MYSQL_8', */ 'POSTGRES_17', /* 'POSTGRES_13',*/ 'SQLITE_3'],
   disableDocker: false,
 });
 

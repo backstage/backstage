@@ -459,6 +459,7 @@ export class TestCaches {
 
 // @public
 export type TestDatabaseId =
+  | 'POSTGRES_17'
   | 'POSTGRES_16'
   | 'POSTGRES_15'
   | 'POSTGRES_14'

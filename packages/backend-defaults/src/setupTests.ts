@@ -21,5 +21,5 @@ import { Settings } from 'luxon';
 Settings.throwOnInvalid = true;
 
 TestDatabases.setDefaults({
-  ids: ['MYSQL_8', 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
+  ids: ['MYSQL_8', 'POSTGRES_17', 'POSTGRES_13', 'SQLITE_3'],
 });
