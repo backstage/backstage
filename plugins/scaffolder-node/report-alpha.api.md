@@ -6,26 +6,10 @@
 /// <reference types="node" />
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
-import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
-
-// @alpha (undocumented)
-export type ActionPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  TParams
->;
 
 // @alpha
 export type AutocompleteHandler = ({
@@ -73,20 +57,6 @@ export interface ScaffolderAutocompleteExtensionPoint {
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
-// @alpha (undocumented)
-export type ScaffolderPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = TemplatePermissionRuleInput<TParams> | ActionPermissionRuleInput<TParams>;
-
-// @alpha
-export interface ScaffolderPermissionsExtensionPoint {
-  // (undocumented)
-  addPermissionRules(...rules: ScaffolderPermissionRuleInput[]): void;
-}
-
-// @alpha
-export const scaffolderPermissionsExtensionPoint: ExtensionPoint<ScaffolderPermissionsExtensionPoint>;
-
 // @alpha
 export interface ScaffolderTaskBrokerExtensionPoint {
   // (undocumented)
@@ -120,16 +90,6 @@ export const scaffolderWorkspaceProviderExtensionPoint: ExtensionPoint<Scaffolde
 export const serializeWorkspace: (opts: { path: string }) => Promise<{
   contents: Buffer;
 }>;
-
-// @alpha (undocumented)
-export type TemplatePermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TParams
->;
 
 // @alpha
 export interface WorkspaceProvider {

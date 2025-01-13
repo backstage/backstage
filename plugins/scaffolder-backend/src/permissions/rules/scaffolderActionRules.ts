@@ -26,7 +26,7 @@ import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 export const createActionPermissionRule = makeCreatePermissionRule<
   {
     action: string;
-    input: JsonObject | undefined;
+    input?: JsonObject;
   },
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION

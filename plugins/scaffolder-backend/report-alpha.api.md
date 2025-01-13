@@ -22,7 +22,7 @@ export const createActionPermissionRule: <
   rule: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -31,7 +31,7 @@ export const createActionPermissionRule: <
 ) => PermissionRule<
   {
     action: string;
-    input: JsonObject | undefined;
+    input?: JsonObject | undefined;
   },
   {},
   'scaffolder-action',
@@ -76,7 +76,7 @@ export const scaffolderActionConditions: Conditions<{
   hasActionId: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -87,7 +87,7 @@ export const scaffolderActionConditions: Conditions<{
   hasProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -99,7 +99,7 @@ export const scaffolderActionConditions: Conditions<{
   hasBooleanProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -111,7 +111,7 @@ export const scaffolderActionConditions: Conditions<{
   hasNumberProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -123,7 +123,7 @@ export const scaffolderActionConditions: Conditions<{
   hasStringProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -139,7 +139,7 @@ export const scaffolderActionRules: {
   hasActionId: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -150,7 +150,7 @@ export const scaffolderActionRules: {
   hasProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -162,7 +162,7 @@ export const scaffolderActionRules: {
   hasBooleanProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -174,7 +174,7 @@ export const scaffolderActionRules: {
   hasNumberProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
@@ -186,7 +186,7 @@ export const scaffolderActionRules: {
   hasStringProperty: PermissionRule<
     {
       action: string;
-      input: JsonObject | undefined;
+      input?: JsonObject | undefined;
     },
     {},
     'scaffolder-action',
