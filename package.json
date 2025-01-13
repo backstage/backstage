@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.35.0-next.1",
+  "version": "1.35.0-next.2",
   "private": true,
   "repository": {
     "type": "git",
@@ -23,8 +23,8 @@
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
-    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
-    "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel -v -i run start",
+    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
+    "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel --jobs unlimited -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix --publish",
     "postinstall": "husky || true",
@@ -43,7 +43,7 @@
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
     "start-backend:legacy": "yarn workspace example-backend-legacy start",
-    "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
+    "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
     "storybook": "yarn ./storybook run storybook",
