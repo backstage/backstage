@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { bundleFileWithRefs, BundlerRead, BundlerResolveUrl } from './bundle';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
 
 const specification = `
 openapi: "3.0.0"
@@ -186,7 +186,7 @@ describe('bundleFileWithRefs - Testing getRelativePath scenarios', () => {
     jest.clearAllMocks();
   });
 
-  const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+  const scmIntegrations = ScmIntegrations.fromConfig(mockServices.rootConfig());
 
   const resolveUrl: BundlerResolveUrl = jest.fn(
     (url: string, base: string): string => {
