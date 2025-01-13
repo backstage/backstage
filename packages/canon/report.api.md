@@ -324,12 +324,31 @@ export interface InlineProps extends SpaceProps {
   style?: React.CSSProperties;
 }
 
-// Warning: (ae-forgotten-export) The symbol "InputProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const Input: React_2.ForwardRefExoticComponent<
   InputProps & React_2.RefAttributes<HTMLDivElement>
 >;
+
+// @public (undocumented)
+export interface InputProps
+  extends React.ComponentPropsWithoutRef<typeof Field.Root> {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  errorForceShow?: boolean;
+  // (undocumented)
+  errorMatch?: Field.Error.Props['match'];
+  // (undocumented)
+  errorMessage?: string;
+  // (undocumented)
+  label?: string;
+  // (undocumented)
+  placeholder?: string;
+  // (undocumented)
+  required?: boolean;
+  // (undocumented)
+  size?: 'sm' | 'md';
+}
 
 // @public (undocumented)
 export type JustifyContent =
