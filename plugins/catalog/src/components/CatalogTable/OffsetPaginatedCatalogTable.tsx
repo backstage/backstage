@@ -36,21 +36,23 @@ export function OffsetPaginatedCatalogTable(
 
   useEffect(() => {
     if (totalItems && page * limit >= totalItems) {
-      setOffset!(Math.max(0, totalItems - limit));
+      setOffset?.(Math.max(0, totalItems - limit));
     } else {
-      setOffset!(Math.max(0, page * limit));
+      setOffset?.(Math.max(0, page * limit));
     }
   }, [setOffset, page, limit, totalItems]);
+
+  const showPagination = (totalItems ?? data.length) > limit;
 
   return (
     <Table
       columns={columns}
       data={data}
       options={{
-        paginationPosition: 'both',
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
+        paging: showPagination,
         ...options,
       }}
       components={{
@@ -64,7 +66,6 @@ export function OffsetPaginatedCatalogTable(
         setLimit(pageSize);
       }}
       totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
       {...restProps}
     />
   );
