@@ -329,13 +329,13 @@ export async function createRouter(
             credentials: await httpAuth.credentials(req),
           });
 
+          writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
+          
           await auditorEvent?.success({
             meta: {
               entities: entities,
             },
           });
-
-          writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
         } catch (err) {
           await auditorEvent?.fail({
             error: err,
