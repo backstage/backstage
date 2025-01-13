@@ -27,7 +27,6 @@ import {
   createFromTemplateRouteRef,
   unregisterRedirectRouteRef,
   viewTechDocRouteRef,
-  rootRouteRef,
 } from './routes';
 import {
   createApiFactory,
@@ -55,6 +54,7 @@ import { HasSubdomainsCardProps } from './components/HasSubdomainsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
+import { rootRouteRef } from './routes';
 import { DefaultEntityPresentationApi } from './apis/EntityPresentationApi';
 
 /** @public */

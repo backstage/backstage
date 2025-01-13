@@ -1,5 +1,5 @@
 {
-  "mode": "exit",
+  "mode": "pre",
   "tag": "next",
   "initialVersions": {
     "example-app": "0.2.104",
