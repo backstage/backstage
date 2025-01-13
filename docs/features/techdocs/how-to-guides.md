@@ -179,7 +179,12 @@ const techDocsTabsConfig = [
     ],
   },
 ];
-
+const docsFilter = {
+  kind: ['Location', 'Resource', 'Component'],
+  'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+}
+const customPageWrapper = ({ children }: React.PropsWithChildren<{}>) =>
+  (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
 const AppRoutes = () => {
   <FlatRoutes>
     <Route
@@ -187,11 +192,8 @@ const AppRoutes = () => {
       element={
         <TechDocsCustomHome
           tabsConfig={techDocsTabsConfig}
-          filter={{
-            kind: ['Location', 'Resource', 'Component'],
-            'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
-          }}
-          CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)}
+          filter={docsFilter}
+          CustomPageWrapper={customPageWrapper}
         />
       }
     />
