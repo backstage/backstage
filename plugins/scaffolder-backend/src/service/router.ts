@@ -36,11 +36,6 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  scaffolderActionPermissions,
-  scaffolderPermissions,
-  scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
@@ -74,10 +69,7 @@ import {
   parseNumberParam,
   parseStringsParam,
 } from './helpers';
-import {
-  createConditionAuthorizer,
-  createPermissionIntegrationRouter,
-} from '@backstage/plugin-permission-node';
+import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { Duration } from 'luxon';
 import {
   AuthService,
@@ -98,21 +90,13 @@ import {
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 import {
-  ActionPermissionRuleInput,
   AutocompleteHandler,
-  ScaffolderPermissionRuleInput,
-  TemplatePermissionRuleInput,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { EventsService } from '@backstage/plugin-events-node';
-import {
-  isActionPermissionRuleInput,
-  isTemplatePermissionRuleInput,
-  scaffolderActionRules,
-  scaffolderTemplateRules,
-} from '../permissions';
+import { scaffolderActionRules, scaffolderTemplateRules } from '../permissions';
 
 /**
  * RouterOptions
@@ -144,7 +128,6 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
-  permissionRules?: ScaffolderPermissionRuleInput[];
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
@@ -258,7 +241,6 @@ export async function createRouter(
     additionalTemplateGlobals,
     additionalWorkspaceProviders,
     permissions,
-    permissionRules,
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
     autocompleteHandlers = {},
@@ -382,45 +364,14 @@ export async function createRouter(
     permissions,
   });
 
-  const templateRules: TemplatePermissionRuleInput[] = Object.values(
-    scaffolderTemplateRules,
-  );
-  const actionRules: ActionPermissionRuleInput[] = Object.values(
-    scaffolderActionRules,
-  );
+  const templateRules = Object.values(scaffolderTemplateRules);
+  const actionRules = Object.values(scaffolderActionRules);
 
-  if (permissionRules) {
-    templateRules.push(
-      ...permissionRules.filter(isTemplatePermissionRuleInput),
-    );
-    actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
-  }
-
-  const isParamAuthorized = createConditionAuthorizer(
-    Object.values(templateRules),
-  );
+  const isParamAuthorized = createConditionAuthorizer(templateRules);
   const isStepAuthorized = createConditionAuthorizer([
-    ...Object.values(templateRules), // Template rules support both steps and parameters
-    ...Object.values(actionRules),
+    ...templateRules, // Template rules support both steps and parameters
+    ...actionRules,
   ]);
-
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    resources: [
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-        permissions: scaffolderTemplatePermissions,
-        rules: templateRules,
-      },
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-        permissions: scaffolderActionPermissions,
-        rules: actionRules,
-      },
-    ],
-    permissions: scaffolderPermissions,
-  });
-
-  router.use(permissionIntegrationRouter);
 
   router
     .get(

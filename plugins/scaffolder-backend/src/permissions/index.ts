@@ -1,13 +1,3 @@
-import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-} from '@backstage/plugin-scaffolder-common/alpha';
-import {
-  ActionPermissionRuleInput,
-  ScaffolderPermissionRuleInput,
-  TemplatePermissionRuleInput,
-} from '@backstage/plugin-scaffolder-node/alpha';
-
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -31,21 +21,3 @@ export {
 } from './conditionExports';
 
 export * from './rules';
-
-/**
- * @internal
- */
-export function isTemplatePermissionRuleInput(
-  permissionRule: ScaffolderPermissionRuleInput,
-): permissionRule is TemplatePermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
-}
-
-/**
- * @internal
- */
-export function isActionPermissionRuleInput(
-  permissionRule: ScaffolderPermissionRuleInput,
-): permissionRule is ActionPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
-}

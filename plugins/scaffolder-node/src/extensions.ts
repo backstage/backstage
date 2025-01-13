@@ -21,68 +21,8 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import {
-  TemplateEntityStepV1beta3,
-  TemplateParametersV1beta3,
-} from '@backstage/plugin-scaffolder-common';
-import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-} from '@backstage/plugin-scaffolder-common/alpha';
 
 export * from './tasks/alpha';
-
-/**
- * @alpha
- */
-export type TemplatePermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TParams
->;
-
-/**
- * @alpha
- */
-export type ActionPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  TParams
->;
-
-/**
- * @alpha
- */
-export type ScaffolderPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = TemplatePermissionRuleInput<TParams> | ActionPermissionRuleInput<TParams>;
-
-/**
- * Extension point for managing scaffolder permissions.
- *
- * @alpha
- */
-export interface ScaffolderPermissionsExtensionPoint {
-  addPermissionRules(...rules: ScaffolderPermissionRuleInput[]): void;
-}
-
-/**
- * Extension point for adding custom scaffolder permission rules.
- *
- * @alpha
- */
-export const scaffolderPermissionsExtensionPoint =
-  createExtensionPoint<ScaffolderPermissionsExtensionPoint>({
-    id: 'scaffolder.permissions',
-  });
 
 /**
  * Extension point for managing scaffolder actions.

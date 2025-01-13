@@ -31,8 +31,6 @@ import {
   AutocompleteHandler,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
-  ScaffolderPermissionRuleInput,
-  scaffolderPermissionsExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
   scaffolderWorkspaceProviderExtensionPoint,
@@ -54,6 +52,14 @@ import {
 } from './scaffolder';
 import { createRouter } from './service/router';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  scaffolderActionPermissions,
+  scaffolderPermissions,
+  scaffolderTemplatePermissions,
+} from '@backstage/plugin-scaffolder-common/alpha';
+import { scaffolderActionRules, scaffolderTemplateRules } from './permissions';
 
 /**
  * Scaffolder plugin
@@ -63,13 +69,6 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',
   register(env) {
-    const addedRules = new Array<ScaffolderPermissionRuleInput>();
-    env.registerExtensionPoint(scaffolderPermissionsExtensionPoint, {
-      addPermissionRules(...newRules) {
-        addedRules.push(...newRules);
-      },
-    });
-
     const addedActions = new Array<TemplateAction<any, any>>();
     env.registerExtensionPoint(scaffolderActionsExtensionPoint, {
       addActions(...newActions: TemplateAction<any>[]) {
@@ -126,6 +125,7 @@ export const scaffolderPlugin = createBackendPlugin({
         httpAuth: coreServices.httpAuth,
         catalogClient: catalogServiceRef,
         events: eventsServiceRef,
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       async init({
         logger,
@@ -140,6 +140,7 @@ export const scaffolderPlugin = createBackendPlugin({
         catalogClient,
         permissions,
         events,
+        permissionsRegistry,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -201,12 +202,25 @@ export const scaffolderPlugin = createBackendPlugin({
           httpAuth,
           discovery,
           permissions,
-          permissionRules: addedRules,
           autocompleteHandlers,
           additionalWorkspaceProviders,
           events,
         });
         httpRouter.use(router);
+
+        permissionsRegistry.addPermissions(scaffolderPermissions);
+
+        permissionsRegistry.addResourceType({
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+          permissions: scaffolderTemplatePermissions,
+          rules: Object.values(scaffolderTemplateRules),
+        });
+
+        permissionsRegistry.addResourceType({
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          permissions: scaffolderActionPermissions,
+          rules: Object.values(scaffolderActionRules),
+        });
       },
     });
   },
