@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-openapi': patch
 ---
 
-Fix resolveUrl for splited openapi definition relative path
+Fix `resolveUrl` for split openapi definition relative path
