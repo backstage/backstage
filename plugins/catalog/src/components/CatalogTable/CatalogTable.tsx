@@ -23,7 +23,6 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
-  Table,
   TableColumn,
   TableProps,
   WarningPanel,
@@ -47,7 +46,7 @@ import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
 import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../alpha/translation';
+import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
@@ -194,13 +193,20 @@ export const CatalogTable = (props: CatalogTableProps) => {
       .join(' ');
 
   const actions = props.actions || defaultActions;
-  const options = {
+  const options: TableProps['options'] = {
+    paginationPosition: 'both',
     actionsColumnIndex: -1,
     loadingType: 'linear' as const,
     showEmptyDataSourceMessage: !loading,
     padding: 'dense' as const,
     ...tableOptions,
   };
+
+  if (paginationMode !== 'cursor' && paginationMode !== 'offset') {
+    entities.sort(refCompare);
+  }
+
+  const rows = entities.map(toEntityRow);
 
   if (paginationMode === 'cursor') {
     return (
@@ -212,45 +218,24 @@ export const CatalogTable = (props: CatalogTableProps) => {
         actions={actions}
         subtitle={subtitle}
         options={options}
-        data={entities.map(toEntityRow)}
+        data={rows}
         next={pageInfo?.next}
         prev={pageInfo?.prev}
       />
     );
-  } else if (paginationMode === 'offset') {
-    return (
-      <OffsetPaginatedCatalogTable
-        columns={tableColumns}
-        emptyContent={emptyContent}
-        isLoading={loading}
-        title={title}
-        actions={actions}
-        subtitle={subtitle}
-        options={options}
-        data={entities.map(toEntityRow)}
-      />
-    );
   }
 
-  const rows = entities.sort(refCompare).map(toEntityRow);
-  const pageSize = 20;
-  const showPagination = rows.length > pageSize;
-
+  // else use offset paging
   return (
-    <Table<CatalogTableRow>
-      isLoading={loading}
+    <OffsetPaginatedCatalogTable
       columns={tableColumns}
-      options={{
-        paging: showPagination,
-        pageSize: pageSize,
-        pageSizeOptions: [20, 50, 100],
-        ...options,
-      }}
+      emptyContent={emptyContent}
+      isLoading={loading}
       title={title}
-      data={rows}
       actions={actions}
       subtitle={subtitle}
-      emptyContent={emptyContent}
+      options={options}
+      data={rows}
     />
   );
 };
