@@ -16,13 +16,15 @@
 
 import { Field } from '@base-ui-components/react/field';
 
+/** @public */
 export interface InputProps
   extends React.ComponentPropsWithoutRef<typeof Field.Root> {
   label?: string;
   description?: string;
   size?: 'sm' | 'md';
   placeholder?: string;
-  match?: Field.Error.Props['match'];
-  error?: string;
+  errorMatch?: Field.Error.Props['match'];
+  errorForceShow?: boolean;
+  errorMessage?: string;
   required?: boolean;
 }

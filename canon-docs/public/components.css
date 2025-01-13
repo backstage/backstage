@@ -281,6 +281,7 @@
 .canon-input-root {
   font-family: var(--canon-font-regular);
   flex-direction: column;
+  width: 100%;
   display: flex;
 }
 

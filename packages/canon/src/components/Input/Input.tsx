@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { Field } from '@base-ui-components/react/field';
@@ -25,12 +27,14 @@ const Input = forwardRef<HTMLDivElement, InputProps>((props, ref) => {
     className,
     label,
     description,
-    match = 'valueMissing',
+    errorMatch = 'customError',
+    errorForceShow = false,
+    errorMessage = 'An error occurred',
     validationMode = 'onChange',
     size = 'md',
     placeholder,
-    error = 'Please enter your a value',
     required = false,
+    style,
     ...rest
   } = props;
 
@@ -38,6 +42,7 @@ const Input = forwardRef<HTMLDivElement, InputProps>((props, ref) => {
     <Field.Root
       ref={ref}
       className={clsx('canon-input-root', className)}
+      style={style}
       validationMode={validationMode}
       {...rest}
     >
@@ -54,9 +59,12 @@ const Input = forwardRef<HTMLDivElement, InputProps>((props, ref) => {
         })}
       />
 
-      <Field.Error className="canon-input-error" match={match}>
-        {error}
-      </Field.Error>
+      <Field.Error
+        className="canon-input-error"
+        match={errorMatch}
+        forceShow={errorForceShow}
+        // children={errorForceShow ? 'An error occurred' : null}
+      />
 
       {description && (
         <Field.Description className="canon-input-description">

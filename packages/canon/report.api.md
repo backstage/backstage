@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import type { CSSProperties } from 'react';
+import { Field } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
@@ -322,6 +323,13 @@ export interface InlineProps extends SpaceProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// Warning: (ae-forgotten-export) The symbol "InputProps" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const Input: React_2.ForwardRefExoticComponent<
+  InputProps & React_2.RefAttributes<HTMLDivElement>
+>;
 
 // @public (undocumented)
 export type JustifyContent =

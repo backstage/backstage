@@ -1,0 +1,126 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  InputPreview,
+  InputLabelAndDescription,
+  InputError,
+} from '@/snippets/input';
+import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+
+# Input
+
+A input component tfor your forms.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InputPreview />}
+  code={`<Input label="Name" placeholder="Enter your name" />`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Input } from '@backstage/canon';
+
+<Input />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Input className="canon-input-root" />`}
+    />
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<BaseUI href="https://base-ui.com/react/components/field" />
+
+<PropsTable
+  data={{
+    label: {
+      type: 'string',
+      responsive: false,
+    },
+    description: {
+      type: 'string',
+      responsive: false,
+    },
+    size: {
+      type: ['sm', 'md'],
+      responsive: false,
+    },
+    placeholder: {
+      type: 'string',
+      responsive: false,
+    },
+    match: {
+      type: [
+        'badInput',
+        'customError',
+        'patternMismatch',
+        'rangeOverflow',
+        'rangeUnderflow',
+        'stepMismatch',
+        'tooLong',
+        'tooShort',
+        'typeMismatch',
+        'valid',
+        'valueMissing',
+      ],
+      responsive: false,
+    },
+    error: {
+      type: 'string',
+      responsive: false,
+    },
+    required: {
+      type: 'boolean',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### With label and description
+
+Here's a simple input with a label and description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<InputLabelAndDescription />}
+  code={`<Input label="Name" description="Visible on your profile" />`}
+/>
+
+### Error
+
+Here's a simple input with an error message.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<InputError />}
+  code={`<Input label="Name" required invalid />`}
+/>

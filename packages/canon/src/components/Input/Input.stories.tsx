@@ -89,13 +89,26 @@ export const Sizes: Story = {
   ),
 };
 
-export const WithError: Story = {
+export const WithErrorValidation: Story = {
   args: {
-    invalid: true,
-    validate: value => (value ? null : 'Please enter your name'),
+    validate: value =>
+      value !== 'Charles' ? 'Please enter a different name' : null,
     required: true,
     label: 'Name',
     description: 'Visible on your profile',
-    error: 'Please enter your name',
+    validationMode: 'onChange',
+    errorMatch: 'customError',
+  },
+};
+
+export const WithInvalidProp: Story = {
+  args: {
+    invalid: true,
+    required: true,
+    label: 'Name',
+    description: 'Visible on your profile',
+    validationMode: 'onChange',
+    errorForceShow: true,
+    validate: () => 'Stuff',
   },
 };
