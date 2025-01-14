@@ -73,7 +73,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         with:
           name: stable-reference
           path: docs/reference/
@@ -113,7 +113,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         with:
           name: next-reference
           path: docs/reference/
@@ -130,7 +130,7 @@ jobs:
         working-directory: storybook
 
       - name: storybook upload
-        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         with:
           name: storybook
           path: storybook/dist/
