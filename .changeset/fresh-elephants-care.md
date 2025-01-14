@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-gitlab': patch
 ---
 
-handle rate GitLab rate limiting
+Added support for Rate Limiting in GitLab API client
