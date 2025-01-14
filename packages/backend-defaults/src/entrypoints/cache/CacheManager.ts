@@ -153,12 +153,12 @@ export class CacheManager {
           this.errorHandler?.(err);
         });
       }
+
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
         store: stores[pluginId],
         emitErrors: false,
-        useKeyPrefix: false,
       });
     };
   }
