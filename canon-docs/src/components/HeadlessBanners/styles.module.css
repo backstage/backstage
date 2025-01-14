@@ -1,11 +1,11 @@
 .container {
   display: flex;
   background-color: var(--canon-surface-1);
-  padding: var(--canon-space-5);
+  padding: var(--canon-space-6);
   border-radius: var(--canon-border-radius-xs);
   border: 1px solid var(--canon-border-base);
-  margin-bottom: var(--canon-space-5);
-  gap: var(--canon-space-5);
+  margin-bottom: var(--canon-space-6);
+  gap: var(--canon-space-6);
   transition: background-color 0.2s ease-in-out;
 }
 

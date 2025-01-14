@@ -20,7 +20,7 @@
   display: flex;
   position: relative;
   z-index: 0;
-  gap: var(--canon-spacing-lg);
+  gap: var(--canon-space-8);
 }
 
 .tab {
