@@ -24,8 +24,8 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
     branchType?: string | undefined;
     pattern?: string | undefined;
     value?: number | undefined;
-    users?: Array<object>;
-    groups?: Array<object>;
+    users?: object[] | undefined;
+    groups?: object[] | undefined;
     token?: string | undefined;
   },
   JsonObject
