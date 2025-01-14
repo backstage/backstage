@@ -53,8 +53,6 @@ export type DatabaseManagerOptions = {
  * Testable implementation class for {@link DatabaseManager} below.
  */
 export class DatabaseManagerImpl {
-  private didRegisterMetrics: boolean = false;
-
   constructor(
     private readonly config: Config,
     private readonly connectors: Record<string, Connector>,
@@ -72,6 +70,8 @@ export class DatabaseManagerImpl {
         await this.shutdown({ logger: options.rootLogger });
       });
     }
+
+    this.registerMetrics();
   }
 
   /**
@@ -188,7 +188,6 @@ export class DatabaseManagerImpl {
       );
     }
 
-    this.registerMetricsOnFirstConnection();
     return clientPromise;
   }
 
@@ -223,12 +222,7 @@ export class DatabaseManagerImpl {
     );
   }
 
-  private registerMetricsOnFirstConnection(): void {
-    if (this.didRegisterMetrics) {
-      return;
-    }
-    this.didRegisterMetrics = true;
-
+  private registerMetrics(): void {
     const meter = metrics.getMeter('default');
 
     const poolConnections = meter.createObservableGauge(
