@@ -3,7 +3,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: var(--canon-spacing-xs);
+  gap: var(--canon-space-3);
   font-size: var(--canon-font-size-xs);
   font-family: var(--canon-font-regular);
   color: var(--canon-text-primary);
