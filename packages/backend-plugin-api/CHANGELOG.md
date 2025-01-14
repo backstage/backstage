@@ -1,5 +1,17 @@
 # @backstage/backend-plugin-api
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.1.1-next.1
 
 ### Patch Changes

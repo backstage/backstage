@@ -1,5 +1,28 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.3.0
+
+### Minor Changes
+
+- dd515e3: **BREAKING**: Removed support for the old backend system. Please [migrate to the new backend system](https://backstage.io/docs/backend-system/) and enable [the catalog collator](https://backstage.io/docs/features/search/collators#catalog) there.
+
+  As part of this, the `/alpha` export path is gone too. Just import the module from the root of the package as usual instead.
+
+### Patch Changes
+
+- 1e09b06: Internal refactor to use cursor based pagination
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-node@1.3.7
+  - @backstage/plugin-search-common@1.2.17
+
 ## 0.3.0-next.1
 
 ### Patch Changes

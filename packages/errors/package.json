@@ -1,6 +1,6 @@
 {
   "name": "@backstage/errors",
-  "version": "1.2.7-next.0",
+  "version": "1.2.7",
   "description": "Common utilities for error handling within Backstage",
   "backstage": {
     "role": "common-library"

@@ -1,5 +1,13 @@
 # @backstage/catalog-model
 
+## 1.7.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/errors@1.2.7
+
 ## 1.7.3-next.0
 
 ### Patch Changes

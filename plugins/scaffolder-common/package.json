@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-common",
-  "version": "1.5.9-next.0",
+  "version": "1.5.9",
   "description": "Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin",
   "backstage": {
     "role": "common-library",

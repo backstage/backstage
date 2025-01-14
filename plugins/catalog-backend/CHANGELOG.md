@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend
 
+## 1.30.0
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- be0aae7: Improved concurrency of the `entities` endpoint when using the streamed query mode behind the `catalog.disableRelationsCompatibility` flag.
+- dd515e3: Internalize the deprecated collator types since they were removed from the collator itself during new-backend-system migration.
+- 3d475a0: Updated condition in `resolveCodeOwner` to fix a bug where `normalizeCodeOwner` could potentially be called with an invalid argument causing an error in `CodeOwnersProcessor`
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.3.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/integration@1.16.1
+  - @backstage/backend-openapi-utils@0.4.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-events-node@0.4.7
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.30.0-next.1
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.11.5
+
+### Patch Changes
+
+- 29a4aa8: fix(config): add missing parameters in config schema
+- Updated dependencies
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.5
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.12.16
+
 ## 1.11.5-next.2
 
 ### Patch Changes
