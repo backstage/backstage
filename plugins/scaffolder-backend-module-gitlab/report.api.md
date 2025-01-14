@@ -14,7 +14,13 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    path: string[];
+    path: (
+      | string
+      | {
+          name: string;
+          slug: string;
+        }
+    )[];
     repoUrl: string;
     token?: string | undefined;
   },
