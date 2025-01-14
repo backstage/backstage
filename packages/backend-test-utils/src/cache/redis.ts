@@ -15,7 +15,7 @@
  */
 
 import Keyv from 'keyv';
-import KeyvRedis from '@keyv/redis';
+import KeyvValkey from '@keyv/valkey';
 import { v4 as uuid } from 'uuid';
 import { Instance } from './types';
 
@@ -24,7 +24,7 @@ async function attemptRedisConnection(connection: string): Promise<Keyv> {
 
   for (;;) {
     try {
-      const store = new KeyvRedis(connection);
+      const store = new KeyvValkey(connection);
       const keyv = new Keyv({ store });
       const value = uuid();
       await keyv.set('test', value);

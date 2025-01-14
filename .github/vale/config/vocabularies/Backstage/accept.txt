@@ -98,6 +98,8 @@ deliverables
 denormalized
 dependabot
 deps
+dequeue
+dequeueing
 deserialization
 destructured
 destructuring
@@ -105,8 +107,6 @@ Deutsche
 dev
 devops
 devs
-dequeue
-dequeueing
 dialogs
 discoverability
 Discoverability
@@ -142,8 +142,8 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
-Flightcontrol
 flightcontrol
+Flightcontrol
 Francesco
 Frontside
 Gaurav
@@ -165,8 +165,8 @@ graphviz
 Hackathons
 haproxy
 hardcoded
-Harness
 harness
+Harness
 Helidon
 Henneke
 Heroku
@@ -292,8 +292,8 @@ OpenSearch
 OpenShift
 openssl
 orgs
-Overridable
 overridable
+Overridable
 padding
 paddings
 pagerduty
@@ -358,10 +358,10 @@ retryable
 reusability
 Reusability
 roadmaps
-rollbar
-rollout
 Roboto
+rollbar
 Rollbar
+rollout
 Rollup
 routable
 Routable
@@ -377,9 +377,10 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
-scrollbar
 SCM
 SCMs
+scrollable
+scrollbar
 sdks
 seb
 semlas
@@ -387,13 +388,14 @@ semver
 sendmail
 serializable
 Serverless
+severities
 shoutout
 SIG
 SIGs
 siloed
 Sinon
-snackbars
 snackbar
+snackbars
 Snyk
 Sonarqube
 sourcemaps
@@ -485,6 +487,7 @@ utils
 Valentina
 validator
 validators
+Valkey
 varchar
 vite
 VMware
@@ -509,5 +512,3 @@ zod
 Zolotusky
 zoomable
 zsh
-scrollable
-severities
