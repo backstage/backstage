@@ -121,7 +121,7 @@ third-parties.
 The same logic applies to headers that are sent from the target back to the
 frontend.
 
-### New backend extension
+### Proxy Extension Endpoint
 
 The proxy plugin additionally supports a `proxyExtensionEndpoint` which a proxy
 plugin module can utilize in order to programmatically register additional
