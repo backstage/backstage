@@ -47,25 +47,25 @@
   /* Spacing */
 
   /* This is the spacing multiplier */
-  --canon-space-unit: 0.25rem; /* 4px */
+  --canon-space: 0.25rem; /* 4px */
 
   /* These are the spacing scale */
-  --canon-space-0_5: calc(var(--canon-space-unit) * 0.5); /* 2px */
-  --canon-space-1: var(--canon-space-unit); /* 4px */
-  --canon-space-1_5: calc(var(--canon-space-unit) * 1.5); /* 6px */
-  --canon-space-2: calc(var(--canon-space-unit) * 2); /* 8px */
-  --canon-space-3: calc(var(--canon-space-unit) * 3); /* 12px */
-  --canon-space-4: calc(var(--canon-space-unit) * 4); /* 16px */
-  --canon-space-5: calc(var(--canon-space-unit) * 5); /* 20px */
-  --canon-space-6: calc(var(--canon-space-unit) * 6); /* 24px */
-  --canon-space-7: calc(var(--canon-space-unit) * 7); /* 28px */
-  --canon-space-8: calc(var(--canon-space-unit) * 8); /* 32px */
-  --canon-space-9: calc(var(--canon-space-unit) * 9); /* 36px */
-  --canon-space-10: calc(var(--canon-space-unit) * 10); /* 40px */
-  --canon-space-11: calc(var(--canon-space-unit) * 11); /* 44px */
-  --canon-space-12: calc(var(--canon-space-unit) * 12); /* 48px */
-  --canon-space-13: calc(var(--canon-space-unit) * 13); /* 52px */
-  --canon-space-14: calc(var(--canon-space-unit) * 14); /* 56px */
+  --canon-space-0_5: calc(var(--canon-space) * 0.5); /* 2px */
+  --canon-space-1: var(--canon-space); /* 4px */
+  --canon-space-1_5: calc(var(--canon-space) * 1.5); /* 6px */
+  --canon-space-2: calc(var(--canon-space) * 2); /* 8px */
+  --canon-space-3: calc(var(--canon-space) * 3); /* 12px */
+  --canon-space-4: calc(var(--canon-space) * 4); /* 16px */
+  --canon-space-5: calc(var(--canon-space) * 5); /* 20px */
+  --canon-space-6: calc(var(--canon-space) * 6); /* 24px */
+  --canon-space-7: calc(var(--canon-space) * 7); /* 28px */
+  --canon-space-8: calc(var(--canon-space) * 8); /* 32px */
+  --canon-space-9: calc(var(--canon-space) * 9); /* 36px */
+  --canon-space-10: calc(var(--canon-space) * 10); /* 40px */
+  --canon-space-11: calc(var(--canon-space) * 11); /* 44px */
+  --canon-space-12: calc(var(--canon-space) * 12); /* 48px */
+  --canon-space-13: calc(var(--canon-space) * 13); /* 52px */
+  --canon-space-14: calc(var(--canon-space) * 14); /* 56px */
 
   /* Border radius */
   --canon-border-radius-2xs: 0.125rem; /* 2px */
@@ -131,25 +131,25 @@
   /* Spacing */
 
   /* This is the spacing multiplier */
-  --canon-space-unit: 0.25rem; /* 4px */
+  --canon-space: 0.25rem; /* 4px */
 
   /* These are the spacing scale */
-  --canon-space-0_5: calc(var(--canon-space-unit) * 0.5); /* 2px */
-  --canon-space-1: var(--canon-space-unit); /* 4px */
-  --canon-space-1_5: calc(var(--canon-space-unit) * 1.5); /* 6px */
-  --canon-space-2: calc(var(--canon-space-unit) * 2); /* 8px */
-  --canon-space-3: calc(var(--canon-space-unit) * 3); /* 12px */
-  --canon-space-4: calc(var(--canon-space-unit) * 4); /* 16px */
-  --canon-space-5: calc(var(--canon-space-unit) * 5); /* 20px */
-  --canon-space-6: calc(var(--canon-space-unit) * 6); /* 24px */
-  --canon-space-7: calc(var(--canon-space-unit) * 7); /* 28px */
-  --canon-space-8: calc(var(--canon-space-unit) * 8); /* 32px */
-  --canon-space-9: calc(var(--canon-space-unit) * 9); /* 36px */
-  --canon-space-10: calc(var(--canon-space-unit) * 10); /* 40px */
-  --canon-space-11: calc(var(--canon-space-unit) * 11); /* 44px */
-  --canon-space-12: calc(var(--canon-space-unit) * 12); /* 48px */
-  --canon-space-13: calc(var(--canon-space-unit) * 13); /* 52px */
-  --canon-space-14: calc(var(--canon-space-unit) * 14); /* 56px */
+  --canon-space-0_5: calc(var(--canon-space) * 0.5); /* 2px */
+  --canon-space-1: var(--canon-space); /* 4px */
+  --canon-space-1_5: calc(var(--canon-space) * 1.5); /* 6px */
+  --canon-space-2: calc(var(--canon-space) * 2); /* 8px */
+  --canon-space-3: calc(var(--canon-space) * 3); /* 12px */
+  --canon-space-4: calc(var(--canon-space) * 4); /* 16px */
+  --canon-space-5: calc(var(--canon-space) * 5); /* 20px */
+  --canon-space-6: calc(var(--canon-space) * 6); /* 24px */
+  --canon-space-7: calc(var(--canon-space) * 7); /* 28px */
+  --canon-space-8: calc(var(--canon-space) * 8); /* 32px */
+  --canon-space-9: calc(var(--canon-space) * 9); /* 36px */
+  --canon-space-10: calc(var(--canon-space) * 10); /* 40px */
+  --canon-space-11: calc(var(--canon-space) * 11); /* 44px */
+  --canon-space-12: calc(var(--canon-space) * 12); /* 48px */
+  --canon-space-13: calc(var(--canon-space) * 13); /* 52px */
+  --canon-space-14: calc(var(--canon-space) * 14); /* 56px */
 
   /* Border radius */
   --canon-border-radius-2xs: 0.125rem; /* 2px */
