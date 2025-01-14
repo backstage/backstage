@@ -129,7 +129,7 @@ export function createPublishGitlabAction(options: {
             type: ['string', 'boolean'],
           },
           skipExisting: {
-            title: 'Source Path',
+            title: 'Skip if repository exists',
             description:
               'Do not publish the repository if it already exists. The default value is false.',
             type: ['boolean'],
