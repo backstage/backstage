@@ -726,11 +726,10 @@ export const createGraphqlClient = (args: {
   logger: LoggerService;
 }): typeof graphql => {
   const { headers, baseUrl, logger } = args;
-  const MyOctokit = Octokit.plugin(throttling);
-  const octokit = new MyOctokit({
+  const ThrottledOctokit = Octokit.plugin(throttling);
+  const octokit = new ThrottledOctokit({
     throttle: {
-      onRateLimit: (retryAfter, rateLimitOptions, _, retryCount) => {
-        const rateLimitData = rateLimitOptions as any;
+      onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
         logger.warn(
           `Request quota exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
         );
@@ -744,8 +743,7 @@ export const createGraphqlClient = (args: {
 
         return false;
       },
-      onSecondaryRateLimit: (retryAfter, rateLimitOptions, _, retryCount) => {
-        const rateLimitData = rateLimitOptions as any;
+      onSecondaryRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
         logger.warn(
           `Secondary Rate Limit Exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
         );
@@ -767,6 +765,5 @@ export const createGraphqlClient = (args: {
     baseUrl,
   });
 
-  // Since the project has multiple versions of @octokit/graphql, we need to cast the client to the correct type
-  return client as unknown as typeof graphql;
+  return client;
 };
