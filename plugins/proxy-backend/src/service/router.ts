@@ -63,7 +63,7 @@ export interface RouterOptions {
   discovery: DiscoveryService;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
-  additionalEndpoints?: JsonObject;
+  additionalEndpoints?: ProxyConfig;
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -310,10 +310,11 @@ export async function createRouterInternal(
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
   const { pathname: pathPrefix } = new URL(externalUrl);
 
-  const proxyConfig = {
+  const proxyConfig: ProxyConfig = {
     ...(options.additionalEndpoints ?? {}),
     ...readProxyConfig(options.config, options.logger),
   };
+
   configureMiddlewares(
     proxyOptions,
     currentRouter,
@@ -356,10 +357,10 @@ function configureMiddlewares(
   },
   router: express.Router,
   pathPrefix: string,
-  proxyConfig: any,
+  proxyConfig: ProxyConfig,
   httpRouterService?: HttpRouterService,
 ) {
-  Object.entries<any>(proxyConfig).forEach(([route, proxyRouteConfig]) => {
+  Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     try {
       router.use(
         route,
