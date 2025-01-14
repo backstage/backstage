@@ -54,7 +54,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@keyv/memcache": "^2.0.1",
-    "@keyv/redis": "^4.0.1",
+    "@keyv/valkey": "^1.0.1",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
     "@types/keyv": "^4.2.0",
