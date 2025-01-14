@@ -15,6 +15,25 @@
  */
 
 import {
+  TokenManager,
+  createLegacyAuthAdapters,
+} from '@backstage/backend-common';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  CatalogApi,
+  CatalogClient,
+  EntityFilterQuery,
+  GetEntitiesRequest,
+} from '@backstage/catalog-client';
+import {
+  Entity,
+  isGroupEntity,
+  isUserEntity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import {
+  CatalogEntityDocument,
   type AnalyzeLocationEntityField as _AnalyzeLocationEntityField,
   type AnalyzeLocationExistingEntity as _AnalyzeLocationExistingEntity,
   type AnalyzeLocationGenerateEntity as _AnalyzeLocationGenerateEntity,
@@ -22,6 +41,7 @@ import {
   type AnalyzeLocationResponse as _AnalyzeLocationResponse,
   type LocationSpec as _LocationSpec,
 } from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import {
   locationSpecToMetadataName as _locationSpecToMetadataName,
   locationSpecToLocationEntity as _locationSpecToLocationEntity,
@@ -51,10 +71,13 @@ import {
   type LocationAnalyzer as _LocationAnalyzer,
   type ScmLocationAnalyzer as _ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
+import { Permission } from '@backstage/plugin-permission-common';
 import {
   defaultCatalogCollatorEntityTransformer as _defaultCatalogCollatorEntityTransformer,
   type CatalogCollatorEntityTransformer as _CatalogCollatorEntityTransformer,
 } from '@backstage/plugin-search-backend-module-catalog';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import { Readable } from 'stream';
 
 /**
  * @public
@@ -252,12 +275,224 @@ export type AnalyzeLocationGenerateEntity = _AnalyzeLocationGenerateEntity;
  */
 export type AnalyzeLocationEntityField = _AnalyzeLocationEntityField;
 
+namespace search {
+  const configKey = 'search.collators.catalog';
+
+  const defaults = {
+    schedule: {
+      frequency: { minutes: 10 },
+      timeout: { minutes: 15 },
+      initialDelay: { seconds: 3 },
+    },
+    collatorOptions: {
+      locationTemplate: '/catalog/:namespace/:kind/:name',
+      filter: undefined,
+      batchSize: 500,
+    },
+  };
+
+  export const readCollatorConfigOptions = (
+    configRoot: Config,
+  ): {
+    locationTemplate: string;
+    filter: EntityFilterQuery | undefined;
+    batchSize: number;
+  } => {
+    const config = configRoot.getOptionalConfig(configKey);
+    if (!config) {
+      return defaults.collatorOptions;
+    }
+
+    return {
+      locationTemplate:
+        config.getOptionalString('locationTemplate') ??
+        defaults.collatorOptions.locationTemplate,
+      filter:
+        config.getOptional<EntityFilterQuery>('filter') ??
+        defaults.collatorOptions.filter,
+      batchSize:
+        config.getOptionalNumber('batchSize') ??
+        defaults.collatorOptions.batchSize,
+    };
+  };
+
+  export const getDocumentText = (entity: Entity): string => {
+    const documentTexts: string[] = [];
+    if (entity.metadata.description) {
+      documentTexts.push(entity.metadata.description);
+    }
+
+    if (isUserEntity(entity) || isGroupEntity(entity)) {
+      if (entity.spec?.profile?.displayName) {
+        documentTexts.push(entity.spec.profile.displayName);
+      }
+    }
+
+    if (isUserEntity(entity)) {
+      if (entity.spec?.profile?.email) {
+        documentTexts.push(entity.spec.profile.email);
+      }
+    }
+
+    return documentTexts.join(' : ');
+  };
+}
+
 /**
  * @public
  * @deprecated import from `@backstage/plugin-search-backend-module-catalog` instead
  */
 export const defaultCatalogCollatorEntityTransformer =
   _defaultCatalogCollatorEntityTransformer;
+
+/**
+ * @public
+ * @deprecated This is no longer supported since the new backend system migration
+ */
+export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
+  public readonly type = 'software-catalog';
+  public readonly visibilityPermission: Permission =
+    catalogEntityReadPermission;
+
+  private locationTemplate: string;
+  private filter?: GetEntitiesRequest['filter'];
+  private batchSize: number;
+  private readonly catalogClient: CatalogApi;
+  private entityTransformer: CatalogCollatorEntityTransformer;
+  private auth: AuthService;
+
+  static fromConfig(
+    configRoot: Config,
+    options: DefaultCatalogCollatorFactoryOptions,
+  ) {
+    const configOptions = search.readCollatorConfigOptions(configRoot);
+    const { auth: adaptedAuth } = createLegacyAuthAdapters({
+      auth: options.auth,
+      discovery: options.discovery,
+      tokenManager: options.tokenManager,
+    });
+    return new DefaultCatalogCollatorFactory({
+      locationTemplate:
+        options.locationTemplate ?? configOptions.locationTemplate,
+      filter: options.filter ?? configOptions.filter,
+      batchSize: options.batchSize ?? configOptions.batchSize,
+      entityTransformer: options.entityTransformer,
+      auth: adaptedAuth,
+      discovery: options.discovery,
+      catalogClient: options.catalogClient,
+    });
+  }
+
+  private constructor(options: {
+    locationTemplate: string;
+    filter: GetEntitiesRequest['filter'];
+    batchSize: number;
+    entityTransformer?: CatalogCollatorEntityTransformer;
+    auth: AuthService;
+    discovery: DiscoveryService;
+    catalogClient?: CatalogApi;
+  }) {
+    const {
+      auth,
+      batchSize,
+      discovery,
+      locationTemplate,
+      filter,
+      catalogClient,
+      entityTransformer,
+    } = options;
+
+    this.locationTemplate = locationTemplate;
+    this.filter = filter;
+    this.batchSize = batchSize;
+    this.catalogClient =
+      catalogClient || new CatalogClient({ discoveryApi: discovery });
+    this.entityTransformer =
+      entityTransformer ?? defaultCatalogCollatorEntityTransformer;
+    this.auth = auth;
+  }
+
+  async getCollator(): Promise<Readable> {
+    return Readable.from(this.execute());
+  }
+
+  private async *execute(): AsyncGenerator<CatalogEntityDocument> {
+    let entitiesRetrieved = 0;
+    let cursor: string | undefined = undefined;
+
+    do {
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
+      const response = await this.catalogClient.queryEntities(
+        {
+          filter: this.filter,
+          limit: this.batchSize,
+          ...(cursor ? { cursor } : {}),
+        },
+        { token },
+      );
+      cursor = response.pageInfo.nextCursor;
+      entitiesRetrieved += response.items.length;
+
+      for (const entity of response.items) {
+        yield {
+          ...this.entityTransformer(entity),
+          authorization: {
+            resourceRef: stringifyEntityRef(entity),
+          },
+          location: this.applyArgsToFormat(this.locationTemplate, {
+            namespace: entity.metadata.namespace || 'default',
+            kind: entity.kind,
+            name: entity.metadata.name,
+          }),
+        };
+      }
+    } while (cursor);
+  }
+
+  private applyArgsToFormat(
+    format: string,
+    args: Record<string, string>,
+  ): string {
+    let formatted = format;
+
+    for (const [key, value] of Object.entries(args)) {
+      formatted = formatted.replace(`:${key}`, value);
+    }
+
+    return formatted.toLowerCase();
+  }
+}
+
+/**
+ * @public
+ * @deprecated This is no longer supported since the new backend system migration
+ */
+export type DefaultCatalogCollatorFactoryOptions = {
+  auth?: AuthService;
+  discovery: DiscoveryService;
+  tokenManager?: TokenManager;
+  /**
+   * @deprecated Use the config key `search.collators.catalog.locationTemplate` instead.
+   */
+  locationTemplate?: string;
+  /**
+   * @deprecated Use the config key `search.collators.catalog.filter` instead.
+   */
+  filter?: GetEntitiesRequest['filter'];
+  /**
+   * @deprecated Use the config key `search.collators.catalog.batchSize` instead.
+   */
+  batchSize?: number;
+  // TODO(freben): Change to required CatalogService instead when fully migrated to the new backend system.
+  catalogClient?: CatalogApi;
+  /**
+   * Allows you to customize how entities are shaped into documents.
+   */
+  entityTransformer?: CatalogCollatorEntityTransformer;
+};
 
 /**
  * @public

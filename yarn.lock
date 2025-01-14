@@ -6194,6 +6194,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
     "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     "@opentelemetry/api": ^1.9.0
