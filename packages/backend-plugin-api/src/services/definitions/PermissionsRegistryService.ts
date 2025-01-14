@@ -57,7 +57,7 @@ export type PermissionsRegistryServiceAddResourceTypeOptions<
    *
    * If this function is not provided the permission system will not be able to
    * resolve conditional decisions except when requesting resources directly
-   * form the plugin.
+   * from the plugin.
    */
   getResources?(resourceRefs: string[]): Promise<Array<TResource | undefined>>;
 };

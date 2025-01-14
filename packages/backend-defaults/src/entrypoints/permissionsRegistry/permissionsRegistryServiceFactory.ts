@@ -23,7 +23,7 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 /**
  * Permission system integration for registering resources and permissions.
  *
- * See {@link @backstage/code-plugin-api#PermissionsRegistryService}
+ * See {@link @backstage/core-plugin-api#PermissionsRegistryService}
  * and {@link https://backstage.io/docs/backend-system/core-services/permission-integrations | the service docs}
  * for more information.
  *
