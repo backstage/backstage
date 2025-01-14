@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-node
 
+## 0.8.7
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 0.8.7-next.1
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.29.5
+
+### Patch Changes
+
+- e937ce0: Fixed incompatible `@typescript-eslint` versions with current `eslint@8.x.x`
+- 8557e09: Removed the `EXPERIMENTAL_VITE` flag for using Vite as a dev server. If you were using this feature, we recommend switching to Rspack via the `EXPERIMENTAL_RSPACK` flag.
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/config-loader@1.9.5
+  - @backstage/integration@1.16.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.12
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+
 ## 0.29.5-next.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/config",
-  "version": "1.3.2-next.0",
+  "version": "1.3.2",
   "description": "Config API used by Backstage core, backend, and CLI",
   "backstage": {
     "role": "common-library"
