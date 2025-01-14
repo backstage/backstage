@@ -172,8 +172,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     const request = await this.fetchApi.fetch(
       `${
-        url.endsWith('/') || url.endsWith('.html') ? url : `${url}/`
-      }index.html`,
+        url.endsWith('/') || url.endsWith('.html') ? url : `${url}/index.html`
+      }`,
     );
 
     let errorMessage = '';
