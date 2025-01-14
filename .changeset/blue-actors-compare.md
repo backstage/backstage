@@ -3,4 +3,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-Replace @keyv/redis package with @keyv/valkey since Redis is no longer open-source and Valkey is the drop-in replacement for it.
+Replace `@keyv/redis` package with `@keyv/valkey` since Redis is no longer open-source and Valkey is the drop-in replacement for it.
