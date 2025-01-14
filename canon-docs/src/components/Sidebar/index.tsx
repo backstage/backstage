@@ -1,5 +1,4 @@
 import styles from './Sidebar.module.css';
-import { TabsVersion, TabsPages, TabsTheme } from './tabs';
 import { Docs } from './docs';
 import { Playground } from './playground';
 import Link from 'next/link';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 export const Sidebar = () => {
   return (
     <div className={styles.sidebar}>
-      <div className={styles.content}>
+      <div className={styles.logoContainer}>
         <Link href="/">
           <svg
             width="89"
@@ -20,15 +19,10 @@ export const Sidebar = () => {
             <path d="M14.037 16.729a4.237 4.237 0 0 0 4.234-4.24 4.237 4.237 0 0 0-4.234-4.242 4.237 4.237 0 0 0-4.234 4.241 4.237 4.237 0 0 0 4.234 4.24Z" />
           </svg>
         </Link>
-        <div className={styles.actions}>
-          <TabsVersion />
-          <TabsTheme />
-        </div>
-        <TabsPages />
-        <div className={styles.menu}>
-          <Docs />
-          <Playground />
-        </div>
+      </div>
+      <div className={styles.menu}>
+        <Docs />
+        <Playground />
       </div>
     </div>
   );

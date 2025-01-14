@@ -15,7 +15,35 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
 const backend = createBackend();
 backend.add(import('../src/alpha'));
+
+backend.add(
+  createBackendModule({
+    pluginId: 'proxy',
+    moduleId: 'demo-additional-endpoints',
+    register: reg => {
+      reg.registerInit({
+        deps: {
+          proxyEndpoints: proxyEndpointsExtensionPoint,
+        },
+        init: async ({ proxyEndpoints }) => {
+          proxyEndpoints.addProxyEndpoints({
+            ...Object.fromEntries(
+              ['foo', 'bar', 'baz'].map(msv => [
+                `/${msv}`,
+                { target: `http://${msv}.org` },
+              ]),
+            ),
+            '/gocd': 'http://cannot-override-config.no',
+          });
+        },
+      });
+    },
+  }),
+);
+
 backend.start();

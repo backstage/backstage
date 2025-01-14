@@ -3,8 +3,13 @@
 }
 
 .container {
-  padding-left: 300px;
   width: 100%;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 300px;
+  }
 }
 
 .page {
