@@ -5656,7 +5656,7 @@
   }
 }
 
-[data-theme="light"] {
+:root {
   --canon-font-regular: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --canon-font-monospace: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
   --canon-font-weight-regular: 400;
@@ -5714,46 +5714,6 @@
 }
 
 [data-theme="dark"] {
-  --canon-font-regular: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --canon-font-monospace: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
-  --canon-font-weight-regular: 400;
-  --canon-font-weight-bold: 600;
-  --canon-font-size-label: .625rem;
-  --canon-font-size-caption: .75rem;
-  --canon-font-size-body: .875rem;
-  --canon-font-size-subtitle: 1rem;
-  --canon-font-size-title5: 1.25rem;
-  --canon-font-size-title4: 1.5rem;
-  --canon-font-size-title3: 2rem;
-  --canon-font-size-title2: 3rem;
-  --canon-font-size-title1: 4rem;
-  --canon-font-size-display: 5.75rem;
-  --canon-space: .25rem;
-  --canon-space-0_5: calc(var(--canon-space) * .5);
-  --canon-space-1: var(--canon-space);
-  --canon-space-1_5: calc(var(--canon-space) * 1.5);
-  --canon-space-2: calc(var(--canon-space) * 2);
-  --canon-space-3: calc(var(--canon-space) * 3);
-  --canon-space-4: calc(var(--canon-space) * 4);
-  --canon-space-5: calc(var(--canon-space) * 5);
-  --canon-space-6: calc(var(--canon-space) * 6);
-  --canon-space-7: calc(var(--canon-space) * 7);
-  --canon-space-8: calc(var(--canon-space) * 8);
-  --canon-space-9: calc(var(--canon-space) * 9);
-  --canon-space-10: calc(var(--canon-space) * 10);
-  --canon-space-11: calc(var(--canon-space) * 11);
-  --canon-space-12: calc(var(--canon-space) * 12);
-  --canon-space-13: calc(var(--canon-space) * 13);
-  --canon-space-14: calc(var(--canon-space) * 14);
-  --canon-border-radius-2xs: .125rem;
-  --canon-border-radius-xs: .25rem;
-  --canon-border-radius-sm: .5rem;
-  --canon-border-radius-md: .75rem;
-  --canon-border-radius-lg: 1rem;
-  --canon-border-radius-xl: 1.25rem;
-  --canon-border-radius-2xl: 1.5rem;
-  --canon-container-max-width: 1200px;
-  --canon-container-padding: 1rem;
   --canon-accent: #fff;
   --canon-background: #000;
   --canon-surface-1: #121212;
