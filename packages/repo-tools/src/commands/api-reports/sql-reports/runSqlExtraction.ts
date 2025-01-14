@@ -75,7 +75,7 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
         },
       });
 
-      await knex.raw(`CREATE DATABASE "${database}"`);
+      await knex.raw('CREATE DATABASE ??', [database]);
 
       await runSingleSqlExtraction(
         packageDir,
