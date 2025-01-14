@@ -169,7 +169,7 @@ Kubernetes definitions in a single file and apply them at the same time.
 Note the volume `type: local`; this creates a volume using local disk on
 Kubernetes nodes. More likely in a production scenario, you'd want to use a more
 highly available
-[type of PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes).
+[types of PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes).
 
 Apply the storage volume and claim to the Kubernetes cluster:
 
