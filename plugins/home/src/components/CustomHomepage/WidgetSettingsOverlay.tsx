@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React from 'react';
-import { Widget } from './types';
+import SettingsIcon from '@material-ui/icons/Settings';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import React from 'react';
+
+import { Widget } from './types';
 
 const Form = withTheme(MuiTheme);
 
@@ -95,14 +97,14 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
                 allOf: 'populateDefaults',
               }}
             >
-              <Box display="inline-flex" gridGap={8}>
+              <DialogActions>
                 <Button color="primary" variant="contained" type="submit">
                   Submit
                 </Button>
                 <Button color="secondary" onClick={onClose}>
                   Cancel
                 </Button>
-              </Box>
+              </DialogActions>
             </Form>
           </DialogContent>
         </Dialog>
