@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-/* Components */
-@import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Input/Input.styles.css';
-@import '../components/Field/Field.styles.css';
+export { Input } from './Input';
+export type { InputProps } from './types';

@@ -3802,6 +3802,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^18.0.0
     "@types/react-dom": ^18.0.0
+    clsx: ^2.1.1
     eslint-plugin-storybook: ^0.11.1
     globals: ^15.11.0
     mini-css-extract-plugin: ^2.9.2

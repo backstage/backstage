@@ -82,7 +82,7 @@
   --canon-border-hover: rgba(0, 0, 0, 0.2);
   --canon-border-warning: #e36d05;
   --canon-border-error: #e22b2b;
-  --canon-border-selected: #1db954;
+  --canon-border-selected: rgba(0, 0, 0, 0.4);
 
   /* States - Add more states */
   --canon-error: #f50000;
@@ -152,9 +152,10 @@
 
   /* Borders */
   --canon-border-base: rgba(255, 255, 255, 0.2);
+  --canon-border-hover: rgba(255, 255, 255, 0.3);
   --canon-border-warning: #f50000;
   --canon-border-error: #f87503;
-  --canon-border-selected: #25d262;
+  --canon-border-selected: rgba(255, 255, 255, 0.4);
 
   /* States - Add more states */
   --canon-error: #f50000;

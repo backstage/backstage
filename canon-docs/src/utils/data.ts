@@ -70,12 +70,17 @@ export const components: Page[] = [
   {
     title: 'Button',
     slug: 'button',
-    status: 'inProgress',
+    status: 'alpha',
   },
   {
     title: 'Checkbox',
     slug: 'checkbox',
-    status: 'inProgress',
+    status: 'alpha',
+  },
+  {
+    title: 'Field',
+    slug: 'field',
+    status: 'alpha',
   },
   {
     title: 'Heading',
@@ -85,6 +90,11 @@ export const components: Page[] = [
   {
     title: 'Icon',
     slug: 'icon',
+    status: 'alpha',
+  },
+  {
+    title: 'Input',
+    slug: 'input',
     status: 'alpha',
   },
   {

@@ -9,6 +9,7 @@ import { ButtonPlayground } from '@/snippets/button';
 import { CheckboxPlayground } from '@/snippets/checkbox';
 import { HeadingPlayground } from '@/snippets/heading';
 import { TextPlayground } from '@/snippets/text';
+import { InputPlayground } from '@/snippets/input';
 
 import styles from './styles.module.css';
 
@@ -66,6 +67,9 @@ const Content = () => {
       {selectedComponents.find(c => c === 'text') && (
         <Line content={<TextPlayground />} title="Text" />
       )}
+      {/* {selectedComponents.find(c => c === 'input') && (
+        <Line content={<InputPlayground />} title="Input" />
+      )} */}
     </Stack>
   );
 };

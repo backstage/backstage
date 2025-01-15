@@ -6,7 +6,9 @@
 /// <reference types="react" />
 
 import type { CSSProperties } from 'react';
+import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
+import { Input as Input_2 } from '@base-ui-components/react/input';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
@@ -181,6 +183,36 @@ export interface ContainerProps {
 export type Display = 'none' | 'flex' | 'block' | 'inline';
 
 // @public (undocumented)
+export const Field: {
+  Root: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Root.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Label: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Label.Props & React_2.RefAttributes<any>, 'ref'> &
+      React_2.RefAttributes<any>
+  >;
+  Description: React_2.ForwardRefExoticComponent<
+    Omit<
+      Field_2.Description.Props & React_2.RefAttributes<HTMLParagraphElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLParagraphElement>
+  >;
+  Error: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Error.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Validity: ({
+    children,
+    className,
+    ...props
+  }: Field_2.Validity.Props & {
+    className?: string | undefined;
+  }) => React_2.JSX.Element;
+};
+
+// @public (undocumented)
 export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
@@ -321,6 +353,17 @@ export interface InlineProps extends SpaceProps {
   gap?: UtilityProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
+}
+
+// @public (undocumented)
+export const Input: React_2.ForwardRefExoticComponent<
+  InputProps & React_2.RefAttributes<HTMLInputElement>
+>;
+
+// @public (undocumented)
+export interface InputProps extends Omit<Input_2.Props, 'size'> {
+  // (undocumented)
+  size?: 'sm' | 'md';
 }
 
 // @public (undocumented)

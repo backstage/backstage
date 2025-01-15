@@ -5700,7 +5700,7 @@
   --canon-border-hover: #0003;
   --canon-border-warning: #e36d05;
   --canon-border-error: #e22b2b;
-  --canon-border-selected: #1db954;
+  --canon-border-selected: #0006;
   --canon-error: #f50000;
   --canon-text-primary: #000;
   --canon-text-primary-on-accent: #fff;
@@ -5747,9 +5747,10 @@
   --canon-surface-1: #121212;
   --canon-surface-2: #1a1a1a;
   --canon-border-base: #fff3;
+  --canon-border-hover: #ffffff4d;
   --canon-border-warning: #f50000;
   --canon-border-error: #f87503;
-  --canon-border-selected: #25d262;
+  --canon-border-selected: #fff6;
   --canon-error: #f50000;
   --canon-text-primary: #fff;
   --canon-text-primary-on-accent: #000;
