@@ -14,45 +14,66 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+
 import React from 'react';
 import { rootDocsRouteRef } from '../../../routes';
 import { InfoCardGrid } from './InfoCardGrid';
 
 describe('Entity Info Card Grid', () => {
+  const catalogApi = catalogApiMock();
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+
   beforeEach(() => {
     jest.resetAllMocks();
+    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+      <TestApiProvider
+        apis={[
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
+    );
   });
 
   it('should render multiple entities', async () => {
     await renderInTestApp(
-      <InfoCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              title: 'TestTitle',
+      <Wrapper>
+        <InfoCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                title: 'TestTitle',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
             },
-            spec: {
-              owner: 'techdocs@example.com',
+            {
+              apiVersion: 'version',
+              kind: 'TestKind2',
+              metadata: {
+                name: 'testName2',
+                title: 'TestTitle2',
+              },
+              spec: {
+                owner: 'techdocs2@example.com',
+              },
             },
-          },
-          {
-            apiVersion: 'version',
-            kind: 'TestKind2',
-            metadata: {
-              name: 'testName2',
-              title: 'TestTitle2',
-            },
-            spec: {
-              owner: 'techdocs2@example.com',
-            },
-          },
-        ]}
-      />,
+          ]}
+        />
+      </Wrapper>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -66,32 +87,34 @@ describe('Entity Info Card Grid', () => {
 
   it('should render links correctly', async () => {
     await renderInTestApp(
-      <InfoCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              title: 'TestTitle',
+      <Wrapper>
+        <InfoCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                title: 'TestTitle',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
             },
-            spec: {
-              owner: 'techdocs@example.com',
+            {
+              apiVersion: 'version',
+              kind: 'TestKind2',
+              metadata: {
+                name: 'testName2',
+                title: 'TestTitle2',
+              },
+              spec: {
+                owner: 'techdocs2@example.com',
+              },
             },
-          },
-          {
-            apiVersion: 'version',
-            kind: 'TestKind2',
-            metadata: {
-              name: 'testName2',
-              title: 'TestTitle2',
-            },
-            spec: {
-              owner: 'techdocs2@example.com',
-            },
-          },
-        ]}
-      />,
+          ]}
+        />
+      </Wrapper>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -112,21 +135,23 @@ describe('Entity Info Card Grid', () => {
 
   it('should render entity title if available', async () => {
     await renderInTestApp(
-      <InfoCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              title: 'TestTitle',
+      <Wrapper>
+        <InfoCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                title: 'TestTitle',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
             },
-            spec: {
-              owner: 'techdocs@example.com',
-            },
-          },
-        ]}
-      />,
+          ]}
+        />
+      </Wrapper>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -139,20 +164,22 @@ describe('Entity Info Card Grid', () => {
 
   it('should render entity name if title is not available', async () => {
     await renderInTestApp(
-      <InfoCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
+      <Wrapper>
+        <InfoCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
             },
-            spec: {
-              owner: 'techdocs@example.com',
-            },
-          },
-        ]}
-      />,
+          ]}
+        />
+      </Wrapper>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
