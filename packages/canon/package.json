@@ -2,7 +2,7 @@
   "name": "@backstage/canon",
   "version": "0.0.0",
   "backstage": {
-    "role": "node-library"
+    "role": "web-library"
   },
   "publishConfig": {
     "access": "public",

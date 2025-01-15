@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-restricted-imports */
 import { transform, bundle } from 'lightningcss';
 import fs from 'fs';
 import path from 'path';
+/* eslint-enable no-restricted-imports */
 
 // Check if core.css and components.css exist
 const cssFiles = ['src/css/core.css', 'src/css/components.css'];
