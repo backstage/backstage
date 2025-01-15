@@ -1,5 +1,23 @@
 # @backstage/integration
 
+## 1.16.1
+
+### Patch Changes
+
+- d2b16db: A new Gerrit helper function (`buildGerritGitilesArchiveUrlFromLocation`) has been added. This
+  constructs a Gitiles URL to download an archive. It is similar to the existing
+  `buildGerritGitilesArchiveUrl` but also support content referenced by a full commit `SHA`.
+
+  **DEPRECATIONS**: The function `buildGerritGitilesArchiveUrl` is deprecated, use the
+  `buildGerritGitilesArchiveUrlFromLocation` function instead.
+
+  **DEPRECATIONS**: The function `parseGerritGitilesUrl` is deprecated, use the
+  `parseGitilesUrlRef` function instead.
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.16.1-next.0
 
 ### Patch Changes

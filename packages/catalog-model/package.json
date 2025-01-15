@@ -1,6 +1,6 @@
 {
   "name": "@backstage/catalog-model",
-  "version": "1.7.3-next.0",
+  "version": "1.7.3",
   "description": "Types and validators that help describe the model of a Backstage Catalog",
   "backstage": {
     "role": "common-library"

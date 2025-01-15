@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.16.3
+
+### Patch Changes
+
+- 4ec6f7b: Allow passing component for `ContentHeader` description
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/version-bridge@1.0.10
+
 ## 0.16.3-next.0
 
 ### Patch Changes

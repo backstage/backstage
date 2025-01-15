@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.16.1-next.0",
+  "version": "1.16.1",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"

@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.3.4
+
+### Patch Changes
+
+- d4a8246: Use the email from `cfIdentity` instead of `claims` when constructing user profile in order to support Cloudflare Service Tokens.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.3.4-next.1
 
 ### Patch Changes

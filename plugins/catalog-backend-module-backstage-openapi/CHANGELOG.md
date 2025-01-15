@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.4.4
+
+### Patch Changes
+
+- 12ba80f: docs: Use a valid configuration as example
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.4.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.15.1
+
 ## 0.4.4-next.1
 
 ### Patch Changes

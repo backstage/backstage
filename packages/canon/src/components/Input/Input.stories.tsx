@@ -22,93 +22,20 @@ import { Inline } from '../Inline';
 const meta = {
   title: 'Components/Input',
   component: Input,
-  decorators: [
-    Story => (
-      <div style={{ maxWidth: '400px' }}>
-        <Story />
-      </div>
-    ),
-  ],
-  argTypes: {
-    label: {
-      control: 'text',
-    },
-    description: {
-      control: 'text',
-    },
-    placeholder: {
-      control: 'text',
-    },
-    size: {
-      control: 'select',
-      options: ['sm', 'md'],
-    },
-  },
 } satisfies Meta<typeof Input>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
-
-export const WithPlaceholder: Story = {
-  args: {
-    placeholder: 'Enter your name',
-  },
-};
-
-export const WithLabel: Story = {
-  args: {
-    label: 'Name',
-  },
-};
-
-export const WithDescription: Story = {
-  args: {
-    description: 'Visible on your profile',
-  },
-};
-
-export const WithLabelAndDescription: Story = {
-  args: {
-    label: 'Name',
-    description: 'Visible on your profile',
-  },
+export const Primary: Story = {
+  render: () => <Input className="canon-Input" />,
 };
 
 export const Sizes: Story = {
-  args: {
-    label: 'Name',
-    description: 'Visible on your profile',
-  },
-  render: args => (
+  render: () => (
     <Inline>
-      <Input size="sm" {...args} />
-      <Input size="md" {...args} />
+      <Input size="sm" />
+      <Input size="md" />
     </Inline>
   ),
-};
-
-export const WithErrorValidation: Story = {
-  args: {
-    validate: value =>
-      value !== 'Charles' ? 'Please enter a different name' : null,
-    required: true,
-    label: 'Name',
-    description: 'Visible on your profile',
-    validationMode: 'onChange',
-    errorMatch: 'customError',
-  },
-};
-
-export const WithInvalidProp: Story = {
-  args: {
-    invalid: true,
-    required: true,
-    label: 'Name',
-    description: 'Visible on your profile',
-    validationMode: 'onChange',
-    errorForceShow: true,
-    validate: () => 'Stuff',
-  },
 };

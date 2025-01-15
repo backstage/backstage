@@ -67,9 +67,9 @@ const Content = () => {
       {selectedComponents.find(c => c === 'text') && (
         <Line content={<TextPlayground />} title="Text" />
       )}
-      {selectedComponents.find(c => c === 'input') && (
+      {/* {selectedComponents.find(c => c === 'input') && (
         <Line content={<InputPlayground />} title="Input" />
-      )}
+      )} */}
     </Stack>
   );
 };

@@ -209,11 +209,13 @@ Scope: The Backstage Documentation
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
 | Deepankumar Loganathan         |                           | [deepan10](https://github.com/deepan10)               | `deepan10`                     |
+| Heikki Hellgren                | OP Financial Group        | [drodil](https://github.com/drodil)                   | `deathammer`                   |
 | Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)           | `OrkoHunter#1520`              |
 | Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |
 | Jorge Lainfiesta               | Roadie.io                 | [jorgelainfiesta](https://github.com/jorgelainfiesta) | `jorgel#8733`                  |
 | Jussi Hallila                  | Roadie.io                 | [Xantier](https://github.com/Xantier)                 | `Xantier#0086`                 |
 | Kashish Mittal                 | Red Hat                   | [04kash](https://github.com/04kash)                   | `kashh._.`                     |
+| Kurt King                      | Procore                   | [kurtaking](https://github.com/kurtaking)             | `mrking2you`                   |
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
 | Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |

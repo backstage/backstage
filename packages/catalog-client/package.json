@@ -1,6 +1,6 @@
 {
   "name": "@backstage/catalog-client",
-  "version": "1.9.1-next.0",
+  "version": "1.9.1",
   "description": "An isomorphic client for the catalog backend",
   "backstage": {
     "role": "common-library"

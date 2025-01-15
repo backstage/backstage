@@ -981,6 +981,99 @@ describe('createPermissionIntegrationRouter', () => {
       ],
     });
   });
+
+  it('returns a list of basic permissions together with permissions and rules from multiple resource types with mutation', async () => {
+    const aPermission = createPermission({
+      name: 'a.permission',
+      attributes: {},
+    });
+
+    const router = createPermissionIntegrationRouter();
+
+    const responseBefore = await request(express().use(router)).get(
+      '/.well-known/backstage/permissions/metadata',
+    );
+
+    expect(responseBefore.status).toEqual(200);
+    expect(responseBefore.body).toEqual({
+      permissions: [],
+      rules: [],
+    });
+
+    router.addPermissions([aPermission, testPermission]);
+
+    router.addResourceType({
+      resourceType: 'test-resource',
+      permissions: [testPermission],
+      getResources: defaultMockedGetResources1,
+      rules: [testRule1],
+    });
+
+    router.addPermissionRules([testRule2]);
+
+    // This one is for the resource added below, it should be possible to add rules before the resource typeof
+    router.addPermissionRules([testRule3]);
+
+    router.addResourceType({
+      resourceType: 'test-resource-2',
+      permissions: [testPermission2],
+      getResources: defaultMockedGetResources2,
+      rules: [],
+    });
+
+    const responseAfter = await request(express().use(router)).get(
+      '/.well-known/backstage/permissions/metadata',
+    );
+
+    expect(responseAfter.status).toEqual(200);
+    expect(responseAfter.body).toEqual({
+      permissions: [aPermission, testPermission, testPermission2],
+      rules: [
+        {
+          name: testRule1.name,
+          description: testRule1.description,
+          resourceType: testRule1.resourceType,
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {
+              foo: {
+                type: 'string',
+              },
+              bar: {
+                description: 'bar',
+                type: 'number',
+              },
+            },
+            required: ['foo', 'bar'],
+            type: 'object',
+          },
+        },
+        {
+          name: testRule2.name,
+          description: testRule2.description,
+          resourceType: testRule2.resourceType,
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {},
+            type: 'object',
+          },
+        },
+        {
+          name: testRule3.name,
+          description: testRule3.description,
+          resourceType: testRule3.resourceType,
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {},
+            type: 'object',
+          },
+        },
+      ],
+    });
+  });
 });
 
 describe('createConditionAuthorizer', () => {

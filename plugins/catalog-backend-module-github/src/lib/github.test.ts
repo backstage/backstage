@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { registerMswTestHooks } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql as graphqlOctokit } from '@octokit/graphql';
 import { graphql as graphqlMsw, HttpResponse } from 'msw';
@@ -32,7 +35,17 @@ import {
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
+  createGraphqlClient,
 } from './github';
+import { Octokit } from '@octokit/core';
+import { throttling } from '@octokit/plugin-throttling';
+
+jest.mock('@octokit/core', () => ({
+  ...jest.requireActual('@octokit/core'),
+  Octokit: {
+    plugin: jest.fn().mockReturnValue({ defaults: jest.fn() }),
+  },
+}));
 
 describe('github', () => {
   const server = setupServer();
@@ -696,6 +709,83 @@ describe('github', () => {
             entity: userEntity,
           },
         ],
+      });
+    });
+  });
+
+  describe('createGraphqlClient', () => {
+    const headers = {};
+
+    const baseUrl = 'https://api.github.com';
+
+    const logger = mockServices.rootLogger();
+
+    const mockClient = jest.fn().mockImplementation();
+
+    const graphqlDefaults = jest.fn().mockReturnValue(mockClient);
+    const mockedOctokit = jest.fn().mockImplementation(() => ({
+      graphql: {
+        defaults: graphqlDefaults,
+      },
+    }));
+    (Octokit.plugin as jest.Mock).mockReturnValue(mockedOctokit);
+
+    const rateLimitOptions = {
+      method: 'POST',
+      url: '/graphql',
+    };
+    const client = createGraphqlClient({
+      headers,
+      baseUrl,
+      logger,
+    });
+    it('should return a graphql client with throttling', async () => {
+      expect(client).toBeDefined();
+      expect(Octokit.plugin).toHaveBeenCalledWith(throttling);
+    });
+
+    it('should return a graphql client with the correct options', async () => {
+      expect(graphqlDefaults).toHaveBeenCalledWith({
+        baseUrl,
+        headers,
+      });
+    });
+
+    describe('onRateLimit', () => {
+      it.each([
+        { retryCount: 0, expectedResult: true },
+        { retryCount: 1, expectedResult: true },
+        { retryCount: 2, expectedResult: false },
+      ])('should return %s', async ({ retryCount, expectedResult }) => {
+        const throttleOptions = mockedOctokit.mock.calls[0][0].throttle;
+
+        const result = throttleOptions.onRateLimit(
+          60,
+          rateLimitOptions,
+          undefined,
+          retryCount,
+        );
+
+        expect(result).toBe(expectedResult);
+      });
+    });
+
+    describe('onSecondaryRateLimit', () => {
+      it.each([
+        { retryCount: 0, expectedResult: true },
+        { retryCount: 1, expectedResult: true },
+        { retryCount: 2, expectedResult: false },
+      ])('should return %s', async ({ retryCount, expectedResult }) => {
+        const throttleOptions = mockedOctokit.mock.calls[0][0].throttle;
+
+        const result = throttleOptions.onSecondaryRateLimit(
+          60,
+          rateLimitOptions,
+          undefined,
+          retryCount,
+        );
+
+        expect(result).toBe(expectedResult);
       });
     });
   });

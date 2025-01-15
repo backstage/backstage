@@ -1,5 +1,16 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.10
+
+### Patch Changes
+
+- 11b001c: Added `proxyEndpointsExtensionPoint` to allow addition of proxy configuration through an extension point in the new backend system.
+- Updated dependencies
+  - @backstage/plugin-proxy-node@0.1.0
+  - @backstage/types@1.2.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+
 ## 0.5.10-next.1
 
 ### Patch Changes

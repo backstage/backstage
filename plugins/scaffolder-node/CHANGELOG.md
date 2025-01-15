@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.6.3
+
+### Patch Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+- 7dd0013: Deprecate the `logStream` option in `executeShellCommand`, replacing it with a logger instance.
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 0.6.3-next.1
 
 ### Patch Changes

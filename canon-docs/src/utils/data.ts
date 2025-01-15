@@ -78,6 +78,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Field',
+    slug: 'field',
+    status: 'alpha',
+  },
+  {
     title: 'Heading',
     slug: 'heading',
     status: 'alpha',

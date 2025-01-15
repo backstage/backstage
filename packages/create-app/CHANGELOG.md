@@ -1,5 +1,15 @@
 # @backstage/create-app
 
+## 0.5.24
+
+### Patch Changes
+
+- 2e3fbc1: Bumped create-app version.
+- 0980e40: Bumped create-app version.
+- 828c993: Added `--jobs unlimited` to `dev` script to help cases where the backend does not start up during local development
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.24-next.2
 
 ### Patch Changes

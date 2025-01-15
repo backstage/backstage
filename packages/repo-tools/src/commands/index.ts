@@ -187,6 +187,7 @@ export function registerCommands(program: Command) {
     .option('--ci', 'CI run checks that there is no changes on API reports')
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
+    .option('--sql-reports', 'Also generate SQL reports from migration files')
     .option(
       '--include <pattern>',
       'Only include packages matching the provided patterns',
