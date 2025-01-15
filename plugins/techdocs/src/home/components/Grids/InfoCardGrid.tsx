@@ -15,9 +15,19 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
+import useAsync from 'react-use/esm/useAsync';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
-import { ItemCardGrid, InfoCard, Link } from '@backstage/core-components';
+import {
+  ItemCardGrid,
+  InfoCard,
+  Link,
+  Progress,
+} from '@backstage/core-components';
+import {
+  EntityRefPresentationSnapshot,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
 import { rootDocsRouteRef } from '../../../routes';
 import { toLowerMaybe } from '../../../helpers';
@@ -71,7 +81,22 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
       name: toLowerMaybe(entity.metadata.name, config),
     });
   };
-
+  const entityPresentationApi = useApi(entityPresentationApiRef);
+  const { value: entityRefToPresentation, loading } = useAsync(async () => {
+    return new Map<string, EntityRefPresentationSnapshot>(
+      await Promise.all(
+        entities?.map(async entity => {
+          const presentation = await entityPresentationApi.forEntity(entity)
+            .promise;
+          return [stringifyEntityRef(entity), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }) || [],
+      ),
+    );
+  });
+  if (loading) return <Progress />;
   if (!entities || !entities?.length) return null;
   return (
     <ItemCardGrid data-testid="info-card-container">
@@ -79,7 +104,10 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
         <InfoCard
           key={entity.metadata.name}
           data-testid={entity?.metadata?.title}
-          title={entity?.metadata?.title || entity?.metadata?.name}
+          title={
+            entityRefToPresentation?.get(stringifyEntityRef(entity))
+              ?.primaryTitle
+          }
         >
           <div>{entity?.metadata?.description}</div>
           <div className={classes.linkSpacer} />

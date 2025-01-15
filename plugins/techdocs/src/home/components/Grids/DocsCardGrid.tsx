@@ -16,12 +16,18 @@
 
 import { rootDocsRouteRef } from '../../../routes';
 import { toLowerMaybe } from '../../../helpers';
-import { Entity } from '@backstage/catalog-model';
+import useAsync from 'react-use/esm/useAsync';
+import {
+  EntityRefPresentationSnapshot,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
 import {
   LinkButton,
   ItemCardGrid,
   ItemCardHeader,
+  Progress,
 } from '@backstage/core-components';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -47,6 +53,22 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
   const { entities } = props;
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
+  const { value: entityRefToPresentation, loading } = useAsync(async () => {
+    return new Map<string, EntityRefPresentationSnapshot>(
+      await Promise.all(
+        entities?.map(async entity => {
+          const presentation = await entityPresentationApi.forEntity(entity)
+            .promise;
+          return [stringifyEntityRef(entity), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }) || [],
+      ),
+    );
+  });
+  if (loading) return <Progress />;
   if (!entities) return null;
   return (
     <ItemCardGrid data-testid="docs-explore">
@@ -56,7 +78,10 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
             <Card key={index}>
               <CardMedia>
                 <ItemCardHeader
-                  title={entity.metadata.title ?? entity.metadata.name}
+                  title={
+                    entityRefToPresentation?.get(stringifyEntityRef(entity))
+                      ?.primaryTitle
+                  }
                 />
               </CardMedia>
               <CardContent>{entity.metadata.description}</CardContent>
