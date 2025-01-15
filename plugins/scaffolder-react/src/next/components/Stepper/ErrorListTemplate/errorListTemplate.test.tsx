@@ -127,11 +127,7 @@ describe('Error List Template', () => {
               },
             },
           },
-          properties: {
-            foo: {
-              title: 'Hello',
-            },
-          },
+          properties: {},
         },
       } as Partial<ErrorListProps> as ErrorListProps;
 
