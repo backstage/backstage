@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-add validation for `each` values
+Fixed an issue where invalid expressions or non-object values in `step.each` caused an error.
