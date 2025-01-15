@@ -1,7 +1,7 @@
 import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
 import * as GridStories from './Grid.stories';
-import { Title, Text, PropsTable, getProps } from '../../../docs/components';
-import { spacingProperties } from '../../layout/sprinkles.css';
+import { Title, Text, PropsTable } from '../../../docs/components';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={GridStories} />
 
@@ -13,24 +13,13 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   more complex ones.
 </Text>
 
-<Title type="h2">Installation</Title>
-<Source code={`import { Grid } from "@backstage/canon";`} language="tsx" dark />
+<Title type="h2">Usage</Title>
+<Source code={`import { Grid } from "@backstage/canon";
 
-<Title type="h2">Anatomy</Title>
-<Text>
-  The grid component is made of two parts: the grid container and the grid item. Import all parts and piece them together.
-</Text>
-<Source
-  code={`import { Grid } from "@backstage/canon/grid";
-
-export default () => (
-  <Grid>
-    <Grid.Item />
-  </Grid>
-);`}
-  language="tsx"
-  dark
-/>
+<Grid>
+  <Grid.Item>Hello World</Grid.Item>
+</Grid>
+`} language="tsx" dark />
 
 <Title type="h2">API reference</Title>
 
@@ -70,7 +59,7 @@ export default () => (
   The grid component also accepts all the spacing props from the Box component.
 </Text>
 
-<PropsTable data={getProps(spacingProperties.styles)} />
+<PropsTable data={spacePropsList} />
 
 <Title type="h3">Grid Item</Title>
 <Text>

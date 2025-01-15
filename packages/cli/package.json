@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.29.3-next.2",
+  "version": "0.29.5",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -77,8 +77,8 @@
     "@swc/jest": "^0.2.22",
     "@types/jest": "^29.5.11",
     "@types/webpack-env": "^1.15.2",
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
-    "@typescript-eslint/parser": "^6.7.2",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.16.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0",
     "bfj": "^8.0.0",
@@ -95,14 +95,14 @@
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-formatter-friendly": "^7.0.0",
-    "eslint-plugin-deprecation": "^2.0.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jest": "^28.0.0",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
-    "eslint-webpack-plugin": "^4.0.0",
+    "eslint-plugin-deprecation": "^3.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jest": "^28.9.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "eslint-webpack-plugin": "^4.2.0",
     "express": "^4.17.1",
     "fork-ts-checker-webpack-plugin": "^9.0.0",
     "fs-extra": "^11.2.0",
@@ -192,28 +192,16 @@
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/webpack-sources": "^3.2.3",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "@vitejs/plugin-react": "^4.3.1",
     "del": "^8.0.0",
     "msw": "^1.0.0",
-    "nodemon": "^3.0.1",
-    "vite": "^5.0.0",
-    "vite-plugin-html": "^3.2.2",
-    "vite-plugin-node-polyfills": "^0.22.0"
+    "nodemon": "^3.0.1"
   },
   "peerDependencies": {
-    "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@rspack/core": "^1.0.10",
     "@rspack/dev-server": "^1.0.9",
-    "@rspack/plugin-react-refresh": "^1.0.0",
-    "@vitejs/plugin-react": "^4.0.4",
-    "vite": "^5.0.0",
-    "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.22.0"
+    "@rspack/plugin-react-refresh": "^1.0.0"
   },
   "peerDependenciesMeta": {
-    "@modyfi/vite-plugin-yaml": {
-      "optional": true
-    },
     "@rspack/core": {
       "optional": true
     },
@@ -221,18 +209,6 @@
       "optional": true
     },
     "@rspack/plugin-react-refresh": {
-      "optional": true
-    },
-    "@vitejs/plugin-react": {
-      "optional": true
-    },
-    "vite": {
-      "optional": true
-    },
-    "vite-plugin-html": {
-      "optional": true
-    },
-    "vite-plugin-node-polyfills": {
       "optional": true
     }
   },

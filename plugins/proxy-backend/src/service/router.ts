@@ -20,7 +20,6 @@ import Router from 'express-promise-router';
 import {
   createProxyMiddleware,
   fixRequestBody,
-  Options,
   RequestHandler,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
@@ -31,6 +30,7 @@ import {
   HttpRouterService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { ProxyConfig } from '@backstage/plugin-proxy-node/alpha';
 
 // A list of headers that are always forwarded to the proxy targets.
 const safeForwardHeaders = [
@@ -63,12 +63,7 @@ export interface RouterOptions {
   discovery: DiscoveryService;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
-}
-
-export interface ProxyConfig extends Options {
-  allowedMethods?: string[];
-  allowedHeaders?: string[];
-  reviveRequestBody?: boolean;
+  additionalEndpoints?: ProxyConfig;
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -87,7 +82,7 @@ export function buildMiddleware(
     fullConfig = { target: config };
     credentialsPolicy = 'require';
   } else {
-    const { credentials, ...rest } = config as any;
+    const { credentials, ...rest } = config;
     fullConfig = rest;
     credentialsPolicy = credentials ?? 'require';
   }
@@ -315,7 +310,11 @@ export async function createRouterInternal(
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
   const { pathname: pathPrefix } = new URL(externalUrl);
 
-  const proxyConfig = readProxyConfig(options.config, options.logger);
+  const proxyConfig: ProxyConfig = {
+    ...(options.additionalEndpoints ?? {}),
+    ...readProxyConfig(options.config, options.logger),
+  };
+
   configureMiddlewares(
     proxyOptions,
     currentRouter,
@@ -358,10 +357,10 @@ function configureMiddlewares(
   },
   router: express.Router,
   pathPrefix: string,
-  proxyConfig: any,
+  proxyConfig: ProxyConfig,
   httpRouterService?: HttpRouterService,
 ) {
-  Object.entries<any>(proxyConfig).forEach(([route, proxyRouteConfig]) => {
+  Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     try {
       router.use(
         route,

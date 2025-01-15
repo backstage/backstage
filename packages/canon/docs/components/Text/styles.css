@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-.text {
-  font-family: 'Geist', sans-serif;
+.sb-text {
   font-size: 16px;
   line-height: 28px;
   margin: 0;
-  font-weight: 300;
   margin-bottom: 16px;
+  color: #4f4f4f;
 
   & p {
-    font-family: 'Geist', sans-serif;
     font-size: 16px;
     line-height: 28px;
     margin: 0;
-    font-weight: 300;
+  }
+
+  & code {
+    font-size: 13px;
+    color: #215cff;
+    background-color: #f1f3fc;
+    padding: 4px 4px;
+    border-radius: 4px;
+  }
+
+  & a {
+    color: #215cff;
+    text-decoration: none;
+    border-bottom: 1px solid #215cff;
   }
 }

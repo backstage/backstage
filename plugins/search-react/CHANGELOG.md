@@ -1,5 +1,45 @@
 # @backstage/plugin-search-react
 
+## 1.8.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/theme@0.6.3
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-search-common@1.2.17-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/version-bridge@1.0.10
+
+## 1.8.4
+
+### Patch Changes
+
+- d311c84: Use Select from core-components and update Lifecycle filter to use Select instead checkboxes.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.16
+
 ## 1.8.4-next.2
 
 ### Patch Changes

@@ -51,11 +51,86 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
   MergeRequests: {
-    create: jest.fn(async (_: any) => {
+    create: jest.fn(async (repoId: string) => {
+      if (repoId === 'owner/repo-without-approvals') {
+        return {
+          iid: 5,
+        };
+      }
+      return {
+        default_branch: 'main',
+        iid: 4,
+      };
+    }),
+    show: jest.fn(async (repoId: string, iid: number) => {
+      if (repoId === 'owner/repo' && iid === 4) {
+        return {
+          iid: 4,
+        };
+      } else if (repoId === 'owner/repo-without-approvals' && iid === 5) {
+        return {
+          iid: 5,
+        };
+      }
       return {
         default_branch: 'main',
       };
     }),
+    edit: jest.fn(async (_: any) => {
+      return {
+        default_branch: 'main',
+      };
+    }),
+  },
+  MergeRequestApprovals: {
+    allApprovalRules: jest.fn(
+      async (repoId: string, options: { mergerequestIId: number }) => {
+        if (
+          repoId === 'owner/repo-without-approvals' &&
+          options.mergerequestIId === 5
+        ) {
+          return [];
+        }
+        return [
+          {
+            id: 123,
+            name: 'rule1',
+            rule_type: 'regular',
+            eligible_approvers: [
+              {
+                id: 234,
+                username: 'Bob Vance',
+              },
+              {
+                id: 345,
+                username: 'Dina Fox',
+              },
+            ],
+            approvals_required: 1,
+            users: [],
+            contains_hidden_groups: false,
+            report_type: null,
+            section: null,
+            source_rule: { approvals_required: 1 },
+            overridden: false,
+          },
+          {
+            id: 456,
+            name: 'All Members',
+            rule_type: 'any_approver',
+            eligible_approvers: [],
+            approvals_required: 1,
+            users: [],
+            groups: [],
+            contains_hidden_groups: false,
+            report_type: null,
+            section: null,
+            source_rule: { approvals_required: 1 },
+            overridden: false,
+          },
+        ];
+      },
+    ),
   },
   Projects: {
     create: jest.fn(),
@@ -67,13 +142,28 @@ const mockGitlabClient = {
   },
   Users: {
     all: jest.fn(async (userOptions: { username: string }) => {
-      if (userOptions.username !== 'John Smith')
-        throw new Error('user does not exist');
-      return [
-        {
-          id: 123,
-        },
-      ];
+      switch (userOptions.username) {
+        case 'John Smith':
+          return [
+            {
+              id: 123,
+            },
+          ];
+        case 'Bob Vance':
+          return [
+            {
+              id: 234,
+            },
+          ];
+        case 'Jane Doe':
+          return [
+            {
+              id: 456,
+            },
+          ];
+        default:
+          throw new Error('user does not exist');
+      }
     }),
   },
   Repositories: {
@@ -512,6 +602,236 @@ describe('createGitLabMergeRequest', () => {
         {
           description: 'This MR is really good',
           removeSourceBranch: false,
+        },
+      );
+    });
+  });
+
+  describe('createGitlabMergeRequestWithReviewers', () => {
+    it('no reviewers are set when a no reviewer are passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This is an important change',
+        removeSourceBranch: false,
+        targetPath: 'Subdirectory',
+        assignee: 'John Smith',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This is an important change',
+          removeSourceBranch: false,
+          assigneeId: 123,
+        },
+      );
+      expect(
+        mockGitlabClient.MergeRequestApprovals.allApprovalRules,
+      ).toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.edit).toHaveBeenCalledWith(
+        'owner/repo',
+        4,
+        {
+          reviewerIds: [234, 345], // Approval Rule Members
+        },
+      );
+    });
+
+    it('reviewer is set correcly when a valid reviewer username is passed in options in combination with MR approval rules', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This is an important change',
+        removeSourceBranch: false,
+        targetPath: 'Subdirectory',
+        assignee: 'John Smith',
+        reviewers: ['Jane Doe', 'Bob Vance'],
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This is an important change',
+          removeSourceBranch: false,
+          assigneeId: 123,
+          reviewerIds: [456, 234], // Jane Doe and Bob Vance
+        },
+      );
+      expect(
+        mockGitlabClient.MergeRequestApprovals.allApprovalRules,
+      ).toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.edit).toHaveBeenCalledWith(
+        'owner/repo',
+        4,
+        {
+          reviewerIds: [234, 345, 456], // Approval Rule Members + Jane Doe (individual reviewer) but no duplicates (Bob Vance)
+        },
+      );
+    });
+
+    it('reviewer is set correcly when a valid reviewer username is passed in options and no MR rules exist', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo-without-approvals&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This is an important change',
+        removeSourceBranch: false,
+        targetPath: 'Subdirectory',
+        assignee: 'John Smith',
+        reviewers: ['Jane Doe', 'Bob Vance'],
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo-without-approvals',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo-without-approvals',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This is an important change',
+          removeSourceBranch: false,
+          assigneeId: 123,
+          reviewerIds: [456, 234], // Jane Doe and Bob Vance
+        },
+      );
+      expect(
+        mockGitlabClient.MergeRequestApprovals.allApprovalRules,
+      ).toHaveBeenCalledWith('owner/repo-without-approvals', {
+        mergerequestIId: 5,
+      });
+      expect(mockGitlabClient.MergeRequests.edit).not.toHaveBeenCalled();
+    });
+
+    it('reviewers are set correcly when valid reviewers username are passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This is an important change',
+        removeSourceBranch: false,
+        targetPath: 'Subdirectory',
+        assignee: 'John Smith',
+        reviewers: ['Jane Doe', 'John Smith'],
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This is an important change',
+          removeSourceBranch: false,
+          assigneeId: 123,
+          reviewerIds: [456, 123],
+        },
+      );
+    });
+
+    it('assignee is not set when a valid assignee username is not passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'This is an important change',
+        removeSourceBranch: false,
+        targetPath: 'Subdirectory',
+        reviewers: ['John Doe'],
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This is an important change',
+          removeSourceBranch: false,
+          assigneeId: undefined,
+          reviewerIds: [],
         },
       );
     });

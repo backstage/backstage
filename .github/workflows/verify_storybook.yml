@@ -42,7 +42,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@c5c3b91fe86c59a87cf9782de1f89e48e19d4492 # v0.6.16
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
       - name: storybook yarn install
@@ -54,7 +54,7 @@ jobs:
 
       - run: yarn --cwd packages/canon build-storybook
 
-      - uses: chromaui/action@0efa3230f403b7848d5d65c6ce140b617fb68380 # v11
+      - uses: chromaui/action@64a9c0ca3bfb724389b0d536e544f56b7b5ff5b3 # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks

@@ -1,0 +1,4 @@
+# next.js
+/.next/
+/dist/
+next-env.d.ts

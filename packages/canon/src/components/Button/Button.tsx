@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
+'use client';
+
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
-import type { IconNames } from '../Icon/types';
-
-/**
- * Properties for {@link Button}
- *
- * @public
- */
-export interface ButtonProps {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary' | 'tertiary';
-  children: React.ReactNode;
-  disabled?: boolean;
-  iconStart?: IconNames;
-  iconEnd?: IconNames;
-}
+import { ButtonProps } from './types';
+import { useCanon } from '../../contexts/canon';
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -42,17 +31,33 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconStart,
       iconEnd,
       children,
+      style,
+      ...rest
     } = props;
+
+    const { getResponsiveValue } = useCanon();
+
+    // Get the responsive value for the variant
+    const responsiveSize = getResponsiveValue(size);
+    const responsiveVariant = getResponsiveValue(variant);
 
     return (
       <button
-        {...props}
+        {...rest}
         ref={ref}
         disabled={disabled}
-        className={`button ${variant} ${size}`}
+        className={[
+          'cn-button',
+          `cn-button-${responsiveSize}`,
+          `cn-button-${responsiveVariant}`,
+        ].join(' ')}
+        style={style}
       >
         <span
-          className={['button-content', iconStart && iconEnd ? 'icon-both' : '']
+          className={[
+            'cn-button-content',
+            iconStart && iconEnd ? 'cn-button-content-icon-both' : '',
+          ]
             .filter(Boolean)
             .join(' ')}
         >

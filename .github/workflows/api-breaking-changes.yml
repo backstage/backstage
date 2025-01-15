@@ -33,7 +33,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@c5c3b91fe86c59a87cf9782de1f89e48e19d4492 # v0.6.16
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: linux-v20
 
@@ -46,7 +46,7 @@ jobs:
           cat ${{ github.event_path }} > event.json
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
         with:
           name: preview-spec
           path: |

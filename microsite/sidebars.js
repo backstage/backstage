@@ -102,7 +102,11 @@ module.exports = {
       {
         type: 'category',
         label: 'Notifications',
-        items: ['notifications/index'],
+        items: [
+          'notifications/index',
+          'notifications/processors',
+          'notifications/usage',
+        ],
       },
       {
         type: 'category',
@@ -537,6 +541,7 @@ module.exports = {
           'architecture-decisions/adrs-adr011',
           'architecture-decisions/adrs-adr012',
           'architecture-decisions/adrs-adr013',
+          'architecture-decisions/adrs-adr014',
         ],
       },
       'api/deprecations',

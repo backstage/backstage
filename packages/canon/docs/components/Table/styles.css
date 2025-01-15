@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-.table-wrapper {
+.sb-table-wrapper {
   border: 1px solid #e7e7e7;
   border-radius: 4px;
   overflow: hidden;
 
-  & .table {
+  & .sb-table {
     width: 100%;
     margin: 0 !important;
     padding: 0 !important;
@@ -27,28 +27,26 @@
     border-collapse: collapse;
   }
 
-  & .table-cell {
+  & .sb-table-cell {
     padding: 12px 16px !important;
     border: none !important;
     text-align: left;
     background-color: white !important;
-    font-family: 'Geist', sans-serif;
     font-size: 16px;
-    font-weight: 300;
 
     & p {
       margin: 0;
     }
   }
 
-  & .table-header-cell {
+  & .sb-table-header-cell {
     background-color: #f5f5f5 !important;
     border-bottom: 1px solid #e7e7e7 !important;
     font-weight: 500;
     font-size: 14px;
   }
 
-  & .table-row {
+  & .sb-table-row {
     border: none;
     border-bottom: 1px solid #e7e7e7;
     &:last-child {
@@ -56,7 +54,7 @@
     }
   }
 
-  & .table-chip {
+  & .sb-table-chip {
     display: inline-block;
     font-size: 14px !important;
     border: 1px solid #e7e7e7;
@@ -65,7 +63,7 @@
     height: 24px;
   }
 
-  & .table-type {
+  & .sb-table-type {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;

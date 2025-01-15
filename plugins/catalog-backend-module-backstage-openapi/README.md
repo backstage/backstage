@@ -26,14 +26,14 @@ catalog:
     backstageOpenapi:
       plugins:
         - catalog
-        - todo
+        - events
         - search
       entityOverrides: # All optional
         metadata:
-          name: 'my name'
+          name: 'my-name'
           title: 'my title'
         spec:
-          owner: 'my team'
+          owner: 'my-team'
 ```
 
 We will attempt to load each plugin's OpenAPI spec hosted at `${pluginRoute}/openapi.json`. These are automatically added if you are using `@backstage/backend-openapi-utils`'s `createValidatedOpenApiRouter`.

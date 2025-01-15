@@ -17,6 +17,7 @@
 import React from 'react';
 import { ContentHeader } from './ContentHeader';
 import { renderInTestApp } from '@backstage/test-utils';
+import _ from 'lodash';
 
 jest.mock('react-helmet', () => {
   return {
@@ -27,14 +28,14 @@ jest.mock('react-helmet', () => {
 describe('<ContentHeader/>', () => {
   it('should render with title', async () => {
     const rendered = await renderInTestApp(<ContentHeader title="Title" />);
-    rendered.getByText('Title');
+    expect(rendered.getByText('Title')).toBeInTheDocument();
   });
 
   it('should render without title', async () => {
     const rendered = await renderInTestApp(
       <ContentHeader>content</ContentHeader>,
     );
-    rendered.getByText('content');
+    expect(rendered.getByText('content')).toBeInTheDocument();
   });
 
   it('should render with titleComponent', async () => {
@@ -43,13 +44,13 @@ describe('<ContentHeader/>', () => {
     const rendered = await renderInTestApp(
       <ContentHeader titleComponent={titleComponent} />,
     );
-    rendered.getByText(title);
+    expect(rendered.getByText(title)).toBeInTheDocument();
   });
 
   it('should render with description', async () => {
     const rendered = await renderInTestApp(
       <ContentHeader description="description" />,
     );
-    rendered.getByText('description');
+    expect(rendered.getByText('description')).toBeInTheDocument();
   });
 });

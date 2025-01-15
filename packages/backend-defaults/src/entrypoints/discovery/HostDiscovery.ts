@@ -24,7 +24,7 @@ import { readHttpServerOptions } from '../rootHttpRouter/http/config';
 type Target = string | { internal: string; external: string };
 
 /**
- * HostDiscovery is a basic PluginEndpointDiscovery implementation
+ * HostDiscovery is a basic DiscoveryService implementation
  * that can handle plugins that are hosted in a single or multiple deployments.
  *
  * The deployment may be scaled horizontally, as long as the external URL

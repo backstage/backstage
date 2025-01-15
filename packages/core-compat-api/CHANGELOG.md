@@ -1,5 +1,33 @@
 # @backstage/core-compat-api
 
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.4
+
+### Patch Changes
+
+- 1f30730: Updated dependency `@oriflame/backstage-plugin-score-card` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/version-bridge@1.0.10
+
 ## 0.3.4-next.2
 
 ### Patch Changes

@@ -128,14 +128,23 @@ describe('writeEntitiesResponse', () => {
   const app = express();
   app.use(express.json());
   app.get('/echo', (req, res) => {
-    writeEntitiesResponse(res, req.body);
+    writeEntitiesResponse({
+      res,
+      items: req.body,
+      alwaysUseObjectMode: Boolean(req.query.object),
+    });
   });
   app.get('/wrapped', (req, res) => {
-    writeEntitiesResponse(res, req.body, entities => ({
-      page: 1,
-      items: entities,
-      totalItems: 1337,
-    }));
+    writeEntitiesResponse({
+      res,
+      items: req.body,
+      alwaysUseObjectMode: Boolean(req.query.object),
+      responseWrapper: entities => ({
+        page: 1,
+        items: entities,
+        totalItems: 1337,
+      }),
+    });
   });
   app.use(mockErrorHandler());
 
@@ -151,6 +160,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual([]);
     });
 
@@ -167,6 +177,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual([
         { kind: 'Component' },
         null,
@@ -185,6 +196,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual({ page: 1, items: [], totalItems: 1337 });
     });
 
@@ -201,6 +213,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual({
         page: 1,
         items: [{ kind: 'Component' }, null, { kind: 'User' }, null],
@@ -221,6 +234,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual([]);
     });
 
@@ -237,6 +251,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).not.toBeDefined();
       expect(res.body).toEqual([
         { kind: 'Component' },
         null,
@@ -255,6 +270,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).not.toBeDefined();
       expect(res.body).toEqual({ page: 1, items: [], totalItems: 1337 });
     });
 
@@ -271,6 +287,7 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).not.toBeDefined();
       expect(res.body).toEqual({
         page: 1,
         items: [{ kind: 'Component' }, null, { kind: 'User' }, null],
@@ -307,6 +324,118 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8',
       );
+      expect(res.header['content-length']).not.toBeDefined();
+      expect(res.body).toEqual({
+        page: 1,
+        items: expect.objectContaining({ length: 300 }),
+        totalItems: 1337,
+      });
+    });
+  });
+
+  describe('in raw form forced to object', () => {
+    it('should return empty list', async () => {
+      const res = await request(app).get('/echo?object=true').send({
+        type: 'raw',
+        entities: [],
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.header['content-length']).toBeDefined();
+      expect(res.body).toEqual([]);
+    });
+
+    it('should return mixed objects', async () => {
+      const res = await request(app)
+        .get('/echo?object=true')
+        .send({
+          type: 'raw',
+          entities: ['{"kind":"Component"}', null, '{"kind":"User"}', null],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.header['content-length']).toBeDefined();
+      expect(res.body).toEqual([
+        { kind: 'Component' },
+        null,
+        { kind: 'User' },
+        null,
+      ]);
+    });
+
+    it('should wrap response of empty list', async () => {
+      const res = await request(app)
+        .get('/wrapped?object=true')
+        .send({ type: 'raw', entities: [] });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.header['content-length']).toBeDefined();
+      expect(res.body).toEqual({ page: 1, items: [], totalItems: 1337 });
+    });
+
+    it('should wrap response of mixed list', async () => {
+      const res = await request(app)
+        .get('/wrapped?object=true')
+        .send({
+          type: 'raw',
+          entities: ['{"kind":"Component"}', null, '{"kind":"User"}', null],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.header['content-length']).toBeDefined();
+      expect(res.body).toEqual({
+        page: 1,
+        items: [{ kind: 'Component' }, null, { kind: 'User' }, null],
+        totalItems: 1337,
+      });
+    });
+
+    it('should write a large wrapped response', async () => {
+      const entityMock = JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          namespace: 'default',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:https://example.com',
+          },
+        },
+        spec: {
+          type: 'service',
+          owner: 'me',
+          lifecycle: 'production',
+        },
+      });
+      const res = await request(app)
+        .get('/wrapped?object=true')
+        .send({
+          type: 'raw',
+          entities: Array(300).fill(entityMock),
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.header['content-type']).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual({
         page: 1,
         items: expect.objectContaining({ length: 300 }),

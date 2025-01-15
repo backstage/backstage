@@ -1,7 +1,7 @@
 import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as StackStories from './Stack.stories';
 import { Title, Text, PropsTable, getProps } from '../../../docs/components';
-import { spacingProperties } from '../../layout/sprinkles.css';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={StackStories} />
 
@@ -15,12 +15,16 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   columns. All values are responsive.
 </Text>
 
-<Title type="h2">Installation</Title>
+<Title type="h2">Usage</Title>
 <Source
-  code={`import { Stack } from "@backstage/canon";`}
-  language="tsx"
-  dark
-/>
+  code={`import { Stack } from "@backstage/canon";
+
+<Stack>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+  <Box>Hello World</Box>
+</Stack>
+`} language="tsx" dark />
 
 <Title type="h2" style={{ marginBottom: '16px' }}>
   API reference
@@ -29,7 +33,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
 <PropsTable
   data={{
     align: {
-      type: ['left', 'center', 'right'],
+      type: ['start', 'center', 'end'],
       responsive: true,
     },
     children: {
@@ -51,7 +55,7 @@ import { spacingProperties } from '../../layout/sprinkles.css';
   The grid component also accepts all the spacing props from the Box component.
 </Text>
 
-<PropsTable data={getProps(spacingProperties.styles)} />
+<PropsTable data={spacePropsList} />
 
 <Title type="h2">Common questions</Title>
 
