@@ -87,7 +87,7 @@ const createWrapper =
       const { updateFilters } = useEntityList();
 
       useMountEffect(() => {
-        updateFilters({ kind: new EntityKindFilter('component') });
+        updateFilters({ kind: new EntityKindFilter('component', 'Component') });
       });
 
       return <>{children}</>;
@@ -252,7 +252,9 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
@@ -277,7 +279,9 @@ describe('<EntityListProvider />', () => {
 
     mockCatalogApi.getEntities!.mockRejectedValueOnce('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
@@ -443,7 +447,9 @@ describe('<EntityListProvider pagination />', () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
@@ -470,7 +476,9 @@ describe('<EntityListProvider pagination />', () => {
 
     mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
@@ -547,7 +555,7 @@ describe('<EntityListProvider pagination />', () => {
   });
 });
 
-describe('<EntityListProvider pagination={{mode: offset}} />', () => {
+describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
   const origReplaceState = window.history.replaceState;
   const pagination: EntityListPagination = { mode: 'offset' };
   const limit = 20;
@@ -680,6 +688,18 @@ describe('<EntityListProvider pagination={{mode: offset}} />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
     });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.owned(ownershipEntityRefs),
+      }),
+    );
+
+    await expect(() =>
+      waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3);
+      }),
+    ).rejects.toThrow();
   });
 
   it('fetch when limit change', async () => {
@@ -715,8 +735,10 @@ describe('<EntityListProvider pagination={{mode: offset}} />', () => {
     expect(result.current.backendEntities.length).toBe(2);
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
-    await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
@@ -740,7 +762,7 @@ describe('<EntityListProvider pagination={{mode: offset}} />', () => {
     expect(result.current.backendEntities.length).toBe(2);
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
-    await act(async () => {
+    act(() => {
       result.current.setOffset!(5);
       result.current.setOffset!(10);
     });
@@ -768,7 +790,9 @@ describe('<EntityListProvider pagination={{mode: offset}} />', () => {
 
     mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();

@@ -90,7 +90,7 @@ describe('<TemplateTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('template') },
+            filters: { kind: new EntityKindFilter('template', 'Template') },
             backendEntities: entities,
           }}
         >
@@ -113,7 +113,7 @@ describe('<TemplateTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('template') },
+            filters: { kind: new EntityKindFilter('template', 'Template') },
             backendEntities: entities,
           }}
         >

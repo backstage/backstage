@@ -15,7 +15,7 @@
  */
 import { AnyJWK, KeyStore, StoredKey } from './types';
 import { exportJWK, importPKCS8, importSPKI, JWK } from 'jose';
-import { KeyLike } from 'jose/dist/types/types';
+import { KeyLike } from 'jose';
 import { promises as fs } from 'fs';
 import { Config } from '@backstage/config';
 

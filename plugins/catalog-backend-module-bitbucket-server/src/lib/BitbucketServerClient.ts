@@ -77,9 +77,8 @@ export class BitbucketServerClient {
     repo: string;
     path: string;
   }): Promise<Response> {
-    const base = new URL(this.config.apiBaseUrl);
     return throttledFetch(
-      `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
+      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
       getBitbucketServerRequestOptions(this.config),
     );
   }

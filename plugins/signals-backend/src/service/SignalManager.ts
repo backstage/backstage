@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
 import crypto from 'crypto';
@@ -45,7 +46,7 @@ export type SignalManagerOptions = {
   events: EventsService;
   config: Config;
   logger: LoggerService;
-  lifecycle?: LifecycleService;
+  lifecycle: LifecycleService;
 };
 
 /** @internal */
@@ -79,7 +80,7 @@ export class SignalManager {
         this.onEventBrokerEvent(params.eventPayload as SignalPayload),
     });
 
-    options.lifecycle?.addShutdownHook(() => this.onShutdown());
+    options.lifecycle.addShutdownHook(() => this.onShutdown());
   }
 
   private ping() {

@@ -51,7 +51,7 @@ export interface CatalogModelExtensionPoint {
 // @alpha (undocumented)
 export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export interface CatalogPermissionExtensionPoint {
   // (undocumented)
   addPermissionRules(
@@ -63,10 +63,10 @@ export interface CatalogPermissionExtensionPoint {
   addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
 }
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogPermissionExtensionPoint: ExtensionPoint<CatalogPermissionExtensionPoint>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;

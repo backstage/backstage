@@ -114,7 +114,9 @@ import {
   RootConfigService,
   UrlReaderService,
   SchedulerService,
+  PermissionsRegistryService,
 } from '@backstage/backend-plugin-api';
+import { entitiesResponseToObjects } from './response';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -135,6 +137,7 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
+  permissionsRegistry?: PermissionsRegistryService;
   scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
@@ -477,6 +480,7 @@ export class CatalogBuilder {
       logger,
       permissions,
       scheduler,
+      permissionsRegistry,
       discovery = HostDiscovery.fromConfig(config),
     } = this.env;
 
@@ -484,6 +488,10 @@ export class CatalogBuilder {
       ...this.env,
       discovery,
     });
+
+    const disableRelationsCompatibility = config.getOptionalBoolean(
+      'catalog.disableRelationsCompatibility',
+    );
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -521,6 +529,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
+      disableRelationsCompatibility,
     });
 
     let permissionsService: PermissionsService;
@@ -548,7 +557,8 @@ export class CatalogBuilder {
       permissionsService,
       createConditionTransformer(this.permissionRules),
     );
-    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+
+    const catalogPermissionResource = {
       resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
       getResources: async (resourceRefs: string[]) => {
         const { entities } = await unauthorizedEntitiesCatalog.entities({
@@ -566,7 +576,10 @@ export class CatalogBuilder {
           },
         });
 
-        const entitiesByRef = keyBy(entities, stringifyEntityRef);
+        const entitiesByRef = keyBy(
+          entitiesResponseToObjects(entities),
+          stringifyEntityRef,
+        );
 
         return resourceRefs.map(
           resourceRef =>
@@ -575,7 +588,18 @@ export class CatalogBuilder {
       },
       permissions: this.permissions,
       rules: this.permissionRules,
-    });
+    } as const;
+
+    let permissionIntegrationRouter:
+      | ReturnType<typeof createPermissionIntegrationRouter>
+      | undefined;
+    if (permissionsRegistry) {
+      permissionsRegistry.addResourceType(catalogPermissionResource);
+    } else {
+      permissionIntegrationRouter = createPermissionIntegrationRouter(
+        catalogPermissionResource,
+      );
+    }
 
     const locationStore = new DefaultLocationStore(dbClient);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
@@ -629,6 +653,7 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       permissionsService,
+      disableRelationsCompatibility,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

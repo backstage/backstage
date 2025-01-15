@@ -10,7 +10,6 @@ import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { HttpRouterServiceAuthPolicy } from '@backstage/backend-plugin-api';
-import { HumanDuration } from '@backstage/types';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { RootConfigService } from '@backstage/backend-plugin-api';
@@ -52,8 +51,9 @@ export const httpRouterServiceFactory: ServiceFactory<
 // @public
 export interface LifecycleMiddlewareOptions {
   // (undocumented)
+  config: RootConfigService;
+  // (undocumented)
   lifecycle: LifecycleService;
-  startupRequestPauseTimeout?: HumanDuration;
 }
 
 // (No @packageDocumentation comment for this package)

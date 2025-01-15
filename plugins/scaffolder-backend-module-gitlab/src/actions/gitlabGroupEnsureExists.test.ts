@@ -62,7 +62,7 @@ describe('gitlab:group:ensureExists', () => {
 
   const mockContext = createMockActionContext();
 
-  it('should create a new group if it does not exists', async () => {
+  it('should create a new group from string if it does not exists', async () => {
     mockGitlabClient.Groups.search.mockResolvedValue([
       {
         id: 1,
@@ -90,6 +90,45 @@ describe('gitlab:group:ensureExists', () => {
     expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
       parentId: 2,
     });
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
+  });
+
+  it('should create a new group from object if it does not exists', async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([
+      {
+        id: 1,
+        full_path: 'bar',
+      },
+      {
+        id: 2,
+        full_path: 'foo',
+      },
+    ]);
+
+    mockGitlabClient.Groups.create.mockResolvedValue({
+      id: 3,
+      full_path: 'foo/bar',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: [
+          { name: 'Foo', slug: 'foo' },
+          { name: 'Bar is a nice name', slug: 'bar' },
+        ],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'Bar is a nice name',
+      'bar',
+      {
+        parentId: 2,
+      },
+    );
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
   });

@@ -243,9 +243,11 @@ export type EntityFilter = {
 
 // @public
 export class EntityKindFilter implements EntityFilter {
-  constructor(value: string);
+  constructor(value: string, label: string);
   // (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  readonly label: string;
   // (undocumented)
   toQueryValue(): string;
   // (undocumented)

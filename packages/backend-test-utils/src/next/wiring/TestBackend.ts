@@ -27,11 +27,11 @@ import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 // Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   InternalBackendFeature,
   InternalBackendRegistrations,
-} from '@backstage/backend-plugin-api/src/wiring/types';
+} from '../../../../backend-plugin-api/src/wiring/types';
 import {
   DefaultRootHttpRouter,
   ExtendedHttpServer,
@@ -75,6 +75,7 @@ export const defaultServiceFactories = [
   mockServices.lifecycle.factory(),
   mockServices.logger.factory(),
   mockServices.permissions.factory(),
+  mockServices.permissionsRegistry.factory(),
   mockServices.rootHealth.factory(),
   mockServices.rootLifecycle.factory(),
   mockServices.rootLogger.factory(),

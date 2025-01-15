@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader } from '@backstage/config';
+
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import {
   mockServices,
@@ -23,7 +23,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const logger = mockServices.logger.mock();
 
@@ -54,11 +53,10 @@ const mockTools = {
 };
 
 describe('ToolDocumentCollatorFactory', () => {
-  const config = new ConfigReader({});
-  const mockDiscoveryApi: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn().mockResolvedValue('http://test-backend/api/explore'),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const config = mockServices.rootConfig();
+  const mockDiscoveryApi = mockServices.discovery.mock({
+    getBaseUrl: async () => 'http://test-backend/api/explore',
+  });
 
   const options = {
     discovery: mockDiscoveryApi,

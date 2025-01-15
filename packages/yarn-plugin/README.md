@@ -24,3 +24,17 @@ The resulting changes in the file system should be committed to your repo.
 The yarn plugin recognizes the version string `"backstage:^"`, and replaces it
 with the appropriate version based on the overall Backstage version in
 backstage.json.
+
+## Local Development
+
+- Run unit tests: `yarn test`
+- Build the plugin locally: `yarn build`
+- Rebuild whenever plugin files change: `yarn start`
+- Install local build (in a package directory outside the Backstage monorepo):
+  `yarn plugin import
+/path/to/backstage-repo/packages/yarn-plugin/bundles/@yarnpkg/plugin-backstage.js`
+
+The plugin can be manually tested in any repository running at least yarn 4.1.1.
+Sadly it can't be manually tested directly in the Backstage monorepo - since
+packages in this repository use `workspace:^` dependencies, there's no use case
+for the yarn plugin.

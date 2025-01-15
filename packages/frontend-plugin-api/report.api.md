@@ -39,6 +39,7 @@ import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { Expand } from '@backstage/types';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';

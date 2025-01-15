@@ -1,8 +1,7 @@
 import { Meta, Unstyled, Source } from '@storybook/blocks';
 import * as ContainerStories from './Container.stories';
 import { Title, Text, PropsTable, getProps } from '../../../docs/components';
-import { spacingProperties } from '../../layout/sprinkles.css';
-import { containerProperties } from './sprinkles.css';
+import { spacePropsList } from '../../../docs/spaceProps';
 
 <Meta of={ContainerStories} />
 
@@ -15,12 +14,12 @@ import { containerProperties } from './sprinkles.css';
   content on the page.
 </Text>
 
-<Title type="h2">Installation</Title>
+<Title type="h2">Usage</Title>
 <Source
-  code={`import { Container } from "@backstage/canon";`}
-  language="tsx"
-  dark
-/>
+  code={`import { Container } from "@backstage/canon";
+
+<Container>Hello World!</Container>
+`} language="tsx" dark />
 
 <Title type="h2" style={{ marginBottom: '16px' }}>
   API reference
@@ -28,18 +27,41 @@ import { containerProperties } from './sprinkles.css';
 
 <PropsTable
   data={{
-    ...getProps(containerProperties.styles),
     children: {
       type: 'ReactNode',
-      required: false,
+      responsive: false,
     },
     className: {
       type: 'string',
-      required: false,
+      responsive: false,
+    },
+    marginY: {
+      type: spacePropsList.marginY.type,
+      responsive: spacePropsList.marginY.responsive,
+    },
+    marginBottom: {
+      type: spacePropsList.marginBottom.type,
+      responsive: spacePropsList.marginBottom.responsive,
+    },
+    marginTop: {
+      type: spacePropsList.marginTop.type,
+      responsive: spacePropsList.marginTop.responsive,
+    },
+    paddingY: {
+      type: spacePropsList.paddingY.type,
+      responsive: spacePropsList.paddingY.responsive,
+    },
+    paddingBottom: {
+      type: spacePropsList.paddingBottom.type,
+      responsive: spacePropsList.paddingBottom.responsive,
+    },
+    paddingTop: {
+      type: spacePropsList.paddingTop.type,
+      responsive: spacePropsList.paddingTop.responsive,
     },
     style: {
       type: 'CSSProperties',
-      required: false,
+      responsive: false,
     },
   }}
 />

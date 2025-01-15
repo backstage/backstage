@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.6.3
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+
 ## 0.6.3-next.0
 
 ### Patch Changes

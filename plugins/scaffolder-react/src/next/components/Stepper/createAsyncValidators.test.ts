@@ -435,4 +435,62 @@ describe('createAsyncValidators', () => {
 
     expect(validators.CustomLinkField).toHaveBeenCalled();
   });
+
+  it('should validate field in the dependencies in an array field', async () => {
+    const schema: JsonObject = {
+      title: 'Make a choice',
+      properties: {
+        myArray: {
+          type: 'array',
+          title: 'Array',
+          items: {
+            type: 'object',
+            required: ['selector'],
+            properties: {
+              selector: {
+                title: 'Selector',
+                type: 'string',
+                enum: ['Choice 1', 'Choice 2'],
+              },
+            },
+            dependencies: {
+              selector: {
+                oneOf: [
+                  { properties: { selector: { enum: ['Choice 1'] } } },
+                  {
+                    properties: {
+                      selector: { enum: ['Choice 2'] },
+                      customValidatedField: {
+                        title: 'Custom validated field',
+                        type: 'string',
+                        'ui:field': 'ValidateKebabCase',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const validators = { ValidateKebabCase: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      myArray: [
+        {
+          selector: 'Choice 2',
+          customValidatedField: 'apple',
+        },
+        { selector: 'Choice 1' },
+      ],
+    });
+
+    expect(validators.ValidateKebabCase).toHaveBeenCalled();
+  });
 });

@@ -16,12 +16,7 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { PluginCacheManager, TokenManager } from '@backstage/backend-common';
 import { Router } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -36,6 +31,8 @@ import {
   UrlReaderService,
   SchedulerService,
   SchedulerServiceTaskRunner,
+  DatabaseService,
+  DiscoveryService,
 } from '@backstage/backend-plugin-api';
 import { PackagePlatform, PackageRole } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
@@ -60,10 +57,10 @@ import { ScannedPluginPackage } from '../scanner';
 export type LegacyPluginEnvironment = {
   logger: Logger;
   cache: PluginCacheManager;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
   reader: UrlReaderService;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;

@@ -47,9 +47,9 @@ Notice that unlike `todoListCreatePermission`, the `todoListUpdatePermission` pe
 
 ## Setting up authorization for the update permission
 
-To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the same manner as we did in the previous section:
+To start, let's edit `plugins/todo-list-backend/src/plugin.ts` to add the new permission to our plugin:
 
-```ts title="plugins/todo-list-backend/src/service/router.ts"
+```ts title="plugins/todo-list-backend/src/plugin.ts"
 /* highlight-remove-next-line */
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-start */
@@ -61,14 +61,29 @@ import {
 
 // ...
 
-const permissionIntegrationRouter = createPermissionIntegrationRouter({
-  /* highlight-remove-next-line */
-  permissions: [todoListCreatePermission],
-  /* highlight-add-next-line */
-  permissions: [todoListCreatePermission, todoListUpdatePermission],
-});
+/* highlight-remove-next-line */
+permissionsRegistry.addPermissions([todoListCreatePermission]);
+/* highlight-add-start */
+permissionsRegistry.addPermissions([
+  todoListCreatePermission,
+  todoListUpdatePermission,
+]);
+/* highlight-add-end */
 
 // ...
+```
+
+Then let's edit `plugins/todo-list-backend/src/service/router.ts` in the same manner as we did in the previous section:
+
+```ts title="plugins/todo-list-backend/src/service/router.ts"
+/* highlight-remove-next-line */
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+/* highlight-add-start */
+import {
+  todoListCreatePermission,
+  todoListUpdatePermission,
+} from '@internal/plugin-todo-list-common';
+/* highlight-add-end */
 
 router.put('/todos', async (req, res) => {
   /* highlight-add-start */
@@ -155,49 +170,50 @@ Specifically, the `apply` function is used to understand whether the passed reso
 
 Let's skip the `toQuery` function for now, we'll come back to that in the next section.
 
-Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/service/router.ts`. This uses the `createPermissionIntegrationRouter` helper to add the APIs needed by the permission framework to your plugin. You'll need to supply:
+Now, let's add the new resource type to the permissions system via the
+`PermissionsRegistryService`. You'll need to supply:
 
 - `getResources`: a function that accepts an array of `resourceRefs` in the same format you expect to be passed to `authorize`, and returns an array of the corresponding resources.
 - `resourceType`: the same value used in the permission rule above.
 - `permissions`: the list of permissions that your plugin accepts.
 - `rules`: an array of all the permission rules you want to support in conditional decisions.
 
-```ts title="plugins/todo-list-backend/src/service/router.ts"
+```ts title="plugins/todo-list-backend/src/plugin.ts"
 // ...
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { createRouter } from './service/router';
 import {
   /* highlight-add-next-line */
   TODO_LIST_RESOURCE_TYPE,
   todoListCreatePermission,
   todoListUpdatePermission,
 } from '@internal/plugin-todo-list-common';
-/* highlight-remove-next-line */
-import { add, getAll, update } from './todos';
 /* highlight-add-start */
-import { add, getAll, getTodo, update } from './todos';
+import { getTodo } from './todos';
 import { rules } from './rules';
 /* highlight-add-end */
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger, identity, permissions } = options;
+// ...
 
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    permissions: [todoListCreatePermission, todoListUpdatePermission],
-    /* highlight-add-start */
-    getResources: async resourceRefs => {
-      return resourceRefs.map(getTodo);
-    },
-    resourceType: TODO_LIST_RESOURCE_TYPE,
-    rules: Object.values(rules),
-    /* highlight-add-end */
-  });
-
-  const router = Router();
-  router.use(express.json());
-
-  // ...
-}
+/* highlight-remove-start */
+permissionsRegistry.addPermissions([
+  todoListCreatePermission,
+  todoListUpdatePermission,
+]);
+/* highlight-remove-end */
+/* highlight-add-start */
+permissionsRegistry.addResourceType({
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+  permissions: [todoListCreatePermission, todoListUpdatePermission],
+  rules: Object.values(rules),
+  getResources: async resourceRefs => {
+    return Promise.all(resourceRefs.map(getTodo));
+  },
+});
+/* highlight-add-end */
 ```
 
 ## Provide utilities for policy authors

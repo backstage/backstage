@@ -16,4 +16,4 @@
 
 export { formDecoratorsApiRef } from './ref';
 export type { ScaffolderFormDecoratorsApi } from './types';
-export { DefaultScaffolderFormDecoratorsApi } from './FormDecoratorsApi';
+export * from './FormDecoratorsApi';

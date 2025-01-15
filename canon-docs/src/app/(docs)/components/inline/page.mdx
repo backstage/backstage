@@ -1,0 +1,118 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { spacePropsList } from '@/utils/spaceProps';
+import { Tabs } from '@/components/Tabs';
+import { Snippet } from '@/components/Snippet';
+import { InlinePreview } from '@/snippets/inline';
+
+# Inline
+
+The Inline component is used to create a horizontal layout of elements.
+
+<Snippet
+  py={4}
+  preview={<InlinePreview />}
+  code={`<Inline>
+    <DecorativeBox />
+    <DecorativeBox />
+    <DecorativeBox />
+</Inline>`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Inline } from '@backstage/canon';
+
+<Inline />
+`}
+    />
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable
+  data={{
+    align: {
+      type: 'start | center | end',
+      responsive: true,
+    },
+    alignY: {
+      type: 'start | center | end',
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+The grid component also accepts all the spacing props from the Box component.
+
+<PropsTable data={spacePropsList} />
+
+## Examples
+
+### Simple
+
+A simple example of how to use the Inline component.
+
+<CodeBlock
+  code={`<Inline>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>
+
+### Responsive
+
+The Inline component also supports responsive values, making it easy to create
+responsive designs.
+
+<CodeBlock
+  code={`<Inline gap={{ xs: 'sm', md: 'md' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>
+
+### Align
+
+The Inline component also supports responsive alignment, making it easy to
+create responsive designs.
+
+<CodeBlock
+  code={`<Inline align={{ xs: 'left', md: 'center' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>
+
+### Align vertically
+
+The Inline component also supports responsive vertical alignment, making it
+easy to create responsive designs.
+
+<CodeBlock
+  code={`<Inline alignY={{ xs: 'top', md: 'center' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Inline>`}
+/>

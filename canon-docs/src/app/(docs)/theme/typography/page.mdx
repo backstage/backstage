@@ -1,0 +1,66 @@
+import { HeadingAllVariants } from '@/snippets/heading';
+import { TextAllVariants } from '@/snippets/text';
+import { Snippet } from '@/components/Snippet';
+
+# Typography
+
+Canon offers a suite of typography components designed to seamlessly align
+with the rest of your Backstage instance. While you can customize their
+appearance to match your brand, the underlying API remains consistent and
+unchanged. Each component is built on a responsive structure, allowing you to
+define different typography values for various breakpoints.
+
+## Headings
+
+Headings are used to structure the content of your page. They are used to
+create a hierarchy of information and to make the content more readable. The
+best way to use add these headings to your page is to import the [Heading
+component](?path=/docs/components-heading--docs).
+
+<Snippet
+  py={2}
+  open
+  preview={<HeadingAllVariants />}
+  code={`<Stack gap="md">
+    <Heading variant="display">Display</Heading>
+    <Heading variant="title1">Title 1</Heading>
+    <Heading variant="title2">Title 2</Heading>
+    <Heading variant="title3">Title 3</Heading>
+    <Heading variant="title4">Title 4</Heading>
+</Stack>`}
+/>
+
+## Text
+
+Canon provides four distinct text variants, each offering different font sizes
+carefully designed to cover the majority of use cases. These variants are
+versatile and can be paired with regular and bold of font weights. You can use
+the [Text component](?path=/docs/components-text--docs) to add text to your
+page.
+
+<Snippet
+  open
+  preview={<TextAllVariants />}
+  code={`<Stack gap="md">
+    <Text variant="subtitle" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="body" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="caption" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="label" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+  </Stack>`}
+/>

@@ -50,6 +50,10 @@ export type {
   PermissionsService,
   PermissionsServiceRequestOptions,
 } from './PermissionsService';
+export type {
+  PermissionsRegistryService,
+  PermissionsRegistryServiceAddResourceTypeOptions,
+} from './PermissionsRegistryService';
 export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootHttpRouterService } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';

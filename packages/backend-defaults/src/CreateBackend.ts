@@ -24,6 +24,7 @@ import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
@@ -45,6 +46,7 @@ export const defaultServiceFactories = [
   lifecycleServiceFactory,
   loggerServiceFactory,
   permissionsServiceFactory,
+  permissionsRegistryServiceFactory,
   rootHealthServiceFactory,
   rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,

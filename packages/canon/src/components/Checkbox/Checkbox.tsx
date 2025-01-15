@@ -15,7 +15,7 @@
  */
 import React from 'react';
 
-import { CheckboxRoot, CheckboxIndicator } from '@base_ui/react';
+import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
 import { Icon } from '@backstage/canon';
 import type { CheckboxProps } from './types';
 
@@ -35,7 +35,7 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     } = props;
 
     const checkboxElement = (
-      <CheckboxRoot
+      <CheckboxPrimitive.Root
         ref={ref}
         className={`checkbox ${className}`}
         checked={checked}
@@ -46,10 +46,10 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         value={value}
         style={style}
       >
-        <CheckboxIndicator className="checkbox-indicator">
+        <CheckboxPrimitive.Indicator className="checkbox-indicator">
           <Icon name="check" size={12} />
-        </CheckboxIndicator>
-      </CheckboxRoot>
+        </CheckboxPrimitive.Indicator>
+      </CheckboxPrimitive.Root>
     );
 
     return label ? (

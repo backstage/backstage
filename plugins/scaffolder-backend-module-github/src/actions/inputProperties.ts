@@ -270,6 +270,12 @@ const requiredCommitSigning = {
   description: `Require commit signing so that you must sign commits on this branch.`,
 };
 
+const requiredLinearHistory = {
+  title: 'Require linear history',
+  type: 'boolean',
+  description: `Prevent merge commits from being pushed to matching branches.`,
+};
+
 const repoVariables = {
   title: 'Repository Variables',
   description: `Variables attached to the repository`,
@@ -311,6 +317,12 @@ const customProperties = {
   type: 'object',
 };
 
+const subscribe = {
+  title: 'Subscribe to repository',
+  description: `Subscribe to the repository. The default value is 'false'`,
+  type: 'boolean',
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -346,7 +358,9 @@ export { sourcePath };
 export { token };
 export { topics };
 export { requiredCommitSigning };
+export { requiredLinearHistory };
 export { repoVariables };
 export { secrets };
 export { oidcCustomization };
 export { customProperties };
+export { subscribe };

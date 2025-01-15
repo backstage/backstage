@@ -25,7 +25,6 @@ import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
@@ -80,15 +79,14 @@ describe('TechDocs Collator', () => {
   registerMswTestHooks(worker);
 
   describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
-    let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
+    const mockDiscoveryApi = mockServices.discovery.mock({
+      getBaseUrl: async () => 'http://test-backend',
+    });
     let mockTokenManager: jest.Mocked<TokenManager>;
     let collator: DefaultTechDocsCollator;
 
     beforeEach(() => {
-      mockDiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-        getExternalBaseUrl: jest.fn(),
-      };
+      jest.clearAllMocks();
       mockTokenManager = {
         getToken: jest.fn().mockResolvedValue({ token: '' }),
         authenticate: jest.fn(),
@@ -144,15 +142,13 @@ describe('TechDocs Collator', () => {
   });
 
   describe('DefaultTechDocsCollator', () => {
-    let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
+    const mockDiscoveryApi = mockServices.discovery.mock({
+      getBaseUrl: async () => 'http://test-backend',
+    });
     let mockTokenManager: jest.Mocked<TokenManager>;
     let collator: DefaultTechDocsCollator;
 
     beforeEach(() => {
-      mockDiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-        getExternalBaseUrl: jest.fn(),
-      };
       mockTokenManager = {
         getToken: jest.fn().mockResolvedValue({ token: '' }),
         authenticate: jest.fn(),

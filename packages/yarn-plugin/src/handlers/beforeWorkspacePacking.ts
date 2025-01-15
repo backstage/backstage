@@ -15,11 +15,7 @@
  */
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
-import {
-  bindBackstageVersion,
-  getCurrentBackstageVersion,
-  getPackageVersion,
-} from '../util';
+import { getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
 
 const hasBackstageVersion = (range: string) =>
@@ -45,8 +41,6 @@ export const beforeWorkspacePacking = async (
   workspace: Workspace,
   rawManifest: any,
 ) => {
-  const backstageVersion = getCurrentBackstageVersion();
-
   for (const dependencyType of ['dependencies', 'devDependencies'] as const) {
     const entries = Array.from(
       workspace.manifest.getForScope(dependencyType).values(),
@@ -69,7 +63,7 @@ export const beforeWorkspacePacking = async (
       );
 
       rawManifest[finalDependencyType][ident] = `^${await getPackageVersion(
-        bindBackstageVersion(descriptor, backstageVersion),
+        descriptor,
         workspace.project.configuration,
       )}`;
     }

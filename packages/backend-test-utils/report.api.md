@@ -33,6 +33,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
@@ -262,6 +263,19 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<PermissionsService> | undefined,
       ) => ServiceMock<PermissionsService>;
+  }
+  // (undocumented)
+  export namespace permissionsRegistry {
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        PermissionsRegistryService,
+        'plugin',
+        'singleton'
+      >;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<PermissionsRegistryService> | undefined,
+      ) => ServiceMock<PermissionsRegistryService>;
   }
   // (undocumented)
   export function rootConfig(options?: rootConfig.Options): RootConfigService;

@@ -120,3 +120,42 @@ third-parties.
 
 The same logic applies to headers that are sent from the target back to the
 frontend.
+
+### Proxy Extension Endpoint
+
+The proxy plugin additionally supports a `proxyExtensionEndpoint` which a proxy
+plugin module can utilize in order to programmatically register additional
+endpoints, whose payloads are specified exactly as in app-config (described
+above). Note that endpoints configured in app-config will always override those
+registered in this manner.
+
+Example:
+
+```ts
+backend.add(
+  createBackendModule({
+    pluginId: 'proxy',
+    moduleId: 'demo-additional-endpoints',
+    register: reg => {
+      reg.registerInit({
+        deps: {
+          proxyEndpoints: proxyEndpointsExtensionPoint,
+        },
+        init: async ({ proxyEndpoints }) => {
+          let largerExampleAuth: string = /* exercise for the reader */;
+          proxyEndpoints.addProxyEndpoints({
+            "/simple-example": "http://simple.example.com:8080",
+            "/larger-example/v1": {
+              target: "http://larger.example.com:8080/svc.v1",
+              credentials: "require",
+              headers: {
+                Authorization: largerExampleAuth
+              },
+            },
+          });
+        },
+      });
+    },
+  }),
+);
+```

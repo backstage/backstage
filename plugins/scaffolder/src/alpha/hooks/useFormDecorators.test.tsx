@@ -81,4 +81,75 @@ describe('useFormDecorators', () => {
       expect(mockApiImplementation.test).toHaveBeenCalledWith('hello');
     });
   });
+
+  it('should return existing secrets and formstate', async () => {
+    const renderedHook = renderHook(() => useFormDecorators({ manifest }), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [mockApiRef, mockApiImplementation],
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [mockDecorator],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+
+      const { secrets, formState } = await result.run({
+        formState: { test: 'formState' },
+        secrets: { test: 'hello' },
+      });
+
+      expect(secrets).toEqual({ test: 'hello' });
+      expect(formState).toEqual({ test: 'formState' });
+    });
+  });
+
+  it('should allow merging of existing secrets and formstate', async () => {
+    const secretAndFormDataModifier = createScaffolderFormDecorator({
+      id: 'test',
+      async decorator({ setFormState, setSecrets }) {
+        setFormState(state => ({ ...state, new: 'formState' }));
+        setSecrets(state => ({ ...state, new: 'hello' }));
+      },
+    });
+    const renderedHook = renderHook(() => useFormDecorators({ manifest }), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [mockApiRef, mockApiImplementation],
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [mockDecorator, secretAndFormDataModifier],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+
+      const { secrets, formState } = await result.run({
+        formState: { test: 'formState' },
+        secrets: { test: 'hello' },
+      });
+
+      expect(secrets).toEqual({ test: 'hello', new: 'hello' });
+      expect(formState).toEqual({ test: 'formState', new: 'formState' });
+    });
+  });
 });

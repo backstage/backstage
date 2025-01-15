@@ -55,7 +55,7 @@ describe('ApiProvider', () => {
         <MyHocConsumer />
       </ApiProvider>,
     );
-    renderedHoc.getByText('hoc message: hello');
+    expect(renderedHoc.getByText('hoc message: hello')).toBeInTheDocument();
   });
 
   it('should provide nested access to apis', () => {
@@ -84,7 +84,7 @@ describe('ApiProvider', () => {
         </ApiProvider>
       </ApiProvider>,
     );
-    renderedHook.getByText('a=z b=y');
+    expect(renderedHook.getByText('a=z b=y')).toBeInTheDocument();
   });
 
   it('should ignore deps in prototype', () => {
@@ -107,7 +107,7 @@ describe('ApiProvider', () => {
         <MyWeirdHocConsumer />
       </ApiProvider>,
     );
-    renderedHoc.getByText('hoc message: hello');
+    expect(renderedHoc.getByText('hoc message: hello')).toBeInTheDocument();
   });
 
   it('should error if no provider is available', () => {
@@ -229,6 +229,6 @@ describe('v1 consumer', () => {
         <MyHookConsumerV1 />
       </ApiProvider>,
     );
-    renderedHook.getByText('hook message: hello');
+    expect(renderedHook.getByText('hook message: hello')).toBeInTheDocument();
   });
 });

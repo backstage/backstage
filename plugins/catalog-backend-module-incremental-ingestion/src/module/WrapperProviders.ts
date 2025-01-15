@@ -79,7 +79,6 @@ export class WrapperProviders {
     return new IncrementalProviderRouter(
       new IncrementalIngestionDatabaseManager({ client: this.options.client }),
       this.options.logger,
-      this.options.config,
     ).createRouter();
   }
 

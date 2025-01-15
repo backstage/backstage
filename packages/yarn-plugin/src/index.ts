@@ -21,10 +21,9 @@
  * @packageDocumentation
  */
 
-import { Plugin, semverUtils, YarnVersion } from '@yarnpkg/core';
-import { Hooks } from '@yarnpkg/plugin-pack';
-import { beforeWorkspacePacking } from './handlers/beforeWorkspacePacking';
-import { BackstageResolver } from './resolver/BackstageResolver';
+import { Plugin, Hooks, semverUtils, YarnVersion } from '@yarnpkg/core';
+import { Hooks as PackHooks } from '@yarnpkg/plugin-pack';
+import { beforeWorkspacePacking, reduceDependency } from './handlers';
 
 // All dependencies of the yarn plugin are bundled during the build. Chalk
 // triples the size of the plugin bundle when included, so we avoid the
@@ -44,11 +43,11 @@ if (!semverUtils.satisfiesWithPrereleases(YarnVersion, '^4.1.1')) {
 /**
  * @public
  */
-const plugin: Plugin<Hooks> = {
+const plugin: Plugin<Hooks & PackHooks> = {
   hooks: {
+    reduceDependency,
     beforeWorkspacePacking,
   },
-  resolvers: [BackstageResolver],
 };
 
 export default plugin;

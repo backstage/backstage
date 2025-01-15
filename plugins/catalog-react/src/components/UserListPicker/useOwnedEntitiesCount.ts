@@ -21,7 +21,7 @@ import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityOwnerFilter, EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
-import { CatalogFilters, reduceCatalogFilters } from '../../utils';
+import { CatalogFilters, reduceCatalogFilters } from '../../utils/filters';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDeepCompareEffect from 'react-use/esm/useDeepCompareEffect';
 

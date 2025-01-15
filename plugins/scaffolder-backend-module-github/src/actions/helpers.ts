@@ -149,6 +149,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
       }
     | undefined,
   customProperties: { [key: string]: string } | undefined,
+  subscribe: boolean | undefined,
   logger: LoggerService,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
@@ -330,6 +331,15 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     );
   }
 
+  if (subscribe) {
+    await client.rest.activity.setRepoSubscription({
+      subscribed: true,
+      ignored: false,
+      owner,
+      repo,
+    });
+  }
+
   return newRepo;
 }
 
@@ -371,6 +381,7 @@ export async function initRepoPushAndProtect(
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
   requiredCommitSigning?: boolean,
+  requiredLinearHistory?: boolean,
 ): Promise<{ commitHash: string }> {
   const gitAuthorInfo = {
     name: gitAuthorName
@@ -416,6 +427,7 @@ export async function initRepoPushAndProtect(
         enforceAdmins: protectEnforceAdmins,
         dismissStaleReviews: dismissStaleReviews,
         requiredCommitSigning: requiredCommitSigning,
+        requiredLinearHistory: requiredLinearHistory,
       });
     } catch (e) {
       assertError(e);

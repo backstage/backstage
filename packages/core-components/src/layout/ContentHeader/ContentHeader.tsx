@@ -84,10 +84,30 @@ const ContentHeaderTitle = ({ title, className }: ContentHeaderTitleProps) => (
   </Typography>
 );
 
+type ContentHeaderDescriptionProps = {
+  description?: string;
+  className?: string;
+};
+
+const ContentHeaderDescription = ({
+  description,
+  className,
+}: ContentHeaderDescriptionProps) =>
+  description ? (
+    <Typography
+      variant="body2"
+      className={className}
+      data-testid="header-description"
+    >
+      {description}
+    </Typography>
+  ) : null;
+
 type ContentHeaderProps = {
   title?: ContentHeaderTitleProps['title'];
   titleComponent?: ReactNode;
-  description?: string;
+  description?: ContentHeaderDescriptionProps['description'];
+  descriptionComponent?: ReactNode;
   textAlign?: 'left' | 'right' | 'center';
 };
 
@@ -104,6 +124,7 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
     title,
     titleComponent: TitleComponent = undefined,
     children,
+    descriptionComponent: DescriptionComponent = undefined,
     textAlign = 'left',
   } = props;
   const classes = useStyles({ textAlign })();
@@ -114,17 +135,22 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
     <ContentHeaderTitle title={title} className={classes.title} />
   );
 
+  const renderedDescription = DescriptionComponent ? (
+    DescriptionComponent
+  ) : (
+    <ContentHeaderDescription
+      description={description}
+      className={classes.description}
+    />
+  );
+
   return (
     <>
       <Helmet title={title} />
       <Box className={classes.container}>
         <Box className={classes.leftItemsBox}>
           {renderedTitle}
-          {description && (
-            <Typography className={classes.description} variant="body2">
-              {description}
-            </Typography>
-          )}
+          {renderedDescription}
         </Box>
         <Box className={classes.rightItemsBox}>{children}</Box>
       </Box>

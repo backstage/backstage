@@ -153,7 +153,7 @@ describe('BitbucketServerClient', () => {
   it('getFile', async () => {
     server.use(
       rest.get(
-        `https://${config.host}/projects/test-project/repos/test-repo/raw/catalog-info.yaml`,
+        `${config.apiBaseUrl}/projects/test-project/repos/test-repo/raw/catalog-info.yaml`,
         (req, res, ctx) => {
           if (
             req.headers.get('authorization') !==

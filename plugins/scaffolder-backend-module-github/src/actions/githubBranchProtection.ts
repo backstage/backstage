@@ -62,6 +62,7 @@ export function createGithubBranchProtectionAction(options: {
     requiredConversationResolution?: boolean;
     requireLastPushApproval?: boolean;
     requiredCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     token?: string;
   }>({
     id: 'github:branch-protection:create',
@@ -90,6 +91,7 @@ export function createGithubBranchProtectionAction(options: {
             inputProps.requiredConversationResolution,
           requireLastPushApproval: inputProps.requireLastPushApproval,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
           token: inputProps.token,
         },
       },
@@ -109,6 +111,7 @@ export function createGithubBranchProtectionAction(options: {
         requiredConversationResolution = false,
         requireLastPushApproval = false,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
         token: providedToken,
       } = ctx.input;
 
@@ -147,6 +150,7 @@ export function createGithubBranchProtectionAction(options: {
         enforceAdmins,
         dismissStaleReviews,
         requiredCommitSigning,
+        requiredLinearHistory,
       });
     },
   });

@@ -16,17 +16,13 @@
 
 import 'buffer';
 import { resolve as resolvePath } from 'path';
-import { errorHandler } from '@backstage/backend-common';
 import {
   createMockDirectory,
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
@@ -55,10 +51,13 @@ import {
 } from './KubernetesProxy';
 
 import type { Request } from 'express';
-import {
-  BackstageCredentials,
-  DiscoveryService,
-} from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -79,15 +78,8 @@ describe('KubernetesProxy', () => {
     >(),
   };
 
-  const permissionApi: jest.Mocked<PermissionEvaluator> = {
-    authorize: jest.fn(),
-    authorizeConditional: jest.fn(),
-  };
-
-  const mockDisocveryApi: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const permissionApi = mockServices.permissions.mock();
+  const mockDisocveryApi = mockServices.discovery.mock();
 
   registerMswTestHooks(worker);
 
@@ -130,7 +122,7 @@ describe('KubernetesProxy', () => {
     const app = express().use(
       Router()
         .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
-        .use(errorHandler()),
+        .use(middleware.error()),
     );
 
     const requestPromise = request(app).get(proxyPath + requestPath);
@@ -937,7 +929,7 @@ describe('KubernetesProxy', () => {
           .use(
             Router()
               .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
-              .use(errorHandler()),
+              .use(middleware.error()),
           )
           .listen(0, '0.0.0.0', () => {
             proxyPort = (expressServer.address() as AddressInfo).port;

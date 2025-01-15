@@ -1,0 +1,83 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as HeadingStories from './Heading.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+
+<Meta of={HeadingStories} />
+
+<Unstyled>
+
+<Title type="h1">Heading</Title>
+
+<Text>Headings are used to structure the content of your page.</Text>
+
+<Canvas of={HeadingStories.Title1} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Heading } from "@backstage/canon";
+
+<Heading variant="title1">Hello World!</Heading>
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    variant: {
+      type: ['display', 'title1', 'title2', 'title3', 'title4', 'title5'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+<Title type="h2">Examples</Title>
+<Text>Here are some examples of how you can use the Heading component.</Text>
+
+<Title type="h3">All variants</Title>
+<Text>
+  The `Heading` component has a `variant` prop that can be used to change the
+  appearance of the heading.
+</Text>
+
+<Canvas of={HeadingStories.AllVariants} />
+
+<Source
+  code={`<Stack gap="md">
+  <Heading variant="title1">Title 1 Lorem ipsum dolor sit amet consectetur...</Heading>
+  <Heading variant="title2">Title 2 Lorem ipsum dolor sit amet consectetur...</Heading>
+  <Heading variant="title3">Title 3 Lorem ipsum dolor sit amet consectetur...</Heading>
+  <Heading variant="title4">Title 4 Lorem ipsum dolor sit amet consectetur...</Heading>
+  <Heading variant="title5">Title 5 Lorem ipsum dolor sit amet consectetur...</Heading>
+  <Heading variant="display">Display Lorem ipsum dolor sit amet consectetur...</Heading>
+</Stack>`}
+  language="tsx"
+  dark
+/>
+
+<Title type="h3">Responsive</Title>
+<Text>
+  You can also use the `variant` prop to change the appearance of the text based
+  on the screen size.
+</Text>
+
+<Source
+  code={`<Heading variant={{ xs: 'title1', md: 'title2' }}>Responsive Lorem ipsum dolor sit amet consectetur...</Heading>`}
+  language="tsx"
+  dark
+/>
+
+</Unstyled>

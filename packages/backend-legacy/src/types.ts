@@ -16,12 +16,7 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { PluginCacheManager, TokenManager } from '@backstage/backend-common';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { EventBroker, EventsService } from '@backstage/plugin-events-node';
@@ -29,15 +24,17 @@ import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   UrlReaderService,
   SchedulerService,
+  DatabaseService,
+  DiscoveryService,
 } from '@backstage/backend-plugin-api';
 
 export type PluginEnvironment = {
   logger: Logger;
   cache: PluginCacheManager;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
   reader: UrlReaderService;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;

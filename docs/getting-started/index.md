@@ -91,7 +91,7 @@ app
   the intended workspace rather than in the root._
 - **packages/**: Lerna leaf packages or "workspaces". Everything here is going
   to be a separate package, managed by lerna.
-- **packages/app/**: An fully functioning Backstage frontend app, that acts as a
+- **packages/app/**: A fully functioning Backstage frontend app that acts as a
   good starting point for you to get to know Backstage.
 - **packages/backend/**: We include a backend that helps power features such as
   [Authentication](https://backstage.io/docs/auth/),

@@ -1,0 +1,48 @@
+import { Canvas, Meta, Unstyled, Source } from '@storybook/blocks';
+import * as IconStories from './Icon.stories';
+import { Title, Text } from '../../../docs/components';
+import { PropsTable } from '../../../docs/components/PropsTable/PropsTable';
+import { icons } from './icons';
+
+<Meta of={IconStories} />
+
+<Unstyled>
+
+<Title type="h1">Icon</Title>
+
+<Text>Icons are used to represent an action or a state.</Text>
+
+<Canvas of={IconStories.Default} />
+
+<Title type="h2">Usage</Title>
+<Source code={`import { Icon } from "@backstage/canon";
+
+<Icon name="icon-name" />
+`} language="tsx" dark />
+
+<Title type="h2" style={{ marginBottom: '16px' }}>
+  API reference
+</Title>
+
+<PropsTable
+  data={{
+    name: {
+      type: Object.keys(icons),
+      responsive: false,
+    },
+    size: {
+      type: 'number',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+</Unstyled>

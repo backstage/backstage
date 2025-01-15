@@ -145,7 +145,7 @@ describe('CursorPaginatedDocsTable', () => {
           entities: data.map(e => e.entity),
           totalItems: data.length,
           filters: {
-            kind: new EntityKindFilter('techdocs'),
+            kind: new EntityKindFilter('techdocs', 'TechDocs'),
           },
         }}
       >

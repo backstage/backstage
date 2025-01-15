@@ -24,6 +24,7 @@ import {
 } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
+import { runSqlExtraction } from './sql-reports';
 
 type Options = {
   ci?: boolean;
@@ -79,9 +80,8 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
     await generateTypeDeclarations(tsconfigFilePath);
   }
 
-  const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
-    selectedPackageDirs,
-  );
+  const { tsPackageDirs, cliPackageDirs, sqlPackageDirs } =
+    await categorizePackageDirs(selectedPackageDirs);
 
   if (tsPackageDirs.length > 0) {
     console.log('# Generating package API reports');
@@ -100,6 +100,14 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
     console.log('# Generating package CLI reports');
     await runCliExtraction({
       packageDirs: cliPackageDirs,
+      isLocalBuild: !isCiBuild,
+    });
+  }
+
+  if (sqlPackageDirs.length > 0 && opts.sqlReports) {
+    console.log('# Generating package SQL reports');
+    await runSqlExtraction({
+      packageDirs: sqlPackageDirs,
       isLocalBuild: !isCiBuild,
     });
   }

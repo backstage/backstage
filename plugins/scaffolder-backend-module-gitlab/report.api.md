@@ -14,7 +14,13 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    path: string[];
+    path: (
+      | string
+      | {
+          name: string;
+          slug: string;
+        }
+    )[];
     repoUrl: string;
     token?: string | undefined;
   },
@@ -202,6 +208,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
   },
   JsonObject
 >;

@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+
+import {
+  LoggerService,
+  RootConfigService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { bundleFileWithRefs } from './lib';
-import { Logger } from 'winston';
 
 /**
  * @public
@@ -28,12 +31,12 @@ import { Logger } from 'winston';
  */
 export class OpenApiRefProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly reader: UrlReaderService;
 
   static fromConfig(
-    config: Config,
-    options: { logger: Logger; reader: UrlReaderService },
+    config: RootConfigService,
+    options: { logger: LoggerService; reader: UrlReaderService },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
 
@@ -45,7 +48,7 @@ export class OpenApiRefProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrations;
-    logger: Logger;
+    logger: LoggerService;
     reader: UrlReaderService;
   }) {
     this.integrations = options.integrations;

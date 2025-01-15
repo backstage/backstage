@@ -19,13 +19,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
 import { Inline } from '../Inline';
 import { Stack } from '../Stack';
+import { Text } from '../Text';
+import { ButtonProps } from './types';
 
 const meta = {
   title: 'Components/Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     size: {
       control: 'select',
@@ -40,34 +39,40 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Variants: Story = {
   args: {
-    children: 'Primary button',
+    children: 'Button',
   },
-};
-
-export const Secondary: Story = {
-  args: {
-    children: 'Secondary button',
-    variant: 'secondary',
+  parameters: {
+    argTypes: {
+      variant: {
+        control: false,
+      },
+    },
   },
-};
-
-export const Tertiary: Story = {
-  args: {
-    children: 'Tertiary button',
-    variant: 'tertiary',
-  },
+  render: () => (
+    <Inline alignY="center">
+      <Button iconStart="cloud" variant="primary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="secondary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="tertiary">
+        Button
+      </Button>
+    </Inline>
+  ),
 };
 
 export const Sizes: Story = {
   args: {
     children: 'Button',
   },
-  render: args => (
+  render: () => (
     <Inline alignY="center">
-      <Button {...args} size="medium" />
-      <Button {...args} size="small" />
+      <Button size="medium">Medium</Button>
+      <Button size="small">Small</Button>
     </Inline>
   ),
 };
@@ -103,4 +108,63 @@ export const Disabled: Story = {
     children: 'Button',
     disabled: true,
   },
+};
+
+export const Responsive: Story = {
+  args: {
+    children: 'Button',
+    variant: {
+      xs: 'primary',
+      sm: 'secondary',
+      md: 'tertiary',
+    },
+    size: {
+      xs: 'small',
+      sm: 'medium',
+    },
+  },
+};
+
+const variants: string[] = ['primary', 'secondary', 'tertiary'];
+
+export const Playground: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: () => (
+    <Stack>
+      {variants.map(variant => (
+        <Stack key={variant}>
+          <Text>{variant}</Text>
+          {['small', 'medium'].map(size => (
+            <Inline alignY="center" key={size}>
+              <Button
+                iconStart="cloud"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd="chevronRight"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconStart="cloud"
+                iconEnd="chevronRight"
+                style={{ width: '200px' }}
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+            </Inline>
+          ))}
+        </Stack>
+      ))}
+    </Stack>
+  ),
 };

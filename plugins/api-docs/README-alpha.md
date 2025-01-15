@@ -826,10 +826,10 @@ export default createFrontendModule({
     createEntityContentExtension({
       // Name is necessary so the system knows that this extension will override the default 'definition' entity content extension provided by the 'api-docs' plugin
       name: 'definition',
-      // Returing a custom content component
+      // Returning a custom content component
       loader: () =>
         import('./components').then(m => (
-          <m.MyCustomApiDefintionEntityContent />
+          <m.MyCustomApiDefinitionEntityContent />
         )),
     }),
   ],

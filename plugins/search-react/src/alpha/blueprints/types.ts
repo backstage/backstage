@@ -36,7 +36,30 @@ export type SearchResultItemExtensionPredicate = (
   result: SearchResult,
 ) => boolean;
 
+/** @alpha */
 export const searchResultListItemDataRef = createExtensionDataRef<{
   predicate?: SearchResultItemExtensionPredicate;
   component: SearchResultItemExtensionComponent;
 }>().with({ id: 'search.search-result-list-item.item' });
+
+/** @alpha */
+export const searchResultTypeDataRef = createExtensionDataRef<{
+  value: string;
+  name: string;
+  icon: JSX.Element;
+}>().with({ id: 'search.filters.result-types.type' });
+
+/** @alpha */
+export type SearchFilterExtensionComponentProps = {
+  className: string;
+};
+
+/** @alpha */
+export type SearchFilterExtensionComponent = (
+  props: SearchFilterExtensionComponentProps,
+) => JSX.Element;
+
+/** @alpha */
+export const searchFilterDataRef = createExtensionDataRef<{
+  component: SearchFilterExtensionComponent;
+}>().with({ id: 'search.filters.filter' });

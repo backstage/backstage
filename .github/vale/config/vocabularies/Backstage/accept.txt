@@ -72,6 +72,7 @@ config
 Config
 configmaps
 configs
+conformant
 const
 cookiecutter
 corepack
@@ -97,6 +98,7 @@ deliverables
 denormalized
 dependabot
 deps
+deserialization
 destructured
 destructuring
 Deutsche
@@ -274,6 +276,7 @@ nohoist
 nonces
 noop
 npm
+nullable
 nunjucks
 nvarchar
 nvm
@@ -342,6 +345,7 @@ rebasing
 Recharts
 Redash
 redis
+reimplement
 renderer
 renderers
 replicasets
@@ -381,6 +385,7 @@ sdks
 seb
 semlas
 semver
+sendmail
 serializable
 Serverless
 shoutout
@@ -405,6 +410,7 @@ src
 statefulsets
 stdout
 storable
+storages
 stringified
 stringify
 subcommand

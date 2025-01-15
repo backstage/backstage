@@ -53,6 +53,7 @@ import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
 import { Knex } from 'knex';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 
 /** @internal */
 function createLoggerMock() {
@@ -465,6 +466,15 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
+    }));
+  }
+
+  export namespace permissionsRegistry {
+    export const factory = () => permissionsRegistryServiceFactory;
+    export const mock = simpleMock(coreServices.permissionsRegistry, () => ({
+      addPermissionRules: jest.fn(),
+      addPermissions: jest.fn(),
+      addResourceType: jest.fn(),
     }));
   }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+
 import {
   decodeProtectedHeader,
   exportJWK,
@@ -27,6 +27,7 @@ import { v4 as uuid } from 'uuid';
 
 import { DefaultIdentityClient } from './DefaultIdentityClient';
 import { IdentityApiGetIdentityRequest } from './IdentityApi';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -87,7 +88,7 @@ function jwtKid(jwt: string): string {
 
 const server = setupServer();
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
-const discovery: PluginEndpointDiscovery = {
+const discovery: DiscoveryService = {
   async getBaseUrl() {
     return mockBaseUrl;
   },

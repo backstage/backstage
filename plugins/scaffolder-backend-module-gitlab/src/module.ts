@@ -34,6 +34,7 @@ import {
   createTriggerGitlabPipelineAction,
   editGitlabIssueAction,
 } from './actions';
+import { createGitlabProjectMigrateAction } from './actions/gitlabProjectMigrate';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 
 /**
@@ -55,6 +56,7 @@ export const gitlabModule = createBackendModule({
 
         scaffolder.addActions(
           createGitlabGroupEnsureExistsAction({ integrations }),
+          createGitlabProjectMigrateAction({ integrations }),
           createGitlabIssueAction({ integrations }),
           createGitlabProjectAccessTokenAction({ integrations }),
           createGitlabProjectDeployTokenAction({ integrations }),

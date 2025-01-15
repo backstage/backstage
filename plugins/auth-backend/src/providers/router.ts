@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -47,7 +45,7 @@ export function bindProviderRouters(
     baseUrl: string;
     config: Config;
     logger: LoggerService;
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     auth: AuthService;
     httpAuth: HttpAuthService;
     tokenManager?: TokenManager;

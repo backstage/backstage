@@ -108,7 +108,7 @@ The following versioning policy applies to all packages:
 - Breaking changes are noted in the changelog, and documentation is updated.
 - Breaking changes are prefixed with `**BREAKING**: ` in the changelog.
 - All public exports are considered stable and will have an entry in the
-  changelog
+  changelog.
 - Breaking changes are recommended to document a clear upgrade path in the
   changelog. This may be omitted for newly introduced or unstable packages.
 

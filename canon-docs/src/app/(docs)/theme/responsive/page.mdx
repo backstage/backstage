@@ -1,0 +1,123 @@
+import * as Table from '@/components/Table';
+import { Chip } from '@/components/Chip';
+import { CodeBlock } from '@/components/CodeBlock';
+
+# Responsive
+
+Canon is built on a responsive design system, meaning that the components are
+designed to adapt to different screen sizes. By default we offer a set of
+breakpoints that you can use to create responsive components.
+
+## Breakpoints
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Breakpoint prefix</Table.HeaderCell>
+      <Table.HeaderCell>Minimum width</Table.HeaderCell>
+      <Table.HeaderCell>CSS</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>xs</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>0px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`{ ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>sm</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>640px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 640px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>md</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>768px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 768px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>lg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>1024px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 1024px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>xl</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>1280px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 1280px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>2xl</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>1536px</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip>{`@media (min-width: 1536px) { ... }`}</Chip>
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Responsive components
+
+Canon components are designed to be responsive, meaning that they will adapt
+to different screen sizes. Not every component is responsive, but the ones
+that are will have a prop to control the responsive behavior.
+
+The behaviour is the same for each component. For each prop, instead of adding
+the value, you add an object with the value and the breakpoint prefix.
+
+<CodeBlock
+  code={`// Fixed value
+
+<Button size="small">Button</Button>
+
+// Responsive value
+
+<Button size={{ xs: 'small', md: 'medium' }}>Button</Button>`} />
+
+## How to update breakpoints
+
+The set of keys are not to be changed, but you can update the minimum width of
+each breakpoint in the theme provider.
+
+<CodeBlock
+  code={`<CanonProvider breakpoints={{
+    xs: 0,
+    sm: 640,
+    md: 768,
+    lg: 1024,
+    xl: 1280,
+    '2xl': 1536,
+}} />`}
+/>

@@ -21,6 +21,12 @@ import Router from 'express-promise-router';
 import request from 'supertest';
 import { HttpPostIngressEventPublisher } from './HttpPostIngressEventPublisher';
 import { mockServices } from '@backstage/backend-test-utils';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
 
 describe('HttpPostIngressEventPublisher', () => {
   const logger = mockServices.logger.mock();
@@ -110,6 +116,7 @@ describe('HttpPostIngressEventPublisher', () => {
       logger,
     });
     publisher.bind(router);
+    router.use(middleware.error());
 
     const response = await request(app)
       .post('/http/testA')
@@ -124,7 +131,7 @@ describe('HttpPostIngressEventPublisher', () => {
             'Failed to retrieve raw body from incoming event for topic testA; not a buffer: object',
           name: 'Error',
         },
-        request: { method: 'POST', url: '/testA' },
+        request: { method: 'POST', url: '/http/testA' },
         response: { statusCode: 500 },
       }),
     );
@@ -149,6 +156,7 @@ describe('HttpPostIngressEventPublisher', () => {
       logger,
     });
     publisher.bind(router);
+    router.use(middleware.error());
 
     const response = await request(app)
       .post('/http/testA')
@@ -163,7 +171,7 @@ describe('HttpPostIngressEventPublisher', () => {
           name: 'UnsupportedCharsetError',
           statusCode: 415,
         },
-        request: { method: 'POST', url: '/testA' },
+        request: { method: 'POST', url: '/http/testA' },
         response: { statusCode: 415 },
       }),
     );
@@ -188,6 +196,7 @@ describe('HttpPostIngressEventPublisher', () => {
       logger,
     });
     publisher.bind(router);
+    router.use(middleware.error());
 
     const response = await request(app)
       .post('/http/testA')
@@ -202,7 +211,7 @@ describe('HttpPostIngressEventPublisher', () => {
           name: 'UnsupportedMediaTypeError',
           statusCode: 415,
         },
-        request: { method: 'POST', url: '/testA' },
+        request: { method: 'POST', url: '/http/testA' },
         response: { statusCode: 415 },
       }),
     );

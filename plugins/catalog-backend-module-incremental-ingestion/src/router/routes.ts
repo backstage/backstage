@@ -18,22 +18,17 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { Config } from '@backstage/config';
 
 export class IncrementalProviderRouter {
   private manager: IncrementalIngestionDatabaseManager;
   private logger: LoggerService;
-  private config: Config;
 
   constructor(
     manager: IncrementalIngestionDatabaseManager,
     logger: LoggerService,
-    config: Config,
   ) {
     this.manager = manager;
     this.logger = logger;
-    this.config = config;
   }
 
   createRouter(): express.Router {
@@ -252,12 +247,6 @@ export class IncrementalProviderRouter {
         });
       },
     );
-
-    const middleware = MiddlewareFactory.create({
-      logger: this.logger,
-      config: this.config,
-    });
-    router.use(middleware.error());
 
     return router;
   }

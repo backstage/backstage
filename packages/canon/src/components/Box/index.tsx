@@ -15,4 +15,3 @@
  */
 export { Box } from './Box';
 export type * from './types';
-export { breakpoints, space, themes } from '../../layout/properties';

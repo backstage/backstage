@@ -1,0 +1,64 @@
+import { CodeBlock } from '@/components/CodeBlock';
+
+<img
+  src="header.png"
+  style={{ width: '100%', marginBottom: '32px', marginTop: '64px' }}
+/>
+
+Welcome to the Canon, the new design library for Backstage plugins. This
+project is still under active development but we will make sure to document
+the API as we go. We are aiming to improve the general UI of Backstage and
+plugins across Backstage. This new library will take time to build but we are
+building it incrementally with not conflict with the existing theming system.
+
+## Installation
+
+### 1. Install canon
+
+Install Canon using a package manager.
+
+<CodeBlock lang="shell" code={`npm install @backstage/canon`} />
+
+### 2. Import the css files
+
+Import the global CSS file at the root of your application.
+
+```tsx
+import '@backstage/canon/css/core.css';
+import '@backstage/canon/css/components.css';
+```
+
+### 3. Add the theme provider
+
+Add the theme provider to your application.
+
+```tsx
+import { ThemeProvider } from '@backstage/canon';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>;
+```
+
+### 4. Start building ✨
+
+Now you can start building your plugin using the new design system.
+
+```tsx
+import { Stack, Button } from '@backstage/canon';
+
+<Stack>
+  <Text>Hello World</Text>
+  <Button>Click me</Button>
+</Stack>;
+```
+
+## Roadmap
+
+You can check our roadmap [on GitHub](https://github.com/orgs/backstage/projects/10). We'll do our best to keep you updated on the progress.
+
+## Next steps
+
+Now that you have the basics down, you can start building your plugin using the new design system.
+Please familiarise yourself first with our theming principles. This will help you understand the core concepts of the design system.
+If you have any questions, please reach out to us on [Discord](https://discord.gg/MUpMjP2).

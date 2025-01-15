@@ -1,0 +1,8 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "notice/notice": "off",
+    "react/forbid-elements": "off",
+    "jsx-a11y/alt-text": "off"
+  }
+}

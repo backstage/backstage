@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader } from '@backstage/config';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { OpenApiRefProcessor } from './OpenApiRefProcessor';
 import { bundleFileWithRefs } from './lib';
 import { mockServices } from '@backstage/backend-test-utils';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 jest.mock('./lib', () => ({
   bundleFileWithRefs: jest.fn(),
@@ -46,15 +45,10 @@ describe('OpenApiRefProcessor', () => {
         kind,
         spec: { definition: '<openapi-definition>', ...spec },
       };
-      const config = new ConfigReader({});
-      const reader = {
-        read: jest.fn(),
-        readUrl: jest.fn(),
-        readTree: jest.fn(),
-        search: jest.fn(),
-      };
+      const config = mockServices.rootConfig();
+      const reader = mockServices.urlReader.mock();
       const processor = OpenApiRefProcessor.fromConfig(config, {
-        logger: loggerToWinstonLogger(mockServices.logger.mock()),
+        logger: mockServices.logger.mock(),
         reader,
       });
 

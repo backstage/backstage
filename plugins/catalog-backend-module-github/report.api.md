@@ -10,6 +10,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -21,7 +22,6 @@ import { GithubIntegrationConfig } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -127,7 +127,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 // @public (undocumented)
 export type GithubLocationAnalyzerOptions = {
   config: Config;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager?: TokenManager;
   auth?: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;

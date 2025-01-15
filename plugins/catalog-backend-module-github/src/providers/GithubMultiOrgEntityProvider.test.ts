@@ -1596,6 +1596,62 @@ describe('GithubMultiOrgEntityProvider', () => {
         });
       });
 
+      it('should create a new group from a new team without parent', async () => {
+        await events.publish({
+          topic: 'github.team',
+          eventPayload: {
+            action: 'created',
+            organization: {
+              login: 'orgB',
+            },
+            team: {
+              name: 'New Team',
+              slug: 'new-team',
+              description: 'description from the new team',
+              html_url: 'https://github.com/orgs/orgB/teams/new-team',
+              parent: null,
+            },
+          },
+        });
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: [
+            {
+              entity: {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Group',
+                metadata: {
+                  name: 'new-team',
+                  namespace: 'orgb',
+                  description: 'description from the new team',
+                  annotations: {
+                    'backstage.io/edit-url':
+                      'https://github.com/orgs/orgB/teams/new-team/edit',
+                    'backstage.io/managed-by-location':
+                      'url:https://github.com/orgs/orgB/teams/new-team',
+                    'backstage.io/managed-by-origin-location':
+                      'url:https://github.com/orgs/orgB/teams/new-team',
+                    'github.com/team-slug': 'orgB/new-team',
+                  },
+                },
+                spec: {
+                  type: 'team',
+                  children: [],
+                  members: [],
+                  profile: {
+                    displayName: 'New Team',
+                  },
+                },
+              },
+              locationKey: 'github-multi-org-provider:my-id',
+            },
+          ],
+          removed: [],
+        });
+      });
+
       it('should remove a group from a deleted team', async () => {
         await events.publish({
           topic: 'github.team',
@@ -1857,6 +1913,170 @@ describe('GithubMultiOrgEntityProvider', () => {
                 spec: {
                   children: [],
                   parent: 'parent',
+                  profile: {
+                    displayName: 'oldName',
+                  },
+                  type: 'team',
+                  members: [],
+                },
+              },
+              locationKey: 'github-multi-org-provider:my-id',
+            },
+          ],
+        });
+      });
+
+      it('should update group without parent', async () => {
+        const mockClient = jest.fn();
+
+        mockClient
+          .mockResolvedValueOnce({
+            organization: {
+              team: {
+                slug: 'team',
+                combinedSlug: 'orgA/team',
+                name: 'TeamA',
+                description: 'The one and only team',
+                avatarUrl: 'http://example.com/team.jpeg',
+                editTeamUrl: 'https://example.com',
+                parentTeam: null,
+                members: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [],
+                },
+              },
+            },
+          })
+          .mockResolvedValueOnce({
+            organization: {
+              membersWithRole: {
+                pageInfo: { hasNextPage: false },
+                nodes: [],
+              },
+            },
+          })
+          .mockResolvedValueOnce({
+            organization: {
+              teams: {
+                pageInfo: { hasNextPage: false },
+                nodes: [
+                  {
+                    slug: 'team',
+                    combinedSlug: 'orgA/team',
+                    name: 'TeamA',
+                    description: 'The one and only team',
+                    avatarUrl: 'http://example.com/team.jpeg',
+                    editTeamUrl: 'https://example.com',
+                    parentTeam: null,
+                    members: {
+                      pageInfo: { hasNextPage: false },
+                      nodes: [],
+                    },
+                  },
+                ],
+              },
+            },
+          })
+          .mockResolvedValueOnce({
+            organization: {
+              teams: {
+                pageInfo: { hasNextPage: false },
+                nodes: [
+                  {
+                    slug: 'team',
+                    combinedSlug: 'orgB/team',
+                    name: 'TeamB',
+                    description: 'The one and only team',
+                    avatarUrl: 'http://example.com/team.jpeg',
+                    editTeamUrl: 'https://example.com',
+                    parentTeam: null,
+                    members: {
+                      pageInfo: { hasNextPage: false },
+                      nodes: [],
+                    },
+                  },
+                ],
+              },
+            },
+          });
+
+        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+        await events.publish({
+          topic: 'github.team',
+          eventPayload: {
+            action: 'edited',
+            changes: {
+              name: {
+                from: 'oldName',
+              },
+              description: {
+                from: 'oldDescription',
+              },
+            },
+            team: {
+              slug: 'team',
+              parent: null,
+            },
+            organization: {
+              login: 'orgA',
+            },
+          },
+        });
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: [
+            {
+              entity: {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Group',
+                metadata: {
+                  annotations: {
+                    'backstage.io/edit-url': 'https://example.com',
+                    'backstage.io/managed-by-location':
+                      'url:https://github.com/orgs/orgA/teams/team',
+                    'backstage.io/managed-by-origin-location':
+                      'url:https://github.com/orgs/orgA/teams/team',
+                    'github.com/team-slug': 'orgA/team',
+                  },
+                  namespace: 'orga',
+                  name: 'team',
+                  description: 'The one and only team',
+                },
+                spec: {
+                  children: [],
+                  profile: {
+                    displayName: 'TeamA',
+                    picture: 'http://example.com/team.jpeg',
+                  },
+                  type: 'team',
+                  members: [],
+                },
+              },
+              locationKey: 'github-multi-org-provider:my-id',
+            },
+          ],
+          removed: [
+            {
+              entity: {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Group',
+                metadata: {
+                  annotations: {
+                    'backstage.io/managed-by-location':
+                      'url:https://github.com/orgs/orgA/teams/oldname',
+                    'backstage.io/managed-by-origin-location':
+                      'url:https://github.com/orgs/orgA/teams/oldname',
+                    'github.com/team-slug': 'orgA/oldname',
+                  },
+                  namespace: 'orga',
+                  name: 'oldname',
+                  description: 'oldDescription',
+                },
+                spec: {
+                  children: [],
                   profile: {
                     displayName: 'oldName',
                   },

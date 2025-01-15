@@ -75,7 +75,7 @@ export function createInitializationLogger(
           ? `, waiting for ${starting.size} other plugins to finish before shutting down the process`
           : '';
       logger?.error(
-        `Plugin '${pluginId}' thew an error during startup${status}`,
+        `Plugin '${pluginId}' threw an error during startup${status}`,
       );
     },
     onAllStarted() {

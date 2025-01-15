@@ -41,9 +41,18 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       input: commonGitlabConfig.merge(
         z.object({
           path: z
-            .array(z.string(), {
-              description: 'A path of group names that is ensured to exist',
-            })
+            .array(
+              z.string().or(
+                z.object({
+                  name: z.string(),
+                  slug: z.string(),
+                }),
+              ),
+              {
+                description:
+                  'A path of group names or objects (name and slug) that is ensured to exist',
+              },
+            )
             .min(1),
         }),
       ),
@@ -68,9 +77,11 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       let currentPath: string | null = null;
       let parentId: number | null = null;
       for (const pathElement of path) {
-        const fullPath: string = currentPath
-          ? `${currentPath}/${pathElement}`
-          : pathElement;
+        const slug =
+          typeof pathElement === 'string' ? pathElement : pathElement.slug;
+        const name =
+          typeof pathElement === 'string' ? pathElement : pathElement.name;
+        const fullPath: string = currentPath ? `${currentPath}/${slug}` : slug;
         const result = (await api.Groups.search(
           fullPath,
         )) as unknown as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
@@ -81,8 +92,8 @@ export const createGitlabGroupEnsureExistsAction = (options: {
           ctx.logger.info(`creating missing group ${fullPath}`);
           parentId = (
             await api.Groups.create(
-              pathElement,
-              pathElement,
+              name,
+              slug,
               parentId
                 ? {
                     parentId: parentId,

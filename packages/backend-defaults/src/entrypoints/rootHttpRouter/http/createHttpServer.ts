@@ -53,6 +53,12 @@ export async function createHttpServer(
 
     stop() {
       return new Promise<void>((resolve, reject) => {
+        if (process.env.NODE_ENV === 'development') {
+          // Ensure that various polling connections are shut down fast in development
+          server.closeAllConnections();
+        } else {
+          server.closeIdleConnections();
+        }
         server.close(error => {
           if (error) {
             reject(error);

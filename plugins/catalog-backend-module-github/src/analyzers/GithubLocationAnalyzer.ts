@@ -29,18 +29,17 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
-  PluginEndpointDiscovery,
   TokenManager,
   createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { extname } from 'path';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {
   config: Config;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager?: TokenManager;
   auth?: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;

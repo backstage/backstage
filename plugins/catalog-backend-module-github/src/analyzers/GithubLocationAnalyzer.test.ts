@@ -32,7 +32,6 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import {
   registerMswTestHooks,
@@ -40,26 +39,21 @@ import {
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { ConfigReader } from '@backstage/config';
 
 const server = setupServer();
 
 describe('GithubLocationAnalyzer', () => {
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
-    getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const mockDiscovery = mockServices.discovery.mock({
+    getBaseUrl: async () => 'http://localhost:7007',
+  });
   const mockAuthService = mockServices.auth.mock({
     getPluginRequestToken: async () => ({ token: 'abc123' }),
   });
-  const config = new ConfigReader({
-    integrations: {
-      github: [
-        {
-          host: 'h.com',
-          token: 't',
-        },
-      ],
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        github: [{ host: 'h.com', token: 't' }],
+      },
     },
   });
 
@@ -121,7 +115,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
+      discovery: mockDiscovery,
       auth: mockAuthService,
       config,
     });
@@ -148,7 +142,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
+      discovery: mockDiscovery,
       auth: mockAuthService,
       config,
     });
@@ -174,7 +168,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
+      discovery: mockDiscovery,
       auth: mockAuthService,
       config,
     });
