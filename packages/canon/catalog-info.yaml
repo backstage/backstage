@@ -5,5 +5,5 @@ metadata:
   title: '@backstage/canon'
 spec:
   lifecycle: experimental
-  type: backstage-web-library
+  type: backstage-node-library
   owner: design-system-maintainers

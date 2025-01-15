@@ -2,7 +2,7 @@
   "name": "@backstage/canon",
   "version": "0.0.0",
   "backstage": {
-    "role": "web-library"
+    "role": "node-library"
   },
   "publishConfig": {
     "access": "public",
@@ -27,8 +27,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "yarn build:app && yarn build:css",
     "build-storybook": "storybook build",
+    "build:app": "backstage-cli package build",
+    "build:css": "node scripts/build-css.mjs",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
