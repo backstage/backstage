@@ -182,8 +182,6 @@ export interface ContainerProps {
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
 
-// Warning: (ae-missing-release-tag) "Field" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Field: {
   Root: React_2.ForwardRefExoticComponent<
@@ -207,10 +205,11 @@ export const Field: {
   >;
   Validity: ({
     children,
+    className,
     ...props
-  }: React_2.ComponentPropsWithoutRef<
-    typeof Field_2.Validity
-  >) => React_2.JSX.Element;
+  }: Field_2.Validity.Props & {
+    className?: string | undefined;
+  }) => React_2.JSX.Element;
 };
 
 // @public (undocumented)

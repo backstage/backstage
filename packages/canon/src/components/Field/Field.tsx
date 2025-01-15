@@ -82,6 +82,7 @@ const FieldValidity = ({
   </FieldPrimitive.Validity>
 );
 
+/** @public */
 export const Field = {
   Root: FieldRoot,
   Label: FieldLabel,
