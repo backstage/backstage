@@ -24242,10 +24242,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:~5.3.0":
-  version: 5.3.0
-  resolution: "chalk@npm:5.3.0"
-  checksum: 623922e077b7d1e9dedaea6f8b9e9352921f8ae3afe739132e0e00c275971bdd331268183b2628cf4ab1727c45ea1f28d7e24ac23ce1db1eb653c414ca8a5a80
+"chalk@npm:~5.4.1":
+  version: 5.4.1
+  resolution: "chalk@npm:5.4.1"
+  checksum: 0c656f30b782fed4d99198825c0860158901f449a6b12b818b0aabad27ec970389e7e8767d0e00762175b23620c812e70c4fd92c0210e55fc2d993638b74e86e
   languageName: node
   linkType: hard
 
@@ -34362,10 +34362,10 @@ __metadata:
   linkType: hard
 
 "lint-staged@npm:^15.0.0":
-  version: 15.2.11
-  resolution: "lint-staged@npm:15.2.11"
+  version: 15.3.0
+  resolution: "lint-staged@npm:15.3.0"
   dependencies:
-    chalk: ~5.3.0
+    chalk: ~5.4.1
     commander: ~12.1.0
     debug: ~4.4.0
     execa: ~8.0.1
@@ -34377,7 +34377,7 @@ __metadata:
     yaml: ~2.6.1
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 9668e67791fd73aa91cf9268641a5b41191b4221ac9e4d34b51bb10088a082548aa5984d9b38066c3832e41f5a01bbb36aa41d9a8c96bbc775301cb5c9071e13
+  checksum: 9917a13c946cd812e4986a724602dfacf09baa4ddbbb4f08f7e59760181a7bf38459fcef54a396cc80b2af1655edae3e45410b23cfe1f70cf431662b2bf45624
   languageName: node
   linkType: hard
 
