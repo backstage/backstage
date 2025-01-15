@@ -28,9 +28,16 @@ export async function updateUnprocessedEntity(options: {
   tx: Knex | Knex.Transaction;
   entity: Entity;
   hash: string;
-  locationKey?: string;
+  locationKey: string;
+  previousLocationKey: string | null;
 }): Promise<boolean> {
-  const { tx, entity, hash, locationKey } = options;
+  const {
+    tx,
+    entity,
+    hash,
+    locationKey,
+    previousLocationKey = locationKey,
+  } = options;
 
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
@@ -39,7 +46,7 @@ export async function updateUnprocessedEntity(options: {
     .update({
       unprocessed_entity: serializedEntity,
       unprocessed_hash: hash,
-      location_key: locationKey,
+      location_key: locationKey ?? null,
       last_discovery_at: tx.fn.now(),
       // We only get to this point if a processed entity actually had any changes, or
       // if an entity provider requested this mutation, meaning that we can safely
@@ -48,11 +55,8 @@ export async function updateUnprocessedEntity(options: {
     })
     .where('entity_ref', entityRef)
     .andWhere(inner => {
-      if (!locationKey) {
-        return inner.whereNull('location_key');
-      }
       return inner
-        .where('location_key', locationKey)
+        .where('location_key', previousLocationKey)
         .orWhereNull('location_key');
     });
 

@@ -152,7 +152,7 @@ export type DbRefreshStateRow = {
    * competing provider/parent is allowed to overwrite and claim it as theirs
    * instead.
    */
-  location_key?: string;
+  location_key: string | null;
 };
 
 export type DbRefreshKeysRow = {

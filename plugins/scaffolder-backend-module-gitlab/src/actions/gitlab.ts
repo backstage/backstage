@@ -414,7 +414,7 @@ export function createPublishGitlabAction(options: {
         await adminClient.ProjectMembers.add(projectId, userId, 50);
       }
 
-      const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
+      const remoteUrl = http_url_to_repo.replace(/\.git$/, '');
       const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {

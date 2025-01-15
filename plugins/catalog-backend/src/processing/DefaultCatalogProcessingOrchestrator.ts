@@ -159,6 +159,7 @@ export class DefaultCatalogProcessingOrchestrator
       // Check that any emitted entities are permitted to originate from that
       // particular location according to the catalog rules
       const collectorResults = context.collector.results();
+
       for (const deferredEntity of collectorResults.deferredEntities) {
         if (
           !this.options.rulesEnforcer.isAllowed(

@@ -15,7 +15,15 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import {
+  createBackendFeatureLoader,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 
 const backend = createBackend();
 
@@ -38,7 +46,60 @@ backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
+backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(
+  createBackendModule({
+    moduleId: 'test',
+    pluginId: 'catalog',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          providers: catalogProcessingExtensionPoint,
+        },
+        async init({ providers }) {
+          class Prov implements EntityProvider {
+            getProviderName(): string {
+              return 'testprovider';
+            }
+            async connect(connection: EntityProviderConnection): Promise<void> {
+              setInterval(() => {
+                console.log('running connect!');
+
+                connection.applyMutation({
+                  type: 'full',
+                  entities: [
+                    {
+                      entity: {
+                        apiVersion: 'backstage.io/v1alpha1',
+                        kind: 'Component',
+                        metadata: {
+                          name: 'petstore',
+                          annotations: {
+                            'backstage.io/managed-by-location': 'url:test',
+                            'backstage.io/managed-by-origin-location':
+                              'url:test',
+                          },
+                        },
+                        spec: {
+                          lifecycle: 'production',
+                          owner: 'me',
+                          type: 'website',
+                        },
+                      },
+                      locationKey: 'sysmodel',
+                    },
+                  ],
+                });
+              }, 5000);
+            }
+          }
+          providers.addEntityProvider(new Prov());
+        },
+      });
+    },
+  }),
+);
 backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend'));

@@ -255,6 +255,8 @@ catalog:
         - System
         - Domain
         - Location
+  processingInterval:
+    seconds: 2
   providers:
     azureBlob:
       accountName: ${ACCOUNT_NAME}
@@ -289,41 +291,42 @@ catalog:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
 
   locations:
-    # Add a location here to ingest it, for example from a URL:
-    #
-    #     - type: url
-    #       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
-    #
-    # For local development you can use a file location instead:
-    #
-    #     - type: file
-    #       target: ../catalog-model/examples/all-components.yaml
-    #
-    # File locations are relative to the current working directory of the
-    # backend, for example packages/backend/.
+    []
+    # # Add a location here to ingest it, for example from a URL:
+    # #
+    # - type: url
+    # target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/petstore-component.yaml
+    # #
+    # # For local development you can use a file location instead:
+    # #
+    # #     - type: file
+    # #       target: ../catalog-model/examples/all-components.yaml
+    # #
+    # # File locations are relative to the current working directory of the
+    # # backend, for example packages/backend/.
 
-    # Backstage example entities
-    - type: file
-      target: ../catalog-model/examples/all.yaml
-    # Backstage example groups and users
-    - type: file
-      target: ../catalog-model/examples/acme-corp.yaml
-      rules:
-        - allow: [User, Group]
-    # Example component for github-actions and TechDocs
-    - type: file
-      target: ../../plugins/github-actions/examples/sample.yaml
-    # Example component for TechDocs
-    - type: file
-      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
-    # Example component for ADRs
-    - type: file
-      target: ../../plugins/adr/examples/component/catalog-info.yaml
-    # Backstage example templates
-    - type: file
-      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
-      rules:
-        - allow: [Template]
+    # # Backstage example entities
+    # - type: file
+    #   target: ../catalog-model/examples/all.yaml
+    # # Backstage example groups and users
+    # - type: file
+    #   target: ../catalog-model/examples/acme-corp.yaml
+    #   rules:
+    #     - allow: [User, Group]
+    # # Example component for github-actions and TechDocs
+    # - type: file
+    #   target: ../../plugins/github-actions/examples/sample.yaml
+    # # Example component for TechDocs
+    # - type: file
+    #   target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # # Example component for ADRs
+    # - type: file
+    #   target: ../../plugins/adr/examples/component/catalog-info.yaml
+    # # Backstage example templates
+    # - type: file
+    #   target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    #   rules:
+    #     - allow: [Template]
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:

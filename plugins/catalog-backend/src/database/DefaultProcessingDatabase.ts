@@ -91,7 +91,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         processed_entity: JSON.stringify(processedEntity),
         result_hash: resultHash,
         errors,
-        location_key: locationKey,
+        location_key: locationKey || null,
       })
       .where('entity_id', id)
       .andWhere(inner => {
@@ -109,6 +109,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
     const sourceEntityRef = stringifyEntityRef(processedEntity);
 
+    console.log('adding deferred entities', deferredEntities);
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
@@ -330,7 +331,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // their entity ref.
     for (const { entity, locationKey } of options.entities) {
       const entityRef = stringifyEntityRef(entity);
-      const hash = generateStableHash(entity);
+      const hash = generateStableHash({ ...entity, locationKey } as any);
 
       const updated = await updateUnprocessedEntity({
         tx,

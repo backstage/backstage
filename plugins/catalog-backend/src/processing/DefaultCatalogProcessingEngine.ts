@@ -149,7 +149,6 @@ export class DefaultCatalogProcessingEngine {
         await withActiveSpan(tracer, 'ProcessingRun', async span => {
           const track = this.tracker.processStart(item, this.logger);
           addEntityAttributes(span, item.unprocessedEntity);
-
           try {
             const {
               id,
@@ -229,6 +228,7 @@ export class DefaultCatalogProcessingEngine {
 
             const resultHash = hashBuilder.digest('hex');
             if (resultHash === previousResultHash) {
+              console.log('equal skipping ref', { location, entityRef });
               // If nothing changed in our produced outputs, we cannot have any
               // significant effect on our surroundings; therefore, we just abort
               // without any updates / stitching.
@@ -244,6 +244,7 @@ export class DefaultCatalogProcessingEngine {
             // just store the errors and trigger a stich so that they become visible to
             // the outside.
             if (!result.ok) {
+              console.log('response not ok', { location, entityRef });
               // notify the error listener if the entity can not be processed.
               Promise.resolve(undefined)
                 .then(() =>
@@ -278,6 +279,12 @@ export class DefaultCatalogProcessingEngine {
 
             result.completedEntity.metadata.uid = id;
             let oldRelationSources: Map<string, string>;
+
+            console.log('updating processed entity', {
+              location,
+              locationKey,
+              entityRef,
+            });
             await this.processingDatabase.transaction(async tx => {
               const { previous } =
                 await this.processingDatabase.updateProcessedEntity(tx, {

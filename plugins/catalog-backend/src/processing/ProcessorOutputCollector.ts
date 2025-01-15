@@ -18,6 +18,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
+  parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
@@ -137,7 +138,11 @@ export class ProcessorOutputCollector {
         },
       };
 
-      this.deferredEntities.push({ entity, locationKey: location });
+      const { kind } = parseEntityRef(entityRef);
+      this.deferredEntities.push({
+        entity,
+        locationKey: kind === 'component' ? null : location,
+      });
     } else if (i.type === 'location') {
       const entity = locationSpecToLocationEntity({
         location: i.location,
