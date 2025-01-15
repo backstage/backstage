@@ -19,11 +19,18 @@
 import React, { forwardRef } from 'react';
 import { HeadingProps } from './types';
 import { useCanon } from '../../contexts/canon';
+import clsx from 'clsx';
 
 /** @public */
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
-    const { children, variant = 'title1', as = 'h1', ...restProps } = props;
+    const {
+      children,
+      variant = 'title1',
+      as = 'h1',
+      className,
+      ...restProps
+    } = props;
     const { getResponsiveValue } = useCanon();
 
     // Get the responsive value for the variant
@@ -40,10 +47,12 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     return (
       <Component
         ref={ref}
+        className={clsx(
+          'canon-Heading',
+          responsiveVariant && `canon-Heading--variant-${responsiveVariant}`,
+          className,
+        )}
         {...restProps}
-        className={`text ${
-          responsiveVariant ? `text-${responsiveVariant}` : ''
-        }`}
       >
         {children}
       </Component>
