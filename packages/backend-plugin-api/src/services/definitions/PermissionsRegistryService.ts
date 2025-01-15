@@ -116,11 +116,11 @@ export interface PermissionsRegistryService {
    *
    * The `getResources` argument should load resources based on a reference
    * identifier. For the catalog, this is an
-   * {@link @backstage/catalog-model#EntityRef}. For other plugins, this can be
-   * any serialized format. This is used to add a permissions registry API
-   * via the HTTP router service. This API will be called by the
-   * `permission-backend` when authorization conditions relating to this plugin
-   * need to be evaluated.
+   * [entity reference](https://backstage.io/docs/features/software-catalog/references#string-references).
+   * For other plugins, this can be any serialized format. This is used to add a
+   * permissions registry API via the HTTP router service. This API will be
+   * called by the `permission-backend` when authorization conditions relating
+   * to this plugin need to be evaluated.
    */
   addResourceType<const TResourceType extends string, TResource>(
     options: PermissionsRegistryServiceAddResourceTypeOptions<
