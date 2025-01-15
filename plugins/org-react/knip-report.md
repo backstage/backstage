@@ -1,8 +1,14 @@
 # Knip report
 
-## Unused devDependencies (1)
+## Unused dependencies (1)
 
-| Name                 | Location     | Severity |
-| :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/catalog-client | package.json | error    |
+
+## Referenced optional peerDependencies (1)
+
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
 

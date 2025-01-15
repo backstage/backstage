@@ -1,8 +1,9 @@
 # Knip report
 
-## Unused dependencies (1)
+## Referenced optional peerDependencies (2)
 
-| Name              | Location     | Severity |
-| :---------------- | :----------- | :------- |
-| @material-ui/core | package.json | error    |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
+| @types/jest  | package.json | error    |
 

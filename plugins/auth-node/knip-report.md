@@ -2,8 +2,8 @@
 
 ## Unused dependencies (2)
 
-| Name       | Location     | Severity |
-| :--------- | :----------- | :------- |
-| node-fetch | package.json | error    |
-| winston    | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/backend-common | package.json | error    |
+| winston                   | package.json | error    |
 

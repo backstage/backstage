@@ -6,9 +6,9 @@
 | :------ | :----------- | :------- |
 | history | package.json | error    |
 
-## Unused devDependencies (1)
+## Referenced optional peerDependencies (1)
 
-| Name                 | Location     | Severity |
-| :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
 

@@ -6,10 +6,9 @@
 | :-- | :----------- | :------- |
 | jss | package.json | error    |
 
-## Unused devDependencies (2)
+## Referenced optional peerDependencies (1)
 
-| Name                 | Location     | Severity |
-| :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
-| canvas               | package.json | error    |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
 

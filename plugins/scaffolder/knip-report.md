@@ -8,9 +8,15 @@
 | @rjsf/material-ui   | package.json | error    |
 | git-url-parse       | package.json | error    |
 
-## Unused devDependencies (1)
+## Referenced optional peerDependencies (1)
 
-| Name                 | Location     | Severity |
-| :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
+
+## Unlisted dependencies (1)
+
+| Name                 | Location                             | Severity |
+| :------------------- | :----------------------------------- | :------- |
+| @internal/scaffolder | src/alpha/hooks/useFormDecorators.ts | error    |
 

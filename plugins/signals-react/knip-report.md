@@ -13,3 +13,9 @@
 | @testing-library/react | package.json | error    |
 | @backstage/test-utils  | package.json | error    |
 
+## Referenced optional peerDependencies (1)
+
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
+
