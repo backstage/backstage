@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-import { Field } from '@base-ui-components/react/field';
+import { Input } from '@base-ui-components/react/input';
 
 /** @public */
-export interface InputProps
-  extends React.ComponentPropsWithoutRef<typeof Field.Root> {
-  label?: string;
-  description?: string;
+export interface InputProps extends Omit<Input.Props, 'size'> {
   size?: 'sm' | 'md';
-  placeholder?: string;
-  errorMatch?: Field.Error.Props['match'];
-  errorForceShow?: boolean;
-  errorMessage?: string;
-  required?: boolean;
 }

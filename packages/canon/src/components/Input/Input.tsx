@@ -14,67 +14,30 @@
  * limitations under the License.
  */
 
-'use client';
-
-import React, { forwardRef } from 'react';
+import React, { ElementRef, forwardRef } from 'react';
+import { Input as InputPrimitive } from '@base-ui-components/react/input';
 import clsx from 'clsx';
-import { Field } from '@base-ui-components/react/field';
 import type { InputProps } from './types';
 
 /** @public */
-const Input = forwardRef<HTMLDivElement, InputProps>((props, ref) => {
-  const {
-    className,
-    label,
-    description,
-    errorMatch = 'customError',
-    errorForceShow = false,
-    errorMessage = 'An error occurred',
-    validationMode = 'onChange',
-    size = 'md',
-    placeholder,
-    required = false,
-    style,
-    ...rest
-  } = props;
+const Input = forwardRef<ElementRef<typeof InputPrimitive>, InputProps>(
+  (props, ref) => {
+    const { size = 'md', className, ...rest } = props;
 
-  return (
-    <Field.Root
-      ref={ref}
-      className={clsx('canon-input-root', className)}
-      style={style}
-      validationMode={validationMode}
-      {...rest}
-    >
-      {label && (
-        <Field.Label className="canon-input-label">{label}</Field.Label>
-      )}
-
-      <Field.Control
-        placeholder={placeholder}
-        required={required}
-        className={clsx('canon-input-control', {
-          'canon-input-control-sm': size === 'sm',
-          'canon-input-control-md': size === 'md',
-        })}
+    return (
+      <InputPrimitive
+        ref={ref}
+        className={clsx(
+          'canon-Input',
+          size === 'sm' ? 'canon-Input--size-sm' : 'canon-Input--size-md',
+          className,
+        )}
+        {...rest}
       />
+    );
+  },
+);
 
-      <Field.Error
-        className="canon-input-error"
-        match={errorMatch}
-        forceShow={errorForceShow}
-        // children={errorForceShow ? 'An error occurred' : null}
-      />
-
-      {description && (
-        <Field.Description className="canon-input-description">
-          {description}
-        </Field.Description>
-      )}
-    </Field.Root>
-  );
-});
-
-Input.displayName = 'Input';
+Input.displayName = InputPrimitive.displayName;
 
 export { Input };

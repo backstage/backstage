@@ -14,28 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Input } from './Input';
-import { Inline } from '../Inline';
-
-const meta = {
-  title: 'Components/Input',
-  component: Input,
-} satisfies Meta<typeof Input>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Primary: Story = {
-  render: () => <Input className="canon-Input" />,
-};
-
-export const Sizes: Story = {
-  render: () => (
-    <Inline>
-      <Input size="sm" />
-      <Input size="md" />
-    </Inline>
-  ),
-};
+export * from './Field';

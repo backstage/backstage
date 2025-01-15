@@ -6,8 +6,8 @@
 /// <reference types="react" />
 
 import type { CSSProperties } from 'react';
-import { Field } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
+import { Input as Input_2 } from '@base-ui-components/react/input';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
@@ -326,26 +326,11 @@ export interface InlineProps extends SpaceProps {
 
 // @public (undocumented)
 export const Input: React_2.ForwardRefExoticComponent<
-  InputProps & React_2.RefAttributes<HTMLDivElement>
+  InputProps & React_2.RefAttributes<HTMLInputElement>
 >;
 
 // @public (undocumented)
-export interface InputProps
-  extends React.ComponentPropsWithoutRef<typeof Field.Root> {
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  errorForceShow?: boolean;
-  // (undocumented)
-  errorMatch?: Field.Error.Props['match'];
-  // (undocumented)
-  errorMessage?: string;
-  // (undocumented)
-  label?: string;
-  // (undocumented)
-  placeholder?: string;
-  // (undocumented)
-  required?: boolean;
+export interface InputProps extends Omit<Input_2.Props, 'size'> {
   // (undocumented)
   size?: 'sm' | 'md';
 }
