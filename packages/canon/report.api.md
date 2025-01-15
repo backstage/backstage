@@ -80,6 +80,8 @@ export interface ButtonProps {
   // (undocumented)
   children: React.ReactNode;
   // (undocumented)
+  className?: string;
+  // (undocumented)
   disabled?: boolean;
   // (undocumented)
   iconEnd?: IconNames;
@@ -271,6 +273,10 @@ export interface HeadingProps {
   // (undocumented)
   children: React.ReactNode;
   // (undocumented)
+  className?: string;
+  // (undocumented)
+  style?: React.CSSProperties;
+  // (undocumented)
   variant?:
     | 'display'
     | 'title1'
@@ -319,6 +325,8 @@ export type IconNames =
 export type IconProps = {
   name: IconNames;
   size?: number;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
 // @public (undocumented)
@@ -487,6 +495,8 @@ export { Text_2 as Text };
 export interface TextProps {
   // (undocumented)
   children: ReactNode;
+  // (undocumented)
+  className?: string;
   // (undocumented)
   style?: CSSProperties;
   // (undocumented)
