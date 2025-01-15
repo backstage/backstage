@@ -68,10 +68,17 @@ FieldError.displayName = FieldPrimitive.Error.displayName;
 
 const FieldValidity = ({
   children,
+  className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof FieldPrimitive.Validity>) => (
+}: React.ComponentPropsWithoutRef<typeof FieldPrimitive.Validity> & {
+  className?: string;
+}) => (
   <FieldPrimitive.Validity {...props}>
-    {validityState => children(validityState)}
+    {validityState => (
+      <div className={clsx('canon-FieldValidity', className)}>
+        {children(validityState)}
+      </div>
+    )}
   </FieldPrimitive.Validity>
 );
 

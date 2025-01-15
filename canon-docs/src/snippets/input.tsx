@@ -1,30 +1,26 @@
-import { Input } from '@backstage/canon';
+import { Input, Inline, Grid } from '../../../packages/canon';
 
 export const InputPreview = () => {
   return (
     <div style={{ width: '300px' }}>
-      <Input label="Name" placeholder="Enter your name" />
+      <Input placeholder="Enter your name" />
     </div>
   );
 };
 
-export const InputLabelAndDescription = () => {
+export const InputSizes = () => {
   return (
-    <div style={{ width: '300px' }}>
-      <Input label="Name" description="Visible on your profile" />
-    </div>
+    <Grid style={{ width: '300px' }}>
+      <Input size="sm" placeholder="Small" />
+      <Input size="md" placeholder="Medium" />
+    </Grid>
   );
 };
 
 export const InputError = () => {
   return (
     <div style={{ width: '300px' }}>
-      <Input
-        label="Name"
-        errorMessage="Please enter your name"
-        required
-        invalid
-      />
+      <Input required />
     </div>
   );
 };
@@ -32,7 +28,7 @@ export const InputError = () => {
 export const InputPlayground = () => {
   return (
     <div style={{ maxWidth: '300px' }}>
-      <Input label="Name" description="Visible on your profile" />
+      <Input placeholder="Enter your name" />
     </div>
   );
 };

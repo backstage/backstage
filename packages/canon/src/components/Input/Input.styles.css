@@ -23,6 +23,7 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-primary);
   transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+  width: 100%;
 }
 
 .canon-Input::placeholder {

@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import type { CSSProperties } from 'react';
+import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
 import { Input as Input_2 } from '@base-ui-components/react/input';
 import { default as React_2 } from 'react';
@@ -180,6 +181,37 @@ export interface ContainerProps {
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
+
+// Warning: (ae-missing-release-tag) "Field" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const Field: {
+  Root: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Root.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Label: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Label.Props & React_2.RefAttributes<any>, 'ref'> &
+      React_2.RefAttributes<any>
+  >;
+  Description: React_2.ForwardRefExoticComponent<
+    Omit<
+      Field_2.Description.Props & React_2.RefAttributes<HTMLParagraphElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLParagraphElement>
+  >;
+  Error: React_2.ForwardRefExoticComponent<
+    Omit<Field_2.Error.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Validity: ({
+    children,
+    ...props
+  }: React_2.ComponentPropsWithoutRef<
+    typeof Field_2.Validity
+  >) => React_2.JSX.Element;
+};
 
 // @public (undocumented)
 export type FlexDirection = 'row' | 'column';

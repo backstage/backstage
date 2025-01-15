@@ -43,3 +43,11 @@
   margin: 0;
   padding-top: var(--canon-spacing-3xs);
 }
+
+.canon-FieldValidity {
+  font-size: var(--canon-font-size-caption);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-text-secondary);
+  margin: 0;
+  padding-top: var(--canon-spacing-3xs);
+}

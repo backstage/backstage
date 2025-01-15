@@ -64,3 +64,24 @@ export const WithError: Story = {
     </Field.Root>
   ),
 };
+
+export const WithValidity: Story = {
+  render: () => (
+    <Field.Root
+      validate={value =>
+        value !== 'Backstage' ? 'Please enter a different name' : null
+      }
+    >
+      <Field.Label>Name</Field.Label>
+      <Input />
+      <Field.Description>
+        An error will show if the value is not Backstage
+      </Field.Description>
+      <Field.Validity>
+        {validityState => (
+          <div>{validityState.value ? 'Not Backstage' : 'Backstage'}</div>
+        )}
+      </Field.Validity>
+    </Field.Root>
+  ),
+};

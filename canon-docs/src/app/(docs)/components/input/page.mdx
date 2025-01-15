@@ -2,11 +2,7 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import {
-  InputPreview,
-  InputLabelAndDescription,
-  InputError,
-} from '@/snippets/input';
+import { InputPreview, InputSizes } from '@/snippets/input';
 import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
 
 # Input
@@ -37,55 +33,19 @@ A input component tfor your forms.
     We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
     your brand. For additional flexibility, you can use the provided class names for each element listed below.
     <CodeBlock
-      code={`<Input className="canon-input-root" />`}
+      code={`<Input className="canon-Input" />`}
     />
   </Tabs.Panel>
 </Tabs.Root>
 
 ## API reference
 
-<BaseUI href="https://base-ui.com/react/components/field" />
+<BaseUI href="https://base-ui.com/react/components/input" />
 
 <PropsTable
   data={{
-    label: {
-      type: 'string',
-      responsive: false,
-    },
-    description: {
-      type: 'string',
-      responsive: false,
-    },
     size: {
       type: ['sm', 'md'],
-      responsive: false,
-    },
-    placeholder: {
-      type: 'string',
-      responsive: false,
-    },
-    match: {
-      type: [
-        'badInput',
-        'customError',
-        'patternMismatch',
-        'rangeOverflow',
-        'rangeUnderflow',
-        'stepMismatch',
-        'tooLong',
-        'tooShort',
-        'typeMismatch',
-        'valid',
-        'valueMissing',
-      ],
-      responsive: false,
-    },
-    error: {
-      type: 'string',
-      responsive: false,
-    },
-    required: {
-      type: 'boolean',
       responsive: false,
     },
     className: {
@@ -101,7 +61,7 @@ A input component tfor your forms.
 
 ## Examples
 
-### With label and description
+### Sizes
 
 Here's a simple input with a label and description.
 
@@ -109,18 +69,9 @@ Here's a simple input with a label and description.
   align="center"
   py={4}
   open
-  preview={<InputLabelAndDescription />}
-  code={`<Input label="Name" description="Visible on your profile" />`}
-/>
-
-### Error
-
-Here's a simple input with an error message.
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<InputError />}
-  code={`<Input label="Name" required invalid />`}
+  preview={<InputSizes />}
+  code={`<Grid>
+    <Input size="sm" placeholder="Small" />
+    <Input size="md" placeholder="Medium" />
+  </Grid>`}
 />
