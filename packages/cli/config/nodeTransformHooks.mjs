@@ -146,7 +146,7 @@ async function withDetectedModuleType(resolved) {
 }
 
 /**
- * Find the closes package.json file from the given path.
+ * Find the closest package.json file from the given path.
  *
  * TODO(Rugvip): This can be replaced with the Node.js built-in with the same name once it is stable.
  * @param {string} startPath
