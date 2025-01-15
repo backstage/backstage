@@ -25,7 +25,7 @@
   font-size: var(--canon-font-size-caption);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-primary);
-  margin-bottom: var(--canon-spacing-3xs);
+  margin-bottom: var(--canon-space-1_5);
 }
 
 .canon-FieldDescription {
@@ -33,7 +33,7 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-secondary);
   margin: 0;
-  padding-top: var(--canon-spacing-3xs);
+  padding-top: var(--canon-space-1_5);
 }
 
 .canon-FieldError {
@@ -41,7 +41,7 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-error);
   margin: 0;
-  padding-top: var(--canon-spacing-3xs);
+  padding-top: var(--canon-space-1_5);
 }
 
 .canon-FieldValidity {
@@ -49,5 +49,5 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-secondary);
   margin: 0;
-  padding-top: var(--canon-spacing-3xs);
+  padding-top: var(--canon-space-1_5);
 }
