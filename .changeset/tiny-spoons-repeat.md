@@ -3,7 +3,7 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-**BREAKING**: The `UrlReaderProccessor` accepts a new config flag `catalog.useUrlReadersSearch` to always call the `search` method of `UrlReaders`.
+The `UrlReaderProccessor` accepts a new config flag `catalog.useUrlReadersSearch` to always call the `search` method of `UrlReaders`.
 
 This flag currently defaults to `false`, but adopters are encouraged to enable it as this behavior will be the default in a future release.
 
