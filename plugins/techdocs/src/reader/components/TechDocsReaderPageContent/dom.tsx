@@ -21,7 +21,6 @@ import { useTheme } from '@material-ui/core/styles';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
-import {} from '@backstage/plugin-catalog-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
