@@ -194,7 +194,9 @@ export const useTechDocsReaderDom = (
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
-          baseUrl: configApi.getString('app.baseUrl'),
+          baseUrl:
+            configApi.getOptionalString('app.baseUrl') ||
+            window.location.origin,
           onClick: (event: MouseEvent, url: string) => {
             // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
             const modifierActive = event.ctrlKey || event.metaKey;
