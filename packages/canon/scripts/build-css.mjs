@@ -18,15 +18,36 @@
 import { transform, bundle } from 'lightningcss';
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
+import { glob } from 'glob';
 /* eslint-enable no-restricted-imports */
 
 // Check if core.css and components.css exist
-const cssFiles = ['src/css/core.css', 'src/css/components.css'];
+const cssDir = 'src/css';
 const distDir = 'dist/css';
+const componentsDir = 'src/components';
 
+// Core files
+const cssFiles = [
+  { path: `${cssDir}/core.css`, newName: 'core.css' },
+  { path: `${cssDir}/components.css`, newName: 'components.css' },
+];
+
+// Components files
+const componentsFiles = glob
+  .sync('**/*.css', { cwd: componentsDir })
+  .map(file => {
+    const folderName = file.split('/')[0].toLocaleLowerCase('en-US');
+    return { path: `${componentsDir}/${file}`, newName: `${folderName}.css` };
+  });
+
+// Combine core and components files
+cssFiles.push(...componentsFiles);
+
+// Check if files exist
 cssFiles.forEach(file => {
-  if (!fs.existsSync(file)) {
-    console.error(`${file} does not exist`);
+  if (!fs.existsSync(file.path)) {
+    console.error(`${file.originalName} does not exist`);
     process.exit(1);
   }
 });
@@ -36,21 +57,23 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
+// Bundle and transform files
 cssFiles.forEach(file => {
   let { code: bundleCode } = bundle({
-    filename: file,
+    filename: file.path,
   });
 
   let { code, map } = transform({
-    filename: `${distDir}/${path.basename(file)}`,
+    filename: `${distDir}/${file.newName}`,
     code: bundleCode,
     minify: true,
     sourceMap: true,
   });
 
-  fs.writeFileSync(`${distDir}/${path.basename(file)}`, code);
-  fs.writeFileSync(`${distDir}/${path.basename(file)}.map`, map);
+  fs.writeFileSync(`${distDir}/${file.newName}`, code);
+  fs.writeFileSync(`${distDir}/${file.newName}.map`, map);
 
-  // Clear the content of the original CSS file
-  fs.writeFileSync(file, '');
+  console.log(chalk.blue('CSS bundled: ') + file.newName);
 });
+
+console.log(chalk.green('CSS files bundled successfully!'));
