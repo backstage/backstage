@@ -295,7 +295,9 @@ class PermissionIntegrationMetadataStore {
     return (name: string): PermissionRule<unknown, unknown, string> => {
       const rule = this.#rulesByTypeByName.get(resourceType)?.get(name);
       if (!rule) {
-        throw new Error(`Unexpected permission rule: ${name}`);
+        throw new Error(
+          `Permission rule '${name}' does not exist for resource type '${resourceType}'`,
+        );
       }
       return rule;
     };
