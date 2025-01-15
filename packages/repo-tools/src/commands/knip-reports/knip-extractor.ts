@@ -68,20 +68,20 @@ async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
           'src/routes.ts',
           'src/run.ts',
         ],
+        ignore: [
+          '.eslintrc.js',
+          'config.d.ts',
+          'knexfile.js',
+          'node_modules/**',
+          'dist/**',
+          '{fixtures,migrations,templates}/**',
+        ],
       },
     },
     jest: {
-      entry: ['src/setupTests.ts', '**/*.test.{ts,tsx}'],
+      entry: ['src/setupTests.ts', 'src/**/*.test.{ts,tsx}'],
     },
     storybook: { entry: 'src/components/**/*.stories.tsx' },
-    ignore: [
-      '.eslintrc.js',
-      'config.d.ts',
-      'knexfile.js',
-      'node_modules/**',
-      'dist/**',
-      '{fixtures,migrations,templates}/**',
-    ],
     ignoreDependencies: [
       // these is reported as a referenced optional peerDependencies
       // TBD: investigate what triggers these

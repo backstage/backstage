@@ -58,18 +58,12 @@
 | @rspack/dev-server           | package.json | error    |
 | @rspack/core                 | package.json | error    |
 
-## Unlisted dependencies (10)
+## Unlisted dependencies (4)
 
-| Name                   | Location                                                                                         | Severity |
-| :--------------------- | :----------------------------------------------------------------------------------------------- | :------- |
-| @testing-library/react | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.test.tsx | error    |
-| react                  | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.test.tsx | error    |
-| @material-ui/core      | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.tsx      | error    |
-| react                  | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.tsx      | error    |
-| supertest              | templates/default-backend-plugin/src/router.test.ts                                              | error    |
-| express-promise-router | templates/default-backend-plugin/src/router.ts                                                   | error    |
-| react-dom              | src/lib/bundler/hasReactDomClient.ts                                                             | error    |
-| react-dom              | src/lib/bundler/config.ts                                                                        | error    |
-| react                  | src/lib/bundler/config.ts                                                                        | error    |
-| react                  | src/lib/bundler/server.ts                                                                        | error    |
+| Name      | Location                             | Severity |
+| :-------- | :----------------------------------- | :------- |
+| react-dom | src/lib/bundler/hasReactDomClient.ts | error    |
+| react-dom | src/lib/bundler/config.ts            | error    |
+| react     | src/lib/bundler/config.ts            | error    |
+| react     | src/lib/bundler/server.ts            | error    |
 
