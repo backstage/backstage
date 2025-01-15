@@ -35115,13 +35115,13 @@ __metadata:
   linkType: hard
 
 "material-ui-confirm@npm:^3.0.12":
-  version: 3.0.16
-  resolution: "material-ui-confirm@npm:3.0.16"
+  version: 3.0.18
+  resolution: "material-ui-confirm@npm:3.0.18"
   peerDependencies:
     "@mui/material": ">= 5.0.0"
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10114de3ac1dfd25cd46d151fa011bf7fa07376199a9cd62c8fbc619d0f711204c7a6bcf124e1ef6752f39377b04c09eb63e470e53d08a52aae5a46ee7a35a79
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: b6cde66a86d6f2566e4b0065e197aa3de62d40dcad989bfd07e861838af54ac8e4b6727b55024d89a130464eac3cb16d46bcf4e6785b17d4ebb4ad105d528e2d
   languageName: node
   linkType: hard
 
