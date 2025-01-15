@@ -8329,6 +8329,7 @@ __metadata:
     just-diff: ^6.0.2
     knex: ^3.0.0
     knex-pglite: ^0.11.0
+    knip: ^5.42.0
     lodash: ^4.17.21
     minimatch: ^9.0.0
     p-limit: ^3.0.2
@@ -34104,7 +34105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knip@npm:^5.0.0":
+"knip@npm:^5.42.0":
   version: 5.42.2
   resolution: "knip@npm:5.42.2"
   dependencies:
@@ -39801,11 +39802,11 @@ __metadata:
   linkType: hard
 
 "pretty-ms@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "pretty-ms@npm:9.0.0"
+  version: 9.2.0
+  resolution: "pretty-ms@npm:9.2.0"
   dependencies:
     parse-ms: ^4.0.0
-  checksum: 072b17547e09cb232e8e4c7be0281e256b6d8acd18dfb2fdd715d50330d1689fdaa877f53cf90c62ed419ef842f0f5fb94a2cd8ed1aa6d7608ad48834219435d
+  checksum: d3a5a5b1c8a3417f64a877dba5ee2bacee404b59bc12083466e5e6dce2745e4bd716e1f9860624c7dceb1b4a532e808e4f2a7a03903a132344b3818951e2d125
   languageName: node
   linkType: hard
 
@@ -42217,7 +42218,6 @@ __metadata:
     eslint-plugin-testing-library: ^6.0.0
     fs-extra: ^11.2.0
     husky: ^9.0.0
-    knip: ^5.0.0
     lint-staged: ^15.0.0
     minimist: ^1.2.5
     node-gyp: ^10.0.0

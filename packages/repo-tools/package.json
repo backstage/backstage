@@ -74,6 +74,7 @@
     "just-diff": "^6.0.2",
     "knex": "^3.0.0",
     "knex-pglite": "^0.11.0",
+    "knip": "^5.42.0",
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
     "p-limit": "^3.0.2",
