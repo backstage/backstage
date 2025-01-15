@@ -14,12 +14,6 @@
 | :-------------------------- | :----------- | :------- |
 | @backstage/frontend-app-api | package.json | error    |
 
-## Referenced optional peerDependencies (1)
-
-| Name         | Location     | Severity |
-| :----------- | :----------- | :------- |
-| @types/react | package.json | error    |
-
 ## Unlisted dependencies (5)
 
 | Name               | Location                                     | Severity |

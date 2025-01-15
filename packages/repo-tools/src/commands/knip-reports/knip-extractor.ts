@@ -83,6 +83,10 @@ async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
       '{fixtures,migrations,templates}/**',
     ],
     ignoreDependencies: [
+      // these is reported as a referenced optional peerDependencies
+      // TBD: investigate what triggers these
+      '@types/react',
+      '@types/jest',
       '@backstage/cli', // everything depends on this for its package.json commands
       '@backstage/theme', // this uses `declare module` in .d.ts so is implicitly used whenever extensions are needed
     ],
