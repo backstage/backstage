@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ErrorListProps, RJSFValidationError } from '@rjsf/utils';
+import {
+  ErrorListProps,
+  GenericObjectType,
+  RJSFValidationError,
+} from '@rjsf/utils';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import ErrorIcon from '@material-ui/icons/Error';
 import startCase from 'lodash/startCase';
 
@@ -48,15 +52,33 @@ export const ErrorListTemplate = ({ errors, schema }: ErrorListProps) => {
       const propertyName = error.property.startsWith('.')
         ? error.property.substring(1)
         : error.property;
-      if (schema.properties && propertyName in schema.properties) {
-        const property = schema.properties[propertyName];
 
-        if (typeof property === 'object' && 'title' in property) {
-          return `'${property.title}' ${error.message}`;
+      const deepFindPropertyTitle = ({
+        properties,
+        ...rest
+      }: GenericObjectType): string | undefined => {
+        if (
+          properties &&
+          propertyName in properties &&
+          typeof properties[propertyName] === 'object' &&
+          'title' in properties[propertyName]
+        ) {
+          return properties[propertyName].title;
         }
-      }
-      // fall back to property name
-      return `'${startCase(propertyName)}' ${error.message}`;
+
+        const restObjectFields: Object[] = Object.values(rest).filter(
+          f => typeof f === 'object',
+        );
+        return [
+          ...restObjectFields.map(childField =>
+            deepFindPropertyTitle(childField),
+          ),
+        ].find(s => typeof s === 'string');
+      };
+
+      return `'${deepFindPropertyTitle(schema) || startCase(propertyName)}' ${
+        error.message
+      }`;
     }
     // fall back if property does not exist
     return error.stack;

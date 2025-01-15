@@ -102,5 +102,44 @@ describe('Error List Template', () => {
       expect(getByText("'Hello' Test error 1")).toBeInTheDocument();
       expect(getByText("'Example Title' Test error 2")).toBeInTheDocument();
     });
+
+    it('looks up deeply nested properties', async () => {
+      const errorList = {
+        errors: [
+          {
+            property: '.foo',
+            stack: 'Test error 1',
+            message: 'Test error 1',
+          },
+        ],
+        errorSchema: {},
+        schema: {
+          if: {
+            properties: {},
+          },
+          else: {
+            if: {},
+            else: {
+              properties: {
+                foo: {
+                  title: 'Hello',
+                },
+              },
+            },
+          },
+          properties: {
+            foo: {
+              title: 'Hello',
+            },
+          },
+        },
+      } as Partial<ErrorListProps> as ErrorListProps;
+
+      const { getByText } = await renderInTestApp(
+        <ErrorListTemplate {...errorList} />,
+      );
+
+      expect(getByText("'Hello' Test error 1")).toBeInTheDocument();
+    });
   });
 });
