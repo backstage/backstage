@@ -59,7 +59,7 @@ export class AzureUrl {
       ref = version.slice(2);
     }
 
-    return new AzureUrl(url.origin, owner, project, repo, path, ref);
+    return new AzureUrl(url.origin, owner, project, repo, path, ref,apiVersion);
   }
 
   #origin: string;
