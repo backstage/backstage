@@ -7,9 +7,3 @@
 | @backstage/version-bridge | package.json | error    |
 | zod                       | package.json | error    |
 
-## Unlisted dependencies (1)
-
-| Name               | Location                          | Severity |
-| :----------------- | :-------------------------------- | :------- |
-| @internal/frontend | src/app/createExtensionTester.tsx | error    |
-

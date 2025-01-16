@@ -8,11 +8,3 @@
 | @backstage/errors            | package.json | error    |
 | zod                          | package.json | error    |
 
-## Unlisted dependencies (3)
-
-| Name               | Location                            | Severity |
-| :----------------- | :---------------------------------- | :------- |
-| @internal/frontend | src/wiring/createSpecializedApp.tsx | error    |
-| @internal/frontend | src/tree/resolveAppNodeSpecs.ts     | error    |
-| @internal/frontend | src/routing/collectRouteIds.ts      | error    |
-

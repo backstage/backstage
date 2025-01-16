@@ -14,13 +14,3 @@
 | :-------------------------- | :----------- | :------- |
 | @backstage/frontend-app-api | package.json | error    |
 
-## Unlisted dependencies (5)
-
-| Name               | Location                                     | Severity |
-| :----------------- | :------------------------------------------- | :------- |
-| @internal/frontend | src/wiring/createExtensionBlueprint.test.tsx | error    |
-| @internal/frontend | src/wiring/resolveExtensionDefinition.ts     | error    |
-| @internal/frontend | src/wiring/createFrontendModule.ts           | error    |
-| @internal/frontend | src/wiring/createFrontendPlugin.ts           | error    |
-| @internal/frontend | src/wiring/createExtension.ts                | error    |
-
