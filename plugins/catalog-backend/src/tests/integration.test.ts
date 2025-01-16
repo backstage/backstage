@@ -971,5 +971,14 @@ describe('Catalog Backend Integration', () => {
         .where({ target_entity_ref: 'component:default/component-1' })
         .select(),
     ).resolves.toEqual([]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-2': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'location-key',
+        },
+      }),
+    });
   });
 });
