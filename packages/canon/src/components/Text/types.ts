@@ -27,5 +27,6 @@ export interface TextProps {
     | 'label'
     | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  className?: string;
   style?: CSSProperties;
 }

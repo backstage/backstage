@@ -15,6 +15,7 @@
  */
 
 /* Components */
+@import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
 @import '../components/Stack/styles.css';
 @import '../components/Inline/styles.css';

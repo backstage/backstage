@@ -73,10 +73,6 @@
   --canon-border-radius-xl: 1.25rem; /* 20px */
   --canon-border-radius-2xl: 1.5rem; /* 24px */
 
-  /* Container */
-  --canon-container-max-width: 1200px;
-  --canon-container-padding: 1rem;
-
   /* Colors */
   --canon-accent: #000;
   --canon-background: #f8f8f8;

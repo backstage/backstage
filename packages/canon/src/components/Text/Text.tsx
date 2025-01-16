@@ -19,7 +19,7 @@
 import React, { forwardRef } from 'react';
 import { TextProps } from './types';
 import { useCanon } from '../../contexts/canon';
-
+import clsx from 'clsx';
 /** @public */
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
@@ -28,6 +28,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       variant = 'body',
       weight = 'regular',
       style,
+      className,
       ...restProps
     } = props;
 
@@ -40,9 +41,12 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     return (
       <p
         ref={ref}
-        className={`text ${
-          responsiveVariant ? `text-${responsiveVariant}` : ''
-        } ${responsiveWeight ? `text-${responsiveWeight}` : ''}`}
+        className={clsx(
+          'canon-Text',
+          responsiveVariant && `canon-Text--variant-${responsiveVariant}`,
+          responsiveWeight && `canon-Text--weight-${responsiveWeight}`,
+          className,
+        )}
         style={style}
         {...restProps}
       >

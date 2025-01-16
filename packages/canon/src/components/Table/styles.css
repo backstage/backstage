@@ -16,12 +16,6 @@
   }
 }
 
-.table-header {
-  tr {
-    /* border-bottom: 1px solid var(--canon-border); */
-  }
-}
-
 .table-head {
   text-align: left;
   padding: var(--canon-space-3);

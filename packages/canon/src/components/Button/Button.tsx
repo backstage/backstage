@@ -20,6 +20,7 @@ import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
 import { ButtonProps } from './types';
 import { useCanon } from '../../contexts/canon';
+import clsx from 'clsx';
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -31,6 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconStart,
       iconEnd,
       children,
+      className,
       style,
       ...rest
     } = props;
@@ -46,17 +48,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...rest}
         ref={ref}
         disabled={disabled}
-        className={[
-          'cn-button',
-          `cn-button-${responsiveSize}`,
-          `cn-button-${responsiveVariant}`,
-        ].join(' ')}
+        className={clsx(
+          'canon-Button',
+          `canon-Button--size-${responsiveSize}`,
+          `canon-Button--variant-${responsiveVariant}`,
+          className,
+        )}
         style={style}
       >
         <span
           className={[
-            'cn-button-content',
-            iconStart && iconEnd ? 'cn-button-content-icon-both' : '',
+            'canon-Button--content',
+            iconStart && iconEnd ? 'canon-Button--icon-start-end' : '',
           ]
             .filter(Boolean)
             .join(' ')}
