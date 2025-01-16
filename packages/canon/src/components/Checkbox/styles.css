@@ -1,22 +1,4 @@
-.checkbox-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: var(--canon-spacing-xs);
-  font-size: var(--canon-font-size-xs);
-  font-family: var(--canon-font-regular);
-  color: var(--canon-text-primary);
-  user-select: none;
-
-  &:hover {
-    & .checkbox {
-      box-shadow: inset 0 0 0 1px var(--canon-border-hover);
-    }
-  }
-}
-
-.checkbox {
+.canon-CheckboxRoot {
   all: unset;
   display: flex;
   align-items: center;
@@ -33,7 +15,25 @@
   }
 }
 
-.checkbox-indicator {
+.canon-CheckboxLabel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--canon-spacing-xs);
+  font-size: var(--canon-font-size-xs);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-text-primary);
+  user-select: none;
+
+  &:hover {
+    & .canon-CheckboxRoot {
+      box-shadow: inset 0 0 0 1px var(--canon-border-hover);
+    }
+  }
+}
+
+.canon-CheckboxIndicator {
   display: flex;
   align-items: center;
   justify-content: center;
