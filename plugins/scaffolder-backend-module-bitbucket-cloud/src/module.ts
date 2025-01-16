@@ -21,11 +21,11 @@ import {
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { createBitbucketCloudBranchRestrictionAction } from './actions/bitbucketCloudBranchRestriction';
 import {
   createBitbucketPipelinesRunAction,
   createPublishBitbucketCloudAction,
   createPublishBitbucketCloudPullRequestAction,
-  createBitbucketCloudBranchRestrictionAction,
 } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { handleAutocompleteRequest } from './autocomplete/autocomplete';
