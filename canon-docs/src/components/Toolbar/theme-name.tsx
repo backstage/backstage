@@ -31,7 +31,7 @@ export const ThemeNameSelector = () => {
         <Select.Positioner className={styles.Positioner} sideOffset={8}>
           <Select.Popup className={styles.Popup}>
             {themes.map(({ name, value }) => (
-              <Select.Item className={styles.Item} value={value}>
+              <Select.Item className={styles.Item} value={value} key={value}>
                 <Select.ItemIndicator className={styles.ItemIndicator}>
                   <Icon name="check" />
                 </Select.ItemIndicator>

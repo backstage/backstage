@@ -9,7 +9,6 @@ import { ButtonPlayground } from '@/snippets/button';
 import { CheckboxPlayground } from '@/snippets/checkbox';
 import { HeadingPlayground } from '@/snippets/heading';
 import { TextPlayground } from '@/snippets/text';
-import { InputPlayground } from '@/snippets/input';
 
 import styles from './styles.module.css';
 
