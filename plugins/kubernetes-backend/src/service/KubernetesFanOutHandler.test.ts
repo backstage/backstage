@@ -486,13 +486,6 @@ describe('KubernetesFanOutHandler', () => {
         { credentials: mockCredentials },
       );
 
-      console.log(
-        JSON.stringify(
-          Array.from(
-            fetchObjectsForService.mock.calls[0][0].objectTypesToFetch,
-          ),
-        ),
-      );
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
       expect(
         Array.from(fetchObjectsForService.mock.calls[0][0].objectTypesToFetch),
@@ -525,13 +518,6 @@ describe('KubernetesFanOutHandler', () => {
         { credentials: mockCredentials },
       );
 
-      console.log(
-        JSON.stringify(
-          Array.from(
-            fetchObjectsForService.mock.calls[0][0].objectTypesToFetch,
-          ),
-        ),
-      );
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
       expect(
         Array.from(fetchObjectsForService.mock.calls[0][0].objectTypesToFetch),
