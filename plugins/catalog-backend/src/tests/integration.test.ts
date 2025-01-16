@@ -195,7 +195,7 @@ class TestHarness {
   readonly #catalog: EntitiesCatalog;
   readonly #engine: CatalogProcessingEngine;
   readonly #refresh: RefreshService;
-  readonly #providers: TestProvider[];
+  readonly #provider: TestProvider;
   readonly #proxyProgressTracker: ProxyProgressTracker;
 
   static async create(options?: {
@@ -203,7 +203,7 @@ class TestHarness {
     logger?: LoggerService;
     db?: Knex;
     permissions?: PermissionEvaluator;
-    providers?: TestProvider[];
+    additionalProviders?: EntityProvider[];
     processEntity?(
       entity: Entity,
       location: LocationSpec,
@@ -302,7 +302,13 @@ class TestHarness {
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
 
-    const providers = options?.providers ?? [new TestProvider()];
+    const provider = new TestProvider();
+    const providers: EntityProvider[] = [provider];
+
+    if (options?.additionalProviders) {
+      providers.push(...options.additionalProviders);
+    }
+
     await connectEntityProviders(providerDatabase, providers);
 
     return new TestHarness(
@@ -318,7 +324,7 @@ class TestHarness {
         },
       },
       refresh,
-      providers,
+      provider,
       proxyProgressTracker,
     );
   }
@@ -327,13 +333,13 @@ class TestHarness {
     catalog: EntitiesCatalog,
     engine: CatalogProcessingEngine,
     refresh: RefreshService,
-    providers: TestProvider[],
+    provider: TestProvider,
     proxyProgressTracker: ProxyProgressTracker,
   ) {
     this.#catalog = catalog;
     this.#engine = engine;
     this.#refresh = refresh;
-    this.#providers = providers;
+    this.#provider = provider;
     this.#proxyProgressTracker = proxyProgressTracker;
   }
 
@@ -354,15 +360,13 @@ class TestHarness {
   }
 
   async setInputEntities(entities: (Entity & { locationKey?: string })[]) {
-    for (const provider of this.#providers) {
-      await provider.getConnection().applyMutation({
-        type: 'full',
-        entities: entities.map(({ locationKey, ...entity }) => ({
-          entity,
-          locationKey,
-        })),
-      });
-    }
+    await this.#provider.getConnection().applyMutation({
+      type: 'full',
+      entities: entities.map(({ locationKey, ...entity }) => ({
+        entity,
+        locationKey,
+      })),
+    });
   }
 
   async getOutputEntities(): Promise<Record<string, Entity>> {
@@ -856,7 +860,7 @@ describe('Catalog Backend Integration', () => {
     secondProvider.getProviderName = () => 'second';
 
     const harness = await TestHarness.create({
-      providers: [firstProvider, secondProvider],
+      additionalProviders: [firstProvider, secondProvider],
       db,
     });
 
