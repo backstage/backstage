@@ -57,7 +57,7 @@
 
 .cn-button-content {
   align-items: center;
-  gap: var(--canon-spacing-xs);
+  gap: var(--canon-space-3);
   font-weight: var(--canon-font-weight-bold);
   display: flex;
 }
@@ -104,7 +104,7 @@
 .checkbox-label {
   justify-content: center;
   align-items: center;
-  gap: var(--canon-spacing-xs);
+  gap: var(--canon-space-3);
   font-size: var(--canon-font-size-xs);
   font-family: var(--canon-font-regular);
   color: var(--canon-text-primary);
@@ -147,8 +147,8 @@
   background-color: var(--canon-surface-1);
   border-radius: var(--canon-border-radius-xs);
   width: 100%;
-  padding-bottom: var(--canon-spacing-5xs);
-  padding-top: var(--canon-spacing-5xs);
+  padding-bottom: var(--canon-space-0_5);
+  padding-top: var(--canon-space-0_5);
   font-size: var(--canon-font-size-body);
   position: relative;
   overflow: auto;
@@ -163,7 +163,7 @@
 
 .table-head {
   text-align: left;
-  padding: var(--canon-spacing-xs);
+  padding: var(--canon-space-3);
 }
 
 .table-body {
@@ -183,19 +183,19 @@
     border-top-left-radius: var(--canon-border-radius-xs);
     border-bottom-left-radius: var(--canon-border-radius-xs);
     box-shadow: inset 4px 2px 0 0 var(--canon-surface-1), inset 4px -2px 0 0 var(--canon-surface-1);
-    padding-left: var(--canon-spacing-xs);
+    padding-left: var(--canon-space-3);
   }
 
   & .table-cell:last-child {
     border-top-right-radius: var(--canon-border-radius-xs);
     border-bottom-right-radius: var(--canon-border-radius-xs);
     box-shadow: inset -4px 2px 0 0 var(--canon-surface-1), inset -4px -2px 0 0 var(--canon-surface-1);
-    padding-right: var(--canon-spacing-xs);
+    padding-right: var(--canon-space-3);
   }
 }
 
 .table-cell {
-  padding: var(--canon-spacing-xs);
+  padding: var(--canon-space-3);
   background-color: var(--canon-surface-2);
   box-shadow: inset 0px 2px 0 0 var(--canon-surface-1), inset 0px -2px 0 0 var(--canon-surface-1);
 }
@@ -281,7 +281,7 @@
 .canon-Input {
   border-radius: var(--canon-border-radius-sm);
   border: 1px solid var(--canon-border-base);
-  padding: var(--canon-spacing-sm);
+  padding: 0 var(--canon-space-4);
   background-color: var(--canon-surface-1);
   font-size: var(--canon-font-size-body);
   font-weight: var(--canon-font-weight-regular);
@@ -342,6 +342,14 @@
   font-size: var(--canon-font-size-caption);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-error);
+  padding-top: var(--canon-spacing-3xs);
+  margin: 0;
+}
+
+.canon-FieldValidity {
+  font-size: var(--canon-font-size-caption);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-text-secondary);
   padding-top: var(--canon-spacing-3xs);
   margin: 0;
 }

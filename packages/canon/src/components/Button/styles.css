@@ -74,7 +74,7 @@
 .canon-Button--content {
   display: flex;
   align-items: center;
-  gap: var(--canon-spacing-xs);
+  gap: var(--canon-space-3);
   font-weight: var(--canon-font-weight-bold);
 }
 

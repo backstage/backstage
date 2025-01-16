@@ -17,7 +17,7 @@
 .canon-Input {
   border-radius: var(--canon-border-radius-sm);
   border: 1px solid var(--canon-border-base);
-  padding: var(--canon-spacing-sm);
+  padding: 0 var(--canon-space-4);
   background-color: var(--canon-surface-1);
   font-size: var(--canon-font-size-body);
   font-weight: var(--canon-font-weight-regular);
