@@ -170,11 +170,15 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const storageUrl = await this.getStorageUrl();
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
 
-    const request = await this.fetchApi.fetch(
-      `${
-        url.endsWith('/') || url.endsWith('.html') ? url : `${url}/index.html`
-      }`,
-    );
+    let updatedUrl = url;
+
+    if (url.endsWith('/')) {
+      updatedUrl += 'index.html';
+    } else if (!url.endsWith('.html')) {
+      updatedUrl += '/index.html';
+    }
+
+    const request = await this.fetchApi.fetch(updatedUrl);
 
     let errorMessage = '';
     switch (request.status) {
