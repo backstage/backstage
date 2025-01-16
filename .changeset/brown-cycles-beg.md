@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': patch
 ---
 
-Adds an option to hide text output buttons
+Hide text output button if only one is present

@@ -39,25 +39,23 @@ export const TextOutputs = (props: {
     <>
       {text
         .filter(({ content }) => content !== undefined)
-        .map(({ title, icon, showButton = true }, i) => {
+        .map(({ title, icon }, i) => {
           const Icon = iconResolver(icon);
           return (
-            showButton && (
-              <Button
-                key={i}
-                startIcon={<Icon />}
-                component="div"
-                color="primary"
-                onClick={() => {
-                  if (index !== i) {
-                    setIndex?.(i);
-                  }
-                }}
-                variant={index === i ? 'outlined' : undefined}
-              >
-                {title}
-              </Button>
-            )
+            <Button
+              key={i}
+              startIcon={<Icon />}
+              component="div"
+              color="primary"
+              onClick={() => {
+                if (index !== i) {
+                  setIndex?.(i);
+                }
+              }}
+              variant={index === i ? 'outlined' : undefined}
+            >
+              {title}
+            </Button>
           );
         })}
     </>
