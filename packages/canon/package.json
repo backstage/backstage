@@ -39,22 +39,22 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@base-ui-components/react": "^1.0.0-alpha.4",
+    "@base-ui-components/react": "^1.0.0-alpha.5",
     "@remixicon/react": "^4.5.0",
     "clsx": "^2.1.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@chromatic-com/storybook": "^3.2.2",
-    "@storybook/addon-essentials": "^8.4.7",
-    "@storybook/addon-interactions": "^8.4.7",
+    "@storybook/addon-essentials": "^8.5.0",
+    "@storybook/addon-interactions": "^8.5.0",
     "@storybook/addon-styling-webpack": "^1.0.1",
-    "@storybook/addon-themes": "^8.4.7",
-    "@storybook/addon-webpack5-compiler-swc": "^1.0.5",
-    "@storybook/blocks": "^8.4.7",
-    "@storybook/react": "^8.4.7",
-    "@storybook/react-webpack5": "^8.4.7",
-    "@storybook/test": "^8.4.7",
+    "@storybook/addon-themes": "^8.5.0",
+    "@storybook/addon-webpack5-compiler-swc": "^2.0.0",
+    "@storybook/blocks": "^8.5.0",
+    "@storybook/react": "^8.5.0",
+    "@storybook/react-webpack5": "^8.5.0",
+    "@storybook/test": "^8.5.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
@@ -67,7 +67,7 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
-    "storybook": "^8.4.7"
+    "storybook": "^8.5.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
