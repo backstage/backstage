@@ -22,7 +22,7 @@ export class AzureUrl {
    *
    * Throws an error if the URL is not a valid azure repo URL.
    */
-  static fromRepoUrl(repoUrl: string): AzureUrl {
+  static fromRepoUrl(repoUrl: string,apiVersion: string): AzureUrl {
     const url = new URL(repoUrl);
 
     let owner;
@@ -162,7 +162,7 @@ export class AzureUrl {
     );
     url.searchParams.set('recursionLevel', 'full');
     url.searchParams.set('download', 'true');
-    url.searchParams.set('api-version', '6.0');
+    url.searchParams.set('api-version', apiVersion);
 
     if (this.#path) {
       url.searchParams.set('scopePath', this.#path);
