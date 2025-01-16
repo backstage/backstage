@@ -4020,6 +4020,7 @@ __metadata:
     tar: ^6.1.12
     terser-webpack-plugin: ^5.1.3
     ts-morph: ^24.0.0
+    undici: ^7.2.3
     util: ^0.12.3
     webpack: ^5.94.0
     webpack-dev-server: ^5.0.0
@@ -45465,6 +45466,13 @@ __metadata:
   dependencies:
     "@fastify/busboy": ^2.0.0
   checksum: a8193132d84540e4dc1895ecc8dbaa176e8a49d26084d6fbe48a292e28397cd19ec5d13bc13e604484e76f94f6e334b2bdc740d5f06a6e50c44072818d0c19f9
+  languageName: node
+  linkType: hard
+
+"undici@npm:^7.2.3":
+  version: 7.2.3
+  resolution: "undici@npm:7.2.3"
+  checksum: 93bfe6b1f5acc1c7180a2d6a04b22bda8223ee4c683a7f240b261b272eeb3bd46e9514f70afe8ad3e55e82ca06ade19cd7bc590202a0b4118803a75daf776b5d
   languageName: node
   linkType: hard
 
