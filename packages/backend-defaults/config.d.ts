@@ -422,6 +422,16 @@ export interface Config {
         | string
         | {
             /**
+             * The specific config for Azure database for PostgreSQL with Entra authentication
+             */
+            type: 'azure';
+            /**
+             * How many milliseconds before token expiration to refresh the token Defaults to 180,000 (3 minutes)
+             */
+            allowedClockSkewMs?: number;
+          }
+        | {
+            /**
              * The specific config for cloudsql connections
              */
             type: 'cloudsql';

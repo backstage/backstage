@@ -82,15 +82,23 @@ export async function buildPgDatabaseConfig(
   // Trim additional properties from the connection object passed to knex
   delete sanitizedConfig.connection.type;
   delete sanitizedConfig.connection.instance;
+  delete sanitizedConfig.connection.allowedClockSkewMs;
 
   if (config.connection.type === 'default' || !config.connection.type) {
     return sanitizedConfig;
   }
 
-  if (config.connection.type !== 'cloudsql') {
-    throw new Error(`Unknown connection type: ${config.connection.type}`);
+  switch (config.connection.type) {
+    case 'cloudsql':
+      return await buildCloudSqlConfig(config, sanitizedConfig);
+    case 'azure':
+      return await buildAzurePgConfig(config, sanitizedConfig);
+    default:
+      throw new Error(`Unknown connection type: ${config.connection.type}`);
   }
+}
 
+export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
   if (config.client !== 'pg') {
     throw new Error('Cloud SQL only supports the pg client');
   }
@@ -118,6 +126,41 @@ export async function buildPgDatabaseConfig(
       ...sanitizedConfig.connection,
       ...clientOpts,
     },
+  };
+}
+
+export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
+  const { DefaultAzureCredential } = require('@azure/identity');
+
+  // By default get a new token starting three minutes before the old one expires
+  const allowedClockSkewMs =
+    config.connection.allowedClockSkewMs !== undefined
+      ? config.connection.allowedClockSkewMs
+      : 180000;
+
+  async function getConnectionConfig() {
+    const credential = new DefaultAzureCredential();
+    const token = await credential.getToken(
+      'https://ossrdbms-aad.database.windows.net',
+    );
+
+    const connectionConfig = {
+      ...sanitizedConfig.connection,
+      password: token.token,
+      expirationChecker: () => {
+        /* return true if the token is near to or past its expiration. */
+        const isExpired =
+          token.expiresOnTimestamp - allowedClockSkewMs <= Date.now();
+
+        return isExpired;
+      },
+    };
+    return connectionConfig;
+  }
+
+  return {
+    ...sanitizedConfig,
+    connection: getConnectionConfig,
   };
 }
 

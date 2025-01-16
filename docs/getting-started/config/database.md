@@ -106,6 +106,60 @@ When filling these out, you have 2 choices,
 
 If you opt for the second option of replacing the entire string, take care to not commit your `app-config.yaml` to source control. It may contain passwords that you don't want leaked.
 
+## Passwordless PostgreSQL in the Cloud
+
+If you want to host your PostgreSQL server in the cloud with passwordless authentication, you can use Azure Database for PostgreSQL with Microsoft Entra authentication or Google Cloud SQL for PostgreSQL with Cloud IAM.
+
+### Azure with Entra authentication
+
+Remove `password` from the connection configuration and set `type` to `azure`. Optionally set `allowedClockSkewMs`. Entra authentication uses OAuth access tokens with expiration timestamps. By default, the database connector will get a new token 3 minutes (180,000 ms) before the prior token expires. If your server's clock may differ more than that from Azure, you can set another value here.
+
+Entra authentication uses `DefaultAzureCredential` under the hood, so it supports [many credential types](https://learn.microsoft.com/azure/developer/javascript/sdk/authentication/credential-chains#use-defaultazurecredential-for-flexibility).
+
+Set `user` to the display name of your Entra ID group, service principal, or managed identity. Set it to the user principal name if you're authenticating with a user's credentials.
+
+```yaml title="app-config.yaml"
+backend:
+  database:
+    client: pg
+    connection:
+      # highlight-add-start
+      type: azure
+      allowedClockSkewMs: 180000
+      # highlight-add-end
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      # highlight-remove-start
+      password: ${POSTGRES_PASSWORD}
+      # highlight-remove-end
+```
+
+### Google with Cloud IAM
+
+Remove `password` from the connection configuration and set `type` to `cloudsql`.
+
+Under the hood, this implements [Automatic IAM Database Authentication](https://github.com/GoogleCloudPlatform/cloud-sql-nodejs-connector?tab=readme-ov-file#automatic-iam-database-authentication).
+
+For an IAM user account, set `user` to the user's email address. For a service account, set `user` to the service account's email without the .gserviceaccount.com domain suffix.
+
+```yaml title="app-config.yaml"
+backend:
+  database:
+    client: pg
+    connection:
+      # highlight-add-start
+      type: cloudsql
+      instance: my-project:region:my-instance
+      # highlight-add-end
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      # highlight-remove-start
+      password: ${POSTGRES_PASSWORD}
+      # highlight-remove-end
+```
+
 :::
 
 [Start the Backstage app](../index.md#2-run-the-backstage-app):
