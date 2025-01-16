@@ -21,7 +21,6 @@ import {
   getPgConnectionConfig,
   parsePgConnectionString,
 } from './postgres';
-import exp from 'node:constants';
 
 jest.mock('@google-cloud/cloud-sql-connector');
 
