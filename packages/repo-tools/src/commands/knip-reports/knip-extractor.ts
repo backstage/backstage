@@ -21,8 +21,10 @@ import fs from 'fs-extra';
 import type { KnipConfig } from 'knip';
 import { createBinRunner } from '../util';
 
-// Ignore this due to Knip error: Error: ENAMETOOLONG: name too long, scandir
-const ignoredPackages = ['packages/techdocs-cli-embedded-app'];
+// Ignore these
+const ignoredPackages = [
+  'packages/canon', // storybook config is different from the rest
+];
 
 interface KnipExtractionOptions {
   packageDirs: string[];
