@@ -1,0 +1,10 @@
+---
+title: azure resource
+author: Anuragpachauri
+authorUrl: https://github.com/anuragpachauri
+category: Infrastructure
+description: backstage plugin For displaying azure resource based on tags . 
+documentation: https://github.com/anuragpachauri/azure-resource/blob/main/README.md
+iconUrl: https://i.ibb.co/KVnsgqT/Azure-Logo-PNG.png
+npmPackageName: https://www.npmjs.com/package/@anuragpachauri/azure-resource
+addedDate: '2025-01-16'
