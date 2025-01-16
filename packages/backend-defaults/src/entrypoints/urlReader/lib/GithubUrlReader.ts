@@ -72,6 +72,16 @@ export class GithubUrlReader implements UrlReaderService {
     });
   };
 
+  public cacheStats() {
+    return {
+      cacheSize: Object.keys(this.githubFileCache).length,
+      cacheHits: this.cacheHits,
+      cacheMisses: this.cacheMisses,
+      // this is not reliable, since different requests have different rate limits, but mostly you get the first type
+      rateLimitRemaining: this.rateLimitsRemaining,
+    };
+  }
+
   constructor(
     private readonly integration: GithubIntegration,
     private readonly deps: {
@@ -84,7 +94,16 @@ export class GithubUrlReader implements UrlReaderService {
         `GitHub integration '${integration.title}' must configure an explicit apiBaseUrl or rawBaseUrl`,
       );
     }
+
+    setInterval(() => {
+      console.log('GithubUrlReader Stats', this.cacheStats());
+    }, 1000 * 20);
   }
+
+  private githubFileCache: GithubFileCache = {};
+  private cacheHits: number = 0;
+  private cacheMisses: number = 0;
+  private rateLimitsRemaining: number | undefined = undefined;
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -269,7 +288,10 @@ export class GithubUrlReader implements UrlReaderService {
       return matching.map(item => ({
         url: pathToUrl(item.path!),
         content: async () => {
-          const blob: GhBlobResponse = await this.fetchJson(item.url!, init);
+          const blob: GhBlobResponse = await this.fetchCachedJson(
+            item.url!,
+            init,
+          );
           return Buffer.from(blob.content, 'base64');
         },
       }));
@@ -335,6 +357,11 @@ export class GithubUrlReader implements UrlReaderService {
     const urlAsString = url.toString();
     const response = await fetch(urlAsString, init);
 
+    this.rateLimitsRemaining = Number.parseInt(
+      response.headers.get('x-ratelimit-remaining') ?? '',
+      10,
+    );
+
     if (!response.ok) {
       let message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
 
@@ -362,5 +389,35 @@ export class GithubUrlReader implements UrlReaderService {
   private async fetchJson(url: string | URL, init: RequestInit): Promise<any> {
     const response = await this.fetchResponse(url, init);
     return await response.json();
+  }
+
+  private async fetchCachedJson(
+    url: string | URL,
+    init: RequestInit,
+  ): Promise<any> {
+    const cachedFile = this.githubFileCache[url.toString()];
+
+    try {
+      const response = await this.fetchResponse(url, {
+        ...init,
+        headers: {
+          ...init.headers,
+          ...(cachedFile?.etag && { 'If-None-Match': cachedFile?.etag }),
+        },
+      });
+      const json = await response.json();
+      this.githubFileCache[url.toString()] = {
+        contents: json,
+        etag: response.headers.get('ETag') ?? '',
+      };
+      this.cacheMisses++;
+      return json;
+    } catch (error) {
+      if (error instanceof NotModifiedError) {
+        this.cacheHits++;
+        return cachedFile?.contents;
+      }
+      throw error;
+    }
   }
 }
