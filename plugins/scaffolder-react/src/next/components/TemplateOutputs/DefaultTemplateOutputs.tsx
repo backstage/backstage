@@ -56,7 +56,9 @@ export const DefaultTemplateOutputs = (props: {
     return null;
   }
 
-  const emptyOutput = Object.keys(output).length === 0;
+  const emptyOutput =
+    (output.links || []).length === 0 &&
+    Object.values(output.text || {}).filter(o => o.showButton).length === 0;
 
   return (
     <>
