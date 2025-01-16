@@ -33,6 +33,13 @@ export type AzureIntegrationConfig = {
   host: string;
 
   /**
+   * The supported apiVersion of the azure api
+   *
+   * Currently only "6.0" is is default.
+   */
+  apiVersion: string;
+  
+  /**
    * The authorization token to use for requests.
    *
    * If no token is specified, anonymous access is used.
