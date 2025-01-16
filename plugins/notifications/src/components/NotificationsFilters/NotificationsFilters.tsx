@@ -40,7 +40,12 @@ export type NotificationsFiltersProps = {
   onSavedChanged: (checked: boolean | undefined) => void;
   severity: NotificationSeverity;
   onSeverityChanged: (severity: NotificationSeverity) => void;
+  topic?: string;
+  onTopicChanged: (value: string | undefined) => void;
+  allTopics?: string[];
 };
+
+const ALL = '___all___';
 
 export const CreatedAfterOptions: {
   [key: string]: { label: string; getDate: () => Date };
@@ -127,6 +132,9 @@ export const NotificationsFilters = ({
   onSavedChanged,
   severity,
   onSeverityChanged,
+  topic,
+  onTopicChanged,
+  allTopics,
 }: NotificationsFiltersProps) => {
   const sortByText = getSortByText(sorting);
 
@@ -179,6 +187,15 @@ export const NotificationsFilters = ({
       (event.target.value as NotificationSeverity) || 'normal';
     onSeverityChanged(value);
   };
+
+  const handleOnTopicChanged = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    const value = event.target.value as string;
+    onTopicChanged(value === ALL ? undefined : value);
+  };
+
+  const sortedAllTopics = (allTopics || []).sort((a, b) => a.localeCompare(b));
 
   return (
     <>
@@ -260,6 +277,29 @@ export const NotificationsFilters = ({
               {Object.keys(AllSeverityOptions).map((key: string) => (
                 <MenuItem value={key} key={key}>
                   {AllSeverityOptions[key as NotificationSeverity]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl fullWidth variant="outlined" size="small">
+            <InputLabel id="notifications-filter-topic">Topic</InputLabel>
+
+            <Select
+              label="Topic"
+              labelId="notifications-filter-topic"
+              value={topic ?? ALL}
+              onChange={handleOnTopicChanged}
+            >
+              <MenuItem value={ALL} key={ALL}>
+                Any topic
+              </MenuItem>
+
+              {sortedAllTopics.map((item: string) => (
+                <MenuItem value={item} key={item}>
+                  {item}
                 </MenuItem>
               ))}
             </Select>
