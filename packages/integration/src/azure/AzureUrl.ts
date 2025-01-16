@@ -68,6 +68,8 @@ export class AzureUrl {
   #repo: string;
   #path?: string;
   #ref?: string;
+  #apiVersion: string;
+
 
   private constructor(
     origin: string,
@@ -76,6 +78,7 @@ export class AzureUrl {
     repo: string,
     path?: string,
     ref?: string,
+    apiVersion: string = '6.0' // Default to '6.0' if not provided
   ) {
     this.#origin = origin;
     this.#owner = owner;
@@ -83,6 +86,7 @@ export class AzureUrl {
     this.#repo = repo;
     this.#path = path;
     this.#ref = ref;
+    this.#apiVersion = apiVersion; // Set the apiVersion
   }
 
   #baseUrl = (...parts: string[]): URL => {
