@@ -163,7 +163,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
 | Name           | Organization | GitHub                                                | Discord       |
 | -------------- | ------------ | ----------------------------------------------------- | ------------- |
-| Aramis Sennyey |              | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Aramis Sennyey | DoorDash     | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
 
 ### Scaffolder
 
@@ -184,7 +184,7 @@ Scope: The Backstage Documentation
 | Name            | Organization  | GitHub                                                | Discord       |
 | --------------- | ------------- | ----------------------------------------------------- | ------------- |
 | Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
-| Aramis Sennyey  |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
 | Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ## Sponsors
@@ -203,7 +203,7 @@ Scope: The Backstage Documentation
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
-| Aramis Sennyey                 |                           | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`                  |
+| Aramis Sennyey                 | DoorDash                  | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
