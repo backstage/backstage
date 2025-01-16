@@ -324,7 +324,6 @@ export type ScaffolderOutputText = {
   title?: string;
   icon?: string;
   content?: string;
-  showButton?: boolean;
   default?: boolean;
 };
 
