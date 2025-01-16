@@ -107,7 +107,7 @@ export const buildPackage = async (options: BuildOptions) => {
 
   const rollupConfigs = await makeRollupConfigs(options);
 
-  await fs.remove(paths.resolveTarget('dist'));
+  await fs.remove(resolvePath(options.targetDir ?? paths.targetDir, 'dist'));
 
   const buildTasks = rollupConfigs.map(rollupBuild);
 
