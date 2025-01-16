@@ -165,9 +165,14 @@ export class DefaultProviderDatabase implements ProviderDatabase {
 
           await tx<DbRefreshStateReferencesRow>('refresh_state_references')
             .where('target_entity_ref', entityRef)
+            .andWhere({ source_key: options.sourceKey })
             .delete();
 
           if (ok) {
+            await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+              .where('target_entity_ref', entityRef)
+              .delete();
+
             await tx<DbRefreshStateReferencesRow>(
               'refresh_state_references',
             ).insert({
