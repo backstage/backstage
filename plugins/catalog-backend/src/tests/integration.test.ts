@@ -31,7 +31,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createHash } from 'crypto';
-import { Knex } from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { EntitiesCatalog } from '../catalog/types';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
@@ -55,6 +55,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { DatabaseManager } from '@backstage/backend-common';
 import { entitiesResponseToObjects } from '../service/response';
+import { DbRefreshStateReferencesRow } from '../database/tables';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -202,6 +203,7 @@ class TestHarness {
     logger?: LoggerService;
     db?: Knex;
     permissions?: PermissionEvaluator;
+    additionalProviders?: EntityProvider[];
     processEntity?(
       entity: Entity,
       location: LocationSpec,
@@ -301,8 +303,13 @@ class TestHarness {
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
 
     const provider = new TestProvider();
+    const providers: EntityProvider[] = [provider];
 
-    await connectEntityProviders(providerDatabase, [provider]);
+    if (options?.additionalProviders) {
+      providers.push(...options.additionalProviders);
+    }
+
+    await connectEntityProviders(providerDatabase, providers);
 
     return new TestHarness(
       catalog,
@@ -353,7 +360,7 @@ class TestHarness {
   }
 
   async setInputEntities(entities: (Entity & { locationKey?: string })[]) {
-    return this.#provider.getConnection().applyMutation({
+    await this.#provider.getConnection().applyMutation({
       type: 'full',
       entities: entities.map(({ locationKey, ...entity }) => ({
         entity,
@@ -836,6 +843,146 @@ describe('Catalog Backend Integration', () => {
         },
         relations: [],
       },
+    });
+  });
+
+  it('should replace any refresh_state_references that are dangling after claiming an entityRef with locationKey', async () => {
+    const db = knexFactory({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+
+    const firstProvider = new TestProvider();
+    firstProvider.getProviderName = () => 'first';
+
+    const secondProvider = new TestProvider();
+    secondProvider.getProviderName = () => 'second';
+
+    const harness = await TestHarness.create({
+      additionalProviders: [firstProvider, secondProvider],
+      db,
+    });
+
+    await firstProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-1',
+              annotations: {
+                'backstage.io/managed-by-location': 'url:.',
+                'backstage.io/managed-by-origin-location': 'url:.',
+              },
+            },
+            spec: {
+              type: 'service',
+              owner: 'no-location-key',
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-1': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'no-location-key',
+        },
+      }),
+    });
+
+    await secondProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          locationKey: 'takeover',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-1',
+              annotations: {
+                'backstage.io/managed-by-location': 'url:.',
+                'backstage.io/managed-by-origin-location': 'url:.',
+              },
+            },
+            spec: {
+              type: 'service',
+              owner: 'location-key',
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-1': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'location-key',
+        },
+      }),
+    });
+
+    await expect(
+      db<DbRefreshStateReferencesRow>('refresh_state_references')
+        .where({ target_entity_ref: 'component:default/component-1' })
+        .select(),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        source_key: 'second',
+        target_entity_ref: 'component:default/component-1',
+      }),
+    ]);
+
+    await secondProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          locationKey: 'takeover',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-2',
+              annotations: {
+                'backstage.io/managed-by-location': 'url:.',
+                'backstage.io/managed-by-origin-location': 'url:.',
+              },
+            },
+            spec: {
+              type: 'service',
+              owner: 'location-key',
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(
+      db<DbRefreshStateReferencesRow>('refresh_state_references')
+        .where({ target_entity_ref: 'component:default/component-1' })
+        .select(),
+    ).resolves.toEqual([]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-2': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'location-key',
+        },
+      }),
     });
   });
 });
