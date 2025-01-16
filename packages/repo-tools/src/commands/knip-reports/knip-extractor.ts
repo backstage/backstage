@@ -71,6 +71,7 @@ async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
           'node_modules/**',
           'dist/**',
           '{fixtures,migrations,templates}/**',
+          'src/tests/transforms/__fixtures__/**', // cli packaging tests
         ],
       },
     },
