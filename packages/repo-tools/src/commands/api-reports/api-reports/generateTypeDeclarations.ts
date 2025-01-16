@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { spawnSync } from 'child_process';
-import { paths as cliPaths } from '../../lib/paths';
+import { paths as cliPaths } from '../../../lib/paths';
 
 /**
  * Generates the TypeScript declaration files for the specified project, using the provided `tsconfig.json` file.

@@ -22,7 +22,7 @@ import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
-import { logApiReportInstructions } from '../api-extractor';
+import { logApiReportInstructions, tryRunPrettier } from '../common';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -153,7 +153,7 @@ async function runSingleSqlExtraction(
     }
   }
 
-  const report = prettyReport(
+  const report = tryRunPrettier(
     generateSqlReport({
       reportName,
       failedDownMigration,
@@ -194,19 +194,5 @@ async function runSingleSqlExtraction(
       }
       throw new Error(`Report ${reportPath} is out of date`);
     }
-  }
-}
-
-function prettyReport(content: string): string {
-  try {
-    const prettier = require('prettier') as typeof import('prettier');
-
-    const config = prettier.resolveConfig.sync(cliPaths.targetRoot) ?? {};
-    return prettier.format(content, {
-      ...config,
-      parser: 'markdown',
-    });
-  } catch (e) {
-    return content;
   }
 }
