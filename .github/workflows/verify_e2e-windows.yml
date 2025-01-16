@@ -28,7 +28,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot
+      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot --experimental-vm-modules
 
     name: E2E Windows ${{ matrix.node-version }}
     steps:
