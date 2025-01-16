@@ -78,4 +78,22 @@ describe('<DefaultTemplateOutputs />', () => {
     expect(queryByTestId('output-box')).toBeNull();
     expect(queryByTestId('text-output-box')).toBeNull();
   });
+  it('should not render the link output box when output only contains text with showButton set to false', async () => {
+    const output = {
+      text: [
+        { title: 'Text 1', content: 'Hello, **world**!', showButton: false },
+        { title: 'Text 2', content: 'Hello, **mars**!', showButton: false },
+      ],
+    };
+    const { queryByTestId } = await renderInTestApp(
+      <DefaultTemplateOutputs output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByTestId('output-box')).toBeNull();
+  });
 });
