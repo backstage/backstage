@@ -27,8 +27,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "yarn build:app && yarn build:css",
     "build-storybook": "storybook build",
+    "build:app": "backstage-cli package build",
+    "build:css": "node scripts/build-css.mjs",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
@@ -56,8 +58,11 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "chalk": "^5.4.1",
     "eslint-plugin-storybook": "^0.11.1",
+    "glob": "^11.0.1",
     "globals": "^15.11.0",
+    "lightningcss": "^1.29.1",
     "mini-css-extract-plugin": "^2.9.2",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
