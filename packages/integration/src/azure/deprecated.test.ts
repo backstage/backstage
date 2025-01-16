@@ -67,6 +67,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
+          apiVersion:'',
           credentials: [
             {
               kind: 'PersonalAccessToken',
@@ -87,6 +88,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
+          apiVersion: '',
           credentials: [
             {
               kind: 'ClientSecret',
