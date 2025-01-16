@@ -742,5 +742,53 @@ describe.each(databases.eachSupportedId())(
         expect(settings).toEqual(notificationSettings);
       });
     });
+
+    describe('topics', () => {
+      it('should return all topics for user', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({ user });
+        expect(topics.topics.sort()).toEqual([
+          testNotification1.payload.topic,
+          testNotification3.payload.topic,
+          testNotification2.payload.topic,
+        ]);
+      });
+
+      it('should return filtered topics for user by title', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveBroadcast(testNotification4);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({
+          user,
+          search: 'Notification 3',
+        });
+        expect(topics).toEqual({
+          topics: [testNotification3.payload.topic],
+        });
+      });
+
+      it('should return filtered topics for user by severity', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveBroadcast(testNotification4);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({
+          user,
+          minimumSeverity: 'critical',
+        });
+        expect(topics).toEqual({
+          topics: [testNotification1.payload.topic],
+        });
+      });
+    });
   },
 );

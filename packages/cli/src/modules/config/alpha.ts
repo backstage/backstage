@@ -32,7 +32,7 @@ export default createCliPlugin({
             'Only include the schema that applies to the given package',
           )
           .description('Browse the configuration reference documentation')
-          .action(lazy(() => import('./commands/docs').then(m => m.default)));
+          .action(lazy(() => import('./commands/docs'), 'default'));
 
         await defaultCommand.parseAsync(args, { from: 'user' });
       },

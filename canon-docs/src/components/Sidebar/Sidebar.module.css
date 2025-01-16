@@ -35,15 +35,11 @@
   position: relative;
 }
 
-.menu a {
-  display: flex;
-  text-decoration: none;
-  height: 28px;
-  align-items: center;
-}
-
 .section {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .sectionTitle {
@@ -54,12 +50,14 @@
 }
 
 .line {
+  text-decoration: none;
+  align-items: center;
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 28px;
+  height: 26px;
   padding: 0 12px;
   border-radius: 4px;
   transition: background-color 0.2s ease-in-out;
