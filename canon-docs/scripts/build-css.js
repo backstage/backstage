@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const chokidar = require('chokidar');
 const { bundle } = require('lightningcss');
 
 const source = '../../packages/canon/src/css';
@@ -21,7 +20,7 @@ const bundleAndCopyFile = async (source, destination) => {
   try {
     const result = await bundle({
       filename: source,
-      minify: false,
+      minify: true,
     });
 
     fs.writeFileSync(destination, result.code);
@@ -31,25 +30,16 @@ const bundleAndCopyFile = async (source, destination) => {
   }
 };
 
-// Watch the source file for changes
-chokidar.watch(source1).on('change', () => {
-  console.log('Detected change in core.css, bundling and copying...');
-  bundleAndCopyFile(source1, destination1);
-});
-
-// Watch the components.css file for changes
-chokidar.watch(source2).on('change', () => {
-  console.log('Detected change in components.css, bundling and copying...');
-  bundleAndCopyFile(source2, destination2);
-});
-
-// Watch the backstage.css file for changes
-chokidar.watch(source3).on('change', () => {
-  console.log('Detected change in backstage.css, bundling and copying...');
-  bundleAndCopyFile(source3, destination3);
-});
-
 // Initial bundle and copy
-bundleAndCopyFile(source1, destination1);
-bundleAndCopyFile(source2, destination2);
-bundleAndCopyFile(source3, destination3);
+Promise.all([
+  bundleAndCopyFile(source1, destination1),
+  bundleAndCopyFile(source2, destination2),
+  bundleAndCopyFile(source3, destination3),
+])
+  .then(() => {
+    // Add an empty line after all operations are complete - It looks better in the terminal :)
+    console.log('');
+  })
+  .catch(err => {
+    console.error('Error in processing files:', err);
+  });
