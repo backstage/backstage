@@ -104,6 +104,11 @@ export interface AppTreeApi {
    * Get the {@link AppTree} for the app.
    */
   getTree(): { tree: AppTree };
+
+  /**
+   * Get all nodes in the app that are mounted at a given route path.
+   */
+  getNodesByRoutePath(sourcePath: string): { nodes: AppNode[] };
 }
 
 /**
