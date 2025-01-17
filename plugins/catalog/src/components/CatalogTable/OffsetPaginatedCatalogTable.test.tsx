@@ -108,7 +108,13 @@ describe('OffsetPaginatedCatalogTable', () => {
     await renderInTestApp(
       wrapInContext(
         <OffsetPaginatedCatalogTable data={data} columns={columns} />,
-        { setOffset: offsetFn, limit: 10, totalItems: data.length, offset: 0 },
+        {
+          setOffset: offsetFn,
+          limit: 10,
+          totalItems: data.length,
+          offset: 0,
+          paginationMode: 'offset',
+        },
       ),
     );
 
