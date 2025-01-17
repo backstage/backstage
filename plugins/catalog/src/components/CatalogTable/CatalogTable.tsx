@@ -236,7 +236,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
       subtitle={subtitle}
       options={options}
       data={rows}
-      clientPagination={paginationMode === 'none'}
     />
   );
 };

@@ -25,28 +25,29 @@ import { CatalogTableToolbar } from './CatalogTableToolbar';
  * @internal
  */
 export function OffsetPaginatedCatalogTable(
-  props: TableProps<CatalogTableRow> & {
-    // If true, the pagination will be handled client side, the table will use all rows provided in the data prop
-    clientPagination?: boolean;
-  },
+  props: TableProps<CatalogTableRow>,
 ) {
-  const { columns, data, options, clientPagination, ...restProps } = props;
-  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
+  const { columns, data, options, ...restProps } = props;
+  const { setLimit, setOffset, limit, totalItems, offset, paginationMode } =
+    useEntityList();
+  const clientPagination = paginationMode === 'none';
 
   const [page, setPage] = React.useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
 
   useEffect(() => {
+    if (clientPagination) {
+      return;
+    }
     if (totalItems && page * limit >= totalItems) {
       setOffset?.(Math.max(0, totalItems - limit));
     } else {
       setOffset?.(Math.max(0, page * limit));
     }
-  }, [setOffset, page, limit, totalItems]);
+  }, [setOffset, page, limit, totalItems, clientPagination]);
 
-  const showPagination =
-    (clientPagination ? data.length : totalItems ?? data.length) > limit;
+  const showPagination = (totalItems ?? data.length) > limit;
 
   return (
     <Table
@@ -62,12 +63,14 @@ export function OffsetPaginatedCatalogTable(
       components={{
         Toolbar: CatalogTableToolbar,
       }}
-      page={clientPagination ? undefined : page}
-      onPageChange={clientPagination ? undefined : newPage => setPage(newPage)}
-      onRowsPerPageChange={
-        clientPagination ? undefined : pageSize => setLimit(pageSize)
-      }
-      totalCount={clientPagination ? undefined : totalItems}
+      {...(clientPagination
+        ? {}
+        : {
+            page,
+            onPageChange: newPage => setPage(newPage),
+            onRowsPerPageChange: pageSize => setLimit(pageSize),
+            totalCount: totalItems,
+          })}
       {...restProps}
     />
   );
