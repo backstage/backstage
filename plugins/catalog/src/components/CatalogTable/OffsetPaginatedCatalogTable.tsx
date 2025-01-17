@@ -67,8 +67,8 @@ export function OffsetPaginatedCatalogTable(
         ? {}
         : {
             page,
-            onPageChange: newPage => setPage(newPage),
-            onRowsPerPageChange: pageSize => setLimit(pageSize),
+            onPageChange: setPage,
+            onRowsPerPageChange: setLimit,
             totalCount: totalItems,
           })}
       {...restProps}
