@@ -426,9 +426,15 @@ export interface Config {
              */
             type: 'azure';
             /**
-             * How many milliseconds before token expiration to refresh the token Defaults to 180,000 (3 minutes)
+             * How early before an access token expires to refresh it with a new one.
+             * Defaults to 5 minutes
+             * Supported formats:
+             * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+             *   library.
+             * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+             * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
              */
-            allowedClockSkewMs?: number;
+            tokenRenewalOffsetTime?: string | HumanDuration;
           }
         | {
             /**

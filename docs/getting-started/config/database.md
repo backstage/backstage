@@ -112,7 +112,9 @@ If you want to host your PostgreSQL server in the cloud with passwordless authen
 
 ### Azure with Entra authentication
 
-Remove `password` from the connection configuration and set `type` to `azure`. Optionally set `allowedClockSkewMs`. Entra authentication uses OAuth access tokens with expiration timestamps. By default, the database connector will get a new token 3 minutes (180,000 ms) before the prior token expires. If your server's clock may differ more than that from Azure, you can set another value here.
+Remove `password` from the connection configuration and set `type` to `azure`.
+
+Optionally set `tokenRenewalOffsetTime`. Entra authentication uses OAuth access tokens with expiration timestamps. By default, the database connector will get a new token 5 minutes before the prior token expires. The value can be a string in the format of '1d', '2 seconds' etc. as supported by the `ms` library or it can be an object with individual units (in plural) as keys, e.g. `{ milliseconds: 2, seconds: 6, minutes: 3 }`.
 
 Entra authentication uses `DefaultAzureCredential` under the hood, so it supports [many credential types](https://learn.microsoft.com/azure/developer/javascript/sdk/authentication/credential-chains#use-defaultazurecredential-for-flexibility).
 
@@ -125,7 +127,7 @@ backend:
     connection:
       # highlight-add-start
       type: azure
-      allowedClockSkewMs: 180000
+      tokenRenewalOffsetTime: 5min
       # highlight-add-end
       host: ${POSTGRES_HOST}
       port: ${POSTGRES_PORT}

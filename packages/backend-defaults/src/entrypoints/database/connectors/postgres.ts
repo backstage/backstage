@@ -15,9 +15,13 @@
  */
 
 import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
-import { Config, ConfigReader } from '@backstage/config';
+import {
+  Config,
+  ConfigReader,
+  readDurationFromConfig,
+} from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import { durationToMilliseconds, JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
@@ -82,7 +86,7 @@ export async function buildPgDatabaseConfig(
   // Trim additional properties from the connection object passed to knex
   delete sanitizedConfig.connection.type;
   delete sanitizedConfig.connection.instance;
-  delete sanitizedConfig.connection.allowedClockSkewMs;
+  delete sanitizedConfig.connection.tokenRenewalOffsetTime;
 
   if (config.connection.type === 'default' || !config.connection.type) {
     return sanitizedConfig;
@@ -132,11 +136,16 @@ export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
 export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
   const { DefaultAzureCredential } = require('@azure/identity');
 
-  // By default get a new token starting three minutes before the old one expires
-  const allowedClockSkewMs =
-    config.connection.allowedClockSkewMs !== undefined
-      ? config.connection.allowedClockSkewMs
-      : 180000;
+  // By default get a new token starting five minutes before the old one expires
+  let tokenRenewalOffsetMs = 300_000;
+  const configReader = new ConfigReader(config);
+  if (configReader.has('connection.tokenRenewalOffsetTime')) {
+    tokenRenewalOffsetMs = durationToMilliseconds(
+      readDurationFromConfig(new ConfigReader(config), {
+        key: 'connection.tokenRenewalOffsetTime',
+      }),
+    );
+  }
 
   async function getConnectionConfig() {
     const credential = new DefaultAzureCredential();
@@ -150,7 +159,7 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
       expirationChecker: () => {
         /* return true if the token is near to or past its expiration. */
         const isExpired =
-          token.expiresOnTimestamp - allowedClockSkewMs <= Date.now();
+          token.expiresOnTimestamp - tokenRenewalOffsetMs <= Date.now();
 
         return isExpired;
       },

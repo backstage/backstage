@@ -199,7 +199,7 @@ describe('postgres', () => {
           client: 'pg',
           connection: {
             type: 'azure',
-            allowedClockSkewMs: 60_000, // 1 minute
+            tokenRenewalOffsetTime: '1 minute',
             user: 'user@contoso.com',
             database: 'other_db',
             port: 5423,
@@ -208,7 +208,7 @@ describe('postgres', () => {
       );
       let connectionResult = await configResult.connection();
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 120_000 });
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 90_000 });
       let expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(false);
 
@@ -216,20 +216,16 @@ describe('postgres', () => {
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 30_000 });
-      expirationResult = await connectionResult.expirationChecker();
-      expect(expirationResult).toBe(true);
-
       jest.useFakeTimers({ now: tokenExpirationTimestamp });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
 
+      // Check the default tokenRenewalOffsetTime of 5 minutes
       configResult = await buildPgDatabaseConfig(
         new ConfigReader({
           client: 'pg',
           connection: {
             type: 'azure',
-            allowedClockSkewMs: 0,
             user: 'user@contoso.com',
             database: 'other_db',
             port: 5423,
@@ -237,9 +233,13 @@ describe('postgres', () => {
         }),
       );
       connectionResult = await configResult.connection();
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 30_000 });
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 450_000 });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 300_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
 
       jest.useFakeTimers({ now: tokenExpirationTimestamp });
       expirationResult = await connectionResult.expirationChecker();
