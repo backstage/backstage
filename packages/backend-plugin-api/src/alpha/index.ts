@@ -40,5 +40,4 @@ export const systemMetadataServiceRef = createServiceRef<
 export type {
   BackstageInstance,
   SystemMetadataService,
-  Target,
 } from './services/definitions/SystemMetadataService';
