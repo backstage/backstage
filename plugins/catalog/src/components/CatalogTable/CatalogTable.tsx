@@ -23,6 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  FavoriteToggleIcon,
   TableColumn,
   TableProps,
   WarningPanel,
@@ -47,7 +48,6 @@ import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
-import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Props for {@link CatalogTable}.
@@ -236,6 +236,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       subtitle={subtitle}
       options={options}
       data={rows}
+      clientPagination={paginationMode === 'none'}
     />
   );
 };
