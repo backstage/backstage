@@ -38,7 +38,7 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
 // @alpha
 export const systemMetadataServiceFactory: ServiceFactory<
   SystemMetadataService,
-  'plugin',
+  'root',
   'singleton'
 >;
 

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-/** @alpha */
-export type Target = string | { internal: string; external: string };
-
 /**
  * @alpha
  */
 export interface BackstageInstance {
-  url: Target;
+  internalUrl: string;
+  externalUrl: string;
 }
 
 /**

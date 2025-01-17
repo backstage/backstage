@@ -43,17 +43,20 @@ export async function createSystemMetadataRouter(options: {
     const featurePromises = await Promise.allSettled(
       instances.map(async instance => {
         const response = await fetch(
-          `${instance.url}/.backstage/instanceMetadata/v1/features/installed`,
+          `${instance.internalUrl}/.backstage/instanceMetadata/v1/features/installed`,
         );
         if (response.ok) {
           return { instance, response: await response.json() };
         }
         throw new Error(
-          `Failed to fetch installed features from ${instance.url}`,
+          `Failed to fetch installed features from ${instance.internalUrl}`,
         );
       }),
     );
-    const pluginByInstance: Record<string, string[]> = {};
+    const pluginByInstance: Record<
+      string,
+      { internalUrl: string; externalUrl: string }[]
+    > = {};
     for (const result of featurePromises) {
       if (result.status !== 'fulfilled') {
         logger.error(`Failed to fetch installed features: ${result.reason}`);
@@ -67,7 +70,7 @@ export async function createSystemMetadataRouter(options: {
           if (!pluginByInstance[feature.pluginId]) {
             pluginByInstance[feature.pluginId] = [];
           }
-          pluginByInstance[feature.pluginId].push(instance.url);
+          pluginByInstance[feature.pluginId].push(instance);
         }
       }
     }

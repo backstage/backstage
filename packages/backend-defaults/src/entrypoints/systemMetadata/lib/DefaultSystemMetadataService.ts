@@ -22,14 +22,49 @@ import {
   BackstageInstance,
   SystemMetadataService,
 } from '@backstage/backend-plugin-api/alpha';
+import z from 'zod';
+
+const targetObjectSchema = z.object({
+  internal: z.string(),
+  external: z.string(),
+});
 
 /**
  * @alpha
  */
 export class DefaultSystemMetadataService implements SystemMetadataService {
+  private instances: BackstageInstance[];
   constructor(
     private options: { logger: LoggerService; config: RootConfigService },
-  ) {}
+  ) {
+    const getInstances = () => {
+      const endpoints =
+        options.config.getOptionalConfigArray('discovery.instances') ?? [];
+      const instances: BackstageInstance[] = [];
+      for (const endpoint of endpoints) {
+        const baseUrl = endpoint.getOptional('baseUrl');
+        if (baseUrl) {
+          if (typeof baseUrl === 'string') {
+            instances.push({ internalUrl: baseUrl, externalUrl: baseUrl });
+          } else {
+            const parseAttempt = targetObjectSchema.safeParse(baseUrl);
+            if (parseAttempt.success) {
+              const { internal, external } = parseAttempt.data;
+              instances.push({
+                internalUrl: internal,
+                externalUrl: external,
+              });
+            }
+          }
+        }
+      }
+      return instances;
+    };
+    this.instances = getInstances();
+    this.options.config.subscribe?.(() => {
+      this.instances = getInstances();
+    });
+  }
 
   public static create(pluginEnv: {
     logger: LoggerService;
@@ -39,15 +74,6 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
   }
 
   async listInstances() {
-    const endpoints =
-      this.options.config.getOptionalConfigArray('discovery.instances') ?? [];
-    const instances: BackstageInstance[] = [];
-    for (const endpoint of endpoints) {
-      const baseUrl = endpoint.getOptionalString('baseUrl');
-      if (baseUrl) {
-        instances.push({ url: baseUrl });
-      }
-    }
-    return instances;
+    return this.instances;
   }
 }
