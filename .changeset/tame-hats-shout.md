@@ -3,4 +3,4 @@
 '@backstage/frontend-app-api': patch
 ---
 
-Added 'getNodesByRoutePath' method to the AppTreeApi.
+Added `getNodesByRoutePath` method to the `AppTreeApi`.
