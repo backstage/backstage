@@ -30,8 +30,6 @@ backend.add(
 );
 backend.add(import('@backstage/plugin-permission-backend'));
 
-backend.add(import('./experimental/instanceMetadata'));
-backend.add(import('./experimental/systemMetadata'));
 backend.add(systemMetadataServiceFactory);
 
 backend.start();
