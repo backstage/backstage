@@ -67,12 +67,3 @@ spec:
         link: ${{ parameters.link }}
         severity: ${{ parameters.severity }}
         scope: ${{ parameters.scope }}
-
-  output:
-    text:
-      - title: Your next steps
-        showButton: false
-        content: >
-          # Success!
-          
-          Text
