@@ -43,6 +43,7 @@ export const systemMetadataServiceRef = createServiceRef<
   import('./services/definitions/SystemMetadataService').SystemMetadataService
 >({
   id: 'core.systemMetadata',
+  scope: 'root',
 });
 
 export type {

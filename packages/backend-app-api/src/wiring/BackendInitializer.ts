@@ -44,6 +44,7 @@ import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
+import Router from 'express-promise-router';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -149,8 +150,31 @@ function createInstanceMetadataServiceFactory(
     .flat();
   return createServiceFactory({
     service: instanceMetadataServiceRef,
-    deps: {},
-    factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
+    deps: {
+      httpRouter: coreServices.rootHttpRouter,
+      logger: coreServices.rootLogger,
+    },
+    factory: async ({ logger, httpRouter }) => {
+      const instanceMetadata = {
+        getInstalledFeatures: () => installedFeatures,
+      };
+
+      logger.info(
+        `Installed features on this instance: ${instanceMetadata
+          .getInstalledFeatures()
+          .join(', ')}`,
+      );
+
+      const router = Router();
+
+      router.get('/features/installed', (_, res) => {
+        res.json({ items: instanceMetadata.getInstalledFeatures() });
+      });
+
+      httpRouter.use('/.backstage/instanceMetadata/v1', router);
+
+      return instanceMetadata;
+    },
   });
 }
 

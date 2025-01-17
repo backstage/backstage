@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultSystemMetadataService } from './lib/DefaultSystemMetadataService';
 import { systemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { createSystemMetadataRouter } from './lib/createSystemMetadataRouter';
 
 /**
  * Metadata about an entire Backstage system, a collection of Backstage instances.
@@ -29,13 +30,19 @@ import { systemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 export const systemMetadataServiceFactory = createServiceFactory({
   service: systemMetadataServiceRef,
   deps: {
-    logger: coreServices.logger,
+    logger: coreServices.rootLogger,
     config: coreServices.rootConfig,
+    httpRouter: coreServices.rootHttpRouter,
   },
-  async factory({ logger, config }) {
-    return DefaultSystemMetadataService.create({
+  async factory({ logger, config, httpRouter }) {
+    const systemMetadata = DefaultSystemMetadataService.create({
       logger,
       config,
     });
+
+    const router = await createSystemMetadataRouter({ systemMetadata, logger });
+
+    httpRouter.use('/.backstage/systemMetadata/v1', router);
+    return systemMetadata;
   },
 });
