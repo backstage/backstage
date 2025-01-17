@@ -25,9 +25,12 @@ import { CatalogTableToolbar } from './CatalogTableToolbar';
  * @internal
  */
 export function OffsetPaginatedCatalogTable(
-  props: TableProps<CatalogTableRow>,
+  props: TableProps<CatalogTableRow> & {
+    // If true, the pagination will be handled client side, the table will use all rows provided in the data prop
+    clientPagination?: boolean;
+  },
 ) {
-  const { columns, data, options, ...restProps } = props;
+  const { columns, data, options, clientPagination, ...restProps } = props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
   const [page, setPage] = React.useState(
@@ -42,7 +45,8 @@ export function OffsetPaginatedCatalogTable(
     }
   }, [setOffset, page, limit, totalItems]);
 
-  const showPagination = (totalItems ?? data.length) > limit;
+  const showPagination =
+    (clientPagination ? data.length : totalItems ?? data.length) > limit;
 
   return (
     <Table
@@ -58,14 +62,12 @@ export function OffsetPaginatedCatalogTable(
       components={{
         Toolbar: CatalogTableToolbar,
       }}
-      page={page}
-      onPageChange={newPage => {
-        setPage(newPage);
-      }}
-      onRowsPerPageChange={pageSize => {
-        setLimit(pageSize);
-      }}
-      totalCount={totalItems}
+      page={clientPagination ? undefined : page}
+      onPageChange={clientPagination ? undefined : newPage => setPage(newPage)}
+      onRowsPerPageChange={
+        clientPagination ? undefined : pageSize => setLimit(pageSize)
+      }
+      totalCount={clientPagination ? undefined : totalItems}
       {...restProps}
     />
   );
