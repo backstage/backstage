@@ -23,8 +23,12 @@ export const currentToDeclaredResourceToPerc = (
     return Math.round((current / resource) * 100);
   }
 
-  const numerator: bigint = BigInt(current);
-  const denominator: bigint = BigInt(resource);
+  const numerator: bigint = BigInt(
+    typeof current === 'number' ? Math.round(current) : Number(current),
+  );
+  const denominator: bigint = BigInt(
+    typeof resource === 'number' ? Math.round(resource) : Number(resource),
+  );
 
   return Number((numerator * BigInt(100)) / denominator);
 };
