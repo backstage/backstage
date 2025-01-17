@@ -6,4 +6,6 @@ discovery:
       plugins: [catalog]
   instances:
     - baseUrl: http://localhost:7007
-    - baseUrl: http://localhost:7008
+    - baseUrl:
+        internal: http://localhost:7008
+        external: http://127.0.0.1:7008
