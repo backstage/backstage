@@ -27,12 +27,9 @@ import {
  * @alpha
  */
 export class DefaultSystemMetadataService implements SystemMetadataService {
-  private readonly logger: LoggerService;
-  private readonly config: RootConfigService;
-  constructor(options: { logger: LoggerService; config: RootConfigService }) {
-    this.logger = options.logger;
-    this.config = options.config;
-  }
+  constructor(
+    private options: { logger: LoggerService; config: RootConfigService },
+  ) {}
 
   public static create(pluginEnv: {
     logger: LoggerService;
@@ -41,24 +38,16 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
     return new DefaultSystemMetadataService(pluginEnv);
   }
 
-  listInstances() {
+  async listInstances() {
     const endpoints =
-      this.config.getOptionalConfigArray('discovery.instances') ?? [];
+      this.options.config.getOptionalConfigArray('discovery.instances') ?? [];
     const instances: BackstageInstance[] = [];
     for (const endpoint of endpoints) {
       const baseUrl = endpoint.getOptionalString('baseUrl');
       if (baseUrl) {
-        this.logger.info(`Found instance at ${baseUrl}`);
         instances.push({ url: baseUrl });
-      } else {
-        this.logger.warn(
-          `Instance ${endpoint.get(
-            'target',
-          )} is missing a 'baseUrl' property. This is required for the system metadata service.`,
-        );
       }
     }
-    this.logger.info(`Found ${instances.length} instances.`);
-    return Promise.resolve(instances);
+    return instances;
   }
 }
