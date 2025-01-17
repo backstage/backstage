@@ -10209,13 +10209,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:^1.10.9, @grpc/grpc-js@npm:^1.7.1":
-  version: 1.10.10
-  resolution: "@grpc/grpc-js@npm:1.10.10"
+"@grpc/grpc-js@npm:^1.10.9, @grpc/grpc-js@npm:^1.11.1, @grpc/grpc-js@npm:^1.7.1":
+  version: 1.12.5
+  resolution: "@grpc/grpc-js@npm:1.12.5"
   dependencies:
     "@grpc/proto-loader": ^0.7.13
     "@js-sdsl/ordered-map": ^4.4.2
-  checksum: e48274ab6e377031a2314197d33416c3261abf9601638ba05d8ae523e6e28338f97f852efdf9f9f763e49056812c83d3719cdf5913881d46cfca837dea2ab23c
+  checksum: 415bad10412b713f1f4094e6af3d2067d03794540fecc16cd3cdcd6079e4a632178da25485dfef9a07add8bf498cfccf1a54f8184d671eb256932c47cfe7f785
   languageName: node
   linkType: hard
 
@@ -26706,15 +26706,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"docker-modem@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "docker-modem@npm:5.0.3"
+"docker-modem@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "docker-modem@npm:5.0.6"
   dependencies:
     debug: ^4.1.1
     readable-stream: ^3.5.0
     split-ca: ^1.0.1
     ssh2: ^1.15.0
-  checksum: 68f4948591622860ca95c10a01cae7f53ff2b2e8435b73b901698083b24ceb24208da12c1db2c47f073d48bc2f64a274cbf30e3c73979734f6fb3fbdf5bdb72e
+  checksum: 111b69a99b5eff10cc2a67b08c0de08bbd3ad7e351419a0b9716a72c23febca50f5cff03a93347f8c0386d7687af097b0a5bb9c33fbeab76e90b70068d1d5c49
   languageName: node
   linkType: hard
 
@@ -26730,13 +26730,17 @@ __metadata:
   linkType: hard
 
 "dockerode@npm:^4.0.0":
-  version: 4.0.2
-  resolution: "dockerode@npm:4.0.2"
+  version: 4.0.4
+  resolution: "dockerode@npm:4.0.4"
   dependencies:
     "@balena/dockerignore": ^1.0.2
-    docker-modem: ^5.0.3
+    "@grpc/grpc-js": ^1.11.1
+    "@grpc/proto-loader": ^0.7.13
+    docker-modem: ^5.0.6
+    protobufjs: ^7.3.2
     tar-fs: ~2.0.1
-  checksum: 4d36633d04ac5f662b0322d2fa4fe51fb1dd5a45f00b07379196ee5ff5dae13688a9ec1adf1edeaefab5eb22f3ae2219f62026241555a8bcf7edb396bbb5a92f
+    uuid: ^10.0.0
+  checksum: 317d45d971640c507cdb22d92043affbf2966abc38b05de1752e61f4dca76c317f8fa82c882ca5d56576bd72bd77270c8108cd00343867917cad203f06172435
   languageName: node
   linkType: hard
 
@@ -46260,6 +46264,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "uuid@npm:10.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 4b81611ade2885d2313ddd8dc865d93d8dccc13ddf901745edca8f86d99bc46d7a330d678e7532e7ebf93ce616679fb19b2e3568873ac0c14c999032acb25869
   languageName: node
   linkType: hard
 
