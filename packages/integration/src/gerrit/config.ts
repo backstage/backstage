@@ -45,6 +45,11 @@ export type GerritIntegrationConfig = {
   cloneUrl?: string;
 
   /**
+   * Activate the edit url feature available since Gerrit 3.9
+   */
+  enableEditUrl?: boolean;
+
+  /**
    * Base url for Gitiles. This is needed for creating a valid
    * user-friendly url that can be used for browsing the content of the
    * provider.
@@ -75,6 +80,7 @@ export function readGerritIntegrationConfig(
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
   let cloneUrl = config.getOptionalString('cloneUrl');
+  const enableEditUrl = config.getOptionalBoolean('enableEditUrl');
   let gitilesBaseUrl = config.getString('gitilesBaseUrl');
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password')?.trim();
@@ -101,21 +107,19 @@ export function readGerritIntegrationConfig(
   } else {
     baseUrl = `https://${host}`;
   }
-  if (gitilesBaseUrl) {
-    gitilesBaseUrl = trimEnd(gitilesBaseUrl, '/');
-  } else {
-    gitilesBaseUrl = `https://${host}`;
-  }
   if (cloneUrl) {
     cloneUrl = trimEnd(cloneUrl, '/');
   } else {
     cloneUrl = baseUrl;
   }
 
+  gitilesBaseUrl = trimEnd(gitilesBaseUrl, '/');
+
   return {
     host,
     baseUrl,
     cloneUrl,
+    enableEditUrl,
     gitilesBaseUrl,
     username,
     password,

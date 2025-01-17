@@ -57,6 +57,7 @@ describe('readGerritIntegrationConfig', () => {
         host: 'a.com',
         baseUrl: 'https://a.com/api',
         cloneUrl: 'https:a.com/clone',
+        enableEditUrl: false,
         gitilesBaseUrl: 'https://a.com/git',
         username: 'u',
         password: '     p      ',
@@ -66,9 +67,29 @@ describe('readGerritIntegrationConfig', () => {
       host: 'a.com',
       baseUrl: 'https://a.com/api',
       cloneUrl: 'https:a.com/clone',
+      enableEditUrl: false,
       gitilesBaseUrl: 'https://a.com/git',
       username: 'u',
       password: 'p',
+    });
+  });
+
+  it('activate Edit Url', () => {
+    const output = readGerritIntegrationConfig(
+      buildConfig({
+        host: 'a.com',
+        enableEditUrl: true,
+        gitilesBaseUrl: 'https://a.com/gerrit/plugins/gitiles',
+      }),
+    );
+    expect(output).toEqual({
+      host: 'a.com',
+      baseUrl: 'https://a.com',
+      cloneUrl: 'https://a.com',
+      enableEditUrl: true,
+      gitilesBaseUrl: 'https://a.com/gerrit/plugins/gitiles',
+      username: undefined,
+      password: undefined,
     });
   });
 
@@ -156,6 +177,7 @@ describe('readGerritIntegrationConfigs', () => {
         host: 'b.com',
         baseUrl: 'https://b.com/api',
         cloneUrl: 'https://b.com/api',
+        enableEditUrl: undefined,
         gitilesBaseUrl: 'https://b.com/gerrit/plugins/gitiles',
         username: undefined,
         password: undefined,
