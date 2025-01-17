@@ -1,0 +1,9 @@
+---
+title: Azure Resource
+author: Anurag pachauri
+authorUrl: https://github.com/anuragpachauri
+category: Infrastructure
+description: A plugin showing Azure resource based on tag and values provided
+documentation: https://github.com/anuragpachauri/azure-resource
+npmPackageName: "@anuragpachauri/azure-resource"
+addedDate: "2025-01-17"
