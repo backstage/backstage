@@ -37,14 +37,14 @@ export function OffsetPaginatedCatalogTable(
   );
 
   useEffect(() => {
-    if (clientPagination) {
+    if (clientPagination || !setOffset) {
       return;
     }
-    if (totalItems && page * limit >= totalItems) {
-      setOffset?.(Math.max(0, totalItems - limit));
-    } else {
-      setOffset?.(Math.max(0, page * limit));
+    let newOffset = page * limit;
+    if (totalItems && newOffset >= totalItems) {
+      newOffset = totalItems - limit;
     }
+    setOffset(Math.max(0, newOffset));
   }, [setOffset, page, limit, totalItems, clientPagination]);
 
   const showPagination = (totalItems ?? data.length) > limit;
