@@ -130,8 +130,8 @@ class AppTreeApiProxy implements AppTreeApi {
 
     const matchedAppNodes =
       matchedRoutes
-        ?.map(routeObj => routeObj.route.appNode)
-        .filter(appNode => !!appNode) || [];
+        ?.filter(routeObj => !!routeObj.route.appNode)
+        .map(routeObj => routeObj.route.appNode!) || [];
 
     return { nodes: matchedAppNodes };
   }
