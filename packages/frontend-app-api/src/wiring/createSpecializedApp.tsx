@@ -122,16 +122,16 @@ class AppTreeApiProxy implements AppTreeApi {
     this.checkIfInitialized();
 
     let path = sourcePath;
-    if (sourcePath.startsWith(this.appBasePath)) {
-      path = sourcePath.slice(this.appBasePath.length);
+    if (path.startsWith(this.appBasePath)) {
+      path = path.slice(this.appBasePath.length);
     }
 
     const matchedRoutes = matchRoutes(this.#routeInfo!.routeObjects, path);
 
     const matchedAppNodes =
       matchedRoutes
-        ?.filter(routeObj => !!routeObj.route.appNode)
-        .map(routeObj => routeObj.route.appNode!) || [];
+        ?.map(routeObj => routeObj.route.appNode)
+        .filter(appNode => !!appNode) || [];
 
     return { nodes: matchedAppNodes };
   }
