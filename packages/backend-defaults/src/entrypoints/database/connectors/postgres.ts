@@ -21,7 +21,11 @@ import {
   readDurationFromConfig,
 } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
-import { durationToMilliseconds, JsonObject } from '@backstage/types';
+import {
+  durationToMilliseconds,
+  HumanDuration,
+  JsonObject,
+} from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
@@ -31,6 +35,7 @@ import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
+import { AccessToken, TokenCredential } from '@azure/identity';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -86,7 +91,7 @@ export async function buildPgDatabaseConfig(
   // Trim additional properties from the connection object passed to knex
   delete sanitizedConfig.connection.type;
   delete sanitizedConfig.connection.instance;
-  delete sanitizedConfig.connection.tokenRenewalOffsetTime;
+  delete sanitizedConfig.connection.tokenCredential;
 
   if (config.connection.type === 'default' || !config.connection.type) {
     return sanitizedConfig;
@@ -133,25 +138,98 @@ export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
   };
 }
 
+export type AzureTokenCredentialConfig = {
+  /**
+   * How early before an access token expires to refresh it with a new one.
+   * Defaults to 5 minutes
+   * Supported formats:
+   * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+   *   library.
+   * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+   * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+   */
+  tokenRenewalOffsetTime?: string | HumanDuration;
+} & (
+  | {
+      type: 'ClientSecretCredential';
+      clientId: string;
+      clientSecret: string;
+      tenantId: string;
+    }
+  | {
+      type: 'ManagedIdentityCredential';
+      /**
+       * The client ID of a user-assigned managed identity.
+       * If not provided, the system-assigned managed identity is used.
+       */
+      clientId?: string;
+    }
+  | {
+      type: undefined | 'DefaultAzureCredential';
+    }
+);
+
 export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
-  const { DefaultAzureCredential } = require('@azure/identity');
+  const {
+    DefaultAzureCredential,
+    ManagedIdentityCredential,
+    ClientSecretCredential,
+  } = require('@azure/identity');
 
   // By default get a new token starting five minutes before the old one expires
   let tokenRenewalOffsetMs = 300_000;
   const configReader = new ConfigReader(config);
-  if (configReader.has('connection.tokenRenewalOffsetTime')) {
+  if (configReader.has('connection.tokenCredential.tokenRenewalOffsetTime')) {
     tokenRenewalOffsetMs = durationToMilliseconds(
       readDurationFromConfig(new ConfigReader(config), {
-        key: 'connection.tokenRenewalOffsetTime',
+        key: 'connection.tokenCredential.tokenRenewalOffsetTime',
       }),
     );
   }
 
+  let credential: TokenCredential;
+  if (configReader.has('connection.tokenCredential')) {
+    const tokenCredentialConfig = configReader.get(
+      'connection.tokenCredential',
+    ) as AzureTokenCredentialConfig;
+    switch (tokenCredentialConfig.type) {
+      case 'ManagedIdentityCredential':
+        if (tokenCredentialConfig.clientId) {
+          // Use user-assigned managed identity
+          credential = new ManagedIdentityCredential(
+            tokenCredentialConfig.clientId,
+          );
+        } else {
+          // Use system-assigned managed identity
+          credential = new ManagedIdentityCredential();
+        }
+        break;
+      case 'ClientSecretCredential':
+        credential = new ClientSecretCredential(
+          tokenCredentialConfig.tenantId,
+          tokenCredentialConfig.clientId,
+          tokenCredentialConfig.clientSecret,
+        );
+        break;
+      case 'DefaultAzureCredential':
+      case undefined:
+        credential = new DefaultAzureCredential();
+        break;
+      default:
+        throw new Error(
+          `Unknown token credential type: ${
+            (tokenCredentialConfig as any).type
+          }`,
+        );
+    }
+  } else {
+    credential = new DefaultAzureCredential();
+  }
+
   async function getConnectionConfig() {
-    const credential = new DefaultAzureCredential();
-    const token = await credential.getToken(
+    const token = (await credential.getToken(
       'https://ossrdbms-aad.database.windows.net',
-    );
+    )) as AccessToken; // This cast is safe since we know all of our TokenCredential implementations return this type.
 
     const connectionConfig = {
       ...sanitizedConfig.connection,

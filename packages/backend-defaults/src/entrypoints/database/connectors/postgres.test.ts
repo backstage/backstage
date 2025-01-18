@@ -199,7 +199,9 @@ describe('postgres', () => {
           client: 'pg',
           connection: {
             type: 'azure',
-            tokenRenewalOffsetTime: '1 minute',
+            tokenCredential: {
+              tokenRenewalOffsetTime: '1 minute',
+            },
             user: 'user@contoso.com',
             database: 'other_db',
             port: 5423,

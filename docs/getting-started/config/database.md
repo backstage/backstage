@@ -114,9 +114,16 @@ If you want to host your PostgreSQL server in the cloud with passwordless authen
 
 Remove `password` from the connection configuration and set `type` to `azure`.
 
-Optionally set `tokenRenewalOffsetTime`. Entra authentication uses OAuth access tokens with expiration timestamps. By default, the database connector will get a new token 5 minutes before the prior token expires. The value can be a string in the format of '1d', '2 seconds' etc. as supported by the `ms` library or it can be an object with individual units (in plural) as keys, e.g. `{ milliseconds: 2, seconds: 6, minutes: 3 }`.
+Optionally set `tokenCredential` with the following properties. Defaults to `type: 'DefaultAzureCredential', tokenRenewalOffsetTime: 5 minutes` if not specified.
 
-Entra authentication uses `DefaultAzureCredential` under the hood, so it supports [many credential types](https://learn.microsoft.com/azure/developer/javascript/sdk/authentication/credential-chains#use-defaultazurecredential-for-flexibility).
+- Optionally set `type` to `DefaultAzureCredential`, `ClientSecretCredential`, or `ManagedIdentityCredential`.
+  - For `ClientSecretCredential`, also set `tenantId`, `clientId`, and `clientSecret`.
+  - For `ManagedIdentityCredential`, it will use the system-assigned managed identity by default. To use a user-assigned managed identity, set the `clientId` property.
+- Optionally set `tokenRenewalOffsetTime`. The value can be a string in the format of '1d', '2 seconds' etc. as supported by the `ms` library or it can be an object with individual units (in plural) as keys, e.g. `{ milliseconds: 2, seconds: 6, minutes: 3 }`.
+
+Entra authentication uses OAuth access tokens with expiration timestamps. By default, the database connector will get a new token 5 minutes before the prior token expires.
+
+Using `DefaultAzureCredential` by default supports [many credential types](https://learn.microsoft.com/azure/developer/javascript/sdk/authentication/credential-chains#use-defaultazurecredential-for-flexibility), choosing one based on the runtime environment.
 
 Set `user` to the display name of your Entra ID group, service principal, or managed identity. Set it to the user principal name if you're authenticating with a user's credentials.
 
@@ -127,7 +134,9 @@ backend:
     connection:
       # highlight-add-start
       type: azure
-      tokenRenewalOffsetTime: 5min
+      tokenCredential:
+        tokenRenewalOffsetTime: 5 minutes
+        type: DefaultAzureCredential
       # highlight-add-end
       host: ${POSTGRES_HOST}
       port: ${POSTGRES_PORT}
