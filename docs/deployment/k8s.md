@@ -537,3 +537,71 @@ For production purposes, this image tag will generally be a full-fledged URL
 pointing to a container registry where built Docker images are hosted. This can
 be hosted internally in your infrastructure, or a managed one offered by a cloud
 provider.
+
+### Backstage [RBAC Policy](https://github.com/backstage/community-plugins/blob/main/workspaces/rbac/plugins/rbac-backend/docs/permissions.md) using configmap
+
+This setup allows you to configure a ConfigMap will store the policy that Backstage will use. This policy will be mounted into the Backstage deployment, and the app-config.yaml will be configured to read the policy from the mounted path.
+
+1. Create a ConfigMap with Policy
+
+Example: Create a file called policy-configmap.yaml:
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-policy-config
+  namespace: backstage
+data:
+  policy.csv: |
+  p, role:default/guests, scaffolder-template, read, allow
+  g, group:default/guests, role:default/guests
+```
+
+Apply the ConfigMap to your Kubernetes cluster:
+
+```
+kubectl apply -f policy-configmap.yaml
+```
+
+2. Deploy Backstage with ConfigMap Mount
+   Next, deploy Backstage and mount the ConfigMap that contains the policy into the Backstage deployment.
+
+Example: Create a file called backstage-deployment.yaml:
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+  namespace: backstage
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: backstage
+    spec:
+      containers:
+        - name: backstage
+          image: backstage:latest
+          volumeMounts:
+            - name: policy-volume
+              mountPath: /etc/backstage/policy
+      volumes:
+        - name: policy-volume
+          configMap:
+            name: backstage-policy-config
+```
+
+3. Update app-config.yaml to Read the Policy
+
+```
+permission:
+  # setting this to `false` will disable permissions
+  enabled: true
+  rbac:
+    policies-csv-file: /etc/backstage/policy/policy.csv
+    policyFileReload: true # allows for the reloading of the CSV file without the need to restart
+
+```
