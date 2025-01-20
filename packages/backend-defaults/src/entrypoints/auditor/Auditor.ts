@@ -52,7 +52,7 @@ export type AuditorEventStatus =
   | { status: 'succeeded' }
   | {
       status: 'failed';
-      error: Error;
+      error: string;
     };
 
 /**
@@ -85,6 +85,7 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
 export type AuditorEvent = [
   eventId: string,
   meta: {
+    plugin: string;
     severityLevel: AuditorServiceEventSeverityLevel;
     actor: AuditorEventActorDetails;
     meta?: JsonObject;
@@ -164,31 +165,18 @@ export class DefaultAuditorService implements AuditorService {
 
     return {
       success: async params => {
-        // return undefined if both objects are empty; otherwise, merge the objects
-        const meta =
-          Object.keys(options.meta ?? {}).length === 0 &&
-          Object.keys(params?.meta ?? {}).length === 0
-            ? undefined
-            : { ...options.meta, ...params?.meta };
-
         await this.log({
           ...options,
-          meta,
+          meta: { ...options.meta, ...params?.meta },
           status: 'succeeded',
         });
       },
       fail: async params => {
-        // return undefined if both objects are empty; otherwise, merge the objects
-        const meta =
-          Object.keys(options.meta ?? {}).length === 0 &&
-          Object.keys(params.meta ?? {}).length === 0
-            ? undefined
-            : { ...options.meta, ...params.meta };
-
         await this.log({
           ...options,
           ...params,
-          meta,
+          error: params.error.toString(),
+          meta: { ...options.meta, ...params?.meta },
           status: 'failed',
         });
       },
@@ -223,11 +211,12 @@ export class DefaultAuditorService implements AuditorService {
   private async reshapeAuditorEvent<T extends JsonObject>(
     options: AuditorEventOptions<T>,
   ): Promise<AuditorEvent> {
-    const { eventId, severityLevel = 'low', request, ...rest } = options;
+    const { eventId, severityLevel = 'low', request, meta, ...rest } = options;
 
     const auditEvent: AuditorEvent = [
       `${this.plugin.getId()}.${eventId}`,
       {
+        plugin: this.plugin.getId(),
         severityLevel,
         actor: {
           actorId: await this.getActorId(request),
@@ -241,6 +230,7 @@ export class DefaultAuditorService implements AuditorService {
               method: request?.method,
             }
           : undefined,
+        meta: Object.keys(meta ?? {}).length === 0 ? undefined : meta,
         ...rest,
       },
     ];
@@ -304,18 +294,7 @@ export class DefaultRootAuditorService {
   }
 
   async log(auditorEvent: AuditorEvent): Promise<void> {
-    const [eventId, meta] = auditorEvent;
-
-    // change `error` type to a string for logging purposes
-    let fields: Omit<AuditorEvent[1], 'error'> & { error?: string };
-
-    if ('error' in meta) {
-      fields = { ...meta, error: meta.error.toString() };
-    } else {
-      fields = meta;
-    }
-
-    this.impl.info(eventId, fields);
+    this.impl.info(...auditorEvent);
   }
 
   forPlugin(deps: {

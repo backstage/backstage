@@ -21,6 +21,7 @@ import * as winston from 'winston';
 export type AuditorEvent = [
   eventId: string,
   meta: {
+    plugin: string;
     severityLevel: AuditorServiceEventSeverityLevel;
     actor: AuditorEventActorDetails;
     meta?: JsonObject;
@@ -60,7 +61,7 @@ export type AuditorEventStatus =
     }
   | {
       status: 'failed';
-      error: Error;
+      error: string;
     };
 
 // @public

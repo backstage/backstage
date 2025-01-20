@@ -28,7 +28,6 @@ import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLif
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import {
-  AuditorService,
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
@@ -50,12 +49,12 @@ import {
 } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
-import { MockRootAuditorService } from './MockAuditorService';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 
 /** @internal */
 function createLoggerMock() {
@@ -223,56 +222,8 @@ export namespace mockServices {
     }));
   }
 
-  /**
-   * Creates a mock implementation of the `AuditorService`.
-   */
-  export function auditor(options?: { pluginId?: string }): AuditorService {
-    const pluginId = options?.pluginId ?? 'test';
-    const mockAuth = new MockAuthService({
-      pluginId,
-      disableDefaultAuthPolicy: false,
-    });
-    const mockHttpAuth = new MockHttpAuthService(
-      pluginId,
-      mockCredentials.user(),
-    );
-
-    const mockPlugin = {
-      getId: () => pluginId,
-    };
-
-    const auditorMock = MockRootAuditorService.create();
-
-    return auditorMock.forPlugin({
-      auth: mockAuth,
-      httpAuth: mockHttpAuth,
-      plugin: mockPlugin,
-    });
-  }
-
   export namespace auditor {
-    export const factory = () =>
-      createServiceFactory({
-        service: coreServices.auditor,
-        deps: {
-          auth: coreServices.auth,
-          httpAuth: coreServices.httpAuth,
-          plugin: coreServices.pluginMetadata,
-        },
-        createRootContext() {
-          return MockRootAuditorService.create();
-        },
-        factory(
-          { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },
-          rootAuditor,
-        ) {
-          return rootAuditor.forPlugin({
-            auth: mockAuth,
-            httpAuth: mockHttpAuth,
-            plugin: mockPlugin,
-          });
-        },
-      });
+    export const factory = () => auditorServiceFactory;
 
     export const mock = simpleMock(coreServices.auditor, () => ({
       createEvent: jest.fn(async _ => {

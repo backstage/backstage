@@ -154,7 +154,6 @@ export function mockErrorHandler(): ErrorRequestHandler<
 
 // @public
 export namespace mockServices {
-  export function auditor(options?: { pluginId?: string }): AuditorService;
   // (undocumented)
   export namespace auditor {
     const // (undocumented)

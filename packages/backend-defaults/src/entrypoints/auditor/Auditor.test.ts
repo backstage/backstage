@@ -80,6 +80,7 @@ describe('Auditor', () => {
     expect(auditorSpy).toHaveBeenCalledTimes(2);
     expect(auditorSpy).toHaveBeenLastCalledWith({
       eventId: 'test-event',
+      meta: {},
       status: 'succeeded',
     });
   });
@@ -107,8 +108,9 @@ describe('Auditor', () => {
     expect(auditorSpy).toHaveBeenCalledTimes(2);
     expect(auditorSpy).toHaveBeenLastCalledWith({
       eventId: 'test-event',
+      meta: {},
       status: 'failed',
-      error,
+      error: error.toString(),
     });
   });
 
@@ -160,7 +162,7 @@ describe('Auditor', () => {
         initiated: 'test',
         failed: 'test',
       },
-      error,
+      error: error.toString(),
     });
   });
 });
