@@ -92,6 +92,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^",
+    "@backstage/plugin-techdocs-node": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

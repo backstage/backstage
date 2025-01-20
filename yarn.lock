@@ -8575,6 +8575,7 @@ __metadata:
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-techdocs-common": "workspace:^"
     "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
+    "@backstage/plugin-techdocs-node": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
