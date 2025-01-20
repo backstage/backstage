@@ -16,8 +16,13 @@
 import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import { useState } from 'react';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 
 type FacetsCursor = {
   start: number;
@@ -41,40 +46,63 @@ type FacetsInitialRequest = {
  * hook, which is also used by EntityOwnerPicker.
  * In this mode, the EntityOwnerPicker won't show detailed information of the owners.
  */
-export function useFacetsEntities({ enabled }: { enabled: boolean }) {
+export function useFacetsEntities({
+  enabled,
+  selectedEntityKind,
+}: {
+  enabled: boolean;
+  selectedEntityKind?: string;
+}) {
   const catalogApi = useApi(catalogApiRef);
+  const [facetsPromise, setFacetsPromise] = useState<Promise<Entity[]>>(
+    Promise.resolve([]),
+  );
 
-  const [facetsPromise] = useState(async () => {
-    if (!enabled) {
+  const fetchFacetsEntities = useCallback(async (): Promise<Entity[]> => {
+    try {
+      const filter: EntityFilterQuery | undefined = selectedEntityKind
+        ? { kind: [selectedEntityKind] }
+        : undefined;
+      const filteredEntities = await catalogApi.getEntities({ filter });
+      const ownerRefs = filteredEntities.items
+        .map(entity => entity.relations?.find(rel => rel.type === 'ownedBy'))
+        .filter(Boolean)
+        .map(relation => {
+          const { kind, namespace, name } = parseEntityRef(relation!.targetRef);
+          return stringifyEntityRef({ kind, namespace, name });
+        });
+
+      if (ownerRefs.length === 0) {
+        return [];
+      }
+
+      const facetResponse = await catalogApi.getEntityFacets({
+        facets: ['relations.ownedBy'],
+      });
+
+      return facetResponse.facets['relations.ownedBy']
+        .map(e => e.value)
+        .map(ref => {
+          const { kind, name, namespace } = parseEntityRef(ref);
+          return {
+            apiVersion: 'backstage.io/v1beta1',
+            kind,
+            metadata: { name, namespace },
+          };
+        });
+    } catch (error) {
       return [];
     }
-    const facet = 'relations.ownedBy';
+  }, [catalogApi, selectedEntityKind]);
 
-    return catalogApi
-      .getEntityFacets({ facets: [facet] })
-      .then(response =>
-        response.facets[facet]
-          .map(e => e.value)
-          .map(ref => {
-            const { kind, name, namespace } = parseEntityRef(ref);
-            return {
-              apiVersion: 'backstage.io/v1beta1',
-              kind,
-              metadata: { name, namespace },
-            };
-          })
-          .sort(
-            (a, b) =>
-              a.kind.localeCompare(b.kind, 'en-US') ||
-              a.metadata.namespace.localeCompare(
-                b.metadata.namespace,
-                'en-US',
-              ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
-          ),
-      )
-      .catch(() => []);
-  });
+  useEffect(() => {
+    if (!enabled) {
+      setFacetsPromise(Promise.resolve([]));
+      return;
+    }
+
+    setFacetsPromise(fetchFacetsEntities());
+  }, [enabled, fetchFacetsEntities]);
 
   return useAsyncFn<
     (

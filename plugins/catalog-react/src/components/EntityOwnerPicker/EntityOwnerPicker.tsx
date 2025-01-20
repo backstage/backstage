@@ -28,7 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityList } from '../../hooks/useEntityListProvider';
+import { useEntityList } from '../../hooks';
 import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
 import PersonIcon from '@material-ui/icons/Person';
@@ -145,10 +145,13 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   const [{ value, loading }, handleFetch, cache] = useFetchEntities({
     mode,
     initialSelectedOwnersRefs: selectedOwners,
+    selectedEntityKind: filters.kind?.value,
   });
   useDebouncedEffect(() => handleFetch({ text }), [text, handleFetch], 250);
 
-  const availableOwners = value?.items || [];
+  const availableOwners = useMemo(() => {
+    return value?.items || [];
+  }, [value]);
 
   // Set selected owners on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
@@ -166,6 +169,12 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         : undefined,
     });
   }, [selectedOwners, updateFilters]);
+
+  // useEffect(() => {
+  //   if (availableOwners.length === 0) {
+  //     setSelectedOwners([]);
+  //   }
+  // }, [availableOwners]);
 
   if (
     ['user', 'group'].includes(

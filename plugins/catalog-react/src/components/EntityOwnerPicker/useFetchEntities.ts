@@ -25,14 +25,17 @@ import { useMountEffect } from '@react-hookz/web';
 export function useFetchEntities({
   mode,
   initialSelectedOwnersRefs,
+  selectedEntityKind,
 }: {
   mode: 'owners-only' | 'all';
   initialSelectedOwnersRefs: string[];
+  selectedEntityKind?: string;
 }) {
   const isOwnersOnlyMode = mode === 'owners-only';
   const queryEntitiesResponse = useQueryEntities();
   const facetsEntitiesResponse = useFacetsEntities({
     enabled: isOwnersOnlyMode,
+    selectedEntityKind,
   });
 
   const [state, handleFetch] = isOwnersOnlyMode
