@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.10.3
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.10
+
 ## 1.10.3-next.0
 
 ### Patch Changes

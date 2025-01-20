@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder
 
+## 1.27.4
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- 4756287: Added support for `FormDecoratorBlueprint` to create form decorators in the Scaffolder plugin
+- 3f09ef4: Fix issue with `secrets` not being forwarded properly to the backend when creating a task
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/plugin-scaffolder-react@1.14.3
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/integration@1.16.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.3
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.30
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.27.4-next.2
 
 ### Patch Changes

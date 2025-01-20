@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.20
+
+### Patch Changes
+
+- b664b2a: Internal refactor for safer handling of possible null value.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.3
+  - @backstage/plugin-techdocs-react@1.2.13
+
 ## 1.1.20-next.1
 
 ### Patch Changes

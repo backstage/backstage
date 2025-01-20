@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.9.5
+
+### Patch Changes
+
+- 8ecf8cb: Exclude `@backstage/backend-common` from schema collection if `@backstage/backend-defaults` is present
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.9.5-next.1
 
 ### Patch Changes

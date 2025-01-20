@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.7.1
+
+### Patch Changes
+
+- 8fb529a: Added `reviewerIds` to the Gitlab Merge Request action.
+- a913beb: Added action `gitlab:group:migrate` to migrate projects using `bulk_import`
+- 7b62987: Updated the path field in the `gitlab:group:ensureExists` action to accept an array of either strings or objects with name and slug fields.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.7.1-next.1
 
 ### Patch Changes

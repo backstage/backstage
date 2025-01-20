@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.35.0-next.2",
+  "version": "1.35.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -17,14 +17,14 @@
     "build:all": "backstage-cli repo build --all",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(adr|adr-backend|adr-common|airbrake|airbrake-backend|allure|analytics-module-ga|analytics-module-ga4|analytics-module-newrelic-browser|apache-airflow|api-docs|api-docs-module-protoc-gen-doc|apollo-explorer|app-visualizer|azure-devops|azure-devops-backend|azure-devops-common|azure-sites|azure-sites-backend|azure-sites-common|badges|badges-backend|bazaar|bazaar-backend|bitbucket-cloud-common|bitrise|catalog-graph|catalog-graphql|catalog-import|catalog-unprocessed-entities|cicd-statistics|cicd-statistics-module-gitlab|circleci|cloudbuild|code-climate|code-coverage|code-coverage-backend|codescene|config-schema|cost-insights|cost-insights-common|dynatrace|entity-feedback|entity-feedback-backend|entity-feedback-common|entity-validation|example-todo-list|example-todo-list-backend|example-todo-list-common|firehydrant|fossa|gcalendar|gcp-projects|git-release-manager|github-actions|github-deployments|github-issues|github-pull-requests-board|gitops-profiles|gocd|graphiql|graphql-backend|graphql-voyager|ilert|jenkins|jenkins-backend|jenkins-common|kafka|kafka-backend|lighthouse|lighthouse-backend|lighthouse-common|linguist|linguist-backend|linguist-common|microsoft-calendar|newrelic|newrelic-dashboard|nomad|nomad-backend|octopus-deploy|opencost|pagerduty|periskop|periskop-backend|playlist|playlist-backend|playlist-common|proxy-backend|puppetdb|rollbar|rollbar-backend|sentry|shortcuts|splunk-on-call|stack-overflow|stack-overflow-backend|stackstorm|tech-radar|tech-radar-2|todo|todo-backend|xcmetrics)'",
     "build:api-reports": "yarn build:api-reports:only --tsc",
-    "build:api-reports:only": "NODE_OPTIONS=--max-old-space-size=8192 backstage-repo-tools api-reports --allow-warnings 'packages/backend-app-api,packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-undocumented,ae-wrong-input-file-type --validate-release-tags",
+    "build:api-reports:only": "NODE_OPTIONS=--max-old-space-size=8192 backstage-repo-tools api-reports --sql-reports --allow-warnings 'packages/backend-app-api,packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-undocumented,ae-wrong-input-file-type --validate-release-tags",
     "build:backend": "yarn workspace example-backend build",
     "build:knip-reports": "backstage-repo-tools knip-reports",
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
-    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
-    "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel -v -i run start",
+    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
+    "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel --jobs unlimited -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix --publish",
     "postinstall": "husky || true",
@@ -41,16 +41,16 @@
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
     "start": "yarn workspace example-app start",
-    "start-backend": "yarn workspace example-backend start",
-    "start-backend:legacy": "yarn workspace example-backend-legacy start",
-    "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
+    "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
+    "start-backend": "yarn workspace example-backend start",
+    "start-backend:legacy": "yarn workspace example-backend-legacy start",
     "storybook": "yarn ./storybook run storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "test": "NODE_OPTIONS=--no-node-snapshot backstage-cli repo test",
-    "test:all": "NODE_OPTIONS=--no-node-snapshot backstage-cli repo test --coverage",
+    "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
+    "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
     "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
     "tsc": "tsc",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
@@ -84,6 +84,9 @@
     ]
   },
   "prettier": "@backstage/cli/config/prettier",
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
   "resolutions": {
     "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
@@ -133,9 +136,6 @@
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
     "typescript": "~5.2.0"
-  },
-  "jest": {
-    "rejectFrontendNetworkRequests": true
   },
   "packageManager": "yarn@3.8.1",
   "engines": {

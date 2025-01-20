@@ -1,5 +1,16 @@
 # @backstage/frontend-defaults
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-app-api@0.10.4
+  - @backstage/plugin-app@0.1.5
+
 ## 0.1.5-next.0
 
 ### Patch Changes

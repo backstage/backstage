@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog
 
+## 1.26.1
+
+### Patch Changes
+
+- 208e53b: Fixing spelling mistake in translation
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.3
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.30
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.5
+
 ## 1.26.1-next.1
 
 ### Patch Changes

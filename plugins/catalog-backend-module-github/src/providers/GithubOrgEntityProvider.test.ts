@@ -14,32 +14,37 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   GithubCredentialsProvider,
   GithubIntegrationConfig,
 } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import {
   DefaultEventsService,
   EventParams,
 } from '@backstage/plugin-events-node';
-import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
+import { graphql } from '@octokit/graphql';
+import { createGraphqlClient } from '../lib/github';
 import { withLocations } from '../lib/withLocations';
-import { mockServices } from '@backstage/backend-test-utils';
+import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 
 jest.mock('@octokit/graphql');
+jest.mock('../lib/github', () => ({
+  ...jest.requireActual('../lib/github'),
+  createGraphqlClient: jest.fn(),
+}));
 
 describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
-    let mockClient;
+    let mockClient: any;
     let entityProviderConnection: EntityProviderConnection;
     let entityProvider: GithubOrgEntityProvider;
 
     const setupMocks = (response: ((...args: any) => any) | undefined) => {
       mockClient = jest.fn().mockImplementation(response);
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
     };
 
     beforeEach(() => {

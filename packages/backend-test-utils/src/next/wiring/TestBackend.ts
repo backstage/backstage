@@ -75,6 +75,7 @@ export const defaultServiceFactories = [
   mockServices.lifecycle.factory(),
   mockServices.logger.factory(),
   mockServices.permissions.factory(),
+  mockServices.permissionsRegistry.factory(),
   mockServices.rootHealth.factory(),
   mockServices.rootLifecycle.factory(),
   mockServices.rootLogger.factory(),
@@ -209,10 +210,19 @@ function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
   );
 }
 
+// Same as in the backend-app-api, handles double defaults from dynamic imports
 function unwrapFeature(
-  feature: BackendFeature | (() => BackendFeature),
+  feature: BackendFeature | { default: BackendFeature },
 ): BackendFeature {
-  return typeof feature === 'function' ? feature() : feature;
+  if ('$$type' in feature) {
+    return feature;
+  }
+
+  if ('default' in feature) {
+    return feature.default;
+  }
+
+  return feature;
 }
 
 const backendInstancesToCleanUp = new Array<Backend>();

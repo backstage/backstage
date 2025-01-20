@@ -44,4 +44,6 @@ export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
 export type IconProps = {
   name: IconNames;
   size?: number;
+  className?: string;
+  style?: React.CSSProperties;
 };

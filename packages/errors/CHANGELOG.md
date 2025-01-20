@@ -1,5 +1,12 @@
 # @backstage/errors
 
+## 1.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+
 ## 1.2.7-next.0
 
 ### Patch Changes

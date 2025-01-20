@@ -137,6 +137,10 @@ Modify your `App.tsx` as follows:
 import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 //...
 
+const options = { emptyRowsWhenPaging: false };
+const linkDestination = (entity: Entity): string | undefined => {
+  return entity.metadata.annotations?.['external-docs'];
+};
 const techDocsTabsConfig = [
   {
     label: 'Recommended Documentation',
@@ -145,18 +149,53 @@ const techDocsTabsConfig = [
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
+        panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
+        filterPredicate: entity =>
+          entity?.metadata?.tags?.includes('golden-path') ?? false,
+      },
+      {
+        title: 'Recommended',
+        description: 'Useful documentation',
+        panelType: 'InfoCardGrid',
+        panelProps: {
+          CustomHeader: () => <ContentHeader title='Recommended' />
+          linkDestination: linkDestination,
+        },
         filterPredicate: entity =>
           entity?.metadata?.tags?.includes('recommended') ?? false,
       },
     ],
   },
+  {
+    label: 'Browse All',
+    panels: [
+      {
+        description: 'Browse all docs',
+        filterPredicate: filterEntity,
+        panelType: 'TechDocsIndexPage',
+        title: 'All',
+        panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+      },
+    ],
+  },
 ];
-
+const docsFilter = {
+  kind: ['Location', 'Resource', 'Component'],
+  'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+}
+const customPageWrapper = ({ children }: React.PropsWithChildren<{}>) =>
+  (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
 const AppRoutes = () => {
   <FlatRoutes>
     <Route
       path="/docs"
-      element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}
+      element={
+        <TechDocsCustomHome
+          tabsConfig={techDocsTabsConfig}
+          filter={docsFilter}
+          CustomPageWrapper={customPageWrapper}
+        />
+      }
     />
   </FlatRoutes>;
 };

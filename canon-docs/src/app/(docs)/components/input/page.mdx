@@ -1,0 +1,77 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import { InputPreview, InputSizes } from '@/snippets/input';
+import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+
+# Input
+
+A input component tfor your forms.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InputPreview />}
+  code={`<Input label="Name" placeholder="Enter your name" />`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Input } from '@backstage/canon';
+
+<Input />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Input className="canon-Input" />`}
+    />
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<BaseUI href="https://base-ui.com/react/components/input" />
+
+<PropsTable
+  data={{
+    size: {
+      type: ['sm', 'md'],
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### Sizes
+
+Here's a simple input with a label and description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<InputSizes />}
+  code={`<Grid>
+    <Input size="sm" placeholder="Small" />
+    <Input size="md" placeholder="Medium" />
+  </Grid>`}
+/>

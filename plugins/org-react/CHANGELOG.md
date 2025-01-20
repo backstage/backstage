@@ -1,5 +1,16 @@
 # @backstage/plugin-org-react
 
+## 0.1.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+
 ## 0.1.34-next.1
 
 ### Patch Changes

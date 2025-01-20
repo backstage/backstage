@@ -37,6 +37,7 @@ export * from './components/Button';
 export * from './components/Icon';
 export * from './components/Checkbox';
 export * from './components/Table';
-
+export * from './components/Input';
+export * from './components/Field';
 // Types
 export * from './types';

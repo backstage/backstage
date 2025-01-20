@@ -82,4 +82,24 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a group nested within another group using objects',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'gitlabGroup',
+          name: 'Group',
+          action: 'gitlab:group:ensureExists',
+          input: {
+            repoUrl: 'gitlab.com',
+            path: [
+              { name: 'Group 1', slug: 'group1' },
+              { name: 'Group 2', slug: 'group2' },
+              { name: 'Group 3', slug: 'group3' },
+            ],
+          },
+        },
+      ],
+    }),
+  },
 ];

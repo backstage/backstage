@@ -1,0 +1,9 @@
+title: Kubernetes Ingestor
+author: terasky.com
+authorUrl: https://github.com/terasky-oss
+category: Kubernetes
+description: Automatically Ingest Kubernetes Workloads and Crossplane Claims as Components, and XRDs as Templates.
+documentation: https://github.com/TeraSky-OSS/backstage-plugins/tree/main/plugins/kubernetes-ingestor
+iconUrl: https://avatars.githubusercontent.com/u/13629408
+npmPackageName: '@terasky/backstage-plugin-kubernetes-ingestor'
+addedDate: '2024-12-30'

@@ -1,5 +1,21 @@
 # @backstage/plugin-search
 
+## 1.4.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.5
+
 ## 1.4.22-next.1
 
 ### Patch Changes
