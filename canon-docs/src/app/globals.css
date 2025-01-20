@@ -1,7 +1,7 @@
 body {
   display: flex;
   flex-direction: row;
-  background-color: var(--canon-background);
+  background-color: var(--canon-bg);
   color: var(--canon-text-primary);
   transition: background-color 0.2s ease-in-out;
 
@@ -41,8 +41,8 @@ iframe {
 }
 
 .ͼ2 .cm-gutters {
-  background-color: var(--canon-surface-2);
-  border-right: 1px solid var(--canon-border-base);
+  background-color: var(--canon-bg);
+  border-right: 1px solid var(--canon-border);
   transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
