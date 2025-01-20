@@ -52,7 +52,9 @@ describe('azure core', () => {
 
   describe('getAzureRequestOptions', () => {
     it('should not add authorization header when not using token or credential', async () => {
-      expect(await getAzureRequestOptions({ host: '' })).toEqual(
+      expect(
+        await getAzureRequestOptions({ host: '', apiVersion: '' }),
+      ).toEqual(
         expect.objectContaining({
           headers: expect.not.objectContaining({
             Authorization: expect.anything(),
