@@ -900,6 +900,57 @@ describe('Catalog Backend Integration', () => {
     });
   });
 
+  it.only('should not delete entities when locationKey changes', async () => {
+    const harness = await TestHarness.create();
+
+    await harness.setInputEntities([
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'component-1',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+        spec: {
+          type: 'service',
+          owner: 'blob',
+        },
+      },
+    ]);
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    const preLocationKey = await harness.getOutputEntities();
+
+    await harness.setInputEntities([
+      {
+        locationKey: 'set',
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'component-1',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:.',
+            'backstage.io/managed-by-origin-location': 'url:.',
+          },
+        },
+        spec: {
+          type: 'service',
+          owner: 'blob',
+        },
+      },
+    ]);
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    const postLocationKey = await harness.getOutputEntities();
+
+    expect(preLocationKey).toEqual(postLocationKey);
+  });
+
   it('should replace any refresh_state_references that are dangling after claiming an entityRef with locationKey', async () => {
     const firstProvider = new TestProvider();
     firstProvider.getProviderName = () => 'first';
@@ -936,6 +987,9 @@ describe('Catalog Backend Integration', () => {
 
     await expect(harness.process()).resolves.toEqual({});
 
+    const { 'component:default/component-1': component } =
+      await harness.getOutputEntities();
+
     await expect(harness.getOutputEntities()).resolves.toEqual({
       'component:default/component-1': expect.objectContaining({
         spec: {
@@ -971,6 +1025,9 @@ describe('Catalog Backend Integration', () => {
 
     await expect(harness.process()).resolves.toEqual({});
 
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-1': component,
+    });
     await expect(harness.getOutputEntities()).resolves.toEqual({
       'component:default/component-1': expect.objectContaining({
         spec: {
@@ -1019,6 +1076,15 @@ describe('Catalog Backend Integration', () => {
         targetEntityRef: 'component:default/component-2',
       },
     ]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-2': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'location-key',
+        },
+      }),
+    });
 
     await expect(harness.getOutputEntities()).resolves.toEqual({
       'component:default/component-2': expect.objectContaining({
