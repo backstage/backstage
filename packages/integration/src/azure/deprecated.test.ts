@@ -67,7 +67,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
-          apiVersion:'',
+          apiVersion: '',
           credentials: [
             {
               kind: 'PersonalAccessToken',
@@ -111,6 +111,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
+          apiVersion: '',
           credentials: [
             {
               kind: 'ManagedIdentity',
