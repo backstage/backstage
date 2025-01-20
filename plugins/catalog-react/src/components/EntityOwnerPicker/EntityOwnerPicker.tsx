@@ -170,11 +170,11 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     });
   }, [selectedOwners, updateFilters]);
 
-  // useEffect(() => {
-  //   if (availableOwners.length === 0) {
-  //     setSelectedOwners([]);
-  //   }
-  // }, [availableOwners]);
+  useEffect(() => {
+    if (availableOwners.length === 0) {
+      setSelectedOwners([]);
+    }
+  }, [availableOwners]);
 
   if (
     ['user', 'group'].includes(
