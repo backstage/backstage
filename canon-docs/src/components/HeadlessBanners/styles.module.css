@@ -1,9 +1,9 @@
 .container {
   display: flex;
-  background-color: var(--canon-surface-1);
+  background-color: var(--canon-bg-elevated);
   padding: var(--canon-space-6);
-  border-radius: var(--canon-border-radius-xs);
-  border: 1px solid var(--canon-border-base);
+  border-radius: var(--canon-radius-2);
+  border: 1px solid var(--canon-border);
   margin-bottom: var(--canon-space-6);
   gap: var(--canon-space-6);
   transition: background-color 0.2s ease-in-out;
@@ -29,14 +29,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: var(--canon-surface-2);
-  border: 1px solid var(--canon-border-base);
-  border-radius: var(--canon-border-radius-xs);
+  background-color: var(--canon-bg);
+  border: 1px solid var(--canon-border);
+  border-radius: var(--canon-radius-2);
   padding: 0 var(--canon-space-3);
   height: 28px;
   border-radius: 100px;
   margin-top: var(--canon-space-3);
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   color: var(--canon-text-primary);
   gap: var(--canon-space-2);
 }

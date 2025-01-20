@@ -77,11 +77,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <code
         style={{
           fontFamily: 'var(--canon-font-monospace)',
-          backgroundColor: 'var(--canon-surface-1)',
+          backgroundColor: 'var(--canon-bg-elevated)',
           padding: '0.2rem 0.375rem',
           borderRadius: '0.25rem',
           color: 'var(--canon-text-secondary)',
-          border: '1px solid var(--canon-border-base)',
+          border: '1px solid var(--canon-border)',
           fontSize: '0.875rem',
         }}
       >

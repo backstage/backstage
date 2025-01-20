@@ -12,7 +12,7 @@
 .tabsTheme {
   width: 142px;
   border-radius: 0.375rem;
-  background-color: var(--canon-surface-2);
+  background-color: var(--canon-bg);
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
@@ -28,7 +28,7 @@
   height: 60px;
   font-family: var(--docs-font);
   color: var(--canon-text-secondary);
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);
   cursor: pointer;
   transition: color 0.2s ease-in-out;
@@ -53,7 +53,7 @@
       position: absolute;
       inset: 0.25rem 0;
       border-radius: 0.25rem;
-      outline: 2px solid var(--canon-surface-1);
+      outline: 2px solid var(--canon-bg-elevated);
       outline-offset: -1px;
     }
   }

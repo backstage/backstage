@@ -85,12 +85,11 @@ const preview: Preview = {
       defaultTheme: 'Light',
     }),
     Story => {
-      document.body.style.backgroundColor = 'var(--canon-background)';
+      document.body.style.backgroundColor = 'var(--canon-bg)';
 
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor =
-          'var(--canon-background)';
+        (element as HTMLElement).style.backgroundColor = 'var(--canon-bg)';
       });
 
       return (
