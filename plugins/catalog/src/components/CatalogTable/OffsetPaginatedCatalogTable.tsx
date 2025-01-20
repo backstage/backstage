@@ -47,8 +47,6 @@ export function OffsetPaginatedCatalogTable(
     setOffset(Math.max(0, newOffset));
   }, [setOffset, page, limit, totalItems, clientPagination]);
 
-  const showPagination = (totalItems ?? data.length) > limit;
-
   return (
     <Table
       columns={columns}
@@ -57,7 +55,6 @@ export function OffsetPaginatedCatalogTable(
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
-        paging: showPagination,
         ...options,
       }}
       components={{
