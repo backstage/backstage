@@ -17,9 +17,11 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { TextProps } from './types';
-import { useCanon } from '../../contexts/canon';
+import { getResponsiveValue } from '../../utils/getResponsiveValue';
 import clsx from 'clsx';
+
+import type { TextProps } from './types';
+
 /** @public */
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
@@ -31,8 +33,6 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       className,
       ...restProps
     } = props;
-
-    const { getResponsiveValue } = useCanon();
 
     // Get the responsive values for the variant and weight
     const responsiveVariant = getResponsiveValue(variant);

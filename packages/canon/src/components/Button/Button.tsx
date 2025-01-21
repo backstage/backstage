@@ -18,9 +18,10 @@
 
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
-import { ButtonProps } from './types';
-import { useCanon } from '../../contexts/canon';
 import clsx from 'clsx';
+import { getResponsiveValue } from '../../utils/getResponsiveValue';
+
+import type { ButtonProps } from './types';
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -36,8 +37,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       style,
       ...rest
     } = props;
-
-    const { getResponsiveValue } = useCanon();
 
     // Get the responsive value for the variant
     const responsiveSize = getResponsiveValue(size);
