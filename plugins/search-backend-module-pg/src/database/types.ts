@@ -24,7 +24,7 @@ export interface PgSearchQuery {
   pgTerm?: string;
   offset: number;
   limit: number;
-  normalization: number;
+  normalization?: number;
   options: PgSearchHighlightOptions;
 }
 
