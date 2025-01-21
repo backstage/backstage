@@ -38,7 +38,7 @@ export function createCloudflareAccessAuthenticator(options?: {
     async defaultProfileTransform(result: CloudflareAccessResult) {
       return {
         profile: {
-          email: result.claims.email,
+          email: result.cfIdentity.email,
           displayName: result.cfIdentity.name,
         },
       };

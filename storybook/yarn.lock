@@ -592,12 +592,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/core@npm:^0.9.0":
-  version: 0.9.1
-  resolution: "@eslint/core@npm:0.9.1"
+"@eslint/core@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "@eslint/core@npm:0.10.0"
   dependencies:
     "@types/json-schema": ^7.0.15
-  checksum: 33c8159842cc3a646caa267c008cb567ca60e0220bcdcf6e426128409953b8f6a9b142246db616c71d06331edf769c192d7e2792b3f19c2a6b8179e491512d89
+  checksum: 851fa099b3fef00e7ff8ece14523aff0822d3e1b47b047ab0a0d898e80c1362a22aa8b7778727231c383246932ecb63de79b4448ec1e500901c578580b087573
   languageName: node
   linkType: hard
 
@@ -618,10 +618,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.17.0":
-  version: 9.17.0
-  resolution: "@eslint/js@npm:9.17.0"
-  checksum: b68a14ff518ffa12e3b85fa9c72b818faeff092285acfbf02da2d0fb12a681b76651638881e98845f2df2ed346ed0d33faeb1d9caac163daf232c223b7efe89c
+"@eslint/js@npm:9.18.0":
+  version: 9.18.0
+  resolution: "@eslint/js@npm:9.18.0"
+  checksum: a47cfcc684f87094992fe4a5c5e54018393231d8d42bd2150a08eb167813a6bf8d7c7ccbc9611933e5f782ff3b96a06c9be8d19342965cadd4530a45521b8981
   languageName: node
   linkType: hard
 
@@ -632,12 +632,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/plugin-kit@npm:^0.2.3":
-  version: 0.2.4
-  resolution: "@eslint/plugin-kit@npm:0.2.4"
+"@eslint/plugin-kit@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "@eslint/plugin-kit@npm:0.2.5"
   dependencies:
+    "@eslint/core": ^0.10.0
     levn: ^0.4.1
-  checksum: 5693465dca5fc6f27b090f987b51bc738f48c6a6b5678dcc1791522921834206388b462578edd362d458e8de6dcd21cce1a2e8cff47d1512411ba0389112c231
+  checksum: 423db33e67ff16f6db71bf8bfc8d5b0c2c4fe6f2209131e5886a573bf994bfc72ab4f825068d6521f186247731d4c9d48eb42a5e5ce389c6faa275752c0e9459
   languageName: node
   linkType: hard
 
@@ -2689,15 +2690,15 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-storybook@npm:^0.11.0":
-  version: 0.11.1
-  resolution: "eslint-plugin-storybook@npm:0.11.1"
+  version: 0.11.2
+  resolution: "eslint-plugin-storybook@npm:0.11.2"
   dependencies:
     "@storybook/csf": ^0.1.11
     "@typescript-eslint/utils": ^8.8.1
     ts-dedent: ^2.2.0
   peerDependencies:
-    eslint: ">=6"
-  checksum: 8b8eb30b598f3c44c2bbf921e318215338f1159c1fba2d2f6cd5bc0b2ec14515655cf1760b5e11355baddabc2ac8446d4dc18ee6df6d2252555b126ff649a421
+    eslint: ">=8"
+  checksum: 04dab47b676db57aa6c2325d4ab66283f5970133a2615cc68a97e42cb4ae1c79317e6db73bcfc24468e146bdff4c9ffe90a368bf2bcb67593954485f058b33ca
   languageName: node
   linkType: hard
 
@@ -2736,16 +2737,16 @@ __metadata:
   linkType: hard
 
 "eslint@npm:^9.11.1":
-  version: 9.17.0
-  resolution: "eslint@npm:9.17.0"
+  version: 9.18.0
+  resolution: "eslint@npm:9.18.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.12.1
     "@eslint/config-array": ^0.19.0
-    "@eslint/core": ^0.9.0
+    "@eslint/core": ^0.10.0
     "@eslint/eslintrc": ^3.2.0
-    "@eslint/js": 9.17.0
-    "@eslint/plugin-kit": ^0.2.3
+    "@eslint/js": 9.18.0
+    "@eslint/plugin-kit": ^0.2.5
     "@humanfs/node": ^0.16.6
     "@humanwhocodes/module-importer": ^1.0.1
     "@humanwhocodes/retry": ^0.4.1
@@ -2780,7 +2781,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 0caae58c53bf4dc9b4893d75e62339e4c40fe5589652a3cb63f30a15bad1f34f8f784ca4fca471bbffedabee516a9f9620ebc33818b55e1b715e8f000865c851
+  checksum: 5e05ae9d25a42ae8cad86a0118ea45107b42446f3614cd0ba822affa3eb85d746e0820529b1fde72820f24aa3c3447d3260505a5ee5e95be1b8b7455740a2256
   languageName: node
   linkType: hard
 
@@ -3126,9 +3127,9 @@ __metadata:
   linkType: hard
 
 "globals@npm:^15.9.0":
-  version: 15.12.0
-  resolution: "globals@npm:15.12.0"
-  checksum: 2a134cc876dd73192489561e3c85be348dc1408fef043ebef605cdc437f64cd2fc922268db02e3348683d05d06bed10fb1c3653b3d4399a204a7ecd59e742a07
+  version: 15.14.0
+  resolution: "globals@npm:15.14.0"
+  checksum: fa993433a01bf4a118904fbafbcff34db487fce83f73da75fb4a8653afc6dcd72905e6208c49bab307ff0980928273d0ecd1cfc67e1a4782dabfbd92c234ab68
   languageName: node
   linkType: hard
 

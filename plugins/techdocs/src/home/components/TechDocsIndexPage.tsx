@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { useOutlet } from 'react-router-dom';
-import { TableColumn, TableProps } from '@backstage/core-components';
+import {
+  TableColumn,
+  TableProps,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityListPagination,
   EntityOwnerPickerProps,
@@ -36,6 +40,9 @@ export type TechDocsIndexPageProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: EntityListPagination;
+  options?: TableOptions<DocsTableRow>;
+  PageWrapper?: React.FC;
+  CustomHeader?: React.FC;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

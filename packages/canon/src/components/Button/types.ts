@@ -28,7 +28,9 @@ export interface ButtonProps {
     | 'tertiary'
     | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
   children: React.ReactNode;
+  className?: string;
   disabled?: boolean;
   iconStart?: IconNames;
   iconEnd?: IconNames;
+  style?: React.CSSProperties;
 }

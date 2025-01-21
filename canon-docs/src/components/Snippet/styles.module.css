@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview {
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--canon-border);
+  background-color: var(--canon-bg);
+  transition: all 0.2s ease-in-out;
+  padding: 1px;
+  position: relative;
+}
+
+.previewContent {
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 0);
+  background-position: calc((8px / 2) * -1) calc((8px / 2) * -1);
+  background-size: 8px 8px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.trigger {
+  all: unset;
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  cursor: pointer;
+}
+
+[data-theme='dark'] .previewContent {
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 0
+  );
+}
+
+.panel {
+  height: var(--collapsible-panel-height);
+  transition: all 0.2s ease-out;
+  overflow: hidden;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    height: 0;
+  }
+
+  &[data-closed] {
+    opacity: 0;
+  }
+
+  &[data-open] {
+    opacity: 1;
+  }
+}

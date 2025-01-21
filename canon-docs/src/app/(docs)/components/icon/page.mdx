@@ -1,0 +1,63 @@
+import { PropsTable } from '@/components/PropsTable';
+import { icons } from '@backstage/canon';
+import { IconPreview } from '@/snippets/icon';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+
+# Icon
+
+Icons are used to represent an action or a state.
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<IconPreview />}
+  code={`<Icon name="heart" />`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Icon } from '@backstage/canon';
+
+<Icon />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Icon className="icon" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable
+  data={{
+    name: {
+      type: Object.keys(icons),
+      responsive: false,
+    },
+    size: {
+      type: 'number',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>

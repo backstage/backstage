@@ -1,5 +1,52 @@
 # @backstage/plugin-api-docs
 
+## 0.12.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/plugin-catalog@1.26.2-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-permission-react@0.4.30
+
+## 0.12.3
+
+### Patch Changes
+
+- dcf6e72: Fix typo in default path of api docs definition route
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+  - @backstage/plugin-catalog@1.26.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.30
+
+## 0.12.3-next.1
+
+### Patch Changes
+
+- dcf6e72: Fix typo in default path of api docs definition route
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/plugin-catalog@1.26.1-next.1
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-permission-react@0.4.30-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+
 ## 0.12.3-next.0
 
 ### Patch Changes

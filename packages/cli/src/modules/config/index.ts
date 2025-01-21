@@ -32,7 +32,7 @@ export function registerCommands(program: Command) {
       'Only include the schema that applies to the given package',
     )
     .description('Browse the configuration reference documentation')
-    .action(lazy(() => import('./commands/docs').then(m => m.default)));
+    .action(lazy(() => import('./commands/docs'), 'default'));
 
   program
     .command('config:print')
@@ -49,7 +49,7 @@ export function registerCommands(program: Command) {
     )
     .option(...configOption)
     .description('Print the app configuration for the current package')
-    .action(lazy(() => import('./commands/print').then(m => m.default)));
+    .action(lazy(() => import('./commands/print'), 'default'));
 
   program
     .command('config:check')
@@ -68,7 +68,7 @@ export function registerCommands(program: Command) {
     .description(
       'Validate that the given configuration loads and matches schema',
     )
-    .action(lazy(() => import('./commands/validate').then(m => m.default)));
+    .action(lazy(() => import('./commands/validate'), 'default'));
 
   program
     .command('config:schema')
@@ -83,5 +83,5 @@ export function registerCommands(program: Command) {
     .option('--merge', 'Print the config schemas merged', true)
     .option('--no-merge', 'Print the config schemas not merged')
     .description('Print configuration schema')
-    .action(lazy(() => import('./commands/schema').then(m => m.default)));
+    .action(lazy(() => import('./commands/schema'), 'default'));
 }

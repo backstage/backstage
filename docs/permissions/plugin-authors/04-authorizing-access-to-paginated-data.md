@@ -4,7 +4,9 @@ title: 4. Authorizing access to paginated data
 description: Explains how to authorize access to paginated data in a Backstage plugin
 ---
 
+:::info
 This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./04-authorizing-access-to-paginated-data--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+:::
 
 Authorizing `GET /todos` is similar to the update endpoint, in that it should be possible to authorize access based on the characteristics of each resource. However, we'll need to authorize a list of resources for this endpoint.
 
@@ -84,14 +86,41 @@ export const todoListPermissions = [
 
 ## Using conditional policy decisions
 
+As usual, we'll start by updating the permission integration to include the new permission:
+
+```ts title="plugins/todo-list-backend/src/plugin.ts"
+import {
+  TODO_LIST_RESOURCE_TYPE,
+  todoListCreatePermission,
+  todoListUpdatePermission,
+  /* highlight-add-next-line */
+  todoListReadPermission,
+} from '@internal/plugin-todo-list-common';
+
+// ...
+
+permissionsRegistry.addResourceType({
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+  /* highlight-remove-next-line */
+  permissions: [todoListCreatePermission, todoListUpdatePermission],
+  /* highlight-add-next-line */
+  permissions: [
+    todoListCreatePermission,
+    todoListUpdatePermission,
+    todoListReadPermission,
+  ],
+  rules: Object.values(rules),
+  getResources: async resourceRefs => {
+    return Promise.all(resourceRefs.map(getTodo));
+  },
+});
+```
+
 So far we've only used the `PermissionsService.authorize` method, which will evaluate conditional decisions before returning a result. In this step, we want to evaluate conditional decisions within our plugin, so we'll use `PermissionsService.authorizeConditional` instead.
 
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
-/* highlight-remove-next-line */
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 /* highlight-add-start */
 import {
-  createPermissionIntegrationRouter,
   createConditionTransformer,
   ConditionTransformer,
 } from '@backstage/plugin-permission-node';
@@ -101,26 +130,11 @@ import { add, getAll, getTodo, update } from './todos';
 /* highlight-add-next-line */
 import { add, getAll, getTodo, TodoFilter, update } from './todos';
 import {
-  TODO_LIST_RESOURCE_TYPE,
   todoListCreatePermission,
   todoListUpdatePermission,
   /* highlight-add-next-line */
   todoListReadPermission,
 } from './permissions';
-
-// ...
-
-const permissionIntegrationRouter = createPermissionIntegrationRouter({
-  /* highlight-remove-next-line */
-  permissions: [todoListCreatePermission, todoListUpdatePermission],
-  /* highlight-add-next-line */
-  permissions: [todoListCreatePermission, todoListUpdatePermission, todoListReadPermission],
-  getResources: async resourceRefs => {
-    return resourceRefs.map(getTodo);
-  },
-  resourceType: TODO_LIST_RESOURCE_TYPE,
-  rules: Object.values(rules),
-});
 
 // ...
 

@@ -1,0 +1,14 @@
+---
+title: Jaeger Tracing
+author: Deepankumar
+authorUrl: https://github.com/deepan10
+category: Observability
+description: View Jaeger traces and trace details in Backstage components.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/jaeger/plugins/jaeger/README.md
+iconUrl: https://avatars.githubusercontent.com/u/28545596?s=200&v=4
+npmPackageName: '@backstage-community/plugin-jaeger'
+tags:
+  - monitoring
+  - tracing
+  - observability
+addedDate: '2024-12-21'

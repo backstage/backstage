@@ -1,5 +1,39 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.6.6
+
+### Patch Changes
+
+- 29a4aa8: fix(config): add missing parameters in config schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+
+## 0.6.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+
 ## 0.6.6-next.1
 
 ### Patch Changes

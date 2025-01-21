@@ -31,6 +31,14 @@ const FRONTEND_ROLES = [
   'frontend-plugin-module',
 ];
 
+const NODE_ROLES = [
+  'backend',
+  'cli',
+  'node-library',
+  'backend-plugin',
+  'backend-plugin-module',
+];
+
 const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
 };
@@ -130,11 +138,97 @@ const transformIgnorePattern = [
 ].join('|');
 
 // Provides additional config that's based on the role of the target package
-function getRoleConfig(role) {
+function getRoleConfig(role, pkgJson) {
+  // Only Node.js package roles support native ESM modules, frontend and common
+  // packages are always transpiled to CommonJS.
+  const moduleOpts = NODE_ROLES.includes(role)
+    ? {
+        module: {
+          ignoreDynamic: true,
+          exportInteropAnnotation: true,
+        },
+      }
+    : undefined;
+
+  const transform = {
+    '\\.(mjs|cjs|js)$': [
+      require.resolve('./jestSwcTransform'),
+      {
+        ...moduleOpts,
+        jsc: {
+          parser: {
+            syntax: 'ecmascript',
+          },
+        },
+      },
+    ],
+    '\\.jsx$': [
+      require.resolve('./jestSwcTransform'),
+      {
+        jsc: {
+          parser: {
+            syntax: 'ecmascript',
+            jsx: true,
+          },
+          transform: {
+            react: {
+              runtime: 'automatic',
+            },
+          },
+        },
+      },
+    ],
+    '\\.(mts|cts|ts)$': [
+      require.resolve('./jestSwcTransform'),
+      {
+        ...moduleOpts,
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+          },
+        },
+      },
+    ],
+    '\\.tsx$': [
+      require.resolve('./jestSwcTransform'),
+      {
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            tsx: true,
+          },
+          transform: {
+            react: {
+              runtime: 'automatic',
+            },
+          },
+        },
+      },
+    ],
+    '\\.(bmp|gif|jpg|jpeg|png|ico|webp|frag|xml|svg|eot|woff|woff2|ttf)$':
+      require.resolve('./jestFileTransform.js'),
+    '\\.(yaml)$': require.resolve('./jestYamlTransform'),
+  };
   if (FRONTEND_ROLES.includes(role)) {
-    return { testEnvironment: require.resolve('jest-environment-jsdom') };
+    return {
+      testEnvironment: require.resolve('jest-environment-jsdom'),
+      transform,
+    };
   }
-  return { testEnvironment: require.resolve('jest-environment-node') };
+  return {
+    testEnvironment: require.resolve('jest-environment-node'),
+    moduleFileExtensions: [...SRC_EXTS, 'json', 'node'],
+    // Jest doesn't let us dynamically detect type=module per transformed file,
+    // so we have to assume that if the entry point is ESM, all TS files are
+    // ESM.
+    //
+    // This means you can't switch a package to type=module until all of its
+    // monorepo dependencies are also type=module or does not contain any .ts
+    // files.
+    extensionsToTreatAsEsm:
+      pkgJson.type === 'module' ? ['.ts', '.mts'] : ['.mts'],
+    transform,
+  };
 }
 
 async function getProjectConfig(targetPath, extraConfig, extraOptions) {
@@ -160,64 +254,6 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
 
-    transform: {
-      '\\.(mjs|cjs|js)$': [
-        require.resolve('./jestSwcTransform'),
-        {
-          jsc: {
-            parser: {
-              syntax: 'ecmascript',
-            },
-          },
-        },
-      ],
-      '\\.jsx$': [
-        require.resolve('./jestSwcTransform'),
-        {
-          jsc: {
-            parser: {
-              syntax: 'ecmascript',
-              jsx: true,
-            },
-            transform: {
-              react: {
-                runtime: 'automatic',
-              },
-            },
-          },
-        },
-      ],
-      '\\.ts$': [
-        require.resolve('./jestSwcTransform'),
-        {
-          jsc: {
-            parser: {
-              syntax: 'typescript',
-            },
-          },
-        },
-      ],
-      '\\.tsx$': [
-        require.resolve('./jestSwcTransform'),
-        {
-          jsc: {
-            parser: {
-              syntax: 'typescript',
-              tsx: true,
-            },
-            transform: {
-              react: {
-                runtime: 'automatic',
-              },
-            },
-          },
-        },
-      ],
-      '\\.(bmp|gif|jpg|jpeg|png|ico|webp|frag|xml|svg|eot|woff|woff2|ttf)$':
-        require.resolve('./jestFileTransform.js'),
-      '\\.(yaml)$': require.resolve('./jestYamlTransform'),
-    },
-
     // A bit more opinionated
     testMatch: [`**/*.test.{${SRC_EXTS.join(',')}}`],
 
@@ -226,7 +262,7 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
       : require.resolve('./jestCachingModuleLoader'),
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
-    ...getRoleConfig(pkgJson.backstage?.role),
+    ...getRoleConfig(pkgJson.backstage?.role, pkgJson),
   };
 
   options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];

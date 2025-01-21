@@ -133,6 +133,30 @@ export const Form: (
 ) => React_2.JSX.Element;
 
 // @alpha
+export const FormDecoratorBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-form-decorator';
+  name: undefined;
+  params: {
+    decorator: ScaffolderFormDecorator;
+  };
+  output: ConfigurableExtensionDataRef<
+    ScaffolderFormDecorator,
+    'scaffolder.form-decorator-loader',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    formDecoratorLoader: ConfigurableExtensionDataRef<
+      ScaffolderFormDecorator,
+      'scaffolder.form-decorator-loader',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
 export const FormFieldBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-field';
   name: undefined;
