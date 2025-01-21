@@ -28,7 +28,6 @@ export const getResponsiveValue = (
 
     for (let i = index; i >= 0; i--) {
       if (value[breakpoints[i].id]) {
-        // console.log(value[breakpoints[i].id]);
         return value[breakpoints[i].id] as string;
       }
     }
