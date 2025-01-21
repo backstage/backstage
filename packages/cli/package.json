@@ -41,6 +41,11 @@
     "ext": "ts",
     "watch": "./src"
   },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/__fixtures__/"
+    ]
+  },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
