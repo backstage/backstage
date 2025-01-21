@@ -26,11 +26,10 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
 ];
 
 export const getBreakpoint = (): Breakpoint => {
-  const queries = breakpoints.map(
-    breakpoint => `(min-width: ${breakpoint.value}px)`,
-  );
-
-  const matches = queries.map(query => useMediaQuery(query));
+  const matches = breakpoints.map(breakpoint => {
+    const match = useMediaQuery(`(min-width: ${breakpoint.value}px)`);
+    return match;
+  });
 
   for (let i = matches.length - 1; i >= 0; i--) {
     if (matches[i]) {
