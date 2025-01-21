@@ -37,12 +37,12 @@ export const defaultFormatter = winston.format.combine(
 );
 
 /**
- * Adds `isAuditorEvent` field
+ * Adds `isAuditEvent` field
  *
  * @public
  */
 export const auditorFieldFormat = winston.format(info => {
-  return { ...info, isAuditorEvent: true };
+  return { ...info, isAuditEvent: true };
 })();
 
 /**
