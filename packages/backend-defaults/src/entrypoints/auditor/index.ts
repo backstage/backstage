@@ -14,5 +14,15 @@
  * limitations under the License.
  */
 
-export * from './Auditor';
+export type {
+  AuditorEvent,
+  AuditorEventActorDetails,
+  AuditorEventOptions,
+  AuditorEventRequest,
+  AuditorEventStatus,
+  AuditorLogFunction,
+} from './DefaultAuditorService';
+export { DefaultAuditorService } from './DefaultAuditorService';
 export { auditorServiceFactory } from './auditorServiceFactory';
+export { WinstonRootAuditorService } from './WinstonRootAuditorService';
+export type { WinstonRootAuditorServiceOptions } from './WinstonRootAuditorService';

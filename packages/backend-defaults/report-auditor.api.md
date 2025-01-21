@@ -13,21 +13,18 @@ import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { Request as Request_2 } from 'express';
-import type { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
 
 // @public
-export type AuditorEvent = [
-  eventId: string,
-  meta: {
-    plugin: string;
-    severityLevel: AuditorServiceEventSeverityLevel;
-    actor: AuditorEventActorDetails;
-    meta?: JsonObject;
-    request?: AuditorEventRequest;
-  } & AuditorEventStatus,
-];
+export type AuditorEvent = {
+  plugin: string;
+  eventId: string;
+  severityLevel: AuditorServiceEventSeverityLevel;
+  actor: AuditorEventActorDetails;
+  meta?: JsonObject;
+  request?: AuditorEventRequest;
+} & AuditorEventStatus;
 
 // @public (undocumented)
 export type AuditorEventActorDetails = {
@@ -65,7 +62,7 @@ export type AuditorEventStatus =
     };
 
 // @public
-export const auditorFieldFormat: Format;
+export type AuditorLogFunction = (event: AuditorEvent) => void | Promise<void>;
 
 // @public
 export const auditorServiceFactory: ServiceFactory<
@@ -77,7 +74,7 @@ export const auditorServiceFactory: ServiceFactory<
 // @public
 export class DefaultAuditorService implements AuditorService {
   static create(
-    impl: DefaultRootAuditorService,
+    logFn: AuditorLogFunction,
     deps: {
       auth: AuthService;
       httpAuth: HttpAuthService;
@@ -90,32 +87,25 @@ export class DefaultAuditorService implements AuditorService {
   ): Promise<AuditorServiceEvent>;
 }
 
-// @public (undocumented)
-export const defaultFormatter: Format;
-
-// @public (undocumented)
-export class DefaultRootAuditorService {
-  static create(options?: RootAuditorOptions): DefaultRootAuditorService;
+// @public
+export class WinstonRootAuditorService {
+  static create(
+    options?: WinstonRootAuditorServiceOptions,
+  ): WinstonRootAuditorService;
   // (undocumented)
   forPlugin(deps: {
     auth: AuthService;
     httpAuth: HttpAuthService;
     plugin: PluginMetadataService;
   }): AuditorService;
-  // (undocumented)
-  log(auditorEvent: AuditorEvent): Promise<void>;
 }
 
 // @public
-export type RootAuditorOptions =
-  | {
-      meta?: JsonObject;
-      format?: Format;
-      transports?: winston.transport[];
-    }
-  | {
-      rootLogger: RootLoggerService;
-    };
+export type WinstonRootAuditorServiceOptions = {
+  meta?: JsonObject;
+  format?: Format;
+  transports?: winston.transport[];
+};
 
 // (No @packageDocumentation comment for this package)
 ```
