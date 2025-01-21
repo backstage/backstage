@@ -15,16 +15,17 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { DefaultAuditorService, DefaultRootAuditorService } from './Auditor';
+import { WinstonRootAuditorService } from './WinstonRootAuditorService';
+import { DefaultAuditorService } from './DefaultAuditorService';
 
-describe('Auditor', () => {
+describe('WinstonRootAuditorService', () => {
   it('creates a auditor instance with default options', () => {
-    const auditor = DefaultRootAuditorService.create();
-    expect(auditor).toBeInstanceOf(DefaultRootAuditorService);
+    const auditor = WinstonRootAuditorService.create();
+    expect(auditor).toBeInstanceOf(WinstonRootAuditorService);
   });
 
   it('creates a child logger', () => {
-    const auditor = DefaultRootAuditorService.create();
+    const auditor = WinstonRootAuditorService.create();
     const childLogger = auditor.forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
@@ -38,7 +39,7 @@ describe('Auditor', () => {
   it('should log a status "initiated" using createEvent', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = DefaultRootAuditorService.create().forPlugin({
+    const auditor = WinstonRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
@@ -61,7 +62,7 @@ describe('Auditor', () => {
   it('should log a status "succeeded" using createEvent', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = DefaultRootAuditorService.create().forPlugin({
+    const auditor = WinstonRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
@@ -88,7 +89,7 @@ describe('Auditor', () => {
   it('should log a status "failed"', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = DefaultRootAuditorService.create().forPlugin({
+    const auditor = WinstonRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {
@@ -117,7 +118,7 @@ describe('Auditor', () => {
   it('should use root meta', async () => {
     const pluginId = 'test-plugin';
 
-    const auditor = DefaultRootAuditorService.create().forPlugin({
+    const auditor = WinstonRootAuditorService.create().forPlugin({
       auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       plugin: {

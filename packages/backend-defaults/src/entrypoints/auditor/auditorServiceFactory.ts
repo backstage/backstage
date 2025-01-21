@@ -18,7 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { DefaultRootAuditorService } from './Auditor';
+import { DefaultAuditorService } from './DefaultAuditorService';
 
 /**
  * Plugin-level auditing.
@@ -32,17 +32,16 @@ import { DefaultRootAuditorService } from './Auditor';
 export const auditorServiceFactory = createServiceFactory({
   service: coreServices.auditor,
   deps: {
-    rootLogger: coreServices.rootLogger,
+    logger: coreServices.logger,
     auth: coreServices.auth,
     httpAuth: coreServices.httpAuth,
     plugin: coreServices.pluginMetadata,
   },
-  async createRootContext({ rootLogger }) {
-    const auditor = DefaultRootAuditorService.create({ rootLogger });
-
-    return auditor;
-  },
-  factory({ plugin, auth, httpAuth }, rootAuditor) {
-    return rootAuditor.forPlugin({ auth, httpAuth, plugin });
+  factory({ logger, plugin, auth, httpAuth }) {
+    const auditLogger = logger.child({ isAuditorEvent: true });
+    return DefaultAuditorService.create(
+      event => auditLogger.info(`${event.plugin}.${event.eventId}`, event),
+      { plugin, auth, httpAuth },
+    );
   },
 });

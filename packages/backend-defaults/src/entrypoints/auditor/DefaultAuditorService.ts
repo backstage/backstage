@@ -23,14 +23,10 @@ import type {
   BackstageCredentials,
   HttpAuthService,
   PluginMetadataService,
-  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
 import type { JsonObject } from '@backstage/types';
 import type { Request } from 'express';
-import type { Format } from 'logform';
-import * as winston from 'winston';
-import { WinstonLogger } from '../rootLogger';
 
 /** @public */
 export type AuditorEventActorDetails = {
@@ -82,56 +78,61 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
  *
  * @public
  */
-export type AuditorEvent = [
-  eventId: string,
-  meta: {
-    plugin: string;
-    severityLevel: AuditorServiceEventSeverityLevel;
-    actor: AuditorEventActorDetails;
-    meta?: JsonObject;
-    request?: AuditorEventRequest;
-  } & AuditorEventStatus,
-];
-
-/** @public */
-export const defaultFormatter = winston.format.combine(
-  winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss',
-  }),
-  winston.format.errors({ stack: true }),
-  winston.format.splat(),
-  winston.format.json(),
-);
+export type AuditorEvent = {
+  plugin: string;
+  eventId: string;
+  severityLevel: AuditorServiceEventSeverityLevel;
+  actor: AuditorEventActorDetails;
+  meta?: JsonObject;
+  request?: AuditorEventRequest;
+} & AuditorEventStatus;
 
 /**
- * Adds `isAuditorEvent` field
- *
+ * Logging function used by the auditor.
  * @public
  */
-export const auditorFieldFormat = winston.format(info => {
-  return { ...info, isAuditorEvent: true };
-})();
+export type AuditorLogFunction = (event: AuditorEvent) => void | Promise<void>;
 
 /**
- * A {@link @backstage/backend-plugin-api#AuditorService} implementation based on winston.
+ * A {@link @backstage/backend-plugin-api#AuditorService} implementation that logs events using a provided callback.
  *
  * @public
+ *
+ * @example
+ * ```ts
+ * export const auditorServiceFactory = createServiceFactory({
+ *   service: coreServices.auditor,
+ *   deps: {
+ *     logger: coreServices.logger,
+ *     auth: coreServices.auth,
+ *     httpAuth: coreServices.httpAuth,
+ *     plugin: coreServices.pluginMetadata,
+ *   },
+ *   factory({ logger, plugin, auth, httpAuth }) {
+ *     const auditLogger = logger.child({ isAuditorEvent: true });
+ *     return DefaultAuditorService.create(
+ *       event => auditLogger.info(`${event.plugin}.${event.eventId}`, event),
+ *       { plugin, auth, httpAuth },
+ *     );
+ *   },
+ * });
+ * ```
  */
 export class DefaultAuditorService implements AuditorService {
-  private readonly impl: DefaultRootAuditorService;
+  private readonly logFn: AuditorLogFunction;
   private readonly auth: AuthService;
   private readonly httpAuth: HttpAuthService;
   private readonly plugin: PluginMetadataService;
 
   private constructor(
-    impl: DefaultRootAuditorService,
+    logFn: AuditorLogFunction,
     deps: {
       auth: AuthService;
       httpAuth: HttpAuthService;
       plugin: PluginMetadataService;
     },
   ) {
-    this.impl = impl;
+    this.logFn = logFn;
     this.auth = deps.auth;
     this.httpAuth = deps.httpAuth;
     this.plugin = deps.plugin;
@@ -141,21 +142,40 @@ export class DefaultAuditorService implements AuditorService {
    * Creates a {@link DefaultAuditorService} instance.
    */
   static create(
-    impl: DefaultRootAuditorService,
+    logFn: AuditorLogFunction,
     deps: {
       auth: AuthService;
       httpAuth: HttpAuthService;
       plugin: PluginMetadataService;
     },
   ): DefaultAuditorService {
-    return new DefaultAuditorService(impl, deps);
+    return new DefaultAuditorService(logFn, deps);
   }
 
   private async log<TMeta extends JsonObject>(
     options: AuditorEventOptions<TMeta>,
   ): Promise<void> {
-    const auditEvent = await this.reshapeAuditorEvent(options);
-    this.impl.log(auditEvent);
+    const { eventId, severityLevel = 'low', request, meta, ...rest } = options;
+
+    await this.logFn({
+      plugin: this.plugin.getId(),
+      eventId,
+      severityLevel,
+      actor: {
+        actorId: await this.getActorId(request),
+        ip: request?.ip,
+        hostname: request?.hostname,
+        userAgent: request?.get('user-agent'),
+      },
+      request: request
+        ? {
+            url: request?.originalUrl,
+            method: request?.method,
+          }
+        : undefined,
+      meta: Object.keys(meta ?? {}).length === 0 ? undefined : meta,
+      ...rest,
+    });
   }
 
   async createEvent(
@@ -175,7 +195,7 @@ export class DefaultAuditorService implements AuditorService {
         await this.log({
           ...options,
           ...params,
-          error: params.error.toString(),
+          error: String(params.error),
           meta: { ...options.meta, ...params?.meta },
           status: 'failed',
         });
@@ -206,105 +226,5 @@ export class DefaultAuditorService implements AuditorService {
     }
 
     return undefined;
-  }
-
-  private async reshapeAuditorEvent<T extends JsonObject>(
-    options: AuditorEventOptions<T>,
-  ): Promise<AuditorEvent> {
-    const { eventId, severityLevel = 'low', request, meta, ...rest } = options;
-
-    const auditEvent: AuditorEvent = [
-      `${this.plugin.getId()}.${eventId}`,
-      {
-        plugin: this.plugin.getId(),
-        severityLevel,
-        actor: {
-          actorId: await this.getActorId(request),
-          ip: request?.ip,
-          hostname: request?.hostname,
-          userAgent: request?.get('user-agent'),
-        },
-        request: request
-          ? {
-              url: request?.originalUrl,
-              method: request?.method,
-            }
-          : undefined,
-        meta: Object.keys(meta ?? {}).length === 0 ? undefined : meta,
-        ...rest,
-      },
-    ];
-
-    return auditEvent;
-  }
-}
-
-/**
- * Options for creating a root auditor.
- * If `rootLogger` is provided, the root auditor will default to using it.
- * Otherwise, a new logger will be created using the provided `meta`, `format`, and `transports`.
- *
- * @public
- */
-export type RootAuditorOptions =
-  | {
-      meta?: JsonObject;
-      format?: Format;
-      transports?: winston.transport[];
-    }
-  | {
-      rootLogger: RootLoggerService;
-    };
-
-/** @public */
-export class DefaultRootAuditorService {
-  private readonly impl: WinstonLogger;
-
-  private constructor(impl: WinstonLogger) {
-    this.impl = impl;
-  }
-
-  /**
-   * Creates a {@link DefaultRootAuditorService} instance.
-   */
-  static create(options?: RootAuditorOptions): DefaultRootAuditorService {
-    if (options && 'rootLogger' in options) {
-      return new DefaultRootAuditorService(
-        options.rootLogger.child({ isAuditorEvent: true }) as WinstonLogger,
-      );
-    }
-
-    let auditor = WinstonLogger.create({
-      meta: {
-        service: 'backstage',
-      },
-      level: 'info',
-      format: winston.format.combine(
-        auditorFieldFormat,
-        options?.format ?? defaultFormatter,
-      ),
-      transports: options?.transports,
-    });
-
-    if (options?.meta) {
-      auditor = auditor.child(options.meta) as WinstonLogger;
-    }
-
-    return new DefaultRootAuditorService(auditor);
-  }
-
-  async log(auditorEvent: AuditorEvent): Promise<void> {
-    this.impl.info(...auditorEvent);
-  }
-
-  forPlugin(deps: {
-    auth: AuthService;
-    httpAuth: HttpAuthService;
-    plugin: PluginMetadataService;
-  }): AuditorService {
-    const impl = new DefaultRootAuditorService(
-      this.impl.child({}) as WinstonLogger,
-    );
-    return DefaultAuditorService.create(impl, deps);
   }
 }
