@@ -41,7 +41,7 @@ There are however some ways to get this to work without too much effort.
    yarn start
    ```
 
-   The default for `global-agent` is to have a prefix on the variable names, hence the need for specifying it twice. For further information about https_proxy and no_proxy     excludes see the global agent documentation https://github.com/gajus/global-agent.
+   The default for `global-agent` is to have a prefix on the variable names, hence the need for specifying it twice. For further information about https_proxy and no_proxy     excludes see the global agent documentation https://github.com/gajus/global-agent and undici documentation https://github.com/nodejs/undici.
 
 ## Configuration
 
