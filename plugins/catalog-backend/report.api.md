@@ -11,6 +11,7 @@ import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -206,6 +207,7 @@ export type CatalogEnvironment = {
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
+  auditor?: AuditorService;
 };
 
 // @public
