@@ -166,6 +166,16 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
   const readerPageTheme = createTheme({
     ...currentTheme,
+    overrides: {
+      // This fixes issues with double scrolls in the TechDocs reader page on EntityPage
+      // @ts-ignore BackstagePage is not in the theme type
+      BackstagePage: {
+        root: {
+          height: 'inherit',
+          overflowY: 'visible',
+        },
+      },
+    },
     ...(props.overrideThemeOptions || {}),
   });
   const { kind, name, namespace } = useRouteRefParams(rootDocsRouteRef);
