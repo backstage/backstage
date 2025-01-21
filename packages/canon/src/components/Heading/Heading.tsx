@@ -18,7 +18,7 @@
 
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { getResponsiveValue } from '../../utils/getResponsiveValue';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
 import type { HeadingProps } from './types';
 
@@ -34,7 +34,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     } = props;
 
     // Get the responsive value for the variant
-    const responsiveVariant = getResponsiveValue(variant);
+    const responsiveVariant = useResponsiveValue(variant);
 
     // Determine the component to render based on the variant
     let Component = as;

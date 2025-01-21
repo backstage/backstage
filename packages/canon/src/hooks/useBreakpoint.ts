@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useMediaQuery } from './useMediaQuery';
 import type { Breakpoint } from '../types';
 
 export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
@@ -25,7 +25,7 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
   { name: 'Extra Large', id: 'xl', value: 1536 },
 ];
 
-export const getBreakpoint = (): Breakpoint => {
+export const useBreakpoint = (): Breakpoint => {
   const matches = breakpoints.map(breakpoint => {
     const match = useMediaQuery(`(min-width: ${breakpoint.value}px)`);
     return match;

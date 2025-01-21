@@ -19,7 +19,7 @@
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
 import clsx from 'clsx';
-import { getResponsiveValue } from '../../utils/getResponsiveValue';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
 import type { ButtonProps } from './types';
 
@@ -39,8 +39,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     } = props;
 
     // Get the responsive value for the variant
-    const responsiveSize = getResponsiveValue(size);
-    const responsiveVariant = getResponsiveValue(variant);
+    const responsiveSize = useResponsiveValue(size);
+    const responsiveVariant = useResponsiveValue(variant);
 
     return (
       <button

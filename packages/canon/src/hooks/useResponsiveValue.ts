@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Breakpoint } from '../types';
-import { getBreakpoint, breakpoints } from './getBreakpoint';
 
-export const getResponsiveValue = (
-  value: string | Partial<Record<Breakpoint, string>>,
-) => {
-  const currentBreakpoint = getBreakpoint();
+import type { Breakpoint } from '../types';
+import { useBreakpoint, breakpoints } from './useBreakpoint';
+
+type ResponsiveValue = string | Partial<Record<Breakpoint, string>>;
+
+export const useResponsiveValue = (value: ResponsiveValue) => {
+  const currentBreakpoint = useBreakpoint();
 
   if (typeof value === 'object') {
     const index = breakpoints.findIndex(

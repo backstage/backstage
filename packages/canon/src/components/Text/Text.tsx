@@ -17,7 +17,7 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { getResponsiveValue } from '../../utils/getResponsiveValue';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 
 import type { TextProps } from './types';
@@ -35,8 +35,8 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     } = props;
 
     // Get the responsive values for the variant and weight
-    const responsiveVariant = getResponsiveValue(variant);
-    const responsiveWeight = getResponsiveValue(weight);
+    const responsiveVariant = useResponsiveValue(variant);
+    const responsiveWeight = useResponsiveValue(weight);
 
     return (
       <p
