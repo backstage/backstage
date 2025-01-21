@@ -118,9 +118,40 @@ export class PgSearchEngine implements SearchEngine {
     this.highlightOptions = highlightOptions;
     this.indexerBatchSize =
       config.getOptionalNumber('search.pg.indexerBatchSize') ?? 1000;
-    this.normalization =
-      config.getOptionalNumber('search.pg.normalization') ?? 0;
+
+    this.normalization = this.getNormalizationValue(config);
     this.logger = logger;
+  }
+
+  private getNormalizationValue(config: Config) {
+    const normalizationConfig =
+      config.getOptional('search.pg.normalization') ?? 0;
+    if (typeof normalizationConfig === 'number') {
+      return normalizationConfig;
+    } else if (typeof normalizationConfig === 'string') {
+      return this.evaluateBitwiseOrExpression(normalizationConfig);
+    }
+    this.logger?.error(
+      `Unknown normalization configuration: ${normalizationConfig}`,
+    );
+
+    return 0;
+  }
+
+  private evaluateBitwiseOrExpression(expression: string) {
+    const tokens = expression.split('|').map(token => token.trim());
+
+    const numbers = tokens.map(token => {
+      const num = parseInt(token, 10);
+      if (isNaN(num)) {
+        this.logger?.error(
+          `Unknown expression for normalization: ${expression}`,
+        );
+        return 0;
+      }
+      return num;
+    });
+    return numbers.reduce((acc, num) => acc | num, 0);
   }
 
   /**
