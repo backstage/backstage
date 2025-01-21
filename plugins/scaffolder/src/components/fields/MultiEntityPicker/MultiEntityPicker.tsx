@@ -169,7 +169,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         getOptionDisabled={_options =>
           maxItems ? noOfItemsSelected >= maxItems : false
         }
-        autoSelect
+        autoSelect={false}
         freeSolo={allowArbitraryValues}
         renderInput={params => (
           <TextField
