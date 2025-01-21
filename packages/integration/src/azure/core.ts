@@ -29,8 +29,8 @@ import { AzureUrl } from './AzureUrl';
  * @param url - A URL pointing to a file
  * @public
  */
-export function getAzureFileFetchUrl(url: string): string {
-  return AzureUrl.fromRepoUrl(url).toFileUrl();
+export function getAzureFileFetchUrl(url: string, apiVersion: string): string {
+  return AzureUrl.fromRepoUrl(url, apiVersion).toFileUrl();
 }
 
 /**
@@ -40,8 +40,8 @@ export function getAzureFileFetchUrl(url: string): string {
  * @param url - A URL pointing to a path
  * @public
  */
-export function getAzureDownloadUrl(url: string): string {
-  return AzureUrl.fromRepoUrl(url).toArchiveUrl();
+export function getAzureDownloadUrl(url: string, apiVersion: string): string {
+  return AzureUrl.fromRepoUrl(url, apiVersion).toArchiveUrl();
 }
 
 /**
@@ -50,6 +50,6 @@ export function getAzureDownloadUrl(url: string): string {
  * @param url - A URL pointing to a repository or a sub-path
  * @public
  */
-export function getAzureCommitsUrl(url: string): string {
-  return AzureUrl.fromRepoUrl(url).toCommitsUrl();
+export function getAzureCommitsUrl(url: string, apiVersion: string): string {
+  return AzureUrl.fromRepoUrl(url, apiVersion).toCommitsUrl();
 }

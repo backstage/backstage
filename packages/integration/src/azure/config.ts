@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
 const AZURE_HOST = 'dev.azure.com';
+const AZURE_API_VERSION = '6.0';
 
 /**
  * The configuration parameters for a single Azure provider.
@@ -38,7 +39,7 @@ export type AzureIntegrationConfig = {
    * Currently only "6.0" is is default.
    */
   apiVersion: string;
-  
+
   /**
    * The authorization token to use for requests.
    *
@@ -207,6 +208,9 @@ export function readAzureIntegrationConfig(
 ): AzureIntegrationConfig {
   const host = config.getOptionalString('host') ?? AZURE_HOST;
 
+  const apiVersion =
+    config.getOptionalString('apiVersion') ?? AZURE_API_VERSION;
+
   let credentialConfigs = config
     .getOptionalConfigArray('credentials')
     ?.map(credential => {
@@ -355,6 +359,7 @@ export function readAzureIntegrationConfig(
 
   return {
     host,
+    apiVersion,
     credentials,
   };
 }
@@ -374,8 +379,12 @@ export function readAzureIntegrationConfigs(
 
   // If no explicit dev.azure.com integration was added, put one in the list as
   // a convenience
-  if (!result.some(c => c.host === AZURE_HOST)) {
-    result.push({ host: AZURE_HOST });
+  if (
+    !result.some(
+      c => c.host === AZURE_HOST && c.apiVersion === AZURE_API_VERSION,
+    )
+  ) {
+    result.push({ host: AZURE_HOST, apiVersion: AZURE_API_VERSION });
   }
 
   return result;

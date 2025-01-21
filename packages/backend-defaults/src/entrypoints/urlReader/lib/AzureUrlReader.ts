@@ -77,7 +77,10 @@ export class AzureUrlReader implements UrlReaderService {
     // TODO: etag is not implemented yet.
     const { signal } = options ?? {};
 
-    const builtUrl = getAzureFileFetchUrl(url);
+    const builtUrl = getAzureFileFetchUrl(
+      url,
+      this.integration.config.apiVersion,
+    );
     let response: Response;
     try {
       const credentials = await this.deps.credentialsProvider.getCredentials({
@@ -123,9 +126,12 @@ export class AzureUrlReader implements UrlReaderService {
       url: url,
     });
 
-    const commitsAzureResponse = await fetch(getAzureCommitsUrl(url), {
-      headers: credentials?.headers,
-    });
+    const commitsAzureResponse = await fetch(
+      getAzureCommitsUrl(url, this.integration.config.apiVersion),
+      {
+        headers: credentials?.headers,
+      },
+    );
     if (!commitsAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;
       if (commitsAzureResponse.status === 404) {
@@ -139,19 +145,22 @@ export class AzureUrlReader implements UrlReaderService {
       throw new NotModifiedError();
     }
 
-    const archiveAzureResponse = await fetch(getAzureDownloadUrl(url), {
-      headers: {
-        ...credentials?.headers,
-        Accept: 'application/zip',
+    const archiveAzureResponse = await fetch(
+      getAzureDownloadUrl(url, this.integration.config.apiVersion),
+      {
+        headers: {
+          ...credentials?.headers,
+          Accept: 'application/zip',
+        },
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can be
+        // removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
       },
-      // TODO(freben): The signal cast is there because pre-3.x versions of
-      // node-fetch have a very slightly deviating AbortSignal type signature.
-      // The difference does not affect us in practice however. The cast can be
-      // removed after we support ESM for CLI dependencies and migrate to
-      // version 3 of node-fetch.
-      // https://github.com/backstage/backstage/issues/8242
-      ...(signal && { signal: signal as any }),
-    });
+    );
     if (!archiveAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
       if (archiveAzureResponse.status === 404) {
