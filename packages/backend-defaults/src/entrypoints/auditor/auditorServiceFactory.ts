@@ -38,7 +38,7 @@ export const auditorServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
   },
   factory({ logger, plugin, auth, httpAuth }) {
-    const auditLogger = logger.child({ isAuditorEvent: true });
+    const auditLogger = logger.child({ isAuditEvent: true });
     return DefaultAuditorService.create(
       event => auditLogger.info(`${event.plugin}.${event.eventId}`, event),
       { plugin, auth, httpAuth },
