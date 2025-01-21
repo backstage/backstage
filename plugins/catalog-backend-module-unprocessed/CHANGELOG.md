@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.5.5-next.0
+
+### Patch Changes
+
+- 4e073c7: Use new `PermissionsRegistryService` instead of the deprecated `catalogPermissionExtensionPoint`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.7
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 0.5.4
 
 ### Patch Changes

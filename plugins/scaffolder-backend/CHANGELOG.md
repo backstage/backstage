@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.30.0-next.0
+
+### Minor Changes
+
+- a4aa244: This change integrates the `auditor` service into the Scaffolder plugin.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/backend-defaults@0.8.0-next.0
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.29.0
 
 ### Minor Changes

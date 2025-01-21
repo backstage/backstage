@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder
 
+## 1.27.5-next.0
+
+### Patch Changes
+
+- 3107f1f: Fixed a bug in the BitbucketRepoBranchPicker component that crashed the scaffolder
+- 3edf7e7: Add schema output return type to the `makeFieldSchema` function return
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.14.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-permission-react@0.4.30
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.27.4
 
 ### Patch Changes

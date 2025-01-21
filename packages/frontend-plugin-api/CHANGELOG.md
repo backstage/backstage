@@ -1,5 +1,16 @@
 # @backstage/frontend-plugin-api
 
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- Updated dependencies
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+
 ## 0.9.4
 
 ### Patch Changes
