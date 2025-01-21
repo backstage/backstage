@@ -26,6 +26,7 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
 ];
 
 export const useBreakpoint = (): Breakpoint => {
+  // TODO: Perhaps refactor for useMediaQuery to accept an array of queries
   const matches = breakpoints.map(breakpoint => {
     const match = useMediaQuery(`(min-width: ${breakpoint.value}px)`);
     return match;
