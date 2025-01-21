@@ -65,10 +65,15 @@ type ProgressTrackerWithErrorReports = ProgressTracker & {
 };
 
 class TestProvider implements EntityProvider {
+  readonly #name: string;
   #connection?: EntityProviderConnection;
 
+  constructor(name: string = 'test') {
+    this.#name = name;
+  }
+
   getProviderName(): string {
-    return 'test';
+    return this.#name;
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -901,11 +906,8 @@ describe('Catalog Backend Integration', () => {
   });
 
   it('should replace any refresh_state_references that are dangling after claiming an entityRef with locationKey', async () => {
-    const firstProvider = new TestProvider();
-    firstProvider.getProviderName = () => 'first';
-
-    const secondProvider = new TestProvider();
-    secondProvider.getProviderName = () => 'second';
+    const firstProvider = new TestProvider('first');
+    const secondProvider = new TestProvider('second');
 
     const harness = await TestHarness.create({
       additionalProviders: [firstProvider, secondProvider],
