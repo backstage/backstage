@@ -17,9 +17,10 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { HeadingProps } from './types';
-import { useCanon } from '../../contexts/canon';
 import clsx from 'clsx';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+
+import type { HeadingProps } from './types';
 
 /** @public */
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
@@ -31,10 +32,9 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       className,
       ...restProps
     } = props;
-    const { getResponsiveValue } = useCanon();
 
     // Get the responsive value for the variant
-    const responsiveVariant = getResponsiveValue(variant);
+    const responsiveVariant = useResponsiveValue(variant);
 
     // Determine the component to render based on the variant
     let Component = as;
