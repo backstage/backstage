@@ -10,7 +10,7 @@
     left: 0;
     width: 300px;
     height: 100vh;
-    color: var(--canon-text-primary);
+    color: var(--canon-fg-primary);
     background-color: var(--canon-bg-elevated);
     border-right: 1px solid var(--canon-border);
     padding-left: 20px;
@@ -26,7 +26,7 @@
 }
 
 .logo path {
-  fill: var(--canon-text-primary);
+  fill: var(--canon-fg-primary);
 }
 
 .menu {
@@ -75,11 +75,11 @@
   font-family: var(--docs-font);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-primary);
 }
 
 .lineStatus {
   font-family: var(--docs-font);
   font-size: var(--canon-font-size-3);
-  color: var(--canon-text-secondary);
+  color: var(--canon-fg-secondary);
 }

@@ -383,7 +383,7 @@ export const Border: Story = {
   args: {
     style: {
       background: 'var(--canon-bg-elevated)',
-      color: 'var(--canon-text-primary)',
+      color: 'var(--canon-fg-primary)',
       padding: '4px 8px',
       width: '80px',
       height: '32px',

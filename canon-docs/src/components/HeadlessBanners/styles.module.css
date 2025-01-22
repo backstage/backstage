@@ -10,7 +10,7 @@
 }
 
 .icon path {
-  fill: var(--canon-text-primary);
+  fill: var(--canon-fg-primary);
 }
 
 .content {
@@ -37,6 +37,6 @@
   border-radius: 100px;
   margin-top: var(--canon-space-3);
   font-size: var(--canon-font-size-3);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-primary);
   gap: var(--canon-space-2);
 }

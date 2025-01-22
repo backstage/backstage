@@ -23,7 +23,7 @@
   gap: var(--canon-space-2);
   font-size: var(--canon-font-size-xs);
   font-family: var(--canon-font-regular);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-primary);
   user-select: none;
 
   &:hover {

@@ -75,7 +75,7 @@
   --canon-bg: #f8f8f8;
   --canon-bg-elevated: #fff;
   --canon-bg-accent: #000;
-  --canon-bg-accent-active: #000;
+  --canon-bg-accent-focus: #000;
   --canon-bg-accent-disabled: #000;
   --canon-bg-accent-hover: #000;
   --canon-bg-tint: #edf2fe;
@@ -95,14 +95,15 @@
   --canon-border-hover: rgba(0, 0, 0, 0.2);
   --canon-border-success: #008000;
   --canon-border-warning: #e36d05;
+  --canon-fg-primary: #000;
+  --canon-fg-secondary: #646464;
+  --canon-fg-link: #fff;
+  --canon-fg-link-hover: #fff;
   --canon-fg-accent: #fff;
+  --canon-fg-tint: #000;
   --canon-fg-danger: #e22b2b;
-  --canon-fg-success: #008000;
   --canon-fg-warning: #e36d05;
-  --canon-text-link: #fff;
-  --canon-text-link-hover: #fff;
-  --canon-text-primary: #000;
-  --canon-text-secondary: #646464;
+  --canon-fg-success: #008000;
 }
 
 /* Dark theme tokens */
@@ -110,7 +111,7 @@
   --canon-bg: #f8f8f8;
   --canon-bg-elevated: #fff;
   --canon-bg-accent: #000;
-  --canon-bg-accent-active: #000;
+  --canon-bg-accent-focus: #000;
   --canon-bg-accent-disabled: #000;
   --canon-bg-accent-hover: #000;
   --canon-bg-tint: #edf2fe;
@@ -134,8 +135,8 @@
   --canon-fg-danger: #e22b2b;
   --canon-fg-success: #008000;
   --canon-fg-warning: #e36d05;
-  --canon-text-link: #fff;
-  --canon-text-link-hover: #fff;
-  --canon-text-primary: #000;
-  --canon-text-secondary: #646464;
+  --canon-fg-link: #fff;
+  --canon-fg-link-hover: #fff;
+  --canon-fg-primary: #000;
+  --canon-fg-secondary: #646464;
 }
