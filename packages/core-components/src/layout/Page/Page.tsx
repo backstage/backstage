@@ -51,7 +51,7 @@ type Props = {
 
 export function Page(props: Props) {
   const { themeId, className, children } = props;
-  const styles = useStyles();
+  const classes = useStyles();
   return (
     <ThemeProvider
       theme={(baseTheme: Theme) => ({
@@ -59,7 +59,7 @@ export function Page(props: Props) {
         page: baseTheme.getPageTheme({ themeId }),
       })}
     >
-      <main className={classNames(styles.root, className)}>{children}</main>
+      <main className={classNames(classes.root, className)}>{children}</main>
     </ThemeProvider>
   );
 }
