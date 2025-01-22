@@ -19,7 +19,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DefaultNode } from './DefaultNode';
 import { DependencyGraphTypes as Types } from './types';
 import { NODE_TEST_ID } from './constants';
-import dagre from 'dagre';
+import dagre from '@dagrejs/dagre';
 
 /** @public */
 export type DependencyGraphNodeClassKey = 'node';
