@@ -28,7 +28,6 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GcpIapResult as GcpIapResult_2 } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
 import { GcpIapTokenInfo as GcpIapTokenInfo_2 } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
@@ -40,7 +39,6 @@ import { ProfileInfo as ProfileInfo_2 } from '@backstage/plugin-auth-node';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
-import { TokenManager } from '@backstage/backend-common';
 import { TokenParams as TokenParams_2 } from '@backstage/plugin-auth-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
@@ -123,13 +121,7 @@ export type BitbucketServerOAuthResult = {
 
 // @public
 export class CatalogIdentityClient {
-  constructor(options: {
-    catalogApi: CatalogApi;
-    tokenManager?: TokenManager;
-    discovery: DiscoveryService;
-    auth?: AuthService;
-    httpAuth?: HttpAuthService;
-  });
+  constructor(options: { catalogApi: CatalogApi; auth: AuthService });
   findUser(query: { annotations: Record<string, string> }): Promise<UserEntity>;
   resolveCatalogMembership(query: {
     entityRefs: string[];
@@ -651,9 +643,9 @@ export const readState: typeof decodeOAuthState;
 // @public @deprecated (undocumented)
 export interface RouterOptions {
   // (undocumented)
-  auth?: AuthService;
+  auth: AuthService;
   // (undocumented)
-  catalogApi?: CatalogApi;
+  catalogApi: CatalogApi;
   // (undocumented)
   config: RootConfigService;
   // (undocumented)
@@ -663,8 +655,6 @@ export interface RouterOptions {
   // (undocumented)
   discovery: DiscoveryService;
   // (undocumented)
-  httpAuth?: HttpAuthService;
-  // (undocumented)
   logger: LoggerService;
   // (undocumented)
   ownershipResolver?: AuthOwnershipResolver;
@@ -672,8 +662,6 @@ export interface RouterOptions {
   providerFactories?: ProviderFactories;
   // (undocumented)
   tokenFactoryAlgorithm?: string;
-  // (undocumented)
-  tokenManager?: TokenManager;
 }
 
 // @public (undocumented)
