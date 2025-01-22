@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
   RELATION_MEMBER_OF,
   UserEntityV1alpha1,
@@ -24,12 +23,9 @@ import { CatalogIdentityClient } from './CatalogIdentityClient';
 import { mockServices } from '@backstage/backend-test-utils';
 
 describe('CatalogIdentityClient', () => {
-  const tokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn(),
-    authenticate: jest.fn(),
-  };
-
-  afterEach(() => jest.resetAllMocks());
+  const auth = mockServices.auth.mock({
+    getPluginRequestToken: async () => ({ token: 'my-token' }),
+  });
 
   it('findUser passes through the correct search params', async () => {
     const catalogApi = catalogServiceMock({
@@ -48,11 +44,9 @@ describe('CatalogIdentityClient', () => {
     });
     jest.spyOn(catalogApi, 'getEntities');
 
-    tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
     const client = new CatalogIdentityClient({
-      discovery: mockServices.discovery(),
       catalogApi,
-      tokenManager,
+      auth,
     });
 
     await client.findUser({ annotations: { key: 'value' } });
@@ -66,7 +60,6 @@ describe('CatalogIdentityClient', () => {
       },
       { token: 'my-token' },
     );
-    expect(tokenManager.getToken).toHaveBeenCalledWith();
   });
 
   it('resolveCatalogMembership resolves membership', async () => {
@@ -107,12 +100,10 @@ describe('CatalogIdentityClient', () => {
     ];
     const catalogApi = catalogServiceMock({ entities: mockUsers });
     jest.spyOn(catalogApi, 'getEntities');
-    tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
     const client = new CatalogIdentityClient({
-      discovery: {} as any,
       catalogApi,
-      tokenManager,
+      auth,
     });
 
     const claims = await client.resolveCatalogMembership({

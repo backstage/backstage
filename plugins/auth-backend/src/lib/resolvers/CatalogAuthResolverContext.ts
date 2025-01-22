@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   DEFAULT_NAMESPACE,
@@ -24,12 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../../identity/types';
 import {
   AuthOwnershipResolver,
@@ -37,7 +31,6 @@ import {
   AuthResolverContext,
   TokenParams,
 } from '@backstage/plugin-auth-node';
-import { CatalogIdentityClient } from '../catalog';
 
 /**
  * Uses the default ownership resolution logic to return an array
@@ -66,24 +59,12 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     logger: LoggerService;
     catalogApi: CatalogApi;
     tokenIssuer: TokenIssuer;
-    tokenManager?: TokenManager;
-    discovery: DiscoveryService;
     auth: AuthService;
-    httpAuth: HttpAuthService;
     ownershipResolver?: AuthOwnershipResolver;
   }): CatalogAuthResolverContext {
-    const catalogIdentityClient = new CatalogIdentityClient({
-      catalogApi: options.catalogApi,
-      tokenManager: options.tokenManager,
-      discovery: options.discovery,
-      auth: options.auth,
-      httpAuth: options.httpAuth,
-    });
-
     return new CatalogAuthResolverContext(
       options.logger,
       options.tokenIssuer,
-      catalogIdentityClient,
       options.catalogApi,
       options.auth,
       options.ownershipResolver,
@@ -93,7 +74,6 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   private constructor(
     public readonly logger: LoggerService,
     public readonly tokenIssuer: TokenIssuer,
-    public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalogApi: CatalogApi,
     private readonly auth: AuthService,
     private readonly ownershipResolver?: AuthOwnershipResolver,

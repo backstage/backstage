@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -29,10 +24,6 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
 
 /**
  * A catalog client tailored for reading out identity data from the catalog.
@@ -43,23 +34,9 @@ export class CatalogIdentityClient {
   private readonly catalogApi: CatalogApi;
   private readonly auth: AuthService;
 
-  constructor(options: {
-    catalogApi: CatalogApi;
-    tokenManager?: TokenManager;
-    discovery: DiscoveryService;
-    auth?: AuthService;
-    httpAuth?: HttpAuthService;
-  }) {
+  constructor(options: { catalogApi: CatalogApi; auth: AuthService }) {
     this.catalogApi = options.catalogApi;
-
-    const { auth } = createLegacyAuthAdapters({
-      auth: options.auth,
-      httpAuth: options.httpAuth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    });
-
-    this.auth = auth;
+    this.auth = options.auth;
   }
 
   /**
