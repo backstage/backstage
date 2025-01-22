@@ -11,8 +11,8 @@ This feature assumes your Backstage instance has enabled the [permissions framew
 
 ### Available permissions
 
-| Name                      | Policy | Description                                                                                                                |
-| ------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
-| kubernetes.clusters.read  | read   | Allows the user to read Kubernetes clusters information                                                                    |
-| kubernetes.resources.read | read   | Allows the user to read Kubernetes resources information                                                                   |
-| kubernetes.proxy          |        | Allows the user to make arbitrary requests to the [REST API](https://kubernetes.io/docs/reference/using-api/api-concepts/) |
+| Name                      | Policy | Description                                                                                                                               |
+| ------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| kubernetes.clusters.read  | read   | Allows the user to read Kubernetes clusters information under `/clusters`                                                                 |
+| kubernetes.resources.read | read   | Allows the user to read Kubernetes resources information under `/services/:serviceId` and `/resources`                                    |
+| kubernetes.proxy          |        | Allows the user to make arbitrary requests to the [REST API](https://kubernetes.io/docs/reference/using-api/api-concepts/) under `/proxy` |
