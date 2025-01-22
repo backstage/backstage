@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement } from 'react';
+import React, { Children, ReactElement, ReactNode } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
-  TECHDOCS_ADDONS_WRAPPER_KEY,
   TECHDOCS_ADDONS_KEY,
+  TECHDOCS_ADDONS_WRAPPER_KEY,
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
 
@@ -37,8 +37,13 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
-import { ThemeOptions } from '@material-ui/core/styles';
-import { createTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
+import {
+  createTheme,
+  makeStyles,
+  ThemeOptions,
+  ThemeProvider,
+  useTheme,
+} from '@material-ui/core/styles';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -117,6 +122,13 @@ are retrieved using the useOutlet hook from React Router.
 NOTE: Render functions are no longer supported in this approach.
 */
 
+const useStyles = makeStyles({
+  readerPage: {
+    height: 'inherit',
+    overflowY: 'visible',
+  },
+});
+
 /**
  * Props for {@link TechDocsReaderLayout}
  * @public
@@ -163,19 +175,10 @@ export type TechDocsReaderPageProps = {
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   const currentTheme = useTheme();
+  const classes = useStyles();
 
   const readerPageTheme = createTheme({
     ...currentTheme,
-    overrides: {
-      // This fixes issues with double scrolls in the TechDocs reader page on EntityPage
-      // @ts-ignore BackstagePage is not in the theme type
-      BackstagePage: {
-        root: {
-          height: 'inherit',
-          overflowY: 'visible',
-        },
-      },
-    },
     ...(props.overrideThemeOptions || {}),
   });
   const { kind, name, namespace } = useRouteRefParams(rootDocsRouteRef);
@@ -207,7 +210,6 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
       </ThemeProvider>
     );
   }
-
   // As explained above, a render function is configuration 3 and React element is 2
   return (
     <ThemeProvider theme={readerPageTheme}>
@@ -215,7 +217,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
         <TechDocsReaderPageProvider entityRef={entityRef}>
           {({ metadata, entityMetadata, onReady }) => (
             <div className="techdocs-reader-page">
-              <Page themeId="documentation">
+              <Page themeId="documentation" className={classes.readerPage}>
                 {children instanceof Function
                   ? children({
                       entityRef,
