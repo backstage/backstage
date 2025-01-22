@@ -651,5 +651,13 @@ describe('AwsCodeCommitUrlReader', () => {
         'site_name: Test\n',
       );
     });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        reader.search(
+          'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
   });
 });

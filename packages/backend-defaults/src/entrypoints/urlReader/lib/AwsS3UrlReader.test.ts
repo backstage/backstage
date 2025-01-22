@@ -572,5 +572,13 @@ describe('AwsS3UrlReader', () => {
         'site_name: Test\n',
       );
     });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        reader.search(
+          'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
   });
 });

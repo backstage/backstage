@@ -287,5 +287,13 @@ describe('FetchUrlReader', () => {
       expect(data.etag).toBe('');
       expect(data.files.length).toBe(0);
     });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        fetchUrlReader.search(`https://backstage.io/some-resource*`, {
+          etag: 'etag',
+        }),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
   });
 });

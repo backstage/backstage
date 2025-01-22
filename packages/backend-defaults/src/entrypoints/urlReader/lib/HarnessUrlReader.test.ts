@@ -280,5 +280,13 @@ describe('HarnessUrlReader', () => {
       expect(data.etag).toBe('');
       expect(data.files.length).toBe(0);
     });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        harnessProcessor.search(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
   });
 });
