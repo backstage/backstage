@@ -52,7 +52,7 @@ export function RequireKubernetesPermissions(
   return (
     <WarningPanel
       title="Permission required"
-      message={`To view Kubernetes objects, contact your administrator to give you the 
+      message={`To view Kubernetes objects, contact your Backstage administrator to give you the 
               '${kubernetesClustersReadPermission.name}' and '${kubernetesResourcesReadPermission.name}' permission.`}
     />
   );
