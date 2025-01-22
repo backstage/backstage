@@ -42,6 +42,7 @@ import {
 } from '@backstage/errors';
 import { Readable } from 'stream';
 import { parseLastModified } from './util';
+import parseGitUrl from 'git-url-parse';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for the Gitea v1 api.
@@ -161,6 +162,12 @@ export class GiteaUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
+    const { filepath } = parseGitUrl(url);
+
+    if (filepath.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
     try {
       const data = await this.readUrl(url, options);
 

@@ -150,6 +150,12 @@ export class GerritUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
+    const { pathname } = new URL(url);
+
+    if (pathname.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
     try {
       const data = await this.readUrl(url, options);
 

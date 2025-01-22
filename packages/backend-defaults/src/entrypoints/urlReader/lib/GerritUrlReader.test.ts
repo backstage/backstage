@@ -466,5 +466,13 @@ describe.skip('GerritUrlReader', () => {
       expect(data.etag).toBe('');
       expect(data.files.length).toBe(0);
     });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        gerritProcessor.search(
+          'https://gerrit.com/web/project/+/refs/heads/master/*.yaml',
+        ),
+      ).rejects.toThrow('Unsuppported search pattern URL');
+    });
   });
 });

@@ -387,5 +387,13 @@ describe('GiteaUrlReader', () => {
       expect(data.etag).toBe('');
       expect(data.files.length).toBe(0);
     });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        giteaProcessor.search(
+          'https://gitea.com/owner/project/src/branch/branch2/*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
   });
 });

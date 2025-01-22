@@ -389,6 +389,12 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
+    const { path } = parseUrl(url, true);
+
+    if (path.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
     try {
       const data = await this.readUrl(url, options);
 
