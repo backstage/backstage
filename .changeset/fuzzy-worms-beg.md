@@ -2,4 +2,6 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-The EntityTagPicker will now include the "hidden" and "initialFilter" props. The EntityAutocompletePicker will now include the "hidden" prop. The UserListPicker will now include the "hidden" and "resetFiltersWhenNoResultsFound" prop.
+Added `hidden` prop to `EntityTagPicker`, `EntityAutocompletePicker` and `UserListPicker`.
+Added `initialFilter` prop to `EntityTagPicker` to set an initial filter for the picker.  
+Added `alwaysKeepFilters` prop to `UserListPicker` to prevent filters from resetting when no entities match the initial filters.
