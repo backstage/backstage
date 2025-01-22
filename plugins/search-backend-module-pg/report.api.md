@@ -164,7 +164,7 @@ export interface PgSearchQuery {
   // (undocumented)
   limit: number;
   // (undocumented)
-  normalization: number;
+  normalization?: number;
   // (undocumented)
   offset: number;
   // (undocumented)
