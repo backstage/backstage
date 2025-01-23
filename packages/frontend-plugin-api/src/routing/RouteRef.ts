@@ -95,7 +95,7 @@ export class RouteRefImpl implements InternalRouteRef {
     if (!id) {
       throw new Error(`${this.#name} id must be a non-empty string`);
     }
-    if (this.#id) {
+    if (this.#id && this.#id !== id) {
       throw new Error(
         `${this.#name} was referenced twice as both '${this.#id}' and '${id}'`,
       );
