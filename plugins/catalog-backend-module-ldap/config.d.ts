@@ -437,7 +437,7 @@ export interface Config {
       /**
        * LdapOrg provider key
        */
-      ldapOrg: {
+      ldapOrg?: {
         /**
          * Id of the LdapOrg provider
          */
