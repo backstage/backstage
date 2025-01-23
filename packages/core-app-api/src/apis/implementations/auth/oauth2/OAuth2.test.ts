@@ -23,6 +23,7 @@ import {
   AuthConnector,
   AuthConnectorRefreshSessionOptions,
   openLoginPopup,
+  // OAuth2Response,
   OAuth2CreateOptionsWithAuthConnector,
 } from '../../../../index';
 
