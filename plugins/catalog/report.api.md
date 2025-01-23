@@ -210,6 +210,8 @@ export interface CatalogTableProps {
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
+  components?: TableProps<CatalogTableRow>['components'];
+  // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
   subtitle?: string;
