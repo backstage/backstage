@@ -310,7 +310,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       if (step.each && !resolvedEach) {
         throw new InputError(
-          `Invalid each value passed to action ${action.id}, "${step.each}" cannot be resolved to a value`,
+          `Invalid value on action ${action.id}.each parameter, "${step.each}" cannot be resolved to a value`,
         );
       }
 

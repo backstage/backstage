@@ -1005,7 +1005,7 @@ describe('NunjucksWorkflowRunner', () => {
         parameters: {},
       });
       await expect(runner.execute(task)).rejects.toThrow(
-        'Invalid each value passed to action jest-validated-action, "${{parameters.data}}" cannot be resolved to a value',
+        'Invalid value on action jest-validated-action.each parameter, "${{parameters.data}}" cannot be resolved to a value',
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });
