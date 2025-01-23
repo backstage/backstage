@@ -15,17 +15,19 @@
  */
 
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
+import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthRequestOptions,
   BackstageIdentityApi,
+  BackstageIdentityApi,
   BackstageIdentityResponse,
   BackstageUserIdentity,
   OAuthApi,
   OpenIdConnectApi,
-  ProfileInfo,
   ProfileInfoApi,
+  SessionApi,
   SessionApi,
   SessionState,
 } from '@backstage/core-plugin-api';
@@ -33,6 +35,7 @@ import { Observable } from '@backstage/types';
 import {
   OAuth2CreateOptions,
   OAuth2CreateOptionsWithAuthConnector,
+  OAuth2Response,
   OAuth2Session,
 } from './types';
 
@@ -40,21 +43,6 @@ const DEFAULT_PROVIDER = {
   id: 'oauth2',
   title: 'Your Identity Provider',
   icon: () => null,
-};
-
-export type OAuth2Response = {
-  providerInfo: {
-    accessToken: string;
-    idToken: string;
-    scope: string;
-    expiresInSeconds?: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: {
-    token: string;
-    expiresInSeconds?: number;
-    identity: BackstageUserIdentity;
-  };
 };
 
 /**
@@ -76,7 +64,14 @@ export default class OAuth2
     if ('authConnector' in options) {
       return options.authConnector;
     }
+  private static createAuthConnector(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    if ('authConnector' in options) {
+      return options.authConnector;
+    }
     const {
+      scopeTransform = x => x,
       scopeTransform = x => x,
       configApi,
       discoveryApi,
@@ -101,9 +96,10 @@ export default class OAuth2
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(res.providerInfo.scope, {
+            scopes: OAuth2.normalizeScopes(
               scopeTransform,
-            }),
+              res.providerInfo.scope,
+            ),
             expiresAt: res.providerInfo.expiresInSeconds
               ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
               : undefined,
@@ -218,6 +214,7 @@ export default class OAuth2
    * @public
    */
   public static normalizeScopes(
+    scopeTransform: (scopes: string[]) => string[],
     scopes?: string | string[],
     options?: { scopeTransform: (scopes: string[]) => string[] },
   ): Set<string> {
