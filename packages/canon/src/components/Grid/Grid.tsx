@@ -16,62 +16,47 @@
 
 import { createElement, forwardRef } from 'react';
 import { GridItemProps, GridProps } from './types';
-import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
+import { getClassNames } from '../../utils/getClassNames';
 
 const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const {
     children,
-    columns,
     gap = 'xs',
+    columns = 'auto',
     className,
     style,
     ...restProps
   } = props;
 
-  const sprinklesClassName = gridSprinkles({
-    ...restProps,
-    gap,
-    gridTemplateColumns: columns ? columns : 'auto',
-  });
+  const utilityClassNames = getClassNames({ gap, columns, ...restProps });
 
-  const classNames = ['grid', sprinklesClassName, className]
+  const classNames = ['canon-grid', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 
-  return createElement(
-    'div',
-    {
-      ref,
-      className: classNames,
-      style,
-    },
+  return createElement('div', {
+    ref,
+    className: classNames,
+    style,
     children,
-  );
+  });
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { children, rowSpan, colSpan, start, end, className, style } = props;
+  const { children, className, style, ...restProps } = props;
 
-  const sprinklesClassName = gridItemSprinkles({
-    rowSpan,
-    colSpan,
-    start,
-    end,
-  });
+  const utilityClassNames = getClassNames(restProps);
 
-  const classNames = ['grid-item', sprinklesClassName, className]
+  const classNames = ['grid-item', utilityClassNames, className]
     .filter(Boolean)
     .join(' ');
 
-  return createElement(
-    'div',
-    {
-      ref,
-      className: classNames,
-      style,
-    },
+  return createElement('div', {
+    ref,
+    className: classNames,
+    style,
     children,
-  );
+  });
 });
 
 /** @public */

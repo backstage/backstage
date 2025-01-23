@@ -18,8 +18,8 @@ import React from 'react';
 
 export const Root = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="table-wrapper">
-      <table className="table">{children}</table>
+    <div className="sb-table-wrapper">
+      <table className="sb-table">{children}</table>
     </div>
   );
 };
@@ -37,13 +37,13 @@ export const HeaderRow = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const HeaderCell = ({ children }: { children: React.ReactNode }) => {
-  return <th className="table-cell table-header-cell">{children}</th>;
+  return <th className="sb-table-cell sb-table-header-cell">{children}</th>;
 };
 
 export const Row = ({ children }: { children: React.ReactNode }) => {
-  return <tr className="table-row">{children}</tr>;
+  return <tr className="sb-table-row">{children}</tr>;
 };
 
 export const Cell = ({ children }: { children: React.ReactNode }) => {
-  return <td className="table-cell">{children}</td>;
+  return <td className="sb-table-cell">{children}</td>;
 };

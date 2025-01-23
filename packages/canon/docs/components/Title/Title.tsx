@@ -31,7 +31,7 @@ export const Title = ({
   if (type === 'h3') Component = 'h3';
 
   return React.createElement(Component, {
-    className: `title ${type}`,
+    className: `sb-title ${type}`,
     style,
     children,
   });

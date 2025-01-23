@@ -5,7 +5,7 @@ authorUrl: https://github.com/adityasinghal26
 category: Development
 description: Integrates GitHub Codespaces for a Backstage component with the Authenticated User.
 documentation: https://github.com/adityasinghal26/backstage-plugins/tree/main/plugins/github-codespaces
-iconUrl: https://github.com/adityasinghal26/backstage-plugins/blob/main/plugins/github-codespaces/images/GitHubLogo.png
+iconUrl: https://avatars.githubusercontent.com/u/9919?s=200&v=4
 npmPackageName: '@adityasinghal26/plugin-github-codespaces'
 tags:
   - github

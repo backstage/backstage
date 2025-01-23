@@ -139,6 +139,16 @@ export interface Config {
     }>;
 
     /**
+     * Disables the compatibility layer for relations in returned entities that
+     * ensures that all relations objects have both `target` and `targetRef`.
+     *
+     * Enabling this option significantly reduces the memory usage of the
+     * catalog, and slightly increases performance, but may break consumers that
+     * rely on the existence of `target` in the relations objects.
+     */
+    disableRelationsCompatibility?: boolean;
+
+    /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
      * "keep".

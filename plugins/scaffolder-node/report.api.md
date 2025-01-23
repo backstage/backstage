@@ -9,6 +9,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -41,6 +42,9 @@ export type ActionContext<
   ): void;
   createTemporaryDirectory(): Promise<string>;
   getInitiatorCredentials(): Promise<BackstageCredentials>;
+  task: {
+    id: string;
+  };
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
   user?: {
@@ -191,6 +195,7 @@ export type ExecuteShellCommandOptions = {
   command: string;
   args: string[];
   options?: SpawnOptionsWithoutStdio;
+  logger?: LoggerService;
   logStream?: Writable;
 };
 

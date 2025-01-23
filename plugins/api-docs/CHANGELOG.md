@@ -1,5 +1,30 @@
 # @backstage/plugin-api-docs
 
+## 0.12.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/plugin-catalog@1.26.1-next.0
+  - @backstage/core-compat-api@0.3.4
+
+## 0.12.2
+
+### Patch Changes
+
+- 11babd9: Fix link styling in ProvidedApisCard component so it aligns with other card components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-catalog@1.26.0
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/core-components@0.16.2
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-permission-react@0.4.29
+
 ## 0.12.2-next.2
 
 ### Patch Changes

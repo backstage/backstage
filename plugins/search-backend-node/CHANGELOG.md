@@ -1,5 +1,28 @@
 # @backstage/plugin-search-backend-node
 
+## 1.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-search-common@1.2.16
+
+## 1.3.6
+
+### Patch Changes
+
+- 5ae8a2c: Removed unnecessary dependency on `@backstage/backend-defaults`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-search-common@1.2.16
+
 ## 1.3.6-next.2
 
 ### Patch Changes

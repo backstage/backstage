@@ -111,13 +111,33 @@ function createInstanceMetadataServiceFactory(
           .getRegistrations()
           .map(feature => {
             if (feature.type === 'plugin') {
-              return { type: 'plugin', pluginId: feature.pluginId };
+              return Object.defineProperty(
+                {
+                  type: 'plugin',
+                  pluginId: feature.pluginId,
+                },
+                'toString',
+                {
+                  enumerable: false,
+                  configurable: true,
+                  value: () => `plugin{pluginId=${feature.pluginId}}`,
+                },
+              );
             } else if (feature.type === 'module') {
-              return {
-                type: 'module',
-                pluginId: feature.pluginId,
-                moduleId: feature.moduleId,
-              };
+              return Object.defineProperty(
+                {
+                  type: 'module',
+                  pluginId: feature.pluginId,
+                  moduleId: feature.moduleId,
+                },
+                'toString',
+                {
+                  enumerable: false,
+                  configurable: true,
+                  value: () =>
+                    `module{moduleId=${feature.moduleId},pluginId=${feature.pluginId}}`,
+                },
+              );
             }
             // Ignore unknown feature types.
             return undefined;

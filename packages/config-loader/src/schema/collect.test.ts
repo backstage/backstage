@@ -68,6 +68,7 @@ describe('collectConfigSchemas', () => {
       {
         path: path.join('node_modules', 'a', 'package.json'),
         value: mockSchema,
+        packageName: 'a',
       },
     ]);
   });
@@ -89,6 +90,62 @@ describe('collectConfigSchemas', () => {
       {
         path: path.join('root', 'package.json'),
         value: mockSchema,
+        packageName: 'root',
+      },
+    ]);
+  });
+
+  it('should not include schemas for backend-common if theres a backend-defaults package', async () => {
+    mockDir.setContent({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          dependencies: {
+            '@backstage/backend-common': '1',
+            '@backstage/backend-defaults': '1',
+          },
+          configSchema: { ...mockSchema, title: 'root' },
+        }),
+      },
+      node_modules: {
+        '@backstage': {
+          'backend-common': {
+            'package.json': JSON.stringify({
+              name: '@backstage/backend-common',
+              version: '1',
+              configSchema: { ...mockSchema, title: 'backend-common' },
+            }),
+          },
+          'backend-defaults': {
+            'package.json': JSON.stringify({
+              name: '@backstage/backend-defaults',
+              version: '1',
+              configSchema: { ...mockSchema, title: 'backend-defaults' },
+            }),
+          },
+        },
+      },
+    });
+
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas(['root'], [path.join('root', 'package.json')]),
+    ).resolves.toEqual([
+      {
+        path: path.join('root', 'package.json'),
+        value: { ...mockSchema, title: 'root' },
+        packageName: 'root',
+      },
+      {
+        path: path.join(
+          'node_modules',
+          '@backstage',
+          'backend-defaults',
+          'package.json',
+        ),
+        value: { ...mockSchema, title: 'backend-defaults' },
+        packageName: '@backstage/backend-defaults',
       },
     ]);
   });
@@ -159,18 +216,22 @@ describe('collectConfigSchemas', () => {
         {
           path: path.join('node_modules', 'b', 'package.json'),
           value: { ...mockSchema, title: 'b' },
+          packageName: 'b',
         },
         {
           path: path.join('node_modules', 'c1', 'package.json'),
           value: { ...mockSchema, title: 'c1' },
+          packageName: 'c1',
         },
         {
           path: path.join('node_modules', 'd1', 'package.json'),
           value: { ...mockSchema, title: 'd1' },
+          packageName: 'd1',
         },
         {
           path: path.join('root', 'package.json'),
           value: { ...mockSchema, title: 'root' },
+          packageName: 'root',
         },
       ]),
     );
@@ -213,10 +274,12 @@ describe('collectConfigSchemas', () => {
         {
           path: path.join('node_modules', 'a', 'package.json'),
           value: { ...mockSchema, title: 'inline' },
+          packageName: 'a',
         },
         {
           path: path.join('node_modules', 'b', 'schema.json'),
           value: { ...mockSchema, title: 'external' },
+          packageName: 'b',
         },
         {
           path: path.join('node_modules', 'c', 'schema.d.ts'),
@@ -231,6 +294,7 @@ describe('collectConfigSchemas', () => {
             },
             required: ['tsKey'],
           },
+          packageName: 'c',
         },
       ]),
     );
@@ -284,14 +348,17 @@ describe('collectConfigSchemas', () => {
         {
           path: path.join('node_modules', 'a', 'package.json'),
           value: mockSchema,
+          packageName: 'a',
         },
         {
           path: path.join('node_modules', 'b', 'package.json'),
           value: { ...mockSchema, title: 'b' },
+          packageName: 'b',
         },
         {
           path: path.join('node_modules', 'c', 'package.json'),
           value: { ...mockSchema, title: 'c1' },
+          packageName: 'c',
         },
         {
           path: path.join(
@@ -302,6 +369,7 @@ describe('collectConfigSchemas', () => {
             'package.json',
           ),
           value: { ...mockSchema, title: 'c2' },
+          packageName: 'c',
         },
       ]),
     );

@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+import { useCanon } from '../../contexts/canon';
+import type { IconProps } from './types';
 
 /** @public */
-export const Icon = (props: { name: IconNames; size?: number }) => {
+export const Icon = (props: IconProps) => {
   const { name, size = 16 } = props;
-  const { icons } = useTheme();
+  const { icons } = useCanon();
 
   const RemixIcon = icons[name] as React.ComponentType<{ className?: string }>;
 

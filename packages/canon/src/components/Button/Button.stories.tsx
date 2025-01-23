@@ -46,28 +46,34 @@ export const Primary: Story = {
   },
 };
 
-export const Secondary: Story = {
+export const Variants: Story = {
   args: {
-    children: 'Secondary button',
-    variant: 'secondary',
+    children: 'Button',
   },
-};
-
-export const Tertiary: Story = {
-  args: {
-    children: 'Tertiary button',
-    variant: 'tertiary',
+  parameters: {
+    argTypes: {
+      variant: {
+        control: false,
+      },
+    },
   },
+  render: () => (
+    <Inline alignY="center">
+      <Button variant="primary">Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="tertiary">Tertiary</Button>
+    </Inline>
+  ),
 };
 
 export const Sizes: Story = {
   args: {
     children: 'Button',
   },
-  render: args => (
+  render: () => (
     <Inline alignY="center">
-      <Button {...args} size="medium" />
-      <Button {...args} size="small" />
+      <Button size="medium">Medium</Button>
+      <Button size="small">Small</Button>
     </Inline>
   ),
 };
@@ -102,5 +108,20 @@ export const Disabled: Story = {
   args: {
     children: 'Button',
     disabled: true,
+  },
+};
+
+export const Responsive: Story = {
+  args: {
+    children: 'Button',
+    variant: {
+      xs: 'primary',
+      sm: 'secondary',
+      md: 'tertiary',
+    },
+    size: {
+      xs: 'small',
+      sm: 'medium',
+    },
   },
 };

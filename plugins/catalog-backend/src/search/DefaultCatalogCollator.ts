@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   Entity,
   isUserEntity,
@@ -32,6 +29,7 @@ import {
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Permission } from '@backstage/plugin-permission-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -39,7 +37,7 @@ import { Permission } from '@backstage/plugin-permission-common';
  * use `DefaultCatalogCollatorFactory` instead.
  */
 export class DefaultCatalogCollator {
-  protected discovery: PluginEndpointDiscovery;
+  protected discovery: DiscoveryService;
   protected locationTemplate: string;
   protected filter?: GetEntitiesRequest['filter'];
   protected readonly catalogClient: CatalogApi;
@@ -51,7 +49,7 @@ export class DefaultCatalogCollator {
   static fromConfig(
     _config: Config,
     options: {
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       tokenManager: TokenManager;
       filter?: GetEntitiesRequest['filter'];
     },
@@ -62,7 +60,7 @@ export class DefaultCatalogCollator {
   }
 
   constructor(options: {
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: GetEntitiesRequest['filter'];

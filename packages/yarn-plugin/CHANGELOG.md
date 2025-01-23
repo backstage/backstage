@@ -1,5 +1,17 @@
 # yarn-plugin-backstage
 
+## 0.0.4
+
+### Patch Changes
+
+- 48cc7c5: Use yarn's built-in http utilities for fetching release manifests
+- ac91864: Switch to using `reduceDependency` hook to replace `backstage:^` versions. This
+  makes the same yarn.lock file valid whether or not the plugin is installed.
+- ee49cb4: Fixed path resolution on windows
+- Updated dependencies
+  - @backstage/release-manifests@0.0.12
+  - @backstage/cli-common@0.1.15
+
 ## 0.0.4-next.1
 
 ### Patch Changes

@@ -22,14 +22,14 @@ import {
 } from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations } from './utils';
+import { getEntityRelations } from './utils/getEntityRelations';
 
 /**
  * Filter entities based on Kind.
  * @public
  */
 export class EntityKindFilter implements EntityFilter {
-  constructor(readonly value: string) {}
+  constructor(readonly value: string, readonly label: string) {}
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };

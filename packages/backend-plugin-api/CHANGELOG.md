@@ -1,5 +1,38 @@
 # @backstage/backend-plugin-api
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 1.1.0
+
+### Minor Changes
+
+- 12eac85: **EXPERIMENTAL**: Adds a new `instanceMetadataService` to hold information about a specific backend instance.
+
+### Patch Changes
+
+- eef3ef1: Removed unused `express` dependencies.
+- 0e9c9fa: The `RootLifecycleService` now has a new `addBeforeShutdownHook` method, and hooks added through this method will run immediately when a termination event is received.
+
+  The backend will not proceed with the shutdown and run the `Shutdown` hooks until all `BeforeShutdown` hooks have completed.
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/errors@1.2.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
 ## 1.1.0-next.2
 
 ### Patch Changes

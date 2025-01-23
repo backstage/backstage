@@ -20,7 +20,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { notificationService } from '@backstage/plugin-notifications-node';
-import { errorHandler } from '@backstage/backend-common';
 import {
   notificationSeverities,
   NotificationSeverity,
@@ -96,7 +95,6 @@ const notificationsDebug = createBackendPlugin({
           });
           res.status(200).send({ status: 'ok' });
         });
-        router.use(errorHandler());
 
         httpRouter.use(router);
         httpRouter.addAuthPolicy({

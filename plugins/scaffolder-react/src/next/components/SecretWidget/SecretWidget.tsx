@@ -17,7 +17,8 @@
 import { WidgetProps } from '@rjsf/utils';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import TextField from '@material-ui/core/TextField';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
 
 /**
  * Secret Widget for overriding the default password input widget
@@ -38,16 +39,31 @@ export const SecretWidget = (
     disabled,
   } = props;
 
+  const [localValue, setLocalValue] = useState(secrets[name] ?? '');
+
+  // Memoize the debounced function so it persists across re-renders
+  const debouncedSetSecrets = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSecrets({ [name]: value });
+      }, 300),
+    [setSecrets, name],
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalValue(newValue);
+    onChange(Array(newValue.length).fill('*').join(''));
+    debouncedSetSecrets(newValue);
+  };
+
   return (
     <TextField
       id={title}
       label={title}
       aria-describedby={title}
-      onChange={e => {
-        onChange(Array(e.target.value.length).fill('*').join(''));
-        setSecrets({ [name]: e.target.value });
-      }}
-      value={secrets[name] ?? ''}
+      onChange={handleChange}
+      value={localValue}
       type="password"
       autoComplete="off"
       required={required}

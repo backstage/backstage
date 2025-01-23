@@ -233,6 +233,12 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       ? require('@rspack/dev-server').RspackDevServer
       : WebpackDevServer;
 
+    if (rspack) {
+      console.log(
+        chalk.yellow(`⚠️  WARNING: Using experimental RSPack dev server.`),
+      );
+    }
+
     const publicPaths = await resolveOptionalBundlingPaths({
       entry: 'src/index-public-experimental',
       dist: 'dist/public',
