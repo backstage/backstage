@@ -19,13 +19,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
 import { Inline } from '../Inline';
 import { Stack } from '../Stack';
+import { Text } from '../Text';
+import { ButtonProps } from './types';
 
 const meta = {
   title: 'Components/Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     size: {
       control: 'select',
@@ -40,12 +39,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-  args: {
-    children: 'Primary button',
-  },
-};
-
 export const Variants: Story = {
   args: {
     children: 'Button',
@@ -59,9 +52,15 @@ export const Variants: Story = {
   },
   render: () => (
     <Inline alignY="center">
-      <Button variant="primary">Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="tertiary">Tertiary</Button>
+      <Button iconStart="cloud" variant="primary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="secondary">
+        Button
+      </Button>
+      <Button iconStart="cloud" variant="tertiary">
+        Button
+      </Button>
     </Inline>
   ),
 };
@@ -115,7 +114,7 @@ export const Responsive: Story = {
   args: {
     children: 'Button',
     variant: {
-      xs: 'primary',
+      initial: 'primary',
       sm: 'secondary',
       md: 'tertiary',
     },
@@ -124,4 +123,48 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
+};
+
+const variants: string[] = ['primary', 'secondary', 'tertiary'];
+
+export const Playground: Story = {
+  args: {
+    children: 'Button',
+  },
+  render: () => (
+    <Stack>
+      {variants.map(variant => (
+        <Stack key={variant}>
+          <Text>{variant}</Text>
+          {['small', 'medium'].map(size => (
+            <Inline alignY="center" key={size}>
+              <Button
+                iconStart="cloud"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd="chevronRight"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                iconStart="cloud"
+                iconEnd="chevronRight"
+                style={{ width: '200px' }}
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+            </Inline>
+          ))}
+        </Stack>
+      ))}
+    </Stack>
+  ),
 };

@@ -228,6 +228,7 @@ LocalStack
 lockdown
 lockfile
 lookbehind
+lowercased
 lunr
 Luxon
 magiclink
@@ -276,6 +277,7 @@ nohoist
 nonces
 noop
 npm
+nullable
 nunjucks
 nvarchar
 nvm
@@ -467,6 +469,7 @@ typeahead
 ui
 unbreak
 Unconference
+undici
 unicode
 unmanaged
 unmount

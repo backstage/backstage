@@ -1,0 +1,101 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { spacePropsList } from '@/utils/spaceProps';
+import { Tabs } from '@/components/Tabs';
+import { Snippet } from '@/components/Snippet';
+import { ContainerPreview } from '@/snippets/container';
+
+# Container
+
+The container component let you use our default max-width and center the
+content on the page.
+
+<Snippet
+  py={4}
+  preview={<ContainerPreview />}
+  code={`<Container>
+    <DecorativeBox />
+</Container>`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock code={`import { Container } from "@backstage/canon";
+
+<Container>Hello World!</Container>
+`} />
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable
+  data={{
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    marginY: {
+      type: spacePropsList.marginY.type,
+      responsive: spacePropsList.marginY.responsive,
+    },
+    marginBottom: {
+      type: spacePropsList.marginBottom.type,
+      responsive: spacePropsList.marginBottom.responsive,
+    },
+    marginTop: {
+      type: spacePropsList.marginTop.type,
+      responsive: spacePropsList.marginTop.responsive,
+    },
+    paddingY: {
+      type: spacePropsList.paddingY.type,
+      responsive: spacePropsList.paddingY.responsive,
+    },
+    paddingBottom: {
+      type: spacePropsList.paddingBottom.type,
+      responsive: spacePropsList.paddingBottom.responsive,
+    },
+    paddingTop: {
+      type: spacePropsList.paddingTop.type,
+      responsive: spacePropsList.paddingTop.responsive,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### Simple
+
+A simple example of how to use the Container component.
+
+<CodeBlock
+  code={`<Container>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Container>`}
+/>
+
+### Responsive padding & margin
+
+The Container component also supports responsive values, making it easy to
+create responsive designs.
+
+<CodeBlock
+  code={`<Container paddingY={{ xs: 'sm', md: 'md' }}>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+    <Box>Hello World</Box>
+</Container>`}
+/>

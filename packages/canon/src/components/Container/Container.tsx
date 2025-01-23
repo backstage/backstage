@@ -16,6 +16,7 @@
 import React, { forwardRef } from 'react';
 import { ContainerProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
+import clsx from 'clsx';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
@@ -25,13 +26,12 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
     // Generate utility class names
     const utilityClassNames = getClassNames(restProps);
 
-    // Combine the base class name, the sprinkles class name, and any additional class names
-    const classNames = ['canon-container', utilityClassNames, className]
-      .filter(Boolean)
-      .join(' ');
-
     return (
-      <div ref={ref} className={classNames} style={style}>
+      <div
+        ref={ref}
+        className={clsx('canon-Container', utilityClassNames, className)}
+        style={style}
+      >
         {children}
       </div>
     );

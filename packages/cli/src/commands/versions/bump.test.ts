@@ -28,8 +28,14 @@ import {
   createMockDirectory,
 } from '@backstage/backend-test-utils';
 
-// Avoid mutating the global http(s) agent used in other tests
-jest.mock('global-agent/bootstrap', () => {});
+// Avoid mutating the global agents used in other tests
+jest.mock('global-agent', () => ({
+  bootstrap: jest.fn(),
+}));
+jest.mock('undici', () => ({
+  setGlobalDispatcher: jest.fn(),
+  EnvHttpProxyAgent: class {},
+}));
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({

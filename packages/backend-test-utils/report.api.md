@@ -8,6 +8,7 @@
 /// <reference types="node" />
 /// <reference types="qs" />
 
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -33,6 +34,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
@@ -153,6 +155,15 @@ export function mockErrorHandler(): ErrorRequestHandler<
 // @public
 export namespace mockServices {
   // (undocumented)
+  export namespace auditor {
+    const // (undocumented)
+      factory: () => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AuditorService> | undefined,
+      ) => ServiceMock<AuditorService>;
+  }
+  // (undocumented)
   export function auth(options?: {
     pluginId?: string;
     disableDefaultAuthPolicy?: boolean;
@@ -262,6 +273,19 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<PermissionsService> | undefined,
       ) => ServiceMock<PermissionsService>;
+  }
+  // (undocumented)
+  export namespace permissionsRegistry {
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        PermissionsRegistryService,
+        'plugin',
+        'singleton'
+      >;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<PermissionsRegistryService> | undefined,
+      ) => ServiceMock<PermissionsRegistryService>;
   }
   // (undocumented)
   export function rootConfig(options?: rootConfig.Options): RootConfigService;

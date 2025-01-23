@@ -22,6 +22,9 @@ import { Stack } from '../Stack';
 const meta = {
   title: 'Components/Text',
   component: Text,
+  args: {
+    children: 'Text',
+  },
 } satisfies Meta<typeof Text>;
 
 export default meta;
@@ -30,42 +33,91 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     children:
-      'Lorem ipsum dolor sit amet consectetur. Nec arcu vel lacus magna adipiscing nisi mauris tortor viverra. Enim rhoncus quisque consectetur ligula diam ac lacus massa. Id interdum id pellentesque justo ut massa nibh amet. Odio massa in scelerisque tortor massa integer purus amet enim. Eros sit neque nullam facilisis. Purus massa dignissim aliquet purus eu in. Urna consequat ullamcorper arcu amet dictumst. Commodo praesent turpis fringilla tristique congue volutpat in. Nulla in nulla ultrices lacus. In ultrices id tellus ut.',
+      "A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man's father is my father's son.” Who is in the painting?",
+    style: { maxWidth: '600px' },
   },
 };
 
 export const AllVariants: Story = {
-  args: {
-    children: 'Text',
-  },
   render: () => (
     <Stack gap="md">
-      <Text variant="subtitle">Subtitle {Default.args?.children}</Text>
-      <Text variant="body">Body {Default.args?.children}</Text>
-      <Text variant="caption">Caption {Default.args?.children}</Text>
-      <Text variant="label">Label {Default.args?.children}</Text>
+      <Text variant="subtitle" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text variant="body" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text variant="caption" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text variant="label" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
     </Stack>
   ),
 };
 
 export const AllWeights: Story = {
-  args: {
-    children: 'Text',
-  },
   render: () => (
     <Stack gap="md">
-      <Text weight="regular">Regular {Default.args?.children}</Text>
-      <Text weight="bold">Bold {Default.args?.children}</Text>
+      <Text weight="regular" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text weight="bold" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
     </Stack>
   ),
 };
 
 export const Responsive: Story = {
   args: {
-    ...Default.args,
     variant: {
       xs: 'label',
       md: 'body',
     },
   },
+};
+
+export const Playground: Story = {
+  render: () => (
+    <Stack>
+      <Text>Subtitle</Text>
+      <Text variant="subtitle" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text>Body</Text>
+      <Text variant="body" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text>Caption</Text>
+      <Text variant="caption" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+      <Text>Label</Text>
+      <Text variant="label" style={{ maxWidth: '600px' }}>
+        A man looks at a painting in a museum and says, “Brothers and sisters I
+        have none, but that man&apos;s father is my father&apos;s son.” Who is
+        in the painting?
+      </Text>
+    </Stack>
+  ),
 };

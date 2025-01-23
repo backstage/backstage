@@ -1,5 +1,51 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.5.5
+
+### Patch Changes
+
+- edaf925: Updates to allow users to subscribe to the newly created repository within GitHub to mimic similar functionality found within the GitHub UI.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/integration@1.16.1-next.0
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- edaf925: Updates to allow users to subscribe to the newly created repository within GitHub to mimic similar functionality found within the GitHub UI.
+
 ## 0.5.5-next.0
 
 ### Patch Changes

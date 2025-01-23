@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.29.5-next.0",
+  "version": "0.30.0-next.0",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -40,6 +40,11 @@
     "exec": "bin/backstage-cli",
     "ext": "ts",
     "watch": "./src"
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/__fixtures__/"
+    ]
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -147,6 +152,7 @@
     "tar": "^6.1.12",
     "terser-webpack-plugin": "^5.1.3",
     "ts-morph": "^24.0.0",
+    "undici": "^7.2.3",
     "util": "^0.12.3",
     "webpack": "^5.94.0",
     "webpack-dev-server": "^5.0.0",
@@ -192,28 +198,16 @@
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/webpack-sources": "^3.2.3",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "@vitejs/plugin-react": "^4.3.1",
     "del": "^8.0.0",
     "msw": "^1.0.0",
-    "nodemon": "^3.0.1",
-    "vite": "^5.0.0",
-    "vite-plugin-html": "^3.2.2",
-    "vite-plugin-node-polyfills": "^0.22.0"
+    "nodemon": "^3.0.1"
   },
   "peerDependencies": {
-    "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@rspack/core": "^1.0.10",
     "@rspack/dev-server": "^1.0.9",
-    "@rspack/plugin-react-refresh": "^1.0.0",
-    "@vitejs/plugin-react": "^4.0.4",
-    "vite": "^5.0.0",
-    "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.22.0"
+    "@rspack/plugin-react-refresh": "^1.0.0"
   },
   "peerDependenciesMeta": {
-    "@modyfi/vite-plugin-yaml": {
-      "optional": true
-    },
     "@rspack/core": {
       "optional": true
     },
@@ -221,18 +215,6 @@
       "optional": true
     },
     "@rspack/plugin-react-refresh": {
-      "optional": true
-    },
-    "@vitejs/plugin-react": {
-      "optional": true
-    },
-    "vite": {
-      "optional": true
-    },
-    "vite-plugin-html": {
-      "optional": true
-    },
-    "vite-plugin-node-polyfills": {
       "optional": true
     }
   },

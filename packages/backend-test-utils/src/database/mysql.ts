@@ -72,7 +72,8 @@ export async function startMysqlContainer(image: string): Promise<{
   const password = uuid();
 
   // Lazy-load to avoid side-effect of importing testcontainers
-  const { GenericContainer } = await import('testcontainers');
+  const { GenericContainer } =
+    require('testcontainers') as typeof import('testcontainers');
 
   const container = await new GenericContainer(image)
     .withExposedPorts(3306)

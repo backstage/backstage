@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import {
+  GetNotificationsCommonOptions,
   GetNotificationsOptions,
   GetNotificationsResponse,
+  GetTopicsOptions,
+  GetTopicsResponse,
   NotificationsApi,
   UpdateNotificationsOptions,
 } from './NotificationsApi';
@@ -56,20 +59,11 @@ export class NotificationsClient implements NotificationsApi {
         `${options.sort},${options?.sortOrder ?? 'desc'}`,
       );
     }
-    if (options?.search) {
-      queryString.append('search', options.search);
-    }
-    if (options?.read !== undefined) {
-      queryString.append('read', options.read ? 'true' : 'false');
-    }
-    if (options?.saved !== undefined) {
-      queryString.append('saved', options.saved ? 'true' : 'false');
-    }
-    if (options?.createdAfter !== undefined) {
-      queryString.append('createdAfter', options.createdAfter.toISOString());
-    }
-    if (options?.minimumSeverity !== undefined) {
-      queryString.append('minimumSeverity', options.minimumSeverity);
+
+    this.appendCommonQueryStrings(queryString, options);
+
+    if (options?.topic !== undefined) {
+      queryString.append('topic', options.topic);
     }
 
     return await this.request<GetNotificationsResponse>(
@@ -109,6 +103,34 @@ export class NotificationsClient implements NotificationsApi {
       body: JSON.stringify(settings),
       headers: { 'Content-Type': 'application/json' },
     });
+  }
+
+  async getTopics(options?: GetTopicsOptions): Promise<GetTopicsResponse> {
+    const queryString = new URLSearchParams();
+    this.appendCommonQueryStrings(queryString, options);
+
+    return await this.request<GetTopicsResponse>(`/topics?${queryString}`);
+  }
+
+  private appendCommonQueryStrings(
+    queryString: URLSearchParams,
+    options?: GetNotificationsCommonOptions,
+  ) {
+    if (options?.search) {
+      queryString.append('search', options.search);
+    }
+    if (options?.read !== undefined) {
+      queryString.append('read', options.read ? 'true' : 'false');
+    }
+    if (options?.saved !== undefined) {
+      queryString.append('saved', options.saved ? 'true' : 'false');
+    }
+    if (options?.createdAfter !== undefined) {
+      queryString.append('createdAfter', options.createdAfter.toISOString());
+    }
+    if (options?.minimumSeverity !== undefined) {
+      queryString.append('minimumSeverity', options.minimumSeverity);
+    }
   }
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {

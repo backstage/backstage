@@ -1,5 +1,42 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- f35a754: Fixed bug in string-to-integer conversion to properly handle decimal values with BigInt.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.3-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-kubernetes-common@0.9.2
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-kubernetes-common@0.9.2-next.0
+
 ## 0.5.2
 
 ### Patch Changes

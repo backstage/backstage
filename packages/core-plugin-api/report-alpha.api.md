@@ -4,6 +4,8 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
+import { Expand } from '@backstage/types';
+import { ExpandRecursive } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';

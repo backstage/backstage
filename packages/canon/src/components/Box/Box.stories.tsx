@@ -40,22 +40,28 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {
+export const Default: Story = {
   args: {
     style: {
-      background: '#1f47ff',
-      color: 'white',
-      padding: '4px 8px',
+      width: '64px',
+      height: '64px',
+      background: '#eaf2fd',
       borderRadius: '4px',
+      border: '1px solid #2563eb',
+      color: '#2563eb',
+      backgroundImage:
+        'url("data:image/svg+xml,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.3%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M5%200h1L0%206V5zM6%205v1H5z%22/%3E%3C/g%3E%3C/svg%3E")',
     },
-    children: 'Basic Box',
   },
 };
 
 export const Display: Story = {
   args: {
     style: {
-      ...Basic.args?.style,
+      ...Default.args?.style,
+      width: 'auto',
+      height: 'auto',
+      padding: '8px',
     },
   },
   render: args => (
@@ -84,7 +90,10 @@ export const Display: Story = {
 export const FlexDirection: Story = {
   args: {
     style: {
-      ...Basic.args?.style,
+      ...Default.args?.style,
+      width: 'auto',
+      height: 'auto',
+      padding: '8px',
     },
     display: 'flex',
     gap: 'xs',
@@ -110,8 +119,10 @@ export const FlexDirection: Story = {
 export const JustifyContent: Story = {
   args: {
     style: {
-      ...Basic.args?.style,
+      ...Default.args?.style,
       width: '200px',
+      height: 'auto',
+      padding: '8px',
     },
     display: 'flex',
     gap: 'xs',
@@ -153,9 +164,10 @@ export const JustifyContent: Story = {
 export const AlignItems: Story = {
   args: {
     style: {
-      ...Basic.args?.style,
+      ...Default.args?.style,
       width: '200px',
       height: '100px',
+      padding: '8px',
     },
     display: 'flex',
     gap: 'xs',
@@ -289,8 +301,10 @@ export const Margin: Story = {
 export const FlexWrap: Story = {
   args: {
     style: {
-      ...Basic.args?.style,
+      ...Default.args?.style,
       width: '200px',
+      height: 'auto',
+      padding: '8px',
     },
     display: 'flex',
     gap: 'xs',
@@ -328,11 +342,14 @@ export const FlexWrap: Story = {
 export const BorderRadius: Story = {
   args: {
     style: {
-      background: '#1f47ff',
-      color: 'white',
-      padding: '4px 8px',
       width: '64px',
       height: '64px',
+      background: '#eaf2fd',
+      border: '1px solid #2563eb',
+      color: '#2563eb',
+      backgroundImage:
+        'url("data:image/svg+xml,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.3%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M5%200h1L0%206V5zM6%205v1H5z%22/%3E%3C/g%3E%3C/svg%3E")',
+      padding: '4px 8px',
     },
     display: 'flex',
     alignItems: 'center',
@@ -365,7 +382,7 @@ export const BorderRadius: Story = {
 export const Border: Story = {
   args: {
     style: {
-      background: 'var(--canon-surface-1)',
+      background: 'var(--canon-bg-elevated)',
       color: 'var(--canon-text-primary)',
       padding: '4px 8px',
       width: '80px',

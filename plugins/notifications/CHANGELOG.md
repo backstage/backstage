@@ -1,5 +1,45 @@
 # @backstage/plugin-notifications
 
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 438c36c: added topic filter for notifications
+- Updated dependencies
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-react@0.0.9
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-react@0.0.9
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-signals-react@0.0.9-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-notifications-common@0.0.8-next.0
+
 ## 0.5.0
 
 ### Minor Changes

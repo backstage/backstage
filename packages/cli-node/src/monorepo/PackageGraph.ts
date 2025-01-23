@@ -43,6 +43,8 @@ export interface BackstagePackageJson {
   // that the package bundles all of its dependencies in its build output.
   bundled?: boolean;
 
+  type?: 'module' | 'commonjs';
+
   backstage?: {
     role?: PackageRole;
     moved?: string;

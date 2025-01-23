@@ -34,7 +34,7 @@ export type AsProps =
   | 'dt';
 
 /** @public */
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 /** @public */
 export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';

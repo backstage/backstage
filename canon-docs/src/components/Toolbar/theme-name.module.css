@@ -1,0 +1,137 @@
+.Select {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 2rem;
+  padding-left: 0.875rem;
+  padding-right: 0.75rem;
+  margin: 0;
+  outline: 0;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.375rem;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--color-gray-900);
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--canon-bg);
+  transition: background-color 0.2s ease-in-out;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: -1px;
+  }
+}
+
+.SelectIcon {
+  display: flex;
+}
+
+.SelectValue {
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.Positioner {
+  z-index: 20;
+}
+
+.Popup {
+  box-sizing: border-box;
+  padding-block: 0.25rem;
+  border-radius: 0.375rem;
+  background-color: var(--canon-bg-elevated);
+  color: var(--color-gray-900);
+  border: 1px solid var(--canon-border);
+  padding-inline: 0.25rem;
+  transform-origin: var(--transform-origin);
+  transition: transform 150ms, opacity 150ms;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  &[data-side='none'] {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  @media (prefers-color-scheme: light) {
+    outline: 1px solid var(--color-gray-200);
+    box-shadow: 0px 10px 15px -3px var(--color-gray-200),
+      0px 4px 6px -4px var(--color-gray-200);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    outline: 1px solid var(--color-gray-300);
+    outline-offset: -1px;
+  }
+}
+
+.Item {
+  box-sizing: border-box;
+  outline: 0;
+  font-size: 0.875rem;
+  line-height: 1rem;
+  padding-block: 0.5rem;
+  padding-left: 0.625rem;
+  padding-right: 1rem;
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-bold);
+  display: grid;
+  gap: 0.5rem;
+  align-items: center;
+  grid-template-columns: 0.75rem 1fr;
+  cursor: default;
+  user-select: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  [data-side='none'] & {
+    font-size: 1rem;
+    padding-right: 3rem;
+    min-width: calc(var(--anchor-width) + 1rem);
+  }
+
+  &[data-highlighted] {
+    z-index: 0;
+    position: relative;
+    color: var(--color-gray-50);
+    background-color: var(--canon-bg);
+  }
+
+  &[data-highlighted]::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0.25rem;
+    border-radius: 0.25rem;
+    background-color: var(--color-gray-900);
+  }
+}
+
+.ItemIndicator {
+  grid-column-start: 1;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.ItemIndicatorIcon {
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.ItemText {
+  grid-column-start: 2;
+}

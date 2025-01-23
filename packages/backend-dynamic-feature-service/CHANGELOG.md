@@ -1,5 +1,82 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- 96c20cd: Make sure changes are successfully tracked before starting up scanner.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/backend-defaults@0.8.0-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/plugin-catalog-backend@1.31.0-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/backend-app-api@1.1.2-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.30-next.0
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-backend@0.4.2-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-node@1.3.8-next.0
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.3
+
+### Patch Changes
+
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/backend-app-api@1.1.1
+  - @backstage/types@1.2.1
+  - @backstage/config-loader@1.9.5
+  - @backstage/plugin-catalog-backend@1.30.0
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/plugin-events-backend@0.4.1
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.12
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-app-node@0.1.29
+  - @backstage/plugin-events-node@0.4.7
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-node@1.3.7
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-app-api@1.1.1-next.1
+  - @backstage/backend-defaults@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/cli-node@0.2.12-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-backend@1.30.0-next.1
+  - @backstage/plugin-events-backend@0.4.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/plugin-search-common@1.2.17-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/plugin-search-backend-node@1.3.7-next.1
+  - @backstage/plugin-app-node@0.1.29-next.1
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.3-next.0
 
 ### Patch Changes
