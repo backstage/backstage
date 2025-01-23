@@ -422,8 +422,5 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     };
   }
 
-  console.log('retry');
-  console.log(`args: ${JSON.stringify(args)}`);
-
   await runJest(args);
 }
