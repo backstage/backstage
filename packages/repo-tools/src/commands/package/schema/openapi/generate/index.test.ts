@@ -82,7 +82,12 @@ describe('generateOpenApiSchema', () => {
       }),
     } as any);
 
-    const { command } = await import('./index');
+    // Same logic as https://github.com/backstage/backstage/blob/547e41da5ac497e5a606c08c8fb57b429687d5f7/packages/repo-tools/src/commands/index.ts#L278-L297
+    const {
+      default: { command },
+    } = (await import('./index')) as unknown as {
+      default: typeof import('./index');
+    };
 
     const actions = async () => {
       while (!mockOn.ready) {
