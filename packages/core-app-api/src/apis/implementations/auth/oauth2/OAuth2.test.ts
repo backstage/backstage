@@ -18,6 +18,14 @@ import OAuth2 from './OAuth2';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import { mockApis } from '@backstage/test-utils';
+import {
+  OAuth2Session,
+  AuthConnector,
+  AuthConnectorRefreshSessionOptions,
+  openLoginPopup,
+  // OAuth2Response,
+  OAuth2CreateOptionsWithAuthConnector,
+} from '../../../../index';
 
 const theFuture = new Date(Date.now() + 3600000);
 const thePast = new Date(Date.now() - 10);
@@ -36,6 +44,25 @@ jest.mock('../../../../lib/AuthSessionManager', () => ({
 }));
 
 const configApi = mockApis.config();
+
+class CustomAuthConnector implements AuthConnector<OAuth2Session> {
+  async createSession() {
+    const s: OAuth2Session = {
+      providerInfo: {
+        idToken: '',
+        accessToken: 'accessToken',
+        scopes: new Set(['myScope']),
+      },
+      profile: {},
+    };
+    await openLoginPopup({ url: 'http://localhost', name: 'myPopup' });
+    return Promise.resolve(s);
+  }
+
+  async refreshSession(_?: AuthConnectorRefreshSessionOptions): Promise<any> {}
+
+  async removeSession(): Promise<void> {}
+}
 
 describe('OAuth2', () => {
   it('should get refreshed access token', async () => {
@@ -214,5 +241,26 @@ describe('OAuth2', () => {
     await expect(promise2).resolves.toBe('token2');
     await expect(promise3).resolves.toBe('token2');
     expect(getSession).toHaveBeenCalledTimes(4); // De-duping of session requests happens in client
+  });
+  it('should use provided auth provider', async () => {
+    getSession = jest.fn().mockResolvedValue({
+      providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
+    });
+
+    const customAuthConnector = new CustomAuthConnector();
+
+    const options: OAuth2CreateOptionsWithAuthConnector = {
+      scopeTransform,
+      defaultScopes: ['myScope'],
+      authConnector: customAuthConnector,
+    };
+    const oauth2 = OAuth2.create(options);
+
+    expect(await oauth2.getAccessToken('my-scope my-scope2')).toBe(
+      'access-token',
+    );
+    expect(getSession).toHaveBeenCalledWith(
+      expect.objectContaining({ scopes: new Set(['my-scope', 'my-scope2']) }),
+    );
   });
 });

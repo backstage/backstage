@@ -14,53 +14,26 @@
  * limitations under the License.
  */
 
-import {
-  AuthConnector,
-  DefaultAuthConnector,
-  PopupOptions,
-} from '../../../../lib/AuthConnector';
+import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthRequestOptions,
+  BackstageIdentityApi,
   BackstageIdentityResponse,
   OAuthApi,
   OpenIdConnectApi,
-  ProfileInfo,
   ProfileInfoApi,
-  SessionState,
   SessionApi,
-  BackstageIdentityApi,
-  BackstageUserIdentity,
+  SessionState,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { OAuth2Session } from './types';
-import { OAuthApiCreateOptions } from '../types';
-
-/**
- * OAuth2 create options.
- * @public
- */
-export type OAuth2CreateOptions = OAuthApiCreateOptions & {
-  scopeTransform?: (scopes: string[]) => string[];
-  popupOptions?: PopupOptions;
-  authConnector?: AuthConnector<OAuth2Session>;
-};
-
-export type OAuth2Response = {
-  providerInfo: {
-    accessToken: string;
-    idToken: string;
-    scope: string;
-    expiresInSeconds?: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: {
-    token: string;
-    expiresInSeconds?: number;
-    identity: BackstageUserIdentity;
-  };
-};
+import {
+  OAuth2CreateOptions,
+  OAuth2CreateOptionsWithAuthConnector,
+  OAuth2Response,
+  OAuth2Session,
+} from './types';
 
 const DEFAULT_PROVIDER = {
   id: 'oauth2',
@@ -81,61 +54,67 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create(options: OAuth2CreateOptions) {
+  private static createAuthConnector(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    if ('authConnector' in options) {
+      return options.authConnector;
+    }
     const {
+      scopeTransform = x => x,
       configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
-      defaultScopes = [],
-      scopeTransform = x => x,
       popupOptions,
     } = options;
 
-    const connector =
-      options.authConnector ??
-      new DefaultAuthConnector({
-        configApi,
-        discoveryApi,
-        environment,
-        provider,
-        oauthRequestApi: oauthRequestApi,
-        sessionTransform({
-          backstageIdentity,
-          ...res
-        }: OAuth2Response): OAuth2Session {
-          const session: OAuth2Session = {
-            ...res,
-            providerInfo: {
-              idToken: res.providerInfo.idToken,
-              accessToken: res.providerInfo.accessToken,
-              scopes: OAuth2.normalizeScopes(
-                scopeTransform,
-                res.providerInfo.scope,
-              ),
-              expiresAt: res.providerInfo.expiresInSeconds
-                ? new Date(
-                    Date.now() + res.providerInfo.expiresInSeconds * 1000,
-                  )
-                : undefined,
-            },
+    return new DefaultAuthConnector({
+      configApi,
+      discoveryApi,
+      environment,
+      provider,
+      oauthRequestApi: oauthRequestApi,
+      sessionTransform({
+        backstageIdentity,
+        ...res
+      }: OAuth2Response): OAuth2Session {
+        const session: OAuth2Session = {
+          ...res,
+          providerInfo: {
+            idToken: res.providerInfo.idToken,
+            accessToken: res.providerInfo.accessToken,
+            scopes: OAuth2.normalizeScopes(
+              scopeTransform,
+              res.providerInfo.scope,
+            ),
+            expiresAt: res.providerInfo.expiresInSeconds
+              ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
+              : undefined,
+          },
+        };
+        if (backstageIdentity) {
+          session.backstageIdentity = {
+            token: backstageIdentity.token,
+            identity: backstageIdentity.identity,
+            expiresAt: backstageIdentity.expiresInSeconds
+              ? new Date(Date.now() + backstageIdentity.expiresInSeconds * 1000)
+              : undefined,
           };
-          if (backstageIdentity) {
-            session.backstageIdentity = {
-              token: backstageIdentity.token,
-              identity: backstageIdentity.identity,
-              expiresAt: backstageIdentity.expiresInSeconds
-                ? new Date(
-                    Date.now() + backstageIdentity.expiresInSeconds * 1000,
-                  )
-                : undefined,
-            };
-          }
-          return session;
-        },
-        popupOptions,
-      });
+        }
+        return session;
+      },
+      popupOptions,
+    });
+  }
+
+  static create(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    const { defaultScopes = [], scopeTransform = x => x } = options;
+
+    const connector = OAuth2.createAuthConnector(options);
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
@@ -218,7 +197,10 @@ export default class OAuth2
     return session?.profile;
   }
 
-  private static normalizeScopes(
+  /**
+   * @public
+   */
+  public static normalizeScopes(
     scopeTransform: (scopes: string[]) => string[],
     scopes?: string | string[],
   ): Set<string> {
