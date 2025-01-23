@@ -16,7 +16,6 @@ To use this integration, add configuration to your root `app-config.yaml`:
 integrations:
   confluence:
     - host: mycompany.atlassian.net
+      email: username@mycompany.com
       apiToken: ${ATLASSIAN_API_TOKEN}
 ```
-
-:warning: Token generated from atlassian cannot be used here directly. Please provide the encoded token here. [Refer](https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/)

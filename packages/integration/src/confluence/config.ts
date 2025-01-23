@@ -25,14 +25,8 @@ import { isValidHost } from '../helpers';
 export type ConfluenceIntegrationConfig = {
   host: string;
 
-  /**
-   *
-   * Token generated from atlassian cannot be used here directly.
-   * You need to put it in this format: <your-mail>:<your-api-token>
-   * and base64 encode it.
-   * Please provide the encoded token here.
-   *
-   */
+  email: string;
+
   apiToken: string;
 };
 
@@ -49,7 +43,11 @@ export function readConfluenceIntegrationConfig(
   config: Config,
 ): ConfluenceIntegrationConfig {
   const host = config.getString('host');
-  const apiToken = `Basic ${config.getString('apiToken')}`;
+  const email = config.getString('email');
+  const apiToken = config.getString('apiToken');
+
+  const token = btoa(`${email}:${apiToken}`);
+  const basicToken = `Basic ${token}`;
 
   const atlassianHostRegex = /^[a-zA-Z0-9-]+(?<!-)\.atlassian\.net$/; // match <your-company>.atlassian.net
   const onpermHostRegex = /^confluence\.[a-zA-Z0-9-]+(?<!-)\.com$/; // match confluence.<your-company>.com
@@ -64,7 +62,8 @@ export function readConfluenceIntegrationConfig(
 
   return {
     host,
-    apiToken,
+    email,
+    apiToken: basicToken,
   };
 }
 

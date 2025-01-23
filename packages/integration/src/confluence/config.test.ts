@@ -29,13 +29,16 @@ describe('Confluence Integration config', () => {
     const output = readConfluenceIntegrationConfig(
       buildConfig({
         host: 'mycompany.atlassian.net',
-        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ',
       }),
     );
 
     expect(output).toEqual({
       host: 'mycompany.atlassian.net',
-      apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      email: 'myname@mycompany.com',
+      apiToken:
+        'Basic bXluYW1lQG15Y29tcGFueS5jb206ZFhObGNqcHdZWE56ZDI5eVpBb0pSVzVqYjJSbFpEcHpaV055WlhR',
     });
   });
 
@@ -43,32 +46,39 @@ describe('Confluence Integration config', () => {
     const output = readConfluenceIntegrationConfig(
       buildConfig({
         host: 'mycompany.atlassian.net',
-        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ',
       }),
     );
 
     expect(output).toEqual({
       host: 'mycompany.atlassian.net',
-      apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      email: 'myname@mycompany.com',
+      apiToken:
+        'Basic bXluYW1lQG15Y29tcGFueS5jb206ZFhObGNqcHdZWE56ZDI5eVpBb0pSVzVqYjJSbFpEcHpaV055WlhR',
     });
 
     const output2 = readConfluenceIntegrationConfig(
       buildConfig({
         host: 'confluence.mycompany.com',
-        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ',
       }),
     );
 
     expect(output2).toEqual({
       host: 'confluence.mycompany.com',
-      apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      email: 'myname@mycompany.com',
+      apiToken:
+        'Basic bXluYW1lQG15Y29tcGFueS5jb206ZFhObGNqcHdZWE56ZDI5eVpBb0pSVzVqYjJSbFpEcHpaV055WlhR',
     });
   });
 
   it('rejects funky configs', () => {
     const valid: any = {
       host: 'mycompany.atlassian.net',
-      apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+      email: 'myname@mycompany.com',
+      apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ',
     };
     expect(() =>
       readConfluenceIntegrationConfig(
@@ -87,11 +97,13 @@ describe('Confluence Integration config', () => {
     const integrations = [
       {
         host: 'mycompany1.atlassian.net',
-        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ',
       },
       {
         host: 'mycompany2.atlassian.net',
-        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ',
       },
     ];
     const config = new ConfigReader({
@@ -104,11 +116,15 @@ describe('Confluence Integration config', () => {
     expect(output).toEqual([
       {
         host: 'mycompany1.atlassian.net',
-        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken:
+          'Basic bXluYW1lQG15Y29tcGFueS5jb206ZFhObGNqcHdZWE56ZDI5eVpBb0pSVzVqYjJSbFpEcHpaV055WlhR',
       },
       {
         host: 'mycompany2.atlassian.net',
-        apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+        email: 'myname@mycompany.com',
+        apiToken:
+          'Basic bXluYW1lQG15Y29tcGFueS5jb206ZFhObGNqcHdZWE56ZDI5eVpBb0pSVzVqYjJSbFpEcHpaV055WlhR',
       },
     ]);
   });

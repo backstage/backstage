@@ -185,7 +185,8 @@ describe('ConfluenceUrlReader', () => {
         confluence: [
           {
             host: 'mycompany.atlassian.net',
-            apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+            email: 'myemail@mycompany.com',
+            apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
           },
         ],
       },
@@ -205,7 +206,8 @@ describe('ConfluenceUrlReader', () => {
         confluence: [
           {
             host: 'mycompany.atlassian.net',
-            apiToken: 'Basic dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
+            email: 'myemail@mycompany.com',
+            apiToken: 'dXNlcjpwYXNzd29yZAoJRW5jb2RlZDpzZWNyZXQ=',
           },
         ],
       },

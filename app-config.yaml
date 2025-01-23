@@ -214,6 +214,7 @@ integrations:
       token: ${GITLAB_TOKEN}
   confluence:
     - host: ${CONFLUENCE_HOST}
+      email: ${CONFLUENCE_API_EMAIL}
       apiToken: ${CONFLUENCE_API_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
