@@ -21,6 +21,7 @@ import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
@@ -547,7 +548,9 @@ export class OAuth2
     SessionApi
 {
   // (undocumented)
-  static create(options: OAuth2CreateOptions): OAuth2;
+  static create(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ): OAuth2;
   // (undocumented)
   getAccessToken(
     scope?: string | string[],
@@ -562,6 +565,11 @@ export class OAuth2
   // (undocumented)
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
   // (undocumented)
+  static normalizeScopes(
+    scopeTransform: (scopes: string[]) => string[],
+    scopes?: string | string[],
+  ): Set<string>;
+  // (undocumented)
   sessionState$(): Observable<SessionState>;
   // (undocumented)
   signIn(): Promise<void>;
@@ -573,7 +581,29 @@ export class OAuth2
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
-  authConnector?: AuthConnector<OAuth2Session>;
+};
+
+// @public
+export type OAuth2CreateOptionsWithAuthConnector = {
+  scopeTransform?: (scopes: string[]) => string[];
+  defaultScopes?: string[];
+  authConnector: AuthConnector<OAuth2Session>;
+};
+
+// @public (undocumented)
+export type OAuth2Response = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds?: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
 };
 
 // @public

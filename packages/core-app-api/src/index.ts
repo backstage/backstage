@@ -27,6 +27,6 @@ export type {
   AuthConnector,
   AuthConnectorCreateSessionOptions,
   AuthConnectorRefreshSessionOptions,
-  openLoginPopup,
   OpenLoginPopupOptions,
 } from './lib';
+export { openLoginPopup } from './lib';
