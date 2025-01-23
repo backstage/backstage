@@ -96,7 +96,7 @@ export function createHandleAutocompleteRequest(options: {
 
         return {
           results: response.map(project => ({
-            title: project.name.trim(),
+            title: project.path,
             id: project.id.toString(),
           })),
         };
