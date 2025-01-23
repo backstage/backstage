@@ -445,8 +445,5 @@ export default async ({ args, info }: CliCommandContext) => {
     };
   }
 
-  console.log('retry');
-  console.log(`args: ${JSON.stringify(args)}`);
-
   await runJest(args);
 };
