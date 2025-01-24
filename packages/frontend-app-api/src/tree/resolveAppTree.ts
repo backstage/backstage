@@ -155,9 +155,33 @@ export function resolveAppTree(
     // TODO: For now we simply ignore the attachTo spec of the root node, but it'd be cleaner if we could avoid defining it
     if (spec.id === rootNodeId) {
       rootNode = node;
-    } else {
-      let attachTo = node.spec.attachTo;
+    } else if (Array.isArray(spec.attachTo)) {
+      let foundFirstParent = false;
+      for (const origAttachTo of spec.attachTo) {
+        let attachTo = origAttachTo;
 
+        if (!isValidAttachmentPoint(attachTo, nodes)) {
+          attachTo =
+            redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
+        }
+
+        const parent = nodes.get(attachTo.id);
+        if (parent) {
+          if (!foundFirstParent) {
+            foundFirstParent = true;
+            node.setParent(parent, attachTo.input);
+          } else {
+            // TODO(Rugvip): Perhaps makes sense to keep track of these with a `clones` map, similar to `orphans`?
+            const clonedNode = new SerializableAppNode(spec);
+            clonedNode.setParent(parent, attachTo.input);
+          }
+        }
+      }
+      if (!foundFirstParent) {
+        orphans.push(node);
+      }
+    } else {
+      let attachTo = spec.attachTo;
       if (!isValidAttachmentPoint(attachTo, nodes)) {
         attachTo =
           redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
