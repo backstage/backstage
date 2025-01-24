@@ -596,25 +596,34 @@ Caching is used sparingly throughout the Backstage build system. It is always us
 
 For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
 
-#### IntelliJ IDEA
+#### Preface
 
 At the moment it's not possible to run jest tests via jest command line. That is, if you run the following command from the project root: 
 ```bash
 NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node node_modules/jest-cli/bin/jest.js --config node_modules/@backstage/cli/config/jest.js
 ```
 
-You will get an error `SyntaxError: Unexpected token 'export'` complaining about one of the imports from the `jest.js` config file. But why does jest work then when running `backstage-cli repo test`?
-The reason is that `packages/cli/bin/backstage-cli` first executes `require('@backstage/cli/config/nodeTransform.cjs');` that probably transforms config files so that jest can use them.
-Even simply adding `require('@backstage/cli/config/nodeTransform.cjs');` to the beginning of `node_modules/jest/bin/jest.js`, will make jest command line above work.
+You will get an error `SyntaxError: Unexpected token 'export'` complaining about one of the imports from the `node_modules/@backstage/cli/config/jest.js` config file. 
+But why does jest work then when running `backstage-cli repo test`?
+The reason is that `packages/cli/bin/backstage-cli` first executes `require('@backstage/cli/config/nodeTransform.cjs');` that probably transforms config files so that jest can digest them.
+Even simply adding `require('@backstage/cli/config/nodeTransform.cjs');` to the beginning of `node_modules/jest/bin/jest.js`, will make jest work in the script above.
 
 Happily, there is a better way to do it, because `backstage-cli repo test` is simply a starter of the `jest-cli` with extra parameters. That is, you can run jest from the command line via `backstage-cli repo test` like this:
+```bash
+NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node_modules/.bin/backstage-cli repo test
+```
+or
 ```bash
 NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node node_modules/@backstage/cli/bin/backstage-cli repo test
 ```
 
+
 `backstage-cli` adds `--passWithNoTests --watch --workerIdleMemoryLimit=1000M --config node_modules/@backstage/cli/config/jest.js` jest options.
 
-So, to run it in Intellij do the following:
+With that in mind, let's configure IDE's to run `backstage-cli` in the role of jest.
+
+
+#### IntelliJ IDEA
 
 1.  Update Jest configuration template by:
     1.  Click on "Edit Configurations" on top panel
@@ -623,16 +632,17 @@ So, to run it in Intellij do the following:
     4.  "Node options": `--no-node-snapshot --experimental-vm-modules`
     5.  "Jest package": `~/workspace/backstage/node_modules/@backstage/cli` - the location of the backstage cli package.
     6.  "Working directory": `~/workspace/backstage`
-    7.  "Jest Options": `repo test --runInBand`
-    8.  "Environment variables": `backstage-cli` adds `--watch` jest option, so if you want your tests to stop after you run them, add `CI=true`
+    7.  "Jest Options": `repo test --runInBand --watch=false`
 
-2.  Another issue is that if you right click on the test, Intellij will create a playwright configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test). So, to run jest tests create a configuration manually, the Intellij will pick up the configuration template, provide there the test file. After Intellij run tests in the file you can click on the individual tests in the run panel and re-run them, Intellij will create a correct jest run configuration.
+2.  Currently intellij has an issue that if you right click on a jest test and press "run", intellij will create a playwright run configuration instead of jest configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test).
+
+    Until intellij maintainers resolved the issue, create a jest configuration manually. Happily, intellij will pre-fill the configuration from the template. The only thing you need to do is provide path to the test file. Note, that after intellij runs test in the file you can click on the individual tests from the run panel and re-run them, this time intellij will create a correct jest run configuration.
 
 #### VS Code
 
 ```jsonc
 {
-  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
+  "jest.jestCommandLine": "node_modules/.bin/backstage-cli --config node_modules/@backstage/cli/config/jest.js",
   // In a large repo like the Backstage main repo you likely want to disable
   // watch mode and the initial test run too, leaving just manual and perhaps
   // on-save test runs in place.
