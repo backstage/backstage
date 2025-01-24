@@ -270,6 +270,10 @@ export function registerCommands(program: Command) {
       '--license <license>',
       'The license to use for any new packages (default: Apache-2.0)',
     )
+    .option(
+      '--allowedOptions <option1,option2>',
+      'Comma separated list of allowed options shown in the interactive guide',
+    )
     .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./new/new'), 'default'));
 

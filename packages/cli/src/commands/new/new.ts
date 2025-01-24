@@ -42,7 +42,12 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
 }
 
 export default async (opts: OptionValues) => {
-  const factory = await FactoryRegistry.interactiveSelect(opts.select);
+  const allowedOptions = (opts.allowedOptions || undefined)?.split(',');
+
+  const factory = await FactoryRegistry.interactiveSelect(
+    opts.select,
+    allowedOptions,
+  );
 
   const providedOptions = parseOptions(opts.option);
   const options = await FactoryRegistry.populateOptions(

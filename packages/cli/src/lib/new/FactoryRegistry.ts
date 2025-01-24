@@ -54,19 +54,25 @@ export class FactoryRegistry {
     Object.values(factories).map(factory => [factory.name, factory]),
   );
 
-  static async interactiveSelect(preselected?: string): Promise<AnyFactory> {
+  static async interactiveSelect(
+    preselected?: string,
+    allowedOptions?: string[],
+  ): Promise<AnyFactory> {
     let selected = preselected;
-
     if (!selected) {
       const answers = await inquirer.prompt<{ name: string }>([
         {
           type: 'list',
           name: 'name',
           message: 'What do you want to create?',
-          choices: Array.from(this.factoryMap.values()).map(factory => ({
-            name: `${factory.name} - ${factory.description}`,
-            value: factory.name,
-          })),
+          choices: Array.from(this.factoryMap.values())
+            .filter(({ name }) =>
+              allowedOptions ? allowedOptions.includes(name) : true,
+            )
+            .map(factory => ({
+              name: `${factory.name} - ${factory.description}`,
+              value: factory.name,
+            })),
         },
       ]);
       selected = answers.name;
