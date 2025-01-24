@@ -53,7 +53,7 @@ class CustomAuthConnector implements AuthConnector<OAuth2Session> {
   async removeSession(): Promise<void> {}
 }
 
-describe('OAuth2', () => {
+describe('OAuth2CustomAuthConnector', () => {
   it('should use provided auth provider', async () => {
     const popupMock = { closed: false };
 
