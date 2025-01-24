@@ -145,6 +145,7 @@ export function resolveAppTree(
   }
 
   const orphans = new Array<SerializableAppNode>();
+  const clones = new Map<string, Array<SerializableAppNode>>();
 
   // A node with the provided rootNodeId must be found in the tree, and it must not be attached to anything
   let rootNode: AppNode | undefined = undefined;
@@ -167,13 +168,22 @@ export function resolveAppTree(
 
         const parent = nodes.get(attachTo.id);
         if (parent) {
+          const cloneParents = clones.get(attachTo.id) ?? [];
+
           if (!foundFirstParent) {
             foundFirstParent = true;
             node.setParent(parent, attachTo.input);
           } else {
-            // TODO(Rugvip): Perhaps makes sense to keep track of these with a `clones` map, similar to `orphans`?
+            cloneParents.unshift(parent);
+          }
+
+          for (const extraParent of cloneParents) {
             const clonedNode = new SerializableAppNode(spec);
-            clonedNode.setParent(parent, attachTo.input);
+            clonedNode.setParent(extraParent, attachTo.input);
+            clones.set(
+              spec.id,
+              clones.get(spec.id)?.concat(clonedNode) ?? [clonedNode],
+            );
           }
         }
       }

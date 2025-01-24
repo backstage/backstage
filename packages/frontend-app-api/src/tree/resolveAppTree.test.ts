@@ -143,44 +143,16 @@ describe('buildAppTree', () => {
 
     expect(Array.from(tree.nodes.keys())).toEqual(['a', 'b', 'c', 'd']);
 
-    expect(JSON.parse(JSON.stringify(tree.root))).toMatchInlineSnapshot(`
-      {
-        "attachments": {
-          "x": [
-            {
-              "attachments": {
-                "x": [
-                  {
-                    "id": "c",
-                  },
-                  {
-                    "id": "d",
-                  },
-                ],
-              },
-              "id": "b",
-            },
-            {
-              "attachments": {
-                "x": [
-                  {
-                    "id": "d",
-                  },
-                ],
-              },
-              "id": "c",
-            },
-          ],
-        },
-        "id": "a",
-      }
-    `);
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<a>
         x [
           <b>
             x [
-              <c />
+              <c>
+                x [
+                  <d />
+                ]
+              </c>
               <d />
             ]
           </b>
