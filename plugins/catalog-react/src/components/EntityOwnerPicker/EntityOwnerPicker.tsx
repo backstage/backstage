@@ -168,13 +168,15 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         ? new EntityOwnerFilter(selectedOwners)
         : undefined,
     });
-  }, [selectedOwners, updateFilters]);
+  }, [selectedOwners, updateFilters, filters.kind?.value]);
 
   useEffect(() => {
     if (availableOwners.length === 0) {
-      setSelectedOwners([]);
+      updateFilters({
+        owners: undefined,
+      });
     }
-  }, [availableOwners]);
+  }, [availableOwners, updateFilters]);
 
   if (
     ['user', 'group'].includes(

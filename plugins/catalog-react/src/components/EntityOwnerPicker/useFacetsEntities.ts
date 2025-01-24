@@ -17,12 +17,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import { EntityFilterQuery } from '@backstage/catalog-client';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 type FacetsCursor = {
   start: number;
@@ -60,19 +55,12 @@ export function useFacetsEntities({
 
   const fetchFacetsEntities = useCallback(async (): Promise<Entity[]> => {
     try {
-      const filter: EntityFilterQuery | undefined = selectedEntityKind
-        ? { kind: [selectedEntityKind] }
-        : undefined;
-      const filteredEntities = await catalogApi.getEntities({ filter });
-      const ownerRefs = filteredEntities.items
-        .map(entity => entity.relations?.find(rel => rel.type === 'ownedBy'))
-        .filter(Boolean)
-        .map(relation => {
-          const { kind, namespace, name } = parseEntityRef(relation!.targetRef);
-          return stringifyEntityRef({ kind, namespace, name });
-        });
+      const facetResponseFiltered = await catalogApi.getEntityFacets({
+        facets: ['relations.ownedBy'],
+        filter: selectedEntityKind ? { kind: [selectedEntityKind] } : undefined,
+      });
 
-      if (ownerRefs.length === 0) {
+      if (facetResponseFiltered.facets['relations.ownedBy'].length === 0) {
         return [];
       }
 
@@ -89,7 +77,13 @@ export function useFacetsEntities({
             kind,
             metadata: { name, namespace },
           };
-        });
+        })
+        .sort(
+          (a, b) =>
+            a.kind.localeCompare(b.kind, 'en-US') ||
+            a.metadata.namespace.localeCompare(b.metadata.namespace, 'en-US') ||
+            a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
+        );
     } catch (error) {
       return [];
     }
