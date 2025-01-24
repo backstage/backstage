@@ -62,8 +62,11 @@ export const ButtonDisabled = () => {
 };
 
 export const ButtonResponsive = () => {
-  // TODO: Add responsive button
-  return null;
+  return (
+    <Button variant={{ initial: 'primary', lg: 'secondary' }}>
+      Responsive Button
+    </Button>
+  );
 };
 
 export const ButtonPlayground = () => {

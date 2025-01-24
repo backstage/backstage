@@ -29,23 +29,23 @@
   outline: 0;
   background: none;
   appearance: none;
-  color: var(--canon-text-secondary);
+  color: var(--canon-fg-text-secondary);
   user-select: none;
   height: 2rem;
   flex: 1;
   cursor: pointer;
 
   &[data-selected] {
-    color: var(--canon-text-primary);
+    color: var(--canon-fg-text-primary);
 
     & p {
-      color: var(--canon-text-primary);
+      color: var(--canon-fg-text-primary);
     }
   }
 
   @media (hover: hover) {
     &:hover {
-      color: var(--canon-text-primary);
+      color: var(--canon-fg-text-primary);
     }
   }
 
@@ -64,7 +64,7 @@
 }
 
 .tab p {
-  color: var(--canon-text-secondary) !important;
+  color: var(--canon-fg-text-secondary) !important;
 }
 
 .indicator {

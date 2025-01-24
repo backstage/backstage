@@ -57,8 +57,9 @@ export const TextAllWeights = () => {
 };
 
 export const TextResponsive = () => {
-  // TODO: Add responsive text
-  return null;
+  return (
+    <Text variant={{ initial: 'body', lg: 'subtitle' }}>Responsive text</Text>
+  );
 };
 
 export const TextPlayground = () => {

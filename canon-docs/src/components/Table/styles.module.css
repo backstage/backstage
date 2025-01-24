@@ -38,7 +38,7 @@
   transition: background-color 0.2s ease-in-out;
 
   & p {
-    margin: 0;
+    margin: 0 !important;
   }
 }
 
