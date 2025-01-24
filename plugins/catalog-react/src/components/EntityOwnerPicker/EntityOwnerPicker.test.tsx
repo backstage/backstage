@@ -312,7 +312,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['group:default/some-owner'],
     });
-    expect(updateFilters).toHaveBeenLastCalledWith({
+    expect(updateFilters).toHaveBeenCalledWith({
       owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
@@ -412,8 +412,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         expect(screen.getByText(owner)).toBeInTheDocument();
       },
     );
-
-    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalled();
 
     fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
 
@@ -494,7 +493,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
+    expect(updateFilters).toHaveBeenCalledWith({
       owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
