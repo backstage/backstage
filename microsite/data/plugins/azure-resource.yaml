@@ -1,0 +1,10 @@
+---
+title: 'azure-resource'
+author: 'Anurag Pachauri'
+authorUrl: 'https://github.com/anuragpachauri'
+category: Infrastructure
+description: 'View resources based of tag and value provided in the catalog-info.yaml file.'
+documentation: 'https://github.com/anuragpachauri/azure-resource/blob/main/README.md'
+iconUrl: 'https://i.ibb.co/tLTspZP/Azure-Logo-PNG.png'
+npmPackageName: 'https://www.npmjs.com/package/@anuragpachauri/azure-resource'
+addedDate: '2025-01-20'
