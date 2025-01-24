@@ -16,7 +16,7 @@
 
 .canon-Text {
   font-family: var(--canon-font-regular);
-  color: var(--canon-fg-primary);
+  color: var(--canon-fg-text-primary);
   padding: 0;
   margin: 0;
 }

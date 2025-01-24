@@ -95,8 +95,8 @@
   --canon-border-hover: rgba(0, 0, 0, 0.2);
   --canon-border-success: #008000;
   --canon-border-warning: #e36d05;
-  --canon-fg-primary: #000;
-  --canon-fg-secondary: #646464;
+  --canon-fg-text-primary: #000;
+  --canon-fg-text-secondary: #646464;
   --canon-fg-link: #fff;
   --canon-fg-link-hover: #fff;
   --canon-fg-accent: #fff;
@@ -137,6 +137,6 @@
   --canon-fg-warning: #e36d05;
   --canon-fg-link: #fff;
   --canon-fg-link-hover: #fff;
-  --canon-fg-primary: #000;
-  --canon-fg-secondary: #646464;
+  --canon-fg-text-primary: #000;
+  --canon-fg-text-secondary: #646464;
 }

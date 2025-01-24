@@ -66,7 +66,7 @@
   padding: 0 8px;
   color: #fff;
   background-color: var(--canon-bg);
-  color: var(--canon-fg-primary);
+  color: var(--canon-fg-text-primary);
   transition: background-color 0.2s ease-in-out;
   border-radius: 0.25rem;
   cursor: pointer;

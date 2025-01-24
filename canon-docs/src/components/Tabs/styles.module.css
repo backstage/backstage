@@ -22,6 +22,6 @@
   left: var(--active-tab-left);
   width: var(--active-tab-width);
   height: 1px;
-  background-color: var(--canon-fg-primary);
+  background-color: var(--canon-fg-text-primary);
   transition: all 0.2s ease-in-out;
 }

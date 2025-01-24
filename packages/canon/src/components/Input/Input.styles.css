@@ -21,13 +21,13 @@
   background-color: var(--canon-bg-elevated);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-primary);
+  color: var(--canon-fg-text-primary);
   transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
   width: 100%;
 }
 
 .canon-Input::placeholder {
-  color: var(--canon-fg-secondary);
+  color: var(--canon-fg-text-secondary);
 }
 
 .canon-Input:hover {

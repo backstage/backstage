@@ -27,21 +27,21 @@
   all: unset;
   height: 60px;
   font-family: var(--docs-font);
-  color: var(--canon-fg-secondary);
+  color: var(--canon-fg-text-secondary);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);
   cursor: pointer;
   transition: color 0.2s ease-in-out;
 
   &:hover {
-    color: var(--canon-fg-primary);
+    color: var(--canon-fg-text-primary);
   }
 
   &[data-selected] {
-    color: var(--canon-fg-primary);
+    color: var(--canon-fg-text-primary);
 
     & p {
-      color: var(--canon-fg-primary);
+      color: var(--canon-fg-text-primary);
     }
   }
 
@@ -60,7 +60,7 @@
 }
 
 .tab p {
-  color: var(--canon-fg-secondary) !important;
+  color: var(--canon-fg-text-secondary) !important;
 }
 
 .indicator {
@@ -72,7 +72,7 @@
   width: var(--active-tab-width);
   height: 1px;
   border-radius: 0.25rem;
-  background-color: var(--canon-fg-primary);
+  background-color: var(--canon-fg-text-primary);
   transition-property: translate, width, background-color;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
