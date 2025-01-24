@@ -55,13 +55,14 @@ export function useFacetsEntities({
 
   const fetchFacetsEntities = useCallback(async (): Promise<Entity[]> => {
     try {
-      const facetResponseFiltered = await catalogApi.getEntityFacets({
-        facets: ['relations.ownedBy'],
-        filter: selectedEntityKind ? { kind: [selectedEntityKind] } : undefined,
-      });
-
-      if (facetResponseFiltered.facets['relations.ownedBy'].length === 0) {
-        return [];
+      if (selectedEntityKind) {
+        const facetResponseFiltered = await catalogApi.getEntityFacets({
+          facets: ['relations.ownedBy'],
+          filter: { kind: [selectedEntityKind] },
+        });
+        if (facetResponseFiltered.facets['relations.ownedBy'].length === 0) {
+          return [];
+        }
       }
 
       const facetResponse = await catalogApi.getEntityFacets({

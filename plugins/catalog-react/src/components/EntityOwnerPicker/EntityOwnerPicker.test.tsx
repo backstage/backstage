@@ -412,7 +412,8 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         expect(screen.getByText(owner)).toBeInTheDocument();
       },
     );
-    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalled();
+
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
 
     fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
 
