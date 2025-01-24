@@ -515,3 +515,4 @@ scrollable
 severities
 Intellij
 intellij
+IntelliJ
