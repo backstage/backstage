@@ -36,7 +36,13 @@ additional encoding:
 The name is always required. Depending on the context, you may be able to leave
 out the kind and/or namespace. If you do, it is contextual what values will be
 used, and the relevant documentation should specify which rule applies where.
-All strings are case insensitive.
+
+Entity ref strings are frequently passed between systems as identifiers of
+entities. In those cases the refs should always be complete (have all three
+parts). The sender should ensure that the refs are always lowercased in an
+`en-US` locale, preferably by using [the `stringifyEntityRef` function](https://backstage.io/docs/reference/catalog-model.stringifyentityref/)
+which does this automatically. The receiver should treat incoming refs case
+insensitively to avoid problems with senders who do not obey this rule.
 
 ```yaml
 # Example:

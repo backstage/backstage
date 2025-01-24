@@ -23,22 +23,22 @@
 }
 
 .canon-Heading--variant-display {
-  font-size: var(--canon-font-size-display);
+  font-size: var(--canon-font-size-10);
   font-weight: var(--canon-font-weight-bold);
 }
 
 .canon-Heading--variant-title1 {
-  font-size: var(--canon-font-size-title1);
+  font-size: var(--canon-font-size-9);
   font-weight: var(--canon-font-weight-bold);
 }
 
 .canon-Heading--variant-title2 {
-  font-size: var(--canon-font-size-title2);
+  font-size: var(--canon-font-size-8);
   font-weight: var(--canon-font-weight-bold);
 }
 
 .canon-Heading--variant-title3 {
-  font-size: var(--canon-font-size-title3);
+  font-size: var(--canon-font-size-7);
   font-weight: var(--canon-font-weight-bold);
 }
 
@@ -48,6 +48,6 @@
 }
 
 .canon-Heading--variant-title5 {
-  font-size: var(--canon-font-size-title5);
+  font-size: var(--canon-font-size-5);
   font-weight: var(--canon-font-weight-bold);
 }

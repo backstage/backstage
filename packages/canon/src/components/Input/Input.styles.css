@@ -15,11 +15,11 @@
  */
 
 .canon-Input {
-  border-radius: var(--canon-border-radius-sm);
-  border: 1px solid var(--canon-border-base);
+  border-radius: var(--canon-radius-3);
+  border: 1px solid var(--canon-border);
   padding: 0 var(--canon-space-4);
-  background-color: var(--canon-surface-1);
-  font-size: var(--canon-font-size-body);
+  background-color: var(--canon-bg-elevated);
+  font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-primary);
   transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
@@ -35,13 +35,13 @@
 }
 
 .canon-Input:focus-visible {
-  outline-color: var(--canon-border-selected);
+  outline-color: var(--canon-border-focus);
   outline-width: 0px;
-  border-color: var(--canon-border-selected);
+  border-color: var(--canon-border-focus);
 }
 
 .canon-Input[data-invalid] {
-  border-color: var(--canon-error);
+  border-color: var(--canon-fg-danger);
 }
 
 .canon-Input--size-sm {

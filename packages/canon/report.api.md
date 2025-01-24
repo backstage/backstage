@@ -68,7 +68,7 @@ export interface BoxProps extends UtilityProps {
 }
 
 // @public (undocumented)
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public (undocumented)
 export const Button: React_2.ForwardRefExoticComponent<
@@ -101,12 +101,6 @@ export interface ButtonProps {
 
 // @public (undocumented)
 export interface CanonContextProps {
-  // (undocumented)
-  breakpoint: Breakpoint;
-  // (undocumented)
-  getResponsiveValue: (
-    value: string | Partial<Record<Breakpoint, string>>,
-  ) => string;
   // (undocumented)
   icons: IconMap;
 }

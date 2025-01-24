@@ -22,22 +22,22 @@
 }
 
 .canon-Text--variant-body {
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   line-height: 140%;
 }
 
 .canon-Text--variant-subtitle {
-  font-size: var(--canon-font-size-subtitle);
+  font-size: var(--canon-font-size-4);
   line-height: 140%;
 }
 
 .canon-Text--variant-caption {
-  font-size: var(--canon-font-size-caption);
+  font-size: var(--canon-font-size-2);
   line-height: 140%;
 }
 
 .canon-Text--variant-label {
-  font-size: var(--canon-font-size-label);
+  font-size: var(--canon-font-size-1);
   line-height: 140%;
 }
 

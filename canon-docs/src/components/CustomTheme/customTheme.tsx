@@ -11,13 +11,13 @@ import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 
 const defaultTheme = `:root {
-  --canon-accent: #000;
+  --canon-bg-accent: #000;
 }`;
 
 const myTheme = createTheme({
   theme: 'light',
   settings: {
-    background: 'var(--canon-surface-1)',
+    background: 'var(--canon-bg-elevated)',
     backgroundImage: '',
     foreground: '#6182B8',
     caret: '#5d00ff',

@@ -176,6 +176,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                 containerSpec,
                 containerStatus,
               )}
+              options={{ nestedValuesAsYaml: true }}
             />
           </Grid>
           {containerMetrics && (

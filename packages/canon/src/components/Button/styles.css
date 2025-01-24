@@ -22,16 +22,16 @@
   user-select: none;
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-bold);
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   padding: 0;
   transition: all 150ms ease;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--canon-radius-2);
 }
 
 .canon-Button--variant-primary {
-  background-color: var(--canon-accent);
-  color: var(--canon-text-primary-on-accent);
+  background-color: var(--canon-bg-accent);
+  color: var(--canon-fg-accent);
 
   &:hover {
     background-color: transparent;
@@ -42,7 +42,7 @@
 
 .canon-Button--variant-secondary {
   background-color: transparent;
-  box-shadow: inset 0 0 0 1px var(--canon-border-base);
+  box-shadow: inset 0 0 0 1px var(--canon-border);
   color: var(--canon-text-primary);
 
   &:hover {

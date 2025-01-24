@@ -5,7 +5,7 @@
 .list {
   display: flex;
   gap: var(--canon-space-6);
-  border-bottom: 1px solid var(--canon-border-base);
+  border-bottom: 1px solid var(--canon-border);
   position: relative;
   margin-bottom: var(--canon-space-6);
 }

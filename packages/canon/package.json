@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.0.0",
+  "version": "0.1.0-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -9,11 +9,10 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "private": true,
   "keywords": [
     "backstage"
   ],
-  "homepage": "https://backstage.io",
+  "homepage": "https://canon.backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
@@ -28,9 +27,9 @@
   ],
   "scripts": {
     "build": "yarn build:app && yarn build:css",
-    "build-storybook": "storybook build",
     "build:app": "backstage-cli package build",
     "build:css": "node scripts/build-css.mjs",
+    "build-storybook": "storybook build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
