@@ -3,5 +3,4 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Changes the TaskLogStream to take up all remaining space
-Changes the RealLogViewer to always display the last line by default
+Updating the `TaskLogStream` to take up all space in a running task, and also show the last line of the log by default
