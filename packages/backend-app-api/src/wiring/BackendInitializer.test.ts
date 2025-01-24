@@ -560,6 +560,30 @@ describe('BackendInitializer', () => {
     );
   });
 
+  it('should permit startup errors for plugins marked as optional', async () => {
+    const init = new BackendInitializer([
+      mockServices.rootLifecycle.factory(),
+      mockServices.rootLogger.factory(),
+      mockServices.rootConfig.factory({
+        data: { backend: { startup: { test: { optional: true } } } },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await init.start();
+  });
+
   it('should forward errors when multiple plugins fail to start', async () => {
     const init = new BackendInitializer([]);
     init.add(

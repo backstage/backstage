@@ -43,3 +43,18 @@ export interface CreateSpecializedBackendOptions {
 export type ServiceOrExtensionPoint<T = unknown> =
   | ExtensionPoint<T>
   | ServiceRef<T>;
+
+/**
+ * @public
+ */
+export type BackendStartupOptions = {
+  [pluginId: string]: {
+    /**
+     * Used to mark plugins as optional, which allows the backend to start up even in the event
+     * of a plugin failure. Plugin failures without this configuration are fatal. This can
+     * enable leaving a crashing plugin installed, but still permit backend startup, which may
+     * help troubleshoot data-dependent issues.
+     */
+    optional?: boolean;
+  };
+};

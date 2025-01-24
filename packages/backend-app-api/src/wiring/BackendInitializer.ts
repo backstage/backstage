@@ -24,7 +24,7 @@ import {
   RootLifecycleService,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { ServiceOrExtensionPoint } from './types';
+import { BackendStartupOptions, ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
@@ -321,6 +321,21 @@ export class BackendInitializer {
       await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
     );
 
+    const rootConfig = await this.#serviceRegistry.get(
+      coreServices.rootConfig,
+      'root',
+    );
+
+    const startupOptions =
+      rootConfig
+        ?.getOptionalConfig('backend.startup')
+        ?.get<BackendStartupOptions>() ?? {};
+
+    // Gather backend pluginIds marked as optional, since these should not cause a startup failure
+    const optionalBackends = Object.entries(startupOptions)
+      .filter(([_, value]) => value?.optional)
+      .map(([key]) => key);
+
     // All plugins are initialized in parallel
     const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
@@ -392,8 +407,12 @@ export class BackendInitializer {
           await lifecycleService.startup();
         } catch (error: unknown) {
           assertError(error);
-          initLogger.onPluginFailed(pluginId, error);
-          throw error;
+          if (optionalBackends.includes(pluginId)) {
+            initLogger.onOptionalPluginFailed(pluginId, error);
+          } else {
+            initLogger.onPluginFailed(pluginId, error);
+            throw error;
+          }
         }
       }),
     );

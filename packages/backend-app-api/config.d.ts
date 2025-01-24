@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { BackendStartupOptions } from './src';
+
 export interface Config {
   backend?: {
     /** Used by the feature discovery service */
@@ -23,5 +25,7 @@ export interface Config {
           include?: string[];
           exclude?: string[];
         };
+
+    startup?: BackendStartupOptions;
   };
 }
