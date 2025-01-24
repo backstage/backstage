@@ -17,6 +17,7 @@
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
+import clsx from 'clsx';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
@@ -26,9 +27,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const utilityClassNames = getClassNames(restProps);
 
   // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['canon-box', utilityClassNames, className]
-    .filter(Boolean)
-    .join(' ');
+  const classNames = clsx('canon-Box', utilityClassNames, className);
 
   return createElement(as, {
     ref,

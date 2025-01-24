@@ -300,6 +300,9 @@ export interface AppTree {
 
 // @public
 export interface AppTreeApi {
+  getNodesByRoutePath(sourcePath: string): {
+    nodes: AppNode[];
+  };
   getTree(): {
     tree: AppTree;
   };

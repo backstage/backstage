@@ -22,32 +22,32 @@
 }
 
 .canon-FieldLabel {
-  font-size: var(--canon-font-size-caption);
+  font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-primary);
-  margin-bottom: var(--canon-spacing-3xs);
+  margin-bottom: var(--canon-space-1_5);
 }
 
 .canon-FieldDescription {
-  font-size: var(--canon-font-size-caption);
+  font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-secondary);
   margin: 0;
-  padding-top: var(--canon-spacing-3xs);
+  padding-top: var(--canon-space-1_5);
 }
 
 .canon-FieldError {
-  font-size: var(--canon-font-size-caption);
+  font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-error);
+  color: var(--canon-fg-danger);
   margin: 0;
-  padding-top: var(--canon-spacing-3xs);
+  padding-top: var(--canon-space-1_5);
 }
 
 .canon-FieldValidity {
-  font-size: var(--canon-font-size-caption);
+  font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-text-secondary);
   margin: 0;
-  padding-top: var(--canon-spacing-3xs);
+  padding-top: var(--canon-space-1_5);
 }

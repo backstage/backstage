@@ -15,21 +15,23 @@
  */
 
 import React, { Fragment, ReactElement } from 'react';
-import {
-  withStyles,
-  createStyles,
-  WithStyles,
-  Theme,
-} from '@material-ui/core/styles';
 import startCase from 'lodash/startCase';
 import Typography from '@material-ui/core/Typography';
 
 import {
-  MetadataTable,
-  MetadataTableItem,
   MetadataList,
   MetadataListItem,
+  MetadataTable,
+  MetadataTableItem,
 } from './MetadataTable';
+import { CodeSnippet } from '../CodeSnippet';
+import jsyaml from 'js-yaml';
+import {
+  Theme,
+  createStyles,
+  WithStyles,
+  withStyles,
+} from '@material-ui/core/styles';
 
 export type StructuredMetadataTableListClassKey = 'root';
 
@@ -41,7 +43,6 @@ const listStyle = createStyles({
 });
 
 export type StructuredMetadataTableNestedListClassKey = 'root';
-
 const nestedListStyle = (theme: Theme) =>
   createStyles({
     root: {
@@ -110,9 +111,24 @@ function toValue(
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
-
-  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-    return renderMap(value, options, nested);
+  if (value !== null && typeof value === 'object') {
+    if (options.nestedValuesAsYaml) {
+      return (
+        <CodeSnippet
+          language="yaml"
+          text={jsyaml.dump(value)}
+          customStyle={{
+            background: 'transparent',
+            lineHeight: '1.4',
+            padding: '0',
+            margin: 0,
+          }}
+        />
+      );
+    }
+    if (!Array.isArray(value)) {
+      return renderMap(value, options, nested);
+    }
   }
 
   if (Array.isArray(value)) {
@@ -122,7 +138,6 @@ function toValue(
   if (typeof value === 'boolean') {
     return <Fragment>{value ? '✅' : '❌'}</Fragment>;
   }
-
   return (
     <Typography variant="body2" component="span">
       {value}
@@ -167,6 +182,7 @@ export interface StructuredMetadataTableProps {
      * @returns Formatted key
      */
     titleFormat?: (key: string) => string;
+    nestedValuesAsYaml?: boolean;
   };
 }
 
@@ -174,9 +190,10 @@ type Options = Required<NonNullable<StructuredMetadataTableProps['options']>>;
 
 /** @public */
 export function StructuredMetadataTable(props: StructuredMetadataTableProps) {
-  const { metadata, dense = true, options = {} } = props;
+  const { metadata, dense = true, options } = props;
   const metadataItems = mapToItems(metadata, {
     titleFormat: startCase,
+    nestedValuesAsYaml: options?.nestedValuesAsYaml ?? false,
     ...options,
   });
   return <MetadataTable dense={dense}>{metadataItems}</MetadataTable>;

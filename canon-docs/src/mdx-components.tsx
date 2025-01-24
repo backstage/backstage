@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import type { MDXComponents } from 'mdx/types';
 import Image, { ImageProps } from 'next/image';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Heading } from '../../packages/canon/src/components/Heading';
 import { Box } from '../../packages/canon/src/components/Box';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -78,11 +77,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <code
         style={{
           fontFamily: 'var(--canon-font-monospace)',
-          backgroundColor: 'var(--canon-surface-1)',
+          backgroundColor: 'var(--canon-bg-elevated)',
           padding: '0.2rem 0.375rem',
           borderRadius: '0.25rem',
           color: 'var(--canon-text-secondary)',
-          border: '1px solid var(--canon-border-base)',
+          border: '1px solid var(--canon-border)',
           fontSize: '0.875rem',
         }}
       >

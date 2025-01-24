@@ -67,6 +67,7 @@ export interface TestBackend extends Backend {
 
 export const defaultServiceFactories = [
   mockServices.auth.factory(),
+  mockServices.auditor.factory(),
   mockServices.cache.factory(),
   mockServices.rootConfig.factory(),
   mockServices.database.factory(),
@@ -210,10 +211,19 @@ function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
   );
 }
 
+// Same as in the backend-app-api, handles double defaults from dynamic imports
 function unwrapFeature(
-  feature: BackendFeature | (() => BackendFeature),
+  feature: BackendFeature | { default: BackendFeature },
 ): BackendFeature {
-  return typeof feature === 'function' ? feature() : feature;
+  if ('$$type' in feature) {
+    return feature;
+  }
+
+  if ('default' in feature) {
+    return feature.default;
+  }
+
+  return feature;
 }
 
 const backendInstancesToCleanUp = new Array<Backend>();

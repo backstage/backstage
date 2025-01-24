@@ -2,11 +2,11 @@
   position: relative;
   overflow: auto;
   width: 100%;
-  background-color: var(--canon-surface-1);
-  border-radius: var(--canon-border-radius-xs);
-  padding-bottom: var(--canon-spacing-5xs);
-  padding-top: var(--canon-spacing-5xs);
-  font-size: var(--canon-font-size-body);
+  background-color: var(--canon-bg-elevated);
+  border-radius: var(--canon-radius-2);
+  padding-bottom: var(--canon-space-0_5);
+  padding-top: var(--canon-space-0_5);
+  font-size: var(--canon-font-size-3);
 
   table {
     width: 100%;
@@ -16,15 +16,9 @@
   }
 }
 
-.table-header {
-  tr {
-    /* border-bottom: 1px solid var(--canon-border); */
-  }
-}
-
 .table-head {
   text-align: left;
-  padding: var(--canon-spacing-xs);
+  padding: var(--canon-space-3);
 }
 
 .table-body {
@@ -37,29 +31,29 @@
   transition: color 0.2s ease-in-out;
 
   &:hover td {
-    background-color: var(--canon-surface-3);
+    background-color: var(--canon-bg-tint);
   }
 
   & .table-cell:first-child {
-    border-top-left-radius: var(--canon-border-radius-xs);
-    border-bottom-left-radius: var(--canon-border-radius-xs);
-    box-shadow: inset 4px 2px 0 0 var(--canon-surface-1),
-      inset 4px -2px 0 0 var(--canon-surface-1);
-    padding-left: var(--canon-spacing-xs);
+    border-top-left-radius: var(--canon-radius-2);
+    border-bottom-left-radius: var(--canon-radius-2);
+    box-shadow: inset 4px 2px 0 0 var(--canon-bg-elevated),
+      inset 4px -2px 0 0 var(--canon-bg-elevated);
+    padding-left: var(--canon-space-3);
   }
 
   & .table-cell:last-child {
-    border-top-right-radius: var(--canon-border-radius-xs);
-    border-bottom-right-radius: var(--canon-border-radius-xs);
-    box-shadow: inset -4px 2px 0 0 var(--canon-surface-1),
-      inset -4px -2px 0 0 var(--canon-surface-1);
-    padding-right: var(--canon-spacing-xs);
+    border-top-right-radius: var(--canon-radius-2);
+    border-bottom-right-radius: var(--canon-radius-2);
+    box-shadow: inset -4px 2px 0 0 var(--canon-bg-elevated),
+      inset -4px -2px 0 0 var(--canon-bg-elevated);
+    padding-right: var(--canon-space-3);
   }
 }
 
 .table-cell {
-  padding: var(--canon-spacing-xs);
-  background-color: var(--canon-surface-2);
-  box-shadow: inset 0px 2px 0 0 var(--canon-surface-1),
-    inset 0px -2px 0 0 var(--canon-surface-1);
+  padding: var(--canon-space-3);
+  background-color: var(--canon-bg);
+  box-shadow: inset 0px 2px 0 0 var(--canon-bg-elevated),
+    inset 0px -2px 0 0 var(--canon-bg-elevated);
 }

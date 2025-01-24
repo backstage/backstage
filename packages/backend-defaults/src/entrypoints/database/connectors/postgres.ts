@@ -103,7 +103,7 @@ export async function buildPgDatabaseConfig(
     Connector: CloudSqlConnector,
     IpAddressTypes,
     AuthTypes,
-  } = await import('@google-cloud/cloud-sql-connector');
+  } = require('@google-cloud/cloud-sql-connector') as typeof import('@google-cloud/cloud-sql-connector');
   const connector = new CloudSqlConnector();
   const clientOpts = await connector.getOptions({
     instanceConnectionName: config.connection.instance,

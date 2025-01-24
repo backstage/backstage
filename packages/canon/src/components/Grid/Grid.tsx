@@ -17,6 +17,7 @@
 import { createElement, forwardRef } from 'react';
 import { GridItemProps, GridProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
+import clsx from 'clsx';
 
 const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const {
@@ -30,13 +31,9 @@ const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 
   const utilityClassNames = getClassNames({ gap, columns, ...restProps });
 
-  const classNames = ['canon-grid', utilityClassNames, className]
-    .filter(Boolean)
-    .join(' ');
-
   return createElement('div', {
     ref,
-    className: classNames,
+    className: clsx('canon-Grid', utilityClassNames, className),
     style,
     children,
   });
@@ -47,13 +44,9 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
 
   const utilityClassNames = getClassNames(restProps);
 
-  const classNames = ['grid-item', utilityClassNames, className]
-    .filter(Boolean)
-    .join(' ');
-
   return createElement('div', {
     ref,
-    className: classNames,
+    className: clsx('canon-GridItem', utilityClassNames, className),
     style,
     children,
   });

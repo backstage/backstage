@@ -84,7 +84,10 @@ const DefaultCustomResourceAccordion = ({
       </AccordionSummary>
       <AccordionDetails>
         {Object.prototype.hasOwnProperty.call(customResource, 'status') && (
-          <StructuredMetadataTable metadata={customResource.status} />
+          <StructuredMetadataTable
+            metadata={customResource.status}
+            options={{ nestedValuesAsYaml: true }}
+          />
         )}
       </AccordionDetails>
     </Accordion>

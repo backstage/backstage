@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { wrapServer } from '@backstage/backend-openapi-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import type { Location } from '@backstage/catalog-client';
 import {
   ANNOTATION_LOCATION,
@@ -23,26 +24,25 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import express from 'express';
-import request from 'supertest';
-import { Cursor, EntitiesCatalog } from '../catalog/types';
-import { LocationInput, LocationService, RefreshService } from './types';
-import { basicEntityFilter } from './request';
-import { createRouter } from './createRouter';
+import { ConfigReader } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   createPermissionIntegrationRouter,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
-import { CatalogProcessingOrchestrator } from '../processing/types';
-import { z } from 'zod';
-import { decodeCursor, encodeCursor } from './util';
-import { wrapServer } from '@backstage/backend-openapi-utils';
+import express from 'express';
 import { Server } from 'http';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import request from 'supertest';
+import { z } from 'zod';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
+import { createRouter } from './createRouter';
+import { basicEntityFilter } from './request';
+import { LocationInput, LocationService, RefreshService } from './types';
+import { decodeCursor, encodeCursor } from './util';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -91,6 +91,7 @@ describe('createRouter readonly disabled', () => {
       httpAuth: mockServices.httpAuth(),
       locationAnalyzer,
       permissionsService,
+      auditor: mockServices.auditor.mock(),
     });
     router.use(middleware.error());
     app = await wrapServer(express().use(router));
@@ -971,6 +972,7 @@ describe('createRouter readonly and raw json enabled', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       permissionsService,
+      auditor: mockServices.auditor.mock(),
     });
     router.use(middleware.error());
     app = express().use(router);
@@ -1190,6 +1192,7 @@ describe('NextRouter permissioning', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       permissionsService,
+      auditor: mockServices.auditor.mock(),
     });
     app = express().use(router);
   });

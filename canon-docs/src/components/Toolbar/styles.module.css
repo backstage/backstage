@@ -4,18 +4,18 @@
   left: 0;
   right: 0;
   z-index: 10;
-  background-color: var(--canon-surface-1);
-  border-bottom: 1px solid var(--canon-border-base);
+  background-color: var(--canon-bg-elevated);
+  border-bottom: 1px solid var(--canon-border);
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--canon-spacing-md);
+  padding: 0 var(--canon-space-6);
   transition: background-color 0.2s ease-in-out;
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--canon-spacing-sm);
+  gap: var(--canon-space-4);
 }

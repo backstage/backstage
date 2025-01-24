@@ -1,4 +1,4 @@
-import { Input, Field, Grid } from '../../../packages/canon';
+import { Input, Field } from '../../../packages/canon';
 
 export const FieldPreview = () => {
   return (

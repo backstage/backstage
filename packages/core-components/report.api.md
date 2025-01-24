@@ -1307,6 +1307,7 @@ export interface StructuredMetadataTableProps {
   // (undocumented)
   options?: {
     titleFormat?: (key: string) => string;
+    nestedValuesAsYaml?: boolean;
   };
 }
 

@@ -35,6 +35,7 @@ describe('RouteRef', () => {
 
     internal.setId('some-id');
     expect(String(internal)).toBe('RouteRef{some-id}');
+    internal.setId('some-id'); // Should allow same ID
 
     expect(() => internal.setId('some-other-id')).toThrow(
       "RouteRef was referenced twice as both 'some-id' and 'some-other-id'",

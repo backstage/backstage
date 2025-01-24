@@ -22,16 +22,23 @@ import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
 import { assertError } from '@backstage/errors';
+import { isPromise } from 'util/types';
 
-type UninitializedFeature = CliFeature | Promise<CliFeature>;
+type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
 
 export class CliInitializer {
   private graph = new CommandGraph();
   private commandRegistry = new CommandRegistry(this.graph);
   #uninitiazedFeatures: Promise<CliFeature>[] = [];
 
-  add(module: UninitializedFeature) {
-    this.#uninitiazedFeatures.push(Promise.resolve(module));
+  add(feature: UninitializedFeature) {
+    if (isPromise(feature)) {
+      this.#uninitiazedFeatures.push(
+        feature.then(f => unwrapFeature(f.default)),
+      );
+    } else {
+      this.#uninitiazedFeatures.push(Promise.resolve(feature));
+    }
   }
 
   async #register(feature: CliFeature) {
@@ -135,4 +142,23 @@ function isCliPlugin(feature: CliFeature): feature is InternalCliPlugin {
   }
   // Backwards compatibility for v1 registrations that use duck typing
   return 'plugin' in internal;
+}
+
+/** @internal */
+export function unwrapFeature(
+  feature: CliFeature | { default: CliFeature },
+): CliFeature {
+  if ('$$type' in feature) {
+    return feature;
+  }
+
+  // This is a workaround where default exports get transpiled to `exports['default'] = ...`
+  // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
+  // when importing using a dynamic import.
+  // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
+  if ('default' in feature) {
+    return feature.default;
+  }
+
+  return feature;
 }

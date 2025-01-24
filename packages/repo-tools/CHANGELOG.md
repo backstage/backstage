@@ -1,5 +1,20 @@
 # @backstage/repo-tools
 
+## 0.12.2-next.0
+
+### Patch Changes
+
+- 98ddf05: The `api-reports` command is now also able to generate SQL reports, enabled by the `--sql-reports` flag.
+- cb76663: Internal refactor to support native ESM.
+- ecd01a9: Internal refactor of API report generation.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
 ## 0.12.1
 
 ### Patch Changes

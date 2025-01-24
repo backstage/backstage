@@ -68,7 +68,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       preferAlpha: options.preferAlpha,
     });
     const scannedPlugins = (await scanner.scanRoot()).packages;
-    scanner.trackChanges();
+    await scanner.trackChanges();
     const moduleLoader =
       options.moduleLoader ||
       new CommonJSModuleLoader({ logger: options.logger });

@@ -27,6 +27,35 @@ import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
 
 // @public
+export interface AuditorService {
+  // (undocumented)
+  createEvent(
+    options: AuditorServiceCreateEventOptions,
+  ): Promise<AuditorServiceEvent>;
+}
+
+// @public (undocumented)
+export type AuditorServiceCreateEventOptions = {
+  eventId: string;
+  severityLevel?: AuditorServiceEventSeverityLevel;
+  request?: Request_2<any, any, any, any, any>;
+  meta?: JsonObject;
+};
+
+// @public (undocumented)
+export type AuditorServiceEvent = {
+  success(options?: { meta?: JsonObject }): Promise<void>;
+  fail(options: { meta?: JsonObject; error: Error }): Promise<void>;
+};
+
+// @public
+export type AuditorServiceEventSeverityLevel =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'critical';
+
+// @public
 export interface AuthService {
   authenticate(
     token: string,
@@ -185,6 +214,7 @@ export namespace coreServices {
   const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
   const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  const auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
   const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
   const permissionsRegistry: ServiceRef<
     PermissionsRegistryService,

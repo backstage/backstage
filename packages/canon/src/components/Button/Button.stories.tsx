@@ -114,7 +114,7 @@ export const Responsive: Story = {
   args: {
     children: 'Button',
     variant: {
-      xs: 'primary',
+      initial: 'primary',
       sm: 'secondary',
       md: 'tertiary',
     },

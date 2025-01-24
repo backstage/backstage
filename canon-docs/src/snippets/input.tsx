@@ -1,4 +1,4 @@
-import { Input, Inline, Grid } from '../../../packages/canon';
+import { Input, Grid } from '../../../packages/canon';
 
 export const InputPreview = () => {
   return (

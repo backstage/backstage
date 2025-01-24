@@ -4,7 +4,7 @@ author: digital.ai
 authorUrl: https://digital.ai/
 category: CI/CD
 description: The plugin offers integration with Digital.ai Deploy and backstage components and services. It provide access to deployments and reports.
-documentation: https://docs.digital.ai/bundle/devops-deploy-version-v.24.1/page/deploy/concept/xl-deploy-backstage-overview.html
+documentation: https://docs.digital.ai/deploy/docs/concept/xl-deploy-backstage-overview
 iconUrl: /img/digital.ai-deploy.svg
 npmPackageName: '@digital.ai/plugin-dai-deploy'
 tags:

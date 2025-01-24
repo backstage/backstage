@@ -40,13 +40,13 @@ describe('DeploymentDrawer', () => {
     expect(getAllByText('Deployment')).toHaveLength(2);
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Strategy')).toBeInTheDocument();
-    expect(getByText('Rolling Update:')).toBeInTheDocument();
-    expect(getByText(textContentMatcher('Max Surge: 25%'))).toBeInTheDocument();
+    expect(getByText('rollingUpdate:')).toBeInTheDocument();
+    expect(getByText(textContentMatcher('maxSurge: 25%'))).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('Max Unavailable: 25%')),
+      getByText(textContentMatcher('maxUnavailable: 25%')),
     ).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('Type: RollingUpdate')),
+      getByText(textContentMatcher('type: RollingUpdate')),
     ).toBeInTheDocument();
     expect(getByText('Min Ready Seconds')).toBeInTheDocument();
     expect(getByText('???')).toBeInTheDocument();

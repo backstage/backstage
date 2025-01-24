@@ -19,6 +19,7 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { ContentHeader, PageWithHeader } from '@backstage/core-components';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
@@ -102,5 +103,81 @@ describe('TechDocsCustomHome', () => {
     expect(
       await screen.findByText('Second Tab Description'),
     ).toBeInTheDocument();
+  });
+  it('should render ContentHeader based on CustomHeader prop', async () => {
+    const tabsConfig = [
+      {
+        label: 'First Tab',
+        panels: [
+          {
+            title: 'First Tab',
+            description: 'First Tab Description',
+            panelType: 'DocsCardGrid' as PanelType,
+            panelProps: {
+              CustomHeader: () => (
+                <ContentHeader
+                  title="Custom Header"
+                  description="useful docs"
+                />
+              ),
+            },
+            filterPredicate: () => true,
+          },
+        ],
+      },
+    ];
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <TechDocsCustomHome tabsConfig={tabsConfig} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Custom Header')).toBeInTheDocument();
+  });
+  it('should render CustomPageWrapper', async () => {
+    const tabsConfig = [
+      {
+        label: 'First Tab',
+        panels: [
+          {
+            title: 'First Tab',
+            description: 'First Tab Description',
+            panelType: 'DocsCardGrid' as PanelType,
+            filterPredicate: () => true,
+          },
+        ],
+      },
+    ];
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <TechDocsCustomHome
+          tabsConfig={tabsConfig}
+          CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (
+            <PageWithHeader
+              title="Custom Title"
+              subtitle="Custom Subtitle"
+              themeId="documentation"
+            >
+              {children}
+            </PageWithHeader>
+          )}
+        />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Custom Title')).toBeInTheDocument();
+    expect(screen.getByText('Custom Subtitle')).toBeInTheDocument();
   });
 });

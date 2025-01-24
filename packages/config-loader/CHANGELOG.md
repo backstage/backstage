@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.9.6-next.0
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.9.5
 
 ### Patch Changes

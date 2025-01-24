@@ -57,7 +57,8 @@ export async function connectToExternalRedis(
 
 export async function startRedisContainer(image: string): Promise<Instance> {
   // Lazy-load to avoid side-effect of importing testcontainers
-  const { GenericContainer } = await import('testcontainers');
+  const { GenericContainer } =
+    require('testcontainers') as typeof import('testcontainers');
 
   const container = await new GenericContainer(image)
     .withExposedPorts(6379)

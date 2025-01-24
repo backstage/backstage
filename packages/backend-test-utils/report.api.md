@@ -8,6 +8,7 @@
 /// <reference types="node" />
 /// <reference types="qs" />
 
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -153,6 +154,15 @@ export function mockErrorHandler(): ErrorRequestHandler<
 
 // @public
 export namespace mockServices {
+  // (undocumented)
+  export namespace auditor {
+    const // (undocumented)
+      factory: () => ServiceFactory<AuditorService, 'plugin', 'singleton'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AuditorService> | undefined,
+      ) => ServiceMock<AuditorService>;
+  }
   // (undocumented)
   export function auth(options?: {
     pluginId?: string;

@@ -131,6 +131,8 @@ export interface FieldSchema<TReturn, TUiOptions> {
   // (undocumented)
   readonly schema: CustomFieldExtensionSchema;
   // (undocumented)
+  readonly TOutput: TReturn;
+  // (undocumented)
   readonly TProps: FieldExtensionComponentProps<TReturn, TUiOptions>;
   // @deprecated (undocumented)
   readonly type: FieldExtensionComponentProps<TReturn, TUiOptions>;

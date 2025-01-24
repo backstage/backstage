@@ -54,7 +54,7 @@ async function verify(directoryPath: string) {
     schemaPath = join(directoryPath, OLD_SCHEMA_PATH);
   }
 
-  const schema = await import(resolvePath(schemaPath));
+  const { default: schema } = await import(resolvePath(schemaPath));
 
   if (!schema.spec) {
     throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a 'spec' export.`);

@@ -23,7 +23,13 @@ function createTransformer(config) {
     ...config,
   });
   const process = (source, filePath, jestOptions) => {
+    // Skip transformation of .js files without ESM syntax, we never transform from CJS to ESM
     if (filePath.endsWith('.js') && !ESM_REGEX.test(source)) {
+      return { code: source };
+    }
+
+    // Skip transformation of .mjs files, they should only be used if ESM support is available
+    if (filePath.endsWith('.mjs')) {
       return { code: source };
     }
 

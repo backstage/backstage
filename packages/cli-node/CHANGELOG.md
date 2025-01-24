@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.13-next.0
+
+### Patch Changes
+
+- cb76663: Added `type` field to `BackstagePackageJson` type.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.2.12
 
 ### Patch Changes
