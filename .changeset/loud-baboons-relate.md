@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': minor
+'@backstage/core-components': patch
 '@backstage/plugin-scaffolder': minor
 ---
 
