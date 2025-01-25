@@ -94,7 +94,11 @@ import { isProtectedApp } from './isProtectedApp';
 type CompatiblePlugin =
   | BackstagePlugin
   | (Omit<BackstagePlugin, 'getFeatureFlags'> & {
-      output(): Array<{ type: 'feature-flag'; name: string }>;
+      output(): Array<{
+        type: 'feature-flag';
+        name: string;
+        description?: string;
+      }>;
     });
 
 function useConfigLoader(
@@ -337,6 +341,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
                 featureFlagsApi.registerFlag({
                   name: flag.name,
                   pluginId: plugin.getId(),
+                  description: flag.description,
                 });
               }
             } else {
@@ -345,6 +350,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
                   featureFlagsApi.registerFlag({
                     name: output.name,
                     pluginId: plugin.getId(),
+                    description: output.description,
                   });
                 }
               }
