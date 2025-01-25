@@ -39,7 +39,7 @@ import {
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
 import {
   createTheme,
-  makeStyles,
+  styled,
   ThemeOptions,
   ThemeProvider,
   useTheme,
@@ -122,13 +122,6 @@ are retrieved using the useOutlet hook from React Router.
 NOTE: Render functions are no longer supported in this approach.
 */
 
-const useStyles = makeStyles({
-  readerPage: {
-    height: 'inherit',
-    overflowY: 'visible',
-  },
-});
-
 /**
  * Props for {@link TechDocsReaderLayout}
  * @public
@@ -169,13 +162,20 @@ export type TechDocsReaderPageProps = {
 };
 
 /**
+ * Styled Backstage Page that fills available vertical space
+ */
+const StyledPage = styled(Page)({
+  height: 'inherit',
+  overflowY: 'visible',
+});
+
+/**
  * An addon-aware implementation of the TechDocsReaderPage.
  *
  * @public
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   const currentTheme = useTheme();
-  const classes = useStyles();
 
   const readerPageTheme = createTheme({
     ...currentTheme,
@@ -216,18 +216,19 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
       <CookieAuthRefreshProvider pluginId="techdocs">
         <TechDocsReaderPageProvider entityRef={entityRef}>
           {({ metadata, entityMetadata, onReady }) => (
-            <div className="techdocs-reader-page">
-              <Page themeId="documentation" className={classes.readerPage}>
-                {children instanceof Function
-                  ? children({
-                      entityRef,
-                      techdocsMetadataValue: metadata.value,
-                      entityMetadataValue: entityMetadata.value,
-                      onReady,
-                    })
-                  : children}
-              </Page>
-            </div>
+            <StyledPage
+              themeId="documentation"
+              className="techdocs-reader-page"
+            >
+              {children instanceof Function
+                ? children({
+                    entityRef,
+                    techdocsMetadataValue: metadata.value,
+                    entityMetadataValue: entityMetadata.value,
+                    onReady,
+                  })
+                : children}
+            </StyledPage>
           )}
         </TechDocsReaderPageProvider>
       </CookieAuthRefreshProvider>
