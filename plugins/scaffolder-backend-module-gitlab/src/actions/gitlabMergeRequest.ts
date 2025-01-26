@@ -21,9 +21,9 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import {
+  CommitAction,
   Gitlab,
   RepositoryTreeSchema,
-  CommitAction,
   SimpleUserSchema,
 } from '@gitbeaker/rest';
 import path from 'path';
@@ -242,7 +242,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         repoUrl,
       });
 
-      let assigneeId = undefined;
+      let assigneeId: number | undefined = undefined;
 
       if (assignee !== undefined) {
         try {
@@ -379,85 +379,105 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           );
         }
       }
-      if (actions.length) {
-        try {
-          await api.Commits.create(repoID, branchName, title, actions);
-        } catch (e) {
-          throw new InputError(
-            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
-              e,
-            )}`,
-          );
-        }
-      }
-      try {
-        let mergeRequest = await api.MergeRequests.create(
-          repoID,
-          branchName,
-          String(targetBranch),
-          title,
-          {
-            description,
-            removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
-            assigneeId,
-            reviewerIds,
-          },
-        );
+      await ctx.checkpoint({
+        key: `commit.to.${repoID}.${branchName}`,
+        fn: async () => {
+          if (actions.length) {
+            try {
+              const commit = await api.Commits.create(
+                repoID,
+                branchName,
+                title,
+                actions,
+              );
+              return commit.id;
+            } catch (e) {
+              throw new InputError(
+                `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
+                  e,
+                )}`,
+              );
+            }
+          }
+          return null;
+        },
+      });
+      await ctx.checkpoint({
+        key: `create.mr.${repoID}.${branchName}`,
+        fn: async () => {
+          try {
+            let mergeRequest = await api.MergeRequests.create(
+              repoID,
+              branchName,
+              String(targetBranch),
+              title,
+              {
+                description,
+                removeSourceBranch: removeSourceBranch
+                  ? removeSourceBranch
+                  : false,
+                assigneeId,
+                reviewerIds,
+              },
+            );
 
-        // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
-        // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
-        // Code owners take a moment to be processed and added to the approval rules after the MR is created.
+            // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
+            // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
+            // Code owners take a moment to be processed and added to the approval rules after the MR is created.
 
-        while (
-          mergeRequest.detailed_merge_status === 'preparing' ||
-          mergeRequest.detailed_merge_status === 'approvals_syncing' ||
-          mergeRequest.detailed_merge_status === 'checking'
-        ) {
-          mergeRequest = await api.MergeRequests.show(repoID, mergeRequest.iid);
-          ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
-        }
+            while (
+              mergeRequest.detailed_merge_status === 'preparing' ||
+              mergeRequest.detailed_merge_status === 'approvals_syncing' ||
+              mergeRequest.detailed_merge_status === 'checking'
+            ) {
+              mergeRequest = await api.MergeRequests.show(
+                repoID,
+                mergeRequest.iid,
+              );
+              ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
+            }
 
-        const approvalRules = await api.MergeRequestApprovals.allApprovalRules(
-          repoID,
-          {
-            mergerequestIId: mergeRequest.iid,
-          },
-        );
+            const approvalRules =
+              await api.MergeRequestApprovals.allApprovalRules(repoID, {
+                mergerequestIId: mergeRequest.iid,
+              });
 
-        if (approvalRules.length !== 0) {
-          const eligibleApprovers = approvalRules
-            .filter(rule => rule.eligible_approvers !== undefined)
-            .map(rule => {
-              return rule.eligible_approvers as SimpleUserSchema[];
-            })
-            .flat();
+            if (approvalRules.length !== 0) {
+              const eligibleApprovers = approvalRules
+                .filter(rule => rule.eligible_approvers !== undefined)
+                .map(rule => {
+                  return rule.eligible_approvers as SimpleUserSchema[];
+                })
+                .flat();
 
-          const eligibleUserIds = new Set([
-            ...eligibleApprovers.map(user => user.id),
-            ...(reviewerIds ?? []),
-          ]);
+              const eligibleUserIds = new Set([
+                ...eligibleApprovers.map(user => user.id),
+                ...(reviewerIds ?? []),
+              ]);
 
-          mergeRequest = await api.MergeRequests.edit(
-            repoID,
-            mergeRequest.iid,
-            {
-              reviewerIds: Array.from(eligibleUserIds),
-            },
-          );
-        }
+              mergeRequest = await api.MergeRequests.edit(
+                repoID,
+                mergeRequest.iid,
+                {
+                  reviewerIds: Array.from(eligibleUserIds),
+                },
+              );
+            }
 
-        ctx.output('projectid', repoID);
-        ctx.output('targetBranchName', targetBranch);
-        ctx.output('projectPath', repoID);
-        ctx.output(
-          'mergeRequestUrl',
-          mergeRequest.web_url ?? mergeRequest.webUrl,
-        );
-      } catch (e) {
-        throw new InputError(
-          `Merge request creation failed. ${getErrorMessage(e)}`,
-        );
-      }
+            ctx.output('projectid', repoID);
+            ctx.output('targetBranchName', targetBranch);
+            ctx.output('projectPath', repoID);
+            ctx.output(
+              'mergeRequestUrl',
+              mergeRequest.web_url ?? mergeRequest.webUrl,
+            );
+          } catch (e) {
+            throw new InputError(
+              `Merge request creation failed. ${getErrorMessage(e)}`,
+            );
+          }
+        },
+      });
     },
   });
 };
