@@ -44,7 +44,7 @@ export const backendPlugin = createFactory<Options>({
     const name = resolvePackageName({
       baseName: pluginId,
       scope: ctx.scope,
-      prefix: ctx.prefix,
+      pluginPrefix: ctx.pluginPrefix,
       plugin: true,
     });
 

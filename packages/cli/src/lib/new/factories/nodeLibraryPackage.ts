@@ -42,7 +42,7 @@ export const nodeLibraryPackage = createFactory<Options>({
     const name = resolvePackageName({
       baseName: id,
       scope: ctx.scope,
-      prefix: ctx.prefix,
+      pluginPrefix: ctx.pluginPrefix,
       plugin: false,
     });
 

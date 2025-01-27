@@ -6,4 +6,4 @@ Added `--allowed-types` to `new` command. This is useful for limiting the type o
 
 Added `--skip-install` to `new` command. This is useful for skipping the installation of dependencies after creating a new plugin.
 
-Added `--prefix` to `new` command. This is useful for customizing the prefix of the plugin package name, defined after the scope, which by default is `backstage-plugin-`.
+Added `--plugin-prefix` to `new` command. This is useful for customizing the prefix of the plugin package name, defined after the scope, which by default is `backstage-plugin-`.

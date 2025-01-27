@@ -184,7 +184,7 @@ Options:
   --baseVersion <version>
   --license <license>
   --allowed-types <type1,type2>
-  --prefix <prefix>
+  --plugin-prefix <prefix>
   --skip-install
   --no-private
   -h, --help

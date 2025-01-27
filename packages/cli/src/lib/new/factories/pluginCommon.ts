@@ -42,7 +42,7 @@ export const pluginCommon = createFactory<Options>({
     const name = resolvePackageName({
       baseName: suffix,
       scope: ctx.scope,
-      prefix: ctx.prefix,
+      pluginPrefix: ctx.pluginPrefix,
       plugin: true,
     });
 

@@ -45,7 +45,7 @@ export const frontendPlugin = createFactory<Options>({
     const name = resolvePackageName({
       baseName: id,
       scope: ctx.scope,
-      prefix: ctx.prefix,
+      pluginPrefix: ctx.pluginPrefix,
       plugin: true,
     });
     const extensionName = `${upperFirst(camelCase(id))}Page`;

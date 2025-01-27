@@ -60,7 +60,7 @@ export const scaffolderModule = createFactory<Options>({
     const name = resolvePackageName({
       baseName: slug,
       scope: ctx.scope,
-      prefix: ctx.prefix,
+      pluginPrefix: ctx.pluginPrefix,
       plugin: true,
     });
 

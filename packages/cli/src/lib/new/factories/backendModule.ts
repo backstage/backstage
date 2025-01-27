@@ -50,7 +50,7 @@ export const backendModule = createFactory<Options>({
     const name = resolvePackageName({
       baseName: dirName,
       scope: ctx.scope,
-      prefix: ctx.prefix,
+      pluginPrefix: ctx.pluginPrefix,
       plugin: true,
     });
 

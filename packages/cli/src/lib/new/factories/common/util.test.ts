@@ -25,11 +25,12 @@ describe('resolvePackageName', () => {
     );
   });
 
-  it('should generate correct name for backstage scope', () => {
+  it('should generate correct name with custom prefix', () => {
     expect(
       resolvePackageName({
         baseName: 'test',
         scope: 'backstage',
+        pluginPrefix: 'plugin',
         plugin: true,
       }),
     ).toEqual('@backstage/plugin-test');

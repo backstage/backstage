@@ -19,8 +19,8 @@ import { Answers, DistinctQuestion } from 'inquirer';
 export interface CreateContext {
   /** The package scope to use for new packages */
   scope?: string;
-  /** The prefix to use for new packages, after the scope */
-  prefix?: string;
+  /** The prefix to use for new plugin packages, after the scope */
+  pluginPrefix?: string;
   /** The NPM registry to use for new packages */
   npmRegistry?: string;
   /** Whether new packages should be marked as private */

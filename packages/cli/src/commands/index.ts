@@ -275,8 +275,8 @@ export function registerCommands(program: Command) {
       'Comma separated list of plugin types that are allowed to be created',
     )
     .option(
-      '--prefix <prefix>',
-      'The prefix to use for new packages, after the scope (default: backstage-plugin)',
+      '--plugin-prefix <prefix>',
+      'The prefix to use for new plugin packages, after the scope (default: backstage-plugin)',
     )
     .option(
       '--skip-install',
