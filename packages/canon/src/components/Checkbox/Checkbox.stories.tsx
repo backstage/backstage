@@ -18,7 +18,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Checkbox } from './Checkbox';
 import { Inline } from '../Inline';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 const meta = {
@@ -51,7 +51,7 @@ export const AllVariants: Story = {
 
 export const Playground: Story = {
   render: () => (
-    <Stack>
+    <Flex>
       <Text>All variants</Text>
       <Inline alignY="center">
         <Checkbox />
@@ -59,6 +59,6 @@ export const Playground: Story = {
         <Checkbox label="Checkbox" />
         <Checkbox label="Checkbox" checked />
       </Inline>
-    </Stack>
+    </Flex>
   ),
 };

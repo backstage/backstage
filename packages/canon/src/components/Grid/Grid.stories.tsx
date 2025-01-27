@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 
 const meta = {
   title: 'Components/Grid',
@@ -82,7 +82,7 @@ export const ColumnSizes: Story = {
     columns: '12',
   },
   render: args => (
-    <Stack gap="4">
+    <Flex gap="4">
       {Array.from({ length: 11 }, (_, i) => (
         <Grid {...args} key={i}>
           <Grid.Item colSpan={String(i + 1) as GridItemProps['colSpan']}>
@@ -93,7 +93,7 @@ export const ColumnSizes: Story = {
           </Grid.Item>
         </Grid>
       ))}
-    </Stack>
+    </Flex>
   ),
 };
 
@@ -102,7 +102,7 @@ export const RowAndColumns: Story = {
     columns: '12',
   },
   render: args => (
-    <Stack gap="md">
+    <Flex gap="4">
       <Grid {...args} columns="3">
         <Grid.Item colSpan="1" rowSpan="2">
           <Box
@@ -123,6 +123,6 @@ export const RowAndColumns: Story = {
           <FakeBox />
         </Grid.Item>
       </Grid>
-    </Stack>
+    </Flex>
   ),
 };

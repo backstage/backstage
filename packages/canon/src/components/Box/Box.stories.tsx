@@ -17,7 +17,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 import { Inline } from '../Inline';
 
 const meta = {
@@ -81,7 +81,7 @@ const CardDisplay = ({ children }: { children?: React.ReactNode }) => {
 
 export const Display: Story = {
   render: args => (
-    <Stack align="center">
+    <Flex align="center">
       <Inline>
         <Box display="block" {...args}>
           <CardDisplay>Block</CardDisplay>
@@ -96,7 +96,7 @@ export const Display: Story = {
       <Box display={{ initial: 'block', md: 'inline' }} {...args}>
         <CardDisplay>Responsive</CardDisplay>
       </Box>
-    </Stack>
+    </Flex>
   ),
 };
 
@@ -116,7 +116,7 @@ export const Padding: Story = {
     },
   },
   render: args => (
-    <Stack align="center" gap="md">
+    <Flex align="center" gap="md">
       <Inline alignY="center" gap="md">
         <Box p="3" style={styleInsideBox}>
           <Box {...args}>Padding</Box>
@@ -142,7 +142,7 @@ export const Padding: Story = {
           <Box {...args}>Padding Left</Box>
         </Box>
       </Inline>
-    </Stack>
+    </Flex>
   ),
 };
 
@@ -156,7 +156,7 @@ export const Margin: Story = {
     },
   },
   render: args => (
-    <Stack align="center" gap="md">
+    <Flex align="center" gap="md">
       <Inline alignY="center" gap="md">
         <Box style={styleInsideBox}>
           <Box m="3" {...args}>
@@ -196,6 +196,6 @@ export const Margin: Story = {
           </Box>
         </Box>
       </Inline>
-    </Stack>
+    </Flex>
   ),
 };

@@ -25,7 +25,7 @@ const directionValues = [
 ] as const;
 
 /** @public */
-const stackPropDefs = {
+const flexPropDefs = {
   align: {
     type: 'enum',
     className: 'cu-align',
@@ -44,7 +44,7 @@ const stackPropDefs = {
 };
 
 /** @public */
-type StackOwnProps = GetPropDefTypes<typeof stackPropDefs>;
+type FlexOwnProps = GetPropDefTypes<typeof flexPropDefs>;
 
-export { stackPropDefs };
-export type { StackOwnProps };
+export { flexPropDefs };
+export type { FlexOwnProps };

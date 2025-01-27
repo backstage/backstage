@@ -15,24 +15,24 @@
  */
 
 import { createElement, forwardRef } from 'react';
-import { StackProps } from './types';
+import { FlexProps } from './types';
 import clsx from 'clsx';
-import { stackPropDefs } from './Stack.props';
+import { flexPropDefs } from './Flex.props';
 import { extractProps } from '../../utils/extractProps';
 import { gapPropDefs } from '../../props/gap-props';
 
 /** @public */
-export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
+export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   const propDefs = {
     ...gapPropDefs,
-    ...stackPropDefs,
+    ...flexPropDefs,
   };
 
   const { className, style } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
-    className: clsx('canon-Stack', className),
+    className: clsx('canon-Flex', className),
     style,
     children: props.children,
   });

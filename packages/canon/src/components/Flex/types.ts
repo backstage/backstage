@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-.canon-Stack {
-  display: flex;
+import type { SpaceProps } from '../../types';
+import { FlexOwnProps } from './Flex.props';
+import type { GapProps } from '../../props/gap-props';
+
+/** @public */
+export interface FlexProps extends SpaceProps {
+  children: React.ReactNode;
+  gap?: GapProps['gap'];
+  align?: FlexOwnProps['align'];
+  direction?: FlexOwnProps['direction'];
+  className?: string;
+  style?: React.CSSProperties;
 }

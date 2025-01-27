@@ -16,11 +16,11 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Stack } from './Stack';
+import { Flex } from './Flex';
 
 const meta = {
-  title: 'Components/Stack',
-  component: Stack,
+  title: 'Components/Flex',
+  component: Flex,
   argTypes: {
     align: {
       control: 'inline-radio',
@@ -38,7 +38,7 @@ const meta = {
     gap: '4',
     children: 'hello world',
   },
-} satisfies Meta<typeof Stack>;
+} satisfies Meta<typeof Flex>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -81,60 +81,60 @@ export const RowDirection: Story = {
 
 export const AlignLeft: Story = {
   render: () => (
-    <Stack align="start">
+    <Flex align="start">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
-    </Stack>
+    </Flex>
   ),
 };
 
 export const AlignCenter: Story = {
   render: () => (
-    <Stack align="center">
+    <Flex align="center">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
-    </Stack>
+    </Flex>
   ),
 };
 
 export const AlignRight: Story = {
   render: () => (
-    <Stack align="end">
+    <Flex align="end">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
-    </Stack>
+    </Flex>
   ),
 };
 
 export const ResponsiveAlign: Story = {
   render: () => (
-    <Stack align={{ xs: 'start', md: 'center', lg: 'end' }}>
+    <Flex align={{ xs: 'start', md: 'center', lg: 'end' }}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
-    </Stack>
+    </Flex>
   ),
 };
 
 export const ResponsiveGap: Story = {
   render: () => (
-    <Stack gap={{ xs: '4', md: '8', lg: '12' }}>
+    <Flex gap={{ xs: '4', md: '8', lg: '12' }}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
-    </Stack>
+    </Flex>
   ),
 };
 
 export const LargeGap: Story = {
   render: () => (
-    <Stack gap="8">
+    <Flex gap="8">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
-    </Stack>
+    </Flex>
   ),
 };

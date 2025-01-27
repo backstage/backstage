@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-import type { SpaceProps } from '../../types';
-import { StackOwnProps } from './Stack.props';
-import type { GapProps } from '../../props/gap-props';
-
-/** @public */
-export interface StackProps extends SpaceProps {
-  children: React.ReactNode;
-  gap?: GapProps['gap'];
-  align?: StackOwnProps['align'];
-  direction?: StackOwnProps['direction'];
-  className?: string;
-  style?: React.CSSProperties;
+.canon-Flex {
+  display: flex;
 }

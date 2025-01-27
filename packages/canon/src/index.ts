@@ -26,7 +26,7 @@ export * from './contexts/canon';
 // Layout components
 export * from './components/Box';
 export * from './components/Grid';
-export * from './components/Stack';
+export * from './components/Flex';
 export * from './components/Container';
 export * from './components/Text';
 export * from './components/Heading';

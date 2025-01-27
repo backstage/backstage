@@ -18,7 +18,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
 import { Inline } from '../Inline';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { ButtonProps } from './types';
 
@@ -95,11 +95,11 @@ export const FullWidth: Story = {
     children: 'Button',
   },
   render: args => (
-    <Stack style={{ width: '300px' }}>
+    <Flex style={{ width: '300px' }}>
       <Button {...args} iconStart="cloud" />
       <Button {...args} iconEnd="chevronRight" />
       <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
-    </Stack>
+    </Flex>
   ),
 };
 
@@ -132,9 +132,9 @@ export const Playground: Story = {
     children: 'Button',
   },
   render: () => (
-    <Stack>
+    <Flex>
       {variants.map(variant => (
-        <Stack key={variant}>
+        <Flex key={variant}>
           <Text>{variant}</Text>
           {['small', 'medium'].map(size => (
             <Inline alignY="center" key={size}>
@@ -163,8 +163,8 @@ export const Playground: Story = {
               </Button>
             </Inline>
           ))}
-        </Stack>
+        </Flex>
       ))}
-    </Stack>
+    </Flex>
   ),
 };
