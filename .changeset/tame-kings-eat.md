@@ -2,4 +2,4 @@
 '@backstage/core-app-api': minor
 ---
 
-create session if refresh session fails
+if session exists and refresh fails, then create a new session if not instant popup
