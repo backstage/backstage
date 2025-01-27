@@ -16,24 +16,23 @@
 
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
+import { getClassNames } from '../../utils/getClassNames';
 import clsx from 'clsx';
-import { extractProps } from '../../utils/extractProps';
-import { spacingPropDefs } from '../../props/spacing';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { as = 'div', children } = props;
+  const { as = 'div', className, style, children, ...restProps } = props;
 
-  // Extract utility class names and styles
-  const propDefs = { ...spacingPropDefs };
-  const { className, style } = extractProps(props, propDefs);
+  // Generate utility class names
+  const utilityClassNames = getClassNames(restProps);
+
+  // Combine the base class name, the sprinkles class name, and any additional class names
+  const classNames = clsx('canon-Box', utilityClassNames, className);
 
   return createElement(as, {
     ref,
-    className: clsx('canon-Box', className),
+    className: classNames,
     style,
     children,
   });
 });
-
-Box.displayName = 'Box';

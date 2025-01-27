@@ -23,6 +23,9 @@ import { Inline } from '../Inline';
 const meta = {
   title: 'Components/Box',
   component: Box,
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     as: {
       control: { type: 'select' },
@@ -213,27 +216,27 @@ export const Padding: Story = {
   render: args => (
     <Stack align="center" gap="md">
       <Inline alignY="center" gap="md">
-        <Box p="3" style={styleInsideBox}>
+        <Box padding="md" style={styleInsideBox}>
           <Box {...args}>Padding</Box>
         </Box>
-        <Box px="3" style={styleInsideBox}>
+        <Box paddingX="md" style={styleInsideBox}>
           <Box {...args}>Padding X</Box>
         </Box>
-        <Box py="3" style={styleInsideBox}>
+        <Box paddingY="md" style={styleInsideBox}>
           <Box {...args}>Padding Y</Box>
         </Box>
       </Inline>
       <Inline alignY="center" gap="md">
-        <Box pt="3" style={styleInsideBox}>
+        <Box paddingTop="md" style={styleInsideBox}>
           <Box {...args}>Padding Top</Box>
         </Box>
-        <Box pr="3" style={styleInsideBox}>
+        <Box paddingRight="md" style={styleInsideBox}>
           <Box {...args}>Padding Right</Box>
         </Box>
-        <Box pb="3" style={styleInsideBox}>
+        <Box paddingBottom="md" style={styleInsideBox}>
           <Box {...args}>Padding Bottom</Box>
         </Box>
-        <Box pl="3" style={styleInsideBox}>
+        <Box paddingLeft="md" style={styleInsideBox}>
           <Box {...args}>Padding Left</Box>
         </Box>
       </Inline>
@@ -254,39 +257,39 @@ export const Margin: Story = {
     <Stack align="center" gap="md">
       <Inline alignY="center" gap="md">
         <Box style={styleInsideBox}>
-          <Box m="3" {...args}>
+          <Box margin="md" {...args}>
             Margin
           </Box>
         </Box>
         <Box style={styleInsideBox}>
-          <Box mx="3" {...args}>
+          <Box marginX="md" {...args}>
             Margin X
           </Box>
         </Box>
         <Box style={styleInsideBox}>
-          <Box my="3" {...args}>
+          <Box marginY="md" {...args}>
             Margin Y
           </Box>
         </Box>
       </Inline>
       <Inline alignY="center" gap="md">
         <Box style={styleInsideBox}>
-          <Box mt="3" {...args}>
+          <Box marginTop="md" {...args}>
             Margin Top
           </Box>
         </Box>
         <Box style={styleInsideBox}>
-          <Box mr="3" {...args}>
+          <Box marginRight="md" {...args}>
             Margin Right
           </Box>
         </Box>
         <Box style={styleInsideBox}>
-          <Box mb="3" {...args}>
+          <Box marginBottom="md" {...args}>
             Margin Bottom
           </Box>
         </Box>
         <Box style={styleInsideBox}>
-          <Box ml="3" {...args}>
+          <Box marginLeft="md" {...args}>
             Margin Left
           </Box>
         </Box>
