@@ -27,6 +27,7 @@ type Options = {
   id: string;
   owner?: string;
   codeOwnersPath?: string;
+  skipInstall?: boolean;
 };
 
 export const pluginCommon = createFactory<Options>({
@@ -42,6 +43,7 @@ export const pluginCommon = createFactory<Options>({
     const name = resolvePackageName({
       baseName: suffix,
       scope: ctx.scope,
+      prefix: ctx.prefix,
       plugin: true,
     });
 
@@ -69,10 +71,13 @@ export const pluginCommon = createFactory<Options>({
       await addCodeownersEntry(`/plugins/${suffix}`, options.owner);
     }
 
-    await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
-    await Task.forCommand('yarn lint --fix', {
-      cwd: targetDir,
-      optional: true,
-    });
+    if (!options.skipInstall) {
+      await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
+
+      await Task.forCommand('yarn lint --fix', {
+        cwd: targetDir,
+        optional: true,
+      });
+    }
   },
 });

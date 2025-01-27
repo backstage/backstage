@@ -28,6 +28,7 @@ type Options = {
   id: string;
   owner?: string;
   codeOwnersPath?: string;
+  skipInstall?: boolean;
 };
 
 export const scaffolderModule = createFactory<Options>({
@@ -60,6 +61,7 @@ export const scaffolderModule = createFactory<Options>({
     const name = resolvePackageName({
       baseName: slug,
       scope: ctx.scope,
+      prefix: ctx.prefix,
       plugin: true,
     });
 
@@ -104,10 +106,12 @@ export const scaffolderModule = createFactory<Options>({
       await addCodeownersEntry(`/plugins/${slug}`, options.owner);
     }
 
-    await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
-    await Task.forCommand('yarn lint --fix', {
-      cwd: targetDir,
-      optional: true,
-    });
+    if (!options.skipInstall) {
+      await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
+      await Task.forCommand('yarn lint --fix', {
+        cwd: targetDir,
+        optional: true,
+      });
+    }
   },
 });

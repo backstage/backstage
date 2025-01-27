@@ -34,6 +34,7 @@ type Options = {
   moduleId: string;
   owner?: string;
   codeOwnersPath?: string;
+  skipInstall?: boolean;
 };
 
 export const backendModule = createFactory<Options>({
@@ -50,6 +51,7 @@ export const backendModule = createFactory<Options>({
     const name = resolvePackageName({
       baseName: dirName,
       scope: ctx.scope,
+      prefix: ctx.prefix,
       plugin: true,
     });
 

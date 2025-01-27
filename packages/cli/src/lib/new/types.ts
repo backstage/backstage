@@ -19,6 +19,8 @@ import { Answers, DistinctQuestion } from 'inquirer';
 export interface CreateContext {
   /** The package scope to use for new packages */
   scope?: string;
+  /** The prefix to use for new packages, after the scope */
+  prefix?: string;
   /** The NPM registry to use for new packages */
   npmRegistry?: string;
   /** Whether new packages should be marked as private */
@@ -37,7 +39,7 @@ export interface CreateContext {
   markAsModified(): void;
 }
 
-export type AnyOptions = Record<string, string>;
+export type AnyOptions = Record<string, string | boolean>;
 
 export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
   name: string;

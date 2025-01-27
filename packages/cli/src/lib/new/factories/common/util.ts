@@ -17,14 +17,13 @@
 export const resolvePackageName = (options: {
   baseName: string;
   scope?: string;
+  prefix?: string;
   plugin: boolean;
 }) => {
-  const { baseName, scope, plugin } = options;
+  const { baseName, scope, plugin, prefix } = options;
   if (scope) {
     if (plugin) {
-      const pluginName = scope.startsWith('backstage')
-        ? 'plugin'
-        : 'backstage-plugin';
+      const pluginName = prefix || 'backstage-plugin';
       return scope.includes('/')
         ? `@${scope}${pluginName}-${baseName}`
         : `@${scope}/${pluginName}-${baseName}`;

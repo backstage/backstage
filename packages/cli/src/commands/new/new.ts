@@ -84,6 +84,7 @@ export default async (opts: OptionValues) => {
       defaultVersion,
       license,
       scope: opts.scope?.replace(/^@/, ''),
+      prefix: opts.prefix,
       npmRegistry: opts.npmRegistry,
       private: Boolean(opts.private),
       createTemporaryDirectory,

@@ -87,8 +87,8 @@ export class FactoryRegistry {
 
   static async populateOptions(
     factory: AnyFactory,
-    provided: Record<string, string>,
-  ): Promise<Record<string, string>> {
+    provided: Answers,
+  ): Promise<Answers> {
     let currentOptions = provided;
 
     if (factory.optionsDiscovery) {

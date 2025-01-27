@@ -274,6 +274,10 @@ export function registerCommands(program: Command) {
       '--allowedOptions <option1,option2>',
       'Comma separated list of allowed options shown in the interactive guide',
     )
+    .option(
+      '--prefix <prefix>',
+      'The prefix to use for new packages, after the scope (default: backstage-plugin)',
+    )
     .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./new/new'), 'default'));
 
