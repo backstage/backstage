@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { PropDef, GetPropDefTypes } from './prop-def';
 
-/** @public */
-const positionValues = [
-  'static',
-  'relative',
-  'absolute',
-  'fixed',
-  'sticky',
-] as const;
+const displayValues = ['none', 'inline', 'inline-block', 'block'] as const;
 
 /** @public */
-const positionPropDefs = {
-  position: {
+const displayPropDefs = {
+  display: {
     type: 'enum',
-    className: 'cu-position',
-    values: positionValues,
+    className: 'cu-display',
+    values: displayValues,
     responsive: true,
   },
 } satisfies {
-  position: PropDef<(typeof positionValues)[number]>;
+  display: PropDef<(typeof displayValues)[number]>;
 };
 
-// Use all of the imported prop defs to ensure that JSDoc works
 /** @public */
-type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
+type DisplayProps = GetPropDefTypes<typeof displayPropDefs>;
 
-export { positionPropDefs };
-export type { PositionProps };
+export { displayPropDefs };
+export type { DisplayProps };

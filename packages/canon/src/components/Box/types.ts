@@ -17,13 +17,14 @@
 import type { HeightProps } from '../../props/height.props';
 import type { WidthProps } from '../../props/width.props';
 import type { PositionProps } from '../../props/position.props';
+import type { DisplayProps } from '../../props/display.props';
 import type { SpaceProps } from '../../types';
 import type { BoxOwnProps } from './Box.props';
 
 /** @public */
 export interface BoxProps extends SpaceProps {
+  display?: DisplayProps['display'];
   as?: BoxOwnProps['as'];
-  display?: BoxOwnProps['display'];
   width?: WidthProps['width'];
   minWidth?: WidthProps['minWidth'];
   maxWidth?: WidthProps['maxWidth'];

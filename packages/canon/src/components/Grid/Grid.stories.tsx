@@ -42,7 +42,6 @@ type Story = StoryObj<typeof meta>;
 
 const FakeBox = () => (
   <Box
-    borderRadius="xs"
     style={{
       background: '#eaf2fd',
       borderRadius: '4px',
@@ -109,7 +108,6 @@ export const RowAndColumns: Story = {
       <Grid {...args} columns={3}>
         <Grid.Item colSpan={1} rowSpan={2}>
           <Box
-            borderRadius="xs"
             style={{
               height: '100%',
               background: '#eaf2fd',

@@ -23,6 +23,7 @@ import { boxPropDefs } from './Box.props';
 import { widthPropDefs } from '../../props/width.props';
 import { heightPropDefs } from '../../props/height.props';
 import { positionPropDefs } from '../../props/position.props';
+import { displayPropDefs } from '../../props/display.props';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
@@ -34,6 +35,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     ...widthPropDefs,
     ...heightPropDefs,
     ...positionPropDefs,
+    ...displayPropDefs,
     ...boxPropDefs,
   };
   const { className, style } = extractProps(props, propDefs);
