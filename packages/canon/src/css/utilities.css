@@ -49,3 +49,15 @@
 @import './utilities/mb.css';
 @import './utilities/my.css';
 @import './utilities/mx.css';
+
+/* Display */
+@import './utilities/display.css';
+
+/* Width */
+@import './utilities/width.css';
+
+/* Height */
+@import './utilities/height.css';
+
+/* Position */
+@import './utilities/position.css';

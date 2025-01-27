@@ -31,10 +31,6 @@ export interface BoxProps extends SpaceProps {
   minHeight?: HeightProps['minHeight'];
   maxHeight?: HeightProps['maxHeight'];
   position?: PositionProps['position'];
-  top?: PositionProps['top'];
-  left?: PositionProps['left'];
-  right?: PositionProps['right'];
-  bottom?: PositionProps['bottom'];
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;

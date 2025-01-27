@@ -41,7 +41,7 @@ const boxPropDefs = {
    */
   display: {
     type: 'enum',
-    className: 'rt-r-display',
+    className: 'cu-display',
     values: displayValues,
     responsive: true,
   },
