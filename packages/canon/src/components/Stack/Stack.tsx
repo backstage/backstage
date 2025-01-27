@@ -18,6 +18,7 @@ import { createElement, forwardRef } from 'react';
 import { StackProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
 import type { AlignItems, Breakpoint } from '../../types';
+import clsx from 'clsx';
 
 // Function to map align values
 const mapAlignValue = (value?: StackProps['align']) => {
@@ -56,14 +57,9 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
     ...restProps,
   });
 
-  // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['canon-stack', utilityClassNames, className]
-    .filter(Boolean)
-    .join(' ');
-
   return createElement(as, {
     ref,
-    className: classNames,
+    className: clsx('canon-Stack', utilityClassNames, className),
     style,
     children,
   });

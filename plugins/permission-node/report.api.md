@@ -124,7 +124,7 @@ export function createPermissionIntegrationRouter<
   TResourceType3 extends string,
   TResource3,
 >(
-  options:
+  options?:
     | {
         permissions: Array<Permission>;
       }
@@ -140,7 +140,16 @@ export function createPermissionIntegrationRouter<
         TResourceType3,
         TResource3
       >,
-): express.Router;
+): express.Router & {
+  addPermissions(permissions: Permission[]): void;
+  addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]): void;
+  addResourceType<const TResourceType extends string, TResource>(
+    resource: CreatePermissionIntegrationRouterResourceOptions<
+      TResourceType,
+      TResource
+    >,
+  ): void;
+};
 
 // @public
 export type CreatePermissionIntegrationRouterResourceOptions<

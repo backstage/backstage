@@ -135,6 +135,26 @@ export const createAsyncValidators = (
         for (const [, propValue] of Object.entries(properties)) {
           await doValidate(propValue);
         }
+        if (Array.isArray(value)) {
+          for (const [_, v] of Object.entries(value)) {
+            const { schema: itemSchema, uiSchema: itemUiSchema } =
+              extractSchemaFromStep(definitionInSchema.items);
+
+            if (isObject(v)) {
+              for (const [pK, pV] of Object.entries(v)) {
+                if ('ui:field' in itemUiSchema[pK]) {
+                  await validateForm(
+                    itemUiSchema[pK]['ui:field'],
+                    pK,
+                    pV,
+                    itemSchema,
+                    itemUiSchema,
+                  );
+                }
+              }
+            }
+          }
+        }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, pointer, value);
       }

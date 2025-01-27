@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Checkbox } from './Checkbox';
+import { Inline } from '../Inline';
+import { Stack } from '../Stack';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Components/Checkbox',
@@ -28,8 +32,33 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
     label: 'Accept terms and conditions',
   },
+};
+
+export const AllVariants: Story = {
+  render: () => (
+    <Inline alignY="center">
+      <Checkbox />
+      <Checkbox checked />
+      <Checkbox label="Checkbox" />
+      <Checkbox label="Checkbox" checked />
+    </Inline>
+  ),
+};
+
+export const Playground: Story = {
+  render: () => (
+    <Stack>
+      <Text>All variants</Text>
+      <Inline alignY="center">
+        <Checkbox />
+        <Checkbox checked />
+        <Checkbox label="Checkbox" />
+        <Checkbox label="Checkbox" checked />
+      </Inline>
+    </Stack>
+  ),
 };

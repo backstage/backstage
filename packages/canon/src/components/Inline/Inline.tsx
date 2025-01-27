@@ -18,6 +18,7 @@ import { createElement, forwardRef } from 'react';
 import type { InlineProps } from './types';
 import { getClassNames } from '../../utils/getClassNames';
 import { JustifyContent, Breakpoint, AlignItems } from '../../types';
+import clsx from 'clsx';
 
 // Function to map align values
 const mapAlignValue = (value?: InlineProps['align']) => {
@@ -75,14 +76,9 @@ export const Inline = forwardRef<HTMLElement, InlineProps>((props, ref) => {
     ...restProps,
   });
 
-  // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = ['canon-inline', utilityClassNames, className]
-    .filter(Boolean)
-    .join(' ');
-
   return createElement(as, {
     ref,
-    className: classNames,
+    className: clsx('canon-Inline', utilityClassNames, className),
     style,
     children,
   });

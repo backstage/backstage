@@ -1,0 +1,26 @@
+.codeBlock {
+  border-radius: 4px;
+  border: 1px solid var(--canon-border);
+  position: relative;
+  background: transparent;
+  overflow-x: auto;
+  font-family: var(--canon-font-monospace);
+  background-color: #fff;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+[data-theme='dark'] .codeBlock {
+  background-color: #121212;
+}
+
+.title {
+  border-bottom: 1px solid var(--canon-border);
+  padding: 12px 20px;
+  font-size: 0.875rem;
+  color: var(--canon-fg-text-secondary);
+}
+
+.code {
+  padding: 20px;
+}

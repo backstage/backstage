@@ -80,6 +80,33 @@ const _default: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
+    'api:scaffolder/form-decorators': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
+        formDecorators: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            ScaffolderFormDecorator,
+            'scaffolder.form-decorator-loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'form-decorators';
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'page:scaffolder': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -172,6 +199,31 @@ export class DefaultScaffolderFormDecoratorsApi
   // (undocumented)
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }
+
+// @alpha (undocumented)
+export const formDecoratorsApi: ExtensionDefinition<{
+  config: {};
+  configInput: {};
+  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  inputs: {
+    formDecorators: ExtensionInput<
+      ConfigurableExtensionDataRef<
+        ScaffolderFormDecorator,
+        'scaffolder.form-decorator-loader',
+        {}
+      >,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+  };
+  kind: 'api';
+  name: 'form-decorators';
+  params: {
+    factory: AnyApiFactory;
+  };
+}>;
 
 // @alpha (undocumented)
 export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;

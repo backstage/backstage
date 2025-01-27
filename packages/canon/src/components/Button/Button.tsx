@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+'use client';
+
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
-import { ButtonProps } from './types';
-import { useCanon } from '../../contexts/canon';
+import clsx from 'clsx';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+
+import type { ButtonProps } from './types';
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -29,29 +33,32 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconStart,
       iconEnd,
       children,
+      className,
+      style,
+      ...rest
     } = props;
 
-    const { getResponsiveValue } = useCanon();
-
     // Get the responsive value for the variant
-    const responsiveSize = getResponsiveValue(size);
-    const responsiveVariant = getResponsiveValue(variant);
+    const responsiveSize = useResponsiveValue(size);
+    const responsiveVariant = useResponsiveValue(variant);
 
     return (
       <button
-        {...props}
+        {...rest}
         ref={ref}
         disabled={disabled}
-        className={[
-          'cn-button',
-          `cn-button-${responsiveSize}`,
-          `cn-button-${responsiveVariant}`,
-        ].join(' ')}
+        className={clsx(
+          'canon-Button',
+          `canon-Button--size-${responsiveSize}`,
+          `canon-Button--variant-${responsiveVariant}`,
+          className,
+        )}
+        style={style}
       >
         <span
           className={[
-            'cn-button-content',
-            iconStart && iconEnd ? 'cn-button-content-icon-both' : '',
+            'canon-Button--content',
+            iconStart && iconEnd ? 'canon-Button--icon-start-end' : '',
           ]
             .filter(Boolean)
             .join(' ')}

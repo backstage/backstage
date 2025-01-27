@@ -53,5 +53,6 @@ export function makeFieldSchemaFromZod<
     type: null as any,
     uiOptionsType: null as any,
     TProps: undefined as any,
+    TOutput: undefined as any,
   };
 }

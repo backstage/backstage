@@ -20,6 +20,7 @@ should point to your Backstage backend auth handler.
    2. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/gitlab/handler/frame` for non-local deployments.
    3. Select the following scopes from the list:
       - [x] `api` Grants full read-write access to the api. This is only required if users need to be able to create merge requests with their own permissions.
+      - [x] `read_api` Grants read access to the API, including all groups and projects, the container registry, and the package registry.
       - [x] `read_user` Grants read-only access to the authenticated user's profile through the /user API endpoint, which includes username, public email, and full name. Also grants access to read-only API endpoints under /users.
       - [x] `read_repository` Grants read-only access to repositories on private projects using Git-over-HTTP (not using the API).
       - [x] `write_repository` Grants read-write access to repositories on private projects using Git-over-HTTP (not using the API).

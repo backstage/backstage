@@ -34,7 +34,7 @@ import type {
 } from '../../../backend-plugin-api/src/wiring/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
-import { ForwardedError, ConflictError } from '@backstage/errors';
+import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import {
   instanceMetadataServiceRef,
   featureDiscoveryServiceRef,
@@ -405,8 +405,9 @@ export class BackendInitializer {
           // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
           const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
           await lifecycleService.startup();
-        } catch (error) {
-          initLogger.onPluginFailed(pluginId);
+        } catch (error: unknown) {
+          assertError(error);
+          initLogger.onPluginFailed(pluginId, error);
           throw error;
         }
       }),

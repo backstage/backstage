@@ -139,6 +139,16 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   },
 ];
 
+export const ALL_OBJECTS: ObjectToFetch[] = [
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'secrets',
+    objectType: 'secrets',
+  },
+  ...DEFAULT_OBJECTS,
+];
+
 export interface KubernetesFanOutHandlerOptions
   extends KubernetesObjectsProviderOptions {
   authStrategy: AuthenticationStrategy;

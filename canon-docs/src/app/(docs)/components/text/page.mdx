@@ -1,0 +1,143 @@
+import { PropsTable } from '@/components/PropsTable';
+import {
+  TextPreview,
+  TextAllVariants,
+  TextResponsive,
+  TextAllWeights,
+} from '@/snippets/text';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+
+# Text
+
+The `Text` component is used to display content on your page.
+
+<Snippet
+  py={4}
+  preview={<TextPreview />}
+  code={`<Text style={{ maxWidth: '600px' }}>
+    A man looks at a painting in a museum and says, “Brothers and sisters I
+    have none, but that man&apos;s father is my father&apos;s son.” Who is in
+    the painting?
+  </Text>`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Text } from '@backstage/canon';
+
+<Text />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Text className="text" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable
+  data={{
+    variant: {
+      type: ['display', 'title1', 'title2', 'title3', 'title4', 'title5'],
+      responsive: true,
+    },
+    weight: {
+      type: ['regular', 'bold'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### All variants
+
+The `Text` component has a `variant` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextAllVariants />}
+  code={`<Stack gap="md">
+    <Text variant="subtitle" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="body" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="caption" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text variant="label" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+  </Stack>`}
+/>
+
+### All weights
+
+The `Text` component has a `weight` prop that can be used to change the
+appearance of the text.
+
+<Snippet
+  open
+  preview={<TextAllWeights />}
+  code={`<Stack gap="md">
+    <Text weight="regular" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+    <Text weight="bold" style={{ maxWidth: '600px' }}>
+      A man looks at a painting in a museum and says, “Brothers and sisters I
+      have none, but that man&apos;s father is my father&apos;s son.” Who is
+      in the painting?
+    </Text>
+  </Stack>`}
+/>
+
+### Responsive
+
+You can also use the `variant` prop to change the appearance of the text based
+on the screen size.
+
+<Snippet
+  open
+  preview={<TextResponsive />}
+  code={`<Text variant={{ initial: 'body', lg: 'subtitle' }}>
+    Responsive text
+  </Text>`}
+/>

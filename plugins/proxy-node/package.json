@@ -1,0 +1,60 @@
+{
+  "name": "@backstage/plugin-proxy-node",
+  "version": "0.1.1-next.0",
+  "description": "The plugin-proxy-node module for @backstage/plugin-proxy-backend",
+  "backstage": {
+    "role": "node-library",
+    "pluginId": "proxy-backend",
+    "pluginPackages": [
+      "@backstage/plugin-proxy-node"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/proxy-node"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    "./alpha": "./src/alpha/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/alpha/index.ts",
+  "types": "src/alpha/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "http-proxy-middleware": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@types/http-proxy-middleware": "^1.0.0"
+  }
+}

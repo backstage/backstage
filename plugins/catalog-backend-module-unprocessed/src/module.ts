@@ -19,7 +19,6 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { UnprocessedEntitiesModule } from './UnprocessedEntitiesModule';
-import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 /**
@@ -39,7 +38,7 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
         permissions: coreServices.permissions,
-        catalogPermissions: catalogPermissionExtensionPoint,
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       async init({
         database,
@@ -48,7 +47,7 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         permissions,
         httpAuth,
         discovery,
-        catalogPermissions,
+        permissionsRegistry,
       }) {
         const module = UnprocessedEntitiesModule.create({
           database: await database.getClient(),
@@ -58,7 +57,9 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
           httpAuth,
         });
 
-        catalogPermissions.addPermissions(unprocessedEntitiesDeletePermission);
+        permissionsRegistry.addPermissions([
+          unprocessedEntitiesDeletePermission,
+        ]);
 
         module.registerRoutes();
 

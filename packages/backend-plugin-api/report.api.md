@@ -16,13 +16,44 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
 import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
+
+// @public
+export interface AuditorService {
+  // (undocumented)
+  createEvent(
+    options: AuditorServiceCreateEventOptions,
+  ): Promise<AuditorServiceEvent>;
+}
+
+// @public (undocumented)
+export type AuditorServiceCreateEventOptions = {
+  eventId: string;
+  severityLevel?: AuditorServiceEventSeverityLevel;
+  request?: Request_2<any, any, any, any, any>;
+  meta?: JsonObject;
+};
+
+// @public (undocumented)
+export type AuditorServiceEvent = {
+  success(options?: { meta?: JsonObject }): Promise<void>;
+  fail(options: { meta?: JsonObject; error: Error }): Promise<void>;
+};
+
+// @public
+export type AuditorServiceEventSeverityLevel =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'critical';
 
 // @public
 export interface AuthService {
@@ -183,7 +214,13 @@ export namespace coreServices {
   const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
   const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  const auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
   const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
+  const permissionsRegistry: ServiceRef<
+    PermissionsRegistryService,
+    'plugin',
+    'singleton'
+  >;
   const pluginMetadata: ServiceRef<
     PluginMetadataService,
     'plugin',
@@ -424,6 +461,29 @@ export interface LoggerService {
   // (undocumented)
   warn(message: string, meta?: Error | JsonObject): void;
 }
+
+// @public
+export interface PermissionsRegistryService {
+  addPermissionRules(rules: PermissionRule<any, any, string>[]): void;
+  addPermissions(permissions: Permission[]): void;
+  addResourceType<const TResourceType extends string, TResource>(
+    options: PermissionsRegistryServiceAddResourceTypeOptions<
+      TResourceType,
+      TResource
+    >,
+  ): void;
+}
+
+// @public
+export type PermissionsRegistryServiceAddResourceTypeOptions<
+  TResourceType extends string,
+  TResource,
+> = {
+  resourceType: TResourceType;
+  permissions?: Array<Permission>;
+  rules: PermissionRule<TResource, any, NoInfer_2<TResourceType>>[];
+  getResources?(resourceRefs: string[]): Promise<Array<TResource | undefined>>;
+};
 
 // @public
 export interface PermissionsService extends PermissionEvaluator {

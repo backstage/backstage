@@ -1,0 +1,173 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  ButtonPreview,
+  ButtonSizes,
+  ButtonWithIcons,
+  ButtonFullWidth,
+  ButtonDisabled,
+  ButtonResponsive,
+} from '@/snippets/button';
+import { buttonVariants } from '@/snippets/_snippets';
+
+# Button
+
+A button component that can be used to trigger actions.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ButtonPreview />}
+  code={`<Inline alignY="center">
+  <Button iconStart="cloud" variant="primary">
+    Button
+  </Button>
+  <Button iconStart="cloud" variant="secondary">
+    Button
+  </Button>
+  <Button iconStart="cloud" variant="tertiary">
+    Button
+  </Button>
+</Inline>`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Button } from '@backstage/canon';
+
+<Button />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Button className="button" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable
+  data={{
+    size: {
+      type: ['small', 'medium'],
+      responsive: true,
+    },
+    variant: {
+      type: ['primary', 'secondary', 'tertiary'],
+      responsive: true,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### Variants
+
+Here's a view when buttons have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonPreview />}
+  code={buttonVariants}
+/>
+
+### Sizes
+
+Here's a view when buttons have different sizes.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSizes />}
+  code={`<Inline alignY="center">
+    <Button size="small">Small</Button>
+    <Button size="medium">Medium</Button>
+</Inline>`}
+/>
+
+### With Icons
+
+Here's a view when buttons have icons.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonWithIcons />}
+  code={`<Inline alignY="center">
+    <Button iconStart="cloud">Button</Button>
+    <Button iconEnd="chevronRight">Button</Button>
+    <Button iconStart="cloud" iconEnd="chevronRight">Button</Button>
+</Inline>`}
+/>
+
+### Full width
+
+Here's a view when buttons are full width.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonFullWidth />}
+  code={`<Stack style={{ width: '300px' }}>
+    <Button fullWidth>Full width</Button>
+</Stack>`}
+/>
+
+### Disabled
+
+Here's a view when buttons are disabled.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonDisabled />}
+  code={`<Button disabled>Button</Button>`}
+/>
+
+### Responsive
+
+Here's a view when buttons are responsive.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonResponsive />}
+  code={`<Button variant={{ initial: 'primary', lg: 'secondary' }}>
+    Responsive Button
+  </Button>`}
+/>
