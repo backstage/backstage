@@ -18,7 +18,6 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
 import { Flex } from '../Flex';
-import { Inline } from '../Inline';
 
 const meta = {
   title: 'Components/Box',
@@ -81,8 +80,8 @@ const CardDisplay = ({ children }: { children?: React.ReactNode }) => {
 
 export const Display: Story = {
   render: args => (
-    <Flex align="center">
-      <Inline>
+    <Flex direction="column" align="center">
+      <Flex>
         <Box display="block" {...args}>
           <CardDisplay>Block</CardDisplay>
         </Box>
@@ -92,7 +91,7 @@ export const Display: Story = {
         <Box display="none" {...args}>
           <CardDisplay>None</CardDisplay>
         </Box>
-      </Inline>
+      </Flex>
       <Box display={{ initial: 'block', md: 'inline' }} {...args}>
         <CardDisplay>Responsive</CardDisplay>
       </Box>
@@ -116,8 +115,8 @@ export const Padding: Story = {
     },
   },
   render: args => (
-    <Flex align="center" gap="md">
-      <Inline alignY="center" gap="md">
+    <Flex direction="column" align="center" gap="4">
+      <Flex gap="4" align="center">
         <Box p="3" style={styleInsideBox}>
           <Box {...args}>Padding</Box>
         </Box>
@@ -127,8 +126,8 @@ export const Padding: Story = {
         <Box py="3" style={styleInsideBox}>
           <Box {...args}>Padding Y</Box>
         </Box>
-      </Inline>
-      <Inline alignY="center" gap="md">
+      </Flex>
+      <Flex gap="4" align="center">
         <Box pt="3" style={styleInsideBox}>
           <Box {...args}>Padding Top</Box>
         </Box>
@@ -141,7 +140,7 @@ export const Padding: Story = {
         <Box pl="3" style={styleInsideBox}>
           <Box {...args}>Padding Left</Box>
         </Box>
-      </Inline>
+      </Flex>
     </Flex>
   ),
 };
@@ -156,8 +155,8 @@ export const Margin: Story = {
     },
   },
   render: args => (
-    <Flex align="center" gap="md">
-      <Inline alignY="center" gap="md">
+    <Flex direction="column" align="center" gap="4">
+      <Flex align="center" gap="4">
         <Box style={styleInsideBox}>
           <Box m="3" {...args}>
             Margin
@@ -173,8 +172,8 @@ export const Margin: Story = {
             Margin Y
           </Box>
         </Box>
-      </Inline>
-      <Inline alignY="center" gap="md">
+      </Flex>
+      <Flex align="center" gap="4">
         <Box style={styleInsideBox}>
           <Box mt="3" {...args}>
             Margin Top
@@ -195,7 +194,7 @@ export const Margin: Story = {
             Margin Left
           </Box>
         </Box>
-      </Inline>
+      </Flex>
     </Flex>
   ),
 };

@@ -14,6 +14,22 @@
   align-items: stretch;
 }
 
+.cu-jc-start {
+  justify-content: start;
+}
+
+.cu-jc-center {
+  justify-content: center;
+}
+
+.cu-jc-end {
+  justify-content: end;
+}
+
+.cu-jc-between {
+  justify-content: space-between;
+}
+
 .cu-fd-row {
   flex-direction: row;
 }
@@ -46,6 +62,22 @@
 
   .xs\:cu-align-stretch {
     align-items: stretch;
+  }
+
+  .xs\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .xs\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .xs\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .xs\:cu-jc-between {
+    justify-content: space-between;
   }
 
   .xs\:cu-fd-row {
@@ -83,6 +115,22 @@
     align-items: stretch;
   }
 
+  .sm\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .sm\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .sm\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .sm\:cu-jc-between {
+    justify-content: space-between;
+  }
+
   .sm\:cu-fd-row {
     flex-direction: row;
   }
@@ -116,6 +164,22 @@
 
   .md\:cu-align-stretch {
     align-items: stretch;
+  }
+
+  .md\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .md\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .md\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .md\:cu-jc-between {
+    justify-content: space-between;
   }
 
   .md\:cu-fd-row {
@@ -153,6 +217,22 @@
     align-items: stretch;
   }
 
+  .lg\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .lg\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .lg\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .lg\:cu-jc-between {
+    justify-content: space-between;
+  }
+
   .lg\:cu-fd-row {
     flex-direction: row;
   }
@@ -186,6 +266,22 @@
 
   .xl\:cu-align-stretch {
     align-items: stretch;
+  }
+
+  .xl\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .xl\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .xl\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .xl\:cu-jc-between {
+    justify-content: space-between;
   }
 
   .xl\:cu-fd-row {

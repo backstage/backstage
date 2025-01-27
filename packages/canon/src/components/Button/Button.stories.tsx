@@ -17,7 +17,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
-import { Inline } from '../Inline';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { ButtonProps } from './types';
@@ -51,7 +50,7 @@ export const Variants: Story = {
     },
   },
   render: () => (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button iconStart="cloud" variant="primary">
         Button
       </Button>
@@ -61,7 +60,7 @@ export const Variants: Story = {
       <Button iconStart="cloud" variant="tertiary">
         Button
       </Button>
-    </Inline>
+    </Flex>
   ),
 };
 
@@ -70,10 +69,10 @@ export const Sizes: Story = {
     children: 'Button',
   },
   render: () => (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button size="medium">Medium</Button>
       <Button size="small">Small</Button>
-    </Inline>
+    </Flex>
   ),
 };
 
@@ -82,11 +81,11 @@ export const WithIcons: Story = {
     children: 'Button',
   },
   render: args => (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button {...args} iconStart="cloud" />
       <Button {...args} iconEnd="chevronRight" />
       <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
-    </Inline>
+    </Flex>
   ),
 };
 
@@ -132,12 +131,12 @@ export const Playground: Story = {
     children: 'Button',
   },
   render: () => (
-    <Flex>
+    <Flex direction="column">
       {variants.map(variant => (
-        <Flex key={variant}>
+        <Flex direction="column" key={variant}>
           <Text>{variant}</Text>
           {['small', 'medium'].map(size => (
-            <Inline alignY="center" key={size}>
+            <Flex align="center" key={size}>
               <Button
                 iconStart="cloud"
                 variant={variant as ButtonProps['variant']}
@@ -161,7 +160,7 @@ export const Playground: Story = {
               >
                 Button
               </Button>
-            </Inline>
+            </Flex>
           ))}
         </Flex>
       ))}

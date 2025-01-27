@@ -23,6 +23,7 @@ export interface FlexProps extends SpaceProps {
   children: React.ReactNode;
   gap?: GapProps['gap'];
   align?: FlexOwnProps['align'];
+  justify?: FlexOwnProps['justify'];
   direction?: FlexOwnProps['direction'];
   className?: string;
   style?: React.CSSProperties;

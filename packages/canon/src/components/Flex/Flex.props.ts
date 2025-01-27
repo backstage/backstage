@@ -23,6 +23,7 @@ const directionValues = [
   'row-reverse',
   'column-reverse',
 ] as const;
+const justifyValues = ['start', 'center', 'end', 'between'] as const;
 
 /** @public */
 const flexPropDefs = {
@@ -38,9 +39,16 @@ const flexPropDefs = {
     values: directionValues,
     responsive: true,
   },
+  justify: {
+    type: 'enum',
+    className: 'cu-jc',
+    values: justifyValues,
+    responsive: true,
+  },
 } satisfies {
   align: PropDef<(typeof alignValues)[number]>;
   direction: PropDef<(typeof directionValues)[number]>;
+  justify: PropDef<(typeof justifyValues)[number]>;
 };
 
 /** @public */
