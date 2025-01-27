@@ -64,6 +64,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
+    let alreadyTriedToRefreshSession = false;
     if (
       this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)
     ) {
@@ -71,6 +72,8 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
       if (!shouldRefresh) {
         return this.currentSession!;
       }
+
+      alreadyTriedToRefreshSession = true;
 
       try {
         const refreshedSession = await this.collapsedSessionRefresh(
@@ -83,7 +86,20 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         }
         return refreshedSession;
       } catch (error) {
-        // If the refresh attempt fails we assume we don't have a session, so continue to create one.
+        this.removeLocalSession();
+
+        if (options.optional) {
+          return undefined;
+        }
+
+        if (options.instantPopup) {
+          // if `instantPopup`, then can't continue because
+          // we are in asynchronous control flow. Therefore, the application must not try to
+          // open the popup later in `connector#createSession(...)` because the browser may block the popup.
+          // Immediately return error.
+          throw error;
+        }
+        // If the refresh attempt fails we assume we don't have a session, so continue to create one
       }
     }
 
@@ -94,13 +110,14 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     // stay in a synchronous call stack from the user interaction. The downside
     // is that the user will sometimes be requested to log in even if they
     // already had an existing session.
-    if (!options.instantPopup) {
+    if (!options.instantPopup && !alreadyTriedToRefreshSession) {
       try {
         const newSession = await this.collapsedSessionRefresh(options.scopes);
         this.currentSession = newSession;
         // The session might not have the scopes requested so go back and check again
         return this.getSession(options);
       } catch {
+        this.removeLocalSession();
         // If the refresh attempt fails we assume we don't have a session, so continue to create one.
       }
     }
@@ -117,6 +134,18 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     });
     this.stateTracker.setIsSignedIn(true);
     return this.currentSession;
+  }
+
+  /**
+   * Sets `undefined` to this.{@link currentSession} and tells this.{@link stateTracker}, session state tracker,
+   * that a user has signed out.
+   *
+   * Does not propagate session removal to the connector like {@link removeSession}().
+   *
+   */
+  removeLocalSession() {
+    this.currentSession = undefined;
+    this.stateTracker.setIsSignedIn(false);
   }
 
   async removeSession() {

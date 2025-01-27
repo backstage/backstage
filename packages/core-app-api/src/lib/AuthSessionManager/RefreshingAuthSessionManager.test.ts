@@ -275,4 +275,26 @@ describe('RefreshingAuthSessionManager', () => {
     expect(refreshSession).toHaveBeenCalledTimes(1);
     expect(createSession).toHaveBeenCalledTimes(1);
   });
+
+  it('should create a new session if refresh fails with existing expired session', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    createSession.mockResolvedValue({
+      scopes: new Set(['a']),
+      expired: true,
+    });
+    await manager.getSession({ scopes: new Set(['a']) });
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
+
+    await manager.getSession({ scopes: new Set(['a']) });
+    // call refresh session only once
+    expect(refreshSession).toHaveBeenCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(2);
+  });
 });
