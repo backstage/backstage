@@ -18,7 +18,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -51,8 +50,10 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
-      config: new ConfigReader({
-        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      config: mockServices.rootConfig({
+        data: {
+          backend: { reading: { allow: [{ host: 'localhost' }] } },
+        },
       }),
     });
     const processor = new UrlReaderProcessor({ reader, logger });
@@ -109,8 +110,10 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
-      config: new ConfigReader({
-        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      config: mockServices.rootConfig({
+        data: {
+          backend: { reading: { allow: [{ host: 'localhost' }] } },
+        },
       }),
     });
     server.use(
@@ -157,8 +160,10 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
-      config: new ConfigReader({
-        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      config: mockServices.rootConfig({
+        data: {
+          backend: { reading: { allow: [{ host: 'localhost' }] } },
+        },
       }),
     });
     const processor = new UrlReaderProcessor({ reader, logger });
