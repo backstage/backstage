@@ -20,7 +20,7 @@ If you're running Backstage with Node 20 or later, you'll need to pass the flag 
 
 You should already have [a standalone app](./index.md).
 
-You will also need to register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules) before moving forward.
+You will also need to register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules) and configure [GitHub authentication](https://backstage.io/docs/auth/github/provider/) before moving forward.
 
 ## Creating your component
 
