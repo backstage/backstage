@@ -290,6 +290,21 @@ export type FlexDirection = 'row' | 'column';
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
 
 // @public (undocumented)
+export const gapPropDefs: {
+  gap: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--gap'[];
+    values: string[];
+    responsive: true;
+    default: string;
+  };
+};
+
+// @public (undocumented)
+export type GapProps = GetPropDefTypes<typeof gapPropDefs>;
+
+// @public (undocumented)
 export type GetPropDefType<Def> = Def extends BooleanPropDef
   ? Def extends ResponsivePropDef
     ? Responsive<boolean>
@@ -327,22 +342,142 @@ export const Grid: ForwardRefExoticComponent<
 };
 
 // @public (undocumented)
+export type GridItemOwnProps = GetPropDefTypes<typeof gridItemPropDefs>;
+
+// @public (undocumented)
+export const gridItemPropDefs: {
+  colSpan: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-span'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  colEnd: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-end'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  colStart: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-start'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  rowSpan: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--row-span'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
-  children: React.ReactNode;
+  children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  colEnd?: UtilityProps['colEnd'];
+  colEnd?: GridItemOwnProps['colEnd'];
   // (undocumented)
-  colSpan?: UtilityProps['colSpan'];
+  colSpan?: GridItemOwnProps['colSpan'];
   // (undocumented)
-  colStart?: UtilityProps['colStart'];
+  colStart?: GridItemOwnProps['colStart'];
   // (undocumented)
-  rowSpan?: UtilityProps['rowSpan'];
+  rowSpan?: GridItemOwnProps['rowSpan'];
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public (undocumented)
+export type GridOwnProps = GetPropDefTypes<typeof gridPropDefs>;
+
+// @public (undocumented)
+export const gridPropDefs: {
+  columns: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--columns'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+    default: string;
+  };
+};
 
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
@@ -351,9 +486,9 @@ export interface GridProps extends SpaceProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  columns?: UtilityProps['columns'];
+  columns?: GridOwnProps['columns'];
   // (undocumented)
-  gap?: UtilityProps['gap'];
+  gap?: GapProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -724,21 +859,29 @@ export const Stack: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
+export type StackOwnProps = GetPropDefTypes<typeof stackPropDefs>;
+
+// @public (undocumented)
+export const stackPropDefs: {
+  align: {
+    type: 'enum';
+    className: string;
+    values: readonly ['start', 'center', 'end', 'baseline', 'stretch'];
+    responsive: true;
+    default: 'stretch';
+  };
+};
+
+// @public (undocumented)
 export interface StackProps extends SpaceProps {
   // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  // (undocumented)
-  as?: AsProps;
+  align?: StackOwnProps['align'];
   // (undocumented)
   children: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  gap?: UtilityProps['gap'];
+  gap?: GapProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
 }
