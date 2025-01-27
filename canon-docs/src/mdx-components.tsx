@@ -6,7 +6,6 @@ import { Box } from '../../packages/canon/src/components/Box';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // Allows customizing built-in components, e.g. to add styling.
     h1: ({ children }) => (
       <Box style={{ marginTop: '4rem' }}>
         <h1
