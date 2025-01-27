@@ -110,6 +110,10 @@ jobs:
       - name: build
         run: yarn backstage-cli repo build --all
 
+        # For now canon has a custom build script and needs to be built separately
+      - name: build canon
+        run: yarn --cwd packages/canon build
+
       - name: verify type dependencies
         run: yarn lint:type-deps
 
