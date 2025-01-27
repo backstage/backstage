@@ -15,3 +15,4 @@
  */
 export { Grid } from './Grid';
 export type { GridProps, GridItemProps } from './types';
+export type { GridOwnProps, GridItemOwnProps } from './Grid.props';

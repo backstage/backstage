@@ -284,10 +284,50 @@ export const Field: {
 };
 
 // @public (undocumented)
+export const Flex: ForwardRefExoticComponent<
+  FlexProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
 export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
+export interface FlexProps extends SpaceProps {
+  // Warning: (ae-forgotten-export) The symbol "FlexOwnProps" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  align?: FlexOwnProps['align'];
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  direction?: FlexOwnProps['direction'];
+  // (undocumented)
+  gap?: GapProps['gap'];
+  // (undocumented)
+  justify?: FlexOwnProps['justify'];
+  // (undocumented)
+  style?: React.CSSProperties;
+}
+
+// @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
+
+// @public (undocumented)
+export const gapPropDefs: {
+  gap: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--gap'[];
+    values: string[];
+    responsive: true;
+    default: string;
+  };
+};
+
+// @public (undocumented)
+export type GapProps = GetPropDefTypes<typeof gapPropDefs>;
 
 // @public (undocumented)
 export type GetPropDefType<Def> = Def extends BooleanPropDef
@@ -329,17 +369,19 @@ export const Grid: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
-  children: React.ReactNode;
+  children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  colEnd?: UtilityProps['colEnd'];
+  colEnd?: GridItemOwnProps['colEnd'];
+  // Warning: (ae-forgotten-export) The symbol "GridItemOwnProps" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  colSpan?: UtilityProps['colSpan'];
+  colSpan?: GridItemOwnProps['colSpan'];
   // (undocumented)
-  colStart?: UtilityProps['colStart'];
+  colStart?: GridItemOwnProps['colStart'];
   // (undocumented)
-  rowSpan?: UtilityProps['rowSpan'];
+  rowSpan?: GridItemOwnProps['rowSpan'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -350,10 +392,12 @@ export interface GridProps extends SpaceProps {
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
+  // Warning: (ae-forgotten-export) The symbol "GridOwnProps" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  columns?: UtilityProps['columns'];
+  columns?: GridOwnProps['columns'];
   // (undocumented)
-  gap?: UtilityProps['gap'];
+  gap?: GapProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -453,37 +497,6 @@ export type IconProps = {
 
 // @public (undocumented)
 export const icons: IconMap;
-
-// @public (undocumented)
-export const Inline: ForwardRefExoticComponent<
-  InlineProps & RefAttributes<HTMLElement>
->;
-
-// @public (undocumented)
-export interface InlineProps extends SpaceProps {
-  // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  // (undocumented)
-  alignY?:
-    | 'top'
-    | 'center'
-    | 'bottom'
-    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
-  // (undocumented)
-  as?: AsProps;
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  gap?: UtilityProps['gap'];
-  // (undocumented)
-  style?: React.CSSProperties;
-}
 
 // @public (undocumented)
 export const Input: React_2.ForwardRefExoticComponent<
@@ -716,31 +729,6 @@ export interface SpaceProps {
   px?: Responsive<Space>;
   // (undocumented)
   py?: Responsive<Space>;
-}
-
-// @public (undocumented)
-export const Stack: ForwardRefExoticComponent<
-  StackProps & RefAttributes<HTMLDivElement>
->;
-
-// @public (undocumented)
-export interface StackProps extends SpaceProps {
-  // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  // (undocumented)
-  as?: AsProps;
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  gap?: UtilityProps['gap'];
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
