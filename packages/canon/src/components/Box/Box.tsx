@@ -29,7 +29,6 @@ import { displayPropDefs } from '../../props/display.props';
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { as = 'div', children } = props;
 
-  // Extract utility class names and styles
   const propDefs = {
     ...spacingPropDefs,
     ...widthPropDefs,

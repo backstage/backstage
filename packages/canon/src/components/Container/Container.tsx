@@ -25,7 +25,6 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
     const { children } = props;
 
-    // Extract utility class names and styles
     const propDefs = {
       ...displayPropDefs,
     };

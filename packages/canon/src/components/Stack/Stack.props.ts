@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import type { SpaceProps } from '../../types';
-import { StackOwnProps } from './Stack.props';
-import type { GapProps } from '../../props/gap-props';
+import type { PropDef, GetPropDefTypes } from '../../props/prop-def';
+
+const alignValues = ['start', 'center', 'end', 'baseline', 'stretch'] as const;
 
 /** @public */
-export interface StackProps extends SpaceProps {
-  children: React.ReactNode;
-  gap?: GapProps['gap'];
-  align?: StackOwnProps['align'];
-  className?: string;
-  style?: React.CSSProperties;
-}
+const stackPropDefs = {
+  align: {
+    type: 'enum',
+    className: 'cu-align',
+    values: alignValues,
+    responsive: true,
+    default: 'stretch',
+  },
+} satisfies {
+  align: PropDef<(typeof alignValues)[number]>;
+};
+
+/** @public */
+type StackOwnProps = GetPropDefTypes<typeof stackPropDefs>;
+
+export { stackPropDefs };
+export type { StackOwnProps };

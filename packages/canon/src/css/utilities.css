@@ -67,3 +67,6 @@
 
 /* Gap */
 @import './utilities/gap.css';
+
+/* Flex */
+@import './utilities/flex.css';
