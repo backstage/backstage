@@ -1,6 +1,6 @@
 'use client';
 
-import { Stack, Text } from '../../../packages/canon';
+import { Flex, Text } from '../../../packages/canon';
 
 export const TextPreview = () => {
   return (
@@ -14,7 +14,7 @@ export const TextPreview = () => {
 
 export const TextAllVariants = () => {
   return (
-    <Stack gap="md">
+    <Flex direction="column">
       <Text variant="subtitle" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I
         have none, but that man&apos;s father is my father&apos;s son.” Who is
@@ -35,13 +35,13 @@ export const TextAllVariants = () => {
         have none, but that man&apos;s father is my father&apos;s son.” Who is
         in the painting?
       </Text>
-    </Stack>
+    </Flex>
   );
 };
 
 export const TextAllWeights = () => {
   return (
-    <Stack gap="md">
+    <Flex direction="column">
       <Text weight="regular" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I
         have none, but that man&apos;s father is my father&apos;s son.” Who is
@@ -52,7 +52,7 @@ export const TextAllWeights = () => {
         have none, but that man&apos;s father is my father&apos;s son.” Who is
         in the painting?
       </Text>
-    </Stack>
+    </Flex>
   );
 };
 
@@ -64,7 +64,7 @@ export const TextResponsive = () => {
 
 export const TextPlayground = () => {
   return (
-    <Stack>
+    <Flex direction="column">
       <Text>Subtitle</Text>
       <Text variant="subtitle" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I
@@ -89,6 +89,6 @@ export const TextPlayground = () => {
         have none, but that man&apos;s father is my father&apos;s son.” Who is
         in the painting?
       </Text>
-    </Stack>
+    </Flex>
   );
 };
