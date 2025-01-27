@@ -18,14 +18,24 @@ import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
 import clsx from 'clsx';
 import { extractProps } from '../../utils/extractProps';
-import { spacingPropDefs } from '../../props/spacing';
+import { spacingPropDefs } from '../../props/spacing.props';
+import { boxPropDefs } from './Box.props';
+import { widthPropDefs } from '../../props/width.props';
+import { heightPropDefs } from '../../props/height.props';
+import { positionPropDefs } from '../../props/position.props';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { as = 'div', children } = props;
 
   // Extract utility class names and styles
-  const propDefs = { ...spacingPropDefs };
+  const propDefs = {
+    ...spacingPropDefs,
+    ...widthPropDefs,
+    ...heightPropDefs,
+    ...positionPropDefs,
+    ...boxPropDefs,
+  };
   const { className, style } = extractProps(props, propDefs);
 
   return createElement(as, {

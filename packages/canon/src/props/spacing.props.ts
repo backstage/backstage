@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { paddingPropDefs } from './padding';
-import { marginPropDefs } from './margin';
+import { paddingPropDefs } from './padding.props';
+import { marginPropDefs } from './margin.props';
 
 export const spacingValues = [
   '0.5',

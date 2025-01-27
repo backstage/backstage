@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
-import type { UtilityProps } from '../../types';
+import type { HeightProps } from '../../props/height.props';
+import type { WidthProps } from '../../props/width.props';
+import type { PositionProps } from '../../props/position.props';
+import type { SpaceProps } from '../../types';
+import type { BoxOwnProps } from './Box.props';
 
 /** @public */
-export interface BoxProps extends UtilityProps {
-  as?: keyof JSX.IntrinsicElements;
+export interface BoxProps extends SpaceProps {
+  as?: BoxOwnProps['as'];
+  display?: BoxOwnProps['display'];
+  width?: WidthProps['width'];
+  minWidth?: WidthProps['minWidth'];
+  maxWidth?: WidthProps['maxWidth'];
+  height?: HeightProps['height'];
+  minHeight?: HeightProps['minHeight'];
+  maxHeight?: HeightProps['maxHeight'];
+  position?: PositionProps['position'];
+  top?: PositionProps['top'];
+  left?: PositionProps['left'];
+  right?: PositionProps['right'];
+  bottom?: PositionProps['bottom'];
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
