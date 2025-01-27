@@ -284,32 +284,7 @@ export const Field: {
 };
 
 // @public (undocumented)
-export const Flex: ForwardRefExoticComponent<
-  FlexProps & RefAttributes<HTMLDivElement>
->;
-
-// @public (undocumented)
 export type FlexDirection = 'row' | 'column';
-
-// @public (undocumented)
-export interface FlexProps extends SpaceProps {
-  // Warning: (ae-forgotten-export) The symbol "FlexOwnProps" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  align?: FlexOwnProps['align'];
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  direction?: FlexOwnProps['direction'];
-  // (undocumented)
-  gap?: GapProps['gap'];
-  // (undocumented)
-  justify?: FlexOwnProps['justify'];
-  // (undocumented)
-  style?: React.CSSProperties;
-}
 
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
@@ -367,6 +342,97 @@ export const Grid: ForwardRefExoticComponent<
 };
 
 // @public (undocumented)
+export type GridItemOwnProps = GetPropDefTypes<typeof gridItemPropDefs>;
+
+// @public (undocumented)
+export const gridItemPropDefs: {
+  colSpan: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-span'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  colEnd: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-end'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  colStart: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-start'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  rowSpan: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--row-span'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
   children?: React.ReactNode;
@@ -374,8 +440,6 @@ export interface GridItemProps {
   className?: string;
   // (undocumented)
   colEnd?: GridItemOwnProps['colEnd'];
-  // Warning: (ae-forgotten-export) The symbol "GridItemOwnProps" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   colSpan?: GridItemOwnProps['colSpan'];
   // (undocumented)
@@ -387,13 +451,40 @@ export interface GridItemProps {
 }
 
 // @public (undocumented)
+export type GridOwnProps = GetPropDefTypes<typeof gridPropDefs>;
+
+// @public (undocumented)
+export const gridPropDefs: {
+  columns: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--columns'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+    default: string;
+  };
+};
+
+// @public (undocumented)
 export interface GridProps extends SpaceProps {
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
-  // Warning: (ae-forgotten-export) The symbol "GridOwnProps" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   columns?: GridOwnProps['columns'];
   // (undocumented)
@@ -497,6 +588,37 @@ export type IconProps = {
 
 // @public (undocumented)
 export const icons: IconMap;
+
+// @public (undocumented)
+export const Inline: ForwardRefExoticComponent<
+  InlineProps & RefAttributes<HTMLElement>
+>;
+
+// @public (undocumented)
+export interface InlineProps extends SpaceProps {
+  // (undocumented)
+  align?:
+    | 'left'
+    | 'center'
+    | 'right'
+    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
+  // (undocumented)
+  alignY?:
+    | 'top'
+    | 'center'
+    | 'bottom'
+    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
+  // (undocumented)
+  as?: AsProps;
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  gap?: UtilityProps['gap'];
+  // (undocumented)
+  style?: React.CSSProperties;
+}
 
 // @public (undocumented)
 export const Input: React_2.ForwardRefExoticComponent<
@@ -729,6 +851,39 @@ export interface SpaceProps {
   px?: Responsive<Space>;
   // (undocumented)
   py?: Responsive<Space>;
+}
+
+// @public (undocumented)
+export const Stack: ForwardRefExoticComponent<
+  StackProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export type StackOwnProps = GetPropDefTypes<typeof stackPropDefs>;
+
+// @public (undocumented)
+export const stackPropDefs: {
+  align: {
+    type: 'enum';
+    className: string;
+    values: readonly ['start', 'center', 'end', 'baseline', 'stretch'];
+    responsive: true;
+    default: 'stretch';
+  };
+};
+
+// @public (undocumented)
+export interface StackProps extends SpaceProps {
+  // (undocumented)
+  align?: StackOwnProps['align'];
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  gap?: GapProps['gap'];
+  // (undocumented)
+  style?: React.CSSProperties;
 }
 
 // @public (undocumented)

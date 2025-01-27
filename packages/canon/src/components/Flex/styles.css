@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.canon-Flex {
-  display: flex;
-}
+export { Stack } from './Stack';
+export { stackPropDefs } from './Stack.props';
+export type { StackProps } from './types';
+export type { StackOwnProps } from './Stack.props';
