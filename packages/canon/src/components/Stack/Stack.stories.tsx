@@ -65,6 +65,20 @@ export const Default: Story = {
   },
 };
 
+export const ColumnDirection: Story = {
+  args: {
+    direction: 'column',
+    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
+  },
+};
+
+export const RowDirection: Story = {
+  args: {
+    direction: 'row',
+    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
+  },
+};
+
 export const AlignLeft: Story = {
   render: () => (
     <Stack align="start">

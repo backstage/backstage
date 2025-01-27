@@ -17,6 +17,12 @@
 import type { PropDef, GetPropDefTypes } from '../../props/prop-def';
 
 const alignValues = ['start', 'center', 'end', 'baseline', 'stretch'] as const;
+const directionValues = [
+  'row',
+  'column',
+  'row-reverse',
+  'column-reverse',
+] as const;
 
 /** @public */
 const stackPropDefs = {
@@ -25,10 +31,16 @@ const stackPropDefs = {
     className: 'cu-align',
     values: alignValues,
     responsive: true,
-    default: 'stretch',
+  },
+  direction: {
+    type: 'enum',
+    className: 'cu-fd',
+    values: directionValues,
+    responsive: true,
   },
 } satisfies {
   align: PropDef<(typeof alignValues)[number]>;
+  direction: PropDef<(typeof directionValues)[number]>;
 };
 
 /** @public */

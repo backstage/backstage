@@ -27,7 +27,6 @@ export * from './contexts/canon';
 export * from './components/Box';
 export * from './components/Grid';
 export * from './components/Stack';
-export * from './components/Inline';
 export * from './components/Container';
 export * from './components/Text';
 export * from './components/Heading';

@@ -23,6 +23,7 @@ export interface StackProps extends SpaceProps {
   children: React.ReactNode;
   gap?: GapProps['gap'];
   align?: StackOwnProps['align'];
+  direction?: StackOwnProps['direction'];
   className?: string;
   style?: React.CSSProperties;
 }
