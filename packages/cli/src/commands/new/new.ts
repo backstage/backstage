@@ -42,11 +42,11 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
 }
 
 export default async (opts: OptionValues) => {
-  const allowedOptions = (opts.allowedOptions || undefined)?.split(',');
+  const allowedTypes = ((opts.allowedTypes as string) || undefined)?.split(',');
 
   const factory = await FactoryRegistry.interactiveSelect(
     opts.select,
-    allowedOptions,
+    allowedTypes,
   );
 
   const providedOptions = parseOptions(opts.option);
@@ -84,6 +84,7 @@ export default async (opts: OptionValues) => {
       defaultVersion,
       license,
       scope: opts.scope?.replace(/^@/, ''),
+      skipInstall: opts.skipInstall,
       prefix: opts.prefix,
       npmRegistry: opts.npmRegistry,
       private: Boolean(opts.private),

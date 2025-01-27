@@ -31,6 +31,8 @@ export interface CreateContext {
   defaultVersion: string;
   /** License to use for new packages */
   license: string;
+  /** Whether to skip the install step after creation */
+  skipInstall?: boolean;
 
   /** Creates a temporary directory. This will always be deleted after creation is done. */
   createTemporaryDirectory(name: string): Promise<string>;

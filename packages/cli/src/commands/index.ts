@@ -271,12 +271,16 @@ export function registerCommands(program: Command) {
       'The license to use for any new packages (default: Apache-2.0)',
     )
     .option(
-      '--allowedOptions <option1,option2>',
-      'Comma separated list of allowed options shown in the interactive guide',
+      '--allowed-types <type1,type2>',
+      'Comma separated list of plugin types that are allowed to be created',
     )
     .option(
       '--prefix <prefix>',
       'The prefix to use for new packages, after the scope (default: backstage-plugin)',
+    )
+    .option(
+      '--skip-install',
+      'Skip the install step after creating the new package',
     )
     .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./new/new'), 'default'));

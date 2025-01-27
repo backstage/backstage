@@ -56,7 +56,7 @@ export class FactoryRegistry {
 
   static async interactiveSelect(
     preselected?: string,
-    allowedOptions?: string[],
+    allowedTypes?: string[],
   ): Promise<AnyFactory> {
     let selected = preselected;
     if (!selected) {
@@ -67,7 +67,7 @@ export class FactoryRegistry {
           message: 'What do you want to create?',
           choices: Array.from(this.factoryMap.values())
             .filter(({ name }) =>
-              allowedOptions ? allowedOptions.includes(name) : true,
+              allowedTypes ? allowedTypes.includes(name) : true,
             )
             .map(factory => ({
               name: `${factory.name} - ${factory.description}`,

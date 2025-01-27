@@ -29,7 +29,6 @@ type Options = {
   id: string;
   owner?: string;
   codeOwnersPath?: string;
-  skipInstall?: boolean;
 };
 
 export const backendPlugin = createFactory<Options>({
@@ -91,7 +90,7 @@ export const backendPlugin = createFactory<Options>({
       await addCodeownersEntry(`/plugins/${id}`, options.owner);
     }
 
-    if (!options.skipInstall) {
+    if (!ctx.skipInstall) {
       await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
       await Task.forCommand('yarn lint --fix', {
         cwd: targetDir,

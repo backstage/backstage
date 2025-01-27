@@ -34,7 +34,6 @@ type Options = {
   moduleId: string;
   owner?: string;
   codeOwnersPath?: string;
-  skipInstall?: boolean;
 };
 
 export const backendModule = createFactory<Options>({
@@ -102,10 +101,12 @@ export const backendModule = createFactory<Options>({
       await addCodeownersEntry(`/plugins/${dirName}`, options.owner);
     }
 
-    await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
-    await Task.forCommand('yarn lint --fix', {
-      cwd: targetDir,
-      optional: true,
-    });
+    if (!ctx.skipInstall) {
+      await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
+      await Task.forCommand('yarn lint --fix', {
+        cwd: targetDir,
+        optional: true,
+      });
+    }
   },
 });

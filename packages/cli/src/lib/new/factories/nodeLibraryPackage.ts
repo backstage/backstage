@@ -27,7 +27,6 @@ type Options = {
   id: string;
   owner?: string;
   codeOwnersPath?: string;
-  skipInstall?: boolean;
 };
 
 export const nodeLibraryPackage = createFactory<Options>({
@@ -71,7 +70,7 @@ export const nodeLibraryPackage = createFactory<Options>({
       await addCodeownersEntry(`/packages/${id}`, options.owner);
     }
 
-    if (!options.skipInstall) {
+    if (!ctx.skipInstall) {
       await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
       await Task.forCommand('yarn lint --fix', {
         cwd: targetDir,
