@@ -15,40 +15,40 @@
  */
 
 import { createElement, forwardRef } from 'react';
-import { GridItemProps, GridProps } from './types';
-import { getClassNames } from '../../utils/getClassNames';
+import { gapPropDefs } from '../../props/gap-props';
+import { extractProps } from '../../utils/extractProps';
+import { gridItemPropDefs, gridPropDefs } from './Grid.props';
 import clsx from 'clsx';
+import type { GridItemProps, GridProps } from './types';
 
 const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const {
-    children,
-    gap = 'xs',
-    columns = 'auto',
-    className,
-    style,
-    ...restProps
-  } = props;
+  const propDefs = {
+    ...gapPropDefs,
+    ...gridPropDefs,
+  };
 
-  const utilityClassNames = getClassNames({ gap, columns, ...restProps });
+  const { className, style } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
-    className: clsx('canon-Grid', utilityClassNames, className),
+    className: clsx('canon-Grid', className),
     style,
-    children,
+    children: props.children,
   });
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { children, className, style, ...restProps } = props;
+  const propDefs = {
+    ...gridItemPropDefs,
+  };
 
-  const utilityClassNames = getClassNames(restProps);
+  const { className, style } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
-    className: clsx('canon-GridItem', utilityClassNames, className),
+    className: clsx('canon-GridItem', className),
     style,
-    children,
+    children: props.children,
   });
 });
 

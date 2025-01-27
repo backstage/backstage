@@ -13,11 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type { DisplayProps, displayPropDefs } from './display.props';
-export type { HeightProps, heightPropDefs } from './height.props';
-export type { MarginProps, marginPropDefs } from './margin.props';
-export type { PaddingProps, paddingPropDefs } from './padding.props';
-export type { PositionProps, positionPropDefs } from './position.props';
-export type { WidthProps, widthPropDefs } from './width.props';
-export type { GapProps, gapPropDefs } from './gap-props';
-export * from './prop-def';
+import { PropDef } from './prop-def';
+import { GetPropDefTypes } from './prop-def';
+import { spacingValues } from './spacing.props';
+
+/** @public */
+const gapPropDefs = {
+  gap: {
+    type: 'enum | string',
+    className: 'cu-gap',
+    customProperties: ['--gap'],
+    values: spacingValues,
+    responsive: true,
+    default: '4',
+  },
+} satisfies {
+  gap: PropDef<(typeof spacingValues)[number]>;
+};
+
+/** @public */
+type GapProps = GetPropDefTypes<typeof gapPropDefs>;
+
+export { gapPropDefs };
+export type { GapProps };

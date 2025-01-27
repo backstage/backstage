@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import type { UtilityProps, SpaceProps } from '../../types';
+import type { GapProps } from '../../props/gap-props';
+import type { SpaceProps } from '../../types';
+import type { GridItemOwnProps, GridOwnProps } from './Grid.props';
 
 /** @public */
 export interface GridProps extends SpaceProps {
   children?: React.ReactNode;
   className?: string;
-  columns?: UtilityProps['columns'];
-  gap?: UtilityProps['gap'];
+  columns?: GridOwnProps['columns'];
+  gap?: GapProps['gap'];
   style?: React.CSSProperties;
 }
 
 /** @public */
 export interface GridItemProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
-  colSpan?: UtilityProps['colSpan'];
-  colEnd?: UtilityProps['colEnd'];
-  colStart?: UtilityProps['colStart'];
-  rowSpan?: UtilityProps['rowSpan'];
+  colSpan?: GridItemOwnProps['colSpan'];
+  colEnd?: GridItemOwnProps['colEnd'];
+  colStart?: GridItemOwnProps['colStart'];
+  rowSpan?: GridItemOwnProps['rowSpan'];
   style?: React.CSSProperties;
 }
