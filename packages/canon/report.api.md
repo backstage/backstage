@@ -160,17 +160,17 @@ export interface ContainerProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  marginBottom?: SpaceProps['marginBottom'];
+  mb?: SpaceProps['mb'];
   // (undocumented)
-  marginTop?: SpaceProps['marginTop'];
+  mt?: SpaceProps['mt'];
   // (undocumented)
-  marginY?: SpaceProps['marginY'];
+  my?: SpaceProps['my'];
   // (undocumented)
-  paddingBottom?: SpaceProps['paddingBottom'];
+  pb?: SpaceProps['pb'];
   // (undocumented)
-  paddingTop?: SpaceProps['paddingTop'];
+  pt?: SpaceProps['pt'];
   // (undocumented)
-  paddingY?: SpaceProps['paddingY'];
+  py?: SpaceProps['py'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -378,38 +378,58 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
-export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
+
+// @public (undocumented)
+export type Space =
+  | '0.5'
+  | '1'
+  | '1.5'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | '13'
+  | '14'
+  | string;
 
 // @public (undocumented)
 export interface SpaceProps {
   // (undocumented)
-  margin?: Space | Partial<Record<Breakpoint, Space>>;
+  m?: Responsive<Space>;
   // (undocumented)
-  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  mb?: Responsive<Space>;
   // (undocumented)
-  marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  ml?: Responsive<Space>;
   // (undocumented)
-  marginRight?: Space | Partial<Record<Breakpoint, Space>>;
+  mr?: Responsive<Space>;
   // (undocumented)
-  marginTop?: Space | Partial<Record<Breakpoint, Space>>;
+  mt?: Responsive<Space>;
   // (undocumented)
-  marginX?: Space | Partial<Record<Breakpoint, Space>>;
+  mx?: Responsive<Space>;
   // (undocumented)
-  marginY?: Space | Partial<Record<Breakpoint, Space>>;
+  my?: Responsive<Space>;
   // (undocumented)
-  padding?: Space | Partial<Record<Breakpoint, Space>>;
+  p?: Responsive<Space>;
   // (undocumented)
-  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  pb?: Responsive<Space>;
   // (undocumented)
-  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  pl?: Responsive<Space>;
   // (undocumented)
-  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
+  pr?: Responsive<Space>;
   // (undocumented)
-  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
+  pt?: Responsive<Space>;
   // (undocumented)
-  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
+  px?: Responsive<Space>;
   // (undocumented)
-  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
+  py?: Responsive<Space>;
 }
 
 // @public (undocumented)
@@ -510,30 +530,30 @@ export const useCanon: () => CanonContextProps;
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {
   // (undocumented)
-  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
+  alignItems?: Responsive<AlignItems>;
   // (undocumented)
-  border?: Border | Partial<Record<Breakpoint, Border>>;
+  border?: Responsive<Border>;
   // (undocumented)
-  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  borderRadius?: Responsive<BorderRadius>;
   // (undocumented)
-  colEnd?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  colEnd?: Responsive<Columns | 'auto'>;
   // (undocumented)
-  colSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  colSpan?: Responsive<Columns | 'full'>;
   // (undocumented)
-  colStart?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  colStart?: Responsive<Columns | 'auto'>;
   // (undocumented)
-  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
+  columns?: Responsive<Columns>;
   // (undocumented)
-  display?: Display | Partial<Record<Breakpoint, Display>>;
+  display?: Responsive<Display>;
   // (undocumented)
-  flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
+  flexDirection?: Responsive<FlexDirection>;
   // (undocumented)
-  flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
+  flexWrap?: Responsive<FlexWrap>;
   // (undocumented)
-  gap?: Space | Partial<Record<Breakpoint, Space>>;
+  gap?: Responsive<Space>;
   // (undocumented)
-  justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
+  justifyContent?: Responsive<JustifyContent>;
   // (undocumented)
-  rowSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  rowSpan?: Responsive<Columns | 'full'>;
 }
 ```
