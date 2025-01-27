@@ -58,6 +58,7 @@ export const ClusterOverview = () => {
             'OIDC Token Provider': value.oidcTokenProvider ?? 'N/A',
             'Dashboard Link': value.dashboardUrl ?? 'N/A',
           }}
+          options={{ nestedValuesAsYaml: true }}
         />
       )}
     </InfoCard>

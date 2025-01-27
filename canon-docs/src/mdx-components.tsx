@@ -62,9 +62,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </p>
     ),
     a: ({ children, href }) => (
-      <a href={href} style={{ color: 'var(--canon-text-primary)' }}>
+      <a href={href} style={{ color: 'var(--canon-fg-text-primary)' }}>
         {children as ReactNode}
       </a>
+    ),
+    li: ({ children }) => (
+      <li style={{ marginBottom: '0.5rem' }}>{children as ReactNode}</li>
     ),
     pre: ({ children }) => {
       const codeContent = React.isValidElement(children)
@@ -80,7 +83,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           backgroundColor: 'var(--canon-bg-elevated)',
           padding: '0.2rem 0.375rem',
           borderRadius: '0.25rem',
-          color: 'var(--canon-text-secondary)',
+          color: 'var(--canon-fg-text-secondary)',
           border: '1px solid var(--canon-border)',
           fontSize: '0.875rem',
         }}

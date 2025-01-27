@@ -19,10 +19,9 @@ export const HeadingAllVariants = () => {
 };
 
 export const HeadingResponsive = () => {
-  return null;
   return (
     <Stack>
-      <Heading variant={{ xs: 'title4', md: 'title2' }}>
+      <Heading variant={{ initial: 'title2', lg: 'title1' }}>
         Responsive heading
       </Heading>
     </Stack>
