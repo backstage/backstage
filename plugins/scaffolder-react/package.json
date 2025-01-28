@@ -114,8 +114,6 @@
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
-    "ajv": "^8.0.1",
-    "immer": "^8.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-router-dom": "^6.3.0"
