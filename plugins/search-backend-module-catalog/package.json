@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-catalog",
-  "version": "0.3.1-next.0",
+  "version": "0.3.1-next.1",
   "description": "A module for the search backend that exports catalog modules",
   "backstage": {
     "role": "backend-plugin-module",
