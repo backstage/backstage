@@ -596,36 +596,16 @@ Caching is used sparingly throughout the Backstage build system. It is always us
 
 For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
 
-#### Preface
+We cannot execute tests with just raw `jest`, because there are a few concerns such as module transforms that need to be in place for the `jest` runtime to be happy.
+Therefore, we delegate to the Backstage CLI to wrap the jest run for us, since it knows how to put those things in place.
+This aligns things so that your in-IDE test runs work the same way as your CI and manual command line test runs do.
 
-At the moment it's not possible to run jest tests via jest command line. That is, if you run the following command from the project root: 
-```bash
-NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node node_modules/jest-cli/bin/jest.js --config node_modules/@backstage/cli/config/jest.js
-```
-
-You will get an error `SyntaxError: Unexpected token 'export'` complaining about one of the imports from the `node_modules/@backstage/cli/config/jest.js` config file. 
-But why does jest work then when running `backstage-cli repo test`?
-The reason is that `packages/cli/bin/backstage-cli` first executes `require('@backstage/cli/config/nodeTransform.cjs');` that probably transforms config files so that jest can digest them.
-Even simply adding `require('@backstage/cli/config/nodeTransform.cjs');` to the beginning of `node_modules/jest/bin/jest.js`, will make jest work in the script above.
-
-Happily, there is a better way to do it, because `backstage-cli repo test` is simply a starter of the `jest-cli` with extra parameters. That is, you can run jest from the command line via `backstage-cli repo test` like this:
-```bash
-NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node_modules/.bin/backstage-cli repo test
-```
-or
-```bash
-NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node node_modules/@backstage/cli/bin/backstage-cli repo test
-```
-
-
-`backstage-cli` adds `--passWithNoTests --watch --workerIdleMemoryLimit=1000M --config node_modules/@backstage/cli/config/jest.js` jest options.
-
-With that in mind, let's configure IDEs to run `backstage-cli` in the role of jest.
-
+With that in mind, here are some IDEs configurations to run backstage components' `jest` tests with `backstage-cli` in the role of `jest`.
 
 #### IntelliJ IDEA
 
 1.  Update Jest configuration template by:
+
     1.  Click on "Edit Configurations" on top panel
     2.  In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
     3.  "Configuration file": leave empty (`backstage-cli` adds the config)
@@ -634,7 +614,7 @@ With that in mind, let's configure IDEs to run `backstage-cli` in the role of je
     6.  "Working directory": `~/workspace/backstage`
     7.  "Jest Options": `repo test --runInBand --watch=false`
 
-2.  Currently intellij has an issue that if you right click on a jest test and press "run", intellij will create a playwright run configuration instead of jest configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test).
+2.  Currently, intellij has an issue that if you right-click on a jest test and press "run", intellij will create a playwright run configuration instead of jest configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test).
 
     Until intellij maintainers resolved the issue, create a jest configuration manually. Happily, intellij will pre-fill the configuration from the template. The only thing you need to do is provide path to the test file. Note, that after intellij runs test in the file you can click on the individual tests from the run panel and re-run them, this time intellij will create a correct jest run configuration.
 
