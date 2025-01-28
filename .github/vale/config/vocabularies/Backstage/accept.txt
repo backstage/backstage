@@ -513,6 +513,4 @@ zoomable
 zsh
 scrollable
 severities
-Intellij
 intellij
-IntelliJ
