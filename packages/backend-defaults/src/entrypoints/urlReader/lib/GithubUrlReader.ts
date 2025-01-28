@@ -58,7 +58,7 @@ export type GhBlobResponse =
  * @public
  */
 export class GithubUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory, logger }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     const credentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
@@ -66,12 +66,14 @@ export class GithubUrlReader implements UrlReaderService {
       const reader = new GithubUrlReader(integration, {
         treeResponseFactory,
         credentialsProvider,
+        logger,
       });
       const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
+  public id: number = 0;
   public cacheStats() {
     return {
       cacheSize: Object.keys(this.githubFileCache).length,
@@ -87,8 +89,10 @@ export class GithubUrlReader implements UrlReaderService {
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
+      logger: LoggerService;
     },
   ) {
+    this.logger = deps.logger;
     if (!integration.config.apiBaseUrl && !integration.config.rawBaseUrl) {
       throw new Error(
         `GitHub integration '${integration.title}' must configure an explicit apiBaseUrl or rawBaseUrl`,
@@ -96,10 +100,11 @@ export class GithubUrlReader implements UrlReaderService {
     }
 
     setInterval(() => {
-      console.log('GithubUrlReader Stats', this.cacheStats());
+      this.logger.info('GithubUrlReader Stats', this.cacheStats());
     }, 1000 * 20);
   }
 
+  private logger: LoggerService;
   private githubFileCache: GithubFileCache = {};
   private cacheHits: number = 0;
   private cacheMisses: number = 0;
@@ -129,10 +134,10 @@ export class GithubUrlReader implements UrlReaderService {
     });
   };
 
-  async readUrl(
+  async readCachedUrl(
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
-  ): Promise<UrlReaderServiceReadUrlResponse> {
+  ): Promise<Buffer> {
     const credentials = await this.getCredentials(url, options);
 
     const ghUrl = getGithubFileFetchUrl(
@@ -141,28 +146,21 @@ export class GithubUrlReader implements UrlReaderService {
       credentials,
     );
 
-    const response = await this.fetchResponse(ghUrl, {
-      headers: {
-        ...credentials?.headers,
-        ...(options?.etag && { 'If-None-Match': options.etag }),
-        ...(options?.lastModifiedAfter && {
-          'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
-        }),
-        Accept: 'application/vnd.github.v3.raw',
-      },
-      // TODO(freben): The signal cast is there because pre-3.x versions of
-      // node-fetch have a very slightly deviating AbortSignal type signature.
-      // The difference does not affect us in practice however. The cast can
-      // be removed after we support ESM for CLI dependencies and migrate to
-      // version 3 of node-fetch.
-      // https://github.com/backstage/backstage/issues/8242
-      signal: options?.signal as any,
+    const blob: GhBlobResponse = await this.fetchCachedJson(ghUrl, {
+      headers: credentials.headers,
     });
+    return Buffer.from(blob.content, 'base64');
+  }
 
-    return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-      etag: response.headers.get('ETag') ?? undefined,
-      lastModifiedAt: parseLastModified(response.headers.get('Last-Modified')),
-    });
+  async readUrl(
+    url: string,
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
+    const data = this.readCachedUrl(url, options);
+    return {
+      etag: options?.etag,
+      buffer: async () => Promise.resolve(data),
+    };
   }
 
   async readTree(
@@ -393,7 +391,7 @@ export class GithubUrlReader implements UrlReaderService {
 
   private async fetchCachedJson(
     url: string | URL,
-    init: RequestInit,
+    init: RequestInit = {},
   ): Promise<any> {
     const cachedFile = this.githubFileCache[url.toString()];
 
@@ -406,6 +404,7 @@ export class GithubUrlReader implements UrlReaderService {
         },
       });
       const json = await response.json();
+
       this.githubFileCache[url.toString()] = {
         contents: json,
         etag: response.headers.get('ETag') ?? '',
@@ -417,7 +416,14 @@ export class GithubUrlReader implements UrlReaderService {
         this.cacheHits++;
         return cachedFile?.contents;
       }
+      this.logger.info(
+        `GithubUrlReader: Error fetching ${url.toString()} ${error.name} ${
+          error.message
+        } ${error}`,
+      );
+
       throw error;
     }
   }
 }
+
