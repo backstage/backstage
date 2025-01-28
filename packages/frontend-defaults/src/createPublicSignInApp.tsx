@@ -20,7 +20,6 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { CreateAppOptions, createApp } from './createApp';
 import appPlugin from '@backstage/plugin-app';

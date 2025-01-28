@@ -15,7 +15,7 @@
  */
 
 import { Content } from './Content';
-import React from 'react';
+import { ReactNode } from 'react';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -35,7 +35,7 @@ const docsEntities = [
 ];
 
 describe('<FeaturedDocsCard />', () => {
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[[catalogApiRef, catalogApiMock({ entities: docsEntities })]]}
     >

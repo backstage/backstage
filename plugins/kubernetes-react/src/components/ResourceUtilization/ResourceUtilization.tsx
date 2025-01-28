@@ -16,7 +16,6 @@
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import React from 'react';
 import { GaugePropsGetColor, LinearGauge } from '@backstage/core-components';
 import { currentToDeclaredResourceToPerc } from '../../utils/resources';
 

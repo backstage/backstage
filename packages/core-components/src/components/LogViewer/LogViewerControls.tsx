@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { KeyboardEvent } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -29,7 +29,7 @@ export function LogViewerControls(props: LogViewerControlsProps) {
   const { resultCount, resultIndexStep, toggleShouldFilter } = props;
   const resultIndex = props.resultIndex ?? 0;
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       if (event.metaKey || event.ctrlKey || event.altKey) {
         toggleShouldFilter();

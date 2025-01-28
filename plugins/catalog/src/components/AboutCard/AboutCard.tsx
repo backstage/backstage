@@ -34,7 +34,7 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,

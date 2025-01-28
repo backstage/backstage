@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 import {
   createExtensionBlueprint,
   ExtensionBoundary,

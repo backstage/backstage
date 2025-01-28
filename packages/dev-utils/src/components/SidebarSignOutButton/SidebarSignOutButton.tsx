@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { SidebarItem } from '@backstage/core-components';
 import LockIcon from '@material-ui/icons/Lock';
 import {

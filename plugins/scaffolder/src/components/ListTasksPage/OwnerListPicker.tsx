@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import SettingsIcon from '@material-ui/icons/Settings';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import {
   TranslationFunction,
   useTranslationRef,

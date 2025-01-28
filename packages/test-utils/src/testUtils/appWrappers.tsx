@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   ComponentType,
   PropsWithChildren,
   ReactElement,
   ReactNode,
+  createElement,
 } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { themes, UnifiedThemeProvider } from '@backstage/theme';
@@ -230,11 +231,11 @@ export function wrapInTestApp(
 ): ReactElement {
   const TestAppWrapper = createTestAppWrapper(options);
 
-  let wrappedElement: React.ReactElement;
+  let wrappedElement: ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = React.createElement(Component as ComponentType);
+    wrappedElement = createElement(Component as ComponentType);
   } else {
-    wrappedElement = Component as React.ReactElement;
+    wrappedElement = Component as ReactElement;
   }
 
   return <TestAppWrapper>{wrappedElement}</TestAppWrapper>;
@@ -255,11 +256,11 @@ export async function renderInTestApp(
   Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
   options: TestAppOptions & LegacyRootOption = {},
 ): Promise<RenderResult> {
-  let wrappedElement: React.ReactElement;
+  let wrappedElement: ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = React.createElement(Component as ComponentType);
+    wrappedElement = createElement(Component as ComponentType);
   } else {
-    wrappedElement = Component as React.ReactElement;
+    wrappedElement = Component as ReactElement;
   }
   const { legacyRoot } = options;
 

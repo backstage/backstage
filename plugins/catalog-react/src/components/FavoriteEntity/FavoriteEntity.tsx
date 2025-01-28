@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import IconButton from '@material-ui/core/IconButton';
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

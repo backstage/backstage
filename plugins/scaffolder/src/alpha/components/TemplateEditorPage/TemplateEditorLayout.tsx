@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { WithStyles, withStyles } from '@material-ui/core/styles';
 
 export const TemplateEditorLayout = withStyles(

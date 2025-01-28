@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
@@ -28,7 +28,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export const Filters = (props: {
-  children: React.ReactNode;
+  children: ReactNode;
   options?: {
     drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
     drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
@@ -80,7 +80,7 @@ export const Filters = (props: {
 };
 
 /** @public */
-export const Content = (props: { children: React.ReactNode }) => {
+export const Content = (props: { children: ReactNode }) => {
   return (
     <Grid item xs={12} lg={10}>
       {props.children}
@@ -89,7 +89,7 @@ export const Content = (props: { children: React.ReactNode }) => {
 };
 
 /** @public */
-export const CatalogFilterLayout = (props: { children: React.ReactNode }) => {
+export const CatalogFilterLayout = (props: { children: ReactNode }) => {
   return (
     <Grid container style={{ position: 'relative' }}>
       {props.children}

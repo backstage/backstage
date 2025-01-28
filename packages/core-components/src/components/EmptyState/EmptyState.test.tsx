@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { EmptyState } from './EmptyState';
 import { renderInTestApp } from '@backstage/test-utils';
 import Button from '@material-ui/core/Button';

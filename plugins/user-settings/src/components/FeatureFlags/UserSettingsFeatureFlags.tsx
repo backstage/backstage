@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import List from '@material-ui/core/List';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
@@ -44,7 +44,7 @@ export const sortFlags = (
 /** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-  const inputRef = React.useRef<HTMLElement>();
+  const inputRef = useRef<HTMLElement>();
 
   const initialFeatureFlags = featureFlagsApi.getRegisteredFlags();
   const initialFeatureFlagsSorted = sortFlags(

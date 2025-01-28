@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import {
   createFrontendPlugin,

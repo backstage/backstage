@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import { cloneElement, ReactElement } from 'react';
 
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
@@ -269,7 +269,7 @@ export class TechDocsAddonTester {
             >
               <TechDocsAddons>
                 {this.addons.map((addon, index) =>
-                  React.cloneElement(addon, { key: index }),
+                  cloneElement(addon, { key: index }),
                 )}
               </TechDocsAddons>
             </Route>

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
@@ -84,7 +84,7 @@ export const VisitListener = ({
   toEntityRef,
   visitName,
 }: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
 }): JSX.Element => {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ContentHeader } from './ContentHeader';
 import { renderInTestApp } from '@backstage/test-utils';
 import _ from 'lodash';

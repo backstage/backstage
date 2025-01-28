@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 import { useContext } from './Context';
 

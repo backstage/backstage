@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ChangeEvent, useState } from 'react';
+import { ReactNode, ChangeEvent, useState } from 'react';
 
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import Drawer from '@material-ui/core/Drawer';
@@ -61,8 +61,8 @@ export interface KubernetesObject {
 interface KubernetesDrawerContentProps {
   close: () => void;
   kubernetesObject: KubernetesObject;
-  header?: React.ReactNode;
-  children?: React.ReactNode;
+  header?: ReactNode;
+  children?: ReactNode;
 }
 
 const KubernetesDrawerContent = ({
@@ -128,9 +128,9 @@ const KubernetesDrawerContent = ({
 export interface KubernetesDrawerProps {
   open?: boolean;
   kubernetesObject: KubernetesObject;
-  label: React.ReactNode;
-  drawerContentsHeader?: React.ReactNode;
-  children?: React.ReactNode;
+  label: ReactNode;
+  drawerContentsHeader?: ReactNode;
+  children?: ReactNode;
 }
 
 const useDrawerStyles = makeStyles((theme: Theme) =>

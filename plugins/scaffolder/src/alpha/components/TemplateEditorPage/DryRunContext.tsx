@@ -17,7 +17,7 @@
 import yaml from 'yaml';
 import { useApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import React, {
+import {
   createContext,
   ReactNode,
   useCallback,

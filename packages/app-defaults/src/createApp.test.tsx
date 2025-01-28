@@ -16,7 +16,7 @@
 
 import { screen } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { createApp } from './createApp';
 

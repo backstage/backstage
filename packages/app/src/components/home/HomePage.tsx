@@ -28,7 +28,6 @@ import {
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
-import React from 'react';
 import HomeIcon from '@material-ui/icons/Home';
 
 const clockConfigs: ClockConfig[] = [

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 export const Component = () => (
   <div>
     <h1>SHIP IT!</h1>

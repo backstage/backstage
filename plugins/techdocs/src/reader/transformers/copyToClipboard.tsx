@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { renderReactElement } from './renderReactElement';
 import { ThemeProvider } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';

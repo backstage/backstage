@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, ReactNode, ComponentType, useState } from 'react';
+import { useContext, ReactNode, ComponentType, useState } from 'react';
 import {
   attachComponentData,
   ConfigApi,

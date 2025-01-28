@@ -17,7 +17,7 @@
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { AnalyzeResult } from '../../api';
 import { StepPrepareSelectLocations } from './StepPrepareSelectLocations';
 import {
@@ -60,11 +60,11 @@ describe('<StepPrepareSelectLocations />', () => {
   } as Extract<AnalyzeResult, { type: 'locations' }>;
 
   const catalogApi = catalogApiMock();
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],

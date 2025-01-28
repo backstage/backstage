@@ -16,7 +16,7 @@
 
 import { createDevApp } from '@backstage/dev-utils';
 import { NotFoundError } from '@backstage/errors';
-import React from 'react';
+import { Component as ReactComponent } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TechDocsReaderPageContent,
@@ -100,7 +100,7 @@ function createPage({
     }
   }
 
-  class Component extends React.Component {
+  class Component extends ReactComponent {
     constructor(props: {}) {
       super(props);
 

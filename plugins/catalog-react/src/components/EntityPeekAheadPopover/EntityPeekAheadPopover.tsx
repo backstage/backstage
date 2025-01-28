@@ -16,7 +16,7 @@
 
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import {
   bindHover,

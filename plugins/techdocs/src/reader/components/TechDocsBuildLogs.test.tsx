@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
   TechDocsBuildLogs,

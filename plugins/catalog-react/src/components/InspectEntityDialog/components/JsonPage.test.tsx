@@ -17,7 +17,6 @@
 import { ComponentEntity } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { JsonPage } from './JsonPage';
 
 describe('JsonPage', () => {

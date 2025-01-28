@@ -20,7 +20,6 @@ import { createApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFormDecorators } from './useFormDecorators';
-import React from 'react';
 import { formDecoratorsApiRef } from '../api/ref';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 

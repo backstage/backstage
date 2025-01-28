@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import { ElementType, JSX } from 'react';
 import { type IconComponent } from './types';
 
 // Emulate the MUI4 icon type
@@ -31,7 +31,7 @@ type Mui5Icon = (props: {
 
 // Emulate the MUI6 icon type
 interface OverridableComponent<P> {
-  <RootComponent extends React.ElementType>(
+  <RootComponent extends ElementType>(
     props: {
       /**
        * The component used for the root node.
@@ -39,8 +39,8 @@ interface OverridableComponent<P> {
        */
       component: RootComponent;
     } & { stuff: number },
-  ): React.JSX.Element | null;
-  (props: P): React.JSX.Element | null;
+  ): JSX.Element | null;
+  (props: P): JSX.Element | null;
 }
 type Mui6Icon = OverridableComponent<{
   fontSize?: 'inherit' | 'large' | 'medium' | 'small';

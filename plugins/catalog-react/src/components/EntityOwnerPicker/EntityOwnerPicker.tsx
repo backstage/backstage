@@ -27,7 +27,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import React, { useEffect, useMemo, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
@@ -224,7 +224,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           setText(inputValue);
         }}
         ListboxProps={{
-          onScroll: (e: React.MouseEvent) => {
+          onScroll: (e: MouseEvent) => {
             const element = e.currentTarget;
             const hasReachedEnd =
               Math.abs(

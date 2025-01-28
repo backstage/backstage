@@ -276,8 +276,6 @@ which renderers to use. Note that the order of the renderers matters! The first 
 Here is an example of customizing your `SearchPage`:
 
 ```tsx title="packages/app/src/components/searchPage.tsx"
-import React from 'react';
-
 import { Grid, Paper } from '@material-ui/core';
 import BuildIcon from '@material-ui/icons/Build';
 
@@ -359,8 +357,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
 Assuming you have completely customized your SearchModal, here's an example that renders results with extensions:
 
 ```tsx title="packages/app/src/components/searchModal.tsx"
-import React from 'react';
-
 import { DialogContent, DialogTitle, Paper } from '@material-ui/core';
 import BuildIcon from '@material-ui/icons/Build';
 

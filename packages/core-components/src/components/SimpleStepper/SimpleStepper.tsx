@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, {
+import {
+  ReactNode,
+  createContext,
   Children,
   isValidElement,
   useState,
@@ -32,7 +34,7 @@ type InternalState = {
 };
 
 const noop = () => {};
-export const VerticalStepperContext = React.createContext<InternalState>({
+export const VerticalStepperContext = createContext<InternalState>({
   stepperLength: 0,
   stepIndex: 0,
   setStepIndex: noop,
@@ -56,7 +58,7 @@ export function SimpleStepper(props: PropsWithChildren<StepperProps>) {
     setStepIndex(activeStep);
   }, [activeStep]);
 
-  const steps: React.ReactNode[] = [];
+  const steps: ReactNode[] = [];
   let endStep;
   Children.forEach(children, child => {
     if (isValidElement(child)) {

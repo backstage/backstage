@@ -21,7 +21,7 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 export type Props = {
   value: number;
@@ -57,18 +57,15 @@ export const MaxDepthFilter = ({ value, onChange }: Props) => {
   }, [value]);
 
   // When the entered text changes, update ourselves and communicate externally
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newValueNumeric = Number(event.target.value);
-      const newValue =
-        Number.isFinite(newValueNumeric) && newValueNumeric > 0
-          ? newValueNumeric
-          : Number.POSITIVE_INFINITY;
-      setCurrentValue(newValue);
-      onChangeRef.current(newValue);
-    },
-    [],
-  );
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const newValueNumeric = Number(event.target.value);
+    const newValue =
+      Number.isFinite(newValueNumeric) && newValueNumeric > 0
+        ? newValueNumeric
+        : Number.POSITIVE_INFINITY;
+    setCurrentValue(newValue);
+    onChangeRef.current(newValue);
+  }, []);
 
   const reset = useCallback(() => {
     setCurrentValue(Number.POSITIVE_INFINITY);

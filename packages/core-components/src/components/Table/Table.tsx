@@ -48,7 +48,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
-import React, {
+import {
+  CSSProperties,
   forwardRef,
   MutableRefObject,
   ReactNode,
@@ -207,7 +208,7 @@ function convertColumns<T extends object>(
   theme: Theme,
 ): TableColumn<T>[] {
   return columns.map(column => {
-    const headerStyle: React.CSSProperties = column.headerStyle ?? {};
+    const headerStyle: CSSProperties = column.headerStyle ?? {};
 
     let cellStyle = column.cellStyle || {};
 
@@ -215,14 +216,14 @@ function convertColumns<T extends object>(
       headerStyle.color = theme.palette.textContrast;
 
       if (typeof cellStyle === 'object') {
-        (cellStyle as React.CSSProperties).fontWeight =
+        (cellStyle as CSSProperties).fontWeight =
           theme.typography.fontWeightBold;
       } else {
         const cellStyleFn = cellStyle as (
           data: any,
           rowData: T,
           column?: Column<T>,
-        ) => React.CSSProperties;
+        ) => CSSProperties;
         cellStyle = (data, rowData, rowColumn) => {
           const style = cellStyleFn(data, rowData, rowColumn);
           return { ...style, fontWeight: theme.typography.fontWeightBold };

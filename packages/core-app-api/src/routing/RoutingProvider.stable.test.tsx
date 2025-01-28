@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, ReactElement } from 'react';
+import { Suspense, PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter, Routes, Route, useOutlet } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
@@ -266,7 +266,7 @@ describe('discovery', () => {
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/blob/bar']}>
-          <React.Suspense fallback="loller">
+          <Suspense fallback="loller">
             <Routes>
               <Route path="foo/:id" element={<ExtensionPage3 />}>
                 <Route
@@ -284,7 +284,7 @@ describe('discovery', () => {
               routeRef={refPage2}
               params={{ id: 'other' }}
             />
-          </React.Suspense>
+          </Suspense>
         </MemoryRouter>
       </AppContextProvider>
     );

@@ -20,6 +20,7 @@ module.exports = {
   root: true,
   plugins: ['@spotify', 'notice', 'react', 'testing-library'],
   rules: {
+    'react/react-in-jsx-scope': 'off',
     'notice/notice': [
       'error',
       {
@@ -46,6 +47,17 @@ module.exports = {
           'This rule can sometimes be ignored when converting text to be displayed to the user.',
         selector:
           "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
+      },
+      {
+        message: "Default React import not allowed.",
+        selector:
+          "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
+      },
+      {
+        message:
+          "Default React import not allowed. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`.",
+        selector:
+          "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportNamespaceSpecifier)",
       },
     ],
     'testing-library/await-async-queries': 'error',

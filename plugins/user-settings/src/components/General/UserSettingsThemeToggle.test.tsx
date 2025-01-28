@@ -20,7 +20,6 @@ import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import { ApiProvider, AppThemeSelector } from '@backstage/core-app-api';
 

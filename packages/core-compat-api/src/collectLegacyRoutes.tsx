@@ -30,7 +30,7 @@ import {
   ApiBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import React, { Children, ReactNode, isValidElement } from 'react';
+import { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   convertLegacyRouteRef,
@@ -176,91 +176,88 @@ export function collectLegacyRoutes(
     return extensions;
   };
 
-  React.Children.forEach(
-    flatRoutesElement.props.children,
-    (route: ReactNode) => {
-      // TODO(freben): Handle feature flag and permissions framework wrapper elements
-      if (!React.isValidElement(route)) {
-        throw new Error(
-          `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
-        );
-      }
-      if (route.type !== Route) {
-        throw new Error(
-          `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
-        );
-      }
-      const routeElement = route.props.element;
-      const path: string | undefined = route.props.path;
-      const plugin = getComponentData<LegacyBackstagePlugin>(
-        routeElement,
-        'core.plugin',
+  Children.forEach(flatRoutesElement.props.children, (route: ReactNode) => {
+    // TODO(freben): Handle feature flag and permissions framework wrapper elements
+    if (!isValidElement(route)) {
+      throw new Error(
+        `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
       );
-      const routeRef = getComponentData<RouteRef>(
-        routeElement,
-        'core.mountPoint',
+    }
+    if (route.type !== Route) {
+      throw new Error(
+        `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
       );
-      if (!plugin) {
-        throw new Error(
-          // TODO(vinzscam): add See <link-to-app-migration-docs> for more info
-          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely.`,
-        );
-      }
-      if (path === undefined) {
-        throw new Error(
-          `Route element inside FlatRoutes had no path prop value given`,
-        );
-      }
-
-      const extensions = getPluginExtensions(plugin);
-      const pageExtensionName = extensions.length ? getUniqueName() : undefined;
-      const pageExtensionId = `page:${plugin.getId()}${
-        pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
-      }`;
-
-      extensions.push(
-        PageBlueprint.makeWithOverrides({
-          name: pageExtensionName,
-          inputs: {
-            childRoutingShims: createExtensionInput([
-              coreExtensionData.routePath.optional(),
-              coreExtensionData.routeRef.optional(),
-            ]),
-          },
-          factory(originalFactory, { inputs: _inputs }) {
-            // todo(blam): why do we not use the inputs here?
-            return originalFactory({
-              defaultPath: path[0] === '/' ? path.slice(1) : path,
-              routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
-              loader: async () =>
-                compatWrapper(
-                  route.props.children ? (
-                    <Routes>
-                      <Route path="*" element={routeElement}>
-                        <Route path="*" element={route.props.children} />
-                      </Route>
-                    </Routes>
-                  ) : (
-                    routeElement
-                  ),
-                ),
-            });
-          },
-        }),
+    }
+    const routeElement = route.props.element;
+    const path: string | undefined = route.props.path;
+    const plugin = getComponentData<LegacyBackstagePlugin>(
+      routeElement,
+      'core.plugin',
+    );
+    const routeRef = getComponentData<RouteRef>(
+      routeElement,
+      'core.mountPoint',
+    );
+    if (!plugin) {
+      throw new Error(
+        // TODO(vinzscam): add See <link-to-app-migration-docs> for more info
+        `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely.`,
       );
+    }
+    if (path === undefined) {
+      throw new Error(
+        `Route element inside FlatRoutes had no path prop value given`,
+      );
+    }
 
-      visitRouteChildren({
-        children: route.props.children,
-        parentExtensionId: pageExtensionId,
-        context: {
-          pluginId: plugin.getId(),
-          extensions,
-          getUniqueName,
-          discoverPlugin: getPluginExtensions,
+    const extensions = getPluginExtensions(plugin);
+    const pageExtensionName = extensions.length ? getUniqueName() : undefined;
+    const pageExtensionId = `page:${plugin.getId()}${
+      pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
+    }`;
+
+    extensions.push(
+      PageBlueprint.makeWithOverrides({
+        name: pageExtensionName,
+        inputs: {
+          childRoutingShims: createExtensionInput([
+            coreExtensionData.routePath.optional(),
+            coreExtensionData.routeRef.optional(),
+          ]),
         },
-      });
-    },
-  );
+        factory(originalFactory, { inputs: _inputs }) {
+          // todo(blam): why do we not use the inputs here?
+          return originalFactory({
+            defaultPath: path[0] === '/' ? path.slice(1) : path,
+            routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
+            loader: async () =>
+              compatWrapper(
+                route.props.children ? (
+                  <Routes>
+                    <Route path="*" element={routeElement}>
+                      <Route path="*" element={route.props.children} />
+                    </Route>
+                  </Routes>
+                ) : (
+                  routeElement
+                ),
+              ),
+          });
+        },
+      }),
+    );
+
+    visitRouteChildren({
+      children: route.props.children,
+      parentExtensionId: pageExtensionId,
+      context: {
+        pluginId: plugin.getId(),
+        extensions,
+        getUniqueName,
+        discoverPlugin: getPluginExtensions,
+      },
+    });
+  });
 
   return Array.from(pluginExtensions).map(([plugin, extensions]) =>
     createFrontendPlugin({

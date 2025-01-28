@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { isValidElement, ReactNode } from 'react';
 import type { MDXComponents } from 'mdx/types';
 import Image, { ImageProps } from 'next/image';
 import { CodeBlock } from '@/components/CodeBlock';
@@ -69,7 +69,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <li style={{ marginBottom: '0.5rem' }}>{children as ReactNode}</li>
     ),
     pre: ({ children }) => {
-      const codeContent = React.isValidElement(children)
+      const codeContent = isValidElement(children)
         ? (children.props as { children: string }).children
         : '';
 

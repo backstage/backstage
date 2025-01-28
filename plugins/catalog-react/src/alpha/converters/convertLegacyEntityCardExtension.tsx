@@ -17,7 +17,7 @@
 import { compatWrapper } from '@backstage/core-compat-api';
 import { BackstagePlugin, getComponentData } from '@backstage/core-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EntityCardBlueprint } from '../blueprints';
 import kebabCase from 'lodash/kebabCase';
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import dagre from '@dagrejs/dagre';
 import { render } from '@testing-library/react';
 import { Node } from './Node';

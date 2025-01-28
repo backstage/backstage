@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback } from 'react';
+import { ComponentType, useCallback } from 'react';
 
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
@@ -32,7 +32,7 @@ import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   onTemplateSelected?: (template: TemplateEntityV1beta3) => void;

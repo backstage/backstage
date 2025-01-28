@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { InfoCard } from '@backstage/core-components';
@@ -130,7 +130,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   } = props;
   const app = useApp();
   const { Progress } = app.getComponents();
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   if (Renderer) {
     return (

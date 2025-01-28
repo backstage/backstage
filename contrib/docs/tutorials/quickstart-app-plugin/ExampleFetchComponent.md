@@ -3,7 +3,6 @@
 ExampleFetchComponent.tsx reference
 
 ```tsx
-import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import Alert from '@material-ui/lab/Alert';
 import { githubAuthApiRef, useApi } from '@backstage/core-plugin-api';

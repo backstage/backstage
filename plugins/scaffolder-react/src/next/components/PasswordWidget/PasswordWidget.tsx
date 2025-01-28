@@ -16,7 +16,6 @@
 
 import { WidgetProps } from '@rjsf/utils';
 import TextField from '@material-ui/core/TextField';
-import React from 'react';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { MarkdownContent } from '@backstage/core-components';
 

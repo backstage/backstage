@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Nodes } from './Nodes';
 import '@testing-library/jest-dom';

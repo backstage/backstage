@@ -19,7 +19,7 @@ import {
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { render, screen, waitFor } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { createPublicSignInApp } from './createPublicSignInApp';
 import { mockApis } from '@backstage/test-utils';
 

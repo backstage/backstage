@@ -30,7 +30,6 @@ import {
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
-import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 import { CatalogTableColumnsFunc } from './types';
 

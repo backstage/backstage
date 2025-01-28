@@ -16,7 +16,6 @@
 
 import { WarningPanel } from '../WarningPanel';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { WarningProps } from '../WarningPanel/WarningPanel';
 

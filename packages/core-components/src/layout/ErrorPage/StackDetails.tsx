@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { useState } from 'react';
 import { Link } from '../../components/Link';
 import { CodeSnippet } from '../../components';

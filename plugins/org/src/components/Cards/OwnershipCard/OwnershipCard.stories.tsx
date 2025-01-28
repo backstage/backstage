@@ -23,7 +23,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
 import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
 

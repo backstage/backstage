@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Header } from './Header';
 import { ConfigReader } from '@backstage/core-app-api';

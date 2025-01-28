@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { FeatureCalloutCircular } from './FeatureCalloutCircular';

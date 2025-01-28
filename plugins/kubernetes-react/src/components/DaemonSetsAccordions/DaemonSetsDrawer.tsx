@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { V1DaemonSet } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';

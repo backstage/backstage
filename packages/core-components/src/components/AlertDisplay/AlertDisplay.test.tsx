@@ -21,7 +21,6 @@ import { fireEvent, screen } from '@testing-library/react';
 import { AlertApiForwarder } from '@backstage/core-app-api';
 import { AlertDisplay } from './AlertDisplay';
 import Observable from 'zen-observable';
-import React from 'react';
 import { act } from '@testing-library/react';
 
 const TEST_MESSAGE = 'TEST_MESSAGE';

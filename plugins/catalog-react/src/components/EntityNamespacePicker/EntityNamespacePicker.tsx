@@ -16,7 +16,6 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import React from 'react';
 import { EntityNamespaceFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker';
 import { catalogReactTranslationRef } from '../../translation';

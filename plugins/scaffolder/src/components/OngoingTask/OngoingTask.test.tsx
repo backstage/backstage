@@ -15,7 +15,6 @@
  */
 
 import { OngoingTask } from './OngoingTask';
-import React from 'react';
 import {
   renderInTestApp,
   TestApiProvider,

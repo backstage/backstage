@@ -16,7 +16,7 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import React, { Children, ReactNode } from 'react';
+import { Children, ReactNode } from 'react';
 import classNames from 'classnames';
 
 const useStyles = makeStyles(theme => ({

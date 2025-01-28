@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 
 import { GaugeCard } from './GaugeCard';

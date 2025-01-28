@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { within } from '@testing-library/react';
 import { InfoCard } from './InfoCard';

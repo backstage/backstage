@@ -20,7 +20,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
-import React from 'react';
+import { createElement } from 'react';
 import parseGitUrl from 'git-url-parse';
 import { renderReactElement } from './renderReactElement';
 
@@ -75,7 +75,7 @@ export const addGitFeedbackLink = (
       default:
         return dom;
     }
-    renderReactElement(React.createElement(FeedbackOutlinedIcon), feedbackLink);
+    renderReactElement(createElement(FeedbackOutlinedIcon), feedbackLink);
     feedbackLink.style.paddingLeft = '5px';
     feedbackLink.title = 'Leave feedback for this page';
     feedbackLink.id = 'git-feedback-link';

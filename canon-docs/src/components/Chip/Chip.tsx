@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import styles from './styles.module.css';
 
 export const Chip = ({
   children,
   head = false,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   head?: boolean;
 }) => {
   return (

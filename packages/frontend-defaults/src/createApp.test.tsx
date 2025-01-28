@@ -27,7 +27,6 @@ import {
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
-import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
 

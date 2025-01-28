@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode, FC } from 'react';
 
 import { PageWithHeader } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
@@ -25,8 +25,8 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
  * @public
  */
 export type TechDocsPageWrapperProps = {
-  children?: React.ReactNode;
-  CustomPageWrapper?: React.FC<{ children?: React.ReactNode }>;
+  children?: ReactNode;
+  CustomPageWrapper?: FC<{ children?: ReactNode }>;
 };
 
 /**

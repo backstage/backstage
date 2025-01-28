@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
 import { Flex } from '../Flex';
@@ -60,7 +60,7 @@ export const Default: Story = {
   },
 };
 
-const CardDisplay = ({ children }: { children?: React.ReactNode }) => {
+const CardDisplay = ({ children }: { children?: ReactNode }) => {
   return (
     <div
       style={{

@@ -31,7 +31,6 @@ import {
   mockApis,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { rootDocsRouteRef } from '../../../routes';
 import { EntityListDocsGrid } from './EntityListDocsGrid';
 

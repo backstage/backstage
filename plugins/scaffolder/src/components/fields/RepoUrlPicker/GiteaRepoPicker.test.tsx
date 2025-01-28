@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { GiteaRepoPicker } from './GiteaRepoPicker';
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';

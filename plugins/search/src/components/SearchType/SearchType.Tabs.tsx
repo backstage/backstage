@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import { useSearch } from '@backstage/plugin-search-react';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
@@ -50,7 +50,7 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const { setPageCursor, setTypes, types } = useSearch();
   const { defaultValue, types: givenTypes } = props;
 
-  const changeTab = (_: React.ChangeEvent<{}>, newType: string) => {
+  const changeTab = (_: ChangeEvent<{}>, newType: string) => {
     setTypes(newType !== '' ? [newType] : []);
     setPageCursor(undefined);
   };

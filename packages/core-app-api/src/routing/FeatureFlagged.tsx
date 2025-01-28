@@ -19,7 +19,7 @@ import {
   useApi,
   attachComponentData,
 } from '@backstage/core-plugin-api';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 /**
  * Props for the {@link FeatureFlagged} component.

@@ -16,7 +16,7 @@
 import { useTemplateTimeSavedMinutes } from './useTemplateTimeSaved';
 import { renderHook, waitFor } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
@@ -56,7 +56,7 @@ describe('useTemplateTimeSavedMinutes', () => {
       const { result } = renderHook(
         () => useTemplateTimeSavedMinutes(templateRef),
         {
-          wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          wrapper: ({ children }: PropsWithChildren<{}>) => (
             <TestApiProvider
               apis={[[catalogApiRef, { getEntityByRef: async () => template }]]}
             >

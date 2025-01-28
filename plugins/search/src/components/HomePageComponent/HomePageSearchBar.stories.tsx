@@ -19,7 +19,7 @@ import { searchApiRef } from '@backstage/plugin-search-react';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 
 export default {
   title: 'Plugins/Home/Components/SearchBar',

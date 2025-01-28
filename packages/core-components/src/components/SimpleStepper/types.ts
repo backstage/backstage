@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactElement } from 'react';
 
 export type StepActions = {
   showNext?: boolean;
@@ -40,7 +40,7 @@ export type StepActions = {
 
 export type StepProps = {
   title: string;
-  children: React.ReactElement;
+  children: ReactElement;
   end?: boolean;
   actions?: StepActions;
 };

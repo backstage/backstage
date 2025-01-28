@@ -16,7 +16,6 @@
 
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
 
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';

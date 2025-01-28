@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement } from 'react';
+import { ReactNode, Children, ReactElement } from 'react';
+
 import { useOutlet } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
@@ -37,8 +38,12 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
-import { ThemeOptions } from '@material-ui/core/styles';
-import { createTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
+import {
+  createTheme,
+  ThemeProvider,
+  useTheme,
+  ThemeOptions,
+} from '@material-ui/core/styles';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -180,7 +185,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
       child => (child as ReactElement)?.props?.children ?? [],
     );
 
-    const page: React.ReactNode = grandChildren.find(
+    const page: ReactNode = grandChildren.find(
       grandChild =>
         !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY) &&
         !getComponentData(grandChild, TECHDOCS_ADDONS_KEY),

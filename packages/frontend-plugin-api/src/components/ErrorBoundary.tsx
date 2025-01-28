@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component, ComponentType, PropsWithChildren } from 'react';
+import { Component, ComponentType, PropsWithChildren } from 'react';
 import { FrontendPlugin } from '../wiring';
 import { CoreErrorBoundaryFallbackProps } from '../types';
 

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { createContext } from 'react';
 
 /**
  * @public
  */
-export const PodNamesWithErrorsContext = React.createContext<Set<string>>(
+export const PodNamesWithErrorsContext = createContext<Set<string>>(
   new Set<string>(),
 );

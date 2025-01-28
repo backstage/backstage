@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
@@ -69,7 +75,7 @@ const useStyles = makeStyles(theme => ({
  * @public
  */
 export const OngoingTask = (props: {
-  TemplateOutputsComponent?: React.ComponentType<{
+  TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput;
   }>;
 }) => {

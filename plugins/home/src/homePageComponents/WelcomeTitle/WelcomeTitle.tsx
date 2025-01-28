@@ -20,7 +20,7 @@ import {
 } from '@backstage/core-plugin-api';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 

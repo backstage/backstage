@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { ApiRef, ApiHolder } from '@backstage/core-plugin-api';
 

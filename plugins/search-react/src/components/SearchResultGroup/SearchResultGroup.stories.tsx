@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ComponentType,
-  useCallback,
-  useState,
-  PropsWithChildren,
-} from 'react';
+import { ComponentType, useCallback, useState, PropsWithChildren } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';

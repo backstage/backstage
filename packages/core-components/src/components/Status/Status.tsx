@@ -20,7 +20,7 @@ import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import WarningOutline from '@material-ui/icons/ReportProblemOutlined';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import classNames from 'classnames';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { PendingIcon } from './icons/PendingIcon';
 import { RunningIcon } from './icons/RunningIcon';
 import { AbortedIcon } from './icons/AbortedIcon';

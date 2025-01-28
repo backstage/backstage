@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 import { Field as FieldPrimitive } from '@base-ui-components/react/field';
 import clsx from 'clsx';
 
-const FieldRoot = React.forwardRef<
+const FieldRoot = forwardRef<
   React.ElementRef<typeof FieldPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof FieldPrimitive.Root>
 >(({ className, ...props }, ref) => (
@@ -30,7 +30,7 @@ const FieldRoot = React.forwardRef<
 ));
 FieldRoot.displayName = FieldPrimitive.Root.displayName;
 
-const FieldLabel = React.forwardRef<
+const FieldLabel = forwardRef<
   React.ElementRef<typeof FieldPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof FieldPrimitive.Label>
 >(({ className, ...props }, ref) => (
@@ -42,7 +42,7 @@ const FieldLabel = React.forwardRef<
 ));
 FieldLabel.displayName = FieldPrimitive.Label.displayName;
 
-const FieldDescription = React.forwardRef<
+const FieldDescription = forwardRef<
   React.ElementRef<typeof FieldPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof FieldPrimitive.Description>
 >(({ className, ...props }, ref) => (
@@ -54,7 +54,7 @@ const FieldDescription = React.forwardRef<
 ));
 FieldDescription.displayName = FieldPrimitive.Description.displayName;
 
-const FieldError = React.forwardRef<
+const FieldError = forwardRef<
   React.ElementRef<typeof FieldPrimitive.Error>,
   React.ComponentPropsWithoutRef<typeof FieldPrimitive.Error>
 >(({ className, ...props }, ref) => (
@@ -70,7 +70,7 @@ const FieldValidity = ({
   children,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof FieldPrimitive.Validity> & {
+}: ComponentPropsWithoutRef<typeof FieldPrimitive.Validity> & {
   className?: string;
 }) => (
   <FieldPrimitive.Validity {...props}>

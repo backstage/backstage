@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 import { isFunction } from 'lodash';
 

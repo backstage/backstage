@@ -26,7 +26,6 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import React from 'react';
 import { cicdContent } from './EntityPage';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
