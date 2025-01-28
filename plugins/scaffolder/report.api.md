@@ -21,7 +21,7 @@ import { FieldSchema as FieldSchema_2 } from '@backstage/plugin-scaffolder-react
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-react';
@@ -30,7 +30,6 @@ import { LogEvent as LogEvent_2 } from '@backstage/plugin-scaffolder-react';
 import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -235,8 +234,8 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    title?: string | undefined;
     description?: string | undefined;
+    title?: string | undefined;
   }
 >;
 
@@ -244,8 +243,8 @@ export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
 export const MyGroupsPickerFieldSchema: FieldSchema<
   string,
   {
-    title?: string | undefined;
     description?: string | undefined;
+    title?: string | undefined;
   }
 >;
 
@@ -386,10 +385,10 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -422,10 +421,10 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -449,10 +448,10 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                azure?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -474,16 +473,16 @@ export const rootRouteRef: RouteRef<undefined>;
 // @public
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
-    TemplateCardComponent?: React_2.ComponentType<{
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    TemplateCardComponent?: ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
-    TaskPageComponent?: React_2.ComponentType<PropsWithChildren<{}>>;
-    EXPERIMENTAL_TemplateOutputsComponent?: React_2.ComponentType<{
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
+    EXPERIMENTAL_TemplateOutputsComponent?: ComponentType<{
       output?: ScaffolderTaskOutput_2;
     }>;
-    EXPERIMENTAL_TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
-    EXPERIMENTAL_TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
+    EXPERIMENTAL_TemplateListPageComponent?: ComponentType<TemplateListPageProps>;
+    EXPERIMENTAL_TemplateWizardPageComponent?: ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -624,8 +623,8 @@ export const scaffolderPlugin: BackstagePlugin<
     registerComponent: ExternalRouteRef<undefined, true>;
     viewTechDoc: ExternalRouteRef<
       {
-        name: string;
         kind: string;
+        name: string;
         namespace: string;
       },
       true
@@ -656,10 +655,10 @@ export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
 // @public (undocumented)
 export const TaskPage: (props: {
-  TemplateOutputsComponent?: React_2.ComponentType<{
+  TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput_2;
   }>;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated
 export type TaskPageProps = {
@@ -670,7 +669,7 @@ export type TaskPageProps = {
 export type TemplateParameterSchema = TemplateParameterSchema_2;
 
 // @public
-export const TemplateTypePicker: () => React_2.JSX.Element | null;
+export const TemplateTypePicker: () => JSX_2.Element | null;
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;

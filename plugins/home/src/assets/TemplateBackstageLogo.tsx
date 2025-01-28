@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export const TemplateBackstageLogo = (props: {
   classes: {
     svg: string;

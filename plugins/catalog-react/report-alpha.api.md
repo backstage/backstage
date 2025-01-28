@@ -11,7 +11,6 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -56,15 +55,15 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.title': 'Entity Inspector';
     readonly 'inspectEntityDialog.closeButtonTitle': 'Close';
     readonly 'inspectEntityDialog.ancestryPage.title': 'Ancestry';
-    readonly 'inspectEntityDialog.colocatedPage.title': 'Colocated';
     readonly 'inspectEntityDialog.colocatedPage.description': 'These are the entities that are colocated with this entity - as in, they originated from the same data source (e.g. came from the same YAML file), or from the same origin (e.g. the originally registered URL).';
+    readonly 'inspectEntityDialog.colocatedPage.title': 'Colocated';
     readonly 'inspectEntityDialog.colocatedPage.alertNoLocation': 'Entity had no location information.';
     readonly 'inspectEntityDialog.colocatedPage.alertNoEntity': 'There were no other entities on this location.';
-    readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.jsonPage.description': 'This is the raw entity data as received from the catalog, on JSON form.';
+    readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
-    readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
+    readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'unregisterEntityDialog.title': 'Are you sure you want to unregister this entity?';
     readonly 'unregisterEntityDialog.cancelButtonTitle': 'Cancel';
     readonly 'unregisterEntityDialog.deleteButtonTitle': 'Delete Entity';
@@ -74,8 +73,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'unregisterEntityDialog.bootstrapState.title': 'You cannot unregister this entity, since it originates from a protected Backstage configuration (location "{{location}}"). If you believe this is in error, please contact the {{appTitle}} integrator.';
     readonly 'unregisterEntityDialog.bootstrapState.advancedDescription': 'You have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
     readonly 'unregisterEntityDialog.bootstrapState.advancedOptions': 'Advanced Options';
-    readonly 'unregisterEntityDialog.unregisterState.title': 'This action will unregister the following entities:';
     readonly 'unregisterEntityDialog.unregisterState.description': 'To undo, just re-register the entity in {{appTitle}}.';
+    readonly 'unregisterEntityDialog.unregisterState.title': 'This action will unregister the following entities:';
     readonly 'unregisterEntityDialog.unregisterState.subTitle': 'Located at the following location:';
     readonly 'unregisterEntityDialog.unregisterState.advancedDescription': 'You also have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
     readonly 'unregisterEntityDialog.unregisterState.advancedOptions': 'Advanced Options';
@@ -152,11 +151,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: EntityPredicate | undefined;
-    type: 'content' | 'summary' | 'info' | undefined;
+    type: 'info' | 'summary' | 'content' | undefined;
   };
   configInput: {
     filter?: EntityPredicate | undefined;
-    type?: 'content' | 'summary' | 'info' | undefined;
+    type?: 'info' | 'summary' | 'content' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -267,9 +266,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: {
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    loader: () => Promise<
-      (props: EntityContentLayoutProps) => React_2.JSX.Element
-    >;
+    loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
   };
   output:
     | ConfigurableExtensionDataRef<
@@ -287,7 +284,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
-        (props: EntityContentLayoutProps) => React_2.JSX.Element,
+        (props: EntityContentLayoutProps) => React.JSX.Element,
         'catalog.entity-content-layout.component',
         {}
       >;
@@ -312,7 +309,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
       {}
     >;
     component: ConfigurableExtensionDataRef<
-      (props: EntityContentLayoutProps) => React_2.JSX.Element,
+      (props: EntityContentLayoutProps) => React.JSX.Element,
       'catalog.entity-content-layout.component',
       {}
     >;
@@ -324,7 +321,7 @@ export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
     type?: EntityCardType;
-    element: React_2.JSX.Element;
+    element: JSX_2.Element;
   }>;
 }
 

@@ -10,10 +10,9 @@ import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -45,8 +44,8 @@ export const catalogGraphPlugin: BackstagePlugin<
   {
     catalogEntity: ExternalRouteRef<
       {
-        name: string;
         kind: string;
+        name: string;
         namespace: string;
       },
       true
@@ -109,7 +108,7 @@ export type EntityNodeData = {
 // @public
 export const EntityRelationsGraph: (
   props: EntityRelationsGraphProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';

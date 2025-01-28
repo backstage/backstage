@@ -6,6 +6,7 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -20,7 +21,6 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PathParams } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
@@ -45,8 +45,8 @@ const _default: FrontendPlugin<
   {
     registerComponent: ExternalRouteRef<undefined>;
     viewTechDoc: ExternalRouteRef<{
-      name: string;
       kind: string;
+      name: string;
       namespace: string;
     }>;
   },
@@ -282,70 +282,71 @@ export type ScaffolderTemplateFormPreviewerClassKey =
 export const scaffolderTranslationRef: TranslationRef<
   'scaffolder',
   {
-    readonly 'fields.entityNamePicker.title': 'Name';
     readonly 'fields.entityNamePicker.description': 'Unique name of the component';
-    readonly 'fields.entityPicker.title': 'Entity';
+    readonly 'fields.entityNamePicker.title': 'Name';
     readonly 'fields.entityPicker.description': 'An entity from the catalog';
-    readonly 'fields.entityTagsPicker.title': 'Tags';
+    readonly 'fields.entityPicker.title': 'Entity';
     readonly 'fields.entityTagsPicker.description': "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters";
-    readonly 'fields.myGroupsPicker.title': 'Entity';
+    readonly 'fields.entityTagsPicker.title': 'Tags';
     readonly 'fields.myGroupsPicker.description': 'An entity from the catalog';
-    readonly 'fields.ownedEntityPicker.title': 'Entity';
+    readonly 'fields.myGroupsPicker.title': 'Entity';
     readonly 'fields.ownedEntityPicker.description': 'An entity from the catalog';
-    readonly 'fields.ownerPicker.title': 'Owner';
+    readonly 'fields.ownedEntityPicker.title': 'Entity';
     readonly 'fields.ownerPicker.description': 'The owner of the component';
-    readonly 'fields.azureRepoPicker.organization.title': 'Organization';
+    readonly 'fields.ownerPicker.title': 'Owner';
     readonly 'fields.azureRepoPicker.organization.description': 'The Organization that this repo will belong to';
-    readonly 'fields.azureRepoPicker.project.title': 'Project';
+    readonly 'fields.azureRepoPicker.organization.title': 'Organization';
     readonly 'fields.azureRepoPicker.project.description': 'The Project that this repo will belong to';
-    readonly 'fields.bitbucketRepoPicker.project.title': 'Allowed Projects';
+    readonly 'fields.azureRepoPicker.project.title': 'Project';
     readonly 'fields.bitbucketRepoPicker.project.description': 'The Project that this repo will belong to';
+    readonly 'fields.bitbucketRepoPicker.project.title': 'Allowed Projects';
     readonly 'fields.bitbucketRepoPicker.project.inputTitle': 'Projects';
-    readonly 'fields.bitbucketRepoPicker.workspaces.title': 'Allowed Workspaces';
     readonly 'fields.bitbucketRepoPicker.workspaces.description': 'The Workspace that this repo will belong to';
+    readonly 'fields.bitbucketRepoPicker.workspaces.title': 'Allowed Workspaces';
     readonly 'fields.bitbucketRepoPicker.workspaces.inputTitle': 'Workspaces';
-    readonly 'fields.gerritRepoPicker.parent.title': 'Parent';
-    readonly 'fields.gerritRepoPicker.parent.description': 'The project parent that the repo will belong to';
-    readonly 'fields.gerritRepoPicker.owner.title': 'Owner';
     readonly 'fields.gerritRepoPicker.owner.description': 'The owner of the project (optional)';
-    readonly 'fields.giteaRepoPicker.owner.title': 'Owner Available';
+    readonly 'fields.gerritRepoPicker.owner.title': 'Owner';
+    readonly 'fields.gerritRepoPicker.parent.description': 'The project parent that the repo will belong to';
+    readonly 'fields.gerritRepoPicker.parent.title': 'Parent';
     readonly 'fields.giteaRepoPicker.owner.description': 'Gitea namespace where this repository will belong to. It can be the name of organization, group, subgroup, user, or the project.';
+    readonly 'fields.giteaRepoPicker.owner.title': 'Owner Available';
     readonly 'fields.giteaRepoPicker.owner.inputTitle': 'Owner';
-    readonly 'fields.githubRepoPicker.owner.title': 'Owner Available';
     readonly 'fields.githubRepoPicker.owner.description': 'The organization, user or project that this repo will belong to';
+    readonly 'fields.githubRepoPicker.owner.title': 'Owner Available';
     readonly 'fields.githubRepoPicker.owner.inputTitle': 'Owner';
-    readonly 'fields.gitlabRepoPicker.owner.title': 'Owner Available';
     readonly 'fields.gitlabRepoPicker.owner.description': 'GitLab namespace where this repository will belong to. It can be the name of organization, group, subgroup, user, or the project.';
+    readonly 'fields.gitlabRepoPicker.owner.title': 'Owner Available';
     readonly 'fields.gitlabRepoPicker.owner.inputTitle': 'Owner';
-    readonly 'fields.repoUrlPicker.host.title': 'Host';
     readonly 'fields.repoUrlPicker.host.description': 'The host where the repository will be created';
-    readonly 'fields.repoUrlPicker.repository.title': 'Repositories Available';
+    readonly 'fields.repoUrlPicker.host.title': 'Host';
     readonly 'fields.repoUrlPicker.repository.description': 'The name of the repository';
+    readonly 'fields.repoUrlPicker.repository.title': 'Repositories Available';
     readonly 'fields.repoUrlPicker.repository.inputTitle': 'Repository';
-    readonly 'actionsPage.content.emptyState.title': 'No information to display';
-    readonly 'actionsPage.content.emptyState.description': 'There are no actions installed or there was an issue communicating with backend.';
-    readonly 'actionsPage.content.searchFieldPlaceholder': 'Search for an action';
-    readonly 'actionsPage.title': 'Installed actions';
+    readonly 'actionsPage.action.examples': 'Examples';
     readonly 'actionsPage.action.input': 'Input';
     readonly 'actionsPage.action.output': 'Output';
-    readonly 'actionsPage.action.examples': 'Examples';
+    readonly 'actionsPage.title': 'Installed actions';
+    readonly 'actionsPage.content.emptyState.description': 'There are no actions installed or there was an issue communicating with backend.';
+    readonly 'actionsPage.content.emptyState.title': 'No information to display';
+    readonly 'actionsPage.content.searchFieldPlaceholder': 'Search for an action';
     readonly 'actionsPage.subtitle': 'This is the collection of all installed actions';
     readonly 'actionsPage.pageTitle': 'Create a New Component';
-    readonly 'listTaskPage.content.emptyState.title': 'No information to display';
-    readonly 'listTaskPage.content.emptyState.description': 'There are no tasks or there was an issue communicating with backend.';
-    readonly 'listTaskPage.content.tableCell.template': 'Template';
-    readonly 'listTaskPage.content.tableCell.status': 'Status';
-    readonly 'listTaskPage.content.tableCell.owner': 'Owner';
-    readonly 'listTaskPage.content.tableCell.created': 'Created';
-    readonly 'listTaskPage.content.tableCell.taskID': 'Task ID';
-    readonly 'listTaskPage.content.tableTitle': 'Tasks';
     readonly 'listTaskPage.title': 'List template tasks';
+    readonly 'listTaskPage.content.emptyState.description': 'There are no tasks or there was an issue communicating with backend.';
+    readonly 'listTaskPage.content.emptyState.title': 'No information to display';
+    readonly 'listTaskPage.content.tableTitle': 'Tasks';
+    readonly 'listTaskPage.content.tableCell.owner': 'Owner';
+    readonly 'listTaskPage.content.tableCell.status': 'Status';
+    readonly 'listTaskPage.content.tableCell.template': 'Template';
+    readonly 'listTaskPage.content.tableCell.taskID': 'Task ID';
+    readonly 'listTaskPage.content.tableCell.created': 'Created';
     readonly 'listTaskPage.subtitle': 'All tasks that have been started';
     readonly 'listTaskPage.pageTitle': 'Templates Tasks';
     readonly 'ownerListPicker.title': 'Task Owner';
     readonly 'ownerListPicker.options.all': 'All';
     readonly 'ownerListPicker.options.owned': 'Owned';
     readonly 'ongoingTask.title': 'Run of';
+    readonly 'ongoingTask.subtitle': 'Task {{taskId}}';
     readonly 'ongoingTask.contextMenu.cancel': 'Cancel';
     readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
     readonly 'ongoingTask.contextMenu.retry': 'Retry';
@@ -353,7 +354,6 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.contextMenu.showLogs': 'Show Logs';
     readonly 'ongoingTask.contextMenu.hideButtonBar': 'Hide Button Bar';
     readonly 'ongoingTask.contextMenu.showButtonBar': 'Show Button Bar';
-    readonly 'ongoingTask.subtitle': 'Task {{taskId}}';
     readonly 'ongoingTask.pageTitle.hasTemplateName': 'Run of {{templateName}}';
     readonly 'ongoingTask.pageTitle.noTemplateName': 'Scaffolder Run';
     readonly 'ongoingTask.cancelButtonTitle': 'Cancel';
@@ -365,8 +365,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'renderSchema.undefined': 'No schema defined';
     readonly 'renderSchema.tableCell.name': 'Name';
     readonly 'renderSchema.tableCell.type': 'Type';
-    readonly 'renderSchema.tableCell.title': 'Title';
     readonly 'renderSchema.tableCell.description': 'Description';
+    readonly 'renderSchema.tableCell.title': 'Title';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateIntroPage.title': 'Manage Templates';
     readonly 'templateIntroPage.subtitle': 'Edit, preview, and try out templates, forms, and custom fields';
@@ -380,8 +380,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.dryRunResultsList.title': 'Result {{resultId}}';
     readonly 'templateEditorPage.dryRunResultsList.deleteButtonTitle': 'Delete result';
     readonly 'templateEditorPage.dryRunResultsList.downloadButtonTitle': 'Download as .zip';
-    readonly 'templateEditorPage.dryRunResultsView.tab.output': 'Output';
     readonly 'templateEditorPage.dryRunResultsView.tab.log': 'Log';
+    readonly 'templateEditorPage.dryRunResultsView.tab.output': 'Output';
     readonly 'templateEditorPage.dryRunResultsView.tab.files': 'Files';
     readonly 'templateEditorPage.taskStatusStepper.skippedStepTitle': 'Skipped';
     readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Template Spec';
@@ -394,16 +394,16 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorBrowser.reloadIconTooltip': 'Reload directory';
     readonly 'templateEditorPage.templateEditorBrowser.closeIconTooltip': 'Close directory';
     readonly 'templateEditorPage.templateEditorIntro.title': 'Get started by choosing one of the options below';
-    readonly 'templateEditorPage.templateEditorIntro.loadLocal.title': 'Load Template Directory';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.description': 'Load a local template directory, allowing you to both edit and try executing your own template.';
+    readonly 'templateEditorPage.templateEditorIntro.loadLocal.title': 'Load Template Directory';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers with the page loaded over HTTPS';
-    readonly 'templateEditorPage.templateEditorIntro.createLocal.title': 'Create New Template';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.description': 'Create a local template directory, allowing you to both edit and try executing your own template.';
+    readonly 'templateEditorPage.templateEditorIntro.createLocal.title': 'Create New Template';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers with the page loaded over HTTPS';
-    readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template Form Playground';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.description': 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
-    readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';
+    readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template Form Playground';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.description': 'View and play around with available installed custom field extensions.';
+    readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';
     readonly 'templateEditorPage.templateEditorTextArea.saveIconTooltip': 'Save file';
     readonly 'templateEditorPage.templateEditorTextArea.refreshIconTooltip': 'Reload file';
     readonly 'templateEditorPage.templateEditorTextArea.emptyStateParagraph': 'Please select an action on the file menu.';
@@ -426,19 +426,19 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsListItems': 'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog';
-    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationUrl': 'https://backstage.io/docs/features/software-templates/adding-templates/';
     readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationButton': 'Go to the documentation';
-    readonly 'templateEditorToolbarFileMenu.button': 'File';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationUrl': 'https://backstage.io/docs/features/software-templates/adding-templates/';
     readonly 'templateEditorToolbarFileMenu.options.openDirectory': 'Open template directory';
     readonly 'templateEditorToolbarFileMenu.options.createDirectory': 'Create template directory';
     readonly 'templateEditorToolbarFileMenu.options.closeEditor': 'Close template editor';
+    readonly 'templateEditorToolbarFileMenu.button': 'File';
     readonly 'templateEditorToolbarTemplatesMenu.button': 'Templates';
   }
 >;
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React_2.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
@@ -459,7 +459,7 @@ export type TemplateListPageProps = {
 export type TemplateWizardPageProps = {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
   components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   layouts?: LayoutOptions[];
   formProps?: FormProps_3;

@@ -14,7 +14,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -24,8 +24,8 @@ const _default: FrontendPlugin<
   },
   {
     catalogEntity: ExternalRouteRef<{
-      name: string;
       kind: string;
+      name: string;
       namespace: string;
     }>;
   },
@@ -45,15 +45,15 @@ const _default: FrontendPlugin<
         height: number | undefined;
       } & {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
+        relations?: string[] | undefined;
+        title?: string | undefined;
         height?: number | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-        title?: string | undefined;
-        relations?: string[] | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
         unidirectional?: boolean | undefined;
@@ -61,14 +61,10 @@ const _default: FrontendPlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -126,10 +122,10 @@ const _default: FrontendPlugin<
         path: string | undefined;
       };
       configInput: {
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        relations?: string[] | undefined;
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-        relations?: string[] | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
@@ -143,11 +139,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,

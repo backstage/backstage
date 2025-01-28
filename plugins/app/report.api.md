@@ -678,15 +678,15 @@ const appPlugin: FrontendPlugin<
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
-          horizontal: 'center' | 'left' | 'right';
           vertical: 'top' | 'bottom';
+          horizontal: 'center' | 'left' | 'right';
         };
       };
       configInput: {
         anchorOrigin?:
           | {
-              horizontal?: 'center' | 'left' | 'right' | undefined;
               vertical?: 'top' | 'bottom' | undefined;
+              horizontal?: 'center' | 'left' | 'right' | undefined;
             }
           | undefined;
         transientTimeoutMs?: number | undefined;

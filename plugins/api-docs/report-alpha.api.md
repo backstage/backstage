@@ -16,7 +16,7 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -48,18 +48,14 @@ const _default: FrontendPlugin<
       name: 'consumed-apis';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -93,18 +89,14 @@ const _default: FrontendPlugin<
       name: 'consuming-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -138,18 +130,14 @@ const _default: FrontendPlugin<
       name: 'definition';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -183,18 +171,14 @@ const _default: FrontendPlugin<
       name: 'has-apis';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -228,18 +212,14 @@ const _default: FrontendPlugin<
       name: 'provided-apis';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -273,18 +253,14 @@ const _default: FrontendPlugin<
       name: 'providing-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'info' | 'summary' | 'content' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'info' | 'summary' | 'content' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -329,11 +305,7 @@ const _default: FrontendPlugin<
         group?: string | false | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -394,11 +366,7 @@ const _default: FrontendPlugin<
         group?: string | false | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -476,11 +444,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,

@@ -9,7 +9,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -49,11 +49,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -64,11 +60,7 @@ const _default: FrontendPlugin<
           >;
       inputs: {
         providerSettings: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >,
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: true;
             optional: true;
@@ -114,15 +106,15 @@ export const settingsNavItem: ExtensionDefinition<{
 export const userSettingsTranslationRef: TranslationRef<
   'user-settings',
   {
+    readonly 'languageToggle.description': 'Change the language';
     readonly 'languageToggle.select': 'Select language {{language}}';
     readonly 'languageToggle.title': 'Language';
-    readonly 'languageToggle.description': 'Change the language';
+    readonly 'themeToggle.description': 'Change the theme mode';
     readonly 'themeToggle.select': 'Select theme {{theme}}';
     readonly 'themeToggle.title': 'Theme';
-    readonly 'themeToggle.description': 'Change the theme mode';
-    readonly 'themeToggle.names.auto': 'Auto';
-    readonly 'themeToggle.names.dark': 'Dark';
     readonly 'themeToggle.names.light': 'Light';
+    readonly 'themeToggle.names.dark': 'Dark';
+    readonly 'themeToggle.names.auto': 'Auto';
     readonly 'themeToggle.selectAuto': 'Select Auto Theme';
   }
 >;
