@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
 import { renderInTestApp } from '@backstage/test-utils';

@@ -434,7 +434,6 @@ async function switchToReact17(appDir: string) {
   await fs.writeFile(
     resolvePath(appDir, 'packages/app/src/index.tsx'),
     `import '@backstage/cli/asset-types';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 

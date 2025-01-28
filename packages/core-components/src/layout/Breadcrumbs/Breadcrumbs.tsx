@@ -21,7 +21,13 @@ import ListItem from '@material-ui/core/ListItem';
 import Popover from '@material-ui/core/Popover';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { ComponentProps, Fragment } from 'react';
+import {
+  MouseEvent,
+  useState,
+  Children,
+  ComponentProps,
+  Fragment,
+} from 'react';
 
 type Props = ComponentProps<typeof MaterialBreadcrumbs>;
 
@@ -71,11 +77,9 @@ const BreadcrumbsCurrentPage = withStyles(
  */
 export function Breadcrumbs(props: Props) {
   const { children, ...restProps } = props;
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null,
-  );
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const childrenArray = React.Children.toArray(children);
+  const childrenArray = Children.toArray(children);
 
   const [firstPage, secondPage, ...expandablePages] = childrenArray;
   const currentPage = expandablePages.length
@@ -83,7 +87,7 @@ export function Breadcrumbs(props: Props) {
     : childrenArray[childrenArray.length - 1];
   const hasHiddenBreadcrumbs = childrenArray.length > 3;
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

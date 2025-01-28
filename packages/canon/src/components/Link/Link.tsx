@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { useRef, forwardRef } from 'react';
 import { useRender } from '@base-ui-components/react/use-render';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
@@ -33,7 +33,7 @@ export const Link = forwardRef<HTMLElement, LinkProps>((props, ref) => {
 
   const responsiveVariant = useResponsiveValue(variant);
   const responsiveWeight = useResponsiveValue(weight);
-  const internalRef = React.useRef<HTMLElement | null>(null);
+  const internalRef = useRef<HTMLElement | null>(null);
 
   const { renderElement } = useRender({
     render,

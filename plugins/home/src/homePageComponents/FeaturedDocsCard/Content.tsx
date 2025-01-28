@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { JSX } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   LinkButton,
@@ -44,7 +44,7 @@ export type FeaturedDocsCardProps = {
   /** The entity filter used to display only the intended item/s */
   filter: EntityFilterQuery;
   /** An optional ReactNode for empty states */
-  emptyState?: React.JSX.Element;
+  emptyState?: JSX.Element;
   /** An optional linkDestination to set for the Featured Doc  */
   linkDestination?: string;
   /** An optional limit to set for link destination  */

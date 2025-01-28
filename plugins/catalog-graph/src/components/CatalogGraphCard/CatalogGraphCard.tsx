@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
-import React, { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
+import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
@@ -36,8 +36,8 @@ import {
   Direction,
   EntityNode,
   EntityRelationsGraph,
+  EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
-import { EntityRelationsGraphProps } from '../EntityRelationsGraph';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';

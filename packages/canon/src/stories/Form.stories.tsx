@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField } from '../components/TextField';
@@ -105,9 +105,9 @@ export const Controlled: Story = {
       formState: { errors },
     } = useForm<Inputs>();
 
-    const [firstname, setFirstname] = React.useState('John');
-    const [lastname, setLastname] = React.useState('Doe');
-    const [city, setCity] = React.useState('london');
+    const [firstname, setFirstname] = useState('John');
+    const [lastname, setLastname] = useState('Doe');
+    const [city, setCity] = useState('london');
 
     const onSubmit: SubmitHandler<Inputs> = data => {
       console.log('data', data);

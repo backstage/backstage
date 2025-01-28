@@ -15,8 +15,7 @@
  */
 
 import { withTheme } from '@rjsf/core';
-import React from 'react';
-import { PropsWithChildren } from 'react';
+import { useMemo, PropsWithChildren } from 'react';
 import { FieldTemplate } from './FieldTemplate';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { FieldProps } from '@rjsf/utils';
@@ -32,7 +31,7 @@ const WrappedForm = withTheme(MuiTheme);
 export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
   // This is where we unbreak the changes from RJSF, and make it work with our custom fields so we don't pass on this
   // breaking change to our users. We will look more into a better API for this in scaffolderv2.
-  const wrappedFields = React.useMemo(
+  const wrappedFields = useMemo(
     () =>
       Object.fromEntries(
         Object.entries(props.fields ?? {}).map(([key, Component]) => [
@@ -54,7 +53,7 @@ export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
     [props.fields],
   );
 
-  const templates = React.useMemo(
+  const templates = useMemo(
     () => ({
       FieldTemplate,
       DescriptionFieldTemplate,

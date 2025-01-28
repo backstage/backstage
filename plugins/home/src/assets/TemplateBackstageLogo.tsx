@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-/** @public */
 export const TemplateBackstageLogo = (props: {
   classes: {
     svg: string;

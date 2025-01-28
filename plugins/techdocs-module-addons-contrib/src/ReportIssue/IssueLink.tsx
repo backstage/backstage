@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { makeStyles } from '@material-ui/core';
 import BugReportIcon from '@material-ui/icons/BugReport';
 
