@@ -4009,8 +4009,8 @@ __metadata:
     luxon: ^3.0.0
     prettier: ^2.6.2
     prism-react-renderer: ^2.1.0
-    react: ^18.0.0
-    react-dom: ^18.0.0
+    react: ^18.0.2
+    react-dom: ^18.0.2
     sass: ^1.57.1
     swc-loader: ^0.2.3
     typescript: ~5.2.0
@@ -10059,7 +10059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.0.0":
+"react-dom@npm:^18.0.2":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -10188,7 +10188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.0.0":
+"react@npm:^18.0.2":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:

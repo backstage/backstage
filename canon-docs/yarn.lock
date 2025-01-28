@@ -940,7 +940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
+"@types/react-dom@npm:^18.0.0":
   version: 18.3.5
   resolution: "@types/react-dom@npm:18.3.5"
   peerDependencies:
@@ -949,7 +949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18":
+"@types/react@npm:^18.0.0":
   version: 18.3.18
   resolution: "@types/react@npm:18.3.18"
   dependencies:
@@ -1503,16 +1503,16 @@ __metadata:
     "@storybook/react": ^8.4.7
     "@types/mdx": ^2.0.13
     "@types/node": ^20
-    "@types/react": ^18
-    "@types/react-dom": ^18
+    "@types/react": ^18.0.0
+    "@types/react-dom": ^18.0.0
     "@uiw/codemirror-themes": ^4.23.7
     "@uiw/react-codemirror": ^4.23.7
     eslint: ^8
     eslint-config-next: 14.2.23
     lightningcss: ^1.28.2
     next: 14.2.23
-    react: ^18
-    react-dom: ^18
+    react: ^18.0.2
+    react-dom: ^18.0.2
     react-frame-component: ^5.2.7
     shiki: ^1.26.1
     storybook: ^8.4.7
@@ -4480,7 +4480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18":
+"react-dom@npm:^18.0.2":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -4510,7 +4510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18":
+"react@npm:^18.0.2":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
