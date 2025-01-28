@@ -12,8 +12,8 @@ import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { GridProps } from '@material-ui/core/Grid';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SignInProviderConfig } from '@backstage/core-components';
 import { TranslationResource } from '@backstage/core-plugin-api/alpha';
@@ -60,11 +60,11 @@ export const EntityGridItem: (
 ) => JSX.Element;
 
 // @public (undocumented)
-export const SidebarLanguageSwitcher: () => React_2.JSX.Element | null;
+export const SidebarLanguageSwitcher: () => JSX_2.Element | null;
 
 // @public
 export const SidebarSignOutButton: (props: {
   icon?: IconComponent;
   text?: string;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 ```

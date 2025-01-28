@@ -25,10 +25,10 @@ import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
@@ -116,10 +116,10 @@ export function createScaffolderFormDecorator<
 // @alpha
 export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput;
-}) => React_2.JSX.Element | null;
+}) => JSX_2.Element | null;
 
 // @alpha (undocumented)
-export const EmbeddableWorkflow: (props: WorkflowProps) => React_2.JSX.Element;
+export const EmbeddableWorkflow: (props: WorkflowProps) => JSX_2.Element;
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
@@ -130,7 +130,7 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 // @alpha
 export const Form: (
   props: PropsWithChildren<ScaffolderRJSFFormProps>,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @alpha
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
@@ -247,7 +247,7 @@ export interface ParsedTemplateSchema {
 }
 
 // @alpha
-export const ReviewState: (props: ReviewStateProps) => React_2.JSX.Element;
+export const ReviewState: (props: ReviewStateProps) => JSX_2.Element;
 
 // @alpha
 export type ReviewStateProps = {
@@ -258,7 +258,7 @@ export type ReviewStateProps = {
 // @alpha
 export const ScaffolderField: (
   props: PropsWithChildren<ScaffolderFieldProps>,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @alpha
 export interface ScaffolderFieldProps {
@@ -310,7 +310,7 @@ export interface ScaffolderFormFieldsApi {
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
-): React_2.JSX.Element | null;
+): JSX_2.Element | null;
 
 // @alpha (undocumented)
 export type ScaffolderPageContextMenuProps = {
@@ -335,10 +335,10 @@ export const SecretWidget: (
     WidgetProps,
     'name' | 'onChange' | 'schema' | 'required' | 'disabled'
   >,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @alpha
-export const Stepper: (stepperProps: StepperProps) => React_2.JSX.Element;
+export const Stepper: (stepperProps: StepperProps) => JSX_2.Element;
 
 // @alpha
 export type StepperProps = {
@@ -363,10 +363,10 @@ export const TaskLogStream: (props: {
   logs: {
     [k: string]: string[];
   };
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @alpha
-export const TaskSteps: (props: TaskStepsProps) => React_2.JSX.Element;
+export const TaskSteps: (props: TaskStepsProps) => JSX_2.Element;
 
 // @alpha
 export interface TaskStepsProps {
@@ -381,7 +381,7 @@ export interface TaskStepsProps {
 }
 
 // @alpha
-export const TemplateCard: (props: TemplateCardProps) => React_2.JSX.Element;
+export const TemplateCard: (props: TemplateCardProps) => JSX_2.Element;
 
 // @alpha
 export interface TemplateCardProps {
@@ -398,18 +398,16 @@ export interface TemplateCardProps {
 }
 
 // @alpha
-export const TemplateCategoryPicker: () => React_2.JSX.Element | null;
+export const TemplateCategoryPicker: () => JSX_2.Element | null;
 
 // @alpha
-export const TemplateGroup: (
-  props: TemplateGroupProps,
-) => React_2.JSX.Element | null;
+export const TemplateGroup: (props: TemplateGroupProps) => JSX_2.Element | null;
 
 // @alpha
 export interface TemplateGroupProps {
   // (undocumented)
   components?: {
-    CardComponent?: React_2.ComponentType<TemplateCardProps>;
+    CardComponent?: ComponentType<TemplateCardProps>;
   };
   // (undocumented)
   onSelected: (template: TemplateEntityV1beta3) => void;
@@ -423,13 +421,13 @@ export interface TemplateGroupProps {
     }[];
   }[];
   // (undocumented)
-  title: React_2.ReactNode;
+  title: ReactNode;
 }
 
 // @alpha (undocumented)
 export const TemplateGroups: (
   props: TemplateGroupsProps,
-) => React_2.JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @alpha (undocumented)
 export interface TemplateGroupsProps {
@@ -444,7 +442,7 @@ export interface TemplateGroupsProps {
   // (undocumented)
   onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
   // (undocumented)
-  TemplateCardComponent?: React_2.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   // (undocumented)
@@ -484,7 +482,7 @@ export type WorkflowProps = {
   namespace: string;
   templateName: string;
   components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<

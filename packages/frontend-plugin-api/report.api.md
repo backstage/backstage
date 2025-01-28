@@ -54,7 +54,8 @@ import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
@@ -69,7 +70,6 @@ import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
@@ -109,7 +109,7 @@ export const analyticsApiRef: ApiRef<AnalyticsApi>;
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public
 export type AnalyticsContextValue = CommonAnalyticsContext & {
@@ -250,7 +250,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint<{
   params: {
     element: JSX.Element | (() => JSX.Element);
   };
-  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  output: ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -265,8 +265,8 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
     Component: ComponentType<PropsWithChildren<{}>>;
   };
   output: ConfigurableExtensionDataRef<
-    React_2.ComponentType<{
-      children?: React_2.ReactNode;
+    ComponentType<{
+      children?: ReactNode;
     }>,
     'app.root.wrapper',
     {}
@@ -276,8 +276,8 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     component: ConfigurableExtensionDataRef<
-      React_2.ComponentType<{
-        children?: React_2.ReactNode;
+      ComponentType<{
+        children?: ReactNode;
       }>,
       'app.root.wrapper',
       {}
@@ -389,7 +389,7 @@ export type CoreErrorBoundaryFallbackProps = {
 // @public (undocumented)
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<
-    JSX_2.Element,
+    JSX_3.Element,
     'core.reactElement',
     {}
   >;
@@ -962,9 +962,7 @@ export type ExtensionBlueprintParameters = {
 };
 
 // @public (undocumented)
-export function ExtensionBoundary(
-  props: ExtensionBoundaryProps,
-): React_2.JSX.Element;
+export function ExtensionBoundary(props: ExtensionBoundaryProps): JSX_2.Element;
 
 // @public (undocumented)
 export namespace ExtensionBoundary {
@@ -1403,7 +1401,7 @@ export const PageBlueprint: ExtensionBlueprint<{
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
   };
   output:
-    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
     | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
     | ConfigurableExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
@@ -1619,7 +1617,7 @@ export const SignInPageBlueprint: ExtensionBlueprint<{
     loader: () => Promise<ComponentType<SignInPageProps>>;
   };
   output: ConfigurableExtensionDataRef<
-    React_2.ComponentType<SignInPageProps>,
+    ComponentType<SignInPageProps>,
     'core.sign-in-page.component',
     {}
   >;
@@ -1628,7 +1626,7 @@ export const SignInPageBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     component: ConfigurableExtensionDataRef<
-      React_2.ComponentType<SignInPageProps>,
+      ComponentType<SignInPageProps>,
       'core.sign-in-page.component',
       {}
     >;

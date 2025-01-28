@@ -8,10 +8,10 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SessionApi } from '@backstage/core-plugin-api';
 
@@ -121,7 +121,7 @@ export interface ScmAuthTokenResponse {
 // @public
 export const ScmIntegrationIcon: (
   props: ScmIntegrationIconProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type ScmIntegrationIconProps = {

@@ -5,14 +5,18 @@
 ```ts
 /// <reference types="react" />
 
+import { ComponentType } from 'react';
 import type { CSSProperties } from 'react';
 import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
+import { HTMLAttributes } from 'react';
 import { Input as Input_2 } from '@base-ui-components/react/input';
-import { default as React_2 } from 'react';
-import * as React_3 from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import type { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+import { TdHTMLAttributes } from 'react';
+import { ThHTMLAttributes } from 'react';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -117,8 +121,8 @@ export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
-export const Button: React_2.ForwardRefExoticComponent<
-  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+export const Button: ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public
@@ -152,19 +156,19 @@ export interface CanonContextProps {
 }
 
 // @public (undocumented)
-export const CanonProvider: (props: CanonProviderProps) => React_2.JSX.Element;
+export const CanonProvider: (props: CanonProviderProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface CanonProviderProps {
   // (undocumented)
   children?: ReactNode;
   // (undocumented)
-  overrides?: Partial<Record<IconNames, React_2.ComponentType>>;
+  overrides?: Partial<Record<IconNames, ComponentType>>;
 }
 
 // @public (undocumented)
-export const Checkbox: React_2.ForwardRefExoticComponent<
-  CheckboxProps & React_2.RefAttributes<HTMLButtonElement>
+export const Checkbox: ForwardRefExoticComponent<
+  CheckboxProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
@@ -255,24 +259,23 @@ export type EnumPropDef<T> = {
 
 // @public (undocumented)
 export const Field: {
-  Root: React_2.ForwardRefExoticComponent<
-    Omit<Field_2.Root.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>
+  Root: ForwardRefExoticComponent<
+    Omit<Field_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
-  Label: React_2.ForwardRefExoticComponent<
-    Omit<Field_2.Label.Props & React_2.RefAttributes<any>, 'ref'> &
-      React_2.RefAttributes<any>
+  Label: ForwardRefExoticComponent<
+    Omit<Field_2.Label.Props & RefAttributes<any>, 'ref'> & RefAttributes<any>
   >;
-  Description: React_2.ForwardRefExoticComponent<
+  Description: ForwardRefExoticComponent<
     Omit<
-      Field_2.Description.Props & React_2.RefAttributes<HTMLParagraphElement>,
+      Field_2.Description.Props & RefAttributes<HTMLParagraphElement>,
       'ref'
     > &
-      React_2.RefAttributes<HTMLParagraphElement>
+      RefAttributes<HTMLParagraphElement>
   >;
-  Error: React_2.ForwardRefExoticComponent<
-    Omit<Field_2.Error.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>
+  Error: ForwardRefExoticComponent<
+    Omit<Field_2.Error.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
   Validity: ({
     children,
@@ -280,7 +283,7 @@ export const Field: {
     ...props
   }: Field_2.Validity.Props & {
     className?: string | undefined;
-  }) => React_2.JSX.Element;
+  }) => JSX_2.Element;
 };
 
 // @public (undocumented)
@@ -542,8 +545,8 @@ export interface GridProps extends SpaceProps {
 }
 
 // @public (undocumented)
-export const Heading: React_2.ForwardRefExoticComponent<
-  HeadingProps & React_2.RefAttributes<HTMLHeadingElement>
+export const Heading: ForwardRefExoticComponent<
+  HeadingProps & RefAttributes<HTMLHeadingElement>
 >;
 
 // @public (undocumented)
@@ -598,7 +601,7 @@ export const heightPropDefs: {
 export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
-export const Icon: (props: IconProps) => React_2.JSX.Element;
+export const Icon: (props: IconProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
@@ -638,8 +641,8 @@ export type IconProps = {
 export const icons: IconMap;
 
 // @public (undocumented)
-export const Input: React_2.ForwardRefExoticComponent<
-  InputProps & React_2.RefAttributes<HTMLInputElement>
+export const Input: ForwardRefExoticComponent<
+  InputProps & RefAttributes<HTMLInputElement>
 >;
 
 // @public (undocumented)
@@ -884,50 +887,46 @@ export type StylingPropDef = {
 };
 
 // @public (undocumented)
-export const Table: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableElement> &
-    React_3.RefAttributes<HTMLTableElement>
+export const Table: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
 >;
 
 // @public (undocumented)
-export const TableBody: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableBody: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableCell: React_3.ForwardRefExoticComponent<
-  React_3.TdHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
+export const TableCell: ForwardRefExoticComponent<
+  TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
 >;
 
 // @public (undocumented)
-export const TableFooter: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableFooter: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableHead: React_3.ForwardRefExoticComponent<
-  React_3.ThHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
+export const TableHead: ForwardRefExoticComponent<
+  ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
 >;
 
 // @public (undocumented)
-export const TableHeader: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableHeader: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableRow: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableRowElement> &
-    React_3.RefAttributes<HTMLTableRowElement>
+export const TableRow: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
 >;
 
 // @public (undocumented)
-const Text_2: React_2.ForwardRefExoticComponent<
-  TextProps & React_2.RefAttributes<HTMLParagraphElement>
+const Text_2: ForwardRefExoticComponent<
+  TextProps & RefAttributes<HTMLParagraphElement>
 >;
 export { Text_2 as Text };
 
