@@ -284,7 +284,55 @@ export const Field: {
 };
 
 // @public (undocumented)
+export const Flex: ForwardRefExoticComponent<
+  FlexProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
 export type FlexDirection = 'row' | 'column';
+
+// @public (undocumented)
+export type FlexOwnProps = GetPropDefTypes<typeof flexPropDefs>;
+
+// @public (undocumented)
+export const flexPropDefs: {
+  align: {
+    type: 'enum';
+    className: string;
+    values: readonly ['start', 'center', 'end', 'baseline', 'stretch'];
+    responsive: true;
+  };
+  direction: {
+    type: 'enum';
+    className: string;
+    values: readonly ['row', 'column', 'row-reverse', 'column-reverse'];
+    responsive: true;
+  };
+  justify: {
+    type: 'enum';
+    className: string;
+    values: readonly ['start', 'center', 'end', 'between'];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export interface FlexProps extends SpaceProps {
+  // (undocumented)
+  align?: FlexOwnProps['align'];
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  direction?: FlexOwnProps['direction'];
+  // (undocumented)
+  gap?: GapProps['gap'];
+  // (undocumented)
+  justify?: FlexOwnProps['justify'];
+  // (undocumented)
+  style?: React.CSSProperties;
+}
 
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
@@ -590,37 +638,6 @@ export type IconProps = {
 export const icons: IconMap;
 
 // @public (undocumented)
-export const Inline: ForwardRefExoticComponent<
-  InlineProps & RefAttributes<HTMLElement>
->;
-
-// @public (undocumented)
-export interface InlineProps extends SpaceProps {
-  // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  // (undocumented)
-  alignY?:
-    | 'top'
-    | 'center'
-    | 'bottom'
-    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
-  // (undocumented)
-  as?: AsProps;
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  gap?: UtilityProps['gap'];
-  // (undocumented)
-  style?: React.CSSProperties;
-}
-
-// @public (undocumented)
 export const Input: React_2.ForwardRefExoticComponent<
   InputProps & React_2.RefAttributes<HTMLInputElement>
 >;
@@ -851,39 +868,6 @@ export interface SpaceProps {
   px?: Responsive<Space>;
   // (undocumented)
   py?: Responsive<Space>;
-}
-
-// @public (undocumented)
-export const Stack: ForwardRefExoticComponent<
-  StackProps & RefAttributes<HTMLDivElement>
->;
-
-// @public (undocumented)
-export type StackOwnProps = GetPropDefTypes<typeof stackPropDefs>;
-
-// @public (undocumented)
-export const stackPropDefs: {
-  align: {
-    type: 'enum';
-    className: string;
-    values: readonly ['start', 'center', 'end', 'baseline', 'stretch'];
-    responsive: true;
-    default: 'stretch';
-  };
-};
-
-// @public (undocumented)
-export interface StackProps extends SpaceProps {
-  // (undocumented)
-  align?: StackOwnProps['align'];
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  gap?: GapProps['gap'];
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)

@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-import type { SpaceProps } from '../../types';
-import { StackOwnProps } from './Stack.props';
-import type { GapProps } from '../../props/gap-props';
+import { createElement, forwardRef } from 'react';
+import { FlexProps } from './types';
+import clsx from 'clsx';
+import { flexPropDefs } from './Flex.props';
+import { extractProps } from '../../utils/extractProps';
+import { gapPropDefs } from '../../props/gap-props';
 
 /** @public */
-export interface StackProps extends SpaceProps {
-  children: React.ReactNode;
-  gap?: GapProps['gap'];
-  align?: StackOwnProps['align'];
-  className?: string;
-  style?: React.CSSProperties;
-}
+export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
+  const propDefs = {
+    ...gapPropDefs,
+    ...flexPropDefs,
+  };
+
+  const { className, style } = extractProps(props, propDefs);
+
+  return createElement('div', {
+    ref,
+    className: clsx('canon-Flex', className),
+    style,
+    children: props.children,
+  });
+});

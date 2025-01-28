@@ -1,6 +1,6 @@
 'use client';
 
-import { Stack } from '../../../packages/canon';
+import { Flex } from '../../../packages/canon';
 
 const DecorativeBox = () => {
   return (
@@ -18,14 +18,14 @@ const DecorativeBox = () => {
   );
 };
 
-export const StackPreview = () => {
+export const FlexPreview = () => {
   return (
     <div style={{ width: '320px' }}>
-      <Stack>
+      <Flex>
         <DecorativeBox />
         <DecorativeBox />
         <DecorativeBox />
-      </Stack>
+      </Flex>
     </div>
   );
 };

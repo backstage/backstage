@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Stack } from './Stack';
-export { stackPropDefs } from './Stack.props';
-export type { StackProps } from './types';
-export type { StackOwnProps } from './Stack.props';
+export { Flex } from './Flex';
+export { flexPropDefs } from './Flex.props';
+export type { FlexProps } from './types';
+export type { FlexOwnProps } from './Flex.props';

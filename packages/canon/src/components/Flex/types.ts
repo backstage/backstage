@@ -13,5 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Inline } from './Inline';
-export type { InlineProps } from './types';
+
+import type { SpaceProps } from '../../types';
+import { FlexOwnProps } from './Flex.props';
+import type { GapProps } from '../../props/gap-props';
+
+/** @public */
+export interface FlexProps extends SpaceProps {
+  children: React.ReactNode;
+  gap?: GapProps['gap'];
+  align?: FlexOwnProps['align'];
+  justify?: FlexOwnProps['justify'];
+  direction?: FlexOwnProps['direction'];
+  className?: string;
+  style?: React.CSSProperties;
+}

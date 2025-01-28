@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-/* Default utilities */
-@import './utilities/xs.css';
-
-/* Min 640px */
-@import './utilities/sm.css';
-
-/* Min 768px */
-@import './utilities/md.css';
-
-/* Min 1024px */
-@import './utilities/lg.css';
-
-/* Min 1280px */
-@import './utilities/xl.css';
-
-/* Min 1536px */
-@import './utilities/2xl.css';
-
 /* Padding */
 @import './utilities/p.css';
 @import './utilities/pl.css';

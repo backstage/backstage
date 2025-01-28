@@ -17,22 +17,42 @@
 import type { PropDef, GetPropDefTypes } from '../../props/prop-def';
 
 const alignValues = ['start', 'center', 'end', 'baseline', 'stretch'] as const;
+const directionValues = [
+  'row',
+  'column',
+  'row-reverse',
+  'column-reverse',
+] as const;
+const justifyValues = ['start', 'center', 'end', 'between'] as const;
 
 /** @public */
-const stackPropDefs = {
+const flexPropDefs = {
   align: {
     type: 'enum',
     className: 'cu-align',
     values: alignValues,
     responsive: true,
-    default: 'stretch',
+  },
+  direction: {
+    type: 'enum',
+    className: 'cu-fd',
+    values: directionValues,
+    responsive: true,
+  },
+  justify: {
+    type: 'enum',
+    className: 'cu-jc',
+    values: justifyValues,
+    responsive: true,
   },
 } satisfies {
   align: PropDef<(typeof alignValues)[number]>;
+  direction: PropDef<(typeof directionValues)[number]>;
+  justify: PropDef<(typeof justifyValues)[number]>;
 };
 
 /** @public */
-type StackOwnProps = GetPropDefTypes<typeof stackPropDefs>;
+type FlexOwnProps = GetPropDefTypes<typeof flexPropDefs>;
 
-export { stackPropDefs };
-export type { StackOwnProps };
+export { flexPropDefs };
+export type { FlexOwnProps };

@@ -15,7 +15,7 @@
  */
 import React from 'react';
 
-export const StackSvg = () => {
+export const FlexSvg = () => {
   return (
     <svg
       width="100"
