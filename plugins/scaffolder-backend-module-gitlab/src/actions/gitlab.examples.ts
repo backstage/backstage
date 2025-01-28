@@ -202,4 +202,23 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Initializes a GitLab repository with the default readme and no files from workspace only if this repository does not exist yet.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            skipExisting: true,
+            initialize_with_readme: true,
+            sourcePath: false,
+          },
+        },
+      ],
+    }),
+  },
 ];
