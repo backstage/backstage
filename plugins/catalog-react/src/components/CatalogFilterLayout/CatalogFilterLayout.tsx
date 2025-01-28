@@ -45,11 +45,10 @@ export const Filters = (props: {
     setDebouncedIsScreenSmallerThanBreakpoint,
   ] = useState(isScreenSmallerThanBreakpoint);
 
-  // @ts-ignore
-  const _ = useDebounce(
+  useDebounce(
     () =>
       setDebouncedIsScreenSmallerThanBreakpoint(isScreenSmallerThanBreakpoint),
-    300,
+    200,
     [isScreenSmallerThanBreakpoint],
   );
   const theme = useTheme();
