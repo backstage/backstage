@@ -620,7 +620,7 @@ NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' node node_modules/@b
 
 `backstage-cli` adds `--passWithNoTests --watch --workerIdleMemoryLimit=1000M --config node_modules/@backstage/cli/config/jest.js` jest options.
 
-With that in mind, let's configure IDE's to run `backstage-cli` in the role of jest.
+With that in mind, let's configure IDEs to run `backstage-cli` in the role of jest.
 
 
 #### IntelliJ IDEA
