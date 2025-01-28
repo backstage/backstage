@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { createContext, ReactNode, useContext } from 'react';
 import { icons } from '../components/Icon/icons';
 import { IconMap, IconNames } from '../components/Icon/types';

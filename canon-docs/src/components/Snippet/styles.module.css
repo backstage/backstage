@@ -33,6 +33,7 @@
   right: 16px;
   bottom: 12px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 [data-theme='dark'] .previewContent {
