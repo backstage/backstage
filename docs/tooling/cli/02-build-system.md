@@ -622,7 +622,7 @@ With that in mind, here are some IDEs configurations to run backstage components
 
 ```jsonc
 {
-  "jest.jestCommandLine": "node_modules/.bin/backstage-cli --config node_modules/@backstage/cli/config/jest.js",
+  "jest.jestCommandLine": "yarn test",
   // In a large repo like the Backstage main repo you likely want to disable
   // watch mode and the initial test run too, leaving just manual and perhaps
   // on-save test runs in place.
