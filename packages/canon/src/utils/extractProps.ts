@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export function extractProps(
   props: {
     className?: string;
@@ -27,9 +28,6 @@ export function extractProps(
   let style: React.CSSProperties = props.style || {};
 
   for (const key in propDefs) {
-    if (key === 'gap') {
-      console.log(key, propDefs[key]);
-    }
     // Check if the prop is present or has a default value
     if (
       !props.hasOwnProperty(key) &&
@@ -45,10 +43,6 @@ export function extractProps(
     const propDefsCustomProperties = propDefs[key].customProperties;
     const propDefsClassName = propDefs[key].className;
     const isResponsive = propDefs[key].responsive;
-
-    if (key === 'gap') {
-      console.log('coco', key, propDefs[key], value);
-    }
 
     const handleValue = (val: any, prefix: string = '') => {
       if (propDefsValues.includes(val)) {
