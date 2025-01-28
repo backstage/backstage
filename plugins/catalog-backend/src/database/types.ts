@@ -101,7 +101,7 @@ export type ListAncestorsResult = {
 };
 
 export type ListParentsOptions = {
-  entityRef: string;
+  entityRefs: string[];
 };
 
 export type ListParentsResult = {
