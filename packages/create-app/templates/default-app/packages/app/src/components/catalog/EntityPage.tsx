@@ -69,7 +69,7 @@ const techdocsContent = (
 const cicdContent = (
   // This is an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
-  (<EntitySwitch>
+  <EntitySwitch>
     {/*
       Here you can add support for different CI/CD services, for example
       using @backstage-community/plugin-github-actions as follows:
@@ -93,7 +93,7 @@ const cicdContent = (
         }
       />
     </EntitySwitch.Case>
-  </EntitySwitch>)
+  </EntitySwitch>
 );
 
 const entityWarningContent = (
