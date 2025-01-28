@@ -616,7 +616,7 @@ With that in mind, here are some IDEs configurations to run backstage components
 
 2.  Currently, intellij has an issue that if you right-click on a jest test and press "run", intellij will create a playwright run configuration instead of jest configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test).
 
-    Until intellij maintainers resolved the issue, create a jest configuration manually. Happily, intellij will pre-fill the configuration from the template. The only thing you need to do is provide path to the test file. Note, that after intellij runs test in the file you can click on the individual tests from the run panel and re-run them, this time intellij will create a correct jest run configuration.
+    Until intellij maintainers resolve the issue, create a jest configuration manually. Happily, intellij will pre-fill the configuration from the template. The only thing you need to do is provide a path to the test file. Note, that after intellij runs test in the file you can click on the individual tests from the run panel and re-run them, this time intellij will create a correct jest run configuration.
 
 #### VS Code
 
