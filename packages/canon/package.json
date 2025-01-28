@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.1.0-next.0",
+  "version": "0.1.0-next.1",
   "backstage": {
     "role": "web-library"
   },

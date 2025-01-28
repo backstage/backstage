@@ -1,5 +1,30 @@
 # @backstage/backend-openapi-utils
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 700d32b: **BREAKING**: The `wrapInOpenApiTestServer` and `wrapServer` functions are now exported via `/testUtils` subpath. If you were importing these functions directly from the root of the package, you will need to update your imports to use the `/testUtils` subpath:
+
+  ```diff
+  - import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+  + import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils/testUtils';
+  ```
+
+  or
+
+  ```diff
+  - import { wrapServer } from '@backstage/backend-openapi-utils';
+  + import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.4.2-next.0
 
 ### Patch Changes
