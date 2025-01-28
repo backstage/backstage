@@ -1,0 +1,134 @@
+.cu-position-absolute {
+  position: absolute;
+}
+
+.cu-position-fixed {
+  position: fixed;
+}
+
+.cu-position-sticky {
+  position: sticky;
+}
+
+.cu-position-relative {
+  position: relative;
+}
+
+.cu-position-static {
+  position: static;
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:cu-position-absolute {
+    position: absolute;
+  }
+
+  .xs\:cu-position-fixed {
+    position: fixed;
+  }
+
+  .xs\:cu-position-sticky {
+    position: sticky;
+  }
+
+  .xs\:cu-position-relative {
+    position: relative;
+  }
+
+  .xs\:cu-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:cu-position-absolute {
+    position: absolute;
+  }
+
+  .sm\:cu-position-fixed {
+    position: fixed;
+  }
+
+  .sm\:cu-position-sticky {
+    position: sticky;
+  }
+
+  .sm\:cu-position-relative {
+    position: relative;
+  }
+
+  .sm\:cu-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:cu-position-absolute {
+    position: absolute;
+  }
+
+  .md\:cu-position-fixed {
+    position: fixed;
+  }
+
+  .md\:cu-position-sticky {
+    position: sticky;
+  }
+
+  .md\:cu-position-relative {
+    position: relative;
+  }
+
+  .md\:cu-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:cu-position-absolute {
+    position: absolute;
+  }
+
+  .lg\:cu-position-fixed {
+    position: fixed;
+  }
+
+  .lg\:cu-position-sticky {
+    position: sticky;
+  }
+
+  .lg\:cu-position-relative {
+    position: relative;
+  }
+
+  .lg\:cu-position-static {
+    position: static;
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:cu-position-absolute {
+    position: absolute;
+  }
+
+  .xl\:cu-position-fixed {
+    position: fixed;
+  }
+
+  .xl\:cu-position-sticky {
+    position: sticky;
+  }
+
+  .xl\:cu-position-relative {
+    position: relative;
+  }
+
+  .xl\:cu-position-static {
+    position: static;
+  }
+}

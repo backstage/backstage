@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Box } from './Box';
-export type * from './types';
-export type { BoxOwnProps } from './Box.props';
-export { boxPropDefs } from './Box.props';
+import { PropDef } from './prop-def';
+import { GetPropDefTypes } from './prop-def';
+import { spacingValues } from './spacing.props';
+
+/** @public */
+const gapPropDefs = {
+  gap: {
+    type: 'enum | string',
+    className: 'cu-gap',
+    customProperties: ['--gap'],
+    values: spacingValues,
+    responsive: true,
+    default: '4',
+  },
+} satisfies {
+  gap: PropDef<(typeof spacingValues)[number]>;
+};
+
+/** @public */
+type GapProps = GetPropDefTypes<typeof gapPropDefs>;
+
+export { gapPropDefs };
+export type { GapProps };

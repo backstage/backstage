@@ -16,51 +16,24 @@
 
 import { createElement, forwardRef } from 'react';
 import { StackProps } from './types';
-import { getClassNames } from '../../utils/getClassNames';
-import type { AlignItems, Breakpoint } from '../../types';
 import clsx from 'clsx';
-
-// Function to map align values
-const mapAlignValue = (value?: StackProps['align']) => {
-  if (typeof value === 'string') {
-    let returnedValue: AlignItems = 'stretch';
-    if (value === 'left') returnedValue = 'stretch';
-    if (value === 'center') returnedValue = 'center';
-    if (value === 'right') returnedValue = 'end';
-    return returnedValue;
-  } else if (typeof value === 'object') {
-    const returnedValue: Partial<Record<Breakpoint, AlignItems>> = {};
-    for (const [key, val] of Object.entries(value)) {
-      returnedValue[key as Breakpoint] = mapAlignValue(val) as AlignItems;
-    }
-    return returnedValue;
-  }
-  return 'stretch';
-};
+import { stackPropDefs } from './Stack.props';
+import { extractProps } from '../../utils/extractProps';
+import { gapPropDefs } from '../../props/gap-props';
 
 /** @public */
 export const Stack = forwardRef<HTMLDivElement, StackProps>((props, ref) => {
-  const {
-    as = 'div',
-    children,
-    align = 'left',
-    gap = 'xs',
-    className,
-    style,
-    ...restProps
-  } = props;
+  const propDefs = {
+    ...gapPropDefs,
+    ...stackPropDefs,
+  };
 
-  // Generate utility class names
-  const utilityClassNames = getClassNames({
-    gap,
-    alignItems: mapAlignValue(align),
-    ...restProps,
-  });
+  const { className, style } = extractProps(props, propDefs);
 
-  return createElement(as, {
+  return createElement('div', {
     ref,
-    className: clsx('canon-Stack', utilityClassNames, className),
+    className: clsx('canon-Stack', className),
     style,
-    children,
+    children: props.children,
   });
 });

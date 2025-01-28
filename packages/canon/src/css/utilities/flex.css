@@ -1,0 +1,86 @@
+.cu-align-start {
+  align-items: start;
+}
+
+.cu-align-center {
+  align-items: center;
+}
+
+.cu-align-end {
+  align-items: end;
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:cu-align-start {
+    align-items: start;
+  }
+
+  .xs\:cu-align-center {
+    align-items: center;
+  }
+
+  .xs\:cu-align-end {
+    align-items: end;
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:cu-align-start {
+    align-items: start;
+  }
+
+  .sm\:cu-align-center {
+    align-items: center;
+  }
+
+  .sm\:cu-align-end {
+    align-items: end;
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:cu-align-start {
+    align-items: start;
+  }
+
+  .md\:cu-align-center {
+    align-items: center;
+  }
+
+  .md\:cu-align-end {
+    align-items: end;
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:cu-align-start {
+    align-items: start;
+  }
+
+  .lg\:cu-align-center {
+    align-items: center;
+  }
+
+  .lg\:cu-align-end {
+    align-items: end;
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:cu-align-start {
+    align-items: start;
+  }
+
+  .xl\:cu-align-center {
+    align-items: center;
+  }
+
+  .xl\:cu-align-end {
+    align-items: end;
+  }
+}

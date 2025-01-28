@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Box } from './Box';
-export type * from './types';
-export type { BoxOwnProps } from './Box.props';
-export { boxPropDefs } from './Box.props';
+
+import type { PropDef, GetPropDefTypes } from './prop-def';
+
+const displayValues = ['none', 'inline', 'inline-block', 'block'] as const;
+
+/** @public */
+const displayPropDefs = {
+  display: {
+    type: 'enum',
+    className: 'cu-display',
+    values: displayValues,
+    responsive: true,
+  },
+} satisfies {
+  display: PropDef<(typeof displayValues)[number]>;
+};
+
+/** @public */
+type DisplayProps = GetPropDefTypes<typeof displayPropDefs>;
+
+export { displayPropDefs };
+export type { DisplayProps };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Box } from './Box';
-export type * from './types';
-export type { BoxOwnProps } from './Box.props';
-export { boxPropDefs } from './Box.props';
+import { paddingPropDefs } from './padding.props';
+import { marginPropDefs } from './margin.props';
+
+export const spacingValues = [
+  '0.5',
+  '1',
+  '1.5',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+];
+
+export const spacingPropDefs = {
+  ...paddingPropDefs(spacingValues),
+  ...marginPropDefs(spacingValues),
+};

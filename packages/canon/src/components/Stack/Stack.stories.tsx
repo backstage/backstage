@@ -29,16 +29,13 @@ const meta = {
     children: {
       control: false,
     },
-    as: {
-      control: false,
-    },
     className: {
       control: 'text',
     },
   },
   args: {
-    align: 'left',
-    gap: 'xs',
+    align: 'stretch',
+    gap: '4',
     children: 'hello world',
   },
 } satisfies Meta<typeof Stack>;
@@ -63,20 +60,14 @@ const DecorativeBox = () => {
 };
 
 export const Default: Story = {
-  render: () => (
-    <div style={{ width: '320px' }}>
-      <Stack>
-        <DecorativeBox />
-        <DecorativeBox />
-        <DecorativeBox />
-      </Stack>
-    </div>
-  ),
+  args: {
+    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
+  },
 };
 
 export const AlignLeft: Story = {
   render: () => (
-    <Stack align="left">
+    <Stack align="start">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
@@ -96,7 +87,7 @@ export const AlignCenter: Story = {
 
 export const AlignRight: Story = {
   render: () => (
-    <Stack align="right">
+    <Stack align="end">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
@@ -106,7 +97,7 @@ export const AlignRight: Story = {
 
 export const ResponsiveAlign: Story = {
   render: () => (
-    <Stack align={{ xs: 'left', md: 'center', lg: 'right' }}>
+    <Stack align={{ xs: 'start', md: 'center', lg: 'end' }}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
@@ -116,7 +107,7 @@ export const ResponsiveAlign: Story = {
 
 export const ResponsiveGap: Story = {
   render: () => (
-    <Stack gap={{ xs: 'xs', md: 'md', lg: '2xl' }}>
+    <Stack gap={{ xs: '4', md: '8', lg: '12' }}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
@@ -126,7 +117,7 @@ export const ResponsiveGap: Story = {
 
 export const LargeGap: Story = {
   render: () => (
-    <Stack gap="xl">
+    <Stack gap="8">
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
