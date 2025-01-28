@@ -12,7 +12,6 @@ import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { Input as Input_2 } from '@base-ui-components/react/input';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import type { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import { TdHTMLAttributes } from 'react';
@@ -366,8 +365,8 @@ export type GetPropDefType<Def> = Def extends BooleanPropDef
     : string
   : Def extends ReactNodePropDef
   ? Def extends ResponsivePropDef
-    ? Responsive<React_2.ReactNode>
-    : React_2.ReactNode
+    ? Responsive<ReactNode>
+    : ReactNode
   : Def extends EnumOrStringPropDef<infer Type>
   ? Def extends ResponsivePropDef<infer Type extends string>
     ? Responsive<string | Type>
@@ -798,7 +797,7 @@ export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
 // @public (undocumented)
 export type ReactNodePropDef = {
   type: 'ReactNode';
-  default?: React_2.ReactNode;
+  default?: ReactNode;
   required?: boolean;
 };
 
