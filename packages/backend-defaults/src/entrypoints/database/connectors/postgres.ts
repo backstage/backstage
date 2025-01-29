@@ -138,6 +138,10 @@ export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
   };
 }
 
+/* Note: the following type definition is intentionally duplicated in
+ * /packages/backend-defaults/config.d.ts so the clientSecret property
+ * can be annotated with "@visibility secret" there.
+ */
 export type AzureTokenCredentialConfig = {
   /**
    * How early before an access token expires to refresh it with a new one.

@@ -15,7 +15,6 @@
  */
 
 import { HumanDuration } from '@backstage/types';
-import { AzureTokenCredentialConfig } from './src/entrypoints/database/connectors/postgres';
 
 export interface Config {
   app: {
@@ -429,7 +428,39 @@ export interface Config {
             /**
              * Optional Azure token credential configuration
              */
-            tokenCredential?: AzureTokenCredentialConfig;
+            tokenCredential?: {
+              /**
+               * How early before an access token expires to refresh it with a new one.
+               * Defaults to 5 minutes
+               * Supported formats:
+               * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+               *   library.
+               * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+               * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+               */
+              tokenRenewalOffsetTime?: string | HumanDuration;
+            } & (
+              | {
+                  type: 'ClientSecretCredential';
+                  clientId: string;
+                  /**
+                   * @visibility secret
+                   */
+                  clientSecret: string;
+                  tenantId: string;
+                }
+              | {
+                  type: 'ManagedIdentityCredential';
+                  /**
+                   * The client ID of a user-assigned managed identity.
+                   * If not provided, the system-assigned managed identity is used.
+                   */
+                  clientId?: string;
+                }
+              | {
+                  type?: undefined | 'DefaultAzureCredential';
+                }
+            );
           }
         | {
             /**
