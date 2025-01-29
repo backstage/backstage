@@ -15,6 +15,7 @@
  */
 export interface AvailableRepositories {
   name: string;
+  path?: string;
   id?: string;
 }
 
