@@ -1,10 +1,13 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused dependencies (4)
 
-| Name       | Location     | Severity |
-| :--------- | :----------- | :------- |
-| node-fetch | package.json | error    |
+| Name                          | Location     | Severity |
+| :---------------------------- | :----------- | :------- |
+| @backstage/plugin-events-node | package.json | error    |
+| @backstage/plugin-auth-node   | package.json | error    |
+| winston                       | package.json | error    |
+| yn                            | package.json | error    |
 
 ## Unused devDependencies (1)
 

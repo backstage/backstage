@@ -1,9 +1,8 @@
 # Knip report
 
-## Unused devDependencies (2)
+## Unused dependencies (1)
 
-| Name             | Location     | Severity |
-| :--------------- | :----------- | :------- |
-| @types/puppeteer | package.json | error    |
-| nodemon          | package.json | error    |
+| Name                  | Location     | Severity |
+| :-------------------- | :----------- | :------- |
+| @backstage/create-app | package.json | error    |
 
