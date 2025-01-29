@@ -218,6 +218,7 @@
     "@types/pg-format": "^1.0.5",
     "@types/yauzl": "^2.10.0",
     "aws-sdk-client-mock": "^4.0.0",
+    "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",

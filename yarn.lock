@@ -2590,6 +2590,7 @@ __metadata:
     express-promise-router: "npm:^4.1.0"
     express-rate-limit: "npm:^7.5.0"
     fs-extra: "npm:^11.2.0"
+    get-port: "npm:^5.1.1"
     git-url-parse: "npm:^15.0.0"
     helmet: "npm:^6.0.0"
     http-errors: "npm:^2.0.0"
