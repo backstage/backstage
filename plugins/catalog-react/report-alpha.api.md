@@ -209,6 +209,20 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   };
 }>;
 
+// @alpha (undocumented)
+export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
+  kind: 'entity-context-menu-item';
+  name: undefined;
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
