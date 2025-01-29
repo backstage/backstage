@@ -319,6 +319,12 @@ export type ElasticSearchOptions = {
   translator?: ElasticSearchQueryTranslator;
 };
 
+// @public (undocumented)
+export type ElasticSearchQueryConfig = {
+  fuzziness?: string | number;
+  prefixLength?: number;
+};
+
 // @public
 export type ElasticSearchQueryTranslator = (
   query: SearchQuery,
@@ -334,6 +340,7 @@ export interface ElasticSearchQueryTranslatorExtensionPoint {
 // @public
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
+  queryOptions?: ElasticSearchQueryConfig;
 };
 
 // @public (undocumented)
@@ -345,7 +352,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     logger: LoggerService,
     batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
+    queryOptions?: ElasticSearchQueryConfig,
   );
+  // (undocumented)
+  [x: string]: any;
   // (undocumented)
   static fromConfig(
     options: ElasticSearchOptions,
@@ -363,6 +373,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
+    queryOptions?: ElasticSearchQueryConfig,
   ): ElasticSearchConcreteQuery;
 }
 
