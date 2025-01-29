@@ -7870,7 +7870,7 @@ __metadata:
     classnames: ^2.2.6
     flatted: 3.3.2
     humanize-duration: ^3.25.1
-    immer: ^8.0.0
+    immer: ^9.0.0
     json-schema: ^0.4.0
     json-schema-library: ^9.0.0
     lodash: ^4.17.21
@@ -31864,14 +31864,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^8.0.0":
-  version: 8.0.4
-  resolution: "immer@npm:8.0.4"
-  checksum: 9d3b28df1ac5bf6918c611e71c15bdb136588c21a3431100448f21325fef9b055cc9a44fe8b023f0c5ecbc66a2ba38f403c9a67d581f613b49d0e4ff15564f79
-  languageName: node
-  linkType: hard
-
-"immer@npm:^9.0.6, immer@npm:^9.0.7":
+"immer@npm:^9.0.0, immer@npm:^9.0.6, immer@npm:^9.0.7":
   version: 9.0.21
   resolution: "immer@npm:9.0.21"
   checksum: 70e3c274165995352f6936695f0ef4723c52c92c92dd0e9afdfe008175af39fa28e76aafb3a2ca9d57d1fb8f796efc4dd1e1cc36f18d33fa5b74f3dfb0375432
