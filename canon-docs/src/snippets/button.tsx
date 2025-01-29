@@ -1,16 +1,10 @@
 'use client';
 
-import {
-  Inline,
-  Button,
-  Stack,
-  ButtonProps,
-  Text,
-} from '../../../packages/canon';
+import { Button, Flex, ButtonProps, Text } from '../../../packages/canon';
 
 export const ButtonPreview = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button iconStart="cloud" variant="primary">
         Button
       </Button>
@@ -20,40 +14,40 @@ export const ButtonPreview = () => {
       <Button iconStart="cloud" variant="tertiary">
         Button
       </Button>
-    </Inline>
+    </Flex>
   );
 };
 
 export const ButtonSizes = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button size="medium">Medium</Button>
       <Button size="small">Small</Button>
-    </Inline>
+    </Flex>
   );
 };
 
 export const ButtonWithIcons = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button iconStart="cloud">Button</Button>
       <Button iconEnd="chevronRight">Button</Button>
       <Button iconStart="cloud" iconEnd="chevronRight">
         Button
       </Button>
-    </Inline>
+    </Flex>
   );
 };
 
 export const ButtonFullWidth = () => {
   return (
-    <Stack style={{ width: '300px' }}>
+    <Flex direction="column" style={{ width: '300px' }}>
       <Button iconStart="cloud">Button</Button>
       <Button iconEnd="chevronRight">Button</Button>
       <Button iconStart="cloud" iconEnd="chevronRight">
         Button
       </Button>
-    </Stack>
+    </Flex>
   );
 };
 
@@ -73,12 +67,12 @@ export const ButtonPlayground = () => {
   const variants: string[] = ['primary', 'secondary', 'tertiary'];
 
   return (
-    <Stack>
+    <Flex direction="column">
       {variants.map(variant => (
-        <Stack key={variant}>
+        <Flex direction="column" key={variant}>
           <Text>{variant}</Text>
           {['small', 'medium'].map(size => (
-            <Inline alignY="center" key={size}>
+            <Flex align="center" key={size}>
               <Button
                 iconStart="cloud"
                 variant={variant as ButtonProps['variant']}
@@ -102,10 +96,10 @@ export const ButtonPlayground = () => {
               >
                 Button
               </Button>
-            </Inline>
+            </Flex>
           ))}
-        </Stack>
+        </Flex>
       ))}
-    </Stack>
+    </Flex>
   );
 };

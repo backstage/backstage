@@ -1,6 +1,6 @@
 'use client';
 
-import { Inline, Checkbox, Stack, Text } from '../../../packages/canon';
+import { Checkbox, Flex, Text } from '../../../packages/canon';
 
 export const CheckboxPreview = () => {
   return <Checkbox label="Accept terms and conditions" />;
@@ -8,25 +8,25 @@ export const CheckboxPreview = () => {
 
 export const CheckboxAllVariants = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Checkbox />
       <Checkbox checked />
       <Checkbox label="Checkbox" />
       <Checkbox label="Checkbox" checked />
-    </Inline>
+    </Flex>
   );
 };
 
 export const CheckboxPlayground = () => {
   return (
-    <Stack>
+    <Flex direction="column">
       <Text>All variants</Text>
-      <Inline alignY="center">
+      <Flex align="center">
         <Checkbox />
         <Checkbox checked />
         <Checkbox label="Checkbox" />
         <Checkbox label="Checkbox" checked />
-      </Inline>
-    </Stack>
+      </Flex>
+    </Flex>
   );
 };

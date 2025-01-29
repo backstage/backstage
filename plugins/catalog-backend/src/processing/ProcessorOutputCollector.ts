@@ -137,7 +137,9 @@ export class ProcessorOutputCollector {
         },
       };
 
-      this.deferredEntities.push({ entity, locationKey: location });
+      const locationKey =
+        i.locationKey === undefined ? location : i.locationKey ?? undefined;
+      this.deferredEntities.push({ entity, locationKey });
     } else if (i.type === 'location') {
       const entity = locationSpecToLocationEntity({
         location: i.location,
