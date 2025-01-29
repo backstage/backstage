@@ -165,7 +165,7 @@ export type AzureTokenCredentialConfig = {
       clientId?: string;
     }
   | {
-      type: undefined | 'DefaultAzureCredential';
+      type?: undefined | 'DefaultAzureCredential';
     }
 );
 
