@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-node
 
+## 1.16.0-next.1
+
+### Minor Changes
+
+- 9b9737c: Added the `locationKey` option to `processingResult.entity(...)`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.0
+
 ## 1.15.2-next.0
 
 ### Patch Changes

@@ -991,6 +991,27 @@ describe('NunjucksWorkflowRunner', () => {
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });
+
+    it('should validate each parameter renders to a valid value', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+        output: {},
+        parameters: {},
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid value on action jest-validated-action.each parameter, "${{parameters.data}}" cannot be resolved to a value',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
   });
 
   describe('secrets', () => {

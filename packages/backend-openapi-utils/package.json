@@ -1,15 +1,12 @@
 {
   "name": "@backstage/backend-openapi-utils",
-  "version": "0.4.2-next.0",
+  "version": "0.5.0-next.1",
   "description": "OpenAPI typescript support.",
   "backstage": {
     "role": "node-library"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -18,8 +15,23 @@
     "directory": "packages/backend-openapi-utils"
   },
   "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testUtils": "./src/testUtils.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "testUtils": [
+        "src/testUtils.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],

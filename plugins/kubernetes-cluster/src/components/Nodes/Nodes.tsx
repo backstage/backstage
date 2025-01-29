@@ -50,7 +50,10 @@ const defaultColumns: TableColumn<INode>[] = [
           <Grid container>
             <Grid item xs={12}>
               <Typography variant="h5">Node Info</Typography>
-              <StructuredMetadataTable metadata={node.status?.nodeInfo ?? {}} />
+              <StructuredMetadataTable
+                metadata={node.status?.nodeInfo ?? {}}
+                options={{ nestedValuesAsYaml: true }}
+              />
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h5">Addresses</Typography>
@@ -61,6 +64,7 @@ const defaultColumns: TableColumn<INode>[] = [
                     return accum;
                   }, {} as any) ?? {}
                 }
+                options={{ nestedValuesAsYaml: true }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -72,6 +76,7 @@ const defaultColumns: TableColumn<INode>[] = [
                     return accum;
                   }, {} as any) ?? {}
                 }
+                options={{ nestedValuesAsYaml: true }}
               />
             </Grid>
           </Grid>

@@ -33,10 +33,10 @@ const desiredLocalVersionsOfDependencies = {
 };
 
 const peerDependencies = {
-  '@types/react': '^16.13.1 || ^17.0.0 || ^18.0.0',
-  react: '^16.13.1 || ^17.0.0 || ^18.0.0',
-  'react-dom': '^16.13.1 || ^17.0.0 || ^18.0.0',
-  'react-router-dom': '6.0.0-beta.0 || ^6.3.0',
+  '@types/react': '^17.0.0 || ^18.0.0',
+  react: '^17.0.0 || ^18.0.0',
+  'react-dom': '^17.0.0 || ^18.0.0',
+  'react-router-dom': '^6.3.0',
 };
 
 const groupsOfPeerDependencies = [['@types/react', 'react', 'react-dom']];

@@ -18,6 +18,13 @@ import { RefAttributes } from 'react';
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
 // @public (undocumented)
+export type ArbitraryStylingPropDef = {
+  className: string;
+  customProperties: `--${string}`[];
+  parseValue?: (value: string) => string | undefined;
+};
+
+// @public (undocumented)
 export type AsProps =
   | 'div'
   | 'span'
@@ -35,6 +42,14 @@ export type AsProps =
   | 'dd'
   | 'dl'
   | 'dt';
+
+// @public (undocumented)
+export type BooleanPropDef = {
+  type: 'boolean';
+  default?: boolean;
+  required?: boolean;
+  className?: string;
+};
 
 // @public (undocumented)
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
@@ -56,19 +71,50 @@ export const Box: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface BoxProps extends UtilityProps {
+export type BoxOwnProps = GetPropDefTypes<typeof boxPropDefs>;
+
+// @public (undocumented)
+export const boxPropDefs: {
+  as: {
+    type: 'enum';
+    values: readonly ['div', 'span'];
+    default: 'div';
+  };
+};
+
+// @public (undocumented)
+export interface BoxProps extends SpaceProps {
   // (undocumented)
-  as?: keyof JSX.IntrinsicElements;
+  as?: BoxOwnProps['as'];
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
+  display?: DisplayProps['display'];
+  // (undocumented)
+  height?: HeightProps['height'];
+  // (undocumented)
+  maxHeight?: HeightProps['maxHeight'];
+  // (undocumented)
+  maxWidth?: WidthProps['maxWidth'];
+  // (undocumented)
+  minHeight?: HeightProps['minHeight'];
+  // (undocumented)
+  minWidth?: WidthProps['minWidth'];
+  // (undocumented)
+  position?: PositionProps['position'];
+  // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  width?: WidthProps['width'];
 }
 
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+// @public (undocumented)
+export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
 export const Button: React_2.ForwardRefExoticComponent<
@@ -149,8 +195,8 @@ export interface CheckboxProps {
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
 
 // @public (undocumented)
-export const Container: React_2.ForwardRefExoticComponent<
-  ContainerProps & React_2.RefAttributes<HTMLDivElement>
+export const Container: ForwardRefExoticComponent<
+  ContainerProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -160,23 +206,52 @@ export interface ContainerProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  marginBottom?: SpaceProps['marginBottom'];
+  mb?: SpaceProps['mb'];
   // (undocumented)
-  marginTop?: SpaceProps['marginTop'];
+  mt?: SpaceProps['mt'];
   // (undocumented)
-  marginY?: SpaceProps['marginY'];
+  my?: SpaceProps['my'];
   // (undocumented)
-  paddingBottom?: SpaceProps['paddingBottom'];
+  pb?: SpaceProps['pb'];
   // (undocumented)
-  paddingTop?: SpaceProps['paddingTop'];
+  pt?: SpaceProps['pt'];
   // (undocumented)
-  paddingY?: SpaceProps['paddingY'];
+  py?: SpaceProps['py'];
   // (undocumented)
   style?: React.CSSProperties;
 }
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
+
+// @public (undocumented)
+export const displayPropDefs: {
+  display: {
+    type: 'enum';
+    className: string;
+    values: readonly ['none', 'inline', 'inline-block', 'block'];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export type DisplayProps = GetPropDefTypes<typeof displayPropDefs>;
+
+// @public (undocumented)
+export type EnumOrStringPropDef<T> = {
+  type: 'enum | string';
+  values: readonly T[];
+  default?: T | string;
+  required?: boolean;
+};
+
+// @public (undocumented)
+export type EnumPropDef<T> = {
+  type: 'enum';
+  values: readonly T[];
+  default?: T;
+  required?: boolean;
+};
 
 // @public (undocumented)
 export const Field: {
@@ -209,10 +284,101 @@ export const Field: {
 };
 
 // @public (undocumented)
+export const Flex: ForwardRefExoticComponent<
+  FlexProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
 export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
+export type FlexOwnProps = GetPropDefTypes<typeof flexPropDefs>;
+
+// @public (undocumented)
+export const flexPropDefs: {
+  align: {
+    type: 'enum';
+    className: string;
+    values: readonly ['start', 'center', 'end', 'baseline', 'stretch'];
+    responsive: true;
+  };
+  direction: {
+    type: 'enum';
+    className: string;
+    values: readonly ['row', 'column', 'row-reverse', 'column-reverse'];
+    responsive: true;
+  };
+  justify: {
+    type: 'enum';
+    className: string;
+    values: readonly ['start', 'center', 'end', 'between'];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export interface FlexProps extends SpaceProps {
+  // (undocumented)
+  align?: FlexOwnProps['align'];
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  direction?: FlexOwnProps['direction'];
+  // (undocumented)
+  gap?: GapProps['gap'];
+  // (undocumented)
+  justify?: FlexOwnProps['justify'];
+  // (undocumented)
+  style?: React.CSSProperties;
+}
+
+// @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
+
+// @public (undocumented)
+export const gapPropDefs: {
+  gap: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--gap'[];
+    values: string[];
+    responsive: true;
+    default: string;
+  };
+};
+
+// @public (undocumented)
+export type GapProps = GetPropDefTypes<typeof gapPropDefs>;
+
+// @public (undocumented)
+export type GetPropDefType<Def> = Def extends BooleanPropDef
+  ? Def extends ResponsivePropDef
+    ? Responsive<boolean>
+    : boolean
+  : Def extends StringPropDef
+  ? Def extends ResponsivePropDef
+    ? Responsive<string>
+    : string
+  : Def extends ReactNodePropDef
+  ? Def extends ResponsivePropDef
+    ? Responsive<React_2.ReactNode>
+    : React_2.ReactNode
+  : Def extends EnumOrStringPropDef<infer Type>
+  ? Def extends ResponsivePropDef<infer Type extends string>
+    ? Responsive<string | Type>
+    : string | Type
+  : Def extends EnumPropDef<infer Type>
+  ? Def extends ResponsivePropDef<infer Type>
+    ? Responsive<Type>
+    : Type
+  : never;
+
+// @public (undocumented)
+export type GetPropDefTypes<P> = {
+  [K in keyof P]?: GetPropDefType<P[K]>;
+};
 
 // @public (undocumented)
 export const Grid: ForwardRefExoticComponent<
@@ -224,22 +390,142 @@ export const Grid: ForwardRefExoticComponent<
 };
 
 // @public (undocumented)
+export type GridItemOwnProps = GetPropDefTypes<typeof gridItemPropDefs>;
+
+// @public (undocumented)
+export const gridItemPropDefs: {
+  colSpan: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-span'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  colEnd: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-end'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  colStart: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--col-start'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+  rowSpan: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--row-span'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
-  children: React.ReactNode;
+  children?: React.ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
-  colEnd?: UtilityProps['colEnd'];
+  colEnd?: GridItemOwnProps['colEnd'];
   // (undocumented)
-  colSpan?: UtilityProps['colSpan'];
+  colSpan?: GridItemOwnProps['colSpan'];
   // (undocumented)
-  colStart?: UtilityProps['colStart'];
+  colStart?: GridItemOwnProps['colStart'];
   // (undocumented)
-  rowSpan?: UtilityProps['rowSpan'];
+  rowSpan?: GridItemOwnProps['rowSpan'];
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public (undocumented)
+export type GridOwnProps = GetPropDefTypes<typeof gridPropDefs>;
+
+// @public (undocumented)
+export const gridPropDefs: {
+  columns: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--columns'[];
+    values: readonly [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      'auto',
+    ];
+    responsive: true;
+    default: string;
+  };
+};
 
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
@@ -248,9 +534,9 @@ export interface GridProps extends SpaceProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  columns?: UtilityProps['columns'];
+  columns?: GridOwnProps['columns'];
   // (undocumented)
-  gap?: UtilityProps['gap'];
+  gap?: GapProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
 }
@@ -285,6 +571,31 @@ export interface HeadingProps {
         >
       >;
 }
+
+// @public (undocumented)
+export const heightPropDefs: {
+  height: {
+    type: 'string';
+    className: string;
+    customProperties: '--height'[];
+    responsive: true;
+  };
+  minHeight: {
+    type: 'string';
+    className: string;
+    customProperties: '--min-height'[];
+    responsive: true;
+  };
+  maxHeight: {
+    type: 'string';
+    className: string;
+    customProperties: '--max-height'[];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
 export const Icon: (props: IconProps) => React_2.JSX.Element;
@@ -327,37 +638,6 @@ export type IconProps = {
 export const icons: IconMap;
 
 // @public (undocumented)
-export const Inline: ForwardRefExoticComponent<
-  InlineProps & RefAttributes<HTMLElement>
->;
-
-// @public (undocumented)
-export interface InlineProps extends SpaceProps {
-  // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  // (undocumented)
-  alignY?:
-    | 'top'
-    | 'center'
-    | 'bottom'
-    | Partial<Record<Breakpoint, 'top' | 'center' | 'bottom'>>;
-  // (undocumented)
-  as?: AsProps;
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  gap?: UtilityProps['gap'];
-  // (undocumented)
-  style?: React.CSSProperties;
-}
-
-// @public (undocumented)
 export const Input: React_2.ForwardRefExoticComponent<
   InputProps & React_2.RefAttributes<HTMLInputElement>
 >;
@@ -378,64 +658,230 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
-export type Space = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export const marginPropDefs: (spacingValues: string[]) => {
+  m: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: '--m'[];
+    responsive: true;
+  };
+  mx: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: ('--ml' | '--mr')[];
+    responsive: true;
+  };
+  my: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: ('--mt' | '--mb')[];
+    responsive: true;
+  };
+  mt: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: '--mt'[];
+    responsive: true;
+  };
+  mr: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: '--mr'[];
+    responsive: true;
+  };
+  mb: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: '--mb'[];
+    responsive: true;
+  };
+  ml: {
+    type: 'enum | string';
+    values: string[];
+    className: string;
+    customProperties: '--ml'[];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
+
+// @public (undocumented)
+export type NonStylingPropDef = {
+  className?: never;
+  customProperties?: never;
+  parseValue?: never;
+};
+
+// @public (undocumented)
+export const paddingPropDefs: (spacingValues: string[]) => {
+  p: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--p'[];
+    values: string[];
+    responsive: true;
+  };
+  px: {
+    type: 'enum | string';
+    className: string;
+    customProperties: ('--pl' | '--pr')[];
+    values: string[];
+    responsive: true;
+  };
+  py: {
+    type: 'enum | string';
+    className: string;
+    customProperties: ('--pt' | '--pb')[];
+    values: string[];
+    responsive: true;
+  };
+  pt: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--pt'[];
+    values: string[];
+    responsive: true;
+  };
+  pr: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--pr'[];
+    values: string[];
+    responsive: true;
+  };
+  pb: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--pb'[];
+    values: string[];
+    responsive: true;
+  };
+  pl: {
+    type: 'enum | string';
+    className: string;
+    customProperties: '--pl'[];
+    values: string[];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export type PaddingProps = GetPropDefTypes<typeof paddingPropDefs>;
+
+// @public (undocumented)
+export const positionPropDefs: {
+  position: {
+    type: 'enum';
+    className: string;
+    values: readonly ['static', 'relative', 'absolute', 'fixed', 'sticky'];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
+
+// @public (undocumented)
+export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
+
+// @public (undocumented)
+export type ReactNodePropDef = {
+  type: 'ReactNode';
+  default?: React_2.ReactNode;
+  required?: boolean;
+};
+
+// @public (undocumented)
+export type RegularPropDef<T> =
+  | ReactNodePropDef
+  | BooleanPropDef
+  | (StringPropDef & ArbitraryStylingPropDef)
+  | (StringPropDef & NonStylingPropDef)
+  | (EnumPropDef<T> & StylingPropDef)
+  | (EnumPropDef<T> & NonStylingPropDef)
+  | (EnumOrStringPropDef<T> & ArbitraryStylingPropDef)
+  | (EnumOrStringPropDef<T> & NonStylingPropDef);
+
+// @public (undocumented)
+export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
+
+// @public (undocumented)
+export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
+  responsive: true;
+};
+
+// @public (undocumented)
+export type Space =
+  | '0.5'
+  | '1'
+  | '1.5'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | '13'
+  | '14'
+  | string;
 
 // @public (undocumented)
 export interface SpaceProps {
   // (undocumented)
-  margin?: Space | Partial<Record<Breakpoint, Space>>;
+  m?: Responsive<Space>;
   // (undocumented)
-  marginBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  mb?: Responsive<Space>;
   // (undocumented)
-  marginLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  ml?: Responsive<Space>;
   // (undocumented)
-  marginRight?: Space | Partial<Record<Breakpoint, Space>>;
+  mr?: Responsive<Space>;
   // (undocumented)
-  marginTop?: Space | Partial<Record<Breakpoint, Space>>;
+  mt?: Responsive<Space>;
   // (undocumented)
-  marginX?: Space | Partial<Record<Breakpoint, Space>>;
+  mx?: Responsive<Space>;
   // (undocumented)
-  marginY?: Space | Partial<Record<Breakpoint, Space>>;
+  my?: Responsive<Space>;
   // (undocumented)
-  padding?: Space | Partial<Record<Breakpoint, Space>>;
+  p?: Responsive<Space>;
   // (undocumented)
-  paddingBottom?: Space | Partial<Record<Breakpoint, Space>>;
+  pb?: Responsive<Space>;
   // (undocumented)
-  paddingLeft?: Space | Partial<Record<Breakpoint, Space>>;
+  pl?: Responsive<Space>;
   // (undocumented)
-  paddingRight?: Space | Partial<Record<Breakpoint, Space>>;
+  pr?: Responsive<Space>;
   // (undocumented)
-  paddingTop?: Space | Partial<Record<Breakpoint, Space>>;
+  pt?: Responsive<Space>;
   // (undocumented)
-  paddingX?: Space | Partial<Record<Breakpoint, Space>>;
+  px?: Responsive<Space>;
   // (undocumented)
-  paddingY?: Space | Partial<Record<Breakpoint, Space>>;
+  py?: Responsive<Space>;
 }
 
 // @public (undocumented)
-export const Stack: ForwardRefExoticComponent<
-  StackProps & RefAttributes<HTMLDivElement>
->;
+export type StringPropDef = {
+  type: 'string';
+  default?: string;
+  required?: boolean;
+};
 
 // @public (undocumented)
-export interface StackProps extends SpaceProps {
-  // (undocumented)
-  align?:
-    | 'left'
-    | 'center'
-    | 'right'
-    | Partial<Record<Breakpoint, 'left' | 'center' | 'right'>>;
-  // (undocumented)
-  as?: AsProps;
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  gap?: UtilityProps['gap'];
-  // (undocumented)
-  style?: React.CSSProperties;
-}
+export type StylingPropDef = {
+  className: string;
+  parseValue?: (value: string) => string | undefined;
+};
 
 // @public (undocumented)
 export const Table: React_3.ForwardRefExoticComponent<
@@ -510,30 +956,55 @@ export const useCanon: () => CanonContextProps;
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {
   // (undocumented)
-  alignItems?: AlignItems | Partial<Record<Breakpoint, AlignItems>>;
+  alignItems?: Responsive<AlignItems>;
   // (undocumented)
-  border?: Border | Partial<Record<Breakpoint, Border>>;
+  border?: Responsive<Border>;
   // (undocumented)
-  borderRadius?: BorderRadius | Partial<Record<Breakpoint, BorderRadius>>;
+  borderRadius?: Responsive<BorderRadius>;
   // (undocumented)
-  colEnd?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  colEnd?: Responsive<Columns | 'auto'>;
   // (undocumented)
-  colSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  colSpan?: Responsive<Columns | 'full'>;
   // (undocumented)
-  colStart?: Columns | 'auto' | Partial<Record<Breakpoint, Columns | 'auto'>>;
+  colStart?: Responsive<Columns | 'auto'>;
   // (undocumented)
-  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
+  columns?: Responsive<Columns>;
   // (undocumented)
-  display?: Display | Partial<Record<Breakpoint, Display>>;
+  display?: Responsive<Display>;
   // (undocumented)
-  flexDirection?: FlexDirection | Partial<Record<Breakpoint, FlexDirection>>;
+  flexDirection?: Responsive<FlexDirection>;
   // (undocumented)
-  flexWrap?: FlexWrap | Partial<Record<Breakpoint, FlexWrap>>;
+  flexWrap?: Responsive<FlexWrap>;
   // (undocumented)
-  gap?: Space | Partial<Record<Breakpoint, Space>>;
+  gap?: Responsive<Space>;
   // (undocumented)
-  justifyContent?: JustifyContent | Partial<Record<Breakpoint, JustifyContent>>;
+  justifyContent?: Responsive<JustifyContent>;
   // (undocumented)
-  rowSpan?: Columns | 'full' | Partial<Record<Breakpoint, Columns | 'full'>>;
+  rowSpan?: Responsive<Columns | 'full'>;
 }
+
+// @public (undocumented)
+export const widthPropDefs: {
+  width: {
+    type: 'string';
+    className: string;
+    customProperties: '--width'[];
+    responsive: true;
+  };
+  minWidth: {
+    type: 'string';
+    className: string;
+    customProperties: '--min-width'[];
+    responsive: true;
+  };
+  maxWidth: {
+    type: 'string';
+    className: string;
+    customProperties: '--max-width'[];
+    responsive: true;
+  };
+};
+
+// @public (undocumented)
+export type WidthProps = GetPropDefTypes<typeof widthPropDefs>;
 ```

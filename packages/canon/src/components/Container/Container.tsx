@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { forwardRef } from 'react';
+
+import { createElement, forwardRef } from 'react';
 import { ContainerProps } from './types';
-import { getClassNames } from '../../utils/getClassNames';
 import clsx from 'clsx';
+import { displayPropDefs } from '../../props/display.props';
+import { extractProps } from '../../utils/extractProps';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
-    const { children, className, style, ...restProps } = props;
+    const { children } = props;
 
-    // Generate utility class names
-    const utilityClassNames = getClassNames(restProps);
+    const propDefs = {
+      ...displayPropDefs,
+    };
+    const { className, style } = extractProps(props, propDefs);
 
-    return (
-      <div
-        ref={ref}
-        className={clsx('canon-Container', utilityClassNames, className)}
-        style={style}
-      >
-        {children}
-      </div>
-    );
+    return createElement('div', {
+      ref,
+      className: clsx('canon-Container', className),
+      style,
+      children,
+    });
   },
 );
