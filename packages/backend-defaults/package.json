@@ -21,7 +21,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
-    "./alpha": "./src/entrypoints/alpha.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
     "./cache": "./src/entrypoints/cache/index.ts",
     "./database": "./src/entrypoints/database/index.ts",
@@ -49,9 +48,6 @@
     "*": {
       "auditor": [
         "src/entrypoints/auditor/index.ts"
-      ],
-      "alpha": [
-        "src/entrypoints/alpha.ts"
       ],
       "auth": [
         "src/entrypoints/auth/index.ts"
@@ -218,6 +214,7 @@
     "@types/yauzl": "^2.10.0",
     "aws-sdk-client-mock": "^4.0.0",
     "better-sqlite3": "^12.0.0",
+    "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",
