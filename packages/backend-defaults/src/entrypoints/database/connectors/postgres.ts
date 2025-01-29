@@ -181,7 +181,7 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
   const configReader = new ConfigReader(config);
   if (configReader.has('connection.tokenCredential.tokenRenewalOffsetTime')) {
     tokenRenewalOffsetMs = durationToMilliseconds(
-      readDurationFromConfig(new ConfigReader(config), {
+      readDurationFromConfig(configReader, {
         key: 'connection.tokenCredential.tokenRenewalOffsetTime',
       }),
     );
