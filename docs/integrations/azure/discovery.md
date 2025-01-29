@@ -85,7 +85,7 @@ The parameters available are:
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
 
-_Note:_
+:::note Note
 
 - The path parameter follows the same rules as the search on Azure DevOps web interface. For more details visit the [official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
 - To use branch parameters, it is necessary that the desired branch be added to the "Searchable branches" list within Azure DevOps Repositories. To do this, follow the instructions below:
@@ -96,6 +96,8 @@ _Note:_
 4. In the "Searchable branches" section, click on the "Add" button to add a new branch.
 5. In the window that appears, enter the name of the branch you want to add and click "Add".
 6. The added branch will now appear in the "Searchable branches" list.
+
+:::
 
 It may take some time before the branch is indexed and searchable.
 
