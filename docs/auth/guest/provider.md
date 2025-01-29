@@ -75,7 +75,7 @@ auth:
       dangerouslyAllowOutsideDevelopment: false
 ```
 
-The `userEntityRef` is used as the entity reference for the guest user and the `ownershipEntityRefs` is a list of entity references to user for ownership of the guest user if the user is not found in the catalog.
+The `userEntityRef` is used as the entity reference for the guest user and the `ownershipEntityRefs` is a list of entity references to use for ownership of the guest user, if the user is not found in the catalog.
 
 The `dangerouslyAllowOutsideDevelopment` flag is used to allow users to sign in with the guest provider outside of their development environments.
 
