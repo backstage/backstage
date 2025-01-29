@@ -355,8 +355,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     queryOptions?: ElasticSearchQueryConfig,
   );
   // (undocumented)
-  [x: string]: any;
-  // (undocumented)
   static fromConfig(
     options: ElasticSearchOptions,
   ): Promise<ElasticSearchSearchEngine>;
