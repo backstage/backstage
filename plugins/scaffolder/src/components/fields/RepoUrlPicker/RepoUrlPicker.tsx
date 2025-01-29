@@ -248,7 +248,7 @@ export const RepoUrlPicker = (
         onChange={repo =>
           setState(prevState => ({
             ...prevState,
-            repoName: repo.name,
+            repoName: repo.path || repo.name,
             id: repo.id || '',
           }))
         }
