@@ -130,7 +130,6 @@
     "node-libs-browser": "^2.2.1",
     "npm-packlist": "^5.0.0",
     "ora": "^5.3.0",
-    "p-limit": "^3.1.0",
     "p-queue": "^6.6.2",
     "pirates": "^4.0.6",
     "postcss": "^8.1.0",
