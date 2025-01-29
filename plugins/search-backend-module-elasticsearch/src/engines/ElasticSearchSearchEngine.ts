@@ -60,6 +60,7 @@ export type ElasticSearchConcreteQuery = {
  */
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
+  queryOptions?: ElasticSearchQueryOptions;
 };
 
 /**
@@ -95,6 +96,16 @@ export type ElasticSearchHighlightOptions = {
 /**
  * @public
  */
+export type ElasticSearchQueryOptions = {
+  fuzziness?: string | number;
+  prefixLength?: number;
+  tieBreaker?: number;
+  maxExpansions?: number;
+};
+
+/**
+ * @public
+ */
 export type ElasticSearchHighlightConfig = {
   fragmentDelimiter: string;
   fragmentSize: number;
@@ -123,6 +134,7 @@ const DEFAULT_INDEXER_BATCH_SIZE = 1000;
  * @public
  */
 export class ElasticSearchSearchEngine implements SearchEngine {
+  [x: string]: any;
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
 
@@ -133,6 +145,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly logger: LoggerService,
     private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
+    queryOptions?: ElasticSearchQueryOptions,
   ) {
     this.elasticSearchClientWrapper =
       ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
@@ -144,6 +157,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       numFragments: 1,
       fragmentDelimiter: ' ... ',
       ...highlightOptions,
+      ...queryOptions,
     };
   }
 
@@ -222,6 +236,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
+    queryOptions?: ElasticSearchQueryOptions,
   ): ElasticSearchConcreteQuery {
     const { term, filters = {}, types, pageCursor } = query;
 
@@ -266,11 +281,15 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       if (restTerm?.length > 0) {
         const esbRestQuery = esb
           .multiMatchQuery(['*'], restTerm.trim())
-          .fuzziness('auto');
+          .fuzziness(queryOptions?.fuzziness ?? 'auto')
+          .prefixLength(queryOptions?.prefixLength ?? 0);
         esbQueries.push(esbRestQuery);
       }
     } else {
-      const esbQuery = esb.multiMatchQuery(['*'], term).fuzziness('auto');
+      const esbQuery = esb
+        .multiMatchQuery(['*'], term)
+        .fuzziness(queryOptions?.fuzziness ?? 'auto')
+        .prefixLength(queryOptions?.prefixLength ?? 0);
       esbQueries.push(esbQuery);
     }
 
@@ -386,7 +405,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { elasticSearchQuery, documentTypes, pageSize } = this.translator(
       query,
-      { highlightOptions: this.highlightOptions },
+      {
+        highlightOptions: this.highlightOptions,
+        queryOptions: this.queryOptions,
+      },
     );
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
