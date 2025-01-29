@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs
 
+## 1.12.2
+
+### Patch Changes
+
+- 5f0a446: Add missing route ref to the `/alpha` entity content extension.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-auth-react@0.1.11
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.5
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.13
+
 ## 1.12.1
 
 ### Patch Changes
