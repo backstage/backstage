@@ -33,6 +33,9 @@ const baseFactories = [
   mockServices.lifecycle.factory(),
   mockServices.rootLogger.factory(),
   mockServices.logger.factory(),
+  mockServices.rootConfig.factory(),
+  mockServices.rootHttpRouter.mock().factory,
+  mockServices.rootHealth.factory(),
 ];
 
 function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
@@ -808,7 +811,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when modules fail to start', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(testPlugin);
     init.add(
       createBackendModule({
@@ -830,7 +833,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate plugins', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -859,7 +862,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate modules', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(testPlugin);
     init.add(
       createBackendModule({
@@ -896,6 +899,9 @@ describe('BackendInitializer', () => {
     const init = new BackendInitializer([
       mockServices.rootLifecycle.factory(),
       mockServices.rootLogger.factory(),
+      mockServices.rootHttpRouter.mock().factory,
+      mockServices.rootHealth.factory(),
+      mockServices.rootConfig.factory(),
     ]);
     init.add(testPlugin);
     init.add(
