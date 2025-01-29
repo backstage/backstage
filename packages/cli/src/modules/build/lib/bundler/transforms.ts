@@ -16,7 +16,7 @@
 
 import { RuleSetRule, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { svgrTemplate } from '../svgrTemplate';
+import { svgrTemplate } from '../../../../lib/svgrTemplate';
 
 type Transforms = {
   loaders: RuleSetRule[];

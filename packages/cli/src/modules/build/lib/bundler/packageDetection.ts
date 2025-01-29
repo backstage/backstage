@@ -20,7 +20,7 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
 import { join as joinPath, resolve as resolvePath } from 'path';
-import { paths as cliPaths } from '../paths';
+import { paths as cliPaths } from '../../../../lib/paths';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 

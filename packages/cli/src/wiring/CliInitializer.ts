@@ -93,8 +93,28 @@ export class CliInitializer {
           .allowExcessArguments(true)
           .action(async () => {
             try {
+              const args = program.parseOptions(process.argv);
+
+              const nonProcessArgs = args.operands.slice(2);
+              const positionalArgs = [];
+              let index = 0;
+              for (
+                let argIndex = 0;
+                argIndex < nonProcessArgs.length;
+                argIndex++
+              ) {
+                // Skip the command name
+                if (
+                  argIndex === index &&
+                  node.command.path[argIndex] === nonProcessArgs[argIndex]
+                ) {
+                  index += 1;
+                  continue;
+                }
+                positionalArgs.push(nonProcessArgs[argIndex]);
+              }
               await node.command.execute({
-                args: program.parseOptions(process.argv).unknown,
+                args: [...positionalArgs, ...args.unknown],
               });
               process.exit(0);
             } catch (error) {
