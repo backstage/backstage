@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': patch
 ---
 
-Reverted the validation in depenendencies in scaffolder
+Reverted the validation in dependencies in scaffolder
