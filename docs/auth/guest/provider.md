@@ -79,4 +79,4 @@ The `userEntityRef` is used as the entity reference for the guest user and the `
 
 The `dangerouslyAllowOutsideDevelopment` flag is used to allow users to sign in with the guest provider outside of their development environments, e.g. in production.
 
-You can find this information by looking at the config file [here](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-guest-provider/config.d.ts)
+You can find this information by looking at the config file [here](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-guest-provider/config.d.ts).
