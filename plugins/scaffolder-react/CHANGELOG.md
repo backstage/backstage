@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.4
+
+### Patch Changes
+
+- fdf351f: Reverted the validation in dependencies in scaffolder
+
 ## 1.14.3
 
 ### Patch Changes

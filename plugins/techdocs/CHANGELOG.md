@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.12.2
+
+### Patch Changes
+
+- 499d16f: Add missing route ref to the `/alpha` entity content extension.
+
 ## 1.12.1
 
 ### Patch Changes

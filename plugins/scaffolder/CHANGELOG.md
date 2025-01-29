@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder
 
+## 1.27.5
+
+### Patch Changes
+
+- e4700eb: Fixed a bug in the BitbucketRepoBranchPicker component that crashed the scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.14.4
+
 ## 1.27.4
 
 ### Patch Changes
