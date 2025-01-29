@@ -63,6 +63,9 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.filterFunction.optional(),
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
     ]),
+    extraContextMenuItems: createExtensionInput([
+      coreExtensionData.reactElement,
+    ]),
   },
   factory(originalFactory, { inputs }) {
     return originalFactory({
@@ -71,9 +74,13 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       loader: async () => {
         const { EntityLayout } = await import('../components/EntityLayout');
         const Component = () => {
+          const extraMenuItems = inputs.extraContextMenuItems.map(item =>
+            item.get(coreExtensionData.reactElement),
+          );
+
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout>
+              <EntityLayout extraMenuItems={extraMenuItems}>
                 {inputs.contents.map(output => {
                   return (
                     <EntityLayout.Route
