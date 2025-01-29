@@ -132,7 +132,6 @@ const DEFAULT_INDEXER_BATCH_SIZE = 1000;
  * @public
  */
 export class ElasticSearchSearchEngine implements SearchEngine {
-  [x: string]: any;
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
 
