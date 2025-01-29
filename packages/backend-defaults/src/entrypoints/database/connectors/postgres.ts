@@ -218,7 +218,7 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
       default:
         throw new Error(
           `Unknown token credential type: ${
-            (tokenCredentialConfig as any).type
+            (tokenCredentialConfig as any)?.type
           }`,
         );
     }
