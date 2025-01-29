@@ -60,7 +60,7 @@ export type ElasticSearchConcreteQuery = {
  */
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
-  queryOptions?: ElasticSearchQueryOptions;
+  queryOptions?: ElasticSearchQueryConfig;
 };
 
 /**
@@ -96,11 +96,9 @@ export type ElasticSearchHighlightOptions = {
 /**
  * @public
  */
-export type ElasticSearchQueryOptions = {
+export type ElasticSearchQueryConfig = {
   fuzziness?: string | number;
   prefixLength?: number;
-  tieBreaker?: number;
-  maxExpansions?: number;
 };
 
 /**
@@ -145,7 +143,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly logger: LoggerService,
     private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
-    queryOptions?: ElasticSearchQueryOptions,
+    queryOptions?: ElasticSearchQueryConfig,
   ) {
     this.elasticSearchClientWrapper =
       ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
@@ -236,7 +234,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
-    queryOptions?: ElasticSearchQueryOptions,
+    queryOptions?: ElasticSearchQueryConfig,
   ): ElasticSearchConcreteQuery {
     const { term, filters = {}, types, pageCursor } = query;
 
