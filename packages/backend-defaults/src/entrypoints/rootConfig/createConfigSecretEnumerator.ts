@@ -22,8 +22,7 @@ import { getPackages } from '@manypkg/get-packages';
 import path from 'path';
 import fs from 'fs';
 
-// Looks for a package.json with a workspace config to identify the root of the monorepo
-export function findRootPath(searchDir: string): string | undefined {
+export function findClosestPackageJson(searchDir: string): string | undefined {
   let currentPath = searchDir;
 
   // Some confidence check to avoid infinite loop
@@ -42,7 +41,7 @@ export function findRootPath(searchDir: string): string | undefined {
   }
 
   throw new Error(
-    `Iteration limit reached when searching for root package.json at ${searchDir}`,
+    `Iteration limit reached when searching for package.json at ${searchDir}`,
   );
 }
 
@@ -57,9 +56,7 @@ export async function createConfigSecretEnumerator(options: {
   if (dir) {
     closestPackagePath = dir;
   } else {
-    const rootPath = findRootPath(
-      path.resolve(process.argv[1]) ?? process.cwd(),
-    );
+    const rootPath = findClosestPackageJson(path.resolve(process.argv[1]));
     if (rootPath) {
       closestPackagePath = rootPath;
     }

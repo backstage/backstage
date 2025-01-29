@@ -17,7 +17,7 @@
 import { loadConfigSchema } from '@backstage/config-loader';
 import {
   createConfigSecretEnumerator,
-  findRootPath,
+  findClosestPackageJson,
 } from './createConfigSecretEnumerator';
 import {
   createMockDirectory,
@@ -299,7 +299,7 @@ describe('createConfigSecretEnumerator', () => {
   });
 });
 
-describe('findRootPath', () => {
+describe('findClosestPackageJson', () => {
   const mockDir = createMockDirectory();
 
   beforeEach(() => {
@@ -324,7 +324,7 @@ describe('findRootPath', () => {
       },
     });
 
-    const rootPath = findRootPath(path.join(mockDir.path));
+    const rootPath = findClosestPackageJson(path.join(mockDir.path));
 
     expect(rootPath).toBe(path.join(mockDir.path));
   });
@@ -343,7 +343,7 @@ describe('findRootPath', () => {
       },
     });
 
-    const rootPath = findRootPath(path.join(mockDir.path, 'a', 'b'));
+    const rootPath = findClosestPackageJson(path.join(mockDir.path, 'a', 'b'));
 
     expect(rootPath).toBe(path.join(mockDir.path, 'a', 'b'));
   });
@@ -365,7 +365,9 @@ describe('findRootPath', () => {
       },
     });
 
-    const rootPath = findRootPath(path.join(mockDir.path, 'a', 'b', 'src'));
+    const rootPath = findClosestPackageJson(
+      path.join(mockDir.path, 'a', 'b', 'src'),
+    );
 
     expect(rootPath).toBe(path.join(mockDir.path, 'a', 'b'));
   });
@@ -387,7 +389,7 @@ describe('findRootPath', () => {
       },
     });
 
-    const rootPath = findRootPath(path.join(mockDir.path, 'a'));
+    const rootPath = findClosestPackageJson(path.join(mockDir.path, 'a'));
 
     expect(rootPath).toBe(undefined);
   });
