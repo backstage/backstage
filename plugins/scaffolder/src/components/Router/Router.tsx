@@ -42,7 +42,6 @@ import {
   selectedTemplateRouteRef,
   templateFormRouteRef,
 } from '../../routes';
-import { ErrorPage } from '@backstage/core-components';
 
 import { ActionsPage } from '../../components/ActionsPage';
 import { ListTasksPage } from '../../components/ListTasksPage';
@@ -64,6 +63,7 @@ import {
   taskReadPermission,
   templateManagementPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import { useApp } from '@backstage/core-plugin-api';
 
 /**
  * The Props for the Scaffolder Router
@@ -125,6 +125,8 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
   const outlet = useOutlet() || props.children;
   const customFieldExtensions =
     useCustomFieldExtensions<FieldExtensionOptions>(outlet);
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
 
   const fieldExtensions = [
     ...customFieldExtensions,
@@ -237,10 +239,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
           </RequirePermission>
         }
       />
-      <Route
-        path="*"
-        element={<ErrorPage status="404" statusMessage="Page not found" />}
-      />
+      <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>
   );
 };
