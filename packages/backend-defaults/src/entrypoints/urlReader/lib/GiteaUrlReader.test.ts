@@ -35,14 +35,6 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: jest.fn(() => Promise.resolve({})),
-    }),
-  },
-}));
-
 const giteaProcessor = new GiteaUrlReader(
   new GiteaIntegration(
     readGiteaConfig(
