@@ -20,7 +20,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { PermissionRule, PermissionRuleAccessor } from '../types';
 import {
   createGetRule,
   isAndCriteria,
@@ -76,13 +76,26 @@ export type ConditionTransformer<TQuery> = (
  *
  * @public
  */
-export const createConditionTransformer = <
+export function createConditionTransformer<TQuery>(
+  permissionRuleAccessor: PermissionRuleAccessor<any, TQuery>,
+): ConditionTransformer<TQuery>;
+/**
+ * @public
+ * @deprecated Use the version of `createConditionTransformer` that accepts a `PermissionRuleAccessor` instead.
+ */
+export function createConditionTransformer<
   TQuery,
   TRules extends PermissionRule<any, TQuery, string>[],
->(
-  permissionRules: [...TRules],
-): ConditionTransformer<TQuery> => {
-  const getRule = createGetRule(permissionRules);
+>(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
+export function createConditionTransformer<TQuery>(
+  permissionRules:
+    | PermissionRule<any, TQuery, string>[]
+    | PermissionRuleAccessor<any, TQuery>,
+): ConditionTransformer<TQuery> {
+  const getRule =
+    typeof permissionRules === 'function'
+      ? permissionRules
+      : createGetRule(permissionRules);
 
   return conditions => mapConditions(conditions, getRule);
-};
+}
