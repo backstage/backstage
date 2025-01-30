@@ -68,7 +68,9 @@ describe('azure core', () => {
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
       },
     ])('should handle happy path %#', async ({ url, apiVersion, result }) => {
-      expect(getAzureFileFetchUrl(url, apiVersion)).toBe(result);
+      expect(getAzureFileFetchUrl(url, { apiVersion: apiVersion })).toBe(
+        result,
+      );
     });
 
     it.each([
@@ -83,7 +85,9 @@ describe('azure core', () => {
         apiVersion: '6.0',
       },
     ])('should handle error path %#', ({ url, apiVersion, error }) => {
-      expect(() => getAzureFileFetchUrl(url, apiVersion)).toThrow(error);
+      expect(() =>
+        getAzureFileFetchUrl(url, { apiVersion: apiVersion }),
+      ).toThrow(error);
     });
   });
 
@@ -91,7 +95,7 @@ describe('azure core', () => {
     it('do not add scopePath if no path is specified', async () => {
       const result = getAzureDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository',
-        '6.0',
+        { apiVersion: '6.0' },
       );
 
       expect(new URL(result).searchParams.get('scopePath')).toBeNull();
@@ -100,7 +104,7 @@ describe('azure core', () => {
     it('add scopePath if a path is specified', async () => {
       const result = getAzureDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
-        '6.0',
+        { apiVersion: '6.0' },
       );
       expect(new URL(result).searchParams.get('scopePath')).toEqual('/docs');
     });
@@ -119,7 +123,7 @@ describe('azure core', () => {
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
       },
     ])('should handle happy path %#', async ({ url, apiVersion, result }) => {
-      expect(getAzureDownloadUrl(url, apiVersion)).toBe(result);
+      expect(getAzureDownloadUrl(url, { apiVersion: apiVersion })).toBe(result);
     });
   });
 });
