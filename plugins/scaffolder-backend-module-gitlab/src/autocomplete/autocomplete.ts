@@ -32,7 +32,6 @@ export function createHandleAutocompleteRequest(options: {
   }): Promise<{
     results: {
       title?: string;
-      path?: string;
       id: string;
     }[];
   }> {
@@ -98,8 +97,7 @@ export function createHandleAutocompleteRequest(options: {
         return {
           results: response.map(project => ({
             title: project.name.trim(),
-            path: project.path,
-            id: project.id.toString(),
+            id: project.path,
           })),
         };
       }

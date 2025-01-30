@@ -15,7 +15,6 @@
  */
 export interface AvailableRepositories {
   name: string;
-  path?: string;
   id?: string;
 }
 
@@ -26,7 +25,6 @@ export interface RepoUrlPickerState {
   organization?: string;
   workspace?: string;
   project?: string;
-  id?: string;
   availableRepos?: AvailableRepositories[];
 }
 
