@@ -4,15 +4,28 @@ title: Transitioning to the New JSX Transform
 description: A guide to migrating your project to the New JSX Transform
 ---
 
-The Backstage core libraries are in the process of deprecating React 16 and evaluating the adoption of React 19. In React 19, the [New JSX Transform](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html), introduced in September 2020, is now [mandatory](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#installing). This requires a modification in how React is imported into components to ensure compatibility with React 19.
+Backstage core libraries currently support React 18. We are actively evaluating the upgrade to React 19, which introduces significant changes, including making the [New JSX Transform](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html) mandatory.
+
+## What this means for you
+
+- **If you are already using the New JSX Transform:** You are not impacted by this change, regardless of your React version (17, 18, or when 19 becomes available for Backstage).
+- **If you are NOT using the New JSX Transform (likely if you're importing React like `import React from 'react'`):** You will need to adopt it before upgrading to React 19. This typically involves changing your imports, as the New JSX Transform doesn't require importing the entire React namespace to use JSX. This is recommended even on React 17 or 18, as it was a change introduced with React 17. Although a best practice since React 17, Backstage did not adopt this transform when it upgraded.
+
+## Action Required
+
+While upgrading to React 19 within Backstage is not yet officially supported, it's recommended to proactively adopt the New JSX Transform if you haven't already. This will ensure a smoother transition when React 19 support is introduced and improve compatibility with the current React ecosystem.
+
+## Timeline
+
+We are currently evaluating React 19 and will provide further guidance on the upgrade path and timelines soon. For now, you can prepare by adopting the New JSX Transform.
 
 ## Migration Process
 
 ### Using the Codemod
 
-The codemod referenced in the [Introducing the New JSX Transform](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html) article is no longer functional. However, we have identified a working solution detailed below.
+While a codemod for the New JSX Transform was originally introduced in the [Introducing the New JSX Transform](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html) article, it is no longer functional. A working solution, inspired by the original, is detailed below:
 
-1. **Create a transformation file**
+1. **Create the transform file**
 
    Create a file named `transform.js` in the root directory of your Backstage project.
 
