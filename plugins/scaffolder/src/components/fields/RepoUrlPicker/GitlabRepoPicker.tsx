@@ -98,7 +98,7 @@ export const GitlabRepoPicker = (
       .then(({ results }) => {
         onChange({
           availableRepos: results.map(r => {
-            return { name: r.title!, path: r.path, id: r.id };
+            return { name: r.title!, id: r.id };
           }),
         });
       })
