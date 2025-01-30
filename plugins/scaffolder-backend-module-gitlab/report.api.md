@@ -39,8 +39,8 @@ export const createGitlabIssueAction: (options: {
     projectId: number;
     labels?: string | undefined;
     description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
+    weight?: number | undefined;
     assignees?: number[] | undefined;
     createdAt?: string | undefined;
     confidential?: boolean | undefined;
@@ -205,7 +205,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'skip' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -243,8 +243,8 @@ export const editGitlabIssueAction: (options: {
     title?: string | undefined;
     labels?: string | undefined;
     description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
+    weight?: number | undefined;
     assignees?: number[] | undefined;
     addLabels?: string | undefined;
     confidential?: boolean | undefined;
