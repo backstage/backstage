@@ -395,6 +395,7 @@ module.exports = {
             label: 'Core Services',
             items: [
               'backend-system/core-services/index',
+              'backend-system/core-services/auditor',
               'backend-system/core-services/auth',
               'backend-system/core-services/cache',
               'backend-system/core-services/database',

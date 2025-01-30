@@ -63,3 +63,20 @@ auth:
     # highlight-add-next-line
     guest: {}
 ```
+
+The above is all you need to get working with the guest provider. However, you can also add additional configuration if you need to such as the following:
+
+```yaml title="app-config.local.yaml"
+auth:
+  providers:
+    guest:
+      userEntityRef: user:default/john-smith
+      ownershipEntityRefs: [group:default/smith-family]
+      dangerouslyAllowOutsideDevelopment: false
+```
+
+The `userEntityRef` is used as the entity reference for the guest user and the `ownershipEntityRefs` is a list of entity references to use for ownership of the guest user, if the user is not found in the catalog.
+
+The `dangerouslyAllowOutsideDevelopment` flag is used to allow users to sign in with the guest provider outside of their development environments, e.g. in production.
+
+You can find this information by looking at the config file [here](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-guest-provider/config.d.ts).
