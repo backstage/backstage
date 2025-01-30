@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import {
+  GetNotificationsCommonOptions,
   GetNotificationsOptions,
   GetNotificationsResponse,
+  GetTopicsOptions,
+  GetTopicsResponse,
   NotificationsApi,
   UpdateNotificationsOptions,
 } from './NotificationsApi';
@@ -56,6 +59,63 @@ export class NotificationsClient implements NotificationsApi {
         `${options.sort},${options?.sortOrder ?? 'desc'}`,
       );
     }
+
+    this.appendCommonQueryStrings(queryString, options);
+
+    if (options?.topic !== undefined) {
+      queryString.append('topic', options.topic);
+    }
+
+    return await this.request<GetNotificationsResponse>(
+      `/notifications?${queryString}`,
+    );
+  }
+
+  async getNotification(id: string): Promise<Notification> {
+    return await this.request<Notification>(
+      `/notifications/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async getStatus(): Promise<NotificationStatus> {
+    return await this.request<NotificationStatus>('/status');
+  }
+
+  async updateNotifications(
+    options: UpdateNotificationsOptions,
+  ): Promise<Notification[]> {
+    return await this.request<Notification[]>('/notifications/update', {
+      method: 'POST',
+      body: JSON.stringify(options),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async getNotificationSettings(): Promise<NotificationSettings> {
+    return await this.request<NotificationSettings>('/settings');
+  }
+
+  async updateNotificationSettings(
+    settings: NotificationSettings,
+  ): Promise<NotificationSettings> {
+    return await this.request<NotificationSettings>('/settings', {
+      method: 'POST',
+      body: JSON.stringify(settings),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async getTopics(options?: GetTopicsOptions): Promise<GetTopicsResponse> {
+    const queryString = new URLSearchParams();
+    this.appendCommonQueryStrings(queryString, options);
+
+    return await this.request<GetTopicsResponse>(`/topics?${queryString}`);
+  }
+
+  private appendCommonQueryStrings(
+    queryString: URLSearchParams,
+    options?: GetNotificationsCommonOptions,
+  ) {
     if (options?.search) {
       queryString.append('search', options.search);
     }
@@ -71,53 +131,16 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.minimumSeverity !== undefined) {
       queryString.append('minimumSeverity', options.minimumSeverity);
     }
-    const urlSegment = `?${queryString}`;
-
-    return await this.request<GetNotificationsResponse>(urlSegment);
   }
 
-  async getNotification(id: string): Promise<Notification> {
-    return await this.request<Notification>(`${id}`);
-  }
+  private async request<T>(path: string, init?: RequestInit): Promise<T> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('notifications');
+    const res = await this.fetchApi.fetch(`${baseUrl}${path}`, init);
 
-  async getStatus(): Promise<NotificationStatus> {
-    return await this.request<NotificationStatus>('status');
-  }
-
-  async updateNotifications(
-    options: UpdateNotificationsOptions,
-  ): Promise<Notification[]> {
-    return await this.request<Notification[]>('update', {
-      method: 'POST',
-      body: JSON.stringify(options),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  async getNotificationSettings(): Promise<NotificationSettings> {
-    return await this.request<NotificationSettings>('settings');
-  }
-
-  async updateNotificationSettings(
-    settings: NotificationSettings,
-  ): Promise<NotificationSettings> {
-    return await this.request<NotificationSettings>('settings', {
-      method: 'POST',
-      body: JSON.stringify(settings),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  private async request<T>(path: string, init?: any): Promise<T> {
-    const baseUrl = `${await this.discoveryApi.getBaseUrl('notifications')}/`;
-    const url = new URL(path, baseUrl);
-
-    const response = await this.fetchApi.fetch(url.toString(), init);
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
+    if (!res.ok) {
+      throw await ResponseError.fromResponse(res);
     }
 
-    return response.json() as Promise<T>;
+    return res.json() as Promise<T>;
   }
 }

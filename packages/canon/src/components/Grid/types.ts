@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Breakpoint, ColorProps } from '../../layout/types';
-import { SpaceProps } from '../../layout/types';
+
+import type { GapProps } from '../../props/gap-props';
+import type { SpaceProps } from '../../types';
+import type { GridItemOwnProps, GridOwnProps } from './Grid.props';
 
 /** @public */
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-
-/** @public */
-export interface GridProps extends SpaceProps, ColorProps {
+export interface GridProps extends SpaceProps {
   children?: React.ReactNode;
-  columns?: Columns | Partial<Record<Breakpoint, Columns>>;
   className?: string;
+  columns?: GridOwnProps['columns'];
+  gap?: GapProps['gap'];
   style?: React.CSSProperties;
 }
 
 /** @public */
 export interface GridItemProps {
-  children: React.ReactNode;
-  rowSpan?: Columns | 'full';
-  colSpan?: Columns | 'full';
-  start?: Columns | 'auto';
-  end?: Columns | 'auto';
+  children?: React.ReactNode;
   className?: string;
+  colSpan?: GridItemOwnProps['colSpan'];
+  colEnd?: GridItemOwnProps['colEnd'];
+  colStart?: GridItemOwnProps['colStart'];
+  rowSpan?: GridItemOwnProps['rowSpan'];
   style?: React.CSSProperties;
 }

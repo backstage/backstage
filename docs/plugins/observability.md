@@ -11,7 +11,7 @@ Backstage integrator.
 ## Datadog RUM Events
 
 See how to install Datadog Events in your app
-[here](../integrations/datadog-rum/installation.md)
+[here](../integrations/datadog-rum/installation.md).
 
 ## Logging
 

@@ -72,6 +72,7 @@ config
 Config
 configmaps
 configs
+conformant
 const
 cookiecutter
 corepack
@@ -80,6 +81,8 @@ cron
 cronjobs
 crontab
 css
+cve
+CVEs
 daemonsets
 Datadog
 dataflow
@@ -95,6 +98,7 @@ deliverables
 denormalized
 dependabot
 deps
+deserialization
 destructured
 destructuring
 Deutsche
@@ -224,6 +228,7 @@ LocalStack
 lockdown
 lockfile
 lookbehind
+lowercased
 lunr
 Luxon
 magiclink
@@ -272,6 +277,7 @@ nohoist
 nonces
 noop
 npm
+nullable
 nunjucks
 nvarchar
 nvm
@@ -339,6 +345,8 @@ rebase
 rebasing
 Recharts
 Redash
+redis
+reimplement
 renderer
 renderers
 replicasets
@@ -378,6 +386,7 @@ sdks
 seb
 semlas
 semver
+sendmail
 serializable
 Serverless
 shoutout
@@ -402,6 +411,7 @@ src
 statefulsets
 stdout
 storable
+storages
 stringified
 stringify
 subcommand
@@ -459,6 +469,7 @@ typeahead
 ui
 unbreak
 Unconference
+undici
 unicode
 unmanaged
 unmount
@@ -503,3 +514,4 @@ zoomable
 zsh
 scrollable
 severities
+intellij

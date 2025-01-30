@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
+import fetch from 'node-fetch';
+
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
@@ -163,6 +166,15 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabGroup>> {
     return this.pagedRequest(`/groups`, options);
+  }
+
+  // https://docs.gitlab.com/ee/api/groups.html#list-group-details
+  // id can either be group id or encoded full path
+  async getGroupByPath(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    return this.nonPagedRequest(`/groups/${groupPath}`, options);
   }
 
   async listDescendantGroups(

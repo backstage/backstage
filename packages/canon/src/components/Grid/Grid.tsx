@@ -15,63 +15,41 @@
  */
 
 import { createElement, forwardRef } from 'react';
-import { GridItemProps, GridProps } from './types';
-import { gridItemSprinkles, gridSprinkles } from './sprinkles.css';
+import { gapPropDefs } from '../../props/gap-props';
+import { extractProps } from '../../utils/extractProps';
+import { gridItemPropDefs, gridPropDefs } from './Grid.props';
+import clsx from 'clsx';
+import type { GridItemProps, GridProps } from './types';
 
 const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const {
-    children,
-    columns,
-    gap = 'xs',
-    className,
+  const propDefs = {
+    ...gapPropDefs,
+    ...gridPropDefs,
+  };
+
+  const { className, style } = extractProps(props, propDefs);
+
+  return createElement('div', {
+    ref,
+    className: clsx('canon-Grid', className),
     style,
-    ...restProps
-  } = props;
-
-  const sprinklesClassName = gridSprinkles({
-    ...restProps,
-    gap,
-    gridTemplateColumns: columns ? columns : 'auto',
+    children: props.children,
   });
-
-  const classNames = ['grid', sprinklesClassName, className]
-    .filter(Boolean)
-    .join(' ');
-
-  return createElement(
-    'div',
-    {
-      ref,
-      className: classNames,
-      style,
-    },
-    children,
-  );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { children, rowSpan, colSpan, start, end, className, style } = props;
+  const propDefs = {
+    ...gridItemPropDefs,
+  };
 
-  const sprinklesClassName = gridItemSprinkles({
-    rowSpan,
-    colSpan,
-    start,
-    end,
+  const { className, style } = extractProps(props, propDefs);
+
+  return createElement('div', {
+    ref,
+    className: clsx('canon-GridItem', className),
+    style,
+    children: props.children,
   });
-
-  const classNames = ['grid-item', sprinklesClassName, className]
-    .filter(Boolean)
-    .join(' ');
-
-  return createElement(
-    'div',
-    {
-      ref,
-      className: classNames,
-      style,
-    },
-    children,
-  );
 });
 
 /** @public */

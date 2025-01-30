@@ -14,7 +14,13 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    path: string[];
+    path: (
+      | string
+      | {
+          name: string;
+          slug: string;
+        }
+    )[];
     repoUrl: string;
     token?: string | undefined;
   },
@@ -132,7 +138,8 @@ export function createPublishGitlabAction(options: {
     repoUrl: string;
     defaultBranch?: string | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    sourcePath?: string | undefined;
+    sourcePath?: string | boolean | undefined;
+    skipExisting?: boolean | undefined;
     token?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
@@ -202,6 +209,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
   },
   JsonObject
 >;

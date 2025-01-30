@@ -11,6 +11,7 @@ import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -28,10 +29,9 @@ import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } fr
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
-import { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter as EntityFilter_2 } from '@backstage/plugin-catalog-node';
@@ -53,12 +53,13 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from '@backstage/plugin-catalog-node';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Readable } from 'stream';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -201,10 +202,12 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
+  permissionsRegistry?: PermissionsRegistryService;
   scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
+  auditor?: AuditorService;
 };
 
 // @public
@@ -285,7 +288,7 @@ export function createRandomProcessingInterval(options: {
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
   constructor(options: {
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: GetEntitiesRequest['filter'];
@@ -299,7 +302,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   protected readonly catalogClient: CatalogApi;
   // (undocumented)
-  protected discovery: PluginEndpointDiscovery;
+  protected discovery: DiscoveryService;
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
@@ -308,7 +311,7 @@ export class DefaultCatalogCollator {
   static fromConfig(
     _config: Config,
     options: {
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       tokenManager: TokenManager;
       filter?: GetEntitiesRequest['filter'];
     },
@@ -327,11 +330,31 @@ export class DefaultCatalogCollator {
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer_2;
 
 // @public @deprecated (undocumented)
-export const DefaultCatalogCollatorFactory: typeof DefaultCatalogCollatorFactory_2;
+export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
+  // (undocumented)
+  static fromConfig(
+    configRoot: Config,
+    options: DefaultCatalogCollatorFactoryOptions,
+  ): DefaultCatalogCollatorFactory;
+  // (undocumented)
+  getCollator(): Promise<Readable>;
+  // (undocumented)
+  readonly type = 'software-catalog';
+  // (undocumented)
+  readonly visibilityPermission: Permission;
+}
 
 // @public @deprecated (undocumented)
-export type DefaultCatalogCollatorFactoryOptions =
-  DefaultCatalogCollatorFactoryOptions_2;
+export type DefaultCatalogCollatorFactoryOptions = {
+  auth?: AuthService;
+  discovery: DiscoveryService;
+  tokenManager?: TokenManager;
+  locationTemplate?: string;
+  filter?: GetEntitiesRequest['filter'];
+  batchSize?: number;
+  catalogClient?: CatalogApi;
+  entityTransformer?: CatalogCollatorEntityTransformer;
+};
 
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;
@@ -456,6 +479,11 @@ export const processingResult: Readonly<{
   readonly entity: (
     atLocation: LocationSpec_2,
     newEntity: Entity,
+    options?:
+      | {
+          locationKey?: string | null | undefined;
+        }
+      | undefined,
   ) => CatalogProcessorResult_2;
   readonly relation: (spec: EntityRelationSpec_2) => CatalogProcessorResult_2;
   readonly refresh: (key: string) => CatalogProcessorResult_2;

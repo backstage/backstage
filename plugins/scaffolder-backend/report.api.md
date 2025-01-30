@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
@@ -39,7 +40,6 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
@@ -359,6 +359,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
   },
   JsonObject
 >;
@@ -407,6 +408,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
+  auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
@@ -520,7 +522,7 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public
 export type DatabaseTaskStoreOptions = {
-  database: PluginDatabaseManager | Knex;
+  database: DatabaseService | Knex;
   events?: EventsService;
 };
 
@@ -540,6 +542,8 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
+  // (undocumented)
+  auditor?: AuditorService;
   // (undocumented)
   auth?: AuthService;
   // (undocumented)

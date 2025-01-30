@@ -32,7 +32,8 @@ import {
   scaffolderPage,
   scaffolderApi,
 } from './extensions';
-import { formFieldsApi } from './api/FormFieldsApi';
+import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { formDecoratorsApi } from './api';
 
 /** @alpha */
 export default createFrontendPlugin({
@@ -53,6 +54,7 @@ export default createFrontendPlugin({
     scaffolderApi,
     scaffolderPage,
     scaffolderNavItem,
+    formDecoratorsApi,
     formFieldsApi,
     repoUrlPickerFormField,
   ],

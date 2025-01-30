@@ -1,0 +1,192 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer utilities {
+  @media (min-width: 640px) {
+    .cu-sm-block {
+      display: block;
+    }
+
+    .cu-sm-border-base {
+      border-color: var(--canon-border);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-sm-border-error {
+      border-color: var(--canon-border-danger);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-sm-border-none {
+      border-color: transparent;
+      border-width: 0;
+    }
+
+    .cu-sm-border-selected {
+      border-color: var(--canon-border-focus);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-sm-border-warning {
+      border-color: var(--canon-border-warning);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .cu-sm-flex {
+      display: flex;
+    }
+
+    .cu-sm-flex-col {
+      flex-direction: column;
+    }
+
+    .cu-sm-flex-nowrap {
+      flex-wrap: nowrap;
+    }
+
+    .cu-sm-flex-row {
+      flex-direction: row;
+    }
+
+    .cu-sm-flex-wrap {
+      flex-wrap: wrap;
+    }
+
+    .cu-sm-flex-wrap-reverse {
+      flex-wrap: wrap-reverse;
+    }
+
+    .cu-sm-gap-2xl {
+      gap: var(--canon-space-12);
+    }
+
+    .cu-sm-gap-lg {
+      gap: var(--canon-space-8);
+    }
+
+    .cu-sm-gap-md {
+      gap: var(--canon-space-6);
+    }
+
+    .cu-sm-gap-none {
+      gap: 0;
+    }
+
+    .cu-sm-gap-sm {
+      gap: var(--canon-space-4);
+    }
+
+    .cu-sm-gap-xl {
+      gap: var(--canon-space-10);
+    }
+
+    .cu-sm-gap-xs {
+      gap: var(--canon-space-3);
+    }
+
+    .cu-sm-hidden {
+      display: none;
+    }
+
+    .cu-sm-inline {
+      display: inline;
+    }
+
+    .cu-sm-inline-block {
+      display: inline-block;
+    }
+
+    .cu-sm-items-center {
+      align-items: center;
+    }
+
+    .cu-sm-items-end {
+      align-items: flex-end;
+    }
+
+    .cu-sm-items-start {
+      align-items: flex-start;
+    }
+
+    .cu-sm-items-stretch {
+      align-items: stretch;
+    }
+
+    .cu-sm-justify-around {
+      justify-content: space-around;
+    }
+
+    .cu-sm-justify-between {
+      justify-content: space-between;
+    }
+
+    .cu-sm-justify-center {
+      justify-content: center;
+    }
+
+    .cu-sm-justify-end {
+      justify-content: flex-end;
+    }
+
+    .cu-sm-justify-start {
+      justify-content: flex-start;
+    }
+
+    .cu-sm-justify-stretch {
+      justify-content: stretch;
+    }
+
+    .cu-sm-rounded-2xl {
+      border-radius: var(--canon-radius-full);
+    }
+
+    .cu-sm-rounded-2xs {
+      border-radius: var(--canon-radius-1);
+    }
+
+    .cu-sm-rounded-lg {
+      border-radius: var(--canon-radius-5);
+    }
+
+    .cu-sm-rounded-md {
+      border-radius: var(--canon-radius-4);
+    }
+
+    .cu-sm-rounded-none {
+      border-radius: 0;
+    }
+
+    .cu-sm-rounded-sm {
+      border-radius: var(--canon-radius-3);
+    }
+
+    .cu-sm-rounded-xl {
+      border-radius: var(--canon-radius-6);
+    }
+
+    .cu-sm-rounded-xs {
+      border-radius: var(--canon-radius-2);
+    }
+
+    .cu-sm-wrap-reverse {
+      flex-wrap: wrap-reverse;
+    }
+  }
+}

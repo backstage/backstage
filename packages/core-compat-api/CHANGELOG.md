@@ -1,5 +1,62 @@
 # @backstage/core-compat-api
 
+## 0.3.6-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.4
+
+### Patch Changes
+
+- 1f30730: Updated dependency `@oriflame/backstage-plugin-score-card` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/version-bridge@1.0.10
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- 1f30730: Updated dependency `@oriflame/backstage-plugin-score-card` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/version-bridge@1.0.10
+
 ## 0.3.4-next.1
 
 ### Patch Changes

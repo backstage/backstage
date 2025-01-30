@@ -1,5 +1,93 @@
 # @backstage/plugin-notifications
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-signals-react@0.0.10-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 438c36c: added topic filter for notifications
+- Updated dependencies
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-react@0.0.9
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-react@0.0.9
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-signals-react@0.0.9-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-notifications-common@0.0.8-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- fc15b77: Switched to using the new `/notifications` endpoints. Be sure to update the `notifications` plugin backend before deploying this frontend plugin change.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/errors@1.2.6
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-signals-react@0.0.8
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- fc15b77: Switched to using the new `/notifications` endpoints. Be sure to update the `notifications` plugin backend before deploying this frontend plugin change.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-notifications-common@0.0.7-next.0
+  - @backstage/plugin-signals-react@0.0.8-next.0
+
 ## 0.4.2-next.1
 
 ### Patch Changes

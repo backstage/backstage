@@ -1,5 +1,194 @@
 # @backstage/plugin-home
 
+## 0.8.5-next.1
+
+### Patch Changes
+
+- 8e86f96: Enable collision prevention by default in custom home page.
+
+  This change ensures that items in the home page will not collide with each other
+  making the user experience better.
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.1
+  - @backstage/plugin-home-react@0.1.23-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+
+## 0.8.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.4
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-home-react@0.1.22
+
+## 0.8.4
+
+### Patch Changes
+
+- 7932f1e: Exported `QuickStartCard` component.
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+  - @backstage/plugin-home-react@0.1.22
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.4
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/theme@0.6.3
+
+## 0.8.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-app-api@1.15.4-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-home-react@0.1.22-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/theme@0.6.3
+
+## 0.8.4-next.1
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/plugin-home-react@0.1.22-next.0
+  - @backstage/core-compat-api@0.3.4
+
+## 0.8.4-next.0
+
+### Patch Changes
+
+- 7932f1e: Exported `QuickStartCard` component.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/core-app-api@1.15.3
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-home-react@0.1.21
+
+## 0.8.3
+
+### Patch Changes
+
+- 7248f3b: Added a new Quick Start Card to `plugin-home`, which can display basic info to get users the info they need to onboard to the Catalog.
+
+  ```
+  import { QuickStartCard } from '@backstage/plugin-home';
+  <QuickStartCard
+    title="Onboarding to the Catalog"
+    modalTitle="Onboarding Quick Start"
+    docsLinkTitle="Learn more with getting started docs"
+    docsLink="https://backstage.io/docs/getting-started"
+    image={
+      <img
+        src={ContentImage}
+        alt="quick start"
+        width="100%"
+        height="100%"
+      />
+    }
+    cardDescription="Backstage system model will help you create new entities"
+    video={
+      <video
+        controls
+        preload="auto"
+        poster={"./videoPoster.png"}
+      >
+        <source src={"OnboardingDemo.mp4"} type="video/mp4" />
+      </video>
+    }
+    downloadImage={
+      <Button
+        href={QuickStartPDF}
+        target={'_blank'}
+        download={true}
+      >
+        Download infographic button
+      </Button>
+    }
+  />
+  ```
+
+  See the [storybook examples](https://backstage.io/storybook/?path=/story/plugins-home-components-quickstartcard--default)
+
+- 9951ba4: Updated dependency `@rjsf/utils` to `5.23.1`.
+  Updated dependency `@rjsf/core` to `5.23.1`.
+  Updated dependency `@rjsf/material-ui` to `5.23.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.1`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/core-app-api@1.15.3
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-home-react@0.1.21
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/core-plugin-api@1.10.2
+
+## 0.8.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/core-app-api@1.15.3-next.1
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/plugin-home-react@0.1.21-next.2
+
 ## 0.8.3-next.1
 
 ### Patch Changes

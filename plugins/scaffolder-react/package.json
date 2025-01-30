@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-react",
-  "version": "1.14.2-next.1",
+  "version": "1.14.4-next.1",
   "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
   "backstage": {
     "role": "web-library",
@@ -73,15 +73,17 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "@rjsf/core": "5.23.1",
-    "@rjsf/material-ui": "5.23.1",
-    "@rjsf/utils": "5.23.1",
-    "@rjsf/validator-ajv8": "5.23.1",
+    "@rjsf/core": "5.23.2",
+    "@rjsf/material-ui": "5.23.2",
+    "@rjsf/utils": "5.23.2",
+    "@rjsf/validator-ajv8": "5.23.2",
     "@types/json-schema": "^7.0.9",
+    "ajv": "^8.0.1",
     "ajv-errors": "^3.0.0",
     "classnames": "^2.2.6",
     "flatted": "3.3.2",
     "humanize-duration": "^3.25.1",
+    "immer": "^9.0.6",
     "json-schema": "^0.4.0",
     "json-schema-library": "^9.0.0",
     "lodash": "^4.17.21",
@@ -113,10 +115,10 @@
     "swr": "^2.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-export { formFieldsApiRef, formDecoratorsApiRef } from './ref';
-export type {
-  ScaffolderFormFieldsApi,
-  ScaffolderFormDecoratorsApi,
-} from './types';
-export { DefaultScaffolderFormDecoratorsApi } from './FormDecoratorsApi';
+export { formDecoratorsApiRef } from './ref';
+export type { ScaffolderFormDecoratorsApi } from './types';
+export * from './FormDecoratorsApi';

@@ -1,0 +1,551 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import * as Table from '@/components/Table';
+import { Chip } from '@/components/Chip';
+import { customTheme } from '@/snippets/_snippets';
+
+# Theming
+
+Canon's theming is built entirely on CSS, without relying on any CSS-in-JS libraries.
+At its core, it provides a solid default theme that is easily customizable using a
+comprehensive set of CSS variables. Additionally, it enables anyone to adapt the design
+to their specific needs. Each component comes with fixed class names, making customization
+even more straightforward.
+
+## Light & Dark modes
+
+By default, Canon supports both light and dark modes using the `data-theme` attribute.
+The light theme is applied by default if no `data-theme` attribute is specified. To create
+a custom theme, you'll need to define both light and dark modes as outlined below. If
+only one mode is defined, the other will fall back to the default theme.
+
+## How to create your own theme
+
+In our [started guide](/), we ask you to import two css files. The `core.css` file includes
+the default set of variables. We recommend to keep this file in place and add your own theme
+on top of it. `core.css` also include an opinionated reset. If you decided to remove `core.css`
+you will have to provide your own reset css.
+
+Here's an example of how your theme.css file should look like:
+
+<CodeBlock lang="css" code={customTheme} />
+
+## Available CSS variables
+
+### Core background colors
+
+These colors are used for the background of your application. We are mostly using for now a
+single elevated background for panels. `--canon-bg` should mostly use as the main background
+color of your app.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>The background color of your Backstage instance.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-elevated</Chip>
+      </Table.Cell>
+      <Table.Cell>Use for any panels or elevated surfaces.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Component background colors
+
+These colors are meants for interactive components like buttons, callout avatar, chips, ...
+We have two main level of background you can customise. The accent one is mostly used as a primary option
+for interactive components. The tint one is used for secondary components like callouts, avatars, ...
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-accent</Chip>
+      </Table.Cell>
+      <Table.Cell>Used mostly for primary interactive components.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-accent-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for interactive components when they are hovered.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-accent-focus</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for interactive components when they are in focus.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-accent-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for interactive components when they are disabled.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-tint</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for secondary interactive components.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-tint-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for interactive components when they are hovered.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-tint-focus</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for interactive components when they are active.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-tint-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for interactive components when they are disabled.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Status background colors
+
+These backgrounds are intended for non-interactive elements to visually convey a specific state.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show errors informations.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show warnings informations.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-bg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show success informations.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Foreground colors
+
+Foreground colours are meant to work in pair with a background colours. Typeically this would work
+for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors
+are prefixed with `fg` to make it easier to identify.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-text-primary</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of `--canon-bg-app` or `--canon-bg-elevated`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-text-secondary</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of `--canon-bg-app` or `--canon-bg-elevated`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-link</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of `--canon-bg-app` or `--canon-bg-elevated`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-link-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of `--canon-bg-app` or `--canon-bg-elevated`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-accent</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-accent`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-tint</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-tint`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-danger`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-warning`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-fg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-success`.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Border colors
+
+These border colors are mostly meant to be used as borders on top of any components with
+low contrast to help as a separator with the different background colors.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of `--canon-bg-elevated`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used when the component is interactive and hovered.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-focus</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used when the component is interactive and focused.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-tint</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-tint`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-tint-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Used when the component is hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-tint-focus</Chip>
+      </Table.Cell>
+      <Table.Cell>Used when the component is in focus.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-danger`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-warning`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-border-success</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--canon-bg-success`.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Font families
+
+We have two fonts that we use across Canon. The first one is the sans-serif
+font that we use for the body of the application. The second one is the
+monospace font that we use for code blocks and tables.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-font-regular</Chip>
+      </Table.Cell>
+      <Table.Cell>The sans-serif font for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-font-mono</Chip>
+      </Table.Cell>
+      <Table.Cell>The monospace font for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Font weights
+
+We have two font weights that we use across Canon. Regular or Bold
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-font-weight-regular</Chip>
+      </Table.Cell>
+      <Table.Cell>The regular font weight for the theme.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-font-weight-bold</Chip>
+      </Table.Cell>
+      <Table.Cell>The bold font weight for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Spacing
+
+We built a spacing system based on a single value `--canon-space`. This value is
+used to calculate the spacing for all the components. By default if you would like to
+increase or decrease the spacing between your components you can do it simply by updating
+`--canon-space` and it will apply to all spacing values.
+
+`--canon-space` is not used directly in any components but serve as an easy way to
+calculate the other values.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        The base unit for the spacing system. Default value is `0.25rem`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+Below is the list of all spacing values you can use in your application. We use these
+tokens for pretty much each spacing properties like padding, margin, gaps, ...
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-0_5</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 0.5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`).</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-1_5</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 1.5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-3</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-4</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 4.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-5</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-6</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 6.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-7</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 7.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-8</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 8.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-9</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 9.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-10</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 10.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-11</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 11.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-12</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 12.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-13</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 13.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-space-14</Chip>
+      </Table.Cell>
+      <Table.Cell>Base unit (`--canon-space`) times 14.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+### Radius (Work in progress)
+
+Our radius system is a little bit different from spacing as we use a factor to calculate the radius values.
+Under the hood different components uses different radius values. For example, button can be set to have full radius  
+while a checkbox will have to remain a square.
+
+Here are the different radius factor we recommend to use
+
+- None: `0`
+- Small: `0.75`
+- Medium: `1`
+- Large: `1.5`
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--canon-radius-factor</Chip>
+      </Table.Cell>
+      <Table.Cell>By default the value is set to medium `1`.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>

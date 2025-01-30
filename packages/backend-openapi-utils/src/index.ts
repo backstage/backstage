@@ -32,7 +32,6 @@ export type {
 } from './utility';
 export type { ApiRouter, TypedRouter } from './router';
 export type { PathTemplate } from './types/common';
-export { wrapInOpenApiTestServer, wrapServer } from './testUtils';
 export {
   createValidatedOpenApiRouter,
   getOpenApiSpecRoute,

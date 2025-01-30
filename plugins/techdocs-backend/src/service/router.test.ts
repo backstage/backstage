@@ -32,7 +32,6 @@ import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -111,10 +110,7 @@ describe('createRouter', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const discovery = mockServices.discovery.mock();
   const cache: jest.Mocked<PluginCacheManager> = {
     getClient: jest.fn(),
   };

@@ -98,7 +98,7 @@ describe('PageBlueprint', () => {
 
     const tester = createExtensionTester(myPage);
 
-    // TODO(blam): test for the routePath output doesn't work, due to the the way the test harness works
+    // TODO(blam): test for the routePath output doesn't work, due to the way the test harness works
     // expect(tester.data(coreExtensionData.routePath)).toBe('/test');
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);

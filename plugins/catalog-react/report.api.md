@@ -243,9 +243,11 @@ export type EntityFilter = {
 
 // @public
 export class EntityKindFilter implements EntityFilter {
-  constructor(value: string);
+  constructor(value: string, label: string);
   // (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  readonly label: string;
   // (undocumented)
   toQueryValue(): string;
   // (undocumented)
@@ -683,7 +685,9 @@ export function humanizeEntityRef(
 export function InspectEntityDialog(props: {
   open: boolean;
   entity: Entity;
+  initialTab?: 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
   onClose: () => void;
+  onSelect?: (tab: string) => void;
 }): React_2.JSX.Element | null;
 
 // @public

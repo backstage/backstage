@@ -5,13 +5,17 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
@@ -129,6 +133,30 @@ export const Form: (
 ) => React_2.JSX.Element;
 
 // @alpha
+export const FormDecoratorBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-form-decorator';
+  name: undefined;
+  params: {
+    decorator: ScaffolderFormDecorator;
+  };
+  output: ConfigurableExtensionDataRef<
+    ScaffolderFormDecorator,
+    'scaffolder.form-decorator-loader',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    formDecoratorLoader: ConfigurableExtensionDataRef<
+      ScaffolderFormDecorator,
+      'scaffolder.form-decorator-loader',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
 export const FormFieldBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-field';
   name: undefined;
@@ -170,6 +198,34 @@ export type FormFieldExtensionData<
   >;
   schema?: FieldSchema<z.output<TReturnValue>, z.output<TUiOptions>>;
 };
+
+// @alpha (undocumented)
+export const formFieldsApi: ExtensionDefinition<{
+  config: {};
+  configInput: {};
+  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  inputs: {
+    formFields: ExtensionInput<
+      ConfigurableExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+  };
+  kind: 'api';
+  name: 'form-fields';
+  params: {
+    factory: AnyApiFactory;
+  };
+}>;
+
+// @alpha (undocumented)
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
 
 // @alpha (undocumented)
 export type FormValidation = {
@@ -244,6 +300,12 @@ export type ScaffolderFormDecoratorContext<
     fn: (currentState: Record<string, string>) => Record<string, string>,
   ) => void;
 };
+
+// @alpha (undocumented)
+export interface ScaffolderFormFieldsApi {
+  // (undocumented)
+  getFormFields(): Promise<FormFieldExtensionData[]>;
+}
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(

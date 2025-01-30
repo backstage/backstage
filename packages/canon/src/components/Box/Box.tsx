@@ -15,26 +15,36 @@
  */
 
 import { createElement, forwardRef } from 'react';
-import { boxSprinkles } from './sprinkles.css';
-import { base } from './box.css';
 import { BoxProps } from './types';
+import clsx from 'clsx';
+import { extractProps } from '../../utils/extractProps';
+import { spacingPropDefs } from '../../props/spacing.props';
+import { boxPropDefs } from './Box.props';
+import { widthPropDefs } from '../../props/width.props';
+import { heightPropDefs } from '../../props/height.props';
+import { positionPropDefs } from '../../props/position.props';
+import { displayPropDefs } from '../../props/display.props';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { as = 'div', className, style, children, ...restProps } = props;
+  const { as = 'div', children } = props;
 
-  // Generate the list of class names
-  const sprinklesClassName = boxSprinkles(restProps);
-
-  // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = [base, sprinklesClassName, className]
-    .filter(Boolean)
-    .join(' ');
+  const propDefs = {
+    ...spacingPropDefs,
+    ...widthPropDefs,
+    ...heightPropDefs,
+    ...positionPropDefs,
+    ...displayPropDefs,
+    ...boxPropDefs,
+  };
+  const { className, style } = extractProps(props, propDefs);
 
   return createElement(as, {
     ref,
-    className: classNames,
+    className: clsx('canon-Box', className),
     style,
     children,
   });
 });
+
+Box.displayName = 'Box';

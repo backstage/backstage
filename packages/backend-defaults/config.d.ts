@@ -28,6 +28,29 @@ export interface Config {
      */
     baseUrl: string;
 
+    lifecycle?: {
+      /**
+       * The maximum time that paused requests will wait for the service to start, before returning an error.
+       * Defaults to 5 seconds
+       * Supported formats:
+       * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+       *   library.
+       * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+       * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+       */
+      startupRequestPauseTimeout?: string | HumanDuration;
+      /**
+       * The minimum time that the HTTP server will delay the shutdown of the backend. During this delay health checks will be set to failing, allowing traffic to drain.
+       * Defaults to 0 seconds.
+       * Supported formats:
+       * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+       *   library.
+       * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+       * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+       */
+      serverShutdownDelay?: string | HumanDuration;
+    };
+
     /** Address that the backend should listen to. */
     listen?:
       | string
@@ -63,6 +86,19 @@ export interface Config {
      * Options used by the default auth, httpAuth and userInfo services.
      */
     auth?: {
+      /**
+       * Keys shared by all backends for signing and validating backend tokens.
+       * @deprecated this will be removed when the backwards compatibility is no longer needed with backend-common
+       */
+      keys?: {
+        /**
+         * Secret for generating tokens. Should be a base64 string, recommended
+         * length is 24 bytes.
+         *
+         * @visibility secret
+         */
+        secret: string;
+      }[];
       /**
        * This disables the otherwise default auth policy, which requires all
        * requests to be authenticated with either user or service credentials.

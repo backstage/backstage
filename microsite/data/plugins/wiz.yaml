@@ -1,0 +1,10 @@
+---
+title: Wiz
+author: roadie.io
+authorUrl: https://github.com/RoadieHQ
+category: Monitoring
+description: View Wiz issues status in Backstage.
+documentation: https://roadie.io/backstage/plugins/wiz/
+iconUrl: https://roadie.io/images/wiz-logo.png
+npmPackageName: '@roadiehq/backstage-plugin-wiz'
+addedDate: '2024-10-14'

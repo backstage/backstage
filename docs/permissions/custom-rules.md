@@ -139,7 +139,13 @@ class CustomPermissionPolicy implements PermissionPolicy {
 
 Now that we have a custom rule defined and added to our policy, we need provide it to the catalog plugin. This step is important because the catalog plugin will use the rule's `toQuery` and `apply` methods while evaluating conditional authorize results. There's no guarantee that the catalog and permission backends are running on the same server, so we must explicitly link the rule to ensure that it's available at runtime.
 
-The api for providing custom rules may differ between plugins, but there should typically be an [extension point](../backend-system/architecture/05-extension-points.md) that you can use in your created module to add your rule. For the catalog, this extension point is exposed via `catalogPermissionExtensionPoint`. Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
+:::warning Warning
+
+The `PermissionsRegistryService` is a fairly new addition and not yet supported by all plugins as they might still be using the old `createPermissionIntegrationRouter` that cannot be extended. If you encounter errors when installing custom rules for a plugin, the plugin may need to be switched to using the `PermissionsRegistryService` first.
+
+:::
+
+To install custom rules in a plugin, we need to use the [`PermissionsRegistryService`](../backend-system/core-services/permissionsRegistry.md). Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
 
 1. We will be using the `@backstage/plugin-catalog-node` package as it contains the extension point we need. Run this to add it:
 
@@ -147,10 +153,10 @@ The api for providing custom rules may differ between plugins, but there should 
    yarn --cwd packages/backend add @backstage/plugin-catalog-node
    ```
 
-2. Next create a `catalogPermissionRules.ts` file in the `packages/backend/src/extensions` folder.
+2. Next create a `catalogPermissionRules.ts` file in the `packages/backend/src/modules` folder.
 3. Then add this as the contents of the new `catalogPermissionRules.ts` file:
 
-   ```typescript title="packages/backend/src/extensions/catalogPermissionRules.ts"
+   ```typescript title="packages/backend/src/modules/catalogPermissionRules.ts"
    import { createBackendModule } from '@backstage/backend-plugin-api';
    import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
    import { isInSystemRule } from './permissionPolicyExtension';
@@ -160,9 +166,9 @@ The api for providing custom rules may differ between plugins, but there should 
      moduleId: 'permission-rules',
      register(reg) {
        reg.registerInit({
-         deps: { catalog: catalogPermissionExtensionPoint },
-         async init({ catalog }) {
-           catalog.addPermissionRules(isInSystemRule);
+         deps: { permissionsRegistry: coreServices.permissionsRegistry },
+         async init({ permissionsRegistry }) {
+           permissionsRegistry.addPermissionRules([isInSystemRule]);
          },
        });
      },

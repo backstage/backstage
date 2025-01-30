@@ -93,7 +93,7 @@ export async function getOctokitOptions(options: {
 
   if (!credentialProviderToken) {
     throw new InputError(
-      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
+      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}. Make sure GitHub auth is configured correctly. See https://backstage.io/docs/auth/github/provider for more details.`,
     );
   }
 
@@ -149,6 +149,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
       }
     | undefined,
   customProperties: { [key: string]: string } | undefined,
+  subscribe: boolean | undefined,
   logger: LoggerService,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
@@ -330,6 +331,15 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     );
   }
 
+  if (subscribe) {
+    await client.rest.activity.setRepoSubscription({
+      subscribed: true,
+      ignored: false,
+      owner,
+      repo,
+    });
+  }
+
   return newRepo;
 }
 
@@ -371,6 +381,7 @@ export async function initRepoPushAndProtect(
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
   requiredCommitSigning?: boolean,
+  requiredLinearHistory?: boolean,
 ): Promise<{ commitHash: string }> {
   const gitAuthorInfo = {
     name: gitAuthorName
@@ -416,6 +427,7 @@ export async function initRepoPushAndProtect(
         enforceAdmins: protectEnforceAdmins,
         dismissStaleReviews: dismissStaleReviews,
         requiredCommitSigning: requiredCommitSigning,
+        requiredLinearHistory: requiredLinearHistory,
       });
     } catch (e) {
       assertError(e);

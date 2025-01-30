@@ -1,8 +1,10 @@
 # Knip report
 
-## Unused devDependencies (1)
+## Unused devDependencies (3)
 
-| Name         | Location     | Severity |
-| :----------- | :----------- | :------- |
-| @types/react | package.json | error    |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| react-router-dom | package.json | error    |
+| react-dom        | package.json | error    |
+| react            | package.json | error    |
 

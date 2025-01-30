@@ -164,12 +164,18 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.s3ForcePathStyle',
     );
 
+    // AWS MAX ATTEMPTS is an optional config. If missing, default value of 3 is used
+    const maxAttempts = config.getOptionalNumber(
+      'techdocs.publisher.awsS3.maxAttempts',
+    );
+
     const storageClient = new S3Client({
       customUserAgent: 'backstage-aws-techdocs-s3-publisher',
       credentialDefaultProvider: () => sdkCredentialProvider,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
       ...(forcePathStyle && { forcePathStyle }),
+      ...(maxAttempts && { maxAttempts }),
       ...(httpsProxy && {
         requestHandler: new NodeHttpHandler({
           httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),

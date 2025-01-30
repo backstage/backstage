@@ -14,69 +14,70 @@
  * limitations under the License.
  */
 
-.button {
+.canon-Button {
   all: unset;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   user-select: none;
   font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-bold);
-  font-size: var(--canon-font-sizes-md);
+  font-weight: var(--canon-font-weight-bold);
+  font-size: var(--canon-font-size-3);
   padding: 0;
   transition: all 150ms ease;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--canon-radius-2);
 }
 
-.button.primary {
-  background-color: var(--canon-accent);
-  color: var(--canon-text-primary-on-accent);
+.canon-Button--variant-primary {
+  background-color: var(--canon-bg-accent);
+  color: var(--canon-fg-accent);
+
+  &:hover {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--canon-border-focus);
+    color: var(--canon-fg-text-primary);
+  }
 }
 
-.button.primary:hover {
+.canon-Button--variant-secondary {
   background-color: transparent;
-  box-shadow: 0 0 0 1px var(--canon-outline-focus);
-  color: var(--canon-text-primary);
+  box-shadow: inset 0 0 0 1px var(--canon-border);
+  color: var(--canon-fg-text-primary);
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px var(--canon-border-hover);
+  }
 }
 
-.button.secondary {
+.canon-Button--variant-tertiary {
   background-color: transparent;
-  box-shadow: 0 0 0 1px var(--canon-outline);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-text-primary);
+
+  &:hover {
+    color: var(--canon-fg-text-secondary);
+  }
 }
 
-.button.secondary:hover {
-  box-shadow: 0 0 0 1px var(--canon-outline-hover);
-}
-
-.button.tertiary {
-  background-color: transparent;
-  color: var(--canon-text-primary);
-}
-
-.button.tertiary:hover {
-  color: var(--canon-text-secondary);
-}
-
-.button.small {
+.canon-Button--size-small {
   padding-left: 6px;
   padding-right: 6px;
   height: 32px;
 }
 
-.button.medium {
+.canon-Button--size-medium {
   padding-left: 8px;
   padding-right: 8px;
   height: 40px;
 }
 
-.button-content {
+.canon-Button--content {
   display: flex;
   align-items: center;
-  gap: var(--canon-spacing-xs);
+  gap: var(--canon-space-3);
+  font-weight: var(--canon-font-weight-bold);
 }
 
-.button-content.icon-both {
+.canon-Button--icon-start-end {
   flex: 1;
 }

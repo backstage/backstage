@@ -1,5 +1,94 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 06eee14: Support empty repository creation in gitlab without workspace pushing and conditionally skip if the repository already exists.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.7.1
+
+### Patch Changes
+
+- 8fb529a: Added `reviewerIds` to the Gitlab Merge Request action.
+- a913beb: Added action `gitlab:group:migrate` to migrate projects using `bulk_import`
+- 7b62987: Updated the path field in the `gitlab:group:ensureExists` action to accept an array of either strings or objects with name and slug fields.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/integration@1.16.1-next.0
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+
+## 0.7.0
+
+### Minor Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 32459d0: **BREAKING**: Upgraded the `gitbeaker` library to version 41. As part of this, the `scopes` parameter to the `gitlab:projectDeployToken:create` is no longer optional, so you will have to pass it a value (for example `['read_repository']`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+
 ## 0.7.0-next.1
 
 ### Patch Changes

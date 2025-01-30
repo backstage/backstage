@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouter } from './deprecated';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { createRouter } from './service/router';
 
 /**
  * Signals backend plugin

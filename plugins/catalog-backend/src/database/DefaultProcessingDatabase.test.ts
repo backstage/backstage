@@ -283,7 +283,7 @@ describe('DefaultProcessingDatabase', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'adds deferred entities to the the refresh_state table to be picked up later, %p',
+      'adds deferred entities to the refresh_state table to be picked up later, %p',
       async databaseId => {
         const { knex, db } = await createDatabase(databaseId);
         await insertRefreshStateRow(knex, {
@@ -784,7 +784,7 @@ describe('DefaultProcessingDatabase', () => {
         });
 
         const result1 = await db.transaction(async tx =>
-          db.listParents(tx, { entityRef: 'component:default/foobar' }),
+          db.listParents(tx, { entityRefs: ['component:default/foobar'] }),
         );
         expect(result1.entityRefs).toEqual([
           'location:default/root-1',
@@ -792,12 +792,12 @@ describe('DefaultProcessingDatabase', () => {
         ]);
 
         const result2 = await db.transaction(async tx =>
-          db.listParents(tx, { entityRef: 'location:default/root-1' }),
+          db.listParents(tx, { entityRefs: ['location:default/root-1'] }),
         );
         expect(result2.entityRefs).toEqual(['location:default/root-2']);
 
         const result3 = await db.transaction(async tx =>
-          db.listParents(tx, { entityRef: 'location:default/root-2' }),
+          db.listParents(tx, { entityRefs: ['location:default/root-2'] }),
         );
         expect(result3.entityRefs).toEqual([]);
       },

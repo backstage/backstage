@@ -20,7 +20,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
-import { ResizableBox } from 'react-resizable';
 import {
   ScaffolderTaskOutput,
   scaffolderApiRef,
@@ -119,6 +118,7 @@ export const OngoingTask = (props: {
 
   useEffect(() => {
     if (taskStream.completed && !taskStream.error) {
+      setLogVisibleState(true);
       setButtonBarVisibleState(false);
     }
   }, [taskStream.error, taskStream.completed]);
@@ -292,13 +292,11 @@ export const OngoingTask = (props: {
         ) : null}
 
         {logsVisible ? (
-          <ResizableBox height={240} minConstraints={[0, 160]} axis="y">
-            <Paper style={{ height: '100%' }}>
-              <Box padding={2} height="100%">
-                <TaskLogStream logs={taskStream.stepLogs} />
-              </Box>
-            </Paper>
-          </ResizableBox>
+          <Paper style={{ height: '100%' }}>
+            <Box padding={2} height="100%">
+              <TaskLogStream logs={taskStream.stepLogs} />
+            </Box>
+          </Paper>
         ) : null}
       </Content>
     </Page>

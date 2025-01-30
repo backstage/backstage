@@ -1,0 +1,77 @@
+.container {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 240px;
+  height: 47px;
+  background-color: var(--canon-bg-elevated);
+  border-radius: 0.375rem;
+  border: 1px solid var(--canon-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition-property: background-color, border-color, height, width;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+}
+
+.open {
+  width: 36%;
+  height: 348px;
+}
+
+.editor {
+  flex: 1;
+}
+
+.editorContainer {
+  overflow: hidden;
+}
+
+.header {
+  height: 46px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--canon-border);
+  background-color: var(--canon-bg-elevated);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px 0 16px;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.headerLeft {
+  font-size: 0.875rem;
+}
+
+.headerRight {
+  display: flex;
+  gap: 8px;
+}
+
+.buttonSave {
+  all: unset;
+  height: 28px;
+  padding: 0 8px;
+  color: #fff;
+  background-color: #000;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.buttonClose {
+  all: unset;
+  height: 28px;
+  padding: 0 8px;
+  color: #fff;
+  background-color: var(--canon-bg);
+  color: var(--canon-fg-text-primary);
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

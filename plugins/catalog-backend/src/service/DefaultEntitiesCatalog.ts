@@ -45,13 +45,14 @@ import {
 import { Stitcher } from '../stitching/types';
 
 import {
-  expandLegacyCompoundRelationRefsInResponse,
+  expandLegacyCompoundRelationsInEntity,
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { processRawEntitiesResult } from './response';
 
 const DEFAULT_LIMIT = 200;
 
@@ -104,15 +105,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
   private readonly stitcher: Stitcher;
+  private readonly disableRelationsCompatibility: boolean;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
     stitcher: Stitcher;
+    disableRelationsCompatibility?: boolean;
   }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
+    this.disableRelationsCompatibility = Boolean(
+      options.disableRelationsCompatibility,
+    );
   }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -142,7 +148,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         targetQuery: entitiesQuery,
         onEntityIdField: 'final_entities.entity_id',
         knex: db,
-        strategy: limit !== undefined && limit <= 500 ? 'join' : 'in',
       });
     }
 
@@ -191,16 +196,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
-    let entities: Entity[] = rows.map(e => JSON.parse(e.final_entity!));
-
-    if (request?.fields) {
-      entities = entities.map(e => request.fields!(e));
-    }
-
-    expandLegacyCompoundRelationRefsInResponse(entities);
-
     return {
-      entities,
+      entities: processRawEntitiesResult(
+        rows.map(r => r.final_entity!),
+        this.disableRelationsCompatibility
+          ? request?.fields
+          : e => {
+              expandLegacyCompoundRelationsInEntity(e);
+              if (request?.fields) {
+                return request.fields(e);
+              }
+              return e;
+            },
+      ),
       pageInfo,
     };
   }
@@ -208,7 +216,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entitiesBatch(
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
-    const lookup = new Map<string, Entity>();
+    const lookup = new Map<string, string>();
 
     for (const chunk of lodashChunk(request.entityRefs, 200)) {
       let query = this.database<DbFinalEntitiesRow>('final_entities')
@@ -228,17 +236,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       }
 
       for (const row of await query) {
-        lookup.set(row.entityRef, row.entity ? JSON.parse(row.entity) : null);
+        lookup.set(row.entityRef, row.entity ? row.entity : null);
       }
     }
 
-    let items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
+    const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
 
-    if (request.fields) {
-      items = items.map(e => e && request.fields!(e));
-    }
-
-    return { items };
+    return { items: processRawEntitiesResult(items, request.fields) };
   }
 
   async queryEntities(
@@ -305,7 +309,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             targetQuery: inner,
             onEntityIdField: 'final_entities.entity_id',
             knex: this.database,
-            strategy: limit <= 500 ? 'join' : 'in',
           });
         }
 
@@ -507,12 +510,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           }
         : undefined;
 
-    const items = rows
-      .map(e => JSON.parse(e.final_entity!))
-      .map(e => (request.fields ? request.fields(e) : e));
-
     return {
-      items,
+      items: processRawEntitiesResult(
+        rows.map(r => r.final_entity!),
+        request.fields,
+      ),
       pageInfo: {
         ...(!!prevCursor && { prevCursor }),
         ...(!!nextCursor && { nextCursor }),

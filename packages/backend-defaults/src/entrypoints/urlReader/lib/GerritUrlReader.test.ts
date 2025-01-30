@@ -20,7 +20,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { NotModifiedError, NotFoundError } from '@backstage/errors';
+import { NotModifiedError } from '@backstage/errors';
 import {
   GerritIntegration,
   readGerritIntegrationConfig,
@@ -36,21 +36,10 @@ import { GerritUrlReader } from './GerritUrlReader';
 import getRawBody from 'raw-body';
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
-const env = process.env;
-process.env = { ...env, DISABLE_GERRIT_GITILES_REQUIREMENT: '1' };
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
-
-const cloneMock = jest.fn(() => Promise.resolve());
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: cloneMock,
-    }),
-  },
-}));
 
 // Gerrit processor without a gitilesBaseUrl configured
 const gerritProcessor = new GerritUrlReader(
@@ -96,12 +85,10 @@ describe.skip('GerritUrlReader', () => {
 
   beforeEach(() => {
     mockDir.clear();
-    process.env = { ...env, DISABLE_GERRIT_GITILES_REQUIREMENT: '1' };
   });
 
   afterAll(() => {
     jest.clearAllMocks();
-    process.env = env;
   });
 
   describe('reader factory', () => {
@@ -186,7 +173,24 @@ describe.skip('GerritUrlReader', () => {
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe(responseBuffer.toString());
     });
-
+    it('should be able to read file contents of a commit as buffer', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/web%2Fproject/commits/f775f9119c313c7ffc890d7908a45997273434d5/files/LICENSE/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(responseBuffer.toString('base64')),
+            );
+          },
+        ),
+      );
+      const result = await gerritProcessor.readUrl(
+        'https://gerrit.com/web/project/+/f775f9119c313c7ffc890d7908a45997273434d5/LICENSE',
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe(responseBuffer.toString());
+    });
     it('should be able to read file contents as stream', async () => {
       worker.use(
         rest.get(
@@ -258,6 +262,7 @@ describe.skip('GerritUrlReader', () => {
     const treeUrlGitiles =
       'https://gerrit.com/gitiles/app/web/+/refs/heads/master/';
     const etag = '52432507a70b677b5674b019c9a46b2e9f29d0a1';
+    const sha = 'f775f9119c313c7ffc890d7908a45997273434d5';
     const mkdocsContent = 'a repo fetched using git clone';
     const mdContent = 'doc';
     const repoArchiveBuffer = fs.readFileSync(
@@ -302,6 +307,19 @@ describe.skip('GerritUrlReader', () => {
               ctx.body(repoArchiveDocsBuffer),
             ),
         ),
+        rest.get(
+          `https://gerrit.com/gitiles/app/web/\\+archive/${sha}.tar.gz`,
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=web-refs/heads/master.tar.gz',
+              ),
+              ctx.body(repoArchiveBuffer),
+            ),
+        ),
       );
     });
 
@@ -330,8 +348,6 @@ describe.skip('GerritUrlReader', () => {
 
       const mdFile = await files[1].content();
       expect(mdFile.toString()).toBe('site_name: Test\n');
-
-      expect(cloneMock).not.toHaveBeenCalled();
     });
 
     it('throws NotModifiedError for matching etags.', async () => {
@@ -346,15 +362,17 @@ describe.skip('GerritUrlReader', () => {
       );
     });
 
-    it('throws NotFoundError if branch info not found.', async () => {
+    it('throws ResponseError if branch info not found.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
           return res(ctx.status(404, 'Not found.'));
         }),
       );
 
-      await expect(gerritProcessor.readTree(treeUrl)).rejects.toThrow(
-        NotFoundError,
+      await expect(
+        gerritProcessor.readTree(treeUrl),
+      ).rejects.toMatchInlineSnapshot(
+        `[ResponseError: Request failed with 404 Not found.]`,
       );
     });
 
@@ -386,8 +404,20 @@ describe.skip('GerritUrlReader', () => {
 
       const mdFile = await files[0].content();
       expect(mdFile.toString()).toBe('# Test\n');
+    });
+    it('throws NotModifiedError for a known commit.', async () => {
+      const shaTreeUrl = `https://gerrit.com/app/web/+/${sha}/`;
 
-      expect(cloneMock).not.toHaveBeenCalled();
+      await expect(
+        gerritProcessor.readTree(shaTreeUrl, { etag: sha }),
+      ).rejects.toThrow(NotModifiedError);
+    });
+    it('can fetch files for a specifc sha.', async () => {
+      const response = await gerritProcessorWithGitiles.readTree(
+        `https://gerrit.com/gitiles/app/web/+/${sha}/`,
+      );
+
+      expect(response.etag).toBe(sha);
     });
   });
 });

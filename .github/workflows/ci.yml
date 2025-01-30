@@ -28,7 +28,7 @@ jobs:
     name: Install ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
         with:
           egress-policy: audit
 
@@ -41,7 +41,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -64,7 +64,7 @@ jobs:
     name: Verify ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
         with:
           egress-policy: audit
 
@@ -77,7 +77,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -126,6 +126,10 @@ jobs:
 
       - name: build all packages
         run: yarn backstage-cli repo build --all
+
+        # For now canon has a custom build script and needs to be built separately
+      - name: build canon
+        run: yarn --cwd packages/canon build
 
       - name: verify type dependencies
         run: yarn lint:type-deps
@@ -202,7 +206,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot
+      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot --experimental-vm-modules
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
@@ -225,7 +229,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -235,7 +239,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore backstage-cli cache
-        uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4
+        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -256,7 +260,7 @@ jobs:
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save backstage-cli cache
-        uses: actions/cache/save@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4
+        uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
         if: always()
         with:
           path: .cache/backstage-cli

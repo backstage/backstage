@@ -65,6 +65,9 @@ const IngressCard = ({ ingress }: IngressCardProps) => {
       metadata={{
         ...ingress.spec,
       }}
+      options={{
+        nestedValuesAsYaml: true,
+      }}
     />
   );
 };

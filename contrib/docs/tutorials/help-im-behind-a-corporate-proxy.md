@@ -22,42 +22,26 @@ There are however some ways to get this to work without too much effort.
 
    `undici` exposes the settings for native `fetch`, and `global-agent` can set things up for `node-fetch`.
 
-1. Go to the entry file for the backend (typically `packages/backend/src/index.ts`), and add the following at the top:
+1. Go to the entry file for the backend (typically `packages/backend/src/index.ts`), and add the following at the VERY top, before all other imports etc:
 
    ```ts
    import 'global-agent/bootstrap';
-   import { setGlobalDispatcher, ProxyAgent } from 'undici';
+   import { setGlobalDispatcher, EnvHttpProxyAgent } from 'undici';
 
-   const proxyEnv =
-     process.env.GLOBAL_AGENT_HTTP_PROXY ||
-     process.env.GLOBAL_AGENT_HTTPS_PROXY;
-
-   if (proxyEnv) {
-     const proxyUrl = new URL(proxyEnv);
-     setGlobalDispatcher(
-       new ProxyAgent({
-         uri: proxyUrl.protocol + proxyUrl.host,
-         token:
-           proxyUrl.username && proxyUrl.password
-             ? `Basic ${Buffer.from(
-                 `${proxyUrl.username}:${proxyUrl.password}`,
-               ).toString('base64')}`
-             : undefined,
-       }),
-     );
-   }
+   setGlobalDispatcher(new EnvHttpProxyAgent());
    ```
 
-   The first import automatically bootstraps `global-agent`, which addresses `node-fetch` proxying. The lines of code below that peeks into the same environment variables as `global-agent` uses, and also leverages them to set up the `undici` package which affects native `fetch`. Does that seem weird? Yes, we think so too. But in the current state of the Node.js ecosystem, that's how it works.
-
-   This code is kept brief for illustrative purposes. You may want to adjust it slightly if you need support for [no-proxy excludes](https://gist.github.com/zicklag/1bb50db6c5138de347c224fda14286da) or only do proxying in local development etc. Also see [the `global-agent` docs](https://github.com/gajus/global-agent) for information about its configuration options.
+   The first import automatically bootstraps `global-agent`, which addresses `node-fetch` proxying. The lines below that set up the `undici` package which affects native `fetch`.
 
 1. Start the backend with the correct environment variables set. For example:
 
    ```sh
-   export GLOBAL_AGENT_HTTP_PROXY=http://username:password@proxy.example.net:8888
+   export HTTP_PROXY=http://username:password@proxy.example.net:8888
+   export GLOBAL_AGENT_HTTP_PROXY=${HTTP_PROXY}
    yarn start
    ```
+
+   The default for `global-agent` is to have a prefix on the variable names, hence the need for specifying it twice. For further information about `HTTP(S)_PROXY` and `NO_PROXY` excludes, see [the global-agent documentation](https://github.com/gajus/global-agent) and [undici documentation](https://github.com/nodejs/undici).
 
 ## Configuration
 

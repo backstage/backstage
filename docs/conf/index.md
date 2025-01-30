@@ -61,7 +61,7 @@ More details are provided in dedicated sections of the documentation.
 
 - [Reading Configuration](./reading.md): How to read configuration in your
   plugin.
-- [Writing Configuration](./writing.md): How to provide configuration for your
+- [Writing Configuration](./writing.md): How to write configuration for your
   Backstage deployment.
 - [Defining Configuration](./defining.md): How to define a configuration schema
   for users of your plugin or package.

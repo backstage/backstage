@@ -15,19 +15,27 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+import { useCanon } from '../../contexts/canon';
+import type { IconProps } from './types';
+import clsx from 'clsx';
 
 /** @public */
-export const Icon = ({ name }: { name: IconNames }) => {
-  const { icons } = useTheme();
+export const Icon = (props: IconProps) => {
+  const { name, size = 16, className, style, ...restProps } = props;
+  const { icons } = useCanon();
 
-  const RemixIcon = icons[name];
+  const CanonIcon = icons[name] as React.ComponentType<Omit<IconProps, 'name'>>;
 
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found.`);
-    return <svg />; // Return default icon perhaps?
+  if (!CanonIcon) {
+    console.error(`Icon "${name}" not found or is not a valid component.`);
+    return <svg />; // Return a default icon or handle the error appropriately
   }
 
-  return <RemixIcon />;
+  return (
+    <CanonIcon
+      className={clsx('canon-Icon', className)}
+      style={{ width: size, height: size, ...style }}
+      {...restProps}
+    />
+  );
 };

@@ -14,76 +14,25 @@
  * limitations under the License.
  */
 
-import { Breakpoint, SpaceProps, ColorProps } from '../../layout/types';
+import type { HeightProps } from '../../props/height.props';
+import type { WidthProps } from '../../props/width.props';
+import type { PositionProps } from '../../props/position.props';
+import type { DisplayProps } from '../../props/display.props';
+import type { SpaceProps } from '../../types';
+import type { BoxOwnProps } from './Box.props';
 
 /** @public */
-export type DisplayProps =
-  | 'flex'
-  | 'none'
-  | 'inline'
-  | 'block'
-  | Partial<Record<Breakpoint, 'flex' | 'none' | 'inline' | 'block'>>;
-
-/** @public */
-export type FlexDirectionProps =
-  | 'row'
-  | 'column'
-  | Partial<Record<Breakpoint, 'row' | 'column'>>;
-
-/** @public */
-export type FlexWrapProps =
-  | 'wrap'
-  | 'nowrap'
-  | Partial<Record<Breakpoint, 'wrap' | 'nowrap'>>;
-
-/** @public */
-export type JustifyContentProps =
-  | 'stretch'
-  | 'flex-start'
-  | 'center'
-  | 'flex-end'
-  | 'space-around'
-  | 'space-between'
-  | Partial<
-      Record<
-        Breakpoint,
-        | 'stretch'
-        | 'flex-start'
-        | 'center'
-        | 'flex-end'
-        | 'space-around'
-        | 'space-between'
-      >
-    >;
-
-/** @public */
-export type AlignItemsProps =
-  | 'stretch'
-  | 'flex-start'
-  | 'center'
-  | 'flex-end'
-  | Partial<
-      Record<Breakpoint, 'stretch' | 'flex-start' | 'center' | 'flex-end'>
-    >;
-
-/** @public */
-export type BorderRadiusProps =
-  | 'none'
-  | 'small'
-  | 'medium'
-  | 'full'
-  | Partial<Record<Breakpoint, 'none' | 'small' | 'medium' | 'full'>>;
-
-/** @public */
-export interface BoxProps extends SpaceProps, ColorProps {
-  as?: keyof JSX.IntrinsicElements;
+export interface BoxProps extends SpaceProps {
+  display?: DisplayProps['display'];
+  as?: BoxOwnProps['as'];
+  width?: WidthProps['width'];
+  minWidth?: WidthProps['minWidth'];
+  maxWidth?: WidthProps['maxWidth'];
+  height?: HeightProps['height'];
+  minHeight?: HeightProps['minHeight'];
+  maxHeight?: HeightProps['maxHeight'];
+  position?: PositionProps['position'];
   children?: React.ReactNode;
-  display?: DisplayProps;
-  flexDirection?: FlexDirectionProps;
-  flexWrap?: FlexWrapProps;
-  justifyContent?: JustifyContentProps;
-  alignItems?: AlignItemsProps;
-  borderRadius?: BorderRadiusProps;
   className?: string;
   style?: React.CSSProperties;
 }

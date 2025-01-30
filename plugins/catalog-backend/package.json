@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "1.29.0-next.1",
+  "version": "1.31.0-next.1",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin",
@@ -75,6 +75,7 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@opentelemetry/api": "^1.9.0",
     "@types/express": "^4.17.6",

@@ -16,21 +16,10 @@
 
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
-import type { IconNames } from '../Icon/types';
+import clsx from 'clsx';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
-/**
- * Properties for {@link Button}
- *
- * @public
- */
-export interface ButtonProps {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary' | 'tertiary';
-  children: React.ReactNode;
-  disabled?: boolean;
-  iconStart?: IconNames;
-  iconEnd?: IconNames;
-}
+import type { ButtonProps } from './types';
 
 /** @public */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -42,17 +31,33 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconStart,
       iconEnd,
       children,
+      className,
+      style,
+      ...rest
     } = props;
+
+    // Get the responsive value for the variant
+    const responsiveSize = useResponsiveValue(size);
+    const responsiveVariant = useResponsiveValue(variant);
 
     return (
       <button
-        {...props}
+        {...rest}
         ref={ref}
         disabled={disabled}
-        className={`button ${variant} ${size}`}
+        className={clsx(
+          'canon-Button',
+          `canon-Button--size-${responsiveSize}`,
+          `canon-Button--variant-${responsiveVariant}`,
+          className,
+        )}
+        style={style}
       >
         <span
-          className={['button-content', iconStart && iconEnd ? 'icon-both' : '']
+          className={[
+            'canon-Button--content',
+            iconStart && iconEnd ? 'canon-Button--icon-start-end' : '',
+          ]
             .filter(Boolean)
             .join(' ')}
         >

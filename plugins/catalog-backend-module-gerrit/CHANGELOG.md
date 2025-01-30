@@ -1,5 +1,83 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.15.1
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/integration@1.16.1-next.0
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+
+## 0.2.5
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
+## 0.2.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+
 ## 0.2.5-next.1
 
 ### Patch Changes

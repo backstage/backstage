@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { LifecycleService } from '@backstage/backend-plugin-api';
+import {
+  RootConfigService,
+  LifecycleService,
+} from '@backstage/backend-plugin-api';
+import { readDurationFromConfig } from '@backstage/config';
 import { ServiceUnavailableError } from '@backstage/errors';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
@@ -26,13 +30,8 @@ export const DEFAULT_TIMEOUT = { seconds: 5 };
  * @public
  */
 export interface LifecycleMiddlewareOptions {
+  config: RootConfigService;
   lifecycle: LifecycleService;
-  /**
-   * The maximum time that paused requests will wait for the service to start, before returning an error.
-   *
-   * Defaults to 5 seconds.
-   */
-  startupRequestPauseTimeout?: HumanDuration;
 }
 
 /**
@@ -52,7 +51,7 @@ export interface LifecycleMiddlewareOptions {
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
-  const { lifecycle, startupRequestPauseTimeout = DEFAULT_TIMEOUT } = options;
+  const { config, lifecycle } = options;
 
   let state: 'init' | 'up' | 'down' = 'init';
   const waiting = new Set<{
@@ -80,6 +79,14 @@ export function createLifecycleMiddleware(
     }
     waiting.clear();
   });
+
+  let startupRequestPauseTimeout: HumanDuration = DEFAULT_TIMEOUT;
+
+  if (config.has('backend.lifecycle.startupRequestPauseTimeout')) {
+    startupRequestPauseTimeout = readDurationFromConfig(config, {
+      key: 'backend.lifecycle.startupRequestPauseTimeout',
+    });
+  }
 
   const timeoutMs = durationToMilliseconds(startupRequestPauseTimeout);
 

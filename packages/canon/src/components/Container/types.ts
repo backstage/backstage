@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SpaceProps } from '../../layout/types';
+import { SpaceProps } from '../../types';
 
 /** @public */
-export interface ContainerProps
-  extends Omit<
-    SpaceProps,
-    | 'padding'
-    | 'paddingLeft'
-    | 'paddingRight'
-    | 'paddingX'
-    | 'margin'
-    | 'marginLeft'
-    | 'marginRight'
-    | 'marginX'
-    | 'gap'
-  > {
+export interface ContainerProps {
   children?: React.ReactNode;
   className?: string;
+  my?: SpaceProps['my'];
+  mb?: SpaceProps['mb'];
+  mt?: SpaceProps['mt'];
+  py?: SpaceProps['py'];
+  pb?: SpaceProps['pb'];
+  pt?: SpaceProps['pt'];
   style?: React.CSSProperties;
 }

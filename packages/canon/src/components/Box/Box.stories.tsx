@@ -17,33 +17,12 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
-import {
-  listResponsiveValues,
-  argTypesSpacing,
-  argTypesColor,
-} from '../../../docs/utils/argTypes';
-import { boxProperties } from './sprinkles.css';
-
-const argTypesBox = Object.keys(boxProperties.styles).reduce<
-  Record<string, any>
->((acc, n) => {
-  acc[n] = {
-    control: 'select',
-    options: listResponsiveValues(n as keyof typeof boxProperties.styles),
-  };
-  return acc;
-}, {});
+import { Flex } from '../Flex';
 
 const meta = {
   title: 'Components/Box',
   component: Box,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
-    ...argTypesSpacing,
-    ...argTypesColor,
-    ...argTypesBox,
     as: {
       control: { type: 'select' },
       options: ['div', 'span', 'article', 'section'],
@@ -52,132 +31,170 @@ const meta = {
       control: false,
     },
   },
-  args: {
-    as: 'div',
-    background: 'elevation1',
-    borderRadius: 'small',
-    children: 'Basic Box',
-    display: 'block',
-    padding: 'sm',
-  },
 } satisfies Meta<typeof Box>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {
-  args: {},
+const Card = () => {
+  return (
+    <div
+      style={{
+        width: '64px',
+        height: '64px',
+        background: '#eaf2fd',
+        borderRadius: '4px',
+        border: '1px solid #2563eb',
+        color: '#2563eb',
+        backgroundImage:
+          'url("data:image/svg+xml,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.3%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M5%200h1L0%206V5zM6%205v1H5z%22/%3E%3C/g%3E%3C/svg%3E")',
+      }}
+    />
+  );
 };
 
-export const Responsive: Story = {
-  render: () => (
-    <Box
-      display={{ xs: 'block', sm: 'flex' }}
-      padding={{ xs: 'xs', sm: 'md', lg: 'lg' }}
-      background="background"
+export const Default: Story = {
+  args: {
+    children: <Card />,
+    display: 'inline',
+  },
+};
+
+const CardDisplay = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <div
+      style={{
+        padding: '8px',
+        background: '#eaf2fd',
+        borderRadius: '4px',
+        border: '1px solid #2563eb',
+        color: '#2563eb',
+        backgroundImage:
+          'url("data:image/svg+xml,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.3%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M5%200h1L0%206V5zM6%205v1H5z%22/%3E%3C/g%3E%3C/svg%3E")',
+      }}
     >
-      Responsive Box
-    </Box>
-  ),
+      {children}
+    </div>
+  );
 };
 
-export const FlexContainer: Story = {
-  render: () => (
-    <Box
-      display="flex"
-      flexDirection="column"
-      padding="lg"
-      background="background"
-    >
-      <Box padding="md" background="background" color="primary">
-        Item 1
-      </Box>
-      <Box padding="md" background="background" color="primary">
-        Item 2
-      </Box>
-      <Box padding="md" background="background" color="primary">
-        Item 3
-      </Box>
-    </Box>
-  ),
-};
-
-export const Nested: Story = {
-  render: () => (
-    <Box padding="lg" background="background">
-      <Box padding="md" background="background">
-        Header
-      </Box>
-      <Box
-        display="flex"
-        padding="md"
-        background="background"
-        justifyContent="space-between"
-      >
-        <Box padding="xs" background="background">
-          Sidebar
+export const Display: Story = {
+  render: args => (
+    <Flex direction="column" align="center">
+      <Flex>
+        <Box display="block" {...args}>
+          <CardDisplay>Block</CardDisplay>
         </Box>
-        <Box padding="xs" background="background">
-          Main Content
+        <Box display="inline" {...args}>
+          <CardDisplay>Inline</CardDisplay>
         </Box>
+        <Box display="none" {...args}>
+          <CardDisplay>None</CardDisplay>
+        </Box>
+      </Flex>
+      <Box display={{ initial: 'block', md: 'inline' }} {...args}>
+        <CardDisplay>Responsive</CardDisplay>
       </Box>
-      <Box padding="md" background="background">
-        Footer
-      </Box>
-    </Box>
+    </Flex>
   ),
 };
 
-export const Alignment: Story = {
-  render: () => (
-    <Box
-      display="flex"
-      padding="lg"
-      background="background"
-      justifyContent="center"
-      alignItems="center"
-      style={{ height: '200px' }}
-    >
-      <Box padding="md" background="background">
-        Centered Content
-      </Box>
-    </Box>
+const styleInsideBox = {
+  background: 'rgb(196, 202, 251)',
+  color: 'white',
+  borderRadius: '4px',
+};
+
+export const Padding: Story = {
+  args: {
+    style: {
+      background: '#1f47ff',
+      color: 'white',
+      borderRadius: '4px',
+      padding: '12px 12px',
+    },
+  },
+  render: args => (
+    <Flex direction="column" align="center" gap="4">
+      <Flex gap="4" align="center">
+        <Box p="3" style={styleInsideBox}>
+          <Box {...args}>Padding</Box>
+        </Box>
+        <Box px="3" style={styleInsideBox}>
+          <Box {...args}>Padding X</Box>
+        </Box>
+        <Box py="3" style={styleInsideBox}>
+          <Box {...args}>Padding Y</Box>
+        </Box>
+      </Flex>
+      <Flex gap="4" align="center">
+        <Box pt="3" style={styleInsideBox}>
+          <Box {...args}>Padding Top</Box>
+        </Box>
+        <Box pr="3" style={styleInsideBox}>
+          <Box {...args}>Padding Right</Box>
+        </Box>
+        <Box pb="3" style={styleInsideBox}>
+          <Box {...args}>Padding Bottom</Box>
+        </Box>
+        <Box pl="3" style={styleInsideBox}>
+          <Box {...args}>Padding Left</Box>
+        </Box>
+      </Flex>
+    </Flex>
   ),
 };
 
-// Example showing different spacing combinations
-export const Spacing: Story = {
-  render: () => (
-    <Box display="flex" flexDirection="column" gap="md">
-      <Box padding="xs" background="background">
-        Small Padding
-      </Box>
-      <Box padding="md" background="background">
-        Medium Padding
-      </Box>
-      <Box padding="lg" background="background">
-        Large Padding
-      </Box>
-      <Box paddingX="lg" paddingY="xs" background="background">
-        Mixed Padding
-      </Box>
-    </Box>
-  ),
-};
-
-// Example showing different display values
-export const DisplayVariants: Story = {
-  render: () => (
-    <Box display="flex" flexDirection="column" gap="md">
-      <Box padding="md" background="background" display="block">
-        Display Block
-      </Box>
-      <Box padding="md" background="background" display="flex">
-        Display Flex
-      </Box>
-      <Box padding="md" background="background" display="inline">
-        Display Inline
-      </Box>
-    </Box>
+export const Margin: Story = {
+  args: {
+    style: {
+      background: '#1f47ff',
+      color: 'white',
+      borderRadius: '4px',
+      padding: '12px 12px',
+    },
+  },
+  render: args => (
+    <Flex direction="column" align="center" gap="4">
+      <Flex align="center" gap="4">
+        <Box style={styleInsideBox}>
+          <Box m="3" {...args}>
+            Margin
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box mx="3" {...args}>
+            Margin X
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box my="3" {...args}>
+            Margin Y
+          </Box>
+        </Box>
+      </Flex>
+      <Flex align="center" gap="4">
+        <Box style={styleInsideBox}>
+          <Box mt="3" {...args}>
+            Margin Top
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box mr="3" {...args}>
+            Margin Right
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box mb="3" {...args}>
+            Margin Bottom
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box ml="3" {...args}>
+            Margin Left
+          </Box>
+        </Box>
+      </Flex>
+    </Flex>
   ),
 };

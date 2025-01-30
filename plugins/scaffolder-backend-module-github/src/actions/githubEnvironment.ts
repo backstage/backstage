@@ -26,6 +26,7 @@ import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -35,8 +36,9 @@ import { Entity } from '@backstage/catalog-model';
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
   catalogClient?: CatalogApi;
+  auth?: AuthService;
 }) {
-  const { integrations, catalogClient } = options;
+  const { integrations, catalogClient, auth } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction<{
@@ -140,7 +142,8 @@ export function createGithubEnvironmentAction(options: {
           reviewers: {
             title: 'Reviewers',
             type: 'array',
-            description: 'Reviewers for this environment',
+            description:
+              'Reviewers for this environment. Must be a list of Backstage entity references.',
             items: {
               type: 'string',
             },
@@ -162,6 +165,11 @@ export function createGithubEnvironmentAction(options: {
         preventSelfReview,
         reviewers,
       } = ctx.input;
+
+      const { token } = (await auth?.getPluginRequestToken({
+        onBehalfOf: await ctx.getInitiatorCredentials(),
+        targetPluginId: 'catalog',
+      })) ?? { token: ctx.secrets?.backstageToken };
 
       // When environment creation step is executed right after a repo publish step, the repository might not be available immediately.
       // Add a 2-second delay before initiating the steps in this action.
@@ -190,9 +198,14 @@ export function createGithubEnvironmentAction(options: {
       if (reviewers) {
         let reviewersEntityRefs: Array<Entity | undefined> = [];
         // Fetch reviewers from Catalog
-        const catalogResponse = await catalogClient?.getEntitiesByRefs({
-          entityRefs: reviewers,
-        });
+        const catalogResponse = await catalogClient?.getEntitiesByRefs(
+          {
+            entityRefs: reviewers,
+          },
+          {
+            token,
+          },
+        );
         if (catalogResponse?.items?.length) {
           reviewersEntityRefs = catalogResponse.items;
         }

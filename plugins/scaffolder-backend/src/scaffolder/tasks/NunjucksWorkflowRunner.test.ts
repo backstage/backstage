@@ -38,7 +38,6 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import stripAnsi from 'strip-ansi';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -48,6 +47,7 @@ describe('NunjucksWorkflowRunner', () => {
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
   let fakeTaskLog: jest.Mock;
+  let stripAnsi: typeof import('strip-ansi').default;
 
   const mockDir = createMockDirectory();
 
@@ -92,8 +92,11 @@ describe('NunjucksWorkflowRunner', () => {
     );
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockDir.clear();
+
+    // This one is ESM-only
+    stripAnsi = await import('strip-ansi').then(m => m.default);
 
     jest.resetAllMocks();
     logger = mockServices.logger.mock();
@@ -208,7 +211,7 @@ describe('NunjucksWorkflowRunner', () => {
     });
 
     await expect(runner.execute(task)).rejects.toThrow(
-      "Template action with ID 'does-not-exist' is not registered.",
+      /Template action with ID 'does-not-exist' is not registered/,
     );
   });
 
@@ -707,6 +710,34 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(output.foo).toEqual('BACKSTAGE');
     });
+
+    it('should include task ID in the templated context', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              values: {
+                taskId: '${{context.task.id}}',
+              },
+            },
+          },
+        ],
+        output: {},
+        parameters: {},
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { values: { taskId: 'test-workspace' } },
+        }),
+      );
+    });
   });
 
   describe('redactions', () => {
@@ -957,6 +988,27 @@ describe('NunjucksWorkflowRunner', () => {
       });
       await expect(runner.execute(task)).rejects.toThrow(
         'Invalid input passed to action jest-validated-action[1], instance requires property "foo"',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('should validate each parameter renders to a valid value', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+        output: {},
+        parameters: {},
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid value on action jest-validated-action.each parameter, "${{parameters.data}}" cannot be resolved to a value',
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });

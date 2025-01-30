@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.27.2-next.1",
+  "version": "1.28.0-next.1",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -81,10 +81,10 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@react-hookz/web": "^24.0.0",
-    "@rjsf/core": "5.23.1",
-    "@rjsf/material-ui": "5.23.1",
-    "@rjsf/utils": "5.23.1",
-    "@rjsf/validator-ajv8": "5.23.1",
+    "@rjsf/core": "5.23.2",
+    "@rjsf/material-ui": "5.23.2",
+    "@rjsf/utils": "5.23.2",
+    "@rjsf/validator-ajv8": "5.23.2",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "git-url-parse": "^15.0.0",
@@ -127,10 +127,10 @@
     "swr": "^2.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

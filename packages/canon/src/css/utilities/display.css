@@ -1,0 +1,110 @@
+.cu-display-none {
+  display: none;
+}
+
+.cu-display-inline {
+  display: inline;
+}
+
+.cu-display-inline-block {
+  display: inline-block;
+}
+
+.cu-display-block {
+  display: block;
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:cu-display-none {
+    display: none;
+  }
+
+  .xs\:cu-display-inline {
+    display: inline;
+  }
+
+  .xs\:cu-display-inline-block {
+    display: inline-block;
+  }
+
+  .xs\:cu-display-block {
+    display: block;
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:cu-display-none {
+    display: none;
+  }
+
+  .sm\:cu-display-inline {
+    display: inline;
+  }
+
+  .sm\:cu-display-inline-block {
+    display: inline-block;
+  }
+
+  .sm\:cu-display-block {
+    display: block;
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:cu-display-none {
+    display: none;
+  }
+
+  .md\:cu-display-inline {
+    display: inline;
+  }
+
+  .md\:cu-display-inline-block {
+    display: inline-block;
+  }
+
+  .md\:cu-display-block {
+    display: block;
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:cu-display-none {
+    display: none;
+  }
+
+  .lg\:cu-display-inline {
+    display: inline;
+  }
+
+  .lg\:cu-display-inline-block {
+    display: inline-block;
+  }
+
+  .lg\:cu-display-block {
+    display: block;
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:cu-display-none {
+    display: none;
+  }
+
+  .xl\:cu-display-inline {
+    display: inline;
+  }
+
+  .xl\:cu-display-inline-block {
+    display: inline-block;
+  }
+
+  .xl\:cu-display-block {
+    display: block;
+  }
+}

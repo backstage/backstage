@@ -53,11 +53,11 @@ describe('DefaultRootHealthService', () => {
 
     it(`should return a 500 response if the server has stopped`, async () => {
       let mockServerStartedFn = () => {};
-      let mockServerStoppedFn = () => {};
+      let mockServerBeforeStoppedFn = () => {};
 
       const lifecycle = mockServices.rootLifecycle.mock({
         addStartupHook: jest.fn(fn => (mockServerStartedFn = fn)),
-        addShutdownHook: jest.fn(fn => (mockServerStoppedFn = fn)),
+        addBeforeShutdownHook: jest.fn(fn => (mockServerBeforeStoppedFn = fn)),
       });
 
       const service = new DefaultRootHealthService({
@@ -65,11 +65,11 @@ describe('DefaultRootHealthService', () => {
       });
 
       mockServerStartedFn();
-      mockServerStoppedFn();
+      mockServerBeforeStoppedFn();
       await expect(service.getReadiness()).resolves.toEqual({
         status: 503,
         payload: {
-          message: 'Backend has not started yet',
+          message: 'Backend is shuttting down',
           status: 'error',
         },
       });

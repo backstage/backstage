@@ -1,0 +1,85 @@
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    color: var(--canon-fg-text-primary);
+    background-color: var(--canon-bg-elevated);
+    border-right: 1px solid var(--canon-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    overflow: hidden;
+  }
+}
+
+.logoContainer {
+  padding-left: 6px;
+  padding-top: 32px;
+}
+
+.logo path {
+  fill: var(--canon-fg-text-primary);
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sectionTitle {
+  font-family: var(--docs-font);
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-bold);
+  padding: 12px 0;
+}
+
+.line {
+  text-decoration: none;
+  align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--canon-bg);
+  }
+}
+
+.line.active {
+  background-color: var(--canon-bg);
+}
+
+.lineTitle {
+  font-family: var(--docs-font);
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-text-primary);
+}
+
+.lineStatus {
+  font-family: var(--docs-font);
+  font-size: var(--canon-font-size-3);
+  color: var(--canon-fg-text-secondary);
+}
