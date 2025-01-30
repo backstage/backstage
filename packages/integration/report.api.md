@@ -399,13 +399,28 @@ export type GerritIntegrationConfig = {
 };
 
 // @public
-export function getAzureCommitsUrl(url: string, apiVersion: string): string;
+export function getAzureCommitsUrl(
+  url: string,
+  options?: {
+    apiVersion?: string;
+  },
+): string;
 
 // @public
-export function getAzureDownloadUrl(url: string, apiVersion: string): string;
+export function getAzureDownloadUrl(
+  url: string,
+  options?: {
+    apiVersion?: string;
+  },
+): string;
 
 // @public
-export function getAzureFileFetchUrl(url: string, apiVersion: string): string;
+export function getAzureFileFetchUrl(
+  url: string,
+  options?: {
+    apiVersion?: string;
+  },
+): string;
 
 // @public @deprecated
 export function getAzureRequestOptions(
