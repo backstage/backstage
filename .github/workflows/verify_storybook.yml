@@ -54,7 +54,7 @@ jobs:
 
       - run: yarn --cwd packages/canon build-storybook
 
-      - uses: chromaui/action@64a9c0ca3bfb724389b0d536e544f56b7b5ff5b3 # v11
+      - uses: chromaui/action@1fc59b137c52d2f7571c8cf0b40daad2794fd551 # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
