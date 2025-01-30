@@ -14,22 +14,91 @@
  * limitations under the License.
  */
 
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  PermissionCriteria,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
+import { z } from 'zod';
+import { PermissionResourceRef } from './createPermissionResourceRef';
+import { NoInfer } from './util';
 
 /**
- * Helper function to ensure that {@link PermissionRule} definitions are typed correctly.
+ * @public
+ */
+export type CreatePermissionRuleOptions<
+  TResource,
+  TQuery,
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = {
+  name: string;
+  description: string;
+
+  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
+
+  /**
+   * A ZodSchema that reflects the structure of the parameters that are passed to
+   */
+  paramsSchema?: z.ZodSchema<TParams>;
+
+  /**
+   * Apply this rule to a resource already loaded from a backing data source. The params are
+   * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
+   * params.
+   */
+  apply(resource: TResource, params: NoInfer<TParams>): boolean;
+
+  /**
+   * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
+   * can be used for loading a collection of resources efficiently with conditional criteria already
+   * applied.
+   */
+  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
+};
+
+/**
+ * Helper function to create a {@link PermissionRule} for a specific resource type using a {@link PermissionResourceRef}.
  *
  * @public
  */
-export const createPermissionRule = <
+export function createPermissionRule<
+  TResource,
+  TQuery,
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: CreatePermissionRuleOptions<TResource, TQuery, TResourceType, TParams>,
+): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+/**
+ * Helper function to ensure that {@link PermissionRule} definitions are typed correctly.
+ *
+ * @deprecated Use the version of `createPermissionRule` that accepts a `resourceRef` option instead.
+ * @public
+ */
+export function createPermissionRule<
   TResource,
   TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
-) => rule;
+): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+export function createPermissionRule<
+  TResource,
+  TQuery,
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule:
+    | PermissionRule<TResource, TQuery, TResourceType, TParams>
+    | CreatePermissionRuleOptions<TResource, TQuery, TResourceType, TParams>,
+): PermissionRule<TResource, TQuery, TResourceType, TParams> {
+  if ('resourceRef' in rule) {
+    return { ...rule, resourceType: rule.resourceRef.resourceType };
+  }
+  return rule;
+}
 
 /**
  * Helper for making plugin-specific createPermissionRule functions, that have
@@ -38,6 +107,7 @@ export const createPermissionRule = <
  * consistent types for the resource and query.
  *
  * @public
+ * @deprecated Use {@link (createPermissionRule:1)} directly instead with the resourceRef option.
  */
 export const makeCreatePermissionRule =
   <TResource, TQuery, TResourceType extends string>() =>

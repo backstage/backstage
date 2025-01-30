@@ -39,6 +39,7 @@ import {
   isOrCriteria,
 } from './util';
 import { NotImplementedError } from '@backstage/errors';
+import { PermissionResourceRef } from './createPermissionResourceRef';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -163,10 +164,22 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-export const createConditionAuthorizer = <TResource, TQuery>(
+export function createConditionAuthorizer<TResource>(
+  permissionRuleAccessor: PermissionRuleAccessor<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+/**
+ * @public
+ * @deprecated Use the version of `createConditionAuthorizer` that accepts a `PermissionRuleAccessor` instead.
+ */
+export function createConditionAuthorizer<TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
-) => {
-  const getRule = createGetRule(rules);
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+export function createConditionAuthorizer<TResource, TQuery>(
+  rules:
+    | PermissionRule<TResource, TQuery, string>[]
+    | PermissionRuleAccessor<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean {
+  const getRule = typeof rules === 'function' ? rules : createGetRule(rules);
 
   return (
     decision: PolicyDecision,
@@ -178,7 +191,7 @@ export const createConditionAuthorizer = <TResource, TQuery>(
 
     return decision.result === AuthorizeResult.ALLOW;
   };
-};
+}
 
 /**
  * Options for creating a permission integration router specific

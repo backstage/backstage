@@ -83,7 +83,23 @@ export const createConditionAuthorizer: <TResource, TQuery>(
 ) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
 
 // @public
-export const createConditionExports: <
+export function createConditionExports<
+  TResourceType extends string,
+  TResource,
+  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
+>(options: {
+  resourceRef: PermissionResourceRef<TResource, any, TResourceType>;
+  rules: TRules;
+}): {
+  conditions: Conditions<TRules>;
+  createConditionalDecision: (
+    permission: ResourcePermission<TResourceType>,
+    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
+  ) => ConditionalPolicyDecision;
+};
+
+// @public @deprecated (undocumented)
+export function createConditionExports<
   TResourceType extends string,
   TResource,
   TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
@@ -91,7 +107,7 @@ export const createConditionExports: <
   pluginId: string;
   resourceType: TResourceType;
   rules: TRules;
-}) => {
+}): {
   conditions: Conditions<TRules>;
   createConditionalDecision: (
     permission: ResourcePermission<TResourceType>,
@@ -164,15 +180,48 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   ) => Promise<Array<TResource | undefined>>;
 };
 
+// @public (undocumented)
+export function createPermissionResourceRef<TResource, TQuery>(): {
+  with<TPluginId extends string, TResourceType extends string>(options: {
+    pluginId: TPluginId;
+    resourceType: TResourceType;
+  }): PermissionResourceRef<TResource, TQuery, TResourceType, TPluginId>;
+};
+
 // @public
-export const createPermissionRule: <
+export function createPermissionRule<
+  TResource,
+  TQuery,
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: CreatePermissionRuleOptions<TResource, TQuery, TResourceType, TParams>,
+): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public @deprecated
+export function createPermissionRule<
   TResource,
   TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
-) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
+): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public (undocumented)
+export type CreatePermissionRuleOptions<
+  TResource,
+  TQuery,
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = {
+  name: string;
+  description: string;
+  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
+  paramsSchema?: z.ZodSchema<TParams>;
+  apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
+  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
+};
 
 // @public
 export const isAndCriteria: <T>(
@@ -189,7 +238,7 @@ export const isOrCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is AnyOfCriteria<T>;
 
-// @public
+// @public @deprecated
 export const makeCreatePermissionRule: <
   TResource,
   TQuery,
@@ -252,6 +301,20 @@ export interface PermissionPolicy {
   // (undocumented)
   handle(request: PolicyQuery, user?: PolicyQueryUser): Promise<PolicyDecision>;
 }
+
+// @public (undocumented)
+export type PermissionResourceRef<
+  TResource = unknown,
+  TQuery = unknown,
+  TResourceType extends string = string,
+  TPluginId extends string = string,
+> = {
+  readonly $$type: '@backstage/PermissionResourceRef';
+  readonly pluginId: TPluginId;
+  readonly resourceType: TResourceType;
+  readonly TQuery: TQuery;
+  readonly TResource: TResource;
+};
 
 // @public
 export type PermissionRule<
