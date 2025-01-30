@@ -29,8 +29,9 @@ import { NoInfer } from './util';
 export type CreatePermissionRuleOptions<
   TResource,
   TQuery,
+  TQueryOutput extends TQuery,
   TResourceType extends string,
-  TParams extends PermissionRuleParams = PermissionRuleParams,
+  TParams extends PermissionRuleParams,
 > = {
   name: string;
   description: string;
@@ -54,7 +55,7 @@ export type CreatePermissionRuleOptions<
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
+  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQueryOutput>;
 };
 
 /**
@@ -65,10 +66,17 @@ export type CreatePermissionRuleOptions<
 export function createPermissionRule<
   TResource,
   TQuery,
+  TQueryOutput extends TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: CreatePermissionRuleOptions<TResource, TQuery, TResourceType, TParams>,
+  rule: CreatePermissionRuleOptions<
+    TResource,
+    TQuery,
+    TQueryOutput,
+    TResourceType,
+    TParams
+  >,
 ): PermissionRule<TResource, TQuery, TResourceType, TParams>;
 /**
  * Helper function to ensure that {@link PermissionRule} definitions are typed correctly.
@@ -87,12 +95,19 @@ export function createPermissionRule<
 export function createPermissionRule<
   TResource,
   TQuery,
+  TQueryOutput extends TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
   rule:
     | PermissionRule<TResource, TQuery, TResourceType, TParams>
-    | CreatePermissionRuleOptions<TResource, TQuery, TResourceType, TParams>,
+    | CreatePermissionRuleOptions<
+        TResource,
+        TQuery,
+        TQueryOutput,
+        TResourceType,
+        TParams
+      >,
 ): PermissionRule<TResource, TQuery, TResourceType, TParams> {
   if ('resourceRef' in rule) {
     return { ...rule, resourceType: rule.resourceRef.resourceType };

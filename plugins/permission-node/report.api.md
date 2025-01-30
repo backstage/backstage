@@ -203,10 +203,17 @@ export function createPermissionResourceRef<TResource, TQuery>(): {
 export function createPermissionRule<
   TResource,
   TQuery,
+  TQueryOutput extends TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: CreatePermissionRuleOptions<TResource, TQuery, TResourceType, TParams>,
+  rule: CreatePermissionRuleOptions<
+    TResource,
+    TQuery,
+    TQueryOutput,
+    TResourceType,
+    TParams
+  >,
 ): PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
 // @public @deprecated
@@ -223,15 +230,16 @@ export function createPermissionRule<
 export type CreatePermissionRuleOptions<
   TResource,
   TQuery,
+  TQueryOutput extends TQuery,
   TResourceType extends string,
-  TParams extends PermissionRuleParams = PermissionRuleParams,
+  TParams extends PermissionRuleParams,
 > = {
   name: string;
   description: string;
   resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
   paramsSchema?: z.ZodSchema<TParams>;
   apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
-  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
+  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQueryOutput>;
 };
 
 // @public
