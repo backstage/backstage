@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.12.2-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+
 ## 0.12.2-next.0
 
 ### Patch Changes

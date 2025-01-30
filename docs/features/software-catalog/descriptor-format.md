@@ -375,13 +375,17 @@ Fields of a link are:
 | `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
 | `type`  | String | [Optional] An optional value to categorize links into specific groups.               |
 
-_NOTE_: The `icon` field value is meant to be a semantic key that will map to a
+:::note Note
+
+The `icon` field value is meant to be a semantic key that will map to a
 specific icon that may be provided by an icon library (e.g. `material-ui`
 icons). These keys should be a sequence of `[a-z0-9A-Z]`, possibly separated by
 one of `[-_.]`. Backstage may support some basic icons out of the box such as those [defined in app-defaults](https://github.com/backstage/backstage/blob/master/packages/app-defaults/src/defaults/icons.tsx), but the
 Backstage integrator will ultimately be left to provide the appropriate icon
 component mappings. A generic fallback icon would be provided if a mapping
 cannot be resolved.
+
+:::
 
 The semantics of the `type` field are undefined. The adopter is free to define their own set of types and utilize them as they wish. Some potential use cases can be to utilize the type field to validate certain links exist on entities or to create customized UI components for specific link types.
 

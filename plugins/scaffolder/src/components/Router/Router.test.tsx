@@ -76,6 +76,14 @@ describe('Router', () => {
       expect(getByText('foobar')).toBeInTheDocument();
       expect(TemplateListPage).not.toHaveBeenCalled();
     });
+
+    it('should render not found error page', async () => {
+      await expect(
+        wrapInApisAndRender(<Router />, {
+          routeEntries: ['/foonotfounderror'],
+        }),
+      ).rejects.toThrow('Reached NotFound Page');
+    });
   });
 
   describe('/templates/:templateName', () => {

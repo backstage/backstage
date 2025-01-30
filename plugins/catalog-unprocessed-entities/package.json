@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-unprocessed-entities",
-  "version": "0.2.13",
+  "version": "0.2.14-next.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-unprocessed-entities",
@@ -58,10 +58,10 @@
     "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

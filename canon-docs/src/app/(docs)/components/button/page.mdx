@@ -141,9 +141,9 @@ Here's a view when buttons are full width.
   py={4}
   open
   preview={<ButtonFullWidth />}
-  code={`<Stack style={{ width: '300px' }}>
+  code={`<Flex style={{ width: '300px' }}>
     <Button fullWidth>Full width</Button>
-</Stack>`}
+</Flex>`}
 />
 
 ### Disabled
@@ -167,9 +167,7 @@ Here's a view when buttons are responsive.
   py={4}
   open
   preview={<ButtonResponsive />}
-  code={`<Button
-    variant={{ xs: 'primary', sm: 'secondary', md: 'tertiary' }}
-    size={{ xs: 'small', sm: 'medium' }}>
-    Button
-</Button>`}
+  code={`<Button variant={{ initial: 'primary', lg: 'secondary' }}>
+    Responsive Button
+  </Button>`}
 />

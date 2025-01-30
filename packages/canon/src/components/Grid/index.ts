@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 export { Grid } from './Grid';
+export { gridPropDefs, gridItemPropDefs } from './Grid.props';
 export type { GridProps, GridItemProps } from './types';
+export type { GridOwnProps, GridItemOwnProps } from './Grid.props';

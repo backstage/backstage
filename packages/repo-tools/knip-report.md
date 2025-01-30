@@ -5,8 +5,8 @@
 | Name                                | Location     | Severity |
 | :---------------------------------- | :----------- | :------- |
 | @openapitools/openapi-generator-cli | package.json | error    |
-| @stoplight/spectral-functions       | package.json | error    |
 | @stoplight/spectral-runtime         | package.json | error    |
+| @electric-sql/pglite                | package.json | error    |
 | is-glob                             | package.json | error    |
 | glob                                | package.json | error    |
 

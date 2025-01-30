@@ -1,21 +1,17 @@
 # Knip report
 
-## Unused dependencies (4)
+## Unused dependencies (2)
 
-| Name                  | Location     |
-|:----------------------|:-------------|
-| history               | package.json |
-| react-use             | package.json |
-| @backstage/theme      | package.json |
-| @backstage/test-utils | package.json |
+| Name      | Location     | Severity |
+| :-------- | :----------- | :------- |
+| react-use | package.json | error    |
+| history   | package.json | error    |
 
-## Unused devDependencies (5)
+## Unused devDependencies (3)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| cross-env                   | package.json |
-| @testing-library/dom        | package.json |
-| @testing-library/react      | package.json |
-| @testing-library/jest-dom   | package.json |
-| @testing-library/user-event | package.json |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @testing-library/user-event | package.json | error    |
+| @testing-library/dom        | package.json | error    |
+| cross-env                   | package.json | error    |
 

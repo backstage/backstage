@@ -214,7 +214,11 @@ if `prevCursor` exists, it can be used to retrieve the previous batch of entitie
 
 Lists entities.
 
-**NOTE**: This endpoint is deprecated in favor of `GET /entities/by-query`, which provides a more efficient implementation and cursor based pagination.
+:::note Note
+
+This endpoint is deprecated in favor of `GET /entities/by-query`, which provides a more efficient implementation and cursor based pagination.
+
+:::
 
 The endpoint supports the following query parameters, described in sections
 below:

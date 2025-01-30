@@ -1,5 +1,15 @@
 # @backstage/integration-react
 
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.16.1
+
 ## 1.2.3
 
 ### Patch Changes

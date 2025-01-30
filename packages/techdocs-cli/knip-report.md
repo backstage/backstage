@@ -8,8 +8,8 @@
 
 ## Unused devDependencies (2)
 
-| Name               | Location     | Severity |
-| :----------------- | :----------- | :------- |
-| @types/webpack-env | package.json | error    |
-| nodemon            | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| techdocs-cli-embedded-app | package.json | error    |
+| @types/webpack-env        | package.json | error    |
 

@@ -1,5 +1,36 @@
 // Sometimes codes are not formatted correctly in the docs, so we need to use snippets
 
+export const customTheme = `:root {
+  --canon-font-regular: system-ui;
+  --canon-font-weight-regular: 400;
+  --canon-font-weight-bold: 600;
+  --canon-bg: #f8f8f8;
+  --canon-bg-elevated: #fff;
+  /* ... other CSS variables */
+
+  /* Add your custom components styles here */
+  .canon-Button {
+    background-color: #000;
+    color: #fff;
+  }
+}
+
+[data-theme='dark'] {
+  --canon-font-regular: system-ui;
+  --canon-font-weight-regular: 400;
+  --canon-font-weight-bold: 600;
+  --canon-bg: #f8f8f8;
+  --canon-bg-elevated: #fff;
+  /* ... other CSS variables */
+
+  /* Add your custom components styles here */
+  .canon-Button {
+    background-color: #000;
+    color: #fff;
+  }
+}
+`;
+
 export const grid = `import { Grid } from '@backstage/canon';
 
 <Grid>
@@ -20,26 +51,26 @@ export const buttonVariants = `<Inline alignY="center">
 </Inline>
 `;
 
-export const stackFAQ1 = `<Grid columns={3} gap="md">
+export const flexFAQ1 = `<Grid columns={3} gap="4">
   <Box>Hello World</Box>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
 </Grid>`;
 
-export const stackSimple = `<Stack>
+export const flexSimple = `<Flex>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
-</Stack>`;
+</Flex>`;
 
-export const stackResponsive = `<Stack gap={{ xs: 'sm', md: 'md' }}>
+export const flexResponsive = `<Flex gap={{ xs: 'sm', md: 'md' }}>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
-</Stack>`;
+</Flex>`;
 
-export const stackAlign = `<Stack align={{ xs: 'left', md: 'center' }}>
+export const flexAlign = `<Flex align={{ xs: 'left', md: 'center' }}>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
   <Box>Hello World</Box>
-</Stack>`;
+</Flex>`;

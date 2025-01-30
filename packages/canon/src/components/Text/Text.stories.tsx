@@ -17,7 +17,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Text } from './Text';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 
 const meta = {
   title: 'Components/Text',
@@ -40,7 +40,7 @@ export const Default: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <Stack gap="md">
+    <Flex gap="4">
       <Text variant="subtitle" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I
         have none, but that man&apos;s father is my father&apos;s son.” Who is
@@ -61,13 +61,13 @@ export const AllVariants: Story = {
         have none, but that man&apos;s father is my father&apos;s son.” Who is
         in the painting?
       </Text>
-    </Stack>
+    </Flex>
   ),
 };
 
 export const AllWeights: Story = {
   render: () => (
-    <Stack gap="md">
+    <Flex gap="4">
       <Text weight="regular" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I
         have none, but that man&apos;s father is my father&apos;s son.” Who is
@@ -78,7 +78,7 @@ export const AllWeights: Story = {
         have none, but that man&apos;s father is my father&apos;s son.” Who is
         in the painting?
       </Text>
-    </Stack>
+    </Flex>
   ),
 };
 
@@ -93,7 +93,7 @@ export const Responsive: Story = {
 
 export const Playground: Story = {
   render: () => (
-    <Stack>
+    <Flex>
       <Text>Subtitle</Text>
       <Text variant="subtitle" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I
@@ -118,6 +118,6 @@ export const Playground: Story = {
         have none, but that man&apos;s father is my father&apos;s son.” Who is
         in the painting?
       </Text>
-    </Stack>
+    </Flex>
   ),
 };

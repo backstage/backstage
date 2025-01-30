@@ -215,7 +215,12 @@ export class DefaultCatalogProcessingEngine {
               const { entityRefs: parents } =
                 await this.processingDatabase.transaction(tx =>
                   this.processingDatabase.listParents(tx, {
-                    entityRef,
+                    entityRefs: [
+                      entityRef,
+                      ...result.deferredEntities.map(e =>
+                        stringifyEntityRef(e.entity),
+                      ),
+                    ],
                   }),
                 );
 

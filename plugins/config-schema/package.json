@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-config-schema",
-  "version": "0.1.64",
+  "version": "0.1.65-next.0",
   "description": "A Backstage plugin that lets you browse the configuration schema of your app",
   "backstage": {
     "role": "frontend-plugin",
@@ -60,10 +60,10 @@
     "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

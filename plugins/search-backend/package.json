@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend",
-  "version": "1.8.2-next.0",
+  "version": "1.8.2-next.1",
   "description": "The Backstage backend plugin that provides your backstage app with search",
   "backstage": {
     "role": "backend-plugin",

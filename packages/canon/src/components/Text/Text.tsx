@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { forwardRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';

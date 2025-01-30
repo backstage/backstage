@@ -56,8 +56,8 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { TabProps } from '@material-ui/core/Tab';
 import Alert from '@material-ui/lab/Alert';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { ComponentProps, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
@@ -284,15 +284,15 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-  const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const catalogRoute = useRouteRef(rootRouteRef);
   const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
-    setInspectionDialogOpen(false);
     navigate(
       unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
     );
@@ -318,9 +318,11 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   // to another entity.
   useEffect(() => {
     setConfirmationDialogOpen(false);
-    setInspectionDialogOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
+  const selectedInspectTab = searchParams.get('inspect');
+  const showInspectTab = typeof selectedInspectTab === 'string';
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
@@ -353,7 +355,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
               onUnregisterEntity={() => setConfirmationDialogOpen(true)}
-              onInspectEntity={() => setInspectionDialogOpen(true)}
+              onInspectEntity={() => setSearchParams('inspect')}
             />
           </>
         )}
@@ -385,16 +387,25 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         </Content>
       )}
 
+      {showInspectTab && (
+        <InspectEntityDialog
+          entity={entity!}
+          initialTab={
+            (selectedInspectTab as ComponentProps<
+              typeof InspectEntityDialog
+            >['initialTab']) || undefined
+          }
+          onSelect={newTab => setSearchParams(`inspect=${newTab}`)}
+          open
+          onClose={() => setSearchParams()}
+        />
+      )}
+
       <UnregisterEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}
         onConfirm={cleanUpAfterRemoval}
         onClose={() => setConfirmationDialogOpen(false)}
-      />
-      <InspectEntityDialog
-        open={inspectionDialogOpen}
-        entity={entity!}
-        onClose={() => setInspectionDialogOpen(false)}
       />
     </Page>
   );

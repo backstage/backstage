@@ -18,8 +18,8 @@
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
     "next": "14.2.23",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
     "react-frame-component": "^5.2.7",
     "shiki": "^1.26.1",
     "storybook": "^8.4.7"
@@ -27,8 +27,8 @@
   "devDependencies": {
     "@types/mdx": "^2.0.13",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.23",
     "lightningcss": "^1.28.2",

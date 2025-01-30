@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { ElementRef, forwardRef } from 'react';
 import { Input as InputPrimitive } from '@base-ui-components/react/input';
 import clsx from 'clsx';

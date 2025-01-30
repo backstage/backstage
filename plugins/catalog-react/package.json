@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-react",
-  "version": "1.15.2-next.0",
+  "version": "1.15.2-next.1",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
   "backstage": {
     "role": "web-library",
@@ -105,10 +105,10 @@
     "react-test-renderer": "^16.13.1"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

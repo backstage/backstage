@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.16.4-next.0
+
+### Patch Changes
+
+- 9c9f4ff: Added `nestedValuesAsYaml` option to `StructuredMetadataTable` to render data as yaml.
+- 17088d2: Updating the `TaskLogStream` to take up all space in a running task, and also show the last line of the log by default
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.16.3
 
 ### Patch Changes

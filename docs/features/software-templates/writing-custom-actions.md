@@ -263,14 +263,17 @@ Idempotent action could be achieved via the usage of checkpoints.
 Example:
 
 ```ts title="plugins/my-company-scaffolder-actions-plugin/src/vendor/my-custom-action.ts"
-const res = await ctx.checkpoint?.('create.projects', async () => {
-  const projectStgId = createStagingProjectId();
-  const projectProId = createProductionProjectId();
+const res = await ctx.checkpoint?.({
+  key: 'create.projects',
+  fn: async () => {
+    const projectStgId = createStagingProjectId();
+    const projectProId = createProductionProjectId();
 
-  return {
-    projectStgId,
-    projectProId,
-  };
+    return {
+      projectStgId,
+      projectProId,
+    };
+  },
 });
 ```
 

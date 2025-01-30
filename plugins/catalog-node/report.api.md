@@ -76,6 +76,7 @@ export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec_2;
+  locationKey?: string | null;
 };
 
 // @public (undocumented)
@@ -334,6 +335,9 @@ export const processingResult: Readonly<{
   readonly entity: (
     atLocation: LocationSpec_2,
     newEntity: Entity,
+    options?: {
+      locationKey?: string | null;
+    },
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
   readonly refresh: (key: string) => CatalogProcessorResult;

@@ -18,10 +18,13 @@ import pLimit from 'p-limit';
 import os from 'os';
 import { relative as relativePath, resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
+import type { KnipConfig } from 'knip';
 import { createBinRunner } from '../util';
 
-// Ignore this due to Knip error: Error: ENAMETOOLONG: name too long, scandir
-const ignoredPackages = ['packages/techdocs-cli-embedded-app'];
+// Ignore these
+const ignoredPackages = [
+  'packages/canon', // storybook config is different from the rest
+];
 
 interface KnipExtractionOptions {
   packageDirs: string[];
@@ -29,7 +32,7 @@ interface KnipExtractionOptions {
 }
 
 interface KnipConfigOptions {
-  packageDir: string;
+  knipConfigPath: string;
 }
 
 interface KnipPackageOptions {
@@ -55,41 +58,43 @@ function logKnipReportInstructions() {
   console.log('');
 }
 
-async function generateKnipConfig({ packageDir }: KnipConfigOptions) {
-  const knipConfig = {
-    entry: [
-      'dev/index.{ts,tsx}',
-      'src/index.{ts,tsx}',
-      'src/alpha.{ts,tsx}',
-      'src/routes.ts',
-      'src/run.ts',
-    ],
+async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
+  const knipConfig: KnipConfig = {
+    workspaces: {
+      '.': {},
+      '{packages,plugins}/*': {
+        entry: ['dev/index.{ts,tsx}', 'src/index.{ts,tsx}'],
+        ignore: [
+          '.eslintrc.js',
+          'config.d.ts',
+          'knexfile.js',
+          'node_modules/**',
+          'dist/**',
+          '{fixtures,migrations,templates}/**',
+          'src/tests/transforms/__fixtures__/**', // cli packaging tests
+        ],
+      },
+    },
     jest: {
-      entry: ['src/setupTests.ts', '**/*.test.{ts,tsx}'],
+      entry: ['src/setupTests.ts', 'src/**/*.test.{ts,tsx}'],
     },
     storybook: { entry: 'src/components/**/*.stories.tsx' },
-    ignore: [
-      '.eslintrc.js',
-      'config.d.ts',
-      'knexfile.js',
-      'node_modules/**',
-      'dist/**',
-      '{fixtures,migrations,templates}/**',
-    ],
     ignoreDependencies: [
+      // these is reported as a referenced optional peerDependencies
+      // TBD: investigate what triggers these
+      '@types/react',
+      '@types/jest',
+      '@internal/.*', // internal packages are not published and inlined
       '@backstage/cli', // everything depends on this for its package.json commands
       '@backstage/theme', // this uses `declare module` in .d.ts so is implicitly used whenever extensions are needed
     ],
   };
-  await fs.writeFile(
-    `${packageDir}/knip.json`,
-    JSON.stringify(knipConfig, null, 2),
-  );
+  await fs.writeFile(knipConfigPath, JSON.stringify(knipConfig, null, 2));
 }
 
-function cleanKnipConfig({ packageDir }: KnipConfigOptions) {
-  if (fs.existsSync(`${packageDir}/knip.json`)) {
-    fs.rmSync(`${packageDir}/knip.json`);
+function cleanKnipConfig({ knipConfigPath }: KnipConfigOptions) {
+  if (fs.existsSync(knipConfigPath)) {
+    fs.rmSync(knipConfigPath);
   }
 }
 
@@ -105,13 +110,11 @@ async function handlePackage({
   }
   const fullDir = cliPaths.resolveTargetRoot(packageDir);
   const reportPath = resolvePath(fullDir, 'knip-report.md');
-  const run = createBinRunner(fullDir, '');
+  const run = createBinRunner(cliPaths.targetRoot, '');
 
-  await generateKnipConfig({ packageDir: fullDir });
-
-  const report = await run(
+  let report = await run(
     `${knipDir}/knip.js`,
-    `--directory ${fullDir}`, // Run in the package directory
+    `-W ${packageDir}`, // Run the desired workspace
     '--config knip.json',
     '--no-exit-code', // Removing this will end the process in case there are findings by knip
     '--no-progress', // Remove unnecessary debugging from output
@@ -120,7 +123,17 @@ async function handlePackage({
     '--reporter markdown',
   );
 
-  cleanKnipConfig({ packageDir: fullDir });
+  // Adjust report paths to be relative to workspace
+  report = report.replaceAll(`| ${packageDir}/`, '| ');
+  // Adjust table separators
+  report = report.replaceAll(
+    new RegExp(`(\\| :-+ \\| :)-{${packageDir.length + 1}}`, 'g'),
+    (_, p1) => p1,
+  );
+  report = report.replaceAll(
+    new RegExp(` \\| Location {1,${packageDir.length + 2}}`, 'g'),
+    ' | Location ',
+  );
 
   const existingReport = await fs.readFile(reportPath, 'utf8').catch(error => {
     if (error.code === 'ENOENT') {
@@ -160,8 +173,10 @@ export async function runKnipReports({
   isLocalBuild,
 }: KnipExtractionOptions) {
   const knipDir = cliPaths.resolveTargetRoot('./node_modules/knip/bin/');
+  const knipConfigPath = cliPaths.resolveTargetRoot('./knip.json');
   const limiter = pLimit(os.cpus().length);
 
+  await generateKnipConfig({ knipConfigPath });
   try {
     await Promise.all(
       packageDirs.map(packageDir =>
@@ -170,15 +185,9 @@ export async function runKnipReports({
         ),
       ),
     );
+    await cleanKnipConfig({ knipConfigPath });
   } catch (e) {
-    console.log(
-      `Error occurred during knip reporting: ${e}, cleaning knip configs`,
-    );
-    packageDirs.map(packageDir => {
-      const fullDir = cliPaths.resolveTargetRoot(packageDir);
-      cleanKnipConfig({ packageDir: fullDir });
-    });
-
+    console.log(`Error occurred during knip reporting: ${e}`);
     throw e;
   }
 }

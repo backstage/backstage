@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-bitbucket-server",
-  "version": "0.3.2-next.0",
+  "version": "0.3.2-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",

@@ -17,8 +17,7 @@
 /* Components */
 @import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
-@import '../components/Stack/styles.css';
-@import '../components/Inline/styles.css';
+@import '../components/Flex/styles.css';
 @import '../components/Grid/styles.css';
 @import '../components/Container/styles.css';
 @import '../components/Icon/styles.css';

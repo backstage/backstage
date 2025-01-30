@@ -1,12 +1,13 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (4)
 
-| Name                  | Location     | Severity |
-| :-------------------- | :----------- | :------- |
-| http-proxy-middleware | package.json | error    |
-| @backstage/config     | package.json | error    |
-| node-fetch            | package.json | error    |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @backstage/plugin-auth-node | package.json | error    |
+| http-proxy-middleware       | package.json | error    |
+| winston                     | package.json | error    |
+| yn                          | package.json | error    |
 
 ## Unused devDependencies (1)
 

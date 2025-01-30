@@ -2,7 +2,7 @@ body {
   display: flex;
   flex-direction: row;
   background-color: var(--canon-bg);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-text-primary);
   transition: background-color 0.2s ease-in-out;
 
   --docs-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,

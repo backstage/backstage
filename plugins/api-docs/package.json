@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs",
-  "version": "0.12.4-next.0",
+  "version": "0.12.4-next.1",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
   "backstage": {
     "role": "frontend-plugin",
@@ -91,10 +91,10 @@
     "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

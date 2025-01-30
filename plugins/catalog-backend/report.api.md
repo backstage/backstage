@@ -479,6 +479,11 @@ export const processingResult: Readonly<{
   readonly entity: (
     atLocation: LocationSpec_2,
     newEntity: Entity,
+    options?:
+      | {
+          locationKey?: string | null | undefined;
+        }
+      | undefined,
   ) => CatalogProcessorResult_2;
   readonly relation: (spec: EntityRelationSpec_2) => CatalogProcessorResult_2;
   readonly refresh: (key: string) => CatalogProcessorResult_2;

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.24.3-next.0",
+  "version": "0.24.3-next.1",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
     "role": "backend-plugin",

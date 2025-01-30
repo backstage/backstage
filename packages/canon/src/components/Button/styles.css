@@ -36,14 +36,14 @@
   &:hover {
     background-color: transparent;
     box-shadow: inset 0 0 0 1px var(--canon-border-focus);
-    color: var(--canon-text-primary);
+    color: var(--canon-fg-text-primary);
   }
 }
 
 .canon-Button--variant-secondary {
   background-color: transparent;
   box-shadow: inset 0 0 0 1px var(--canon-border);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-text-primary);
 
   &:hover {
     box-shadow: inset 0 0 0 1px var(--canon-border-hover);
@@ -52,10 +52,10 @@
 
 .canon-Button--variant-tertiary {
   background-color: transparent;
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-text-primary);
 
   &:hover {
-    color: var(--canon-text-secondary);
+    color: var(--canon-fg-text-secondary);
   }
 }
 

@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-signals-react@0.0.10-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
 ## 0.5.2-next.0
 
 ### Patch Changes

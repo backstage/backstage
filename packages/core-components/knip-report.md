@@ -1,20 +1,17 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (1)
 
-| Name          | Location     | Severity |
-| :------------ | :----------- | :------- |
-| @date-io/core | package.json | error    |
-| linkifyjs     | package.json | error    |
-| pluralize     | package.json | error    |
+| Name      | Location     | Severity |
+| :-------- | :----------- | :------- |
+| pluralize | package.json | error    |
 
-## Unused devDependencies (4)
+## Unused devDependencies (3)
 
 | Name                    | Location     | Severity |
 | :---------------------- | :----------- | :------- |
 | @backstage/app-defaults | package.json | error    |
 | @types/google-protobuf  | package.json | error    |
-| @testing-library/dom    | package.json | error    |
 | cross-fetch             | package.json | error    |
 
 ## Unlisted dependencies (3)

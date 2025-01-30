@@ -515,3 +515,4 @@ zsh
 scrollable
 severities
 apis
+intellij

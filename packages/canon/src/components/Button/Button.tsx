@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
 import clsx from 'clsx';

@@ -65,7 +65,6 @@
     "uuid": "^11.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",

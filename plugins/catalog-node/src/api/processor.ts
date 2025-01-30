@@ -155,6 +155,7 @@ export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec;
+  locationKey?: string | null;
 };
 
 /** @public */
