@@ -34,7 +34,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
-import lodash, { keyBy } from 'lodash';
+import lodash from 'lodash';
 
 import {
   AuditorService,
@@ -118,6 +118,7 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { basicEntityFilter } from './request';
 import { entitiesResponseToObjects } from './response';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -558,7 +559,13 @@ export class CatalogBuilder {
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
       permissionsService,
-      createConditionTransformer(this.permissionRules),
+      permissionsRegistry
+        ? createConditionTransformer(
+            permissionsRegistry.getRuleAccessor(
+              catalogEntityPermissionResourceRef,
+            ),
+          )
+        : createConditionTransformer(this.permissionRules),
     );
 
     const catalogPermissionResource = {
@@ -579,9 +586,10 @@ export class CatalogBuilder {
           },
         });
 
-        const entitiesByRef = keyBy(
-          entitiesResponseToObjects(entities),
-          stringifyEntityRef,
+        const entitiesByRef = Object.fromEntries(
+          entitiesResponseToObjects(entities)
+            .filter((x): x is Entity => Boolean(x))
+            .map(entity => [stringifyEntityRef(entity), entity]),
         );
 
         return resourceRefs.map(
@@ -597,7 +605,10 @@ export class CatalogBuilder {
       | ReturnType<typeof createPermissionIntegrationRouter>
       | undefined;
     if (permissionsRegistry) {
-      permissionsRegistry.addResourceType(catalogPermissionResource);
+      permissionsRegistry.addResourceType({
+        ...catalogPermissionResource,
+        resourceRef: catalogEntityPermissionResourceRef,
+      });
     } else {
       permissionIntegrationRouter = createPermissionIntegrationRouter(
         catalogPermissionResource,
