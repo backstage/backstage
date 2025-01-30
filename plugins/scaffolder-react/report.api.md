@@ -215,6 +215,7 @@ export interface ScaffolderApi {
   }): Promise<{
     results: {
       title?: string;
+      path?: string;
       id: string;
     }[];
   }>;
