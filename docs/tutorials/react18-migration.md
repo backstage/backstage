@@ -20,7 +20,7 @@ _Before diving in, this is a heads-up that for large projects this can be a tric
 
 #### Backstage Instance
 
-To migrate a Backstage instance to React 18, follow these three steps:
+To migrate a Backstage instance to React 18, follow these steps:
 
 1. Modify the `resolutions` section in your root `package.json` to reference the latest versions of `@types/react` and `@types/react-dom`:
 
@@ -120,7 +120,7 @@ Be sure to update your lockfile after modifying your `package.json` files.
 
 When upgrading to React 18 you are likely to see a fair number of TypeScript type errors. A summary of the breaking changes can be found in the [Pull Request that introduced them](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/56210). A codemod is also provided to help with the migration.
 
-Run `yarn tsc:full` to access the damage.
+Run `yarn tsc:full` to assess the damage.
 
 The good news is that these errors can be fixed while still staying on React 17. If you have a large number of errors to fix you can address as few or many is you like at a time and merge them into your main branch **without** the version bumps from step 1. This lets you gradually migrate the types in your project while not yet fully moving over to React 18. Once all type breakages are fixed you can move on to the next step of migrating tests.
 
