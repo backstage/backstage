@@ -142,7 +142,7 @@ import {
 
 /* highlight-add-start */
 const transformConditions = createConditionTransformer(
-  permissionsRegistry.getRuleAccessor(todoListPermissionResourceRef)
+  permissionsRegistry.getPermissionRuleset(todoListPermissionResourceRef)
 );
 /* highlight-add-end */
 

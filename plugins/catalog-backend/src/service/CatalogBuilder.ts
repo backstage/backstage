@@ -561,7 +561,7 @@ export class CatalogBuilder {
       permissionsService,
       permissionsRegistry
         ? createConditionTransformer(
-            permissionsRegistry.getRuleAccessor(
+            permissionsRegistry.getPermissionRuleset(
               catalogEntityPermissionResourceRef,
             ),
           )

@@ -21,7 +21,7 @@ import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionResourceRef } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
-import { PermissionRuleAccessor } from '@backstage/plugin-permission-node';
+import { PermissionRuleset } from '@backstage/plugin-permission-node';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
@@ -475,9 +475,9 @@ export interface PermissionsRegistryService {
       TQuery
     >,
   ): void;
-  getRuleAccessor<TResourceType extends string, TResource, TQuery>(
+  getPermissionRuleset<TResourceType extends string, TResource, TQuery>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
-  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 }
 
 // @public

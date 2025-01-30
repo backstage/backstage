@@ -72,14 +72,16 @@ export type PermissionRule<
  *
  * @remarks
  *
- * Accessed via {@link @backstage/backend-plugin-api#PermissionsRegistryService.getRuleAccessor}.
+ * Accessed via {@link @backstage/backend-plugin-api#PermissionsRegistryService.getPermissionRuleset}.
  *
  * Will throw an error if a rule with the provided name does not exist.
  *
  * @public
  */
-export type PermissionRuleAccessor<
+export type PermissionRuleset<
   TResource = unknown,
   TQuery = unknown,
   TResourceType extends string = string,
-> = (name: string) => PermissionRule<TResource, TQuery, TResourceType>;
+> = {
+  getRuleByName(name: string): PermissionRule<TResource, TQuery, TResourceType>;
+};

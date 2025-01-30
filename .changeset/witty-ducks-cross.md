@@ -3,4 +3,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-Updated `PermissionsRegistryService` to use `PermissionResourceRef`s and added the `getRuleAccessor` method.
+Updated `PermissionsRegistryService` to use `PermissionResourceRef`s and added the `getPermissionRuleset` method.

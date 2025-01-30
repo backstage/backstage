@@ -30,7 +30,7 @@ import {
   PermissionCriteria,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule, PermissionRuleAccessor } from '../types';
+import { PermissionRule, PermissionRuleset } from '../types';
 import {
   NoInfer,
   createGetRule,
@@ -165,11 +165,11 @@ const applyConditions = <TResourceType extends string, TResource>(
  * @public
  */
 export function createConditionAuthorizer<TResource>(
-  permissionRuleAccessor: PermissionRuleAccessor<TResource>,
+  permissionRuleset: PermissionRuleset<TResource>,
 ): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
 /**
  * @public
- * @deprecated Use the version of `createConditionAuthorizer` that accepts a `PermissionRuleAccessor` instead.
+ * @deprecated Use the version of `createConditionAuthorizer` that accepts a `PermissionRuleset` instead.
  */
 export function createConditionAuthorizer<TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
@@ -177,9 +177,12 @@ export function createConditionAuthorizer<TResource, TQuery>(
 export function createConditionAuthorizer<TResource, TQuery>(
   rules:
     | PermissionRule<TResource, TQuery, string>[]
-    | PermissionRuleAccessor<TResource>,
+    | PermissionRuleset<TResource>,
 ): (decision: PolicyDecision, resource: TResource | undefined) => boolean {
-  const getRule = typeof rules === 'function' ? rules : createGetRule(rules);
+  const getRule =
+    'getRuleByName' in rules
+      ? (n: string) => rules.getRuleByName(n)
+      : createGetRule(rules);
 
   return (
     decision: PolicyDecision,
@@ -439,9 +442,9 @@ export function createPermissionIntegrationRouter<
       TResource
     >,
   ): void;
-  getRuleAccessor<TResource, TQuery, TResourceType extends string>(
+  getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
-  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 } {
   const store = new PermissionIntegrationMetadataStore();
 
@@ -531,12 +534,12 @@ export function createPermissionIntegrationRouter<
     ) {
       store.addResourceType(resource);
     },
-    getRuleAccessor<TResource, TQuery, TResourceType extends string>(
+    getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
       resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
-    ): PermissionRuleAccessor<TResource, TQuery, TResourceType> {
-      return store.getRuleMapper(
-        resourceRef.resourceType,
-      ) as PermissionRuleAccessor<TResource, TQuery, TResourceType>;
+    ): PermissionRuleset<TResource, TQuery, TResourceType> {
+      return {
+        getRuleByName: store.getRuleMapper(resourceRef.resourceType),
+      } as PermissionRuleset<TResource, TQuery, TResourceType>;
     },
   });
 }

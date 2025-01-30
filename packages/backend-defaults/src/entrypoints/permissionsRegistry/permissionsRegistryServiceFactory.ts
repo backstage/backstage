@@ -74,8 +74,8 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
         }
         router.addPermissionRules(rules);
       },
-      getRuleAccessor(resourceRef) {
-        return router.getRuleAccessor(resourceRef);
+      getPermissionRuleset(resourceRef) {
+        return router.getPermissionRuleset(resourceRef);
       },
     } satisfies PermissionsRegistryService;
   },
