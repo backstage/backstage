@@ -15,6 +15,7 @@
  */
 
 import {
+  PermissionsRegistryService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
@@ -52,7 +53,10 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
             'Cannot add permission resource types after the plugin has started',
           );
         }
-        router.addResourceType(resource);
+        router.addResourceType({
+          ...resource,
+          resourceType: resource.resourceRef.resourceType,
+        });
       },
       addPermissions(permissions) {
         if (started) {
@@ -70,6 +74,9 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
         }
         router.addPermissionRules(rules);
       },
-    };
+      getRuleAccessor(resourceRef) {
+        return router.getRuleAccessor(resourceRef);
+      },
+    } satisfies PermissionsRegistryService;
   },
 });

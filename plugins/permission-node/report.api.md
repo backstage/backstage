@@ -173,6 +173,9 @@ export function createPermissionIntegrationRouter<
       TResource
     >,
   ): void;
+  getRuleAccessor<TResource, TQuery, TResourceType extends string>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
 };
 
 // @public

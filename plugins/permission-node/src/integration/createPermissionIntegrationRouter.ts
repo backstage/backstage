@@ -30,7 +30,7 @@ import {
   PermissionCriteria,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { PermissionRule, PermissionRuleAccessor } from '../types';
 import {
   NoInfer,
   createGetRule,
@@ -439,6 +439,9 @@ export function createPermissionIntegrationRouter<
       TResource
     >,
   ): void;
+  getRuleAccessor<TResource, TQuery, TResourceType extends string>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
 } {
   const store = new PermissionIntegrationMetadataStore();
 
@@ -527,6 +530,13 @@ export function createPermissionIntegrationRouter<
       >,
     ) {
       store.addResourceType(resource);
+    },
+    getRuleAccessor<TResource, TQuery, TResourceType extends string>(
+      resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+    ): PermissionRuleAccessor<TResource, TQuery, TResourceType> {
+      return store.getRuleMapper(
+        resourceRef.resourceType,
+      ) as PermissionRuleAccessor<TResource, TQuery, TResourceType>;
     },
   });
 }
