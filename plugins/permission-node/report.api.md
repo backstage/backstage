@@ -79,7 +79,7 @@ export type ConditionTransformer<TQuery> = (
 
 // @public
 export function createConditionAuthorizer<TResource>(
-  permissionRuleAccessor: PermissionRuleAccessor<TResource>,
+  permissionRuleset: PermissionRuleset<TResource>,
 ): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
 
 // @public @deprecated (undocumented)
@@ -130,7 +130,7 @@ export const createConditionFactory: <
 
 // @public
 export function createConditionTransformer<TQuery>(
-  permissionRuleAccessor: PermissionRuleAccessor<any, TQuery>,
+  permissionRuleset: PermissionRuleset<any, TQuery>,
 ): ConditionTransformer<TQuery>;
 
 // @public @deprecated (undocumented)
@@ -173,9 +173,9 @@ export function createPermissionIntegrationRouter<
       TResource
     >,
   ): void;
-  getRuleAccessor<TResource, TQuery, TResourceType extends string>(
+  getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
-  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 };
 
 // @public
@@ -351,11 +351,13 @@ export type PermissionRule<
 };
 
 // @public
-export type PermissionRuleAccessor<
+export type PermissionRuleset<
   TResource = unknown,
   TQuery = unknown,
   TResourceType extends string = string,
-> = (name: string) => PermissionRule<TResource, TQuery, TResourceType>;
+> = {
+  getRuleByName(name: string): PermissionRule<TResource, TQuery, TResourceType>;
+};
 
 // @public
 export type PolicyQuery = {

@@ -18,7 +18,7 @@ import { Permission } from '@backstage/plugin-permission-common';
 import {
   PermissionResourceRef,
   PermissionRule,
-  PermissionRuleAccessor,
+  PermissionRuleset,
 } from '@backstage/plugin-permission-node';
 
 /**
@@ -148,7 +148,7 @@ export interface PermissionsRegistryService {
    *
    * Primarily intended for use with {@link @backstage/plugin-permission-node#createConditionAuthorizer} and {@link @backstage/plugin-permission-node#createConditionTransformer}.
    */
-  getRuleAccessor<TResourceType extends string, TResource, TQuery>(
+  getPermissionRuleset<TResourceType extends string, TResource, TQuery>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
-  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 }
