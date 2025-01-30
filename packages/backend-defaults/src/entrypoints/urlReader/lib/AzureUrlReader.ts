@@ -77,10 +77,9 @@ export class AzureUrlReader implements UrlReaderService {
     // TODO: etag is not implemented yet.
     const { signal } = options ?? {};
 
-    const builtUrl = getAzureFileFetchUrl(
-      url,
-      this.integration.config.apiVersion,
-    );
+    const builtUrl = getAzureFileFetchUrl(url, {
+      apiVersion: this.integration.config.apiVersion,
+    });
     let response: Response;
     try {
       const credentials = await this.deps.credentialsProvider.getCredentials({
@@ -127,7 +126,9 @@ export class AzureUrlReader implements UrlReaderService {
     });
 
     const commitsAzureResponse = await fetch(
-      getAzureCommitsUrl(url, this.integration.config.apiVersion),
+      getAzureCommitsUrl(url, {
+        apiVersion: this.integration.config.apiVersion,
+      }),
       {
         headers: credentials?.headers,
       },
@@ -146,7 +147,9 @@ export class AzureUrlReader implements UrlReaderService {
     }
 
     const archiveAzureResponse = await fetch(
-      getAzureDownloadUrl(url, this.integration.config.apiVersion),
+      getAzureDownloadUrl(url, {
+        apiVersion: this.integration.config.apiVersion,
+      }),
       {
         headers: {
           ...credentials?.headers,

@@ -34,6 +34,10 @@ export interface Config {
           /**
            * (Required) Your organization slug.
            */
+          apiVersion?: string;
+          /**
+           * (Optional) azure devops API version.
+           */
           organization: string;
           /**
            * (Required) Your project slug.

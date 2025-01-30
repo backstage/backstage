@@ -1,5 +1,5 @@
 ---
-'@backstage/integration': patch
+'@backstage/integration': minor
 ---
 
-Enabled app-config to take apiVersion of azure integration to support azure devops of different APIs
+Enabled app-config to take `apiVersion` of azure integration to support azure devops of different APIs
