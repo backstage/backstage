@@ -78,9 +78,14 @@ export type ConditionTransformer<TQuery> = (
 ) => PermissionCriteria<TQuery>;
 
 // @public
-export const createConditionAuthorizer: <TResource, TQuery>(
+export function createConditionAuthorizer<TResource>(
+  permissionRuleAccessor: PermissionRuleAccessor<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+
+// @public @deprecated (undocumented)
+export function createConditionAuthorizer<TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
-) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
 
 // @public
 export function createConditionExports<
@@ -124,12 +129,15 @@ export const createConditionFactory: <
 ) => (params: TParams) => PermissionCondition<TResourceType, TParams>;
 
 // @public
-export const createConditionTransformer: <
+export function createConditionTransformer<TQuery>(
+  permissionRuleAccessor: PermissionRuleAccessor<any, TQuery>,
+): ConditionTransformer<TQuery>;
+
+// @public @deprecated (undocumented)
+export function createConditionTransformer<
   TQuery,
   TRules extends PermissionRule<any, TQuery, string>[],
->(
-  permissionRules: [...TRules],
-) => ConditionTransformer<TQuery>;
+>(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
 
 // @public
 export function createPermissionIntegrationRouter<
@@ -330,6 +338,13 @@ export type PermissionRule<
   apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
   toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
 };
+
+// @public
+export type PermissionRuleAccessor<
+  TResource = unknown,
+  TQuery = unknown,
+  TResourceType extends string = string,
+> = (name: string) => PermissionRule<TResource, TQuery, TResourceType>;
 
 // @public
 export type PolicyQuery = {

@@ -66,3 +66,20 @@ export type PermissionRule<
    */
   toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
 };
+
+/**
+ * A function that can be used to look up permission rules by name for a particular resource type.
+ *
+ * @remarks
+ *
+ * Accessed via {@link @backstage/backend-plugin-api#PermissionsRegistryService.getRuleAccessor}.
+ *
+ * Will throw an error if a rule with the provided name does not exist.
+ *
+ * @public
+ */
+export type PermissionRuleAccessor<
+  TResource = unknown,
+  TQuery = unknown,
+  TResourceType extends string = string,
+> = (name: string) => PermissionRule<TResource, TQuery, TResourceType>;
