@@ -134,9 +134,8 @@ const Community = () => {
               and different meetups. To ensure that you have a welcoming
               environment, we follow the{' '}
               <Link to="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
-              CNCF Code of Conduct
-              </Link>
-              {' '}
+                CNCF Code of Conduct
+              </Link>{' '}
               in everything we do.
             </ContentBlock>
 
