@@ -1,5 +1,33 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.3-next.0
+
+### Patch Changes
+
+- ac0e1ac: Fixed the lack of `secrets` to fetch from the kubernetes api by adding option to specify additional Objects which are not part of Default Objects
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
 ## 0.9.1
 
 ### Patch Changes

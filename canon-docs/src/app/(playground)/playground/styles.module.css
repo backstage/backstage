@@ -1,0 +1,36 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  overflow-x: scroll;
+}
+
+.containerEmpty {
+  padding: 78px 40px;
+}
+
+.breakpointContainer {
+  flex-shrink: 0;
+  margin-top: 40px;
+  height: calc(100vh - 86px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &:first-child {
+    margin-left: 48px;
+  }
+
+  &:last-child {
+    margin-right: 48px;
+  }
+}
+
+.breakpointContent {
+  height: 100%;
+  border-radius: 4px;
+  border: 1px solid var(--canon-border);
+  background-color: var(--canon-bg);
+  padding: 16px;
+}

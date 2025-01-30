@@ -1,0 +1,27 @@
+.root {
+  margin-top: 40px;
+}
+
+.list {
+  display: flex;
+  gap: var(--canon-space-6);
+  border-bottom: 1px solid var(--canon-border);
+  position: relative;
+  margin-bottom: var(--canon-space-6);
+}
+
+.tab {
+  all: unset;
+  cursor: pointer;
+  padding-bottom: 8px;
+}
+
+.indicator {
+  position: absolute;
+  bottom: -1px;
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: 1px;
+  background-color: var(--canon-fg-text-primary);
+  transition: all 0.2s ease-in-out;
+}

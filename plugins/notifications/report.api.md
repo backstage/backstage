@@ -20,22 +20,35 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { TableProps } from '@backstage/core-components';
 
 // @public (undocumented)
-export type GetNotificationsOptions = {
-  offset?: number;
-  limit?: number;
+export type GetNotificationsCommonOptions = {
   search?: string;
   read?: boolean;
   saved?: boolean;
   createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
+};
+
+// @public (undocumented)
+export type GetNotificationsOptions = GetNotificationsCommonOptions & {
+  offset?: number;
+  limit?: number;
   sort?: 'created' | 'topic' | 'origin';
   sortOrder?: 'asc' | 'desc';
-  minimumSeverity?: NotificationSeverity;
+  topic?: string;
 };
 
 // @public (undocumented)
 export type GetNotificationsResponse = {
   notifications: Notification_2[];
   totalCount: number;
+};
+
+// @public (undocumented)
+export type GetTopicsOptions = GetNotificationsCommonOptions;
+
+// @public (undocumented)
+export type GetTopicsResponse = {
+  topics: string[];
 };
 
 // @public (undocumented)
@@ -50,6 +63,8 @@ export interface NotificationsApi {
   getNotificationSettings(): Promise<NotificationSettings>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
+  // (undocumented)
+  getTopics(options?: GetTopicsOptions): Promise<GetTopicsResponse>;
   // (undocumented)
   updateNotifications(
     options: UpdateNotificationsOptions,
@@ -76,6 +91,8 @@ export class NotificationsClient implements NotificationsApi {
   getNotificationSettings(): Promise<NotificationSettings>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
+  // (undocumented)
+  getTopics(options?: GetTopicsOptions): Promise<GetTopicsResponse>;
   // (undocumented)
   updateNotifications(
     options: UpdateNotificationsOptions,

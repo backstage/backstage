@@ -30,8 +30,11 @@ export type IconNames =
   | 'chevronRight'
   | 'chevronUp'
   | 'cloud'
+  | 'externalLink'
   | 'heart'
+  | 'moon'
   | 'plus'
+  | 'sun'
   | 'trash';
 
 /** @public */
@@ -41,4 +44,6 @@ export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
 export type IconProps = {
   name: IconNames;
   size?: number;
+  className?: string;
+  style?: React.CSSProperties;
 };

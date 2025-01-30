@@ -1,5 +1,63 @@
 # @backstage/frontend-app-api
 
+## 0.10.5-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/frontend-defaults@0.1.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.10.5-next.0
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.1.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.10.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.1.5
+  - @backstage/version-bridge@1.0.10
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/frontend-defaults@0.1.5-next.0
+  - @backstage/core-app-api@1.15.4-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/version-bridge@1.0.10
+
 ## 0.10.3
 
 ### Patch Changes

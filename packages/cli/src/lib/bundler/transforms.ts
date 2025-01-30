@@ -154,7 +154,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       ],
       type: 'asset/resource',
       generator: {
-        filename: 'static/[name].[hash:8].[ext]',
+        filename: 'static/[name].[hash:8][ext]',
       },
     },
     {

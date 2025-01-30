@@ -66,7 +66,7 @@ export const BitbucketRepoBranchPicker = ({
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        setAvailableBranches(results.map(r => r.title!));
+        setAvailableBranches(results.map(r => r.id));
       })
       .catch(() => {
         setAvailableBranches([]);

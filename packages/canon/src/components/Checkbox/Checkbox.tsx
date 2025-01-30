@@ -18,6 +18,7 @@ import React from 'react';
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
 import { Icon } from '@backstage/canon';
 import type { CheckboxProps } from './types';
+import clsx from 'clsx';
 
 /** @public */
 export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
@@ -37,7 +38,7 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     const checkboxElement = (
       <CheckboxPrimitive.Root
         ref={ref}
-        className={`checkbox ${className}`}
+        className={clsx('canon-CheckboxRoot', className)}
         checked={checked}
         onCheckedChange={onChange}
         disabled={disabled}
@@ -46,14 +47,14 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         value={value}
         style={style}
       >
-        <CheckboxPrimitive.Indicator className="checkbox-indicator">
+        <CheckboxPrimitive.Indicator className="canon-CheckboxIndicator">
           <Icon name="check" size={12} />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     );
 
     return label ? (
-      <label className="checkbox-label">
+      <label className="canon-CheckboxLabel">
         {checkboxElement}
         {label}
       </label>

@@ -35,11 +35,12 @@ export function createBinRunner(cwd: string, path: string) {
             {
               cwd,
               shell: true,
-              timeout: 60000,
+              timeout: 3 * 60 * 1000,
               maxBuffer: 1024 * 1024,
             },
             (err, stdout, stderr) => {
               if (err) {
+                console.log('err', err);
                 reject(new Error(`${err.message}\n${stderr}`));
               } else if (stderr) {
                 reject(new Error(`Command printed error output: ${stderr}`));

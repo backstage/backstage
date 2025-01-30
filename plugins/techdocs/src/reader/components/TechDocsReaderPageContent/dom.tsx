@@ -20,7 +20,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -68,6 +68,7 @@ export const useTechDocsReaderDom = (
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const configApi = useApi(configApiRef);
 
   const { state, path, content: rawPage } = useTechDocsReader();
   const { '*': currPath = '' } = useParams();
@@ -193,7 +194,9 @@ export const useTechDocsReaderDom = (
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
-          baseUrl: window.location.origin,
+          baseUrl:
+            configApi.getOptionalString('app.baseUrl') ||
+            window.location.origin,
           onClick: (event: MouseEvent, url: string) => {
             // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
             const modifierActive = event.ctrlKey || event.metaKey;
@@ -258,7 +261,7 @@ export const useTechDocsReaderDom = (
           onLoaded: () => {},
         }),
       ]),
-    [theme, navigate, analytics, entityRef.name],
+    [theme, navigate, analytics, entityRef.name, configApi],
   );
 
   useEffect(() => {

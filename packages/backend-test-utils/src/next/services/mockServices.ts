@@ -21,6 +21,7 @@ import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
@@ -47,12 +48,13 @@ import {
   eventsServiceRef,
 } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
+import { Knex } from 'knex';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
-import { Knex } from 'knex';
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 
 /** @internal */
 function createLoggerMock() {
@@ -217,6 +219,19 @@ export namespace mockServices {
       error: jest.fn(),
       info: jest.fn(),
       warn: jest.fn(),
+    }));
+  }
+
+  export namespace auditor {
+    export const factory = () => auditorServiceFactory;
+
+    export const mock = simpleMock(coreServices.auditor, () => ({
+      createEvent: jest.fn(async _ => {
+        return {
+          success: jest.fn(),
+          fail: jest.fn(),
+        };
+      }),
     }));
   }
 
@@ -465,6 +480,15 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
+    }));
+  }
+
+  export namespace permissionsRegistry {
+    export const factory = () => permissionsRegistryServiceFactory;
+    export const mock = simpleMock(coreServices.permissionsRegistry, () => ({
+      addPermissionRules: jest.fn(),
+      addPermissions: jest.fn(),
+      addResourceType: jest.fn(),
     }));
   }
 

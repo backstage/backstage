@@ -1,5 +1,105 @@
 # @backstage/plugin-catalog-backend
 
+## 1.31.0-next.1
+
+### Minor Changes
+
+- 9b9737c: Added support for emitting entities with an explicit location key during processing.
+
+### Patch Changes
+
+- 4ae6884: Fixed an bug in the entity processing caching that would prevent entities that were emitted during processing to be restored after being overridden.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/backend-openapi-utils@0.5.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.0-next.0
+
+### Minor Changes
+
+- 8805f93: The catalog backend now supports the new `PermissionsRegistryService`, which can be used to add custom permission rules.
+- a4aa244: This change integrates the `auditor` service into the Catalog plugin.
+
+### Patch Changes
+
+- c9139e1: Ignore benign database conflict errors during stitching, now logged with debug level instead.
+- f178b12: Cleanup `refresh_state_references` for entity processors and providers that are no longer in control of a `refresh_state` row for entity
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.0
+  - @backstage/backend-openapi-utils@0.4.2-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.30.0
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- be0aae7: Improved concurrency of the `entities` endpoint when using the streamed query mode behind the `catalog.disableRelationsCompatibility` flag.
+- dd515e3: Internalize the deprecated collator types since they were removed from the collator itself during new-backend-system migration.
+- 3d475a0: Updated condition in `resolveCodeOwner` to fix a bug where `normalizeCodeOwner` could potentially be called with an invalid argument causing an error in `CodeOwnersProcessor`
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.3.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/integration@1.16.1
+  - @backstage/backend-openapi-utils@0.4.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-events-node@0.4.7
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.30.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-openapi-utils@0.4.1-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.0-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+  - @backstage/integration@1.16.1-next.0
+
 ## 1.30.0-next.0
 
 ### Minor Changes

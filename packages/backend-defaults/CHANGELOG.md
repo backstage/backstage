@@ -1,5 +1,102 @@
 # @backstage/backend-defaults
 
+## 0.8.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.1.2-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-node@0.8.8-next.0
+
+## 0.8.0-next.0
+
+### Minor Changes
+
+- a4aa244: This change introduces the `auditor` service implementation details.
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- a19cb2b: Added default implementation for the new `PermissionsRegistryService`.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/backend-app-api@1.1.2-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- ec547b8: Ensure that an error handler middleware exists at the end of each plugin `httpRouter` handler chain. This makes it so that exceptions thrown by plugin routes are caught and encoded in the standard error format.
+
+  If you were using the standard `MiddlewareFactory` just to put an `error` middleware in you router, you can now remove that at your earliest convenience since it's redundant. If you have custom error handlers in your plugin router, those will continue to function as previously. If you were relying on thrown errors propagating all the way down to the root HTTP router, you will find that they no longer do that, and may want to hoist your error handling up to the plugin level instead.
+
+### Patch Changes
+
+- 575613f: Go back to using `node-fetch` for gitlab
+- d2b16db: The `GerritUrlReader` can now read content from a commit and not only from the top of a branch. The
+  Gitiles URL must contain the full commit `SHA` hash like: `https://gerrit.com/gitiles/repo/+/2846e8dc327ae2f60249983b1c3b96f42f205bae/catalog-info.yaml`.
+- 8ecf8cb: Exclude `@backstage/backend-common` from schema collection if `@backstage/backend-defaults` is present
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- Updated dependencies
+  - @backstage/backend-app-api@1.1.1
+  - @backstage/types@1.2.1
+  - @backstage/config-loader@1.9.5
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/integration@1.16.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.12
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-events-node@0.4.7
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-app-api@1.1.1-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/cli-node@0.2.12-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/integration-aws-node@0.1.15-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/integration@1.16.1-next.0
+
 ## 0.7.0-next.0
 
 ### Minor Changes

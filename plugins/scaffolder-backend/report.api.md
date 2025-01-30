@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
@@ -358,6 +359,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
   },
   JsonObject
 >;
@@ -406,6 +408,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
+  auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
@@ -539,6 +542,8 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
+  // (undocumented)
+  auditor?: AuditorService;
   // (undocumented)
   auth?: AuthService;
   // (undocumented)

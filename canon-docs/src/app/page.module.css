@@ -1,0 +1,49 @@
+.global {
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 300px;
+  }
+}
+
+.page {
+  flex: 1;
+}
+
+.page p {
+  color: var(--canon-fg-text-primary);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.content {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 64px 24px 64px;
+}
+
+.header {
+  width: 100%;
+  margin-bottom: 64px;
+}
+
+.header img {
+  width: 100%;
+  height: auto;
+}
+
+.pageContainer {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
