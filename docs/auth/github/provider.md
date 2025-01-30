@@ -30,9 +30,9 @@ Settings for local development:
 
 GitHub Apps handle OAuth scope at the app installation level, meaning that the
 `scope` parameter for the call to `getAccessToken` in the frontend has no
-effect. When calling `getAccessToken` in open-source plugins, one should still
+effect. When calling `getAccessToken` in open source plugins, one should still
 include the appropriate scope, but also document in the plugin README what
-Scopes are required for GitHub Apps.
+scopes are required for GitHub Apps.
 
 ## Configuration
 
