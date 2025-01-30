@@ -19,7 +19,9 @@ import { Knex } from 'knex';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleAccessor } from '@backstage/plugin-permission-node';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
@@ -466,23 +468,34 @@ export interface LoggerService {
 export interface PermissionsRegistryService {
   addPermissionRules(rules: PermissionRule<any, any, string>[]): void;
   addPermissions(permissions: Permission[]): void;
-  addResourceType<const TResourceType extends string, TResource>(
+  addResourceType<const TResourceType extends string, TResource, TQuery>(
     options: PermissionsRegistryServiceAddResourceTypeOptions<
       TResourceType,
-      TResource
+      TResource,
+      TQuery
     >,
   ): void;
+  getRuleAccessor<TResourceType extends string, TResource, TQuery>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleAccessor<TResource, TQuery, TResourceType>;
 }
 
 // @public
 export type PermissionsRegistryServiceAddResourceTypeOptions<
   TResourceType extends string,
   TResource,
+  TQuery,
 > = {
-  resourceType: TResourceType;
+  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
   permissions?: Array<Permission>;
-  rules: PermissionRule<TResource, any, NoInfer_2<TResourceType>>[];
-  getResources?(resourceRefs: string[]): Promise<Array<TResource | undefined>>;
+  rules: PermissionRule<
+    NoInfer_2<TResource>,
+    NoInfer_2<TQuery>,
+    NoInfer_2<TResourceType>
+  >[];
+  getResources?(
+    resourceRefs: string[],
+  ): Promise<Array<NoInfer_2<TResource> | undefined>>;
 };
 
 // @public
