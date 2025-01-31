@@ -22,7 +22,7 @@ import {
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
 import * as inputProps from './inputProperties';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 

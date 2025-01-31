@@ -25,7 +25,8 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
+import { initRepoPushAndProtect } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './githubRepoPush.examples';

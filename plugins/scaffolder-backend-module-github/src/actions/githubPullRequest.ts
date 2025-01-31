@@ -28,7 +28,7 @@ import {
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
   LoggerService,
