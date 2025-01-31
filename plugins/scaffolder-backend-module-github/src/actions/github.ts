@@ -225,15 +225,17 @@ export function createPublishGithubAction(options: {
         requiredLinearHistory = false,
       } = ctx.input;
 
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
-        repoUrl: repoUrl,
+        host,
+        owner,
+        repo,
       });
       const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
