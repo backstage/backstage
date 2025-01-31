@@ -91,14 +91,6 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         if (options.optional) {
           return undefined;
         }
-
-        if (options.instantPopup) {
-          // if `instantPopup`, then can't continue because
-          // we are in asynchronous control flow. Therefore, the application must not try to
-          // open the popup later in `connector#createSession(...)` because the browser may block the popup.
-          // Immediately return error.
-          throw error;
-        }
         // If the refresh attempt fails we assume we don't have a session, so continue to create one
       }
     }
@@ -106,11 +98,12 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     // The user may still have a valid refresh token in their cookies. Attempt to
     // initiate a fresh session through the backend using that refresh token.
     //
-    // We skip this check if an instant login popup is requested, as we need to
-    // stay in a synchronous call stack from the user interaction. The downside
-    // is that the user will sometimes be requested to log in even if they
-    // already had an existing session.
-    if (!options.instantPopup && !alreadyTriedToRefreshSession) {
+    // We can still try to refresh even if client requested instant popup.
+    // With instant popup option, the client is responsible for providing the user login prompt modal window.
+    // If control flow executes this code and client requested instant popup, it means that
+    // must have clicked sign in on the login prompt. The browser allows asynchronous code to open a popup
+    // if it is caused by a user interaction, clicking on a sign-in button, for example.
+    if (!alreadyTriedToRefreshSession) {
       try {
         const newSession = await this.collapsedSessionRefresh(options.scopes);
         this.currentSession = newSession;

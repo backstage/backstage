@@ -138,7 +138,7 @@ describe('RefreshingAuthSessionManager', () => {
     expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set() });
   });
 
-  it('should forward option to instantly show auth popup and not attempt refresh', async () => {
+  it('should forward option to instantly show auth popup after attempting refresh', async () => {
     const createSession = jest.fn();
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
@@ -152,7 +152,7 @@ describe('RefreshingAuthSessionManager', () => {
       scopes: new Set(),
       instantPopup: true,
     });
-    expect(refreshSession).toHaveBeenCalledTimes(0);
+    expect(refreshSession).toHaveBeenCalledTimes(1);
   });
 
   it('should remove session straight away', async () => {
