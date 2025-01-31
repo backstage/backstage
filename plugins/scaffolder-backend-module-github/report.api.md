@@ -477,8 +477,10 @@ export const createPublishGithubPullRequestAction: (
 export function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
+  host: string;
+  owner?: string;
+  repo?: string;
   token?: string;
-  repoUrl: string;
 }): Promise<OctokitOptions>;
 
 // @public

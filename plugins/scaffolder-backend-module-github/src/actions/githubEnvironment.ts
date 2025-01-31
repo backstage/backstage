@@ -175,13 +175,15 @@ export function createGithubEnvironmentAction(options: {
       // Add a 2-second delay before initiating the steps in this action.
       await new Promise(resolve => setTimeout(resolve, 2000));
 
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         token: providedToken,
-        repoUrl: repoUrl,
+        host,
+        owner,
+        repo,
       });
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);

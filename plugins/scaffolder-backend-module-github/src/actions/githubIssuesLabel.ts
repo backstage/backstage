@@ -80,7 +80,7 @@ export function createGithubIssuesLabelAction(options: {
     async handler(ctx) {
       const { repoUrl, number, labels, token: providedToken } = ctx.input;
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
       ctx.logger.info(`Adding labels to ${number} issue on repo ${repo}`);
 
       if (!owner) {
@@ -91,7 +91,9 @@ export function createGithubIssuesLabelAction(options: {
         await getOctokitOptions({
           integrations,
           credentialsProvider: githubCredentialsProvider,
-          repoUrl: repoUrl,
+          host,
+          owner,
+          repo,
           token: providedToken,
         }),
       );

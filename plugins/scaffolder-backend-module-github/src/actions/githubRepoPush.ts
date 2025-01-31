@@ -142,7 +142,7 @@ export function createGithubRepoPushAction(options: {
         requiredLinearHistory = false,
       } = ctx.input;
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -152,7 +152,9 @@ export function createGithubRepoPushAction(options: {
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
-        repoUrl,
+        host,
+        owner,
+        repo,
       });
 
       const client = new Octokit(octokitOptions);

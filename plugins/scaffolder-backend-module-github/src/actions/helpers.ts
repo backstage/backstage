@@ -27,7 +27,6 @@ import { Octokit } from 'octokit';
 import {
   getRepoSourceDirectory,
   initRepoAndPush,
-  parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 
 import Sodium from 'libsodium-wrappers';
@@ -47,20 +46,18 @@ const DEFAULT_TIMEOUT_MS = 60_000;
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
+  host: string;
+  owner?: string;
+  repo?: string;
   token?: string;
-  repoUrl: string;
 }): Promise<OctokitOptions> {
-  const { integrations, credentialsProvider, repoUrl, token } = options;
-  const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+  const { integrations, credentialsProvider, host, owner, repo, token } =
+    options;
 
   const requestOptions = {
     // set timeout to 60 seconds
     timeout: DEFAULT_TIMEOUT_MS,
   };
-
-  if (!owner) {
-    throw new InputError(`No owner provided for repo ${repoUrl}`);
-  }
 
   const integrationConfig = integrations.github.byHost(host)?.config;
 
@@ -78,12 +75,16 @@ export async function getOctokitOptions(options: {
     };
   }
 
+  if (!owner || !repo) {
+    throw new InputError(
+      `No owner and/or owner provided, which is required if a token is not provided`,
+    );
+  }
+
   const githubCredentialsProvider =
     credentialsProvider ??
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
-  // TODO(blam): Consider changing this API to take host and repo instead of repoUrl, as we end up parsing in this function
-  // and then parsing in the `getCredentials` function too the other side
   const { token: credentialProviderToken } =
     await githubCredentialsProvider.getCredentials({
       url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
