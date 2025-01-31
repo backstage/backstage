@@ -189,7 +189,7 @@ Lint a package
 Options:
   --format <format>        Lint report output format (default: "eslint-formatter-friendly")
   --fix                    Attempt to automatically fix violations
-  --max-warnings <number>  Fail if more than this number of warnings. -1 allows warnings. (default: 0)
+  --max-warnings <number>  Fail if more than this number of warnings. -1 allows warnings. (default: -1)
 ```
 
 ## package test
