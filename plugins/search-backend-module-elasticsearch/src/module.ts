@@ -80,9 +80,7 @@ export default createBackendModule({
           'search.elasticsearch.indexPrefix',
         );
         if (indexPrefix) {
-          logger.info(
-            `Preceeding all indices with index prefix: ${indexPrefix}`,
-          );
+          logger.info(`Index prefix will be used for indices: ${indexPrefix}`);
         }
         searchEngineRegistry.setSearchEngine(
           await ElasticSearchSearchEngine.fromConfig({
