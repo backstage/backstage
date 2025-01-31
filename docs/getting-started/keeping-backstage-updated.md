@@ -163,4 +163,4 @@ export YARN_HTTPS_PROXY=${HTTPS_PROXY}                        # optional
 
 ## Rollback migrations
 
-In some cases you could need to downgrade Backstage instance due to some problem or maybe because you are using a test environment to validate the new version of Backstage. You can check the [Manual Rollback using Knex](./manual-knex-rollback.md) guide to know how to rollback migrations using Knex.
+In some cases you could need to downgrade Backstage instance due to some problem or maybe because you are using a test environment to validate the new version of Backstage. You can check the [Manual Rollback using Knex](../tutorials/manual-knex-rollback.md) guide to know how to rollback migrations using Knex.
