@@ -484,6 +484,87 @@ While a codemod for the New JSX Transform was originally introduced in the [Intr
    import { default as React } from 'react';
    ```
 
+### Updating Configuration Files
+
+To ensure compatibility when using the `backstage-cli`, you must modify both the `tsconfig.json` and `eslintrc.js` files. Failure to do so may result in errors.
+
+#### TypeScript Configuration (TSConfig)
+
+Update the `compilerOptions.jsx` setting in `tsconfig.json` to `react-jsx`. This file is typically located in the root directory.
+
+```json filename="tsconfig.json"
+{
+  "extends": "@backstage/cli/config/tsconfig.json",
+  ...
+  "compilerOptions": {
+    // highlight-remove-next-line
+    "jsx": "react",
+    // highlight-add-next-line
+    "jsx": "react-jsx"
+  }
+}
+```
+
+In the future, this setting will change to `preserve` once React 17 is fully deprecated.
+
+##### Explanation of `compilerOptions.jsx` Values
+
+- The `react` mode: This mode converts JSX into `React.createElement` calls, making it directly usable by React. The code doesn't require a separate JSX transformation step, and the output files will use the `.js` extension.
+
+- The `react-jsx` mode: Introduced with React 17, this mode automatically handles the JSX transformation, allowing you to use JSX without needing to import `React` in each file.
+
+- The `preserve` mode: This option leaves the JSX code untouched, embedding it directly into the output files. This is useful when you're planning to process the JSX with another tool like Babel later. The resulting files will use the `.jsx` extension to indicate the presence of JSX.
+
+#### ESLint Configuration
+
+:::note
+
+Only update `eslintrc.js` if the package or plugin contains React code, such as `app` or a frontend plugin.
+
+:::
+
+Modify `eslintrc.json` in frontend workspaces, e.g., `./packages/app/eslintrc.js`.
+
+##### Required Rule
+
+This disables the requirement for a global React import:
+
+```js filename="eslintrc.js"
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+  },
+});
+```
+
+##### Recommended Rule
+
+This prevents default imports of React, encouraging cleaner code:
+
+```js filename="eslintrc.js"
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+    // highlight-add-start
+    'no-restricted-syntax': [
+      'error',
+      {
+        message: 'Default React import not allowed.',
+        selector:
+          "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
+      },
+      {
+        message:
+          'Default React import not allowed. If you need a global type that conflicts with a React named export (e.g., `MouseEvent`), use `globalThis.MouseHandler`.',
+        selector:
+          "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportNamespaceSpecifier)",
+      },
+    ],
+    // highlight-add-end
+  },
+});
+```
+
 ## Additional Resources
 
 - [Introducing the New JSX Transform](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
