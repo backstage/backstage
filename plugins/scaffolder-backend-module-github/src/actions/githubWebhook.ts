@@ -25,7 +25,7 @@ import {
 import { emitterEventNames } from '@octokit/webhooks';
 import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubWebhook.examples';
 
 /**

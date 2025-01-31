@@ -25,7 +25,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './githubPagesEnable.examples';
-import { getOctokitOptions } from '@backstage/plugin-scaffolder-backend-module-github';
+import { getOctokitOptions } from '../util';
 
 /**
  * Creates a new action that enables GitHub Pages for a repository.
