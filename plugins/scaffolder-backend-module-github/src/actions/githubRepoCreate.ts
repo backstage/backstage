@@ -24,10 +24,8 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import {
-  createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
-} from './helpers';
+import { createGithubRepoWithCollaboratorsAndTopics } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './githubRepoCreate.examples';

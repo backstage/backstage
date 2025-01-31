@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { examples } from './githubAutolinks.examples';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 
 /**
  * Create an autolink reference for a repository

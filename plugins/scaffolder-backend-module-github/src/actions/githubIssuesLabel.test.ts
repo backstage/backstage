@@ -23,7 +23,7 @@ import {
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 
 jest.mock('./helpers', () => {
   return {

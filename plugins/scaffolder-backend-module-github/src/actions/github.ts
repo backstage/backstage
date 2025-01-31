@@ -27,9 +27,9 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
   initRepoPushAndProtect,
 } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';

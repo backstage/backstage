@@ -24,7 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubIssuesLabel.examples';
 
 /**
