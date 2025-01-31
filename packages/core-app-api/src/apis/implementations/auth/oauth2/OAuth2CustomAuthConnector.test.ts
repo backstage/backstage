@@ -23,6 +23,7 @@ import {
   OAuth2CreateOptionsWithAuthConnector,
   OAuth2Response,
 } from '../../../../index';
+import { waitFor } from '@testing-library/react';
 
 const scopeTransform = (x: string[]) => x;
 
@@ -54,7 +55,7 @@ class CustomAuthConnector implements AuthConnector<OAuth2Session> {
 }
 
 describe('OAuth2CustomAuthConnector', () => {
-  it('should use provided auth provider', async () => {
+  it('should use custom auth connector', async () => {
     const popupMock = { closed: false };
 
     jest.spyOn(window, 'open').mockReturnValue(popupMock as Window);
@@ -88,11 +89,10 @@ describe('OAuth2CustomAuthConnector', () => {
     };
     const oauth2 = OAuth2.create(options);
 
-    // so that AuthConnector calls openLoginPopup synchronously (not try to refresh the token)
-    const accessToken = oauth2.getAccessToken('myScope', {
-      instantPopup: true,
-      optional: false,
-    });
+    const accessToken = oauth2.getAccessToken('myScope');
+
+    // wait until `openLoginPopup` has been called
+    await waitFor(() => expect(addEventListenerSpy).toHaveBeenCalled());
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
 
