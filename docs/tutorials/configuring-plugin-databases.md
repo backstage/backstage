@@ -186,6 +186,6 @@ deployment situations. Good luck!
 
 If you want to read more about the database configuration, here are some helpful links:
 
-- [Manual Knex Rollback](../../tutorials/manual-knex-rollback.md)
+- [Manual Knex Rollback](./manual-knex-rollback.md)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
 - [Install `pgAdmin` 4](https://www.pgadmin.org/), a helpful tool for querying your database.
