@@ -107,13 +107,15 @@ export function createGithubDeployKeyAction(options: {
         token: providedToken,
       } = ctx.input;
 
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         token: providedToken,
-        repoUrl: repoUrl,
+        host,
+        owner,
+        repo,
       });
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);

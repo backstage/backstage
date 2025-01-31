@@ -134,7 +134,7 @@ export function createGithubWebhookAction(options: {
       } = ctx.input;
 
       ctx.logger.info(`Creating webhook ${webhookUrl} for repo ${repoUrl}`);
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -144,7 +144,9 @@ export function createGithubWebhookAction(options: {
         await getOctokitOptions({
           integrations,
           credentialsProvider: githubCredentialsProvider,
-          repoUrl: repoUrl,
+          host,
+          owner,
+          repo,
           token: providedToken,
         }),
       );
