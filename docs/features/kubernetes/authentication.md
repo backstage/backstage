@@ -28,7 +28,6 @@ The server side providers are:
 - `aws`
 - `azure`
 - `googleServiceAccount`
-- `localKubectlProxy`
 - `serviceAccount`
 
 ### AWS
