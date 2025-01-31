@@ -25,6 +25,8 @@ import {
   RepositoryTreeSchema,
   CommitAction,
   SimpleUserSchema,
+  ExpandedMergeRequestSchema,
+  Camelize,
 } from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -81,6 +83,56 @@ async function getFileAction(
   return defaultCommitAction;
 }
 
+async function getReviewersFromApprovalRules(
+  api: InstanceType<typeof Gitlab>,
+  mergerequestIId: number,
+  repoID: string,
+  ctx: any,
+): Promise<number[]> {
+  try {
+    // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
+    // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
+    // Code owners take a moment to be processed and added to the approval rules after the MR is created.
+
+    let mergeRequest:
+      | ExpandedMergeRequestSchema
+      | Camelize<ExpandedMergeRequestSchema> = await api.MergeRequests.show(
+      repoID,
+      mergerequestIId,
+    );
+
+    while (
+      mergeRequest.detailed_merge_status === 'preparing' ||
+      mergeRequest.detailed_merge_status === 'approvals_syncing' ||
+      mergeRequest.detailed_merge_status === 'checking'
+    ) {
+      mergeRequest = await api.MergeRequests.show(repoID, mergeRequest.iid);
+      ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
+    }
+
+    const approvalRules = await api.MergeRequestApprovals.allApprovalRules(
+      repoID,
+      {
+        mergerequestIId: mergeRequest.iid,
+      },
+    );
+    return approvalRules
+      .filter(rule => rule.eligible_approvers !== undefined)
+      .map(rule => {
+        return rule.eligible_approvers as SimpleUserSchema[];
+      })
+      .flat()
+      .map(user => user.id);
+  } catch (e) {
+    ctx.logger.warn(
+      `Failed to retrieve approval rules for MR ${mergerequestIId}: ${getErrorMessage(
+        e,
+      )}. Proceeding with MR creation without reviewers from approval rules.`,
+    );
+    return [];
+  }
+}
+
 /**
  * Create a new action that creates a gitlab merge request.
  *
@@ -106,6 +158,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     removeSourceBranch?: boolean;
     assignee?: string;
     reviewers?: string[];
+    assignReviewersFromApprovalRules?: boolean;
   }>({
     id: 'publish:gitlab:merge-request',
     examples,
@@ -192,6 +245,12 @@ which uses additional API calls in order to detect whether to 'create', 'update'
               type: 'string',
             },
             description: 'Users that will be assigned as reviewers',
+          },
+          assignReviewersFromApprovalRules: {
+            title: 'Assign reviewers from approval rules',
+            type: 'boolean',
+            description:
+              'Automatically assign reviewers from the approval rules of the MR. Includes Codeowners',
           },
         },
       },
@@ -404,48 +463,35 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           },
         );
 
-        // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
-        // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
-        // Code owners take a moment to be processed and added to the approval rules after the MR is created.
+        if (ctx.input.assignReviewersFromApprovalRules) {
+          try {
+            const reviewersFromApprovalRules =
+              await getReviewersFromApprovalRules(
+                api,
+                mergeRequest.iid,
+                repoID,
+                ctx,
+              );
+            const eligibleUserIds = new Set([
+              ...reviewersFromApprovalRules,
+              ...(reviewerIds ?? []),
+            ]);
 
-        while (
-          mergeRequest.detailed_merge_status === 'preparing' ||
-          mergeRequest.detailed_merge_status === 'approvals_syncing' ||
-          mergeRequest.detailed_merge_status === 'checking'
-        ) {
-          mergeRequest = await api.MergeRequests.show(repoID, mergeRequest.iid);
-          ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
+            mergeRequest = await api.MergeRequests.edit(
+              repoID,
+              mergeRequest.iid,
+              {
+                reviewerIds: Array.from(eligibleUserIds),
+              },
+            );
+          } catch (e) {
+            ctx.logger.warn(
+              `Failed to assign reviewers from approval rules: ${getErrorMessage(
+                e,
+              )}`,
+            );
+          }
         }
-
-        const approvalRules = await api.MergeRequestApprovals.allApprovalRules(
-          repoID,
-          {
-            mergerequestIId: mergeRequest.iid,
-          },
-        );
-
-        if (approvalRules.length !== 0) {
-          const eligibleApprovers = approvalRules
-            .filter(rule => rule.eligible_approvers !== undefined)
-            .map(rule => {
-              return rule.eligible_approvers as SimpleUserSchema[];
-            })
-            .flat();
-
-          const eligibleUserIds = new Set([
-            ...eligibleApprovers.map(user => user.id),
-            ...(reviewerIds ?? []),
-          ]);
-
-          mergeRequest = await api.MergeRequests.edit(
-            repoID,
-            mergeRequest.iid,
-            {
-              reviewerIds: Array.from(eligibleUserIds),
-            },
-          );
-        }
-
         ctx.output('projectid', repoID);
         ctx.output('targetBranchName', targetBranch);
         ctx.output('projectPath', repoID);
