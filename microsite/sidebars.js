@@ -4,9 +4,12 @@ module.exports = {
   docs: {
     Overview: [
       'overview/what-is-backstage',
+      'overview/architecture-overview',
       'overview/background',
       'overview/vision',
       'overview/roadmap',
+      'overview/threat-model',
+      'overview/versioning-policy',
     ],
     'Getting Started': [
       'getting-started/index',
@@ -300,7 +303,6 @@ module.exports = {
     ],
     Plugins: [
       'plugins/index',
-      'overview/architecture-overview',
       'plugins/existing-plugins',
       'plugins/create-a-plugin',
       'plugins/plugin-development',
@@ -495,27 +497,31 @@ module.exports = {
       {
         Techical: [
           'tutorials/quickstart-app-plugin',
-          'tutorials/react-router-stable-migration',
-          'tutorials/react18-migration',
-          'tutorials/package-role-migration',
-          'tutorials/migrating-away-from-core',
           'tutorials/configuring-plugin-databases',
           'tutorials/switching-sqlite-postgres',
           'tutorials/using-backstage-proxy-within-plugin',
-          'tutorials/yarn-migration',
-          'tutorials/migrate-to-mui5',
-          'tutorials/auth-service-migration',
           'tutorials/enable-public-entry',
           'tutorials/setup-opentelemetry',
           'accessibility/index',
         ],
       },
+      {Migrations: [
+        'tutorials/react-router-stable-migration',
+        'tutorials/react18-migration',
+        'tutorials/package-role-migration',
+        'tutorials/migrating-away-from-core',
+        'tutorials/yarn-migration',
+        'tutorials/migrate-to-mui5',
+        'tutorials/auth-service-migration',
+      ]}
     ],
-    FAQ: ['faq/index', 'faq/technical', 'faq/product'],
+    FAQ: ['faq/index', 'faq/product','faq/technical'],
     Contribute: [
       'contribute/index',
       'contribute/getting-involved',
       'contribute/project-structure',
+    ],
+    References: [
       {
         'Designing for Backstage': [
           'dls/design',
@@ -524,8 +530,6 @@ module.exports = {
           'dls/figma',
         ],
       },
-    ],
-    References: [
       {
         type: 'category',
         label: 'Architecture Decision Records (ADRs)',
@@ -549,15 +553,10 @@ module.exports = {
       },
       'api/deprecations',
       'references/glossary',
-      {
-        Security: ['overview/threat-model'],
-      },
       'api/utility-apis',
-      'overview/versioning-policy',
       'reference/index',
     ],
   },
-  Assets: ['overview/logos'],
   releases: {
     'Release Notes': releases.map(release => `releases/${release}`),
   },
