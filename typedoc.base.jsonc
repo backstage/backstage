@@ -1,0 +1,9 @@
+{
+  // Note: In TypeDoc 0.26 you can instead specify `packageOptions` if running
+  // only with packages mode. The separate base config file is retained in this
+  // example so that individual packages can be built for demonstration of the
+  // advanced method in the readme.
+
+  "$schema": "https://typedoc.org/schema.json",
+  "includeVersion": true
+}
