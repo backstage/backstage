@@ -472,7 +472,7 @@ describe.skip('GerritUrlReader', () => {
         gerritProcessor.search(
           'https://gerrit.com/web/project/+/refs/heads/master/*.yaml',
         ),
-      ).rejects.toThrow('Unsuppported search pattern URL');
+      ).rejects.toThrow('Unsupported search pattern URL');
     });
   });
 });
