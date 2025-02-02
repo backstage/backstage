@@ -116,6 +116,7 @@ async function getReviewersFromApprovalRules(
         mergerequestIId: mergeRequest.iid,
       },
     );
+
     return approvalRules
       .filter(rule => rule.eligible_approvers !== undefined)
       .map(rule => {
@@ -472,23 +473,25 @@ which uses additional API calls in order to detect whether to 'create', 'update'
                 repoID,
                 ctx,
               );
-            const eligibleUserIds = new Set([
-              ...reviewersFromApprovalRules,
-              ...(reviewerIds ?? []),
-            ]);
+            if (reviewersFromApprovalRules.length > 0) {
+              const eligibleUserIds = new Set([
+                ...reviewersFromApprovalRules,
+                ...(reviewerIds ?? []),
+              ]);
 
-            mergeRequest = await api.MergeRequests.edit(
-              repoID,
-              mergeRequest.iid,
-              {
-                reviewerIds: Array.from(eligibleUserIds),
-              },
-            );
+              mergeRequest = await api.MergeRequests.edit(
+                repoID,
+                mergeRequest.iid,
+                {
+                  reviewerIds: Array.from(eligibleUserIds),
+                },
+              );
+            }
           } catch (e) {
             ctx.logger.warn(
               `Failed to assign reviewers from approval rules: ${getErrorMessage(
                 e,
-              )}`,
+              )}.`,
             );
           }
         }
