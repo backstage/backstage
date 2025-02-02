@@ -39,11 +39,11 @@ export const createGitlabIssueAction: (options: {
     projectId: number;
     labels?: string | undefined;
     description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
+    weight?: number | undefined;
     assignees?: number[] | undefined;
-    createdAt?: string | undefined;
     confidential?: boolean | undefined;
+    createdAt?: string | undefined;
     milestoneId?: number | undefined;
     epicId?: number | undefined;
     dueDate?: string | undefined;
@@ -67,8 +67,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
     projectId: string | number;
     name?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    scopes?: string[] | undefined;
     accessLevel?: number | undefined;
   },
   {
@@ -82,8 +82,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
-    scopes: string[];
     repoUrl: string;
+    scopes: string[];
     projectId: string | number;
     username?: string | undefined;
     token?: string | undefined;
@@ -124,7 +124,7 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'update' | 'create' | 'delete' | undefined;
   },
   JsonObject
 >;
@@ -205,11 +205,12 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'skip' | 'create' | 'delete' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
     reviewers?: string[] | undefined;
+    assignReviewersFromApprovalRules?: boolean | undefined;
   },
   JsonObject
 >;
@@ -219,8 +220,8 @@ export const createTriggerGitlabPipelineAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    branch: string;
     repoUrl: string;
+    branch: string;
     projectId: number;
     tokenDescription: string;
     token?: string | undefined;
@@ -242,8 +243,8 @@ export const editGitlabIssueAction: (options: {
     title?: string | undefined;
     labels?: string | undefined;
     description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
+    weight?: number | undefined;
     assignees?: number[] | undefined;
     addLabels?: string | undefined;
     confidential?: boolean | undefined;
