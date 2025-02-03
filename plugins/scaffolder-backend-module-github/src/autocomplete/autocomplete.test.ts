@@ -29,6 +29,7 @@ const mockOctokit = {
   rest: {
     repos: {
       listForAuthenticatedUser: jest.fn(),
+      listBranches: jest.fn(),
     },
   },
 };
@@ -67,6 +68,33 @@ describe('handleAutocompleteRequest', () => {
     });
   });
 
+  it('should return branches', async () => {
+    const handleAutocompleteRequest = createHandleAutocompleteRequest({
+      integrations: mockIntegrations,
+    });
+
+    mockOctokit.rest.repos.listBranches.mockResolvedValue({
+      data: [
+        {
+          name: 'main',
+        },
+      ],
+    });
+
+    const result = await handleAutocompleteRequest({
+      resource: 'branches',
+      token: 'token',
+      context: {
+        owner: 'backstage',
+        repository: 'backstage',
+      },
+    });
+
+    expect(result).toEqual({
+      results: [{ id: 'main' }],
+    });
+  });
+
   it('should throw an error for invalid resource', async () => {
     const handleAutocompleteRequest = createHandleAutocompleteRequest({
       integrations: mockIntegrations,
@@ -81,15 +109,15 @@ describe('handleAutocompleteRequest', () => {
     ).rejects.toThrow(InputError);
   });
 
-  it('should throw an error if context id is missing for repositories', async () => {
+  it('should throw an error when there are missing parameters', async () => {
     const handleAutocompleteRequest = createHandleAutocompleteRequest({
       integrations: mockIntegrations,
     });
 
     await expect(
       handleAutocompleteRequest({
-        resource: 'repositories',
         token: 'token',
+        resource: 'branches',
         context: {},
       }),
     ).rejects.toThrow(InputError);
