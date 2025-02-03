@@ -16,18 +16,26 @@
 
 import React, { act } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
+import userEvent from '@testing-library/user-event';
 
 describe('GithubRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
     autocomplete: jest.fn().mockImplementation(opts =>
       Promise.resolve({
-        results: [{ title: `${opts.resource}_example` }],
+        results: [
+          {
+            id:
+              opts.resource === 'repositoriesWithOwner'
+                ? 'spotify/backstage'
+                : `${opts.resource}_example`,
+          },
+        ],
       }),
     ),
   };
@@ -106,6 +114,60 @@ describe('GithubRepoPicker', () => {
       });
 
       expect(onChange).toHaveBeenCalledWith({ owner: 'my-mock-owner' });
+    });
+  });
+
+  describe('autocompletion', () => {
+    it('should populate owners if accessToken is provided', async () => {
+      const onChange = jest.fn();
+
+      const { getAllByRole, getByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GithubRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            accessToken="foo"
+          />
+        </TestApiProvider>,
+      );
+
+      // Open the Autcomplete dropdown
+      const ownerInput = getAllByRole('textbox')[0];
+      await userEvent.click(ownerInput);
+
+      // Verify that the available owners are shown
+      await waitFor(() => expect(getByText('spotify')).toBeInTheDocument());
+
+      // Verify that selecting an option calls onChange
+      await userEvent.click(getByText('spotify'));
+      expect(onChange).toHaveBeenCalledWith({
+        owner: 'spotify',
+      });
+    });
+
+    it('should populate owners if owner and accessToken are provided', async () => {
+      const onChange = jest.fn();
+
+      await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GithubRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ repoName: 'repo', owner: 'spotify' }}
+            accessToken="foo"
+          />
+        </TestApiProvider>,
+      );
+
+      // Verify that the available repos are updated
+      await waitFor(
+        () =>
+          expect(onChange).toHaveBeenCalledWith({
+            availableRepos: [{ name: 'backstage' }],
+          }),
+        { timeout: 1500 },
+      );
     });
   });
 });
