@@ -28,7 +28,10 @@ import {
   AsyncEntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityContentBlueprint,
+  defaultEntityContentGroups,
+} from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
@@ -62,21 +65,57 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.title,
       EntityContentBlueprint.dataRefs.filterFunction.optional(),
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
+      EntityContentBlueprint.dataRefs.group.optional(),
     ]),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      groups: z =>
+        z.record(z.string(), z.string().or(z.literal(false))).optional(),
+    },
+  },
+  factory(originalFactory, { config, inputs }) {
     return originalFactory({
       defaultPath: '/catalog/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(entityRouteRef),
       loader: async () => {
-        const { EntityLayout } = await import('../components/EntityLayout');
+        const { EntityLayout } = await import('./components/EntityLayout');
+
+        // config groups override default groups
+        const groups: Record<string, string> = {
+          ...defaultEntityContentGroups,
+          ...config.groups,
+        };
+
+        // the groups order is determined by the order of the contents
+        // a group will appear in the order of the first item that belongs to it
+        const tabs = inputs.contents.reduce<
+          Record<string, Array<(typeof inputs.contents)[0]>>
+        >((rest, output) => {
+          const itemTitle = output.get(EntityContentBlueprint.dataRefs.title);
+          const groupId = output.get(EntityContentBlueprint.dataRefs.group);
+          const groupTitle = groupId && groups[groupId];
+          // disabled or invalid groups are ignored
+          if (!groupTitle) {
+            return {
+              ...rest,
+              [itemTitle]: [output],
+            };
+          }
+          return {
+            ...rest,
+            [groupTitle]: [...(rest[groupTitle] ?? []), output],
+          };
+        }, {});
+
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
               <EntityLayout>
-                {inputs.contents.map(output => {
-                  return (
+                {Object.entries(tabs).flatMap(([group, items]) =>
+                  items.map(output => (
                     <EntityLayout.Route
+                      group={group}
                       key={output.get(coreExtensionData.routePath)}
                       path={output.get(coreExtensionData.routePath)}
                       title={output.get(EntityContentBlueprint.dataRefs.title)}
@@ -91,12 +130,13 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                     >
                       {output.get(coreExtensionData.reactElement)}
                     </EntityLayout.Route>
-                  );
-                })}
+                  )),
+                )}
               </EntityLayout>
             </AsyncEntityProvider>
           );
         };
+
         return compatWrapper(<Component />);
       },
     });
