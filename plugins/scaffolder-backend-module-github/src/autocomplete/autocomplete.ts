@@ -40,14 +40,12 @@ export function createHandleAutocompleteRequest(options: {
     const client = new Octokit(octokitOptions);
 
     switch (resource) {
-      case 'owners': {
-        const organizations = await client.paginate(
-          client.rest.orgs.listForAuthenticatedUser,
+      case 'repositoriesWithOwner': {
+        const repositoriesWithOwner = await client.paginate(
+          client.rest.repos.listForAuthenticatedUser,
         );
 
-        const results = organizations.map(organization => ({
-          id: organization.login,
-        }));
+        const results = repositoriesWithOwner.map(r => ({ id: r.full_name }));
 
         return { results };
       }
