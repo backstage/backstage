@@ -126,7 +126,7 @@ describe('GithubRepoPicker', () => {
           <GithubRepoPicker
             onChange={onChange}
             rawErrors={[]}
-            state={{ repoName: 'repo' }}
+            state={{ host: 'github.com', repoName: 'repo' }}
             accessToken="foo"
           />
         </TestApiProvider>,
@@ -146,7 +146,7 @@ describe('GithubRepoPicker', () => {
       });
     });
 
-    it('should populate owners if owner and accessToken are provided', async () => {
+    it('should populate repositories if owner and accessToken are provided', async () => {
       const onChange = jest.fn();
 
       await renderInTestApp(
@@ -154,7 +154,7 @@ describe('GithubRepoPicker', () => {
           <GithubRepoPicker
             onChange={onChange}
             rawErrors={[]}
-            state={{ repoName: 'repo', owner: 'spotify' }}
+            state={{ host: 'github.com', owner: 'spotify' }}
             accessToken="foo"
           />
         </TestApiProvider>,
