@@ -26,6 +26,7 @@ import {
   ClusterObjects,
   CustomResourceMatcher,
   FetchResponse,
+  KUBERNETES_ANNOTATION,
   KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
@@ -287,7 +288,7 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
     const labelSelector: string =
       entity.metadata?.annotations?.[
         KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION
-      ] || `backstage.io/kubernetes-id=${entityName}`;
+      ] || `${KUBERNETES_ANNOTATION}=${entityName}`;
 
     const namespace =
       entity.metadata?.annotations?.['backstage.io/kubernetes-namespace'];
