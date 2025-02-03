@@ -317,6 +317,13 @@ export interface JobsFetchResponse {
   type: 'jobs';
 }
 
+// @public
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+
+// @public
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
+
 // @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'

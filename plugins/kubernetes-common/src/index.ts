@@ -29,4 +29,3 @@ export {
 } from './permissions';
 export * from './error-detection';
 export * from './util';
-export * from './constants';
