@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
@@ -25,6 +25,8 @@ import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useDebounce from 'react-use/esm/useDebounce';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import uniq from 'lodash/uniq';
+import map from 'lodash/map';
 
 export const GithubRepoPicker = (
   props: BaseRepoUrlPickerProps<{
@@ -42,30 +44,55 @@ export const GithubRepoPicker = (
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
-  const [availableOwners, setAvailableOwners] = useState<string[]>([]);
+  const [availableRepositoriesWithOwner, setAvailableRepositoriesWithOwner] =
+    useState<{ owner: string; name: string }[]>([]);
 
-  // Update available owners when client is available
-  const updateAvailableOwners = useCallback(() => {
+  // Update available repositories with owner when client is available
+  const updateAvailableRepositoriesWithOwner = useCallback(() => {
     if (!scaffolderApi.autocomplete || !accessToken) {
-      setAvailableOwners([]);
+      setAvailableRepositoriesWithOwner([]);
       return;
     }
 
     scaffolderApi
       .autocomplete({
         token: accessToken,
-        resource: 'owners',
+        resource: 'repositoriesWithOwner',
         provider: 'github',
       })
       .then(({ results }) => {
-        setAvailableOwners(results.map(r => r.id));
+        setAvailableRepositoriesWithOwner(
+          results.map(r => {
+            const [rOwner, rName] = r.id.split('/');
+            return { owner: rOwner, name: rName };
+          }),
+        );
       })
       .catch(() => {
-        setAvailableOwners([]);
+        setAvailableRepositoriesWithOwner([]);
       });
   }, [scaffolderApi, accessToken]);
 
-  useDebounce(updateAvailableOwners, 500, [updateAvailableOwners]);
+  useDebounce(updateAvailableRepositoriesWithOwner, 500, [
+    updateAvailableRepositoriesWithOwner,
+  ]);
+
+  // Update available owners when available repositories with owner change
+  const availableOwners = useMemo<string[]>(
+    () => uniq(map(availableRepositoriesWithOwner, 'owner')),
+    [availableRepositoriesWithOwner],
+  );
+
+  // Update available repositories when available repositories with owner change or when owner changes
+  const updateAvailableRepositories = useCallback(() => {
+    const availableRepos = availableRepositoriesWithOwner.flatMap(r =>
+      r.owner === owner ? [{ name: r.name }] : [],
+    );
+
+    onChange({ availableRepos });
+  }, [availableRepositoriesWithOwner, owner, onChange]);
+
+  useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 
   return (
     <>
