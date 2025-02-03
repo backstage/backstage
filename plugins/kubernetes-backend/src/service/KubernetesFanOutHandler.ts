@@ -16,13 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
-  CustomResource,
-  FetchResponseWrapper,
-  KubernetesFetcher,
   KubernetesObjectsProviderOptions,
-  KubernetesServiceLocator,
   ObjectsByEntityRequest,
-  ObjectToFetch,
 } from '../types/types';
 import {
   ClientContainerStatus,
@@ -285,7 +280,7 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
 
     const labelSelector: string =
       entity.metadata?.annotations?.[
-        'backstage.io/kubernetes-label-selector'
+        KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION
       ] || `backstage.io/kubernetes-id=${entityName}`;
 
     const namespace =

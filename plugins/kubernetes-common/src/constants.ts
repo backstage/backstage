@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Common functionalities for Kubernetes, to be shared between the `kubernetes` and `kubernetes-backend` plugins
- *
- * @packageDocumentation
- */
-
-export * from './types';
-export * from './catalog-entity-constants';
-export * from './certificate-authority-constants';
-export {
-  kubernetesProxyPermission,
-  kubernetesPermissions,
-} from './permissions';
-export * from './error-detection';
-export * from './util';
-export * from './constants';
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
