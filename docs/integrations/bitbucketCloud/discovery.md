@@ -123,7 +123,8 @@ catalog:
 
 :::note Note
 
- It is possible but certainly not recommended to skip the provider ID level.
+It is possible but certainly not recommended to skip the provider ID level.
+
 > If you do so, `default` will be used as provider ID.
 
 :::
