@@ -42,6 +42,11 @@ export interface Config {
     concurrentTasksLimit?: number;
 
     /**
+     * Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
+     */
+    EXPERIMENTAL_gracefulShutdown?: boolean;
+
+    /**
      * Sets the tasks recoverability on system start up.
      *
      * If not specified, the default value is false.
