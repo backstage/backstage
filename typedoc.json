@@ -1,0 +1,26 @@
+{
+  "entryPoints": ["packages/*", "plugins/*"],
+  "exclude": [
+    "packages/app",
+    "packages/app-next",
+    "packages/app-next-example-plugin",
+    "packages/cli",
+    "packages/cli-common",
+    "packages/cli-node",
+    "packages/e2e-test",
+    "packages/e2e-test-utils",
+    "packages/opaque-internal",
+    "packages/techdocs-cli",
+    "packages/techdocs-cli-embedded-app",
+    "packages/yarn-plugin",
+    "packages/backend"
+  ],
+  "packageOptions": {
+    "exclude": ["**/package.json"],
+    "includeVersion": true
+  },
+  "name": "Backstage API References",
+  "entryPointStrategy": "packages",
+  "includeVersion": false,
+  "logLevel": "Verbose"
+}

@@ -13,42 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import { promisify } from 'util';
 import { paths } from '../../lib/paths';
-import { rm, writeFile } from 'fs/promises';
-import { PackageGraph } from '@backstage/cli-node';
-import path from 'path';
 
-const execAsync = promisify(exec);
+const execAsync = promisify(spawn);
 
 export default async function packageDocs() {
-  const packages = await PackageGraph.listTargetPackages();
-  for (const pkg of packages) {
-    console.log(path.relative(paths.targetRoot, pkg.dir));
-    if (path.relative(paths.targetRoot, pkg.dir).startsWith('packages/')) {
-      continue;
-    }
-    const configPath = path.join(pkg.dir, 'typedoc.json');
-    try {
-      const DEFAULT_CONFIG = {
-        extends: ['../../typedoc.base.jsonc'],
-        entryPoints:
-          Object.values(pkg.packageJson.exports ?? {}) ?? pkg.packageJson.main,
-      };
-      await writeFile(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
-      console.log(`Generating docs for ${pkg.packageJson.name}`);
-      await execAsync(
-        `${paths.resolveTargetRoot('node_modules/.bin/typedoc')} --out docs`,
-        {
-          cwd: pkg.dir,
-        },
-      );
-    } catch (e) {
-      console.error(`Failed to generate docs for ${pkg.packageJson.name}`);
-      console.error(e);
-    } finally {
-      await rm(configPath);
-    }
-  }
+  //   const packages = await PackageGraph.listTargetPackages();
+  //   for (const pkg of packages) {
+  //     console.log(path.relative(paths.targetRoot, pkg.dir));
+  //     const configPath = path.join(pkg.dir, 'typedoc.json');
+  //     try {
+  //       const DEFAULT_CONFIG = {
+  //         extends: ['../../typedoc.base.jsonc'],
+  //         entryPoints:
+  //           Object.values(pkg.packageJson.exports ?? {}) ?? pkg.packageJson.main,
+  //       };
+  //       await writeFile(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
+  //     } catch (e) {
+  //       console.error(`Failed to generate docs for ${pkg.packageJson.name}`);
+  //       console.error(e);
+  //     } finally {
+  //     }
+  //   }
+  console.log(`Generating docs.`);
+  await execAsync(
+    paths.resolveTargetRoot('node_modules/.bin/typedoc'),
+    ['--out', 'type-docs', '--entryPointStrategy', 'packages'],
+    {
+      stdio: 'inherit',
+      cwd: paths.targetRoot,
+      env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=12288' },
+    },
+  );
+  //   for (const pkg of packages) {
+  //     const configPath = path.join(pkg.dir, 'typedoc.json');
+  //     await rm(configPath);
+  //   }
 }
