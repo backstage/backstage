@@ -40,7 +40,7 @@ export const GithubRepoPicker = (
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const { owner } = state;
+  const { host, owner } = state;
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -49,7 +49,7 @@ export const GithubRepoPicker = (
 
   // Update available repositories with owner when client is available
   const updateAvailableRepositoriesWithOwner = useCallback(() => {
-    if (!scaffolderApi.autocomplete || !accessToken) {
+    if (!scaffolderApi.autocomplete || !accessToken || !host) {
       setAvailableRepositoriesWithOwner([]);
       return;
     }
@@ -59,6 +59,7 @@ export const GithubRepoPicker = (
         token: accessToken,
         resource: 'repositoriesWithOwner',
         provider: 'github',
+        context: { host },
       })
       .then(({ results }) => {
         setAvailableRepositoriesWithOwner(
@@ -71,7 +72,7 @@ export const GithubRepoPicker = (
       .catch(() => {
         setAvailableRepositoriesWithOwner([]);
       });
-  }, [scaffolderApi, accessToken]);
+  }, [scaffolderApi, accessToken, host]);
 
   useDebounce(updateAvailableRepositoriesWithOwner, 500, [
     updateAvailableRepositoriesWithOwner,
