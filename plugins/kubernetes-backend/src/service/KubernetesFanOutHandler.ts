@@ -26,6 +26,7 @@ import {
   ClusterObjects,
   CustomResourceMatcher,
   FetchResponse,
+  KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
   PodFetchResponse,
@@ -39,10 +40,15 @@ import {
 import {
   AuthenticationStrategy,
   ClusterDetails,
+  CustomResource,
   CustomResourcesByEntity,
+  FetchResponseWrapper,
   KubernetesCredential,
+  KubernetesFetcher,
   KubernetesObjectsByEntity,
   KubernetesObjectsProvider,
+  KubernetesServiceLocator,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
 import {
   BackstageCredentials,
