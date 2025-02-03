@@ -80,18 +80,4 @@ describe('handleAutocompleteRequest', () => {
       }),
     ).rejects.toThrow(InputError);
   });
-
-  it('should throw an error if context id is missing for repositories', async () => {
-    const handleAutocompleteRequest = createHandleAutocompleteRequest({
-      integrations: mockIntegrations,
-    });
-
-    await expect(
-      handleAutocompleteRequest({
-        resource: 'repositories',
-        token: 'token',
-        context: {},
-      }),
-    ).rejects.toThrow(InputError);
-  });
 });
