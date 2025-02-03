@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Grid, Stack, Text } from '../../../../../packages/canon';
+import { Grid, Flex, Text } from '../../../../../packages/canon';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';
@@ -53,7 +53,7 @@ const Content = () => {
   const { selectedComponents } = usePlayground();
 
   return (
-    <Stack gap="xl">
+    <Flex direction="column" gap="4">
       {selectedComponents.find(c => c === 'button') && (
         <Line content={<ButtonPlayground />} title="Button" />
       )}
@@ -69,17 +69,17 @@ const Content = () => {
       {/* {selectedComponents.find(c => c === 'input') && (
         <Line content={<InputPlayground />} title="Input" />
       )} */}
-    </Stack>
+    </Flex>
   );
 };
 
 const Line = ({ content, title }: { content: ReactNode; title: string }) => {
   return (
-    <Grid gap={{ xs: 'xs', md: 'xl' }}>
-      <Grid.Item colSpan={2}>
+    <Grid gap={{ xs: '2', md: '4' }}>
+      <Grid.Item colSpan="2">
         <Text>{title}</Text>
       </Grid.Item>
-      <Grid.Item colSpan={10}>{content}</Grid.Item>
+      <Grid.Item colSpan="10">{content}</Grid.Item>
     </Grid>
   );
 };

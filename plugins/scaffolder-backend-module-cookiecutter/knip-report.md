@@ -1,9 +1,10 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (3)
 
-| Name    | Location     | Severity |
-| :------ | :----------- | :------- |
-| winston | package.json | error    |
-| yn      | package.json | error    |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @backstage/backend-defaults | package.json | error    |
+| winston                     | package.json | error    |
+| yn                          | package.json | error    |
 

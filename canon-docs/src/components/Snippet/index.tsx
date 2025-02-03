@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { CodeBlock } from '../CodeBlock';
-import { Text } from '../../../../packages/canon/src/components/Text';
 import { Collapsible } from '@base-ui-components/react/collapsible';
 import styles from './styles.module.css';
 
@@ -31,7 +30,7 @@ export const Snippet = ({
           {preview}
         </div>
         <Collapsible.Trigger className={styles.trigger}>
-          <Text variant="body">View code</Text>
+          View code
         </Collapsible.Trigger>
       </div>
       <Collapsible.Panel className={styles.panel}>

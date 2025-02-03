@@ -1,0 +1,86 @@
+.cu-w {
+  width: var(--width);
+}
+
+.cu-min-w {
+  min-width: var(--min-width);
+}
+
+.cu-max-w {
+  max-width: var(--max-width);
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:cu-w {
+    width: var(--width);
+  }
+
+  .xs\:cu-min-w {
+    min-width: var(--min-width);
+  }
+
+  .xs\:cu-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:cu-w {
+    width: var(--width);
+  }
+
+  .sm\:cu-min-w {
+    min-width: var(--min-width);
+  }
+
+  .sm\:cu-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:cu-w {
+    width: var(--width);
+  }
+
+  .md\:cu-min-w {
+    min-width: var(--min-width);
+  }
+
+  .md\:cu-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:cu-w {
+    width: var(--width);
+  }
+
+  .lg\:cu-min-w {
+    min-width: var(--min-width);
+  }
+
+  .lg\:cu-max-w {
+    max-width: var(--max-width);
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:cu-w {
+    width: var(--width);
+  }
+
+  .xl\:cu-min-w {
+    min-width: var(--min-width);
+  }
+
+  .xl\:cu-max-w {
+    max-width: var(--max-width);
+  }
+}

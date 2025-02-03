@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
-import React, { MouseEvent, ReactNode, useCallback } from 'react';
+import React, { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
@@ -86,7 +86,7 @@ export const CatalogGraphCard = (
   } = props;
 
   const { entity } = useEntity();
-  const entityName = getCompoundEntityRef(entity);
+  const entityName = useMemo(() => getCompoundEntityRef(entity), [entity]);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();

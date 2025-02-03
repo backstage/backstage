@@ -688,7 +688,9 @@ export function humanizeEntityRef(
 export function InspectEntityDialog(props: {
   open: boolean;
   entity: Entity;
+  initialTab?: 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
   onClose: () => void;
+  onSelect?: (tab: string) => void;
 }): React_2.JSX.Element | null;
 
 // @public

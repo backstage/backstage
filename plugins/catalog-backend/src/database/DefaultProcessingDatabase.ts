@@ -272,7 +272,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const rows = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
-      .where({ target_entity_ref: options.entityRef })
+      .whereIn('target_entity_ref', options.entityRefs)
       .select();
 
     const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
