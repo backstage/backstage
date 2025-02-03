@@ -27,7 +27,7 @@ import yaml from 'yaml';
 import { examples } from './githubIssuesLabel.examples';
 import { getOctokitOptions } from '../util';
 
-jest.mock('./helpers', () => {
+jest.mock('../util', () => {
   return {
     getOctokitOptions: jest.fn(),
   };
