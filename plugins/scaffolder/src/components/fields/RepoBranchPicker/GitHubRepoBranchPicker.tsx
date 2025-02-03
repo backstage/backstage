@@ -40,14 +40,20 @@ export const GitHubRepoBranchPicker = ({
 }: BaseRepoBranchPickerProps<{
   accessToken?: string;
 }>) => {
-  const { owner, repository, branch } = state;
+  const { host, owner, repository, branch } = state;
 
   const [availableBranches, setAvailableBranches] = useState<string[]>([]);
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
   const updateAvailableBranches = useCallback(() => {
-    if (!scaffolderApi.autocomplete || !owner || !repository || !accessToken) {
+    if (
+      !scaffolderApi.autocomplete ||
+      !owner ||
+      !repository ||
+      !accessToken ||
+      !host
+    ) {
       setAvailableBranches([]);
       return;
     }
@@ -56,7 +62,7 @@ export const GitHubRepoBranchPicker = ({
       .autocomplete({
         token: accessToken,
         resource: 'branches',
-        context: { owner, repository },
+        context: { host, owner, repository },
         provider: 'github',
       })
       .then(({ results }) => {
@@ -65,7 +71,7 @@ export const GitHubRepoBranchPicker = ({
       .catch(() => {
         setAvailableBranches([]);
       });
-  }, [owner, repository, accessToken, scaffolderApi]);
+  }, [host, owner, repository, accessToken, scaffolderApi]);
 
   useDebounce(updateAvailableBranches, 500, [updateAvailableBranches]);
 

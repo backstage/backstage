@@ -78,6 +78,7 @@ describe('GitHubRepoBranchPicker', () => {
         <GitHubRepoBranchPicker
           onChange={onChange}
           state={{
+            host: 'github.com',
             branch: 'main',
             owner: 'foo',
             repository: 'bar',
