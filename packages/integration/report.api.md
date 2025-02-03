@@ -562,6 +562,11 @@ export function getGitHubRequestOptions(
 };
 
 // @public
+export function getGitilesAuthenticationUrl(
+  config: GerritIntegrationConfig,
+): string;
+
+// @public
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,

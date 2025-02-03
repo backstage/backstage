@@ -5591,11 +5591,13 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/fs-extra": ^11.0.0
     fs-extra: ^11.2.0
     luxon: ^3.0.0
     msw: ^1.0.0
+    p-limit: ^3.1.0
     uuid: ^11.0.0
   languageName: unknown
   linkType: soft

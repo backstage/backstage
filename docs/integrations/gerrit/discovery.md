@@ -45,8 +45,9 @@ catalog:
     gerrit:
       yourProviderId: # identifies your dataset / provider independent of config changes
         host: gerrit-your-company.com
-        branch: master # Optional
+        branch: master # Optional, defaults to the repository's default branch
         query: 'state=ACTIVE&prefix=webapps'
+        catalogPath: 'catalog-info.yaml' # Optional, defaults to catalog-info.yaml
         schedule:
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
@@ -56,12 +57,15 @@ catalog:
         host: gerrit-your-company.com
         branch: master # Optional
         query: 'state=ACTIVE&prefix=backend'
+        # catalogPath can be a glob-pattern supported by the minimatch library
+        catalogPath: '{**/catalog-info.{yml,yaml},**/.catalog-info/*.{yml,yaml}}'
 ```
 
-The provider configuration is composed of three parts:
+The provider configuration consists of the following parts:
 
 - **`host`**: the host of the Gerrit integration to use.
-- **`branch`** _(optional)_: the branch where we will look for catalog entities (defaults to "master").
+- **`branch`** _(optional)_: the branch where we will look for catalog entities (defaults to the repository's default branch).
 - **`query`**: this string is directly used as the argument to the "List Project" API.
   Typically, you will want to have some filter here to exclude projects that will
   never contain any catalog files.
+- **`catalogPath`**: path relative to the root of the repository where the Backstage manifests are stored. It can also be a glob pattern supported by [`minimatch`](https://github.com/isaacs/minimatch) to load multiple files.
