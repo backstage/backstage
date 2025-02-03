@@ -65,7 +65,7 @@ export const KubernetesClusterContent = () => {
       errorPage={
         <WarningPanel
           title="Permission required"
-          message={`To view Kubernetes objects, contact your Backstage administrator to give you the
+          message={`To view Kubernetes objects, contact your portal administrator to give you the
                         '${kubernetesClustersReadPermission.name}' permission.`}
         />
       }
