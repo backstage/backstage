@@ -78,4 +78,41 @@ describe('<DefaultTemplateOutputs />', () => {
     expect(queryByTestId('output-box')).toBeNull();
     expect(queryByTestId('text-output-box')).toBeNull();
   });
+  it('should not render anything when only a single text output is defined', async () => {
+    // This is the default case when no output field is present in the template
+    const output = {
+      text: [
+        { title: 'Text 1', content: 'Hello, **world**!', showButton: false },
+      ],
+    };
+    const { queryByTestId } = await renderInTestApp(
+      <DefaultTemplateOutputs output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Ensure that nothing renders from this component
+    expect(queryByTestId('output-box')).toBeNull();
+  });
+  it('should not render text output buttons if there is only one output', async () => {
+    const output = {
+      links: [{ title: 'Link 1', url: 'https://backstage.io/' }],
+      text: [
+        { title: 'Text 1', content: 'Hello, **world**!', showButton: false },
+      ],
+    };
+    const { queryByTestId } = await renderInTestApp(
+      <DefaultTemplateOutputs output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByTestId('text-outputs')).toBeNull();
+  });
 });
