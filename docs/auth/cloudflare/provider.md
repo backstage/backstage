@@ -38,6 +38,8 @@ auth:
       # You can customize the authorization cookie name, by default
       # CF_Authorization is used
       authorizationCookieName: <MY_CAUTHORIZATION_COOKIE_NAME>
+      ## uncomment to set lifespan of user session
+      # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
       # This picks what sign in resolver(s) you want to use.
       signIn:
         resolvers:
@@ -46,6 +48,10 @@ auth:
 ```
 
 This config section must be in place for the provider to load at all.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 

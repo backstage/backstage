@@ -29,6 +29,7 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
+import { setTimeout } from 'timers/promises';
 
 /**
  * TaskWorkerOptions
@@ -44,6 +45,7 @@ export type TaskWorkerOptions = {
   permissions?: PermissionEvaluator;
   logger?: Logger;
   auditor?: AuditorService;
+  gracefulShutdown?: boolean;
 };
 
 /**
@@ -74,6 +76,7 @@ export type CreateWorkerOptions = {
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
+  gracefulShutdown?: boolean;
 };
 
 /**
@@ -108,6 +111,7 @@ export class TaskWorker {
       concurrentTasksLimit = 10, // from 1 to Infinity
       additionalTemplateGlobals,
       permissions,
+      gracefulShutdown,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -127,6 +131,7 @@ export class TaskWorker {
       concurrentTasksLimit,
       permissions,
       auditor,
+      gracefulShutdown,
     });
   }
 
@@ -141,7 +146,7 @@ export class TaskWorker {
   start() {
     (async () => {
       while (!this.stopWorkers) {
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await setTimeout(10000);
         await this.recoverTasks();
       }
     })();
@@ -156,8 +161,13 @@ export class TaskWorker {
     })();
   }
 
-  stop() {
+  async stop() {
     this.stopWorkers = true;
+    if (this.options?.gracefulShutdown) {
+      while (this.taskQueue.size > 0) {
+        await setTimeout(1000);
+      }
+    }
   }
 
   protected onReadyToClaimTask(): Promise<void> {

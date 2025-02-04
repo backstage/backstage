@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { createPermissionRule } from '@backstage/plugin-permission-node';
 import { z } from 'zod';
-import { createCatalogPermissionRule } from './util';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
@@ -26,10 +26,10 @@ import { createCatalogPermissionRule } from './util';
  *
  * @alpha
  */
-export const hasAnnotation = createCatalogPermissionRule({
+export const hasAnnotation = createPermissionRule({
   name: 'HAS_ANNOTATION',
   description: 'Allow entities with the specified annotation',
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  resourceRef: catalogEntityPermissionResourceRef,
   paramsSchema: z.object({
     annotation: z.string().describe('Name of the annotation to match on'),
     value: z

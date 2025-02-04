@@ -18,17 +18,48 @@ import request from 'supertest';
 import {
   mockCredentials,
   mockServices,
+  type ServiceMock,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { kubernetesObjectsProviderExtensionPoint } from '@backstage/plugin-kubernetes-node';
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  createBackendModule,
+  type PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;
+  const permissionsMock: ServiceMock<PermissionsService> =
+    mockServices.permissions.mock({
+      authorize: jest.fn(),
+      authorizeConditional: jest.fn(),
+    });
 
-  beforeAll(async () => {
+  const startPermissionDeniedTestServer = async () => {
+    permissionsMock.authorize.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+    const { server } = await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            kubernetes: {
+              serviceLocatorMethod: { type: 'multiTenant' },
+              clusterLocatorMethods: [],
+            },
+          },
+        }),
+        permissionsMock.factory,
+        import('@backstage/plugin-kubernetes-backend'),
+      ],
+    });
+    return server;
+  };
+
+  beforeEach(async () => {
     const objectsProviderMock = {
       getKubernetesObjectsByEntity: jest.fn().mockImplementation(args => {
         if (args.entity.metadata.name === 'inject500') {
@@ -109,6 +140,8 @@ describe('resourcesRoutes', () => {
           },
         }),
         import('@backstage/plugin-kubernetes-backend'),
+        import('@backstage/plugin-permission-backend'),
+        import('@backstage/plugin-permission-backend-module-allow-all-policy'),
         createBackendModule({
           pluginId: 'kubernetes',
           moduleId: 'test-objects-provider',
@@ -125,6 +158,10 @@ describe('resourcesRoutes', () => {
     });
 
     app = server;
+  });
+
+  afterEach(() => {
+    app.stop();
   });
 
   describe('POST /resources/workloads/query', () => {
@@ -268,6 +305,13 @@ describe('resourcesRoutes', () => {
           },
           response: { statusCode: 401 },
         });
+    });
+    it('403 when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).post(
+        '/api/kubernetes/resources/workloads/query',
+      );
+      expect(response.status).toEqual(403);
     });
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
@@ -547,6 +591,13 @@ describe('resourcesRoutes', () => {
           },
           response: { statusCode: 401 },
         });
+    });
+    it('403 when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).post(
+        '/api/kubernetes/resources/custom/query',
+      );
+      expect(response.status).toEqual(403);
     });
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {

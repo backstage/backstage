@@ -28,7 +28,7 @@ import {
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
   LoggerService,
@@ -49,14 +49,12 @@ export const defaultClientFactory: CreateGithubPullRequestActionOptions['clientF
     host = 'github.com',
     token: providedToken,
   }) => {
-    const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
-      encodeURIComponent,
-    );
-
     const octokitOptions = await getOctokitOptions({
       integrations,
       credentialsProvider: githubCredentialsProvider,
-      repoUrl: `${encodedHost}?owner=${encodedOwner}&repo=${encodedRepo}`,
+      host,
+      owner,
+      repo,
       token: providedToken,
     });
 
