@@ -182,6 +182,10 @@ export function createGithubRepoCreateAction(options: {
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
@@ -191,10 +195,6 @@ export function createGithubRepoCreateAction(options: {
         repo,
       });
       const client = new Octokit(octokitOptions);
-
-      if (!owner) {
-        throw new InputError('Invalid repository owner provided in repoUrl');
-      }
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
         client,
