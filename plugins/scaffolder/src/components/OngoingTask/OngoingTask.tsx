@@ -44,6 +44,7 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+import { default as reactUseAsync } from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -82,7 +83,6 @@ export const OngoingTask = (props: {
   const scaffolderApi = useApi(scaffolderApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const taskStream = useTaskEventStream(taskId!);
-  const [templateName, setTemplateName] = useState<string | undefined>();
   const classes = useStyles();
   const steps = useMemo(
     () =>
@@ -126,13 +126,12 @@ export const OngoingTask = (props: {
     }
   }, [taskStream.error, taskStream.completed]);
 
-  useEffect(() => {
+  const { value: presentation } = reactUseAsync(async () => {
     const templateEntityRef = taskStream.task?.spec.templateInfo?.entityRef;
     if (!templateEntityRef) {
-      return;
+      return undefined;
     }
-    const presentation = entityPresentationApi.forEntity(templateEntityRef);
-    setTemplateName(presentation.snapshot.primaryTitle);
+    return entityPresentationApi.forEntity(templateEntityRef).promise;
   }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const activeStep = useMemo(() => {
@@ -202,13 +201,16 @@ export const OngoingTask = (props: {
     <Page themeId="website">
       <Header
         pageTitleOverride={
-          templateName
-            ? t('ongoingTask.pageTitle.hasTemplateName', { templateName })
+          presentation
+            ? t('ongoingTask.pageTitle.hasTemplateName', {
+                templateName: presentation.primaryTitle,
+              })
             : t('ongoingTask.pageTitle.noTemplateName')
         }
         title={
           <div>
-            {t('ongoingTask.title')} <code>{templateName}</code>
+            {t('ongoingTask.title')}{' '}
+            <code>{presentation ? presentation.primaryTitle : ''}</code>
           </div>
         }
         subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
