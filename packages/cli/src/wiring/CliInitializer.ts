@@ -17,7 +17,7 @@
 import { CommandGraph } from './CommandGraph';
 import { CliFeature, InternalCliFeature, InternalCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
-import { program } from 'commander';
+import { Command } from 'commander';
 import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
@@ -61,6 +61,8 @@ export class CliInitializer {
    */
   async run() {
     await this.#doInit();
+
+    const program = new Command();
     program
       .name('backstage-cli')
       .version(version)
