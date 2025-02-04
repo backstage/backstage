@@ -15,6 +15,8 @@
  */
 import { mockServices } from '@backstage/backend-test-utils';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory';
+import { RedisStore } from 'rate-limit-redis';
+import { PostgresStore } from '@acpr/rate-limit-postgresql';
 
 jest.mock('@keyv/redis', () => {
   const Actual = jest.requireActual('@keyv/redis');
@@ -62,6 +64,23 @@ describe('CacheRateLimitStoreFactory', () => {
       },
     });
     const store = RateLimitStoreFactory.create(config);
-    expect(store).not.toBeUndefined();
+    expect(store).toBeInstanceOf(RedisStore);
+  });
+
+  it('should return postgres store if configured explicitly', async () => {
+    const config = mockServices.rootConfig({
+      data: {
+        backend: {
+          rateLimit: {
+            store: {
+              client: 'postgres',
+              connection: 'postgres://localhost:5432',
+            },
+          },
+        },
+      },
+    });
+    const store = RateLimitStoreFactory.create(config);
+    expect(store).toBeInstanceOf(PostgresStore);
   });
 });

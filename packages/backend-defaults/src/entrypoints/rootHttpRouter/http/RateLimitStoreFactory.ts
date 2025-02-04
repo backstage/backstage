@@ -16,6 +16,8 @@
 import { Config } from '@backstage/config';
 import type { Store } from 'express-rate-limit';
 import { RedisStore } from 'rate-limit-redis';
+import { parsePgConnectionString } from '../../database/connectors/postgres.ts';
+import { PostgresStore } from '@acpr/rate-limit-postgresql';
 
 /**
  * Creates a store for `express-rate-limit` based on the configuration.
@@ -32,6 +34,9 @@ export class RateLimitStoreFactory {
     switch (client) {
       case 'redis':
         return this.redis(store);
+      case 'postgres':
+        return this.postgres(store);
+      case 'memory':
       default:
         return undefined;
     }
@@ -47,5 +52,15 @@ export class RateLimitStoreFactory {
         return client.sendCommand(args);
       },
     });
+  }
+
+  private static postgres(storeConfig: Config): Store {
+    const connection = storeConfig.get('connection') as any;
+    const isConnectionString =
+      typeof connection === 'string' || connection instanceof String;
+    const connectionOptions = isConnectionString
+      ? parsePgConnectionString(connection as string)
+      : connection;
+    return new PostgresStore(connectionOptions, 'rl');
   }
 }
