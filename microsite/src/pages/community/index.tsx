@@ -33,14 +33,14 @@ const Community = () => {
     },
     {
       content: 'Subscribe to the',
-      label: 'Community newsletter',
+      label: 'Community Newsletter',
       link: 'https://info.backstage.spotify.com/newsletter_subscribe',
     },
   ];
 
   const officialInitiatives: ICollectionItem[] = [
     {
-      title: 'Community sessions',
+      title: 'Community Sessions',
       content:
         'Maintainers and adopters meet monthly to share updates, demos, and ideas. You can find recorded session on our YouTube channel!',
       link: 'https://github.com/backstage/community/tree/main/backstage-community-sessions#backstage-community-sessions',
@@ -61,6 +61,13 @@ const Community = () => {
       content:
         'This is a course produced and curated by the Linux Foundation. This course introduces you to Backstage and how to get started with the project.',
       link: 'https://training.linuxfoundation.org/training/introduction-to-backstage-developer-portals-made-easy-lfs142x/',
+      label: 'Learn more',
+    },
+    {
+      title: 'Certified Backstage Associate (CBA)',
+      content:
+        'Designed for IT engineers, developers, platform engineers, and other IT professionals, the CBA proves you have the skills and the mindset to work with Backstage.',
+      link: 'https://www.cncf.io/training/certification/cba/',
       label: 'Learn more',
     },
   ];
@@ -125,11 +132,10 @@ const Community = () => {
             >
               Join the vibrant community around Backstage through social media
               and different meetups. To ensure that you have a welcoming
-              environment, we follow the
+              environment, we follow the{' '}
               <Link to="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
-                {' '}
-                CNCF Code of Conduct{' '}
-              </Link>
+                CNCF Code of Conduct
+              </Link>{' '}
               in everything we do.
             </ContentBlock>
 
@@ -159,7 +165,7 @@ const Community = () => {
           <BannerSectionGrid
             header={
               <>
-                <h2 className="text--primary">Offical Backstage initiatives</h2>
+                <h2 className="text--primary">Offical Backstage Initiatives</h2>
 
                 <h1>Stay tuned to the latest developments</h1>
               </>
