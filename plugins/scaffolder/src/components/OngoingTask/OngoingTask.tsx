@@ -21,8 +21,8 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  ScaffolderTaskOutput,
   scaffolderApiRef,
+  ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
@@ -38,11 +38,12 @@ import { useAsync } from '@react-hookz/web';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
   taskCancelPermission,
-  taskReadPermission,
   taskCreatePermission,
+  taskReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -79,7 +80,9 @@ export const OngoingTask = (props: {
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const taskStream = useTaskEventStream(taskId!);
+  const [templateName, setTemplateName] = useState<string | undefined>();
   const classes = useStyles();
   const steps = useMemo(
     () =>
@@ -122,6 +125,15 @@ export const OngoingTask = (props: {
       setButtonBarVisibleState(false);
     }
   }, [taskStream.error, taskStream.completed]);
+
+  useEffect(() => {
+    const templateEntityRef = taskStream.task?.spec.templateInfo?.entityRef;
+    if (!templateEntityRef) {
+      return;
+    }
+    const presentation = entityPresentationApi.forEntity(templateEntityRef);
+    setTemplateName(presentation.snapshot.primaryTitle);
+  }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const activeStep = useMemo(() => {
     for (let i = steps.length - 1; i >= 0; i--) {
@@ -183,9 +195,6 @@ export const OngoingTask = (props: {
   );
 
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
-
-  const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name || '';
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
