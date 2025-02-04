@@ -26,6 +26,8 @@ import {
 import { WarningPanel } from '@backstage/core-components';
 import { kubernetesClustersReadPermission } from '@backstage/plugin-kubernetes-common';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesClusterTranslationRef } from '../../translation';
 
 const ContentGrid = () => {
   const { error } = useKubernetesClusterError();
@@ -59,14 +61,15 @@ const ContentGrid = () => {
  * @public
  */
 export const KubernetesClusterContent = () => {
+  const { t } = useTranslationRef(kubernetesClusterTranslationRef);
+
   return (
     <RequirePermission
       permission={kubernetesClustersReadPermission}
       errorPage={
         <WarningPanel
-          title="Permission required"
-          message={`To view Kubernetes objects, contact your portal administrator to give you the
-                        '${kubernetesClustersReadPermission.name}' permission.`}
+          title={t('kubernetesClusterContentPage.permissionAlert.title')}
+          message={t('kubernetesClusterContentPage.permissionAlert.message')}
         />
       }
     >
