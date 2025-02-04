@@ -63,7 +63,7 @@ export const ErrorListTemplate = ({ errors, schema }: ErrorListProps) => {
           typeof properties[propertyName] === 'object' &&
           'title' in properties[propertyName]
         ) {
-          return properties[propertyName].title;
+          return `${properties[propertyName].title}`;
         }
 
         const restObjectFields: Object[] = Object.values(rest).filter(
