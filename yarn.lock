@@ -3449,6 +3449,7 @@ __metadata:
     compression: ^1.7.4
     cookie: ^0.7.0
     cors: ^2.8.5
+    express-promise-router: ^4.1.1
     helmet: ^6.0.0
     http-errors: ^2.0.0
     jose: ^5.0.0
@@ -3606,6 +3607,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
+    get-port: ^5.1.1
     git-url-parse: ^15.0.0
     helmet: ^6.0.0
     http-errors: ^2.0.0
@@ -28900,6 +28902,12 @@ __metadata:
   languageName: node
   linkType: soft
 
+"example-app@link:../app::locator=example-backend-split%40workspace%3Apackages%2Fbackend-split":
+  version: 0.0.0-use.local
+  resolution: "example-app@link:../app::locator=example-backend-split%40workspace%3Apackages%2Fbackend-split"
+  languageName: node
+  linkType: soft
+
 "example-app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "example-app@workspace:packages/app"
@@ -29025,6 +29033,31 @@ __metadata:
     pg-connection-string: ^2.3.0
     prom-client: ^15.0.0
     winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
+"example-backend-split@workspace:packages/backend-split":
+  version: 0.0.0-use.local
+  resolution: "example-backend-split@workspace:packages/backend-split"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-permission-backend": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@opentelemetry/auto-instrumentations-node": ^0.54.0
+    "@opentelemetry/exporter-prometheus": ^0.54.0
+    "@opentelemetry/sdk-node": ^0.54.0
+    example-app: "link:../app"
+    express-promise-router: ^4.1.0
   languageName: unknown
   linkType: soft
 

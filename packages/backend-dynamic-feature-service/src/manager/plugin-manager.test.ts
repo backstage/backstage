@@ -42,7 +42,10 @@ import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { BackstagePackageJson, PackageRole } from '@backstage/cli-node';
 
@@ -1043,6 +1046,8 @@ describe('backend-dynamic-feature-service', () => {
 
       const backend = createSpecializedBackend({
         defaultServiceFactories: [
+          mockServices.rootHealth.factory(),
+          mockServices.rootHttpRouter.mock().factory,
           rootLifecycleServiceFactory,
           createServiceFactory({
             service: coreServices.rootConfig,

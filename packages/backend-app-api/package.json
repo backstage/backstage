@@ -62,6 +62,7 @@
     "compression": "^1.7.4",
     "cookie": "^0.7.0",
     "cors": "^2.8.5",
+    "express-promise-router": "^4.1.1",
     "helmet": "^6.0.0",
     "jose": "^5.0.0",
     "knex": "^3.0.0",
