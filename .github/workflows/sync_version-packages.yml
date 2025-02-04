@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - '.github/workflows/sync_version-packages.yml'
 
 concurrency:
   group: sync-version-packages
@@ -23,6 +25,10 @@ jobs:
           fetch-depth: 20000
           fetch-tags: true
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Fetch tags # See https://github.com/actions/checkout/issues/2041
+        run: git fetch --tags
+
       - name: Install Dependencies
         run: yarn --immutable
       - name: Create Release Pull Request
