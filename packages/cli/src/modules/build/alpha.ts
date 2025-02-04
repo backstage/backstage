@@ -106,7 +106,6 @@ export const buildPlugin = createCliPlugin({
             'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
           )
           .action(lazy(() => import('./commands/buildWorkspace'), 'default'));
-        console.log(args);
         await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
