@@ -20,32 +20,58 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { parseRepoUrl } from '@backstage/plugin-scaffolder-node';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
 /**
- * Helper for generating octokit configuration options for given repoUrl.
+ * Helper for generating octokit configuration options.
  * If no token is provided, it will attempt to get a token from the credentials provider.
  * @public
  */
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
+  token?: string;
   host: string;
   owner?: string;
   repo?: string;
+}): Promise<OctokitOptions>;
+
+/**
+ * Helper for generating octokit configuration options for given repoUrl.
+ * If no token is provided, it will attempt to get a token from the credentials provider.
+ * @public
+ * @deprecated Use options `host`, `owner` and `repo` instead of `repoUrl`.
+ */
+export async function getOctokitOptions(options: {
+  integrations: ScmIntegrationRegistry;
+  credentialsProvider?: GithubCredentialsProvider;
   token?: string;
+  repoUrl: string;
+}): Promise<OctokitOptions>;
+
+export async function getOctokitOptions(options: {
+  integrations: ScmIntegrationRegistry;
+  credentialsProvider?: GithubCredentialsProvider;
+  token?: string;
+  host?: string;
+  owner?: string;
+  repo?: string;
+  repoUrl?: string;
 }): Promise<OctokitOptions> {
-  const { integrations, credentialsProvider, host, owner, repo, token } =
-    options;
+  const { integrations, credentialsProvider, token, repoUrl } = options;
+  const { host, owner, repo } = repoUrl
+    ? parseRepoUrl(repoUrl, integrations)
+    : options;
 
   const requestOptions = {
     // set timeout to 60 seconds
     timeout: DEFAULT_TIMEOUT_MS,
   };
 
-  const integrationConfig = integrations.github.byHost(host)?.config;
+  const integrationConfig = integrations.github.byHost(host!)?.config;
 
   if (!integrationConfig) {
     throw new InputError(`No integration for host ${host}`);
