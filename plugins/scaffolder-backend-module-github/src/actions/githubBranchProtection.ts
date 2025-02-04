@@ -117,6 +117,10 @@ export function createGithubBranchProtectionAction(options: {
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
+      if (!owner) {
+        throw new InputError(`No owner provided for repo ${repoUrl}`);
+      }
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         token: providedToken,
@@ -125,10 +129,6 @@ export function createGithubBranchProtectionAction(options: {
         repo,
       });
       const client = new Octokit(octokitOptions);
-
-      if (!owner) {
-        throw new InputError(`No owner provided for repo ${repoUrl}`);
-      }
 
       const repository = await client.rest.repos.get({
         owner: owner,

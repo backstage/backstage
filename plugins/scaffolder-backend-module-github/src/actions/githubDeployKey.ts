@@ -109,6 +109,10 @@ export function createGithubDeployKeyAction(options: {
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
+      if (!owner) {
+        throw new InputError(`No owner provided for repo ${repoUrl}`);
+      }
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         token: providedToken,
@@ -116,10 +120,6 @@ export function createGithubDeployKeyAction(options: {
         owner,
         repo,
       });
-
-      if (!owner) {
-        throw new InputError(`No owner provided for repo ${repoUrl}`);
-      }
 
       const client = new Octokit(octokitOptions);
 
