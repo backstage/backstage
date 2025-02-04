@@ -125,6 +125,63 @@ describe('TemplatePage', () => {
     expect(rendered.getByText('Test output')).toBeInTheDocument();
   });
 
+  it('renders action with oneOf output', async () => {
+    scaffolderApiMock.listActions.mockResolvedValue([
+      {
+        id: 'test',
+        description: 'example description',
+        schema: {
+          input: {
+            type: 'object',
+            required: ['foobar'],
+            properties: {
+              foobar: {
+                title: 'Test title',
+                type: 'string',
+              },
+            },
+          },
+          output: {
+            oneOf: [
+              {
+                type: 'object',
+                properties: {
+                  buzz: {
+                    title: 'Test output1',
+                    type: 'string',
+                  },
+                },
+              },
+              {
+                type: 'object',
+                properties: {
+                  buzz: {
+                    title: 'Test output2',
+                    type: 'string',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ]);
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ActionsPage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+      },
+    );
+    expect(rendered.getByText('oneOf')).toBeInTheDocument();
+    expect(rendered.getByText('Test title')).toBeInTheDocument();
+    expect(rendered.getByText('Test output1')).toBeInTheDocument();
+    expect(rendered.getByText('Test output2')).toBeInTheDocument();
+  });
+
   it('renders action with multiple input types', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
