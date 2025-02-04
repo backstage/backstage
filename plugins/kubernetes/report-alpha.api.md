@@ -48,6 +48,21 @@ const _default: FrontendPlugin<
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
       };
     }>;
+    'api:kubernetes': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
       kind: 'entity-content';
       name: 'kubernetes';
@@ -97,21 +112,6 @@ const _default: FrontendPlugin<
         defaultTitle: string;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'api:kubernetes': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
       };
     }>;
     'api:kubernetes/proxy': ExtensionDefinition<{
