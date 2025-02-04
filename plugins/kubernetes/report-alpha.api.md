@@ -13,6 +13,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @public (undocumented)
 const _default: FrontendPlugin<
@@ -45,21 +46,6 @@ const _default: FrontendPlugin<
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'api:kubernetes': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
       };
     }>;
     'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
@@ -113,6 +99,21 @@ const _default: FrontendPlugin<
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
     }>;
+    'api:kubernetes': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'api:kubernetes/proxy': ExtensionDefinition<{
       kind: 'api';
       name: 'proxy';
@@ -161,6 +162,15 @@ const _default: FrontendPlugin<
   }
 >;
 export default _default;
+
+// @alpha (undocumented)
+export const kubernetesTranslationRef: TranslationRef<
+  'kubernetes',
+  {
+    readonly 'kubernetesContentPage.permissionAlert.message': "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' and 'kubernetes.resources.read' permission.";
+    readonly 'kubernetesContentPage.permissionAlert.title': 'Permission required';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

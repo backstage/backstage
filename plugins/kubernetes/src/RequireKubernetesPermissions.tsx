@@ -20,6 +20,8 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { WarningPanel } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesTranslationRef } from './alpha/translation';
 
 export type RequireKubernetesPermissionProps = {
   children: ReactNode;
@@ -34,6 +36,7 @@ export function RequireKubernetesPermissions(
   const kubernetesResourcesPermissionResult = usePermission({
     permission: kubernetesResourcesReadPermission,
   });
+  const { t } = useTranslationRef(kubernetesTranslationRef);
 
   if (
     kubernetesClustersPermissionResult.loading ||
@@ -51,9 +54,8 @@ export function RequireKubernetesPermissions(
 
   return (
     <WarningPanel
-      title="Permission required"
-      message={`To view Kubernetes objects, contact your portal administrator to give you the 
-              '${kubernetesClustersReadPermission.name}' and '${kubernetesResourcesReadPermission.name}' permission.`}
+      title={t('kubernetesContentPage.permissionAlert.title')}
+      message={t('kubernetesContentPage.permissionAlert.message')}
     />
   );
 }

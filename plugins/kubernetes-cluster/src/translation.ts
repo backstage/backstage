@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { kubernetesTranslationRef } from './translation';
-export { default } from './plugin';
+import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
+
+/** @alpha */
+export const kubernetesClusterTranslationRef = createTranslationRef({
+  id: 'kubernetes-cluster',
+  messages: {
+    kubernetesClusterContentPage: {
+      permissionAlert: {
+        title: 'Permission required',
+        message:
+          "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' permission.",
+      },
+    },
+  },
+});
