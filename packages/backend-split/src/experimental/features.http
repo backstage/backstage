@@ -1,7 +1,0 @@
-// Test requests for the split backend to test the system metadata service :)
-// The 2 below requests should return the same data.
-GET http://localhost:7007/.backstage/systemMetadata/v1/features/installed
-
-###
-
-GET http://localhost:7008/.backstage/systemMetadata/v1/features/installed
