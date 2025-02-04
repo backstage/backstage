@@ -19,6 +19,7 @@ export interface RepoBranchPickerState {
   workspace?: string;
   repository?: string;
   branch?: string;
+  owner?: string;
 }
 
 export type BaseRepoBranchPickerProps<T extends {} = {}> = T & {

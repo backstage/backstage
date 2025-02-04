@@ -49,6 +49,21 @@ export function createHandleAutocompleteRequest(options: {
 
         return { results };
       }
+      case 'branches': {
+        if (!context.owner || !context.repository)
+          throw new InputError(
+            'Missing owner and/or repository context parameter',
+          );
+
+        const branches = await client.paginate(client.rest.repos.listBranches, {
+          owner: context.owner,
+          repo: context.repository,
+        });
+
+        const results = branches.map(r => ({ id: r.name }));
+
+        return { results };
+      }
       default:
         throw new InputError(`Invalid resource: ${resource}`);
     }
