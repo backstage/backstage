@@ -142,7 +142,7 @@ export interface PermissionsRegistryService {
   ): void;
 
   /**
-   * Returns a lookup function that can be used to look up rules for the provided resource by name.
+   * Returns the set of registered rules for this resource.
    *
    * @remarks
    *
