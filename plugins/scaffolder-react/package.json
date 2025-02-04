@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-react",
-  "version": "1.14.4-next.1",
+  "version": "1.14.5-next.2",
   "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
   "backstage": {
     "role": "web-library",

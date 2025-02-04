@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.15.2-next.2
+
+### Patch Changes
+
+- b07756e: The Entity Page now retains the visibility of the Inspect Dialog after a reload. This allows sharing the URL with the dialog open.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/frontend-test-utils@0.2.6-next.2
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
 ## 1.15.2-next.1
 
 ### Patch Changes
