@@ -48,7 +48,10 @@ jest.mock('@backstage/plugin-scaffolder-react', () => ({
     task: {
       spec: {
         steps: [],
-        templateInfo: { entity: { metadata: { name: 'my-template' } } },
+        templateInfo: {
+          entityRef: 'template:default/my-template',
+          entity: { metadata: { name: 'my-template' } },
+        },
       },
     },
   }),
@@ -60,7 +63,11 @@ describe('OngoingTask', () => {
     getTask: jest.fn().mockImplementation(async () => {}),
   };
 
-  const mockEntityPresentationApi = {};
+  const mockEntityPresentationApi = {
+    forEntity: jest.fn().mockReturnValue({
+      promise: new Promise(resolve => resolve({ primaryTitle: 'My template' })),
+    }),
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -83,6 +90,12 @@ describe('OngoingTask', () => {
       { mountedRoutes: { '/': rootRouteRef } },
     );
   };
+
+  it('should render title', async () => {
+    const rendered = await render();
+    expect(rendered.getByText('My template')).toBeInTheDocument();
+  });
+
   it('should trigger cancel api on "Cancel" click in context menu', async () => {
     const rendered = await render();
     const cancelOptionLabel = 'Cancel';
