@@ -1,5 +1,26 @@
 # @backstage/cli
 
+## 0.30.0-next.2
+
+### Patch Changes
+
+- f17ef61: The `versions:bump` command will now reject `*` as a pattern.
+- 86c72c1: The packing process when running `build-workspace` with the `--alwaysYarnPack` flag now respects the `BACKSTAGE_CLI_BUILD_PARALLEL` environment variable, defaulting parallel work limits based on CPU availability.
+- 2167afc: Treat static file assets as always being free from side effects in package builds.
+- f54eed0: Fixed an issue where default feature type information wasn't being added to package.json/exports before publishing if exports didn't exist beforehand
+- 9638f6d: Only allow pass through of `.mjs` in Jest transform if static ESM is supported.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.30.0-next.1
 
 ### Patch Changes
