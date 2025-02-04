@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -27,6 +29,7 @@ export interface Config {
           clientSecret: string;
           host: string;
           callbackUrl?: string;
+          sessionDuration?: HumanDuration | string;
         };
       };
     };

@@ -46,6 +46,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/passport-microsoft": "^1.0.0",
     "msw": "^1.0.0",
     "supertest": "^7.0.0"
