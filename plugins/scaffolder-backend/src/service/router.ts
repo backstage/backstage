@@ -366,6 +366,10 @@ export async function createRouter(
 
   const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
+    const gracefulShutdown = config.getOptionalBoolean(
+      'scaffolder.EXPERIMENTAL_gracefulShutdown',
+    );
+
     for (let i = 0; i < (taskWorkers || 1); i++) {
       const worker = await TaskWorker.create({
         taskBroker,
@@ -378,6 +382,7 @@ export async function createRouter(
         additionalTemplateGlobals,
         concurrentTasksLimit,
         permissions,
+        gracefulShutdown,
       });
       workers.push(worker);
     }
@@ -399,8 +404,8 @@ export async function createRouter(
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
-  const shutdownWorkers = () => {
-    workers.forEach(worker => worker.stop());
+  const shutdownWorkers = async () => {
+    await Promise.allSettled(workers.map(worker => worker.stop()));
   };
 
   if (options.lifecycle) {

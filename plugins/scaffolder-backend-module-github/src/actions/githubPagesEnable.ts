@@ -94,6 +94,10 @@ export function createGithubPagesEnableAction(options: {
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
@@ -103,10 +107,6 @@ export function createGithubPagesEnableAction(options: {
         repo,
       });
       const client = new Octokit(octokitOptions);
-
-      if (!owner) {
-        throw new InputError('Invalid repository owner provided in repoUrl');
-      }
 
       ctx.logger.info(
         `Attempting to enable GitHub Pages for ${owner}/${repo} with "${buildType}" build type, on source branch "${sourceBranch}" and source path "${sourcePath}"`,

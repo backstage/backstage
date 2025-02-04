@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PackageRole } from '@backstage/cli-node';
+import {
+  BackstagePackageFeatureType,
+  packageFeatureType,
+  PackageRole,
+} from '@backstage/cli-node';
 import { resolve as resolvePath } from 'path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
 import { paths } from './paths';
@@ -34,17 +38,6 @@ const targetPackageRoles: PackageRole[] = [
   'web-library',
   'node-library',
 ];
-
-// A list of the feature types we want to extract from the project
-// and include in the metadata
-const targetFeatureTypes = [
-  '@backstage/BackendFeature',
-  '@backstage/BackstagePlugin',
-  '@backstage/FrontendPlugin',
-  '@backstage/FrontendModule',
-] as const;
-
-export type BackstagePackageFeatureType = (typeof targetFeatureTypes)[number];
 
 export const getEntryPointDefaultFeatureType = (
   role: PackageRole,
@@ -146,6 +139,6 @@ function isTargetFeatureType(
   type: string | BackstagePackageFeatureType,
 ): type is BackstagePackageFeatureType {
   return (
-    !!type && targetFeatureTypes.includes(type as BackstagePackageFeatureType)
+    !!type && packageFeatureType.includes(type as BackstagePackageFeatureType)
   );
 }

@@ -221,6 +221,63 @@ describe('postgres', () => {
       });
     });
 
+    it('passes default settings to cloud-sql-connector', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
+
+      await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            user: 'ben@gke.com',
+            instance: 'project:region:instance',
+            port: 5423,
+          },
+        }),
+        { connection: { database: 'other_db' } },
+      );
+
+      expect(Connector.prototype.getOptions).toHaveBeenCalledWith({
+        authType: 'IAM',
+        instanceConnectionName: 'project:region:instance',
+        ipType: 'PUBLIC',
+      });
+    });
+
+    it('passes ip settings to cloud-sql-connector', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
+
+      await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            user: 'ben@gke.com',
+            instance: 'project:region:instance',
+            ipAddressType: 'PRIVATE',
+            port: 5423,
+          },
+        }),
+        { connection: { database: 'other_db' } },
+      );
+
+      expect(Connector.prototype.getOptions).toHaveBeenCalledWith({
+        authType: 'IAM',
+        instanceConnectionName: 'project:region:instance',
+        ipType: 'PRIVATE',
+      });
+    });
+
     it('throws an error when the connection type is not supported', async () => {
       await expect(
         buildPgDatabaseConfig(

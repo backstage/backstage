@@ -248,8 +248,7 @@ export const RepoUrlPicker = (
         onChange={repo =>
           setState(prevState => ({
             ...prevState,
-            repoName: repo.name,
-            id: repo.id || '',
+            repoName: repo.id || repo.name,
           }))
         }
         rawErrors={rawErrors}

@@ -45,6 +45,8 @@ auth:
         # audience: https://gitlab.company.com
         ## uncomment if using a custom redirect URI
         # callbackUrl: https://${BASE_URL}/api/auth/gitlab/handler/frame
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/gitlab/provider#resolvers for more resolvers
@@ -61,6 +63,7 @@ The GitLab provider is a structure with three configuration keys:
 - `callbackUrl` (optional): The URL matching the Redirect URI registered when creating your GitLab OAuth App, e.g.
   `https://$backstage.acme.corp/api/auth/gitlab/handler/frame`
   Note: Due to a peculiarity with GitLab OAuth, ensure there is no trailing `/` after 'frame' in the URL.
+- `sessionDuration` (optional): Lifespan of the user session.
 
 ### Resolvers
 

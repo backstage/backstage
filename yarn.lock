@@ -4333,6 +4333,7 @@ __metadata:
     "@backstage/errors": ^1.2.4
     "@backstage/theme": ^0.6.0
     "@backstage/version-bridge": ^1.0.10
+    "@dagrejs/dagre": ^1.1.4
     "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
@@ -4345,7 +4346,6 @@ __metadata:
     d3-selection: ^3.0.0
     d3-shape: ^3.0.0
     d3-zoom: ^3.0.0
-    dagre: ^0.8.5
     linkify-react: 4.1.3
     linkifyjs: 4.1.3
     lodash: ^4.17.21
@@ -4442,6 +4442,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@dagrejs/dagre": ^1.1.4
     "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
@@ -4457,7 +4458,6 @@ __metadata:
     "@types/d3-selection": ^3.0.1
     "@types/d3-shape": ^3.0.1
     "@types/d3-zoom": ^3.0.1
-    "@types/dagre": ^0.7.44
     "@types/google-protobuf": ^3.7.2
     "@types/react": ^18.0.0
     "@types/react-helmet": ^6.1.0
@@ -4472,7 +4472,6 @@ __metadata:
     d3-selection: ^3.0.0
     d3-shape: ^3.0.0
     d3-zoom: ^3.0.0
-    dagre: ^0.8.5
     history: ^5.0.0
     js-yaml: ^4.1.0
     linkify-react: 4.1.3
@@ -5191,6 +5190,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-atlassian-oauth2: ^2.1.0
@@ -5208,6 +5208,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-auth0": ^1.0.5
     "@types/passport-oauth2": ^1.4.15
     express: ^4.17.1
@@ -5228,6 +5229,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     jose: ^5.0.0
     msw: ^2.0.8
@@ -5263,6 +5265,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-bitbucket-oauth2: ^0.1.2
@@ -5280,6 +5283,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-oauth2": ^1.4.15
     passport: ^0.7.0
     passport-oauth2: ^1.6.1
@@ -5333,6 +5337,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     passport-github2: ^0.1.12
     supertest: ^7.0.0
   languageName: unknown
@@ -5348,6 +5353,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-gitlab2: ^5.0.0
@@ -5364,6 +5370,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-google-oauth20": ^2.0.3
     google-auth-library: ^9.0.0
     passport-google-oauth20: ^2.0.0
@@ -5398,6 +5405,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-microsoft": ^1.0.0
     express: ^4.18.2
     jose: ^5.0.0
@@ -5417,6 +5425,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     passport: ^0.7.0
     passport-oauth2: ^1.6.1
     supertest: ^7.0.0
@@ -5447,6 +5456,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     cookie-parser: ^1.4.6
     express: ^4.18.2
     express-promise-router: ^4.1.1
@@ -5469,6 +5479,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@davidzemon/passport-okta-oauth": ^0.0.5
     express: ^4.18.2
     passport: ^0.7.0
@@ -5486,6 +5497,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     express: ^4.18.2
     passport: ^0.7.0
     passport-onelogin-oauth: ^0.0.1
@@ -5504,6 +5516,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     cookie-parser: ^1.4.6
     express: ^4.18.2
     express-session: ^1.17.3
@@ -5529,6 +5542,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/passport-oauth2": ^1.4.15
     jose: ^5.0.0
     msw: ^2.0.8
@@ -6860,6 +6874,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-kubernetes-react": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@kubernetes-models/apimachinery": ^2.0.0
     "@kubernetes-models/base": ^5.0.0
@@ -6988,6 +7003,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-kubernetes-react": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@kubernetes-models/apimachinery": ^2.0.0
     "@kubernetes-models/base": ^5.0.0
@@ -9372,6 +9388,22 @@ __metadata:
     enabled: 2.0.x
     kuler: ^2.0.0
   checksum: 4d95cc31249a840b6cc3dba3dc4345a9295265413456068a0d07b69fa0ec6a5a5bc2c39e56ec04c6509ac1f4d9c17fc80baaaddd5caa1abcdd3aaeffe2b63cec
+  languageName: node
+  linkType: hard
+
+"@dagrejs/dagre@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "@dagrejs/dagre@npm:1.1.4"
+  dependencies:
+    "@dagrejs/graphlib": 2.2.4
+  checksum: 39d29a0ea34d1782fee012a87b0395e1959d81f2f8c9cdf4b236e2b703f88524ae2de3d7c4eccce85758c8d26966e1ee147d1075201af059443f6da967e5bfd2
+  languageName: node
+  linkType: hard
+
+"@dagrejs/graphlib@npm:2.2.4":
+  version: 2.2.4
+  resolution: "@dagrejs/graphlib@npm:2.2.4"
+  checksum: 02d2d8df07fd6234bfc82f03f0aebd718f1ffc2ba6579ef67a26e423d9ad25a437256d3342e6342e29ae8a5c5e448a07440d6e218c6e77e390bc57ee73b43d2d
   languageName: node
   linkType: hard
 
@@ -19545,13 +19577,6 @@ __metadata:
     "@types/d3-interpolate": "*"
     "@types/d3-selection": "*"
   checksum: a1685728949ed39faf8ce162cc13338639c57bc2fd4d55fc7902b2632cad2bc2a808941263e57ce6685647e8a6a0a556e173386a52d6bb74c9ed6195b68be3de
-  languageName: node
-  linkType: hard
-
-"@types/dagre@npm:^0.7.44":
-  version: 0.7.52
-  resolution: "@types/dagre@npm:0.7.52"
-  checksum: 89e046e73f9f83855fcecc0f79838e0e3e0e42d88b6cc42bb573249364a606909ff7ded5b6a0377246eb0648047b330b5003c8dd975358de3135635ddae0f589
   languageName: node
   linkType: hard
 
