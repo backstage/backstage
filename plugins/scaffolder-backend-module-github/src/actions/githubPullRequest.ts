@@ -256,29 +256,53 @@ export const createPublishGithubPullRequestAction = (
             type: 'boolean',
             title: 'Create When Empty',
             description:
-              'Set whether to create pull request when there are no changes to commit. The default value is true',
+              'Set whether to create pull request when there are no changes to commit. The default value is true. If set to false, remoteUrl is no longer a required output.',
           },
         },
       },
       output: {
-        required: [],
-        type: 'object',
-        properties: {
-          targetBranchName: {
-            title: 'Target branch name of the merge request',
-            type: 'string',
+        oneOf: [
+          {
+            required: ['remoteUrl'],
+            type: 'object',
+            properties: {
+              targetBranchName: {
+                title: 'Target branch name of the merge request',
+                type: 'string',
+              },
+              remoteUrl: {
+                type: 'string',
+                title: 'Pull Request URL',
+                description: 'Link to the pull request in Github',
+              },
+              pullRequestNumber: {
+                type: 'number',
+                title: 'Pull Request Number',
+                description: 'The pull request number',
+              },
+            },
           },
-          remoteUrl: {
-            type: 'string',
-            title: 'Pull Request URL',
-            description: 'Link to the pull request in Github',
+          {
+            required: [],
+            type: 'object',
+            properties: {
+              targetBranchName: {
+                title: 'Target branch name of the merge request',
+                type: 'string',
+              },
+              remoteUrl: {
+                type: 'string',
+                title: 'Pull Request URL',
+                description: 'Link to the pull request in Github',
+              },
+              pullRequestNumber: {
+                type: 'number',
+                title: 'Pull Request Number',
+                description: 'The pull request number',
+              },
+            },
           },
-          pullRequestNumber: {
-            type: 'number',
-            title: 'Pull Request Number',
-            description: 'The pull request number',
-          },
-        },
+        ],
       },
     },
     async handler(ctx) {
