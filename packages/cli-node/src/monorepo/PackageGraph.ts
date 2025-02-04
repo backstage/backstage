@@ -23,6 +23,24 @@ import { Lockfile } from './Lockfile';
 import { JsonValue } from '@backstage/types';
 
 /**
+ * A list of the feature types we want to extract from the project
+ * and include in the metadata
+ *
+ * @public
+ */
+export const packageFeatureType = [
+  '@backstage/BackendFeature',
+  '@backstage/BackstagePlugin',
+  '@backstage/FrontendPlugin',
+  '@backstage/FrontendModule',
+] as const;
+
+/**
+ * @public
+ */
+export type BackstagePackageFeatureType = (typeof packageFeatureType)[number];
+
+/**
  * Known fields in Backstage package.json files.
  *
  * @public
@@ -72,6 +90,11 @@ export interface BackstagePackageJson {
      * All packages that are part of the plugin. Must always and only be set for plugin packages and plugin library packages.
      */
     pluginPackages?: string[];
+
+    /**
+     * The feature types exported from the package, indexed by path.
+     */
+    features?: Record<string, BackstagePackageFeatureType>;
   };
 
   exports?: JsonValue;

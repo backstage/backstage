@@ -188,7 +188,16 @@ async function rewriteEntryPoints(
         // This ensures that the `backstage` field is at the top of the
         // `exports` field in the package.json because order is important.
         // https://nodejs.org/docs/latest-v20.x/api/packages.html#conditional-exports
+        //
+        // Adding this to the `exports` field in the package.json is to temporarily
+        // support any existing behavior that relies on this, however not all packages
+        // have exports field in their package.json.
         exp = { backstage: defaultFeatureType, ...exp };
+
+        // Add the default feature type to the backstage metadata in the package.json
+        pkg.backstage = pkg.backstage ?? {};
+        pkg.backstage.features = pkg.backstage.features ?? {};
+        pkg.backstage.features[entryPoint.mount] = defaultFeatureType;
       }
     }
 
