@@ -17,9 +17,9 @@
 import { OngoingTask } from './OngoingTask';
 import React from 'react';
 import {
+  mockApis,
   renderInTestApp,
   TestApiProvider,
-  mockApis,
 } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor, within } from '@testing-library/react';
@@ -30,6 +30,7 @@ import {
 import { rootRouteRef } from '../../routes';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -59,6 +60,8 @@ describe('OngoingTask', () => {
     getTask: jest.fn().mockImplementation(async () => {}),
   };
 
+  const mockEntityPresentationApi = {};
+
   beforeEach(async () => {
     jest.clearAllMocks();
   });
@@ -71,6 +74,7 @@ describe('OngoingTask', () => {
           apis={[
             [scaffolderApiRef, mockScaffolderApi],
             [permissionApiRef, permissionApi || mockApis.permission()],
+            [entityPresentationApiRef, mockEntityPresentationApi],
           ]}
         >
           <OngoingTask />
