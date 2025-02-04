@@ -18,6 +18,19 @@ import {
   createLegacyAuthAdapters,
   HostDiscovery,
 } from '@backstage/backend-common';
+import {
+  AuditorService,
+  AuthService,
+  BackstageCredentials,
+  DatabaseService,
+  DiscoveryService,
+  HttpAuthService,
+  LifecycleService,
+  PermissionsService,
+  resolveSafeChildPath,
+  SchedulerService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
@@ -29,7 +42,17 @@ import {
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
+import {
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
+import { EventsService } from '@backstage/plugin-events-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  createConditionAuthorizer,
+  createPermissionIntegrationRouter,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
   TemplateEntityStepV1beta3,
@@ -49,11 +72,6 @@ import {
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
-import express from 'express';
-import Router from 'express-promise-router';
-import { validate } from 'jsonschema';
-import { Logger } from 'winston';
-import { z } from 'zod';
 import {
   TaskBroker,
   TaskStatus,
@@ -62,6 +80,19 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import {
+  AutocompleteHandler,
+  WorkspaceProvider,
+} from '@backstage/plugin-scaffolder-node/alpha';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
+import express from 'express';
+import Router from 'express-promise-router';
+import { validate } from 'jsonschema';
+import { Duration } from 'luxon';
+import { pathToFileURL } from 'url';
+import { v4 as uuid } from 'uuid';
+import { Logger } from 'winston';
+import { z } from 'zod';
+import {
   createBuiltinActions,
   DatabaseTaskStore,
   TaskWorker,
@@ -69,6 +100,8 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { InternalTaskSecrets } from '../scaffolder/tasks/types';
+import { checkPermission } from '../util/checkPermissions';
 import {
   findTemplate,
   getEntityBaseUrl,
@@ -76,39 +109,7 @@ import {
   parseNumberParam,
   parseStringsParam,
 } from './helpers';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import {
-  createConditionAuthorizer,
-  createPermissionIntegrationRouter,
-  PermissionRule,
-} from '@backstage/plugin-permission-node';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
-import { Duration } from 'luxon';
-import {
-  AuthService,
-  BackstageCredentials,
-  DatabaseService,
-  DiscoveryService,
-  HttpAuthService,
-  LifecycleService,
-  PermissionsService,
-  resolveSafeChildPath,
-  SchedulerService,
-  UrlReaderService,
-} from '@backstage/backend-plugin-api';
-import {
-  IdentityApi,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
-import { InternalTaskSecrets } from '../scaffolder/tasks/types';
-import { checkPermission } from '../util/checkPermissions';
-import {
-  AutocompleteHandler,
-  WorkspaceProvider,
-} from '@backstage/plugin-scaffolder-node/alpha';
-import { pathToFileURL } from 'url';
-import { v4 as uuid } from 'uuid';
-import { EventsService } from '@backstage/plugin-events-node';
 
 /**
  *
@@ -184,7 +185,7 @@ export interface RouterOptions {
   identity?: IdentityApi;
   discovery?: DiscoveryService;
   events?: EventsService;
-
+  auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
 
@@ -297,6 +298,7 @@ export async function createRouter(
     identity = buildDefaultIdentityClient(options),
     autocompleteHandlers = {},
     events: eventsService,
+    auditor,
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -326,6 +328,7 @@ export async function createRouter(
       config,
       auth,
       additionalWorkspaceProviders,
+      auditor,
     );
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
@@ -369,6 +372,7 @@ export async function createRouter(
         actionRegistry,
         integrations,
         logger,
+        auditor,
         workingDirectory,
         additionalTemplateFilters,
         additionalTemplateGlobals,
@@ -410,6 +414,7 @@ export async function createRouter(
     actionRegistry,
     integrations,
     logger,
+    auditor,
     workingDirectory,
     additionalTemplateFilters,
     additionalTemplateGlobals,
@@ -454,48 +459,80 @@ export async function createRouter(
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
-        const credentials = await httpAuth.credentials(req);
+        const requestedTemplateRef = `${req.params.kind}:${req.params.namespace}/${req.params.name}`;
 
-        const { token } = await auth.getPluginRequestToken({
-          onBehalfOf: credentials,
-          targetPluginId: 'catalog',
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'template-parameter-schema',
+          request: req,
+          meta: { templateRef: requestedTemplateRef },
         });
 
-        const template = await authorizeTemplate(
-          req.params,
-          token,
-          credentials,
-        );
+        try {
+          const credentials = await httpAuth.credentials(req);
 
-        const parameters = [template.spec.parameters ?? []].flat();
+          const { token } = await auth.getPluginRequestToken({
+            onBehalfOf: credentials,
+            targetPluginId: 'catalog',
+          });
 
-        const presentation = template.spec.presentation;
+          const template = await authorizeTemplate(
+            req.params,
+            token,
+            credentials,
+          );
 
-        res.json({
-          title: template.metadata.title ?? template.metadata.name,
-          ...(presentation ? { presentation } : {}),
-          description: template.metadata.description,
-          'ui:options': template.metadata['ui:options'],
-          steps: parameters.map(schema => ({
-            title: schema.title ?? 'Please enter the following information',
-            description: schema.description,
-            schema,
-          })),
-          EXPERIMENTAL_formDecorators:
-            template.spec.EXPERIMENTAL_formDecorators,
-        });
+          const parameters = [template.spec.parameters ?? []].flat();
+
+          const presentation = template.spec.presentation;
+
+          const templateRef = `${template.kind}:${
+            template.metadata.namespace || 'default'
+          }/${template.metadata.name}`;
+
+          await auditorEvent?.success({ meta: { templateRef: templateRef } });
+
+          res.json({
+            title: template.metadata.title ?? template.metadata.name,
+            ...(presentation ? { presentation } : {}),
+            description: template.metadata.description,
+            'ui:options': template.metadata['ui:options'],
+            steps: parameters.map(schema => ({
+              title: schema.title ?? 'Please enter the following information',
+              description: schema.description,
+              schema,
+            })),
+            EXPERIMENTAL_formDecorators:
+              template.spec.EXPERIMENTAL_formDecorators,
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
+          throw err;
+        }
       },
     )
-    .get('/v2/actions', async (_req, res) => {
-      const actionsList = actionRegistry.list().map(action => {
-        return {
-          id: action.id,
-          description: action.description,
-          examples: action.examples,
-          schema: action.schema,
-        };
+    .get('/v2/actions', async (req, res) => {
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'action-fetch',
+        request: req,
       });
-      res.json(actionsList);
+
+      try {
+        const actionsList = actionRegistry.list().map(action => {
+          return {
+            id: action.id,
+            description: action.description,
+            examples: action.examples,
+            schema: action.schema,
+          };
+        });
+
+        await auditorEvent?.success();
+
+        res.json(actionsList);
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
     })
     .post('/v2/tasks', async (req, res) => {
       const templateRef: string = req.body.templateRef;
@@ -503,376 +540,539 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      const credentials = await httpAuth.credentials(req);
-
-      await checkPermission({
-        credentials,
-        permissions: [taskCreatePermission],
-        permissionService: permissions,
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        severityLevel: 'medium',
+        request: req,
+        meta: {
+          actionType: 'create',
+          templateRef: templateRef,
+        },
       });
 
-      const { token } = await auth.getPluginRequestToken({
-        onBehalfOf: credentials,
-        targetPluginId: 'catalog',
-      });
+      try {
+        const credentials = await httpAuth.credentials(req);
+        await checkPermission({
+          credentials,
+          permissions: [taskCreatePermission],
+          permissionService: permissions,
+        });
 
-      const userEntityRef = auth.isPrincipal(credentials, 'user')
-        ? credentials.principal.userEntityRef
-        : undefined;
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
 
-      const userEntity = userEntityRef
-        ? await catalogClient.getEntityByRef(userEntityRef, { token })
-        : undefined;
+        const userEntityRef = auth.isPrincipal(credentials, 'user')
+          ? credentials.principal.userEntityRef
+          : undefined;
 
-      let auditLog = `Scaffolding task for ${templateRef}`;
-      if (userEntityRef) {
-        auditLog += ` created by ${userEntityRef}`;
-      }
-      logger.info(auditLog);
+        const userEntity = userEntityRef
+          ? await catalogClient.getEntityByRef(userEntityRef, { token })
+          : undefined;
 
-      const values = req.body.values;
-
-      const template = await authorizeTemplate(
-        { kind, namespace, name },
-        token,
-        credentials,
-      );
-
-      for (const parameters of [template.spec.parameters ?? []].flat()) {
-        const result = validate(values, parameters);
-
-        if (!result.valid) {
-          res.status(400).json({ errors: result.errors });
-          return;
+        let auditLog = `Scaffolding task for ${templateRef}`;
+        if (userEntityRef) {
+          auditLog += ` created by ${userEntityRef}`;
         }
-      }
+        logger.info(auditLog);
 
-      const baseUrl = getEntityBaseUrl(template);
+        const values = req.body.values;
 
-      const taskSpec: TaskSpec = {
-        apiVersion: template.apiVersion,
-        steps: template.spec.steps.map((step, index) => ({
-          ...step,
-          id: step.id ?? `step-${index + 1}`,
-          name: step.name ?? step.action,
-        })),
-        EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
-        output: template.spec.output ?? {},
-        parameters: values,
-        user: {
-          entity: userEntity as UserEntity,
-          ref: userEntityRef,
-        },
-        templateInfo: {
-          entityRef: stringifyEntityRef({ kind, name, namespace }),
-          baseUrl,
-          entity: {
-            metadata: template.metadata,
-          },
-        },
-      };
-
-      const secrets: InternalTaskSecrets = {
-        ...req.body.secrets,
-        backstageToken: token,
-        __initiatorCredentials: JSON.stringify({
-          ...credentials,
-          // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
-          token: (credentials as any).token,
-        }),
-      };
-
-      const result = await taskBroker.dispatch({
-        spec: taskSpec,
-        createdBy: userEntityRef,
-        secrets,
-      });
-
-      res.status(201).json({ id: result.taskId });
-    })
-    .get('/v2/tasks', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      await checkPermission({
-        credentials,
-        permissions: [taskReadPermission],
-        permissionService: permissions,
-      });
-
-      if (!taskBroker.list) {
-        throw new Error(
-          'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
+        const template = await authorizeTemplate(
+          { kind, namespace, name },
+          token,
+          credentials,
         );
-      }
 
-      const createdBy = parseStringsParam(req.query.createdBy, 'createdBy');
-      const status = parseStringsParam(req.query.status, 'status');
+        for (const parameters of [template.spec.parameters ?? []].flat()) {
+          const result = validate(values, parameters);
 
-      const order = parseStringsParam(req.query.order, 'order')?.map(item => {
-        const match = item.match(/^(asc|desc):(.+)$/);
-        if (!match) {
-          throw new InputError(
-            `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
-          );
+          if (!result.valid) {
+            await auditorEvent?.fail({
+              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+              error: (AggregateError as any)(
+                result.errors,
+                'Could not create entity',
+              ),
+            });
+
+            res.status(400).json({ errors: result.errors });
+            return;
+          }
         }
 
-        return {
-          order: match[1] as 'asc' | 'desc',
-          field: match[2],
-        };
-      });
+        const baseUrl = getEntityBaseUrl(template);
 
-      const limit = parseNumberParam(req.query.limit, 'limit');
-      const offset = parseNumberParam(req.query.offset, 'offset');
-
-      const tasks = await taskBroker.list({
-        filters: {
-          createdBy,
-          status: status ? (status as TaskStatus[]) : undefined,
-        },
-        order,
-        pagination: {
-          limit: limit ? limit[0] : undefined,
-          offset: offset ? offset[0] : undefined,
-        },
-      });
-
-      res.status(200).json(tasks);
-    })
-    .get('/v2/tasks/:taskId', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      await checkPermission({
-        credentials,
-        permissions: [taskReadPermission],
-        permissionService: permissions,
-      });
-
-      const { taskId } = req.params;
-      const task = await taskBroker.get(taskId);
-      if (!task) {
-        throw new NotFoundError(`Task with id ${taskId} does not exist`);
-      }
-      // Do not disclose secrets
-      delete task.secrets;
-      res.status(200).json(task);
-    })
-    .post('/v2/tasks/:taskId/cancel', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      // Requires both read and cancel permissions
-      await checkPermission({
-        credentials,
-        permissions: [taskCancelPermission, taskReadPermission],
-        permissionService: permissions,
-      });
-
-      const { taskId } = req.params;
-      await taskBroker.cancel?.(taskId);
-      res.status(200).json({ status: 'cancelled' });
-    })
-    .post('/v2/tasks/:taskId/retry', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      // Requires both read and cancel permissions
-      await checkPermission({
-        credentials,
-        permissions: [taskCreatePermission, taskReadPermission],
-        permissionService: permissions,
-      });
-
-      const { taskId } = req.params;
-      await taskBroker.retry?.(taskId);
-      res.status(201).json({ id: taskId });
-    })
-    .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      await checkPermission({
-        credentials,
-        permissions: [taskReadPermission],
-        permissionService: permissions,
-      });
-
-      const { taskId } = req.params;
-      const after =
-        req.query.after !== undefined ? Number(req.query.after) : undefined;
-
-      logger.debug(`Event stream observing taskId '${taskId}' opened`);
-
-      // Mandatory headers and http status to keep connection open
-      res.writeHead(200, {
-        Connection: 'keep-alive',
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'text/event-stream',
-      });
-
-      // After client opens connection send all events as string
-      const subscription = taskBroker.event$({ taskId, after }).subscribe({
-        error: error => {
-          logger.error(
-            `Received error from event stream when observing taskId '${taskId}', ${error}`,
-          );
-          res.end();
-        },
-        next: ({ events }) => {
-          let shouldUnsubscribe = false;
-          for (const event of events) {
-            res.write(
-              `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
-            );
-            if (event.type === 'completion' && !event.isTaskRecoverable) {
-              shouldUnsubscribe = true;
-            }
-          }
-          // res.flush() is only available with the compression middleware
-          res.flush?.();
-          if (shouldUnsubscribe) {
-            subscription.unsubscribe();
-            res.end();
-          }
-        },
-      });
-
-      // When client closes connection we update the clients list
-      // avoiding the disconnected one
-      req.on('close', () => {
-        subscription.unsubscribe();
-        logger.debug(`Event stream observing taskId '${taskId}' closed`);
-      });
-    })
-    .get('/v2/tasks/:taskId/events', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      await checkPermission({
-        credentials,
-        permissions: [taskReadPermission],
-        permissionService: permissions,
-      });
-
-      const { taskId } = req.params;
-      const after = Number(req.query.after) || undefined;
-
-      // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
-      const timeout = setTimeout(() => {
-        res.json([]);
-      }, 30_000);
-
-      // Get all known events after an id (always includes the completion event) and return the first callback
-      const subscription = taskBroker.event$({ taskId, after }).subscribe({
-        error: error => {
-          logger.error(
-            `Received error from event stream when observing taskId '${taskId}', ${error}`,
-          );
-        },
-        next: ({ events }) => {
-          clearTimeout(timeout);
-          subscription.unsubscribe();
-          res.json(events);
-        },
-      });
-
-      // When client closes connection we update the clients list
-      // avoiding the disconnected one
-      req.on('close', () => {
-        subscription.unsubscribe();
-        clearTimeout(timeout);
-      });
-    })
-    .post('/v2/dry-run', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      await checkPermission({
-        credentials,
-        permissions: [taskCreatePermission],
-        permissionService: permissions,
-      });
-
-      const bodySchema = z.object({
-        template: z.unknown(),
-        values: z.record(z.unknown()),
-        secrets: z.record(z.string()).optional(),
-        directoryContents: z.array(
-          z.object({ path: z.string(), base64Content: z.string() }),
-        ),
-      });
-      const body = await bodySchema.parseAsync(req.body).catch(e => {
-        throw new InputError(`Malformed request: ${e}`);
-      });
-
-      const template = body.template as TemplateEntityV1beta3;
-      if (!(await templateEntityV1beta3Validator.check(template))) {
-        throw new InputError('Input template is not a template');
-      }
-
-      const { token } = await auth.getPluginRequestToken({
-        onBehalfOf: credentials,
-        targetPluginId: 'catalog',
-      });
-
-      const userEntityRef = auth.isPrincipal(credentials, 'user')
-        ? credentials.principal.userEntityRef
-        : undefined;
-
-      const userEntity = userEntityRef
-        ? await catalogClient.getEntityByRef(userEntityRef, { token })
-        : undefined;
-
-      for (const parameters of [template.spec.parameters ?? []].flat()) {
-        const result = validate(body.values, parameters);
-        if (!result.valid) {
-          res.status(400).json({ errors: result.errors });
-          return;
-        }
-      }
-
-      const steps = template.spec.steps.map((step, index) => ({
-        ...step,
-        id: step.id ?? `step-${index + 1}`,
-        name: step.name ?? step.action,
-      }));
-
-      const dryRunId = uuid();
-      const contentsPath = resolveSafeChildPath(
-        workingDirectory,
-        `dry-run-content-${dryRunId}`,
-      );
-
-      const templateInfo = {
-        entityRef: stringifyEntityRef(template),
-        entity: {
-          metadata: template.metadata,
-        },
-        baseUrl: pathToFileURL(
-          resolveSafeChildPath(contentsPath, 'template.yaml'),
-        ).toString(),
-      };
-
-      const result = await dryRunner({
-        spec: {
+        const taskSpec: TaskSpec = {
           apiVersion: template.apiVersion,
-          steps,
+          steps: template.spec.steps.map((step, index) => ({
+            ...step,
+            id: step.id ?? `step-${index + 1}`,
+            name: step.name ?? step.action,
+          })),
+          EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
           output: template.spec.output ?? {},
-          parameters: body.values as JsonObject,
+          parameters: values,
           user: {
             entity: userEntity as UserEntity,
             ref: userEntityRef,
           },
+          templateInfo: {
+            entityRef: stringifyEntityRef({ kind, name, namespace }),
+            baseUrl,
+            entity: {
+              metadata: template.metadata,
+            },
+          },
+        };
+
+        const secrets: InternalTaskSecrets = {
+          ...req.body.secrets,
+          backstageToken: token,
+          __initiatorCredentials: JSON.stringify({
+            ...credentials,
+            // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+            token: (credentials as any).token,
+          }),
+        };
+
+        const result = await taskBroker.dispatch({
+          spec: taskSpec,
+          createdBy: userEntityRef,
+          secrets,
+        });
+
+        await auditorEvent?.success({ meta: { taskId: result.taskId } });
+
+        res.status(201).json({ id: result.taskId });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .get('/v2/tasks', async (req, res) => {
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        request: req,
+        meta: {
+          actionType: 'list',
         },
-        templateInfo: templateInfo,
-        directoryContents: (body.directoryContents ?? []).map(file => ({
-          path: file.path,
-          content: Buffer.from(file.base64Content, 'base64'),
-        })),
-        secrets: {
-          ...body.secrets,
-          ...(token && { backstageToken: token }),
-        },
-        credentials,
       });
 
-      res.status(200).json({
-        ...result,
-        steps,
-        directoryContents: result.directoryContents.map(file => ({
-          path: file.path,
-          executable: file.executable,
-          base64Content: file.content.toString('base64'),
-        })),
+      try {
+        const credentials = await httpAuth.credentials(req);
+        await checkPermission({
+          credentials,
+          permissions: [taskReadPermission],
+          permissionService: permissions,
+        });
+
+        if (!taskBroker.list) {
+          throw new Error(
+            'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
+          );
+        }
+
+        const createdBy = parseStringsParam(req.query.createdBy, 'createdBy');
+        const status = parseStringsParam(req.query.status, 'status');
+
+        const order = parseStringsParam(req.query.order, 'order')?.map(item => {
+          const match = item.match(/^(asc|desc):(.+)$/);
+          if (!match) {
+            throw new InputError(
+              `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
+            );
+          }
+
+          return {
+            order: match[1] as 'asc' | 'desc',
+            field: match[2],
+          };
+        });
+
+        const limit = parseNumberParam(req.query.limit, 'limit');
+        const offset = parseNumberParam(req.query.offset, 'offset');
+
+        const tasks = await taskBroker.list({
+          filters: {
+            createdBy,
+            status: status ? (status as TaskStatus[]) : undefined,
+          },
+          order,
+          pagination: {
+            limit: limit ? limit[0] : undefined,
+            offset: offset ? offset[0] : undefined,
+          },
+        });
+
+        await auditorEvent?.success();
+
+        res.status(200).json(tasks);
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .get('/v2/tasks/:taskId', async (req, res) => {
+      const { taskId } = req.params;
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        request: req,
+        meta: {
+          actionType: 'get',
+          taskId: taskId,
+        },
       });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        await checkPermission({
+          credentials,
+          permissions: [taskReadPermission],
+          permissionService: permissions,
+        });
+
+        const task = await taskBroker.get(taskId);
+        if (!task) {
+          throw new NotFoundError(`Task with id ${taskId} does not exist`);
+        }
+
+        await auditorEvent?.success();
+
+        // Do not disclose secrets
+        delete task.secrets;
+        res.status(200).json(task);
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .post('/v2/tasks/:taskId/cancel', async (req, res) => {
+      const { taskId } = req.params;
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        severityLevel: 'medium',
+        request: req,
+        meta: {
+          actionType: 'cancel',
+          taskId: taskId,
+        },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        // Requires both read and cancel permissions
+        await checkPermission({
+          credentials,
+          permissions: [taskCancelPermission, taskReadPermission],
+          permissionService: permissions,
+        });
+
+        await taskBroker.cancel?.(taskId);
+
+        await auditorEvent?.success();
+
+        res.status(200).json({ status: 'cancelled' });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .post('/v2/tasks/:taskId/retry', async (req, res) => {
+      const { taskId } = req.params;
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        severityLevel: 'medium',
+        request: req,
+        meta: {
+          actionType: 'retry',
+          taskId: taskId,
+        },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        // Requires both read and cancel permissions
+        await checkPermission({
+          credentials,
+          permissions: [taskCreatePermission, taskReadPermission],
+          permissionService: permissions,
+        });
+
+        await auditorEvent?.success();
+
+        await taskBroker.retry?.(taskId);
+        res.status(201).json({ id: taskId });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
+      const { taskId } = req.params;
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        request: req,
+        meta: {
+          actionType: 'stream',
+          taskId: taskId,
+        },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        await checkPermission({
+          credentials,
+          permissions: [taskReadPermission],
+          permissionService: permissions,
+        });
+
+        const after =
+          req.query.after !== undefined ? Number(req.query.after) : undefined;
+
+        logger.debug(`Event stream observing taskId '${taskId}' opened`);
+
+        // Mandatory headers and http status to keep connection open
+        res.writeHead(200, {
+          Connection: 'keep-alive',
+          'Cache-Control': 'no-cache',
+          'Content-Type': 'text/event-stream',
+        });
+
+        // After client opens connection send all events as string
+        const subscription = taskBroker.event$({ taskId, after }).subscribe({
+          error: async error => {
+            logger.error(
+              `Received error from event stream when observing taskId '${taskId}', ${error}`,
+            );
+            await auditorEvent?.fail({ error: error });
+            res.end();
+          },
+          next: ({ events }) => {
+            let shouldUnsubscribe = false;
+            for (const event of events) {
+              res.write(
+                `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
+              );
+              if (event.type === 'completion' && !event.isTaskRecoverable) {
+                shouldUnsubscribe = true;
+              }
+            }
+            // res.flush() is only available with the compression middleware
+            res.flush?.();
+            if (shouldUnsubscribe) {
+              subscription.unsubscribe();
+              res.end();
+            }
+          },
+        });
+
+        // When client closes connection we update the clients list
+        // avoiding the disconnected one
+        req.on('close', async () => {
+          subscription.unsubscribe();
+          logger.debug(`Event stream observing taskId '${taskId}' closed`);
+          await auditorEvent?.success();
+        });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .get('/v2/tasks/:taskId/events', async (req, res) => {
+      const { taskId } = req.params;
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        request: req,
+        meta: {
+          actionType: 'events',
+          taskId: taskId,
+        },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        await checkPermission({
+          credentials,
+          permissions: [taskReadPermission],
+          permissionService: permissions,
+        });
+
+        const after = Number(req.query.after) || undefined;
+
+        // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
+        const timeout = setTimeout(() => {
+          res.json([]);
+        }, 30_000);
+
+        // Get all known events after an id (always includes the completion event) and return the first callback
+        const subscription = taskBroker.event$({ taskId, after }).subscribe({
+          error: async error => {
+            logger.error(
+              `Received error from event stream when observing taskId '${taskId}', ${error}`,
+            );
+            await auditorEvent?.fail({ error: error });
+          },
+          next: async ({ events }) => {
+            clearTimeout(timeout);
+            subscription.unsubscribe();
+            await auditorEvent?.success();
+            res.json(events);
+          },
+        });
+
+        // When client closes connection we update the clients list
+        // avoiding the disconnected one
+        req.on('close', () => {
+          subscription.unsubscribe();
+          clearTimeout(timeout);
+        });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
+    })
+    .post('/v2/dry-run', async (req, res) => {
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        request: req,
+        meta: {
+          actionType: 'dry-run',
+        },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        await checkPermission({
+          credentials,
+          permissions: [taskCreatePermission],
+          permissionService: permissions,
+        });
+
+        const bodySchema = z.object({
+          template: z.unknown(),
+          values: z.record(z.unknown()),
+          secrets: z.record(z.string()).optional(),
+          directoryContents: z.array(
+            z.object({ path: z.string(), base64Content: z.string() }),
+          ),
+        });
+        const body = await bodySchema.parseAsync(req.body).catch(e => {
+          throw new InputError(`Malformed request: ${e}`);
+        });
+
+        const template = body.template as TemplateEntityV1beta3;
+        if (!(await templateEntityV1beta3Validator.check(template))) {
+          throw new InputError('Input template is not a template');
+        }
+
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
+
+        const userEntityRef = auth.isPrincipal(credentials, 'user')
+          ? credentials.principal.userEntityRef
+          : undefined;
+
+        const userEntity = userEntityRef
+          ? await catalogClient.getEntityByRef(userEntityRef, { token })
+          : undefined;
+
+        const templateRef: string = `${template.kind}:${
+          template.metadata.namespace || 'default'
+        }/${template.metadata.name}`;
+
+        for (const parameters of [template.spec.parameters ?? []].flat()) {
+          const result = validate(body.values, parameters);
+          if (!result.valid) {
+            await auditorEvent?.fail({
+              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+              error: (AggregateError as any)(
+                result.errors,
+                'Could not execute dry run',
+              ),
+              meta: {
+                templateRef: templateRef,
+                parameters: template.spec.parameters,
+              },
+            });
+
+            res.status(400).json({ errors: result.errors });
+            return;
+          }
+        }
+
+        const steps = template.spec.steps.map((step, index) => ({
+          ...step,
+          id: step.id ?? `step-${index + 1}`,
+          name: step.name ?? step.action,
+        }));
+
+        const dryRunId = uuid();
+        const contentsPath = resolveSafeChildPath(
+          workingDirectory,
+          `dry-run-content-${dryRunId}`,
+        );
+        const templateInfo = {
+          entityRef: 'template:default/dry-run',
+          entity: {
+            metadata: template.metadata,
+          },
+          baseUrl: pathToFileURL(
+            resolveSafeChildPath(contentsPath, 'template.yaml'),
+          ).toString(),
+        };
+
+        const result = await dryRunner({
+          spec: {
+            apiVersion: template.apiVersion,
+            steps,
+            output: template.spec.output ?? {},
+            parameters: body.values as JsonObject,
+            user: {
+              entity: userEntity as UserEntity,
+              ref: userEntityRef,
+            },
+          },
+          templateInfo: templateInfo,
+          directoryContents: (body.directoryContents ?? []).map(file => ({
+            path: file.path,
+            content: Buffer.from(file.base64Content, 'base64'),
+          })),
+          secrets: {
+            ...body.secrets,
+            ...(token && { backstageToken: token }),
+          },
+          credentials,
+        });
+
+        await auditorEvent?.success({
+          meta: {
+            templateRef: templateRef,
+            parameters: template.spec.parameters,
+          },
+        });
+
+        res.status(200).json({
+          ...result,
+          steps,
+          directoryContents: result.directoryContents.map(file => ({
+            path: file.path,
+            executable: file.executable,
+            base64Content: file.content.toString('base64'),
+          })),
+        });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
     })
     .post('/v2/autocomplete/:provider/:resource', async (req, res) => {
       const { token, context } = req.body;

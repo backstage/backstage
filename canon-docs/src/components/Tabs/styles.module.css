@@ -4,10 +4,10 @@
 
 .list {
   display: flex;
-  gap: var(--canon-spacing-md);
-  border-bottom: 1px solid var(--canon-border-base);
+  gap: var(--canon-space-6);
+  border-bottom: 1px solid var(--canon-border);
   position: relative;
-  margin-bottom: var(--canon-spacing-md);
+  margin-bottom: var(--canon-space-6);
 }
 
 .tab {
@@ -22,6 +22,6 @@
   left: var(--active-tab-left);
   width: var(--active-tab-width);
   height: 1px;
-  background-color: var(--canon-text-primary);
+  background-color: var(--canon-fg-text-primary);
   transition: all 0.2s ease-in-out;
 }

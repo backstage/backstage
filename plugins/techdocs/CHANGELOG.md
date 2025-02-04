@@ -1,5 +1,165 @@
 # @backstage/plugin-techdocs
 
+## 1.12.2-next.1
+
+### Patch Changes
+
+- 524f0af: Add missing route ref to the `/alpha` entity content extension.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-techdocs-react@1.2.14-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.1
+  - @backstage/plugin-search-react@1.8.6-next.1
+  - @backstage/plugin-auth-react@0.1.12-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.2-next.0
+
+### Patch Changes
+
+- f4be934: Changed the base URL in addLinkClickListener from window.location.origin to app.baseUrl for improved path handling. This fixes an issue where Backstage, when running on a subpath, was unable to handle non-Backstage URLs of the same origin correctly.
+- 1f40e6b: Add optional props to `TechDocCustomHome` to allow for more flexibility:
+
+  ```tsx
+  import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
+  //...
+
+  const options = { emptyRowsWhenPaging: false };
+  const linkDestination = (entity: Entity): string | undefined => {
+    return entity.metadata.annotations?.['external-docs'];
+  };
+  const techDocsTabsConfig = [
+    {
+      label: 'Recommended Documentation',
+      panels: [
+        {
+          title: 'Golden Path',
+          description: 'Documentation about standards to follow',
+          panelType: 'DocsCardGrid',
+          panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
+          filterPredicate: entity =>
+            entity?.metadata?.tags?.includes('golden-path') ?? false,
+        },
+        {
+          title: 'Recommended',
+          description: 'Useful documentation',
+          panelType: 'InfoCardGrid',
+          panelProps: {
+            CustomHeader: () => <ContentHeader title='Recommended' />
+            linkDestination: linkDestination,
+          },
+          filterPredicate: entity =>
+            entity?.metadata?.tags?.includes('recommended') ?? false,
+        },
+      ],
+    },
+    {
+      label: 'Browse All',
+      panels: [
+        {
+          description: 'Browse all docs',
+          filterPredicate: filterEntity,
+          panelType: 'TechDocsIndexPage',
+          title: 'All',
+          panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+        },
+      ],
+    },
+  ];
+
+  const AppRoutes = () => {
+    <FlatRoutes>
+      <Route
+        path="/docs"
+        element={
+          <TechDocsCustomHome
+            tabsConfig={techDocsTabsConfig}
+            filter={{
+              kind: ['Location', 'Resource', 'Component'],
+              'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+            }}
+            CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)}
+          />
+        }
+      />
+    </FlatRoutes>;
+  };
+  ```
+
+  Add new Grid option called `InfoCardGrid` which is a more customizable card option for the Docs grid.
+
+  ```tsx
+  <InfoCardGrid
+    entities={entities}
+    linkContent="Learn more"
+    linkDestination={entity => entity.metadata['external-docs']}
+  />
+  ```
+
+  Expose existing `CustomDocsPanel` so that it can be used independently if desired.
+
+  ```tsx
+  const panels: PanelConfig[] = [
+    {
+      description: '',
+      filterPredicate: entity => {},
+      panelType: 'InfoCardGrid',
+      title: 'Standards',
+      panelProps: {
+            CustomHeader: () => <ContentHeader title='Recommended' />
+            linkDestination: linkDestination,
+          },
+    },
+    {
+      description: '',
+      filterPredicate: entity => {},
+      panelType: 'DocsCardGrid',
+      title: 'Contribute',
+    },
+  ];
+  {
+    panels.map((config, index) => (
+      <CustomDocsPanel
+        key={index}
+        config={config}
+        entities={!!entities ? entities : []}
+        index={index}
+      />
+    ));
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.6-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-auth-react@0.1.11
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.13
+
 ## 1.12.1
 
 ### Patch Changes

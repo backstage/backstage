@@ -77,6 +77,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         ports: service.spec?.ports,
         ...metadata,
       }}
+      options={{ nestedValuesAsYaml: true }}
     />
   );
 };

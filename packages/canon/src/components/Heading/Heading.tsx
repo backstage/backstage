@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { forwardRef } from 'react';
-import { HeadingProps } from './types';
-import { useCanon } from '../../contexts/canon';
+import clsx from 'clsx';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+
+import type { HeadingProps } from './types';
 
 /** @public */
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
-    const { children, variant = 'title1', as = 'h1', ...restProps } = props;
-    const { getResponsiveValue } = useCanon();
+    const {
+      children,
+      variant = 'title1',
+      as = 'h1',
+      className,
+      ...restProps
+    } = props;
 
     // Get the responsive value for the variant
-    const responsiveVariant = getResponsiveValue(variant);
+    const responsiveVariant = useResponsiveValue(variant);
 
     // Determine the component to render based on the variant
     let Component = as;
@@ -40,10 +45,12 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     return (
       <Component
         ref={ref}
+        className={clsx(
+          'canon-Heading',
+          responsiveVariant && `canon-Heading--variant-${responsiveVariant}`,
+          className,
+        )}
         {...restProps}
-        className={`text ${
-          responsiveVariant ? `text-${responsiveVariant}` : ''
-        }`}
       >
         {children}
       </Component>

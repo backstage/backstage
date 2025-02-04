@@ -17,7 +17,7 @@
   color: var(--color-gray-900);
   cursor: pointer;
   user-select: none;
-  background-color: var(--canon-surface-2);
+  background-color: var(--canon-bg);
   transition: background-color 0.2s ease-in-out;
 
   &:focus-visible {
@@ -31,7 +31,7 @@
 }
 
 .SelectValue {
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-regular);
 }
 
@@ -43,9 +43,9 @@
   box-sizing: border-box;
   padding-block: 0.25rem;
   border-radius: 0.375rem;
-  background-color: canvas;
+  background-color: var(--canon-bg-elevated);
   color: var(--color-gray-900);
-  border: 1px solid var(--canon-border-base);
+  border: 1px solid var(--canon-border);
   padding-inline: 0.25rem;
   transform-origin: var(--transform-origin);
   transition: transform 150ms, opacity 150ms;
@@ -82,7 +82,7 @@
   padding-block: 0.5rem;
   padding-left: 0.625rem;
   padding-right: 1rem;
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);
   display: grid;
   gap: 0.5rem;
@@ -104,7 +104,7 @@
     z-index: 0;
     position: relative;
     color: var(--color-gray-50);
-    background-color: var(--canon-surface-2);
+    background-color: var(--canon-bg);
   }
 
   &[data-highlighted]::before {

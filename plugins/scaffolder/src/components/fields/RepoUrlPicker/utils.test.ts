@@ -53,10 +53,9 @@ describe('utils', () => {
           organization: 'organization',
           workspace: 'workspace',
           project: 'backstage',
-          id: '1234',
         }),
       ).toBe(
-        'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage&id=1234',
+        'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage',
       );
     });
   });
@@ -65,7 +64,7 @@ describe('utils', () => {
     it('should parse a complete string', () => {
       expect(
         parseRepoPickerUrl(
-          'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage&id=1234',
+          'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage',
         ),
       ).toEqual({
         host: 'github.com',
@@ -74,7 +73,6 @@ describe('utils', () => {
         organization: 'organization',
         workspace: 'workspace',
         project: 'backstage',
-        id: '1234',
       });
     });
   });

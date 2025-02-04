@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { forwardRef } from 'react';
-import { TextProps } from './types';
-import { useCanon } from '../../contexts/canon';
+import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import clsx from 'clsx';
+
+import type { TextProps } from './types';
 
 /** @public */
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
@@ -28,21 +28,23 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       variant = 'body',
       weight = 'regular',
       style,
+      className,
       ...restProps
     } = props;
 
-    const { getResponsiveValue } = useCanon();
-
     // Get the responsive values for the variant and weight
-    const responsiveVariant = getResponsiveValue(variant);
-    const responsiveWeight = getResponsiveValue(weight);
+    const responsiveVariant = useResponsiveValue(variant);
+    const responsiveWeight = useResponsiveValue(weight);
 
     return (
       <p
         ref={ref}
-        className={`text ${
-          responsiveVariant ? `text-${responsiveVariant}` : ''
-        } ${responsiveWeight ? `text-${responsiveWeight}` : ''}`}
+        className={clsx(
+          'canon-Text',
+          responsiveVariant && `canon-Text--variant-${responsiveVariant}`,
+          responsiveWeight && `canon-Text--weight-${responsiveWeight}`,
+          className,
+        )}
         style={style}
         {...restProps}
       >

@@ -1,6 +1,6 @@
 ---
 id: product
-title: Product FAQ
+title: Non-technical FAQ
 description: Questions related to product and design.
 ---
 

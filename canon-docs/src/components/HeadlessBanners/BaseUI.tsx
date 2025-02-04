@@ -1,6 +1,7 @@
+'use client';
+
+import { Icon, Text } from '../../../../packages/canon';
 import styles from './styles.module.css';
-import { Text } from '../../../../packages/canon/src/components/Text';
-import { Icon } from '../../../../packages/canon/src/components/Icon';
 
 interface BaseUIProps {
   href: string;

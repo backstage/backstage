@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.35.0",
+  "version": "1.36.0-next.1",
   "private": true,
   "repository": {
     "type": "git",
@@ -41,16 +41,16 @@
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
     "start": "yarn workspace example-app start",
-    "start-backend": "yarn workspace example-backend start",
-    "start-backend:legacy": "yarn workspace example-backend-legacy start",
     "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
+    "start-backend": "yarn workspace example-backend start",
+    "start-backend:legacy": "yarn workspace example-backend-legacy start",
     "storybook": "yarn ./storybook run storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "test": "NODE_OPTIONS=--no-node-snapshot backstage-cli repo test",
-    "test:all": "NODE_OPTIONS=--no-node-snapshot backstage-cli repo test --coverage",
+    "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
+    "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
     "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
     "tsc": "tsc",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
@@ -91,8 +91,8 @@
     "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
   },
   "dependencies": {
@@ -126,7 +126,6 @@
     "eslint-plugin-testing-library": "^6.0.0",
     "fs-extra": "^11.2.0",
     "husky": "^9.0.0",
-    "knip": "^5.0.0",
     "lint-staged": "^15.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^10.0.0",

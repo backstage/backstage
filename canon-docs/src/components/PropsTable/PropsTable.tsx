@@ -1,6 +1,8 @@
-import React from 'react';
+'use client';
+
 import * as Table from '../Table';
 import { Chip } from '../Chip';
+import { icons } from '../../../../packages/canon';
 
 // Define a more specific type for the data object
 type PropData = {
@@ -30,11 +32,17 @@ export const PropsTable = <T extends Record<string, PropData>>({
               <Chip head>{n}</Chip>
             </Table.Cell>
             <Table.Cell>
-              {Array.isArray(data[n].type) ? (
-                data[n].type.map(t => <Chip key={t}>{t}</Chip>)
-              ) : (
-                <Chip>{data[n].type}</Chip>
-              )}
+              <div
+                style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}
+              >
+                {data[n].type === 'icon' ? (
+                  Object.keys(icons).map(icon => <Chip key={icon}>{icon}</Chip>)
+                ) : Array.isArray(data[n].type) ? (
+                  data[n].type.map(t => <Chip key={t}>{t}</Chip>)
+                ) : (
+                  <Chip>{data[n].type}</Chip>
+                )}
+              </div>
             </Table.Cell>
             <Table.Cell>
               <Chip>{data[n].responsive ? 'Yes' : 'No'}</Chip>

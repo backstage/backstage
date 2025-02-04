@@ -14,34 +14,24 @@
  * limitations under the License.
  */
 
-'use client';
-
-import React, { createContext, useContext, ReactNode } from 'react';
-import { IconMap, IconNames } from '../components/Icon/types';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { icons } from '../components/Icon/icons';
-import { useMediaQuery } from '../hooks/useMediaQuery';
-import type { Breakpoint } from '../types';
+import { IconMap, IconNames } from '../components/Icon/types';
 
 /** @public */
 export interface CanonContextProps {
   icons: IconMap;
-  breakpoint: Breakpoint;
-  getResponsiveValue: (
-    value: string | Partial<Record<Breakpoint, string>>,
-  ) => string;
 }
-
-const CanonContext = createContext<CanonContextProps>({
-  icons,
-  breakpoint: 'md',
-  getResponsiveValue: () => '',
-});
 
 /** @public */
 export interface CanonProviderProps {
   children?: ReactNode;
   overrides?: Partial<Record<IconNames, React.ComponentType>>;
 }
+
+const CanonContext = createContext<CanonContextProps>({
+  icons,
+});
 
 /** @public */
 export const CanonProvider = (props: CanonProviderProps) => {
@@ -50,50 +40,8 @@ export const CanonProvider = (props: CanonProviderProps) => {
   // Merge provided overrides with default icons
   const combinedIcons = { ...icons, ...overrides };
 
-  const isBreakpointSm = useMediaQuery(`(min-width: 640px)`);
-  const isBreakpointMd = useMediaQuery(`(min-width: 768px)`);
-  const isBreakpointLg = useMediaQuery(`(min-width: 1024px)`);
-  const isBreakpointXl = useMediaQuery(`(min-width: 1280px)`);
-  const isBreakpoint2xl = useMediaQuery(`(min-width: 1536px)`);
-
-  // Determine the current breakpoint
-  const breakpoint = (() => {
-    if (isBreakpoint2xl) return '2xl';
-    if (isBreakpointXl) return 'xl';
-    if (isBreakpointLg) return 'lg';
-    if (isBreakpointMd) return 'md';
-    if (isBreakpointSm) return 'sm';
-    return 'xs';
-  })();
-
-  const getResponsiveValue = (
-    value: string | Partial<Record<Breakpoint, string>>,
-  ) => {
-    if (typeof value === 'object') {
-      const breakpointsOrder: Breakpoint[] = [
-        'xs',
-        'sm',
-        'md',
-        'lg',
-        'xl',
-        '2xl',
-      ];
-      const index = breakpointsOrder.indexOf(breakpoint);
-
-      for (let i = index; i >= 0; i--) {
-        if (value[breakpointsOrder[i]]) {
-          return value[breakpointsOrder[i]] as string;
-        }
-      }
-      return value['xs'] as string;
-    }
-    return value;
-  };
-
   return (
-    <CanonContext.Provider
-      value={{ icons: combinedIcons, breakpoint, getResponsiveValue }}
-    >
+    <CanonContext.Provider value={{ icons: combinedIcons }}>
       {children}
     </CanonContext.Provider>
   );

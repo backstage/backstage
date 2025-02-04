@@ -11,6 +11,7 @@ import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -206,6 +207,7 @@ export type CatalogEnvironment = {
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
+  auditor?: AuditorService;
 };
 
 // @public
@@ -477,6 +479,11 @@ export const processingResult: Readonly<{
   readonly entity: (
     atLocation: LocationSpec_2,
     newEntity: Entity,
+    options?:
+      | {
+          locationKey?: string | null | undefined;
+        }
+      | undefined,
   ) => CatalogProcessorResult_2;
   readonly relation: (spec: EntityRelationSpec_2) => CatalogProcessorResult_2;
   readonly refresh: (key: string) => CatalogProcessorResult_2;

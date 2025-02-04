@@ -49,6 +49,16 @@ export type NotificationModifyOptions = {
 } & NotificationGetOptions;
 
 /** @internal */
+export type TopicGetOptions = {
+  user: string;
+  search?: string;
+  read?: boolean;
+  saved?: boolean;
+  createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
+};
+
+/** @internal */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
   getNotificationsCount(options: NotificationGetOptions): Promise<number>;
@@ -97,4 +107,6 @@ export interface NotificationsStore {
     user: string;
     settings: NotificationSettings;
   }): Promise<void>;
+
+  getTopics(options: TopicGetOptions): Promise<{ topics: string[] }>;
 }

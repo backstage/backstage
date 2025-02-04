@@ -20,11 +20,9 @@
 
 /* Light theme tokens */
 
-[data-theme='light'] {
+:root {
   /* Font families */
-  --canon-font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  --canon-font-regular: system-ui;
   --canon-font-monospace: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
     'Liberation Mono', 'Courier New', monospace;
 
@@ -33,134 +31,112 @@
   --canon-font-weight-bold: 600;
 
   /* Font sizes */
-  --canon-font-size-label: 0.625rem; /* 10px */
-  --canon-font-size-caption: 0.75rem; /* 12px */
-  --canon-font-size-body: 0.875rem; /* 14px */
-  --canon-font-size-subtitle: 1rem; /* 16px */
-  --canon-font-size-title5: 1.25rem; /* 20px */
-  --canon-font-size-title4: 1.5rem; /* 24px */
-  --canon-font-size-title3: 2rem; /* 32px */
-  --canon-font-size-title2: 3rem; /* 48px */
-  --canon-font-size-title1: 4rem; /* 64px */
-  --canon-font-size-display: 5.75rem; /* 92px */
+  --canon-font-size-1: 0.625rem; /* 10px */
+  --canon-font-size-2: 0.75rem; /* 12px */
+  --canon-font-size-3: 0.875rem; /* 14px */
+  --canon-font-size-4: 1rem; /* 16px */
+  --canon-font-size-5: 1.25rem; /* 20px */
+  --canon-font-size-6: 1.5rem; /* 24px */
+  --canon-font-size-7: 2rem; /* 32px */
+  --canon-font-size-8: 3rem; /* 48px */
+  --canon-font-size-9: 4rem; /* 64px */
+  --canon-font-size-10: 5.75rem; /* 92px */
 
   /* Spacing */
-  --canon-spacing-5xs: 0.125rem; /* 2px */
-  --canon-spacing-4xs: 0.25rem; /* 4px */
-  --canon-spacing-3xs: 0.375rem; /* 6px */
-  --canon-spacing-2xs: 0.5rem; /* 8px */
-  --canon-spacing-xs: 0.75rem; /* 12px */
-  --canon-spacing-sm: 1rem; /* 16px */
-  --canon-spacing-md: 1.5rem; /* 24px */
-  --canon-spacing-lg: 2rem; /* 32px */
-  --canon-spacing-xl: 2.5rem; /* 40px */
-  --canon-spacing-2xl: 3rem; /* 48px */
-  --canon-spacing-3xl: 3.5rem; /* 56px */
+  --canon-space: 0.25rem; /* This is the spacing multiplier */
+  --canon-space-0_5: calc(var(--canon-space) * 0.5); /* 2px */
+  --canon-space-1: var(--canon-space); /* 4px */
+  --canon-space-1_5: calc(var(--canon-space) * 1.5); /* 6px */
+  --canon-space-2: calc(var(--canon-space) * 2); /* 8px */
+  --canon-space-3: calc(var(--canon-space) * 3); /* 12px */
+  --canon-space-4: calc(var(--canon-space) * 4); /* 16px */
+  --canon-space-5: calc(var(--canon-space) * 5); /* 20px */
+  --canon-space-6: calc(var(--canon-space) * 6); /* 24px */
+  --canon-space-7: calc(var(--canon-space) * 7); /* 28px */
+  --canon-space-8: calc(var(--canon-space) * 8); /* 32px */
+  --canon-space-9: calc(var(--canon-space) * 9); /* 36px */
+  --canon-space-10: calc(var(--canon-space) * 10); /* 40px */
+  --canon-space-11: calc(var(--canon-space) * 11); /* 44px */
+  --canon-space-12: calc(var(--canon-space) * 12); /* 48px */
+  --canon-space-13: calc(var(--canon-space) * 13); /* 52px */
+  --canon-space-14: calc(var(--canon-space) * 14); /* 56px */
 
-  /* Border radius */
-  --canon-border-radius-2xs: 0.125rem; /* 2px */
-  --canon-border-radius-xs: 0.25rem; /* 4px */
-  --canon-border-radius-sm: 0.5rem; /* 8px */
-  --canon-border-radius-md: 0.75rem; /* 12px */
-  --canon-border-radius-lg: 1rem; /* 16px */
-  --canon-border-radius-xl: 1.25rem; /* 20px */
-  --canon-border-radius-2xl: 1.5rem; /* 24px */
-
-  /* Container */
-  --canon-container-max-width: 1200px;
-  --canon-container-padding: 1rem;
+  /* Radius */
+  --canon-radius-factor: 1.5;
+  --canon-radius-1: calc(3px * var(--canon-radius-factor));
+  --canon-radius-2: calc(4px * var(--canon-radius-factor));
+  --canon-radius-3: calc(6px * var(--canon-radius-factor));
+  --canon-radius-4: calc(8px * var(--canon-radius-factor));
+  --canon-radius-5: calc(12px * var(--canon-radius-factor));
+  --canon-radius-6: calc(16px * var(--canon-radius-factor));
+  --canon-radius-full: 9999px;
 
   /* Colors */
-  --canon-accent: #000;
-  --canon-background: #f8f8f8;
-  --canon-surface-1: #fff;
-  --canon-surface-2: #f4f4f4;
-  --canon-surface-3: #f1f1f1;
-
-  /* Borders */
-  --canon-border-base: rgba(0, 0, 0, 0.1);
+  --canon-bg: #f8f8f8;
+  --canon-bg-elevated: #fff;
+  --canon-bg-accent: #000;
+  --canon-bg-accent-focus: #000;
+  --canon-bg-accent-disabled: #000;
+  --canon-bg-accent-hover: #000;
+  --canon-bg-tint: #edf2fe;
+  --canon-bg-tint-active: #c7d7ff;
+  --canon-bg-tint-disabled: #f8f8f8;
+  --canon-bg-tint-hover: #dbe4ff;
+  --canon-bg-danger: #f8f8f8;
+  --canon-bg-elevated: #fff;
+  --canon-bg-success: #f8f8f8;
+  --canon-bg-warning: #f8f8f8;
+  --canon-border: rgba(0, 0, 0, 0.1);
+  --canon-border-accent: #000;
+  --canon-border-accent-focus: #000;
+  --canon-border-accent-hover: #000;
+  --canon-border-danger: #e22b2b;
+  --canon-border-focus: rgba(0, 0, 0, 0.4);
   --canon-border-hover: rgba(0, 0, 0, 0.2);
+  --canon-border-success: #008000;
   --canon-border-warning: #e36d05;
-  --canon-border-error: #e22b2b;
-  --canon-border-selected: #1db954;
-
-  /* States - Add more states */
-  --canon-error: #f50000;
-
-  /* Text colors */
-  --canon-text-primary: #000;
-  --canon-text-primary-on-accent: #fff;
-  --canon-text-secondary: #646464;
+  --canon-fg-text-primary: #000;
+  --canon-fg-text-secondary: #646464;
+  --canon-fg-link: #fff;
+  --canon-fg-link-hover: #fff;
+  --canon-fg-accent: #fff;
+  --canon-fg-tint: #000;
+  --canon-fg-danger: #e22b2b;
+  --canon-fg-warning: #e36d05;
+  --canon-fg-success: #008000;
 }
 
 /* Dark theme tokens */
 [data-theme='dark'] {
-  /* Font families */
-  --canon-font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --canon-font-monospace: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
-    'Liberation Mono', 'Courier New', monospace;
-
-  /* Font weights */
-  --canon-font-weight-regular: 400;
-  --canon-font-weight-bold: 600;
-
-  /* Font sizes */
-  --canon-font-size-label: 0.625rem; /* 10px */
-  --canon-font-size-caption: 0.75rem; /* 12px */
-  --canon-font-size-body: 0.875rem; /* 14px */
-  --canon-font-size-subtitle: 1rem; /* 16px */
-  --canon-font-size-title5: 1.25rem; /* 20px */
-  --canon-font-size-title4: 1.5rem; /* 24px */
-  --canon-font-size-title3: 2rem; /* 32px */
-  --canon-font-size-title2: 3rem; /* 48px */
-  --canon-font-size-title1: 4rem; /* 64px */
-  --canon-font-size-display: 5.75rem; /* 92px */
-
-  /* Spacing */
-  --canon-spacing-5xs: 0.125rem; /* 2px */
-  --canon-spacing-4xs: 0.25rem; /* 4px */
-  --canon-spacing-3xs: 0.375rem; /* 6px */
-  --canon-spacing-2xs: 0.5rem; /* 8px */
-  --canon-spacing-xs: 0.75rem; /* 12px */
-  --canon-spacing-sm: 1rem; /* 16px */
-  --canon-spacing-md: 1.5rem; /* 24px */
-  --canon-spacing-lg: 2rem; /* 32px */
-  --canon-spacing-xl: 2.5rem; /* 40px */
-  --canon-spacing-2xl: 3rem; /* 48px */
-  --canon-spacing-3xl: 3.5rem; /* 56px */
-
-  /* Border radius */
-  --canon-border-radius-2xs: 0.125rem; /* 2px */
-  --canon-border-radius-xs: 0.25rem; /* 4px */
-  --canon-border-radius-sm: 0.5rem; /* 8px */
-  --canon-border-radius-md: 0.75rem; /* 12px */
-  --canon-border-radius-lg: 1rem; /* 16px */
-  --canon-border-radius-xl: 1.25rem; /* 20px */
-  --canon-border-radius-2xl: 1.5rem; /* 24px */
-
-  /* Container */
-  --canon-container-max-width: 1200px;
-  --canon-container-padding: 1rem;
-
-  /* Colors */
-  --canon-accent: #fff;
-  --canon-background: #000;
-  --canon-surface-1: #121212;
-  --canon-surface-2: #1a1a1a;
-
-  /* Borders */
-  --canon-border-base: rgba(255, 255, 255, 0.2);
-  --canon-border-warning: #f50000;
-  --canon-border-error: #f87503;
-  --canon-border-selected: #25d262;
-
-  /* States - Add more states */
-  --canon-error: #f50000;
-
-  /* Text colors */
-  --canon-text-primary: #fff;
-  --canon-text-primary-on-accent: #000;
-  --canon-text-secondary: #b3b3b3;
+  --canon-bg: #f8f8f8;
+  --canon-bg-elevated: #fff;
+  --canon-bg-accent: #000;
+  --canon-bg-accent-focus: #000;
+  --canon-bg-accent-disabled: #000;
+  --canon-bg-accent-hover: #000;
+  --canon-bg-tint: #edf2fe;
+  --canon-bg-tint-active: #c7d7ff;
+  --canon-bg-tint-disabled: #f8f8f8;
+  --canon-bg-tint-hover: #dbe4ff;
+  --canon-bg-danger: #f8f8f8;
+  --canon-bg-elevated: #fff;
+  --canon-bg-success: #f8f8f8;
+  --canon-bg-warning: #f8f8f8;
+  --canon-border: rgba(0, 0, 0, 0.1);
+  --canon-border-accent: #000;
+  --canon-border-accent-focus: #000;
+  --canon-border-accent-hover: #000;
+  --canon-border-danger: #e22b2b;
+  --canon-border-focus: rgba(0, 0, 0, 0.4);
+  --canon-border-hover: rgba(0, 0, 0, 0.2);
+  --canon-border-success: #008000;
+  --canon-border-warning: #e36d05;
+  --canon-fg-accent: #000;
+  --canon-fg-danger: #e22b2b;
+  --canon-fg-success: #008000;
+  --canon-fg-warning: #e36d05;
+  --canon-fg-link: #fff;
+  --canon-fg-link-hover: #fff;
+  --canon-fg-text-primary: #000;
+  --canon-fg-text-secondary: #646464;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.cn-button {
+.canon-Button {
   all: unset;
   display: inline-flex;
   align-items: center;
@@ -22,62 +22,62 @@
   user-select: none;
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-bold);
-  font-size: var(--canon-font-size-body);
+  font-size: var(--canon-font-size-3);
   padding: 0;
   transition: all 150ms ease;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--canon-radius-2);
 }
 
-.cn-button-primary {
-  background-color: var(--canon-accent);
-  color: var(--canon-text-primary-on-accent);
+.canon-Button--variant-primary {
+  background-color: var(--canon-bg-accent);
+  color: var(--canon-fg-accent);
 
   &:hover {
     background-color: transparent;
     box-shadow: inset 0 0 0 1px var(--canon-border-focus);
-    color: var(--canon-text-primary);
+    color: var(--canon-fg-text-primary);
   }
 }
 
-.cn-button-secondary {
+.canon-Button--variant-secondary {
   background-color: transparent;
-  box-shadow: inset 0 0 0 1px var(--canon-border-base);
-  color: var(--canon-text-primary);
+  box-shadow: inset 0 0 0 1px var(--canon-border);
+  color: var(--canon-fg-text-primary);
 
   &:hover {
     box-shadow: inset 0 0 0 1px var(--canon-border-hover);
   }
 }
 
-.cn-button-tertiary {
+.canon-Button--variant-tertiary {
   background-color: transparent;
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-text-primary);
 
   &:hover {
-    color: var(--canon-text-secondary);
+    color: var(--canon-fg-text-secondary);
   }
 }
 
-.cn-button-small {
+.canon-Button--size-small {
   padding-left: 6px;
   padding-right: 6px;
   height: 32px;
 }
 
-.cn-button-medium {
+.canon-Button--size-medium {
   padding-left: 8px;
   padding-right: 8px;
   height: 40px;
 }
 
-.cn-button-content {
+.canon-Button--content {
   display: flex;
   align-items: center;
-  gap: var(--canon-spacing-xs);
+  gap: var(--canon-space-3);
   font-weight: var(--canon-font-weight-bold);
 }
 
-.cn-button-content-icon-both {
+.canon-Button--icon-start-end {
   flex: 1;
 }

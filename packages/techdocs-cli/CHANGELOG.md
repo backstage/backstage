@@ -1,5 +1,32 @@
 # @techdocs/cli
 
+## 1.9.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/plugin-techdocs-node@1.13.0-next.0
+
+## 1.9.0-next.0
+
+### Minor Changes
+
+- 8de3d2d: Allow configurable optional retries for publisher AWS S3 operations.
+
+### Patch Changes
+
+- 69f84ac: Internal update to work with dynamic imports.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.0
+  - @backstage/plugin-techdocs-node@1.13.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+
 ## 1.8.25
 
 ### Patch Changes

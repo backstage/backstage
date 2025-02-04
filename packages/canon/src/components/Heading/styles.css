@@ -14,45 +14,40 @@
  * limitations under the License.
  */
 
-.text {
+.canon-Heading {
   font-family: var(--canon-font-regular);
-  color: var(--canon-text-primary);
+  color: var(--canon-fg-text-primary);
+  line-height: 100%;
   padding: 0;
   margin: 0;
+}
 
-  &.text-display {
-    font-size: var(--canon-font-size-display);
-    line-height: 100%;
-    font-weight: var(--canon-font-weight-bold);
-  }
+.canon-Heading--variant-display {
+  font-size: var(--canon-font-size-10);
+  font-weight: var(--canon-font-weight-bold);
+}
 
-  &.text-title1 {
-    font-size: var(--canon-font-size-title1);
-    line-height: 100%;
-    font-weight: var(--canon-font-weight-bold);
-  }
+.canon-Heading--variant-title1 {
+  font-size: var(--canon-font-size-9);
+  font-weight: var(--canon-font-weight-bold);
+}
 
-  &.text-title2 {
-    font-size: var(--canon-font-size-title2);
-    line-height: 100%;
-    font-weight: var(--canon-font-weight-bold);
-  }
+.canon-Heading--variant-title2 {
+  font-size: var(--canon-font-size-8);
+  font-weight: var(--canon-font-weight-bold);
+}
 
-  &.text-title3 {
-    font-size: var(--canon-font-size-title3);
-    line-height: 100%;
-    font-weight: var(--canon-font-weight-bold);
-  }
+.canon-Heading--variant-title3 {
+  font-size: var(--canon-font-size-7);
+  font-weight: var(--canon-font-weight-bold);
+}
 
-  &.text-title4 {
-    font-size: var(--canon-font-size-title4);
-    line-height: 100%;
-    font-weight: var(--canon-font-weight-bold);
-  }
+.canon-Heading--variant-title4 {
+  font-size: var(--canon-font-size-title4);
+  font-weight: var(--canon-font-weight-bold);
+}
 
-  &.text-title5 {
-    font-size: var(--canon-font-size-title5);
-    line-height: 100%;
-    font-weight: var(--canon-font-weight-bold);
-  }
+.canon-Heading--variant-title5 {
+  font-size: var(--canon-font-size-5);
+  font-weight: var(--canon-font-weight-bold);
 }

@@ -228,6 +228,7 @@ LocalStack
 lockdown
 lockfile
 lookbehind
+lowercased
 lunr
 Luxon
 magiclink
@@ -468,6 +469,7 @@ typeahead
 ui
 unbreak
 Unconference
+undici
 unicode
 unmanaged
 unmount
@@ -512,3 +514,4 @@ zoomable
 zsh
 scrollable
 severities
+intellij

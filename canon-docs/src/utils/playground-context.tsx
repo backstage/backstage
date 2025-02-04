@@ -7,16 +7,19 @@ import React, {
 } from 'react';
 import { components } from './data';
 
+type Theme = 'light' | 'dark';
+type ThemeName = 'legacy' | 'default' | 'custom';
+
 // Create a context with an empty array as the default value
 const PlaygroundContext = createContext<{
   selectedScreenSizes: string[];
   setSelectedScreenSizes: (screenSizes: string[]) => void;
   selectedComponents: string[];
   setSelectedComponents: (components: string[]) => void;
-  selectedTheme: string | null;
-  setSelectedTheme: (theme: string) => void;
-  selectedThemeName: string;
-  setSelectedThemeName: (themeName: string) => void;
+  selectedTheme: Theme;
+  setSelectedTheme: (theme: Theme) => void;
+  selectedThemeName: ThemeName;
+  setSelectedThemeName: (themeName: ThemeName) => void;
 }>({
   selectedScreenSizes: [],
   setSelectedScreenSizes: () => {},
@@ -37,12 +40,14 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
   const [selectedComponents, setSelectedComponents] = useState<string[]>(
     components.map(component => component.slug),
   );
-  const [selectedTheme, setSelectedTheme] = useState<string | null>(() => {
-    return isBrowser ? localStorage.getItem('theme') : 'light';
-  });
-  const [selectedThemeName, setSelectedThemeName] = useState<string>(() => {
+  const [selectedTheme, setSelectedTheme] = useState<Theme>(() => {
     return isBrowser
-      ? localStorage.getItem('theme-name') || 'default'
+      ? (localStorage.getItem('theme') as Theme) || 'light'
+      : 'light';
+  });
+  const [selectedThemeName, setSelectedThemeName] = useState<ThemeName>(() => {
+    return isBrowser
+      ? (localStorage.getItem('theme-name') as ThemeName) || 'default'
       : 'default';
   });
 

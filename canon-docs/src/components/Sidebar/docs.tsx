@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { components, overview, layoutComponents, theme } from '@/utils/data';
-import { Box } from '../../../../packages/canon/src/components/Box';
-import { Text } from '../../../../packages/canon/src/components/Text';
+import { Box } from '../../../../packages/canon';
 import { motion } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';

@@ -1,8 +1,8 @@
 body {
   display: flex;
   flex-direction: row;
-  background-color: var(--canon-background);
-  color: var(--canon-text-primary);
+  background-color: var(--canon-bg);
+  color: var(--canon-fg-text-primary);
   transition: background-color 0.2s ease-in-out;
 
   --docs-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -34,4 +34,38 @@ iframe {
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+.cm-editor {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.ͼ2 .cm-gutters {
+  background-color: var(--canon-bg);
+  border-right: 1px solid var(--canon-border);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.ͼ1 .cm-lineNumbers .cm-gutterElement {
+  padding-right: 8px;
+  padding-left: 8px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 34px;
+}
+
+.cm-line {
+  font-size: 0.875rem;
+}
+
+.ͼ1 .cm-line {
+  padding-left: 12px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.cm-focused {
+  outline: none !important;
 }

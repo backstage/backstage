@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 
 const meta = {
   title: 'Components/Grid',
@@ -33,7 +33,7 @@ const meta = {
     },
   },
   args: {
-    gap: 'xs',
+    gap: '4',
   },
 } satisfies Meta<typeof Grid>;
 
@@ -42,7 +42,6 @@ type Story = StoryObj<typeof meta>;
 
 const FakeBox = () => (
   <Box
-    borderRadius="xs"
     style={{
       background: '#eaf2fd',
       borderRadius: '4px',
@@ -67,7 +66,7 @@ export const Default: Story = {
 
 export const LargeGap: Story = {
   args: {
-    gap: 'lg',
+    gap: '64px',
   },
   render: args => (
     <Grid {...args}>
@@ -80,36 +79,33 @@ export const LargeGap: Story = {
 
 export const ColumnSizes: Story = {
   args: {
-    columns: 12,
-    gap: 'md',
+    columns: '12',
   },
   render: args => (
-    <Stack gap="md">
+    <Flex gap="4">
       {Array.from({ length: 11 }, (_, i) => (
         <Grid {...args} key={i}>
-          <Grid.Item colSpan={(i + 1) as GridItemProps['colSpan']}>
+          <Grid.Item colSpan={String(i + 1) as GridItemProps['colSpan']}>
             <FakeBox />
           </Grid.Item>
-          <Grid.Item colSpan={(11 - i) as GridItemProps['colSpan']}>
+          <Grid.Item colSpan={String(11 - i) as GridItemProps['colSpan']}>
             <FakeBox />
           </Grid.Item>
         </Grid>
       ))}
-    </Stack>
+    </Flex>
   ),
 };
 
 export const RowAndColumns: Story = {
   args: {
-    columns: 12,
-    gap: 'md',
+    columns: '12',
   },
   render: args => (
-    <Stack gap="md">
-      <Grid {...args} columns={3}>
-        <Grid.Item colSpan={1} rowSpan={2}>
+    <Flex gap="4">
+      <Grid {...args} columns="3">
+        <Grid.Item colSpan="1" rowSpan="2">
           <Box
-            borderRadius="xs"
             style={{
               height: '100%',
               background: '#eaf2fd',
@@ -120,13 +116,13 @@ export const RowAndColumns: Story = {
             }}
           />
         </Grid.Item>
-        <Grid.Item colSpan={2}>
+        <Grid.Item colSpan="2">
           <FakeBox />
         </Grid.Item>
-        <Grid.Item colSpan={2}>
+        <Grid.Item colSpan="2">
           <FakeBox />
         </Grid.Item>
       </Grid>
-    </Stack>
+    </Flex>
   ),
 };
