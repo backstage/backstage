@@ -9,14 +9,27 @@ import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-n
 import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
-import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
-import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
-import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { createGithubActionsDispatchAction as createGithubActionsDispatchAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createGithubDeployKeyAction as createGithubDeployKeyAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createGithubEnvironmentAction as createGithubEnvironmentAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createGithubIssuesLabelAction as createGithubIssuesLabelAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { CreateGithubPullRequestActionOptions as CreateGithubPullRequestActionOptions_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createGithubRepoCreateAction as createGithubRepoCreateAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createGithubRepoPushAction as createGithubRepoPushAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createGithubWebhookAction as createGithubWebhookAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createPublishAzureAction as createPublishAzureAction_2 } from '@backstage/plugin-scaffolder-backend-module-azure';
+import { createPublishBitbucketAction as createPublishBitbucketAction_2 } from '@backstage/plugin-scaffolder-backend-module-bitbucket';
+import { createPublishBitbucketCloudAction as createPublishBitbucketCloudAction_2 } from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
+import { createPublishBitbucketServerAction as createPublishBitbucketServerAction_2 } from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
+import { createPublishBitbucketServerPullRequestAction as createPublishBitbucketServerPullRequestAction_2 } from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
+import { createPublishGerritAction as createPublishGerritAction_2 } from '@backstage/plugin-scaffolder-backend-module-gerrit';
+import { createPublishGerritReviewAction as createPublishGerritReviewAction_2 } from '@backstage/plugin-scaffolder-backend-module-gerrit';
+import { createPublishGithubAction as createPublishGithubAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
+import { createPublishGitlabAction as createPublishGitlabAction_2 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
@@ -25,9 +38,6 @@ import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
 import { fetchContents as fetchContents_2 } from '@backstage/plugin-scaffolder-node';
-import * as gerrit from '@backstage/plugin-scaffolder-backend-module-gerrit';
-import * as github from '@backstage/plugin-scaffolder-backend-module-github';
-import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -265,57 +275,57 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
 >;
 
 // @public @deprecated (undocumented)
-export const createGithubActionsDispatchAction: typeof github.createGithubActionsDispatchAction;
+export const createGithubActionsDispatchAction: typeof createGithubActionsDispatchAction_2;
 
 // @public @deprecated (undocumented)
-export const createGithubDeployKeyAction: typeof github.createGithubDeployKeyAction;
+export const createGithubDeployKeyAction: typeof createGithubDeployKeyAction_2;
 
 // @public @deprecated (undocumented)
-export const createGithubEnvironmentAction: typeof github.createGithubEnvironmentAction;
+export const createGithubEnvironmentAction: typeof createGithubEnvironmentAction_2;
 
 // @public @deprecated (undocumented)
-export const createGithubIssuesLabelAction: typeof github.createGithubIssuesLabelAction;
+export const createGithubIssuesLabelAction: typeof createGithubIssuesLabelAction_2;
 
 // @public @deprecated (undocumented)
 export type CreateGithubPullRequestActionOptions =
-  github.CreateGithubPullRequestActionOptions;
+  CreateGithubPullRequestActionOptions_2;
 
 // @public @deprecated (undocumented)
-export const createGithubRepoCreateAction: typeof github.createGithubRepoCreateAction;
+export const createGithubRepoCreateAction: typeof createGithubRepoCreateAction_2;
 
 // @public @deprecated (undocumented)
-export const createGithubRepoPushAction: typeof github.createGithubRepoPushAction;
+export const createGithubRepoPushAction: typeof createGithubRepoPushAction_2;
 
 // @public @deprecated (undocumented)
-export const createGithubWebhookAction: typeof github.createGithubWebhookAction;
+export const createGithubWebhookAction: typeof createGithubWebhookAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishAzureAction: typeof azure.createPublishAzureAction;
+export const createPublishAzureAction: typeof createPublishAzureAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketAction: typeof bitbucket.createPublishBitbucketAction;
+export const createPublishBitbucketAction: typeof createPublishBitbucketAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketCloudAction: typeof bitbucketCloud.createPublishBitbucketCloudAction;
+export const createPublishBitbucketCloudAction: typeof createPublishBitbucketCloudAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketServerAction: typeof bitbucketServer.createPublishBitbucketServerAction;
+export const createPublishBitbucketServerAction: typeof createPublishBitbucketServerAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketServerPullRequestAction: typeof bitbucketServer.createPublishBitbucketServerPullRequestAction;
+export const createPublishBitbucketServerPullRequestAction: typeof createPublishBitbucketServerPullRequestAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishGerritAction: typeof gerrit.createPublishGerritAction;
+export const createPublishGerritAction: typeof createPublishGerritAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishGerritReviewAction: typeof gerrit.createPublishGerritReviewAction;
+export const createPublishGerritReviewAction: typeof createPublishGerritReviewAction_2;
 
 // @public @deprecated (undocumented)
-export const createPublishGithubAction: typeof github.createPublishGithubAction;
+export const createPublishGithubAction: typeof createPublishGithubAction_2;
 
 // @public @deprecated (undocumented)
 export const createPublishGithubPullRequestAction: (
-  options: github.CreateGithubPullRequestActionOptions,
+  options: CreateGithubPullRequestActionOptions_2,
 ) => TemplateAction_2<
   {
     title: string;
@@ -340,7 +350,7 @@ export const createPublishGithubPullRequestAction: (
 >;
 
 // @public @deprecated (undocumented)
-export const createPublishGitlabAction: typeof gitlab.createPublishGitlabAction;
+export const createPublishGitlabAction: typeof createPublishGitlabAction_2;
 
 // @public @deprecated (undocumented)
 export const createPublishGitlabMergeRequestAction: (options: {
