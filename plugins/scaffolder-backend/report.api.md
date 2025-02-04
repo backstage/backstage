@@ -414,6 +414,7 @@ export type CreateWorkerOptions = {
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   permissions?: PermissionEvaluator;
+  gracefulShutdown?: boolean;
 };
 
 // @public
@@ -841,7 +842,7 @@ export class TaskWorker {
   // (undocumented)
   start(): void;
   // (undocumented)
-  stop(): void;
+  stop(): Promise<void>;
 }
 
 // @public @deprecated (undocumented)
