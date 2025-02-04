@@ -5,14 +5,11 @@ module.exports = {
     Overview: [
       'overview/what-is-backstage',
       'overview/architecture-overview',
-      'overview/roadmap',
-      'overview/vision',
       'overview/background',
-      'overview/adopting',
-      'overview/versioning-policy',
+      'overview/vision',
+      'overview/roadmap',
       'overview/threat-model',
-      'overview/support',
-      'overview/logos',
+      'overview/versioning-policy',
     ],
     'Getting Started': [
       'getting-started/index',
@@ -46,6 +43,7 @@ module.exports = {
           'getting-started/create-a-component',
         ],
       },
+      'overview/support',
       'getting-started/keeping-backstage-updated',
     ],
     'Core Features': [
@@ -494,36 +492,46 @@ module.exports = {
         ],
       },
     ],
-    'Designing for Backstage': [
-      'dls/design',
-      'dls/component-design-guidelines',
-      'dls/contributing-to-storybook',
-      'dls/figma',
-    ],
     Tutorials: [
-      'tutorials/quickstart-app-plugin',
-      'tutorials/react-router-stable-migration',
-      'tutorials/react18-migration',
-      'tutorials/package-role-migration',
-      'tutorials/migrating-away-from-core',
-      'tutorials/configuring-plugin-databases',
-      'tutorials/switching-sqlite-postgres',
-      'tutorials/using-backstage-proxy-within-plugin',
-      'tutorials/yarn-migration',
-      'tutorials/migrate-to-mui5',
-      'tutorials/auth-service-migration',
-      'tutorials/enable-public-entry',
-      'tutorials/setup-opentelemetry',
+      { 'Non-technical': ['overview/adopting'] },
+      {
+        Techical: [
+          'tutorials/quickstart-app-plugin',
+          'tutorials/configuring-plugin-databases',
+          'tutorials/switching-sqlite-postgres',
+          'tutorials/using-backstage-proxy-within-plugin',
+          'tutorials/enable-public-entry',
+          'tutorials/setup-opentelemetry',
+          'accessibility/index',
+        ],
+      },
+      {
+        Migrations: [
+          'tutorials/react-router-stable-migration',
+          'tutorials/react18-migration',
+          'tutorials/package-role-migration',
+          'tutorials/migrating-away-from-core',
+          'tutorials/yarn-migration',
+          'tutorials/migrate-to-mui5',
+          'tutorials/auth-service-migration',
+        ],
+      },
     ],
-
     FAQ: ['faq/index', 'faq/product', 'faq/technical'],
-    Accessibility: ['accessibility/index'],
     Contribute: [
       'contribute/index',
       'contribute/getting-involved',
       'contribute/project-structure',
     ],
     References: [
+      {
+        'Designing for Backstage': [
+          'dls/design',
+          'dls/component-design-guidelines',
+          'dls/contributing-to-storybook',
+          'dls/figma',
+        ],
+      },
       {
         type: 'category',
         label: 'Architecture Decision Records (ADRs)',
