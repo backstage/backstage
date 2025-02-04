@@ -83,7 +83,7 @@ export const ErrorBoundary: ComponentClass<
     this.setState({ error, errorInfo });
 
     if (this.props.onError) {
-      this.props.onError(error, errorInfo):
+      this.props.onError(error, errorInfo);
     }
   }
 
