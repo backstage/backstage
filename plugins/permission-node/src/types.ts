@@ -68,13 +68,11 @@ export type PermissionRule<
 };
 
 /**
- * A function that can be used to look up permission rules by name for a particular resource type.
+ * A set of registered rules for a particular resource type.
  *
  * @remarks
  *
  * Accessed via {@link @backstage/backend-plugin-api#PermissionsRegistryService.getPermissionRuleset}.
- *
- * Will throw an error if a rule with the provided name does not exist.
  *
  * @public
  */
@@ -83,5 +81,12 @@ export type PermissionRuleset<
   TQuery = unknown,
   TResourceType extends string = string,
 > = {
+  /**
+   * Returns a resource permission rule by name.
+   *
+   * @remarks
+   *
+   * Will throw an error if a rule with the provided name does not exist.
+   */
   getRuleByName(name: string): PermissionRule<TResource, TQuery, TResourceType>;
 };
