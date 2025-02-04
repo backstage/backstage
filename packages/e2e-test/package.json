@@ -1,6 +1,6 @@
 {
   "name": "e2e-test",
-  "version": "0.2.25-next.1",
+  "version": "0.2.25-next.2",
   "description": "E2E test for verifying Backstage packages",
   "backstage": {
     "role": "cli"

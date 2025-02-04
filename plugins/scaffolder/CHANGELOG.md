@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder
 
+## 1.28.0-next.2
+
+### Patch Changes
+
+- eb3d91a: Use the custom error page if provided for displaying errors instead of the default error page
+- fe44946: Fixed bug of passing wrong value to `onChange` handler when using `GitLab` autocomplete
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.14.5-next.2
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.28.0-next.1
 
 ### Minor Changes
