@@ -1,4 +1,4 @@
-import { releases } from './releases';
+const { releases } = require('./releases');
 
 function tryToLoadCustomSidebar(ref) {
   try {
@@ -15,7 +15,7 @@ const searchSidebar = tryToLoadCustomSidebar(
   '../docs/features/search/api/sidebar.ts',
 );
 
-export default {
+module.exports = {
   docs: {
     Overview: [
       'overview/what-is-backstage',
