@@ -29,6 +29,7 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
+import { setTimeout } from 'timers/promises';
 
 /**
  * TaskWorkerOptions
@@ -145,7 +146,7 @@ export class TaskWorker {
   start() {
     (async () => {
       while (!this.stopWorkers) {
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await setTimeout(10000);
         await this.recoverTasks();
       }
     })();
@@ -164,7 +165,7 @@ export class TaskWorker {
     this.stopWorkers = true;
     if (this.options?.gracefulShutdown) {
       while (this.taskQueue.size > 0) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await setTimeout(1000);
       }
     }
   }
