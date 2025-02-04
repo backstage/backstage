@@ -37,10 +37,6 @@ import {
 import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { findPaths } from '@backstage/cli-common';
 import * as fs from 'fs';
-import {
-  FeatureDiscoveryService,
-  featureDiscoveryServiceRef,
-} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @public
@@ -307,54 +303,26 @@ export const dynamicPluginsServiceFactory = Object.assign(
   dynamicPluginsServiceFactoryWithOptions(),
 );
 
-class DynamicPluginsEnabledFeatureDiscoveryService
-  implements FeatureDiscoveryService
-{
-  constructor(
-    private readonly dynamicPlugins: DynamicPluginProvider,
-    private readonly featureDiscoveryService?: FeatureDiscoveryService,
-  ) {}
+class DynamicPluginsEnabledFeatureDiscoveryService {
+  constructor(private readonly dynamicPlugins: DynamicPluginProvider) {}
 
   async getBackendFeatures(): Promise<{ features: Array<BackendFeature> }> {
-    const staticFeatures =
-      (await this.featureDiscoveryService?.getBackendFeatures())?.features ??
-      [];
-
     return {
-      features: [
-        ...this.dynamicPlugins
-          .backendPlugins()
-          .flatMap((plugin): BackendFeature[] => {
-            if (plugin.installer?.kind === 'new') {
-              const installed = plugin.installer.install();
-              if (Array.isArray(installed)) {
-                return installed;
-              }
-              return [installed];
+      features: this.dynamicPlugins
+        .backendPlugins()
+        .flatMap((plugin): BackendFeature[] => {
+          if (plugin.installer?.kind === 'new') {
+            const installed = plugin.installer.install();
+            if (Array.isArray(installed)) {
+              return installed;
             }
-            return [];
-          }),
-        ...staticFeatures,
-      ],
+            return [installed];
+          }
+          return [];
+        }),
     };
   }
 }
-
-/**
- * @public
- * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
- */
-export const dynamicPluginsFeatureDiscoveryServiceFactory =
-  createServiceFactory({
-    service: featureDiscoveryServiceRef,
-    deps: {
-      config: coreServices.rootConfig,
-      dynamicPlugins: dynamicPluginsServiceRef,
-    },
-    factory({ dynamicPlugins }) {
-      return new DynamicPluginsEnabledFeatureDiscoveryService(dynamicPlugins);
-    },
-  });
 
 /**
  * @public
