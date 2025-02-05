@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { Progress } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -65,23 +65,34 @@ export const SchedulerContent = ({ pluginId }: { pluginId: string }) => {
 
   if (loading) {
     return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+  }
+  if (error) {
+    return null;
   }
 
   if (!schedules) {
-    return <Alert severity="error">Unable to load config</Alert>;
+    return <Alert severity="error">Unable to load schedules</Alert>;
   }
 
   return (
     <Box>
       <Paper className={classes.paperStyle}>
-        <ReactJson
-          src={schedules as object}
-          name="schedule"
-          enableClipboard={false}
-          theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
-        />
+        <Typography variant="h6">{pluginId}</Typography>
+        <Paper className={classes.paperStyle}>
+          {schedules.map(e => (
+            <>
+              <p>
+                {e.id} | {e.scope}
+              </p>
+              <ReactJson
+                src={e.settings as object}
+                name="schedule"
+                enableClipboard={false}
+                theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
+              />
+            </>
+          ))}
+        </Paper>
       </Paper>
     </Box>
   );

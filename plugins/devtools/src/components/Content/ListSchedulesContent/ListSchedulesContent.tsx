@@ -60,11 +60,8 @@ export const ListSchedulesContent = () => {
 
   return (
     <Box>
-      {plugins.map(plugin => (
-        <Paper className={classes.paperStyle} key={plugin}>
-          <Typography variant="h6">{plugin}</Typography>
-          <SchedulerContent pluginId={plugin} />
-        </Paper>
+      {plugins.map(pluginId => (
+        <SchedulerContent pluginId={pluginId} key={pluginId} />
       ))}
     </Box>
   );

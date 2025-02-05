@@ -30,7 +30,7 @@ export function useScheduler(pluginId: string): {
   const discovery = useApi(discoveryApiRef);
   const { value, loading, error } = useAsync(async () => {
     const response = await fetch(
-      `${await discovery.getBaseUrl(pluginId)}/.backstage/scheduler/v1/list`,
+      `${await discovery.getBaseUrl(pluginId)}/.backstage/scheduler/v1/tasks`,
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch schedules: ${response.statusText}`);
