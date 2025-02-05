@@ -30,8 +30,7 @@ type PaginatedCatalogTableProps = {
  */
 
 export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, components, data, next, prev, options, ...restProps } =
-    props;
+  const { columns, data, next, prev, options, ...restProps } = props;
 
   return (
     <Table
@@ -55,7 +54,6 @@ export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       }}
       components={{
         Toolbar: CatalogTableToolbar,
-        ...(components ?? {}),
       }}
       /* this will enable the prev button accordingly */
       page={prev ? 1 : 0}

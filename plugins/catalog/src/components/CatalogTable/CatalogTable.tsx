@@ -49,7 +49,6 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
-import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * Props for {@link CatalogTable}.
@@ -67,7 +66,6 @@ export interface CatalogTableProps {
    */
   title?: string;
   subtitle?: string;
-  components?: TableProps<CatalogTableRow>['components'];
 }
 
 const refCompare = (a: Entity, b: Entity) => {
@@ -96,7 +94,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     tableOptions,
     subtitle,
     emptyContent,
-    components,
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
@@ -218,7 +215,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
         data={entities.map(toEntityRow)}
         next={pageInfo?.next}
         prev={pageInfo?.prev}
-        components={components}
       />
     );
   } else if (paginationMode === 'offset') {
@@ -232,7 +228,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
         subtitle={subtitle}
         options={options}
         data={entities.map(toEntityRow)}
-        components={components}
       />
     );
   }
@@ -250,10 +245,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSize: pageSize,
         pageSizeOptions: [20, 50, 100],
         ...options,
-      }}
-      components={{
-        Toolbar: CatalogTableToolbar,
-        ...(components ?? {}),
       }}
       title={title}
       data={rows}

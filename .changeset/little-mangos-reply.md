@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Allow overriding default components in underlying Catalog Material table
+Revert client side paginated catalog table to using built in Material Table toolbar component
