@@ -18,6 +18,9 @@ import { InputError } from '@backstage/errors';
 import { isChildPath } from '@backstage/backend-plugin-api';
 import { join as joinPath, normalize as normalizePath } from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TemplateActionOptions } from './createTemplateAction';
+import zodToJsonSchema from 'zod-to-json-schema';
+import { z } from 'zod';
 
 /**
  * @public
@@ -124,3 +127,52 @@ function checkRequiredParams(repoUrl: URL, ...params: string[]) {
     }
   }
 }
+
+const isZodSchema = (schema: unknown): schema is z.ZodType => {
+  return typeof schema === 'object' && !!schema && 'safeParseAsync' in schema;
+};
+
+const isNativeZodSchema = (
+  schema: unknown,
+): schema is { [key in string]: (zImpl: typeof z) => z.ZodType } => {
+  return (
+    typeof schema === 'object' &&
+    !!schema &&
+    Object.values(schema).every(v => typeof v === 'function')
+  );
+};
+
+export const parseSchemas = (action: TemplateActionOptions<any, any, any>) => {
+  if (!action.schema) {
+    return { inputSchema: undefined, outputSchema: undefined };
+  }
+
+  if (isZodSchema(action.schema.input) && isZodSchema(action.schema.output)) {
+    return {
+      inputSchema: zodToJsonSchema(action.schema.input),
+      outputSchema: zodToJsonSchema(action.schema.output),
+    };
+  }
+
+  if (
+    isNativeZodSchema(action.schema.input) &&
+    isNativeZodSchema(action.schema.output)
+  ) {
+    const input = z.object(
+      Object.fromEntries(
+        Object.entries(action.schema.input).map(([k, v]) => [k, v(z)]),
+      ),
+    );
+    const output = z.object(
+      Object.fromEntries(
+        Object.entries(action.schema.output).map(([k, v]) => [k, v(z)]),
+      ),
+    );
+    return {
+      inputSchema: zodToJsonSchema(input),
+      outputSchema: zodToJsonSchema(output),
+    };
+  }
+
+  throw new Error('Invalid schema provided');
+};
