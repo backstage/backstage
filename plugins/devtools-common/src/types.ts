@@ -66,3 +66,6 @@ export type ConfigError = {
   messages?: string[];
   stack?: string;
 };
+
+/** @public */
+export type SchedulerResponse = {};

@@ -29,4 +29,5 @@ export interface DevToolsApi {
   getConfig(): Promise<ConfigInfo | undefined>;
   getExternalDependencies(): Promise<ExternalDependency[] | undefined>;
   getInfo(): Promise<DevToolsInfo | undefined>;
+  getScheduleForPlugin(pluginId: string): Promise<any>;
 }
