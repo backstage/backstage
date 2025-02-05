@@ -17,9 +17,11 @@
 import {
   OAuthAuthenticatorResult,
   createSignInResolverFactory,
+  handleSignInUserNotFound,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Microsoft auth provider.
@@ -31,7 +33,12 @@ export namespace microsoftSignInResolvers {
    * Looks up the user by matching their Microsoft email to the email entity annotation.
    */
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -42,11 +49,21 @@ export namespace microsoftSignInResolvers {
           throw new Error('Microsoft profile contained no email');
         }
 
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'microsoft.com/email': profile.email,
-          },
-        });
+        try {
+          return await ctx.signInWithCatalogUser({
+            annotations: {
+              'microsoft.com/email': profile.email,
+            },
+          });
+        } catch (error) {
+          return await handleSignInUserNotFound({
+            ctx,
+            error,
+            userEntityName: profile.email,
+            dangerouslyAllowSignInWithoutUserInCatalog:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          });
+        }
       };
     },
   });
@@ -55,7 +72,12 @@ export namespace microsoftSignInResolvers {
    */
   export const userIdMatchingUserEntityAnnotation = createSignInResolverFactory(
     {
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -68,11 +90,21 @@ export namespace microsoftSignInResolvers {
             throw new Error('Microsoft profile contained no id');
           }
 
-          return ctx.signInWithCatalogUser({
-            annotations: {
-              'graph.microsoft.com/user-id': id,
-            },
-          });
+          try {
+            return await ctx.signInWithCatalogUser({
+              annotations: {
+                'graph.microsoft.com/user-id': id,
+              },
+            });
+          } catch (error) {
+            return await handleSignInUserNotFound({
+              ctx,
+              error,
+              userEntityName: id,
+              dangerouslyAllowSignInWithoutUserInCatalog:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog,
+            });
+          }
         };
       },
     },

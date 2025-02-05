@@ -16,9 +16,11 @@
 
 import {
   createSignInResolverFactory,
+  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { OAuth2ProxyResult } from './types';
+import { z } from 'zod';
 
 /**
  * @public
@@ -26,15 +28,30 @@ import { OAuth2ProxyResult } from './types';
 export namespace oauth2ProxySignInResolvers {
   export const forwardedUserMatchingUserEntityName =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (info: SignInInfo<OAuth2ProxyResult>, ctx) => {
           const name = info.result.getHeader('x-forwarded-user');
           if (!name) {
             throw new Error('Request did not contain a user');
           }
-          return ctx.signInWithCatalogUser({
-            entityRef: { name },
-          });
+          try {
+            return await ctx.signInWithCatalogUser({
+              entityRef: { name },
+            });
+          } catch (error) {
+            return await handleSignInUserNotFound({
+              ctx,
+              error,
+              userEntityName: name,
+              dangerouslyAllowSignInWithoutUserInCatalog:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog,
+            });
+          }
         };
       },
     });

@@ -470,7 +470,9 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
-      usernameMatchingUserEntityName: () => SignInResolver_2<GithubOAuthResult>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
+      emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
+      emailMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;
   gitlab: Readonly<{
@@ -555,8 +557,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
-      emailLocalPartMatchingUserEntityName: () => SignInResolver_2<unknown>;
-      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
+      emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;
   okta: Readonly<{

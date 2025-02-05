@@ -16,14 +16,21 @@
 
 import {
   createSignInResolverFactory,
+  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AzureEasyAuthResult } from './types';
+import { z } from 'zod';
 
 /** @public */
 export namespace azureEasyAuthSignInResolvers {
   export const idMatchingUserEntityAnnotation = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (info: SignInInfo<AzureEasyAuthResult>, ctx) => {
         const {
           fullProfile: { id },
@@ -33,11 +40,21 @@ export namespace azureEasyAuthSignInResolvers {
           throw new Error('User profile contained no id');
         }
 
-        return await ctx.signInWithCatalogUser({
-          annotations: {
-            'graph.microsoft.com/user-id': id,
-          },
-        });
+        try {
+          return await ctx.signInWithCatalogUser({
+            annotations: {
+              'graph.microsoft.com/user-id': id,
+            },
+          });
+        } catch (error) {
+          return await handleSignInUserNotFound({
+            ctx,
+            error,
+            userEntityName: id,
+            dangerouslyAllowSignInWithoutUserInCatalog:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          });
+        }
       };
     },
   });
