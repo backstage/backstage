@@ -2,4 +2,4 @@
 '@backstage/config-loader': patch
 ---
 
-Add missing devDependencies
+Added `@types/minimist` to `devDependencies`
