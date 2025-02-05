@@ -139,19 +139,59 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     return { entity: result };
   }
 
-  async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
-    const { entity } = await this.findCatalogUser(query);
+  async signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?:
+        | string
+        | {
+            kind?: string;
+            namespace?: string;
+            name: string;
+          };
+    },
+  ) {
+    try {
+      const { entity } = await this.findCatalogUser(query);
 
-    const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
-      entity,
-    );
+      const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
+        entity,
+      );
 
-    return await this.tokenIssuer.issueToken({
-      claims: {
-        sub: stringifyEntityRef(entity),
-        ent: ownershipEntityRefs,
-      },
-    });
+      return await this.tokenIssuer.issueToken({
+        claims: {
+          sub: stringifyEntityRef(entity),
+          ent: ownershipEntityRefs,
+        },
+      });
+    } catch (error) {
+      if (error?.name !== 'NotFoundError') {
+        throw error;
+      }
+      if (!options?.dangerousEntityRefFallback) {
+        this.logger.error(
+          'Failed to sign-in, unable to resolve user identity. For non-production environments, manually provision the user or disable the user provisioning requirement by setting the dangerouslyAllowSignInWithoutUserInCatalog option.',
+        );
+
+        throw new Error(
+          'Failed to sign-in, unable to resolve user identity. Please verify that your catalog contains the expected User entities that would match your configured sign-in resolver.',
+        );
+      }
+
+      const userEntityRef = stringifyEntityRef(
+        parseEntityRef(options.dangerousEntityRefFallback, {
+          defaultKind: 'User',
+          defaultNamespace: DEFAULT_NAMESPACE,
+        }),
+      );
+
+      return await this.tokenIssuer.issueToken({
+        claims: {
+          sub: userEntityRef,
+          ent: [userEntityRef],
+        },
+      });
+    }
   }
 
   async resolveOwnershipEntityRefs(
