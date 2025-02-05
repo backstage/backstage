@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-devtools-common';
 import { ResponseError } from '@backstage/errors';
 import { DevToolsApi } from './DevToolsApi';
+import { JsonObject } from '@backstage/types';
 
 export class DevToolsClient implements DevToolsApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -58,6 +59,21 @@ export class DevToolsClient implements DevToolsApi {
 
     const info = await this.get<DevToolsInfo | undefined>(urlSegment);
     return info;
+  }
+
+  public async getScheduleForPlugin(
+    pluginId: string,
+  ): Promise<JsonObject | undefined> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl(pluginId)}/`;
+    const url = new URL('.backstage/scheduler/v1/', baseUrl);
+
+    const response = await this.fetchApi.fetch(url.toString());
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json() as Promise<any>;
   }
 
   private async get<T>(path: string): Promise<T> {
