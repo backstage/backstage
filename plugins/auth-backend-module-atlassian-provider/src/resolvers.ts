@@ -16,10 +16,12 @@
 
 import {
   createSignInResolverFactory,
+  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Atlassian auth provider.
@@ -31,7 +33,12 @@ export namespace atlassianSignInResolvers {
    * Looks up the user by matching their Atlassian username to the entity name.
    */
   export const usernameMatchingUserEntityName = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -43,7 +50,17 @@ export namespace atlassianSignInResolvers {
           throw new Error(`Atlassian user profile does not contain a username`);
         }
 
-        return ctx.signInWithCatalogUser({ entityRef: { name: id } });
+        try {
+          return await ctx.signInWithCatalogUser({ entityRef: { name: id } });
+        } catch (error) {
+          return await handleSignInUserNotFound({
+            ctx,
+            error,
+            userEntityName: id,
+            dangerouslyAllowSignInWithoutUserInCatalog:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          });
+        }
       };
     },
   });

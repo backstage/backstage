@@ -16,10 +16,12 @@
 
 import {
   createSignInResolverFactory,
+  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Okta auth provider.
@@ -32,7 +34,12 @@ export namespace oktaSignInResolvers {
    */
 
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -42,12 +49,21 @@ export namespace oktaSignInResolvers {
         if (!profile.email) {
           throw new Error('Okta profile contained no email');
         }
-
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'okta.com/email': profile.email,
-          },
-        });
+        try {
+          return await ctx.signInWithCatalogUser({
+            annotations: {
+              'okta.com/email': profile.email,
+            },
+          });
+        } catch (error) {
+          return await handleSignInUserNotFound({
+            ctx,
+            error,
+            userEntityName: profile.email,
+            dangerouslyAllowSignInWithoutUserInCatalog:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          });
+        }
       };
     },
   });

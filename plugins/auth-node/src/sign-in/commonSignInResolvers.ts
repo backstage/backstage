@@ -17,6 +17,7 @@
 import { z } from 'zod';
 import { createSignInResolverFactory } from './createSignInResolverFactory';
 import { NotAllowedError } from '@backstage/errors';
+import { handleSignInUserNotFound } from './handleSignInUserNotFound';
 
 // This splits an email "joe+work@acme.com" into ["joe", "+work", "@acme.com"]
 // so that we can remove the plus addressing. May output a shorter array:
@@ -35,7 +36,12 @@ export namespace commonSignInResolvers {
    */
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (info, ctx) => {
           const { profile } = info;
 
@@ -59,14 +65,31 @@ export namespace commonSignInResolvers {
                 const [_, name, _plus, domain] = m;
                 const noPlusEmail = `${name}${domain}`;
 
-                return ctx.signInWithCatalogUser({
-                  filter: {
-                    'spec.profile.email': noPlusEmail,
-                  },
-                });
+                try {
+                  return await ctx.signInWithCatalogUser({
+                    filter: {
+                      'spec.profile.email': noPlusEmail,
+                    },
+                  });
+                } catch {
+                  // Email had no plus addressing or is missing in the catalog
+                  return await handleSignInUserNotFound({
+                    ctx,
+                    error: err,
+                    userEntityName: noPlusEmail,
+                    dangerouslyAllowSignInWithoutUserInCatalog:
+                      options?.dangerouslyAllowSignInWithoutUserInCatalog,
+                  });
+                }
               }
+              return await handleSignInUserNotFound({
+                ctx,
+                error: err,
+                userEntityName: profile.email,
+                dangerouslyAllowSignInWithoutUserInCatalog:
+                  options?.dangerouslyAllowSignInWithoutUserInCatalog,
+              });
             }
-            // Email had no plus addressing or is missing in the catalog, forward failure
             throw err;
           }
         };
@@ -82,6 +105,7 @@ export namespace commonSignInResolvers {
       optionsSchema: z
         .object({
           allowedDomains: z.array(z.string()).optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
         })
         .optional(),
       create(options = {}) {
@@ -102,10 +126,19 @@ export namespace commonSignInResolvers {
               'Sign-in user email is not from an allowed domain',
             );
           }
-
-          return ctx.signInWithCatalogUser({
-            entityRef: { name: localPart },
-          });
+          try {
+            return await ctx.signInWithCatalogUser({
+              entityRef: { name: localPart },
+            });
+          } catch (error) {
+            return await handleSignInUserNotFound({
+              ctx,
+              error,
+              userEntityName: localPart,
+              dangerouslyAllowSignInWithoutUserInCatalog:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog,
+            });
+          }
         };
       },
     });

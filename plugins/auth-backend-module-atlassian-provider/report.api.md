@@ -20,7 +20,10 @@ export const atlassianAuthenticator: OAuthAuthenticator<
 export namespace atlassianSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 

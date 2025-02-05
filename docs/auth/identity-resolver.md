@@ -351,8 +351,12 @@ users to sign in, for example by checking email domains.
 While populating the catalog with organizational data unlocks more powerful ways
 to browse your software ecosystem, it might not always be a viable or prioritized
 option. However, even if you do not have user entities populated in your catalog, you
-can still sign in users. As there are currently no built-in sign-in resolvers for
-this scenario you will need to implement your own.
+can still sign in users.
+
+##### Custom Sign-in Resolver to bypass user in catalog requirement
+
+As there are currently no built-in sign-in resolvers for
+this scenario you may want to implement your own.
 
 Signing in a user that doesn't exist in the catalog is as simple as skipping the
 catalog lookup step from the above example. Rather than looking up the user, we
@@ -400,6 +404,22 @@ async signInResolver({ profile }, ctx) {
     },
   });
 }
+```
+
+##### Using the `dangerouslyAllowSignInWithoutUserInCatalog` Option
+
+Another way to bypass this requirement is to enable the `dangerouslyAllowSignInWithoutUserInCatalog` option for resolvers. This will allow users to sign in even if their user entity has not been synced into the catalog. For example:
+
+```yaml title="Within the provider configuration"
+auth:
+  providers:
+    github:
+      development:
+        ...
+        signIn:
+          resolvers:
+            - resolver: emailLocalPartMatchingUserEntityName
+              dangerouslyAllowSignInWithoutUserInCatalog: true
 ```
 
 ## Profile Transforms

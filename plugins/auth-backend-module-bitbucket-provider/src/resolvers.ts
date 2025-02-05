@@ -16,10 +16,12 @@
 
 import {
   createSignInResolverFactory,
+  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Bitbucket auth provider.
@@ -32,7 +34,12 @@ export namespace bitbucketSignInResolvers {
    */
   export const userIdMatchingUserEntityAnnotation = createSignInResolverFactory(
     {
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -44,11 +51,21 @@ export namespace bitbucketSignInResolvers {
             throw new Error('Bitbucket user profile does not contain an ID');
           }
 
-          return ctx.signInWithCatalogUser({
-            annotations: {
-              'bitbucket.org/user-id': id,
-            },
-          });
+          try {
+            return await ctx.signInWithCatalogUser({
+              annotations: {
+                'bitbucket.org/user-id': id,
+              },
+            });
+          } catch (error) {
+            return await handleSignInUserNotFound({
+              ctx,
+              error,
+              userEntityName: id,
+              dangerouslyAllowSignInWithoutUserInCatalog:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog,
+            });
+          }
         };
       },
     },
@@ -59,7 +76,12 @@ export namespace bitbucketSignInResolvers {
    */
   export const usernameMatchingUserEntityAnnotation =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -73,11 +95,21 @@ export namespace bitbucketSignInResolvers {
             );
           }
 
-          return ctx.signInWithCatalogUser({
-            annotations: {
-              'bitbucket.org/username': username,
-            },
-          });
+          try {
+            return await ctx.signInWithCatalogUser({
+              annotations: {
+                'bitbucket.org/username': username,
+              },
+            });
+          } catch (error) {
+            return await handleSignInUserNotFound({
+              ctx,
+              error,
+              userEntityName: username,
+              dangerouslyAllowSignInWithoutUserInCatalog:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog,
+            });
+          }
         };
       },
     });

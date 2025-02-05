@@ -147,11 +147,15 @@ export type ClientAuthResponse<TProviderInfo> = {
 export namespace commonSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
     | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
         allowedDomains?: string[] | undefined;
       }
     | undefined
@@ -245,6 +249,23 @@ export function encodeOAuthState(state: OAuthState): string;
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;
+
+// @public (undocumented)
+export function handleSignInUserNotFound(
+  options: HandleSignInUserNotFoundOptions,
+): Promise<BackstageSignInResult>;
+
+// @public (undocumented)
+export interface HandleSignInUserNotFoundOptions {
+  // (undocumented)
+  ctx: AuthResolverContext;
+  // (undocumented)
+  dangerouslyAllowSignInWithoutUserInCatalog: boolean | undefined;
+  // (undocumented)
+  error: any;
+  // (undocumented)
+  userEntityName: string;
+}
 
 // @public
 export interface IdentityApi {
