@@ -37,7 +37,6 @@ import type { InternalServiceFactory } from '../../../backend-plugin-api/src/ser
 import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import {
   instanceMetadataServiceRef,
-  featureDiscoveryServiceRef,
   BackendFeatureMeta,
 } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
@@ -250,20 +249,6 @@ export class BackendInitializer {
 
     for (const feature of this.#registeredFeatures) {
       this.#addFeature(await feature);
-    }
-
-    const featureDiscovery = await this.#serviceRegistry.get(
-      // TODO: Let's leave this in place and remove it once the deprecated service is removed. We can do that post-1.0 since it's alpha
-      featureDiscoveryServiceRef,
-      'root',
-    );
-
-    if (featureDiscovery) {
-      const { features } = await featureDiscovery.getBackendFeatures();
-      for (const feature of features) {
-        this.#addFeature(unwrapFeature(feature));
-      }
-      this.#serviceRegistry.checkForCircularDeps();
     }
 
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);

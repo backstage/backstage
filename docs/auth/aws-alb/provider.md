@@ -23,6 +23,8 @@ auth:
       signer: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456'
       # this is the region where your ALB instance resides
       region: 'us-west-2'
+      ## uncomment to set lifespan of user session
+      # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
       signIn:
         resolvers:
           # See https://backstage.io/docs/auth/aws-alb/provider#resolvers for more resolvers
@@ -30,6 +32,10 @@ auth:
 ```
 
 Ensure that you have set the signer correctly. It is also recommended that you restrict your target groups' security policy to only accept connections from that ALB.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 

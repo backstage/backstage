@@ -608,4 +608,56 @@ describe('AwsCodeCommitUrlReader', () => {
       expect(bodySubfolderFile.toString().trim()).toBe('site_name: Test2');
     });
   });
+
+  describe('search', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsCodeCommit: [
+          {
+            host: AMAZON_AWS_CODECOMMIT_HOST,
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+            region: 'fakeregion',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      codeCommitClient.reset();
+
+      codeCommitClient.on(GetFileCommand).resolves({
+        fileContent: fs.readFileSync(
+          path.resolve(
+            __dirname,
+            '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+          ),
+        ),
+        commitId: `123abc`,
+      });
+    });
+
+    it('should return a file when given an exact valid url', async () => {
+      const data = await reader.search(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml',
+      );
+
+      expect(data.etag).toBe('123abc');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'site_name: Test\n',
+      );
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        reader.search(
+          'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
+  });
 });

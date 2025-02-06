@@ -1,5 +1,28 @@
 # @backstage/backend-defaults
 
+## 0.8.0-next.2
+
+### Patch Changes
+
+- 92a56f6: Internal refactor to stop importing the removed `FeatureDiscoveryService` from `@backstage/backend-plugin-api`.
+- 0d39029: Do not send `etag` or `If-Modified-Since` headers for gitlab artifact urls
+- c7609de: Allow passing IP type to use with cloud-sql-connector
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/backend-app-api@1.2.0-next.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.8-next.1
+  - @backstage/plugin-permission-node@0.8.8-next.1
+
 ## 0.8.0-next.1
 
 ### Patch Changes

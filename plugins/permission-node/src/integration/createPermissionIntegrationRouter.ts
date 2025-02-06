@@ -30,7 +30,7 @@ import {
   PermissionCriteria,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { PermissionRule, PermissionRuleset } from '../types';
 import {
   NoInfer,
   createGetRule,
@@ -39,6 +39,7 @@ import {
   isOrCriteria,
 } from './util';
 import { NotImplementedError } from '@backstage/errors';
+import { PermissionResourceRef } from './createPermissionResourceRef';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -163,10 +164,25 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-export const createConditionAuthorizer = <TResource, TQuery>(
+export function createConditionAuthorizer<TResource>(
+  permissionRuleset: PermissionRuleset<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+/**
+ * @public
+ * @deprecated Use the version of `createConditionAuthorizer` that accepts a `PermissionRuleset` instead.
+ */
+export function createConditionAuthorizer<TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
-) => {
-  const getRule = createGetRule(rules);
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+export function createConditionAuthorizer<TResource, TQuery>(
+  rules:
+    | PermissionRule<TResource, TQuery, string>[]
+    | PermissionRuleset<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean {
+  const getRule =
+    'getRuleByName' in rules
+      ? (n: string) => rules.getRuleByName(n)
+      : createGetRule(rules);
 
   return (
     decision: PolicyDecision,
@@ -178,7 +194,7 @@ export const createConditionAuthorizer = <TResource, TQuery>(
 
     return decision.result === AuthorizeResult.ALLOW;
   };
-};
+}
 
 /**
  * Options for creating a permission integration router specific
@@ -426,6 +442,9 @@ export function createPermissionIntegrationRouter<
       TResource
     >,
   ): void;
+  getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 } {
   const store = new PermissionIntegrationMetadataStore();
 
@@ -514,6 +533,13 @@ export function createPermissionIntegrationRouter<
       >,
     ) {
       store.addResourceType(resource);
+    },
+    getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
+      resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+    ): PermissionRuleset<TResource, TQuery, TResourceType> {
+      return {
+        getRuleByName: store.getRuleMapper(resourceRef.resourceType),
+      } as PermissionRuleset<TResource, TQuery, TResourceType>;
     },
   });
 }

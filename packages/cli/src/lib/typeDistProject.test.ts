@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { PackageRole } from '@backstage/cli-node';
+import { PackageRole, BackstagePackageFeatureType } from '@backstage/cli-node';
 import createFeatureEnvironment from './__testUtils__/createFeatureEnvironment';
-import {
-  getEntryPointDefaultFeatureType,
-  BackstagePackageFeatureType,
-} from './typeDistProject';
+import { getEntryPointDefaultFeatureType } from './typeDistProject';
 
 describe('typeDistProject', () => {
   describe('for package role', () => {

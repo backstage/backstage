@@ -13,7 +13,6 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventsBackend } from '@backstage/plugin-events-backend';
 import { EventsService } from '@backstage/plugin-events-node';
-import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
@@ -149,13 +148,6 @@ export interface DynamicPluginsFactoryOptions {
 
 // @public @deprecated (undocumented)
 export const dynamicPluginsFeatureDiscoveryLoader: BackendFeature;
-
-// @public @deprecated (undocumented)
-export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
-  FeatureDiscoveryService,
-  'root',
-  'singleton'
->;
 
 // @public
 export const dynamicPluginsFeatureLoader: ((
