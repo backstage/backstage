@@ -43,6 +43,7 @@ const _default: FrontendPlugin<
         height: number | undefined;
       } & {
         filter: string | undefined;
+        area: string | undefined;
       };
       configInput: {
         height?: number | undefined;
@@ -58,6 +59,7 @@ const _default: FrontendPlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: string | undefined;
+        area?: string | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -78,6 +80,13 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-card-area',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         [x: string]: ExtensionInput<
@@ -93,6 +102,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        defaultArea?: 'main' | 'info' | 'glance' | undefined;
       };
     }>;
     'page:catalog-graph': ExtensionDefinition<{

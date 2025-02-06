@@ -12,6 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -113,6 +114,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
+    defaultArea?: 'main' | 'info' | 'glance' | undefined;
   };
   output:
     | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -129,13 +131,22 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-card-area',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
     filter: string | undefined;
+    area: string | undefined;
   };
   configInput: {
     filter?: string | undefined;
+    area?: string | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -148,6 +159,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
+    area: ConfigurableExtensionDataRef<string, 'catalog.entity-card-area', {}>;
   };
 }>;
 
@@ -239,6 +251,98 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
+
+// @alpha (undocumented)
+export const OverviewEntityContentLauyoutBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-overview-entity-content-layout';
+  name: undefined;
+  params: {
+    areas: Array<string>;
+    defaultArea: string;
+    defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
+    loader: () => Promise<
+      (props: OverviewEntityContentLayoutProps) => React_2.JSX.Element
+    >;
+  };
+  output:
+    | ConfigurableExtensionDataRef<string, 'catalog.entity-card-area', {}>
+    | ConfigurableExtensionDataRef<
+        string[],
+        'catalog.overview-entity-content.layout.areas',
+        {}
+      >
+    | ConfigurableExtensionDataRef<
+        (props: OverviewEntityContentLayoutProps) => React_2.JSX.Element,
+        'catalog.overview-entity-content.layout.page-component',
+        {}
+      >
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.overview-entity-content.layout.filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.overview-entity-content.layout.filter-expression',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    area: string | undefined;
+    filter: string | undefined;
+  };
+  configInput: {
+    filter?: string | undefined;
+    area?: string | undefined;
+  };
+  dataRefs: {
+    areas: ConfigurableExtensionDataRef<
+      string[],
+      'catalog.overview-entity-content.layout.areas',
+      {}
+    >;
+    defaultArea: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-card-area',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.overview-entity-content.layout.filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.overview-entity-content.layout.filter-expression',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: OverviewEntityContentLayoutProps) => React_2.JSX.Element,
+      'catalog.overview-entity-content.layout.page-component',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface OverviewEntityContentLayoutProps {
+  // (undocumented)
+  buildFilterFn: (
+    filterFunction?: (entity: Entity) => boolean,
+    filterExpression?: string,
+  ) => (entity: Entity) => boolean;
+  // (undocumented)
+  cards: Array<{
+    area?: string;
+    element: React_2.JSX.Element;
+    filterFunction?: (entity: Entity) => boolean;
+    filterExpression?: string;
+  }>;
+}
 
 // @alpha
 export function useEntityPermission(

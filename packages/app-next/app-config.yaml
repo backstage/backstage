@@ -25,11 +25,14 @@ app:
             custom: Custom
 
     # Entity page cards
-    - entity-card:catalog/about
+    - entity-card:catalog/about:
+        config:
+          area: info
     - entity-card:catalog/labels
     - entity-card:catalog/links:
         config:
           filter: kind:component has:links
+          area: info
     # - entity-card:linguist/languages
     - entity-card:catalog-graph/relations:
         config:
@@ -66,6 +69,11 @@ app:
     # - entity-content:azure-devops/pipelines
     # - entity-content:azure-devops/pull-requests
     # - entity-content:azure-devops/git-tags
+
+    - catalog-overview-entity-content-layout:app/sticky:
+        config:
+          # this layout will apply to entities of kind component
+          filter: 'kind:component'
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({
