@@ -15,7 +15,7 @@ Please leave feedback on these features in the [Backstage Discord](https://disco
 
 Do you have long-running tasks, and can they recover and proceed after Backstage redeploy?
 
-Then you definitely will benefit from enabling the experimental feature called EXPERIMENTAL_recovery.
+Then you definitely will benefit from enabling the experimental scaffolder task recovery feature.
 
 Whenever you do redeploy, on startup there will be a check of all tasks in "processing" state that you identified in your template as they are capable of starting over.
 
