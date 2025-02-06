@@ -103,6 +103,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/glob": "^8.0.0",
