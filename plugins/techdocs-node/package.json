@@ -61,6 +61,7 @@
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-techdocs-common": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@google-cloud/storage": "^7.0.0",
     "@smithy/node-http-handler": "^3.0.0",
     "@trendyol-js/openstack-swift-sdk": "^0.0.7",

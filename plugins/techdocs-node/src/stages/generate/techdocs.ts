@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import path from 'path';
 import {
   ScmIntegrationRegistry,
@@ -39,11 +39,12 @@ import {
   GeneratorOptions,
   GeneratorRunInType,
   GeneratorRunOptions,
+  TechDocsContainerRunner,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TechDocsContainerRunner } from './types';
+import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * Generates documentation files
@@ -149,6 +150,7 @@ export class TechdocsGenerator implements GeneratorBase {
             args: ['build', '-d', outputDir, '-v'],
             options: {
               cwd: inputDir,
+              timeout: this.options.timeout,
             },
             logStream,
           });
@@ -158,7 +160,8 @@ export class TechdocsGenerator implements GeneratorBase {
           break;
         case 'docker': {
           const containerRunner =
-            this.containerRunner || new DockerContainerRunner();
+            this.containerRunner ||
+            new DockerContainerRunner({ timeout: this.options.timeout });
           await containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
@@ -229,6 +232,12 @@ export function readGeneratorConfig(
     );
   }
 
+  const timeout = config.has('techdocs.generator.timeout')
+    ? durationToMilliseconds(
+        readDurationFromConfig(config, { key: 'techdocs.generator.timeout' }),
+      )
+    : undefined;
+
   return {
     runIn:
       legacyGeneratorType ??
@@ -245,5 +254,6 @@ export function readGeneratorConfig(
     defaultPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.defaultPlugins',
     ),
+    timeout,
   };
 }

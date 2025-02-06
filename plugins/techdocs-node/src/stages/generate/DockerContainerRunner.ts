@@ -17,11 +17,9 @@
 import Docker from 'dockerode';
 import fs from 'fs-extra';
 import { ForwardedError } from '@backstage/errors';
-import { PassThrough } from 'stream';
-import { pipeline as pipelineStream } from 'stream';
+import { PassThrough, pipeline as pipelineStream, Writable } from 'stream';
 import { promisify } from 'util';
 import { TechDocsContainerRunner } from './types';
-import { Writable } from 'stream';
 
 const pipeline = promisify(pipelineStream);
 
@@ -35,8 +33,8 @@ export type UserOptions = {
 export class DockerContainerRunner implements TechDocsContainerRunner {
   private readonly dockerClient: Docker;
 
-  constructor() {
-    this.dockerClient = new Docker();
+  constructor(options?: { timeout?: number }) {
+    this.dockerClient = new Docker(options);
   }
 
   async runContainer(options: {
