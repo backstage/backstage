@@ -90,17 +90,24 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         );
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
-          parentId = (
-            await api.Groups.create(
-              name,
-              slug,
-              parentId
-                ? {
-                    parentId: parentId,
-                  }
-                : {},
-            )
-          )?.id;
+
+          parentId = await ctx.checkpoint({
+            key: `ensure.${name}.${slug}.${parentId}`,
+            // eslint-disable-next-line no-loop-func
+            fn: async () => {
+              return (
+                await api.Groups.create(
+                  name,
+                  slug,
+                  parentId
+                    ? {
+                        parentId: parentId,
+                      }
+                    : {},
+                )
+              )?.id;
+            },
+          });
         } else {
           parentId = subGroup.id;
         }
