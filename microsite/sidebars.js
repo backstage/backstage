@@ -495,7 +495,7 @@ module.exports = {
     Tutorials: [
       { 'Non-technical': ['overview/adopting'] },
       {
-        Techical: [
+        Technical: [
           'tutorials/quickstart-app-plugin',
           'tutorials/configuring-plugin-databases',
           'tutorials/switching-sqlite-postgres',
