@@ -89,7 +89,7 @@ describe('populateOptions', () => {
       {
         id: '',
         private: false,
-        baseVersion: '0.0.0',
+        baseVersion: '0.1.0',
         owner: '',
         license: 'Apache-2.0',
         targetPath: '/example',
@@ -107,7 +107,7 @@ describe('populateOptions', () => {
     ).toEqual({
       id: '',
       private: false,
-      baseVersion: '0.0.0',
+      baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',
       targetPath: '/example',
@@ -125,7 +125,7 @@ describe('populateOptions', () => {
     ).toEqual({
       id: '',
       private: false,
-      baseVersion: '0.0.0',
+      baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',
       targetPath: '/global',
