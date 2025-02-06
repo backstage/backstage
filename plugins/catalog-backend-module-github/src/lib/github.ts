@@ -26,9 +26,9 @@ import {
 } from './defaultTransformers';
 import { withLocations } from './withLocations';
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Octokit } from '@octokit/core';
-import { LoggerService } from '@backstage/backend-plugin-api';
 import { throttling } from '@octokit/plugin-throttling';
 // Graphql types
 
@@ -465,7 +465,7 @@ export async function getOrganizationRepositories(
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
         login
-        repositories(first: 50, after: $cursor) {
+        repositories(first: 30, after: $cursor) {
           nodes {
             name
             catalogInfoFile: object(expression: $catalogPathRef) {
