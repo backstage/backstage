@@ -44,6 +44,7 @@ import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { customEntityContentOverviewLayoutModule } from './EntityPages';
 
 /*
 
@@ -131,6 +132,7 @@ const app = createApp({
     kubernetesPlugin,
     notFoundErrorPageModule,
     customHomePageModule,
+    customEntityContentOverviewLayoutModule,
     ...collectedLegacyPlugins,
   ],
   /* Handled through config instead */

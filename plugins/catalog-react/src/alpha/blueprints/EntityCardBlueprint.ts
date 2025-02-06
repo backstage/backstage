@@ -22,6 +22,8 @@ import {
 import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
+  entityCardAreaDataRef,
+  defaultEntityCardArea,
 } from './extensionData';
 
 /**
@@ -35,25 +37,30 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
+    entityCardAreaDataRef.optional(),
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
+    area: entityCardAreaDataRef,
   },
   config: {
     schema: {
       filter: z => z.string().optional(),
+      area: z => z.string().optional(),
     },
   },
   *factory(
     {
       loader,
       filter,
+      defaultArea,
     }: {
       loader: () => Promise<JSX.Element>;
       filter?:
         | typeof entityFilterFunctionDataRef.T
         | typeof entityFilterExpressionDataRef.T;
+      defaultArea?: (typeof defaultEntityCardArea)[number];
     },
     { node, config },
   ) {
@@ -65,6 +72,11 @@ export const EntityCardBlueprint = createExtensionBlueprint({
       yield entityFilterExpressionDataRef(filter);
     } else if (typeof filter === 'function') {
       yield entityFilterFunctionDataRef(filter);
+    }
+
+    const area = config.area ?? defaultArea;
+    if (area) {
+      yield entityCardAreaDataRef(area);
     }
   },
 });
