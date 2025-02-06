@@ -247,6 +247,10 @@ export function registerCommands(program: Command) {
     .description(
       'Open up an interactive guide to creating new things in your app',
     )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
     .action(lazy(() => import('./new/new'), 'default'));
 
   registerConfigCommands(program);
