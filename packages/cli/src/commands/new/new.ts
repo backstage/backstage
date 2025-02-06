@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import fs from 'fs-extra';
-import { join as joinPath } from 'path';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import { isMonoRepo } from '@backstage/cli-node';
@@ -42,6 +40,7 @@ import {
 } from '../../lib/new/utils';
 import { runAdditionalActions } from '../../lib/new/additionalActions';
 import { executePluginPackageTemplate } from '../../lib/new/executeTemplate';
+import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
@@ -59,12 +58,7 @@ export default async () => {
   });
   const options = populateOptions(prompts, template);
 
-  const tempDirs = new Array<string>();
-  async function createTemporaryDirectory(name: string): Promise<string> {
-    const dir = await fs.mkdtemp(joinPath(os.tmpdir(), name));
-    tempDirs.push(dir);
-    return dir;
-  }
+  const tmpDirManager = TemporaryDirectoryManager.create();
 
   const dirName = createDirName(template, options);
   const targetDir = paths.resolveTargetRoot(options.targetPath, dirName);
@@ -88,7 +82,7 @@ export default async () => {
     await executePluginPackageTemplate(
       {
         isMonoRepo: await isMonoRepo(),
-        createTemporaryDirectory,
+        createTemporaryDirectory: tmpDirManager.createDir,
         markAsModified() {
           modified = true;
         },
@@ -150,14 +144,6 @@ export default async () => {
       Task.error(`🔥  Failed to create ${template.id}!`);
     }
   } finally {
-    for (const dir of tempDirs) {
-      try {
-        await fs.remove(dir);
-      } catch (error) {
-        console.error(
-          `Failed to remove temporary directory '${dir}', ${error}`,
-        );
-      }
-    }
+    tmpDirManager.cleanup();
   }
 };
