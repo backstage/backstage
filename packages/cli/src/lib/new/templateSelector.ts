@@ -47,7 +47,15 @@ export function readCliConfig(cliConfig: CliConfig) {
 
 export async function templateSelector(
   templates: TemplateLocation[],
+  selected?: string,
 ): Promise<TemplateLocation> {
+  if (selected) {
+    const template = templates.find(t => t.id === selected);
+    if (!template) {
+      throw new Error(`Template '${selected}' not found`);
+    }
+    return template;
+  }
   const answer = await inquirer.prompt<{ name: TemplateLocation }>([
     {
       type: 'list',

@@ -41,13 +41,16 @@ import {
 import { runAdditionalActions } from '../../lib/new/additionalActions';
 import { executePluginPackageTemplate } from '../../lib/new/executeTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
+import { OptionValues } from 'commander';
 
-export default async () => {
+export default async (opts: OptionValues) => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
   const { templates, globals } = readCliConfig(cliConfig);
-  const template = verifyTemplate(await templateSelector(templates));
+  const template = verifyTemplate(
+    await templateSelector(templates, opts.select),
+  );
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
