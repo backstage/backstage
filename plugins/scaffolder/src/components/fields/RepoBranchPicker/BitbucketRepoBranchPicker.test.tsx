@@ -26,9 +26,7 @@ import userEvent from '@testing-library/user-event';
 
 describe('BitbucketRepoBranchPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest
-      .fn()
-      .mockResolvedValue({ results: [{ title: 'branch1' }] }),
+    autocomplete: jest.fn().mockResolvedValue({ results: [{ id: 'branch1' }] }),
   };
 
   it('renders an input field', () => {

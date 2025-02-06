@@ -1,5 +1,105 @@
 # @backstage/frontend-defaults
 
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-app-api@0.10.5-next.2
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/plugin-app@0.1.6-next.2
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/frontend-app-api@0.10.5-next.1
+  - @backstage/plugin-app@0.1.6-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/frontend-app-api@0.10.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-app@0.1.6-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-app-api@0.10.4
+  - @backstage/plugin-app@0.1.5
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/frontend-app-api@0.10.4-next.0
+  - @backstage/plugin-app@0.1.5-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/frontend-app-api@0.10.3
+
+## 0.1.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/frontend-app-api@0.10.3-next.2
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/plugin-app@0.1.4-next.2
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-app-api@0.10.3-next.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/plugin-app@0.1.4-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.4-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-app-api@0.10.3-next.0
+
 ## 0.1.2
 
 ### Patch Changes

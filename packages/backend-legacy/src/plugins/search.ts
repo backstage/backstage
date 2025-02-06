@@ -15,7 +15,6 @@
  */
 
 import { useHotCleanup } from '@backstage/backend-common';
-import { DefaultCatalogCollatorFactory } from '@backstage/plugin-search-backend-module-catalog';
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
@@ -65,16 +64,6 @@ export default async function createPlugin(
     // A 3 second delay gives the backend server a chance to initialize before
     // any collators are executed, which may attempt requests against the API.
     initialDelay: { seconds: 3 },
-  });
-
-  // Collators are responsible for gathering documents known to plugins. This
-  // particular collator gathers entities from the software catalog.
-  indexBuilder.addCollator({
-    schedule,
-    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
-      discovery: env.discovery,
-      tokenManager: env.tokenManager,
-    }),
   });
 
   indexBuilder.addCollator({

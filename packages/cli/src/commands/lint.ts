@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { OptionValues } from 'commander';
 import { paths } from '../lib/paths';
 import { ESLint } from 'eslint';
@@ -49,10 +50,14 @@ export default async (directories: string[], opts: OptionValues) => {
     process.chdir(paths.targetRoot);
   }
 
-  const resultText = formatter.format(results);
+  const resultText = await formatter.format(results);
 
   if (resultText) {
-    console.log(resultText);
+    if (opts.outputFile) {
+      await fs.writeFile(paths.resolveTarget(opts.outputFile), resultText);
+    } else {
+      console.log(resultText);
+    }
   }
 
   if (failed) {

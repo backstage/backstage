@@ -23,7 +23,11 @@ import {
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import {
   BitbucketIntegration,
   getBitbucketDefaultBranch,
@@ -32,15 +36,12 @@ import {
   getBitbucketRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { parseLastModified } from './util';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket v1 and v2 APIs, such
@@ -127,12 +128,7 @@ export class BitbucketUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
@@ -170,7 +166,7 @@ export class BitbucketUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(archiveBitbucketResponse.body),
+      response: archiveBitbucketResponse,
       subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
@@ -182,6 +178,34 @@ export class BitbucketUrlReader implements UrlReaderService {
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
     const { filepath } = parseGitUrl(url);
+
+    // If it's a direct URL we use readUrl instead
+    if (!filepath?.match(/[*?]/)) {
+      try {
+        const data = await this.readUrl(url, options);
+
+        return {
+          files: [
+            {
+              url: url,
+              content: data.buffer,
+              lastModifiedAt: data.lastModifiedAt,
+            },
+          ],
+          etag: data.etag ?? '',
+        };
+      } catch (error) {
+        assertError(error);
+        if (error.name === 'NotFoundError') {
+          return {
+            files: [],
+            etag: '',
+          };
+        }
+        throw error;
+      }
+    }
+
     const matcher = new Minimatch(filepath);
 
     // TODO(freben): For now, read the entire repo and filter through that. In

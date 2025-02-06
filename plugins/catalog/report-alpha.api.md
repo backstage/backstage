@@ -115,7 +115,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain';
     readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this';
     readonly 'systemDiagramCard.title': 'System Diagram';
-    readonly 'systemDiagramCard.description': 'Use pinch & zoo to move around the diagram.';
+    readonly 'systemDiagramCard.description': 'Use pinch & zoom to move around the diagram.';
     readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
     readonly 'systemDiagramCard.edgeLabels.partOf': 'part of';
     readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
@@ -146,21 +146,6 @@ const _default: FrontendPlugin<
     unregisterRedirect: ExternalRouteRef<undefined>;
   },
   {
-    'api:catalog': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
-    }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -180,6 +165,21 @@ const _default: FrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
+      };
+    }>;
+    'api:catalog': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
       };
     }>;
     'api:catalog/starred-entities': ExtensionDefinition<{

@@ -36,11 +36,14 @@ const mockGitlabClient = {
   Namespaces: {
     show: jest.fn(),
   },
+  Groups: {
+    allProjects: jest.fn(),
+  },
   Projects: {
     create: jest.fn(),
   },
   Users: {
-    current: jest.fn(),
+    showCurrentUser: jest.fn(),
   },
   ProjectMembers: {
     add: jest.fn(),
@@ -55,7 +58,7 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -183,8 +186,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should work when there is a token provided through ctx.input', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -199,7 +203,7 @@ describe('publish:gitlab', () => {
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 1234,
+      namespaceId: 1234,
       name: 'bob',
       visibility: 'private',
     });
@@ -208,8 +212,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should call the correct Gitlab APIs when the owner is an organization', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -218,7 +223,7 @@ describe('publish:gitlab', () => {
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 1234,
+      namespaceId: 1234,
       name: 'repo',
       visibility: 'private',
       ci_config_path: '.gitlab-ci.yml',
@@ -229,7 +234,8 @@ describe('publish:gitlab', () => {
 
   it('should call the correct Gitlab APIs when the owner is not an organization', async () => {
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: null });
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -238,7 +244,57 @@ describe('publish:gitlab', () => {
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 12345,
+      namespaceId: 12345,
+      name: 'repo',
+      visibility: 'private',
+      ci_config_path: '.gitlab-ci.yml',
+    });
+    expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
+  });
+
+  it('should not call the creation Gitlab APIs when the repository already exists', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([
+      {
+        path: 'repo',
+        http_url_to_repo: 'http://mockurl.git',
+      },
+      {
+        path: 'repo-name',
+        http_url_to_repo: 'http://mockurl.git',
+      },
+    ]);
+
+    await action.handler({
+      ...mockContext,
+      input: { ...mockContext.input, skipExisting: true },
+    });
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
+  });
+
+  it('should call the creation Gitlab APIs when the repository does not yet exists', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([
+      {
+        path: 'repo-name',
+      },
+    ]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContext);
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
+      namespaceId: 1234,
       name: 'repo',
       visibility: 'private',
       ci_config_path: '.gitlab-ci.yml',
@@ -248,8 +304,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should call the correct Gitlab APIs when using project settings with override of visibility and topics', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -258,7 +315,7 @@ describe('publish:gitlab', () => {
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 1234,
+      namespaceId: 1234,
       name: 'repo',
       visibility: 'internal',
       topics: ['topic1', 'topic2'],
@@ -269,8 +326,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should call the correct Gitlab APIs for branches and protectd branches when branch settings provided', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       id: 123456,
       http_url_to_repo: 'http://mockurl.git',
@@ -280,7 +338,7 @@ describe('publish:gitlab', () => {
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 1234,
+      namespaceId: 1234,
       name: 'repo',
       visibility: 'private',
     });
@@ -309,8 +367,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should call the correct Gitlab APIs for variables when their configuration is provided', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       id: 123456,
       http_url_to_repo: 'http://mockurl.git',
@@ -320,29 +379,30 @@ describe('publish:gitlab', () => {
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 1234,
+      namespaceId: 1234,
       name: 'repo',
       visibility: 'private',
     });
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       123456,
+      'key',
+      'value',
       {
-        key: 'key',
-        value: 'value',
         description: 'description',
-        variable_type: 'env_var',
+        variableType: 'env_var',
         protected: true,
         masked: true,
         raw: false,
-        environment_scope: '*',
+        environmentScope: '*',
       },
     );
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -360,9 +420,34 @@ describe('publish:gitlab', () => {
     });
   });
 
-  it('should call initRepoAndPush with the correct default branch', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+  it('should not call initRepoAndPush when sourcePath is false', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { ...mockContext.input, sourcePath: false },
+    });
+
+    expect(initRepoAndPush).not.toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      defaultBranch: 'master',
+      remoteUrl: 'http://mockurl.git',
+      auth: { username: 'oauth2', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {},
+    });
+  });
+
+  it('should call initRepoAndPush with the correct default branch', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -416,8 +501,9 @@ describe('publish:gitlab', () => {
       config: customAuthorConfig,
     });
 
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -462,8 +548,9 @@ describe('publish:gitlab', () => {
       config: customAuthorConfig,
     });
 
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
@@ -482,8 +569,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should call output with the remoteUrl and repoContentsUrl and projectId', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
       id: 1234,
@@ -523,7 +611,8 @@ describe('publish:gitlab', () => {
     });
 
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       id: 123456,
       http_url_to_repo: 'http://mockurl.git',
@@ -539,14 +628,14 @@ describe('publish:gitlab', () => {
     });
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
-    expect(mockGitlabClient.Users.current).toHaveBeenCalled();
+    expect(mockGitlabClient.Users.showCurrentUser).toHaveBeenCalled();
     expect(mockGitlabClient.ProjectMembers.add).toHaveBeenCalledWith(
       123456,
       12345,
       50,
     );
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
-      namespace_id: 1234,
+      namespaceId: 1234,
       name: 'repo',
       visibility: 'private',
     });

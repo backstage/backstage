@@ -17,41 +17,6 @@ latest releases. Backstage is more of a library than an application or service;
 similar to `create-react-app`, the `@backstage/create-app` tool gives you a
 starting point that's meant to be evolved.
 
-## Managing package versions with the Backstage yarn plugin
-
-The Backstage yarn plugin makes it easier to manage Backstage package versions,
-by determining the appropriate version for each package based on the overall
-Backstage version in backstage.json. This avoids the need to update every
-package.json across your Backstage monorepo, and means that when adding new
-`@backstage` dependencies, you don't need to worry about figuring out the right
-version to use to match the currently-installed release of Backstage.
-
-### Requirements
-
-In order to use the yarn plugin, you'll need to be using yarn 4.1.1 or greater.
-
-### Installation
-
-To install the yarn plugin, run the following command in your Backstage
-monorepo:
-
-```bash
-yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin
-```
-
-The resulting changes in the file system should be committed to your repo.
-
-### Usage
-
-When the yarn plugin is installed, versions for currently-released `@backstage`
-packages can be replaced in package.json with the string `"backstage:^"`. This
-instructs yarn to resolve the version based on the overall Backstage version in
-backstage.json.
-
-The `backstage-cli versions:bump` command documented below will detect the
-installation of the yarn plugin, and when it's installed, will automatically
-migrate dependencies across the monorepo to use it.
-
 ## Updating Backstage versions with backstage-cli
 
 The Backstage CLI has a command to bump all `@backstage` packages and
@@ -64,6 +29,13 @@ yarn backstage-cli versions:bump
 
 The reason for bumping all `@backstage` packages at once is to maintain the
 dependencies that they have between each other.
+
+<a name="plugin"></a>
+:::tip
+
+To make the version bump process even easier and more streamlined we highly recommend using the [Backstage yarn plugin](#managing-package-versions-with-the-backstage-yarn-plugin)
+
+:::
 
 By default the bump command will upgrade `@backstage` packages to the latest `main` release line which is released monthly. For those in a hurry that want to track the `next` release line which releases weekly can do so using the `--release next` option.
 
@@ -95,6 +67,53 @@ for any applicable updates when upgrading packages. As an alternative, the
 a consolidated view of all the changes between two versions of Backstage. You
 can find the current version of your Backstage installation in `backstage.json`.
 
+## Managing package versions with the Backstage yarn plugin
+
+The Backstage yarn plugin makes it easier to manage Backstage package versions,
+by determining the appropriate version for each package based on the overall
+Backstage version in `backstage.json`. This avoids the need to update every
+package.json across your Backstage monorepo, and means that when adding new
+`@backstage` dependencies, you don't need to worry about figuring out the right
+version to use to match the currently-installed release of Backstage.
+
+### Requirements
+
+In order to use the yarn plugin, you'll need to be using yarn 4.1.1 or greater.
+
+### Installation
+
+To install the yarn plugin, run the following command in your Backstage
+monorepo:
+
+```bash
+yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin
+```
+
+The resulting changes in the file system should be committed to your repo.
+
+:::tip
+
+For best results it's ideal to add the Backstage Yarn plugin when you are about to do a Backstage upgrade as it will make it easier to confirm everything is working.
+
+:::
+
+### Usage
+
+When the yarn plugin is installed, versions for currently-released `@backstage`
+packages can be replaced in package.json with the string `"backstage:^"`. This
+instructs yarn to resolve the version based on the overall Backstage version in
+`backstage.json`.
+
+:::tip
+
+The `backstage.json` is key for the plugin to work, make sure this file is included in your CI/CD pipelines and/or any Container builds.
+
+:::
+
+The `backstage-cli versions:bump` command documented above will detect the
+installation of the yarn plugin, and when it's installed, will automatically
+migrate dependencies across the monorepo to use it.
+
 ## More information on dependency mismatches
 
 Backstage is structured as a monorepo with
@@ -122,12 +141,22 @@ down the number of duplicate packages.
 
 ## Proxy
 
-The Backstage CLI uses [global-agent](https://www.npmjs.com/package/global-agent) to configure HTTP/HTTPS proxy settings using environment variables. This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
+The Backstage CLI uses [global-agent](https://www.npmjs.com/package/global-agent) and `undici` to configure HTTP/HTTPS proxy settings using environment variables. This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
+
+Additionally, yarn needs a proxy too (sometimes), when in environments with restricted internet access. It uses different settings than the other modules. If you decide to use the backstage yarn plugin [mentioned above](#plugin), you will need to set additional proxy values.
+If you will always need proxy settings in all environments and situations, you can add `httpProxy` and `httpsProxy` values to [the yarnrc.yml file](https://yarnpkg.com/configuration/yarnrc). If some environments need it (say a developer workstation) but other environments do not (perhaps a CI build server running on AWS), then you may not want to update the yarnrc.yml file but just set environment variables `YARN_HTTP_PROXY` and `YARN_HTTPS_PROXY` in the environments/situations where you need to proxy.
+
+**If you plan to use the backstage yarn plugin, you will need these extra yarn proxy settings to both install the plugin and run the `versions:bump` command**. If you do not plan to use the backstage yarn plugin, it seems like the global agent proxy settings alone are sufficient.
 
 ### Example Configuration
 
 ```bash
-export GLOBAL_AGENT_HTTP_PROXY=http://proxy.company.com:8080
-export GLOBAL_AGENT_HTTPS_PROXY=https://secure-proxy.company.com:8080
-export GLOBAL_AGENT_NO_PROXY=localhost,internal.company.com
+export HTTP_PROXY=http://proxy.company.com:8080
+export HTTPS_PROXY=https://secure-proxy.company.com:8080
+export NO_PROXY=localhost,internal.company.com
+export GLOBAL_AGENT_HTTP_PROXY=${HTTP_PROXY}
+export GLOBAL_AGENT_HTTPS_PROXY=${HTTPS_PROXY}
+export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
+export YARN_HTTP_PROXY=${HTTP_PROXY}                          # optional
+export YARN_HTTPS_PROXY=${HTTPS_PROXY}                        # optional
 ```

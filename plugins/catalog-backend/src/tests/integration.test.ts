@@ -30,9 +30,9 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { JsonObject } from '@backstage/types';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
+import merge from 'lodash/merge';
 import { EntitiesCatalog } from '../catalog/types';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
@@ -55,6 +55,8 @@ import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { mockServices } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { DatabaseManager } from '@backstage/backend-common';
+import { entitiesResponseToObjects } from '../service/response';
+import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -63,10 +65,15 @@ type ProgressTrackerWithErrorReports = ProgressTracker & {
 };
 
 class TestProvider implements EntityProvider {
+  readonly #name: string;
   #connection?: EntityProviderConnection;
 
+  constructor(name: string = 'test') {
+    this.#name = name;
+  }
+
   getProviderName(): string {
-    return 'test';
+    return this.#name;
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -196,33 +203,33 @@ class TestHarness {
   readonly #refresh: RefreshService;
   readonly #provider: TestProvider;
   readonly #proxyProgressTracker: ProxyProgressTracker;
+  readonly #db: Knex;
 
   static async create(options?: {
-    config?: JsonObject;
+    disableRelationsCompatibility?: boolean;
     logger?: LoggerService;
     db?: Knex;
     permissions?: PermissionEvaluator;
+    additionalProviders?: EntityProvider[];
     processEntity?(
       entity: Entity,
       location: LocationSpec,
       emit: CatalogProcessorEmit,
     ): Promise<Entity>;
   }) {
-    const config = new ConfigReader(
-      options?.config ?? {
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
-          },
-        },
-        catalog: {
-          stitchingStrategy: {
-            mode: 'immediate',
-          },
+    const config = new ConfigReader({
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
         },
       },
-    );
+      catalog: {
+        stitchingStrategy: {
+          mode: 'immediate',
+        },
+      },
+    });
     const logger = options?.logger ?? mockServices.logger.mock();
     const db =
       options?.db ??
@@ -279,6 +286,7 @@ class TestHarness {
       database: db,
       logger,
       stitcher,
+      disableRelationsCompatibility: options?.disableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -302,8 +310,13 @@ class TestHarness {
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
 
     const provider = new TestProvider();
+    const providers: EntityProvider[] = [provider];
 
-    await connectEntityProviders(providerDatabase, [provider]);
+    if (options?.additionalProviders) {
+      providers.push(...options.additionalProviders);
+    }
+
+    await connectEntityProviders(providerDatabase, providers);
 
     return new TestHarness(
       catalog,
@@ -320,6 +333,7 @@ class TestHarness {
       refresh,
       provider,
       proxyProgressTracker,
+      db,
     );
   }
 
@@ -329,12 +343,14 @@ class TestHarness {
     refresh: RefreshService,
     provider: TestProvider,
     proxyProgressTracker: ProxyProgressTracker,
+    db: Knex,
   ) {
     this.#catalog = catalog;
     this.#engine = engine;
     this.#refresh = refresh;
     this.#provider = provider;
     this.#proxyProgressTracker = proxyProgressTracker;
+    this.#db = db;
   }
 
   async process(entityRefs?: Set<string>) {
@@ -354,7 +370,7 @@ class TestHarness {
   }
 
   async setInputEntities(entities: (Entity & { locationKey?: string })[]) {
-    return this.#provider.getConnection().applyMutation({
+    await this.#provider.getConnection().applyMutation({
       type: 'full',
       entities: entities.map(({ locationKey, ...entity }) => ({
         entity,
@@ -365,11 +381,65 @@ class TestHarness {
 
   async getOutputEntities(): Promise<Record<string, Entity>> {
     const { entities } = await this.#catalog.entities();
-    return Object.fromEntries(entities.map(e => [stringifyEntityRef(e), e]));
+    return Object.fromEntries(
+      entitiesResponseToObjects(entities).map(e => [
+        stringifyEntityRef(e!),
+        e!,
+      ]),
+    );
   }
 
   async refresh(options: RefreshOptions) {
     return this.#refresh.refresh(options);
+  }
+
+  async removeOrphanedEntities() {
+    await deleteOrphanedEntities({
+      knex: this.#db,
+      strategy: { mode: 'immediate' },
+    });
+  }
+
+  async getRefreshState(): Promise<
+    Record<
+      string,
+      {
+        id: string;
+        unprocessedEntity: Entity;
+        processedEntity: Entity;
+        locationKey: string | null;
+      }
+    >
+  > {
+    const result = await this.#db('refresh_state').select('*');
+    return Object.fromEntries(
+      result.map(r => [
+        r.entity_ref,
+        {
+          id: r.entity_id,
+          unprocessedEntity: JSON.parse(r.unprocessed_entity),
+          processedEntity: r.processed_entity
+            ? JSON.parse(r.processed_entity)
+            : undefined,
+          locationKey: r.location_key,
+        },
+      ]),
+    );
+  }
+
+  async getRefreshStateReferences(): Promise<
+    Array<{
+      sourceKey: string | null;
+      sourceEntityRef: string | null;
+      targetEntityRef: string;
+    }>
+  > {
+    const result = await this.#db('refresh_state_references').select('*');
+    return result.map(r => ({
+      sourceKey: r.source_key ?? undefined,
+      sourceEntityRef: r.source_entity_ref ?? undefined,
+      targetEntityRef: r.target_entity_ref,
+    }));
   }
 }
 
@@ -442,7 +512,6 @@ describe('Catalog Backend Integration', () => {
                 cause: {
                   name: 'Error',
                   message: 'NOPE',
-                  stack: expect.stringMatching(/^Error: NOPE/),
                 },
               },
             },
@@ -780,6 +849,468 @@ describe('Catalog Backend Integration', () => {
           "Invalid location ref 'url:javascript:bad()', target is a javascript: URL",
         ),
       ],
+    });
+  });
+
+  it('should return valid responses in raw JSON mode', async () => {
+    const harness = await TestHarness.create({
+      disableRelationsCompatibility: true,
+    });
+
+    const entityA = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'a',
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityB = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'b',
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+
+    await harness.setInputEntities([entityA, entityB]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': {
+        ...entityA,
+        metadata: {
+          ...entityA.metadata,
+          etag: expect.any(String),
+          uid: expect.any(String),
+        },
+        relations: [],
+      },
+      'component:default/b': {
+        ...entityB,
+        metadata: {
+          ...entityB.metadata,
+          etag: expect.any(String),
+          uid: expect.any(String),
+        },
+        relations: [],
+      },
+    });
+  });
+
+  it('should replace any refresh_state_references that are dangling after claiming an entityRef with locationKey', async () => {
+    const firstProvider = new TestProvider('first');
+    const secondProvider = new TestProvider('second');
+
+    const harness = await TestHarness.create({
+      additionalProviders: [firstProvider, secondProvider],
+    });
+
+    await firstProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-1',
+              annotations: {
+                'backstage.io/managed-by-location': 'url:.',
+                'backstage.io/managed-by-origin-location': 'url:.',
+              },
+            },
+            spec: {
+              type: 'service',
+              owner: 'no-location-key',
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-1': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'no-location-key',
+        },
+      }),
+    });
+
+    await secondProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          locationKey: 'takeover',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-1',
+              annotations: {
+                'backstage.io/managed-by-location': 'url:.',
+                'backstage.io/managed-by-origin-location': 'url:.',
+              },
+            },
+            spec: {
+              type: 'service',
+              owner: 'location-key',
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-1': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'location-key',
+        },
+      }),
+    });
+
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'second',
+        targetEntityRef: 'component:default/component-1',
+      },
+    ]);
+
+    await secondProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          locationKey: 'takeover',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-2',
+              annotations: {
+                'backstage.io/managed-by-location': 'url:.',
+                'backstage.io/managed-by-origin-location': 'url:.',
+              },
+            },
+            spec: {
+              type: 'service',
+              owner: 'location-key',
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'second',
+        targetEntityRef: 'component:default/component-2',
+      },
+    ]);
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/component-2': expect.objectContaining({
+        spec: {
+          type: 'service',
+          owner: 'location-key',
+        },
+      }),
+    });
+  });
+
+  function withOutputFields(entity: Entity) {
+    return {
+      ...entity,
+      metadata: {
+        ...entity.metadata,
+        etag: expect.any(String),
+        uid: expect.any(String),
+      },
+      relations: [],
+    };
+  }
+
+  it('should fully replace existing entities when emitting override entities during processing', async () => {
+    const baseEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityA = merge({ metadata: { name: 'a' } }, baseEntity);
+    const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
+    const entityBOverride = merge({ metadata: { override: true } }, entityB);
+
+    const processEntity = jest.fn(
+      async (
+        entity: Entity,
+        _location: LocationSpec,
+        _emit: CatalogProcessorEmit,
+      ) => entity,
+    );
+    const harness = await TestHarness.create({ processEntity });
+
+    processEntity.mockImplementation(async (entity, location, emit) => {
+      if (entity.metadata.name === entityA.metadata.name) {
+        emit(processingResult.entity(location, entityBOverride));
+      }
+      return entity;
+    });
+
+    // A and B are added to the catalog, but the processor emits B' from A that overrides B
+    await harness.setInputEntities([entityA, entityB]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    // Expect to find A and B' in the catalog
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'test',
+        targetEntityRef: 'component:default/a',
+      },
+      {
+        sourceEntityRef: 'component:default/a',
+        targetEntityRef: 'component:default/b',
+      },
+    ]);
+    await expect(harness.getRefreshState()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        locationKey: null,
+        unprocessedEntity: entityA,
+      }),
+      'component:default/b': expect.objectContaining({
+        locationKey: 'url:.',
+        unprocessedEntity: entityBOverride,
+      }),
+    });
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityBOverride),
+    });
+
+    // Stop emitting B' from A, then do a full sync with A and B
+    processEntity.mockImplementation(async entity => entity);
+    await harness.setInputEntities([entityA, entityB]);
+
+    // At this point we should still have A and B' in the catalog
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'test',
+        targetEntityRef: 'component:default/a',
+      },
+      {
+        sourceEntityRef: 'component:default/a',
+        targetEntityRef: 'component:default/b',
+      },
+    ]);
+    await expect(harness.getRefreshState()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        locationKey: null,
+        unprocessedEntity: entityA,
+      }),
+      'component:default/b': expect.objectContaining({
+        locationKey: 'url:.',
+        unprocessedEntity: entityBOverride,
+      }),
+    });
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityBOverride),
+    });
+
+    // Once we process, B' should be orphaned
+    await expect(harness.process()).resolves.toEqual({});
+    // This is expected to remove B'
+    await harness.removeOrphanedEntities();
+
+    // At this point only A is left in the catalog
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'test',
+        targetEntityRef: 'component:default/a',
+      },
+    ]);
+    await expect(harness.getRefreshState()).resolves.toEqual({
+      'component:default/a': expect.objectContaining({
+        locationKey: null,
+        unprocessedEntity: entityA,
+      }),
+    });
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+    });
+
+    // Next time the provider runs and does a full sync we should now be able to add back B
+    await harness.setInputEntities([entityA, entityB]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+  });
+
+  it('should be able to emit entities during processing with custom location keys', async () => {
+    const baseEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityA = merge({ metadata: { name: 'a' } }, baseEntity);
+    const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
+    const entityBOverride = merge({ metadata: { override: true } }, entityB);
+
+    const processEntity = jest.fn(
+      async (
+        entity: Entity,
+        _location: LocationSpec,
+        _emit: CatalogProcessorEmit,
+      ) => entity,
+    );
+    const harness = await TestHarness.create({ processEntity });
+
+    processEntity.mockImplementation(async (entity, location, emit) => {
+      if (entity.metadata.name === entityA.metadata.name) {
+        emit(
+          processingResult.entity(location, entityB, {
+            locationKey: null,
+          }),
+        );
+      }
+      return entity;
+    });
+
+    // Start with just A, which outputs B via processing
+    await harness.setInputEntities([entityA]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+
+    // Now apply A and B', which should override B since it has a null location key
+    await harness.setInputEntities([
+      entityA,
+      { ...entityBOverride, locationKey: 'test' },
+    ]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityBOverride),
+    });
+  });
+
+  it('should resolve handle location key conflicts across processed and provided entities', async () => {
+    const baseEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityA = merge({ metadata: { name: 'a' } }, baseEntity);
+    const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
+    const entityBOverride = merge({ metadata: { override: true } }, entityB);
+
+    const processEntity = jest.fn(
+      async (
+        entity: Entity,
+        _location: LocationSpec,
+        _emit: CatalogProcessorEmit,
+      ) => entity,
+    );
+    const harness = await TestHarness.create({ processEntity });
+
+    processEntity.mockImplementation(async (entity, location, emit) => {
+      if (entity.metadata.name === entityA.metadata.name) {
+        emit(
+          processingResult.entity(location, entityB, {
+            locationKey: 'my-key',
+          }),
+        );
+      }
+      return entity;
+    });
+
+    // Start with just A, which outputs B via processing
+    await harness.setInputEntities([entityA]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+
+    // Now apply A and B', but since B already has a different location key, B' should not be used
+    await harness.setInputEntities([entityA, entityBOverride]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+
+    // Stop emitting B from A
+    processEntity.mockImplementation(async e => e);
+
+    // Apply A and B', but since B still has a location key set it should remain, but now orphaned
+    await harness.setInputEntities([entityA, entityBOverride]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(
+        merge(entityB, {
+          metadata: { annotations: { 'backstage.io/orphan': 'true' } },
+        }),
+      ),
+    });
+
+    // Apply A and B' but this time with the matching location key, causing B' to override B
+    await harness.setInputEntities([
+      entityA,
+      { ...entityBOverride, locationKey: 'my-key' },
+    ]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityBOverride),
+    });
+
+    // Finally, remove B', leaving just A
+    await harness.setInputEntities([entityA]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
     });
   });
 });

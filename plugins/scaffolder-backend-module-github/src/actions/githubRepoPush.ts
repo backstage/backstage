@@ -25,7 +25,8 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
+import { initRepoPushAndProtect } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './githubRepoPush.examples';
@@ -75,6 +76,7 @@ export function createGithubRepoPushAction(options: {
     sourcePath?: string;
     token?: string;
     requiredCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     requireLastPushApproval?: boolean;
   }>({
     id: 'github:repo:push',
@@ -106,6 +108,7 @@ export function createGithubRepoPushAction(options: {
           sourcePath: inputProps.sourcePath,
           token: inputProps.token,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
         },
       },
       output: {
@@ -137,9 +140,10 @@ export function createGithubRepoPushAction(options: {
         requireLastPushApproval = false,
         token: providedToken,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
       } = ctx.input;
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -149,7 +153,9 @@ export function createGithubRepoPushAction(options: {
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
-        repoUrl,
+        host,
+        owner,
+        repo,
       });
 
       const client = new Octokit(octokitOptions);
@@ -185,6 +191,7 @@ export function createGithubRepoPushAction(options: {
         gitAuthorEmail,
         dismissStaleReviews,
         requiredCommitSigning,
+        requiredLinearHistory,
       );
 
       ctx.output('remoteUrl', remoteUrl);

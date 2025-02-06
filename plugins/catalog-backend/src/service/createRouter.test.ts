@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import type { Location } from '@backstage/catalog-client';
 import {
   ANNOTATION_LOCATION,
@@ -23,26 +24,30 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import express from 'express';
-import request from 'supertest';
-import { Cursor, EntitiesCatalog } from '../catalog/types';
-import { LocationInput, LocationService, RefreshService } from './types';
-import { basicEntityFilter } from './request';
-import { createRouter } from './createRouter';
+import { ConfigReader } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   createPermissionIntegrationRouter,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
-import { CatalogProcessingOrchestrator } from '../processing/types';
-import { z } from 'zod';
-import { decodeCursor, encodeCursor } from './util';
-import { wrapServer } from '@backstage/backend-openapi-utils';
+import express from 'express';
 import { Server } from 'http';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import request from 'supertest';
+import { z } from 'zod';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
+import { createRouter } from './createRouter';
+import { basicEntityFilter } from './request';
+import { LocationInput, LocationService, RefreshService } from './types';
+import { decodeCursor, encodeCursor } from './util';
+
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -51,9 +56,9 @@ describe('createRouter readonly disabled', () => {
   let app: express.Express | Server;
   let refreshService: RefreshService;
   let locationAnalyzer: jest.Mocked<LocationAnalyzer>;
-  let permissionsService: jest.Mocked<PermissionsService>;
+  const permissionsService = mockServices.permissions.mock();
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
       entitiesBatch: jest.fn(),
@@ -69,15 +74,9 @@ describe('createRouter readonly disabled', () => {
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
     };
-
     locationAnalyzer = {
       analyzeLocation: jest.fn(),
     };
-    permissionsService = {
-      authorize: jest.fn(),
-      authorizeConditional: jest.fn(),
-    };
-
     refreshService = { refresh: jest.fn() };
     orchestrator = { process: jest.fn() };
     const router = await createRouter({
@@ -91,13 +90,15 @@ describe('createRouter readonly disabled', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       locationAnalyzer,
-      permissionsService: permissionsService,
+      permissionsService,
+      auditor: mockServices.auditor.mock(),
     });
+    router.use(middleware.error());
     app = await wrapServer(express().use(router));
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('POST /refresh', () => {
@@ -136,8 +137,41 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [entities[0]],
+        entities: { type: 'object', entities: [entities[0]] },
         pageInfo: { hasNextPage: false },
+      });
+
+      const response = await request(app).get('/entities');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(entities);
+    });
+
+    it('happy path: lists entities when by-entities emulation is enabled', async () => {
+      const router = await createRouter({
+        entitiesCatalog,
+        locationService,
+        orchestrator,
+        logger: mockServices.logger.mock(),
+        refreshService,
+        config: new ConfigReader(undefined),
+        permissionIntegrationRouter: express.Router(),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        locationAnalyzer,
+        permissionsService,
+        disableRelationsCompatibility: true, // added
+      });
+      app = await wrapServer(express().use(router));
+
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [entities[0]] },
+        pageInfo: {},
+        totalItems: 1,
       });
 
       const response = await request(app).get('/entities');
@@ -148,7 +182,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses single and multiple request parameters and passes them down', async () => {
       entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [],
+        entities: { type: 'object', entities: [] },
         pageInfo: { hasNextPage: false },
       });
       const response = await request(app).get(
@@ -166,10 +200,56 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         credentials: mockCredentials.user(),
+      });
+    });
+
+    it('parses single and multiple request parameters and passes them down when by-entities emulation is enabled', async () => {
+      const router = await createRouter({
+        entitiesCatalog,
+        locationService,
+        orchestrator,
+        logger: mockServices.logger.mock(),
+        refreshService,
+        config: new ConfigReader(undefined),
+        permissionIntegrationRouter: express.Router(),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        locationAnalyzer,
+        permissionsService,
+        disableRelationsCompatibility: true, // added
+      });
+      app = await wrapServer(express().use(router));
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [] },
+        pageInfo: {},
+        totalItems: 0,
+      });
+      const response = await request(app).get(
+        '/entities?filter=a=1,a=2,b=3&filter=c=4',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
+        filter: {
+          anyOf: [
+            {
+              allOf: [
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
+              ],
+            },
+            { key: 'c', values: ['4'] },
+          ],
+        },
+        limit: 10000,
+        credentials: mockCredentials.user(),
+        skipTotalItems: true,
       });
     });
   });
@@ -181,7 +261,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -199,7 +279,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses initial request', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [],
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
@@ -218,7 +298,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         orderFields: [
@@ -235,7 +315,7 @@ describe('createRouter readonly disabled', () => {
 
     it('parses encoded params request', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items: [],
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
@@ -258,7 +338,7 @@ describe('createRouter readonly disabled', () => {
                 { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', values: ['4'] }] },
+            { key: 'c', values: ['4'] },
           ],
         },
         orderFields: [
@@ -279,7 +359,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -308,7 +388,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: {
           nextCursor: mockCursor({ fullTextFilter: { term: 'mySearch' } }),
@@ -350,7 +430,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -375,7 +455,7 @@ describe('createRouter readonly disabled', () => {
       ];
 
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
-        items,
+        items: { type: 'object', entities: items },
         totalItems: 100,
         pageInfo: { nextCursor: mockCursor() },
       });
@@ -398,7 +478,7 @@ describe('createRouter readonly disabled', () => {
         },
       };
       entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
+        entities: { type: 'object', entities: [entity] },
         pageInfo: { hasNextPage: false },
       });
 
@@ -415,7 +495,7 @@ describe('createRouter readonly disabled', () => {
 
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entities.mockResolvedValue({
-        entities: [],
+        entities: { type: 'object', entities: [] },
         pageInfo: { hasNextPage: false },
       });
 
@@ -441,20 +521,15 @@ describe('createRouter readonly disabled', () => {
           namespace: 'ns',
         },
       };
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
       });
 
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({
-          kind: 'k',
-          'metadata.namespace': 'ns',
-          'metadata.name': 'n',
-        }),
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['k:ns/n'],
         credentials: mockCredentials.user(),
       });
       expect(response.status).toEqual(200);
@@ -462,20 +537,15 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('responds with a 404 for missing entities', async () => {
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [null] },
       });
 
       const response = await request(app).get('/entities/by-name/b/d/c');
 
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': 'c',
-        }),
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['b:d/c'],
         credentials: mockCredentials.user(),
       });
       expect(response.status).toEqual(404);
@@ -539,7 +609,9 @@ describe('createRouter readonly disabled', () => {
         },
       };
       const entityRef = stringifyEntityRef(entity);
-      entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
+      });
       const response = await request(app)
         .post('/entities/by-refs?filter=kind=Component')
         .set('Content-Type', 'application/json')
@@ -554,13 +626,7 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: expect.any(Function),
         credentials: mockCredentials.user(),
-        filter: {
-          anyOf: [
-            {
-              allOf: [{ key: 'kind', values: ['Component'] }],
-            },
-          ],
-        },
+        filter: { key: 'kind', values: ['Component'] },
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });
@@ -870,11 +936,11 @@ describe('createRouter readonly disabled', () => {
   });
 });
 
-describe('createRouter readonly enabled', () => {
+describe('createRouter readonly and raw json enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let app: express.Express;
   let locationService: jest.Mocked<LocationService>;
-  let permissionsService: jest.Mocked<PermissionsService>;
+  const permissionsService = mockServices.permissions.mock();
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -893,6 +959,7 @@ describe('createRouter readonly enabled', () => {
       getLocationByEntity: jest.fn(),
     };
     const router = await createRouter({
+      disableRelationsCompatibility: true,
       entitiesCatalog,
       locationService,
       logger: mockServices.logger.mock(),
@@ -904,13 +971,15 @@ describe('createRouter readonly enabled', () => {
       permissionIntegrationRouter: express.Router(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
-      permissionsService: permissionsService,
+      permissionsService,
+      auditor: mockServices.auditor.mock(),
     });
+    router.use(middleware.error());
     app = express().use(router);
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('GET /entities', () => {
@@ -919,9 +988,10 @@ describe('createRouter readonly enabled', () => {
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: [entities[0]],
-        pageInfo: { hasNextPage: false },
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'raw', entities: [JSON.stringify(entities[0])] },
+        pageInfo: {},
+        totalItems: 1,
       });
 
       const response = await request(app).get('/entities');
@@ -1074,7 +1144,7 @@ describe('NextRouter permissioning', () => {
   let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
   let refreshService: RefreshService;
-  let permissionsService: jest.Mocked<PermissionsService>;
+  const permissionsService = mockServices.permissions.mock();
 
   const fakeRule = createPermissionRule({
     name: 'FAKE_RULE',
@@ -1121,13 +1191,14 @@ describe('NextRouter permissioning', () => {
       }),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
-      permissionsService: permissionsService,
+      permissionsService,
+      auditor: mockServices.auditor.mock(),
     });
     app = express().use(router);
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('accepts and evaluates conditions at the apply-conditions endpoint', async () => {
@@ -1139,7 +1210,7 @@ describe('NextRouter permissioning', () => {
       },
     };
     entitiesCatalog.entities.mockResolvedValueOnce({
-      entities: [spideySense],
+      entities: { type: 'object', entities: [spideySense] },
       pageInfo: { hasNextPage: false },
     });
 

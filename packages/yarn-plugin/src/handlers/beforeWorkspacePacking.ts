@@ -15,8 +15,7 @@
  */
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
-import { some } from 'lodash';
-import { getCurrentBackstageVersion, getPackageVersion } from '../util';
+import { getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
 
 const hasBackstageVersion = (range: string) =>
@@ -42,8 +41,6 @@ export const beforeWorkspacePacking = async (
   workspace: Workspace,
   rawManifest: any,
 ) => {
-  const backstageVersion = getCurrentBackstageVersion();
-
   for (const dependencyType of ['dependencies', 'devDependencies'] as const) {
     const entries = Array.from(
       workspace.manifest.getForScope(dependencyType).values(),
@@ -66,18 +63,18 @@ export const beforeWorkspacePacking = async (
       );
 
       rawManifest[finalDependencyType][ident] = `^${await getPackageVersion(
-        structUtils.makeDescriptor(
-          descriptor,
-          `${PROTOCOL}${backstageVersion}`,
-        ),
+        descriptor,
+        workspace.project.configuration,
       )}`;
     }
   }
 
   if (
-    some(
-      ['dependencies', 'devDependencies', 'optionalDependencies'],
-      dependencyType => some(rawManifest[dependencyType], hasBackstageVersion),
+    ['dependencies', 'devDependencies', 'optionalDependencies'].some(
+      dependencyType =>
+        Object.values<string>(rawManifest[dependencyType] ?? {}).some(
+          hasBackstageVersion,
+        ),
     )
   ) {
     throw new Error(

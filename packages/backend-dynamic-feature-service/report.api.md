@@ -8,10 +8,11 @@ import { BackstagePackageJson } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
+import { DatabaseService } from '@backstage/backend-plugin-api';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventsBackend } from '@backstage/plugin-events-backend';
 import { EventsService } from '@backstage/plugin-events-node';
-import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
@@ -22,8 +23,6 @@ import { PackageRole } from '@backstage/cli-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginCacheManager } from '@backstage/backend-common';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -150,13 +149,6 @@ export interface DynamicPluginsFactoryOptions {
 // @public @deprecated (undocumented)
 export const dynamicPluginsFeatureDiscoveryLoader: BackendFeature;
 
-// @public @deprecated (undocumented)
-export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
-  FeatureDiscoveryService,
-  'root',
-  'singleton'
->;
-
 // @public
 export const dynamicPluginsFeatureLoader: ((
   options?: DynamicPluginsFeatureLoaderOptions,
@@ -274,10 +266,10 @@ export interface LegacyBackendPluginInstaller {
 export type LegacyPluginEnvironment = {
   logger: Logger;
   cache: PluginCacheManager;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
   reader: UrlReaderService;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;

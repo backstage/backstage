@@ -4,7 +4,7 @@ author: Red Hat
 authorUrl: https://redhat.com
 category: Discovery
 description: Synchronize 3scale content into the Backstage catalog.
-documentation: https://janus-idp.io/plugins/3scale
-iconUrl: https://janus-idp.io/images/plugins/3scale.svg
-npmPackageName: '@janus-idp/backstage-plugin-3scale-backend'
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/3scale/plugins/3scale-backend/README.md
+iconUrl: /img/3scale.svg
+npmPackageName: '@backstage-community/plugin-3scale-backend'
 addedDate: '2023-05-15'

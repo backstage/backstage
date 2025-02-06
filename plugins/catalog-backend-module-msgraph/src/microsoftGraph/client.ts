@@ -20,7 +20,6 @@ import {
   ClientSecretCredential,
 } from '@azure/identity';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import fetch, { Response } from 'node-fetch';
 import qs from 'qs';
 import { MicrosoftGraphProviderConfig } from './config';
 

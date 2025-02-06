@@ -55,6 +55,10 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
 
   if (availableTypes.length === 0 || error) return null;
 
+  availableTypes.sort((a, b) =>
+    a.toLocaleLowerCase('en-US').localeCompare(b.toLocaleLowerCase('en-US')),
+  );
+
   const items = [
     { value: 'all', label: t('entityTypePicker.optionAllTitle') },
     ...availableTypes.map((type: string) => ({

@@ -22,10 +22,11 @@ import PromiseRouter from 'express-promise-router';
 import { AuthProviderRouteHandlers, AuthResolverContext } from '../types';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthAuthenticator } from './types';
-import { errorHandler } from '@backstage/backend-common';
 import { encodeOAuthState, OAuthState } from './state';
 import { PassportProfile } from '../passport';
 import { parseWebMessageResponse } from '../flow/__testUtils__/parseWebMessageResponse';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
   initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
@@ -63,13 +64,17 @@ const baseConfig = {
 };
 
 function wrapInApp(handlers: AuthProviderRouteHandlers) {
+  const middleware = MiddlewareFactory.create({
+    logger: mockServices.logger.mock(),
+    config: mockServices.rootConfig(),
+  });
   const app = express();
 
   const router = PromiseRouter();
 
   router.use(cookieParser());
   app.use('/my-provider', router);
-  app.use(errorHandler());
+  app.use(middleware.error());
 
   router.get('/start', handlers.start.bind(handlers));
   router.get('/handler/frame', handlers.frameHandler.bind(handlers));
@@ -807,6 +812,75 @@ describe('createOAuthRouteHandlers', () => {
           message: 'Invalid X-Requested-With header',
         },
       });
+    });
+
+    it('should set sessionDuration to configured value', async () => {
+      const baseConfigWithSessionDuration = {
+        ...baseConfig,
+        config: new ConfigReader({
+          sessionDuration: { days: 7 },
+        }),
+      };
+
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfigWithSessionDuration)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=refresh-token',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.refresh.mockImplementation(async ({ scope }) => ({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: { ...mockSession, scope, refreshToken: 'new-refresh-token' },
+      }));
+
+      const res = await agent
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest');
+
+      expect(res.status).toBe(200);
+      const expectedExpirationDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
+      const cookie = getRefreshTokenCookie(agent);
+      expect(cookie.expiration_date).toBeGreaterThanOrEqual(
+        expectedExpirationDate - 1000,
+      );
+      expect(cookie.expiration_date).toBeLessThanOrEqual(
+        expectedExpirationDate + 1000,
+      );
+    });
+
+    it('should set sessionDuration to default of 1000 days when not configured', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=refresh-token',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.refresh.mockImplementation(async ({ scope }) => ({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: { ...mockSession, scope, refreshToken: 'new-refresh-token' },
+      }));
+
+      const res = await agent
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest');
+
+      expect(res.status).toBe(200);
+      const expectedExpirationDate = Date.now() + 1000 * 24 * 60 * 60 * 1000;
+      const cookie = getRefreshTokenCookie(agent);
+      expect(cookie.expiration_date).toBeGreaterThanOrEqual(
+        expectedExpirationDate - 1000,
+      );
+      expect(cookie.expiration_date).toBeLessThanOrEqual(
+        expectedExpirationDate + 1000,
+      );
     });
   });
 

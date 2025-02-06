@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { bootstrap } from 'global-agent';
-
-if (shouldUseGlobalAgent()) {
-  bootstrap();
-}
+maybeBootstrapProxy();
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
@@ -44,18 +40,26 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from './utils';
+import { run } from '../../lib/run';
 
-function shouldUseGlobalAgent(): boolean {
+function maybeBootstrapProxy() {
   // see https://www.npmjs.com/package/global-agent
-  const namespace =
+  const globalAgentNamespace =
     process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE ?? 'GLOBAL_AGENT_';
   if (
-    process.env[`${namespace}HTTP_PROXY`] ||
-    process.env[`${namespace}HTTPS_PROXY`]
+    process.env[`${globalAgentNamespace}HTTP_PROXY`] ||
+    process.env[`${globalAgentNamespace}HTTPS_PROXY`]
   ) {
-    return true;
+    const globalAgent =
+      require('global-agent') as typeof import('global-agent');
+    globalAgent.bootstrap();
   }
-  return false;
+
+  if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY) {
+    const { setGlobalDispatcher, EnvHttpProxyAgent } =
+      require('undici') as typeof import('undici');
+    setGlobalDispatcher(new EnvHttpProxyAgent());
+  }
 }
 
 const DEP_TYPES = [
@@ -84,6 +88,8 @@ export default async (opts: OptionValues) => {
   if (!pattern) {
     console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
     pattern = DEFAULT_PATTERN_GLOB;
+  } else if (pattern === '*') {
+    throw new Error(`Rejected pattern '*', please use a more specific pattern`);
   } else {
     console.log(`Using custom pattern glob ${pattern}`);
   }
@@ -118,6 +124,20 @@ export default async (opts: OptionValues) => {
       releaseLine: opts.releaseLine,
       releaseManifest,
     });
+  }
+
+  if (hasYarnPlugin) {
+    console.log();
+    console.log(
+      `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
+    );
+    console.log();
+    await run('yarn', [
+      'plugin',
+      'import',
+      `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`,
+    ]);
+    console.log();
   }
 
   // First we discover all Backstage dependencies within our own repo

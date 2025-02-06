@@ -1,0 +1,107 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CheckboxPreview, CheckboxAllVariants } from '@/snippets/checkbox';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+
+# Checkbox
+
+A checkbox component that can be used to trigger actions.
+
+<Snippet
+  py={4}
+  preview={<CheckboxPreview />}
+  code={`<Checkbox label="Accept terms and conditions" />`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Checkbox } from '@backstage/canon';
+
+<Checkbox />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Checkbox className="checkbox" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<BaseUI href="https://base-ui.com/react/components/checkbox" />
+
+<PropsTable
+  data={{
+    label: {
+      type: 'string',
+      responsive: false,
+    },
+    defaultChecked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    checked: {
+      type: ['boolean', "'indeterminate'"],
+      responsive: false,
+    },
+    onChange: {
+      type: "(checked: boolean | 'indeterminate') => void",
+      responsive: false,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    required: {
+      type: 'boolean',
+      responsive: false,
+    },
+    name: {
+      type: 'string',
+      responsive: false,
+    },
+    value: {
+      type: 'string',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### All variants
+
+Here's a view when checkboxes have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<CheckboxAllVariants />}
+  code={`<Inline alignY="center">
+    <Checkbox />
+    <Checkbox checked />
+    <Checkbox label="Checkbox" />
+    <Checkbox label="Checkbox" checked />
+  </Inline>`}
+/>

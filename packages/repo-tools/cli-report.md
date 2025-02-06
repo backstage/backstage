@@ -33,6 +33,7 @@ Options:
   --ci
   --tsc
   --docs
+  --sql-reports
   --include <pattern>
   --exclude <pattern>
   -a, --allow-warnings <allowWarningsPaths>

@@ -1,7 +1,7 @@
 ---
 title: Mend.io
-author: dariuszsobkowicz
-authorUrl: https://github.com/dariuszsobkowicz
+author: Mend.io
+authorUrl: https://www.mend.io/
 category: Security
 description: Proactive application risk management for developer and security teams directly in Backstage
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/mend/plugins/mend

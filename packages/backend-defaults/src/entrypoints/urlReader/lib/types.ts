@@ -60,17 +60,28 @@ export type ReadUrlResponseFactoryFromStreamOptions = {
  *
  * @public
  */
-export type ReadTreeResponseFactoryOptions = {
-  // A binary stream of a tar archive.
-  stream: Readable;
-  // If unset, the files at the root of the tree will be read.
-  // subpath must not contain the name of the top level directory.
-  subpath?: string;
-  // etag of the blob
-  etag: string;
-  // Filter passed on from the ReadTreeOptions
-  filter?: (path: string, info?: { size: number }) => boolean;
-};
+export type ReadTreeResponseFactoryOptions =
+  | {
+      // A binary stream of a tar archive.
+      stream: Readable;
+      // If unset, the files at the root of the tree will be read.
+      // subpath must not contain the name of the top level directory.
+      subpath?: string;
+      // etag of the blob
+      etag: string;
+      // Filter passed on from the ReadTreeOptions
+      filter?: (path: string, info?: { size: number }) => boolean;
+    }
+  | {
+      /** A response from a fetch request */
+      response: Response;
+      /** If unset, the files at the root of the tree will be read. Subpath must not contain the name of the top level directory. */
+      subpath?: string;
+      /** etag of the blob, to optionally override what the response header may or may not say */
+      etag?: string;
+      /** Filter passed on from the ReadTreeOptions */
+      filter?: (path: string, info?: { size: number }) => boolean;
+    };
 
 /**
  * Options that control {@link ReadTreeResponseFactory.fromReadableArray}

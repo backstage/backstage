@@ -221,6 +221,17 @@ integrations:
   #   apiBaseUrl: server.bitbucket.com
   #   username: ${BITBUCKET_SERVER_USERNAME}
   #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+
+  # azureBlobStorage:
+  #   - accountName: ${ACCOUNT_NAME} # required
+  #     endpoint: ${CUSTOM_ENDPOINT} # custom endpoint will require either aadCredentials or sasToken
+  #     sasToken: ${SAS_TOKEN}
+  #     aadCredential:
+  #       clientId: ${CLIENT_ID}
+  #       tenantId: ${TENANT_ID}
+  #       clientSecret: ${CLIENT_SECRET}
+  #     accountKey: ${ACCOUNT_KEY}
+
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
@@ -233,6 +244,7 @@ integrations:
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
+  useUrlReadersSearch: true
   import:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
@@ -245,6 +257,14 @@ catalog:
         - Domain
         - Location
   providers:
+    azureBlob:
+      accountName: ${ACCOUNT_NAME}
+      containerName: ${CONTAINER_NAME}
+      schedule: # same options as in TaskScheduleDefinition
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
     backstageOpenapi:
       plugins:
         - catalog

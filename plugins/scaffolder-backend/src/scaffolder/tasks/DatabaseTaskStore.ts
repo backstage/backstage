@@ -15,8 +15,10 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
@@ -45,6 +47,7 @@ import {
   serializeWorkspace,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { flattenParams } from '../../service/helpers';
+import { EventsService } from '@backstage/plugin-events-node';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -77,18 +80,19 @@ export type RawDbTaskEventRow = {
  * @public
  */
 export type DatabaseTaskStoreOptions = {
-  database: PluginDatabaseManager | Knex;
+  database: DatabaseService | Knex;
+  events?: EventsService;
 };
 
 /**
- * Type guard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
+ * Type guard to help DatabaseTaskStore understand when database is DatabaseService vs. when database is a Knex instance.
  *
  * * @public
  */
-function isPluginDatabaseManager(
-  opt: PluginDatabaseManager | Knex,
-): opt is PluginDatabaseManager {
-  return (opt as PluginDatabaseManager).getClient !== undefined;
+function isDatabaseService(
+  opt: DatabaseService | Knex,
+): opt is DatabaseService {
+  return (opt as DatabaseService).getClient !== undefined;
 }
 
 const parseSqlDateToIsoString = <T>(input: T): T | string => {
@@ -112,6 +116,7 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
  */
 export class DatabaseTaskStore implements TaskStore {
   private readonly db: Knex;
+  private readonly events?: EventsService;
 
   static async create(
     options: DatabaseTaskStoreOptions,
@@ -121,7 +126,7 @@ export class DatabaseTaskStore implements TaskStore {
 
     await this.runMigrations(database, client);
 
-    return new DatabaseTaskStore(client);
+    return new DatabaseTaskStore(client, options.events);
   }
 
   private isRecoverableTask(spec: TaskSpec): boolean {
@@ -149,9 +154,9 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private static async getClient(
-    database: PluginDatabaseManager | Knex,
+    database: DatabaseService | Knex,
   ): Promise<Knex> {
-    if (isPluginDatabaseManager(database)) {
+    if (isDatabaseService(database)) {
       return database.getClient();
     }
 
@@ -159,10 +164,10 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private static async runMigrations(
-    database: PluginDatabaseManager | Knex,
+    database: DatabaseService | Knex,
     client: Knex,
   ): Promise<void> {
-    if (!isPluginDatabaseManager(database)) {
+    if (!isDatabaseService(database)) {
       await client.migrate.latest({
         directory: migrationsDir,
       });
@@ -177,8 +182,19 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  private constructor(client: Knex) {
+  private constructor(client: Knex, events?: EventsService) {
     this.db = client;
+    this.events = events;
+  }
+
+  private getState(task: RawDbTaskRow) {
+    try {
+      return task.state ? JSON.parse(task.state).state : undefined;
+    } catch (error) {
+      throw new Error(
+        `Failed to parse state of the task '${task.id}', ${error}`,
+      );
+    }
   }
 
   async list(options: {
@@ -259,7 +275,7 @@ export class DatabaseTaskStore implements TaskStore {
     try {
       const spec = JSON.parse(result.spec);
       const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
-      const state = result.state ? JSON.parse(result.state).state : undefined;
+      const state = this.getState(result);
       return {
         id: result.id,
         spec,
@@ -286,6 +302,17 @@ export class DatabaseTaskStore implements TaskStore {
       created_by: options.createdBy ?? null,
       status: 'open',
     });
+
+    this.events?.publish({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: taskId,
+        spec: options.spec,
+        createdBy: options.createdBy,
+        status: 'open',
+      },
+    });
+
     return { taskId };
   }
 
@@ -317,27 +344,23 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
-      const getState = () => {
-        try {
-          return task.state ? JSON.parse(task.state).state : undefined;
-        } catch (error) {
-          throw new Error(
-            `Failed to parse state of the task '${task.id}', ${error}`,
-          );
-        }
-      };
-
-      const secrets = this.parseTaskSecrets(task);
-      return {
+      const ret: SerializedTask = {
         id: task.id,
         spec,
         status: 'processing',
         lastHeartbeatAt: task.last_heartbeat_at,
         createdAt: task.created_at,
         createdBy: task.created_by ?? undefined,
-        secrets,
-        state: getState(),
+        state: this.getState(task),
       };
+
+      this.events?.publish({
+        topic: 'scaffolder.task',
+        eventPayload: ret,
+      });
+
+      const secrets = this.parseTaskSecrets(task);
+      return { ...ret, secrets };
     });
   }
 
@@ -408,11 +431,25 @@ export class DatabaseTaskStore implements TaskStore {
           );
         }
 
-        await tx<RawDbTaskEventRow>('task_events').insert({
-          task_id: taskId,
-          event_type: 'completion',
-          body: JSON.stringify(eventBody),
+        this.events?.publish({
+          topic: 'scaffolder.task',
+          eventPayload: {
+            id: taskId,
+            status: status,
+            lastHeartbeatAt: task.last_heartbeat_at,
+            createdAt: task.created_at,
+            createdBy: task.created_by,
+            state: this.getState(task),
+          },
         });
+
+        await tx<RawDbTaskEventRow>('task_events')
+          .insert({
+            task_id: taskId,
+            event_type: 'completion',
+            body: JSON.stringify(eventBody),
+          })
+          .returning('id');
       };
 
       if (status === 'cancelled') {
@@ -448,11 +485,13 @@ export class DatabaseTaskStore implements TaskStore {
   ): Promise<void> {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
-    await this.db<RawDbTaskEventRow>('task_events').insert({
-      task_id: taskId,
-      event_type: 'log',
-      body: serializedBody,
-    });
+    await this.db<RawDbTaskEventRow>('task_events')
+      .insert({
+        task_id: taskId,
+        event_type: 'log',
+        body: serializedBody,
+      })
+      .returning('id');
   }
 
   async getTaskState({ taskId }: { taskId: string }): Promise<
@@ -596,10 +635,22 @@ export class DatabaseTaskStore implements TaskStore {
   ): Promise<void> {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
-    await this.db<RawDbTaskEventRow>('task_events').insert({
-      task_id: taskId,
-      event_type: 'cancelled',
-      body: serializedBody,
+    const [ret] = await this.db<RawDbTaskEventRow>('task_events')
+      .insert({
+        task_id: taskId,
+        event_type: 'cancelled',
+        body: serializedBody,
+      })
+      .returning('id');
+
+    this.events?.publish({
+      topic: 'scaffolder.task',
+      eventPayload: {
+        id: ret.id,
+        taskId,
+        status: 'cancelled',
+        body,
+      },
     });
   }
 
@@ -665,13 +716,26 @@ export class DatabaseTaskStore implements TaskStore {
 
       for (const { id, spec } of result) {
         const taskSpec = JSON.parse(spec as string) as TaskSpec;
-        await tx<RawDbTaskEventRow>('task_events').insert({
-          task_id: id,
-          event_type: 'recovered',
-          body: JSON.stringify({
-            recoverStrategy:
-              taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
-          }),
+        const event = {
+          recoverStrategy:
+            taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+        };
+        const [ret] = await tx<RawDbTaskEventRow>('task_events')
+          .insert({
+            task_id: id,
+            event_type: 'recovered',
+            body: JSON.stringify(event),
+          })
+          .returning('id');
+
+        this.events?.publish({
+          topic: 'scaffolder.task',
+          eventPayload: {
+            id: ret.id,
+            taskId: id,
+            status: 'recovered',
+            body: event,
+          },
         });
       }
     });

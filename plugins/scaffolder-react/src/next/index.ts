@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export * from './api';
 export * from './components';
 export * from './lib';
 export * from './hooks';
 export * from './overridableComponents';
 export * from './blueprints';
+export * from './extensions';

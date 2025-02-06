@@ -21,10 +21,13 @@ import {
   createServiceFactory,
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
-import { createLifecycleMiddleware } from './createLifecycleMiddleware';
-import { createCredentialsBarrier } from './createCredentialsBarrier';
-import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
-import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
+import {
+  createLifecycleMiddleware,
+  createCookieAuthRefreshMiddleware,
+  createCredentialsBarrier,
+  createAuthIntegrationRouter,
+} from './http';
+import { MiddlewareFactory } from '../rootHttpRouter';
 
 /**
  * HTTP route registration for plugins.
@@ -45,8 +48,17 @@ export const httpRouterServiceFactory = createServiceFactory({
     rootHttpRouter: coreServices.rootHttpRouter,
     auth: coreServices.auth,
     httpAuth: coreServices.httpAuth,
+    logger: coreServices.logger,
   },
-  async factory({ auth, httpAuth, config, plugin, rootHttpRouter, lifecycle }) {
+  async factory({
+    auth,
+    httpAuth,
+    config,
+    plugin,
+    rootHttpRouter,
+    lifecycle,
+    logger,
+  }) {
     const router = PromiseRouter();
 
     rootHttpRouter.use(`/api/${plugin.getId()}`, router);
@@ -57,13 +69,19 @@ export const httpRouterServiceFactory = createServiceFactory({
     });
 
     router.use(createAuthIntegrationRouter({ auth }));
-    router.use(createLifecycleMiddleware({ lifecycle }));
+    router.use(createLifecycleMiddleware({ config, lifecycle }));
     router.use(credentialsBarrier.middleware);
     router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 
+    const pluginRoutes = PromiseRouter();
+    router.use(pluginRoutes);
+
+    const middleware = MiddlewareFactory.create({ config, logger });
+    router.use(middleware.error());
+
     return {
       use(handler: Handler): void {
-        router.use(handler);
+        pluginRoutes.use(handler);
       },
       addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
         credentialsBarrier.addAuthPolicy(policy);

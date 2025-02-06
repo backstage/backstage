@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
@@ -32,7 +31,7 @@ export class IncrementalProviderRouter {
     this.logger = logger;
   }
 
-  async createRouter() {
+  createRouter(): express.Router {
     const router = Router();
     router.use(express.json());
 
@@ -248,8 +247,6 @@ export class IncrementalProviderRouter {
         });
       },
     );
-
-    router.use(errorHandler());
 
     return router;
   }

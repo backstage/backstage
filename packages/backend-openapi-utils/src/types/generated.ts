@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Router } from 'express';
 import type core from 'express-serve-static-core';
 import { PathTemplate, ValueOf } from './common';
 
@@ -208,15 +207,4 @@ export interface EndpointMapRequestMatcher<
       >
     >
   ): T;
-}
-
-/**
- * @public
- */
-export interface TypedRouter<GeneratedEndpointMap extends EndpointMap>
-  extends Router {
-  get: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'get'>;
-  post: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'post'>;
-  put: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'put'>;
-  delete: EndpointMapRequestMatcher<GeneratedEndpointMap, this, '_delete'>;
 }

@@ -25,7 +25,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './githubPagesEnable.examples';
-import { getOctokitOptions } from '@backstage/plugin-scaffolder-backend-module-github';
+import { getOctokitOptions } from '../util';
 
 /**
  * Creates a new action that enables GitHub Pages for a repository.
@@ -67,14 +67,13 @@ export function createGithubPagesEnableAction(options: {
           sourceBranch: {
             title: 'Source Branch',
             type: 'string',
-            description:
-              'The the GitHub Pages source branch. Default is "main"',
+            description: 'The GitHub Pages source branch. Default is "main"',
           },
           sourcePath: {
             title: 'Source Path',
             type: 'string',
             description:
-              'The the GitHub Pages source path - "/" or "/docs". Default is "/"',
+              'The GitHub Pages source path - "/" or "/docs". Default is "/"',
           },
           token: {
             title: 'Authorization Token',
@@ -93,19 +92,21 @@ export function createGithubPagesEnableAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
 
       ctx.logger.info(
         `Attempting to enable GitHub Pages for ${owner}/${repo} with "${buildType}" build type, on source branch "${sourceBranch}" and source path "${sourcePath}"`,

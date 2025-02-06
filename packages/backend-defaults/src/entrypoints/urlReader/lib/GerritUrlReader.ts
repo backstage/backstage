@@ -20,6 +20,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
@@ -28,14 +29,19 @@ import { Readable } from 'stream';
 import {
   GerritIntegration,
   ScmIntegrations,
-  buildGerritGitilesArchiveUrl,
+  buildGerritGitilesArchiveUrlFromLocation,
   getGerritBranchApiUrl,
   getGerritFileContentsApiUrl,
   getGerritRequestOptions,
-  parseGerritGitilesUrl,
   parseGerritJsonResponse,
+  parseGitilesUrlRef,
 } from '@backstage/integration';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  NotFoundError,
+  NotModifiedError,
+  ResponseError,
+  assertError,
+} from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 
 /**
@@ -135,38 +141,44 @@ export class GerritUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
-    const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
-    let response: Response;
-    try {
-      response = await fetch(apiUrl, {
-        method: 'GET',
-        ...getGerritRequestOptions(this.integration.config),
-      });
-    } catch (e) {
-      throw new Error(`Unable to read branch state ${url}, ${e}`);
-    }
+    const urlRevision = await this.getRevisionForUrl(url, options);
 
-    if (response.status === 404) {
-      throw new NotFoundError(`Not found: ${url}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        `${url} could not be read as ${apiUrl}, ${response.status} ${response.statusText}`,
-      );
-    }
-    const branchInfo = (await parseGerritJsonResponse(response as any)) as {
-      revision: string;
-    };
-    if (options?.etag === branchInfo.revision) {
-      throw new NotModifiedError();
-    }
-
-    return this.readTreeFromGitiles(url, branchInfo.revision, options);
+    return this.readTreeFromGitiles(url, urlRevision, options);
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('GerritReader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { pathname } = new URL(url);
+
+    if (pathname.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {
@@ -179,15 +191,9 @@ export class GerritUrlReader implements UrlReaderService {
     revision: string,
     options?: UrlReaderServiceReadTreeOptions,
   ) {
-    const { branch, filePath, project } = parseGerritGitilesUrl(
+    const archiveUrl = buildGerritGitilesArchiveUrlFromLocation(
       this.integration.config,
       url,
-    );
-    const archiveUrl = buildGerritGitilesArchiveUrl(
-      this.integration.config,
-      project,
-      branch,
-      filePath,
     );
     const archiveResponse = await fetch(archiveUrl, {
       ...getGerritRequestOptions(this.integration.config),
@@ -216,5 +222,42 @@ export class GerritUrlReader implements UrlReaderService {
       filter: options?.filter,
       stripFirstDirectory: false,
     });
+  }
+
+  private async getRevisionForUrl(
+    url: string,
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<string> {
+    const { ref, refType } = parseGitilesUrlRef(this.integration.config, url);
+    // The url points to a static revision.
+    if (refType === 'sha') {
+      if (options?.etag === ref) {
+        throw new NotModifiedError();
+      }
+      return ref;
+    }
+
+    const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
+    let response: Response;
+    try {
+      response = await fetch(apiUrl, {
+        method: 'GET',
+        ...getGerritRequestOptions(this.integration.config),
+      });
+    } catch (e) {
+      throw new Error(`Unable to read branch state ${url}, ${e}`);
+    }
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const branchInfo = (await parseGerritJsonResponse(response as any)) as {
+      revision: string;
+    };
+    if (options?.etag === branchInfo.revision) {
+      throw new NotModifiedError();
+    }
+    return branchInfo.revision;
   }
 }

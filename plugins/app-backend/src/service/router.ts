@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { notFoundHandler } from '@backstage/backend-common';
 import {
   DatabaseService,
   resolvePackagePath,
@@ -22,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { AppConfig } from '@backstage/config';
 import helmet from 'helmet';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
@@ -299,10 +298,22 @@ async function createEntryPointRouter({
   if (staticFallbackHandler) {
     staticRouter.use(staticFallbackHandler);
   }
-  staticRouter.use(notFoundHandler());
+  staticRouter.use((_req: Request, res: Response) => {
+    res.status(404).end();
+  });
 
   router.use('/static', staticRouter);
-  router.use(
+
+  const rootRouter = Router();
+  rootRouter.use((req, _res, next) => {
+    // Make sure / and /index.html are handled by the HTML5 route below
+    if (req.path === '/' || req.path === '/index.html') {
+      next('router');
+    } else {
+      next();
+    }
+  });
+  rootRouter.use(
     express.static(rootDir, {
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
@@ -315,7 +326,9 @@ async function createEntryPointRouter({
       },
     }),
   );
+  router.use(rootRouter);
 
+  // HTML5 routing
   router.get('/*', (_req, res) => {
     if (injectResult?.indexHtmlContent) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');

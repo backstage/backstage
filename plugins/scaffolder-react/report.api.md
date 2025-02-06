@@ -131,6 +131,8 @@ export interface FieldSchema<TReturn, TUiOptions> {
   // (undocumented)
   readonly schema: CustomFieldExtensionSchema;
   // (undocumented)
+  readonly TOutput: TReturn;
+  // (undocumented)
   readonly TProps: FieldExtensionComponentProps<TReturn, TUiOptions>;
   // @deprecated (undocumented)
   readonly type: FieldExtensionComponentProps<TReturn, TUiOptions>;
@@ -214,7 +216,8 @@ export interface ScaffolderApi {
     context?: Record<string, string>;
   }): Promise<{
     results: {
-      title: string;
+      title?: string;
+      id: string;
     }[];
   }>;
   cancelTask(taskId: string): Promise<void>;
@@ -538,6 +541,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  EXPERIMENTAL_formDecorators?: {
+    id: string;
+    input?: JsonObject;
+  }[];
 };
 
 // @public

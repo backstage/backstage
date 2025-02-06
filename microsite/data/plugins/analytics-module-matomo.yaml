@@ -4,7 +4,7 @@ author: Red Hat
 authorUrl: https://redhat.com
 category: Monitoring
 description: Track usage of your Backstage instance using Matomo Analytics.
-documentation: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/analytics-module-matomo/README.md
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-matomo/README.md
 iconUrl: /img/matomo.png
-npmPackageName: '@janus-idp/backstage-plugin-analytics-module-matomo'
+npmPackageName: '@backstage-community/plugin-analytics-module-matomo'
 addedDate: '2023-10-17'

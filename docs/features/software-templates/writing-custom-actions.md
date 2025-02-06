@@ -141,6 +141,39 @@ Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if
 
 > We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on migrating these in the repository over time too.
 
+### Adding a TemplateExample
+
+A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure consistency and standardization across different custom actions.
+
+#### Define a TemplateExample and add to your Custom Action
+
+```ts title="With JSON Schema"
+import { TemplateExample } from '@backstage/plugin-scaffolder-node';
+import yaml from 'yaml';
+
+export const examples: TemplateExample[] = [
+  {
+    description: 'Template Example for Creating an Acme file',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'acme:file:create',
+          name: 'Create an Acme file.',
+          input: {
+            contents: 'file contents...',
+            filename: 'ACME.properties',
+          },
+        },
+      ],
+    }),
+  },
+];
+```
+
+Add the example to the `createTemplateAction` under the object property `examples`:
+
+`return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...};`
+
 ### The context object
 
 When the action `handler` is called, we provide you a `context` as the only
@@ -187,7 +220,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
       async init({ scaffolder /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
-        scaffolder.addActions(new createNewFileAction()); // just an example
+        scaffolder.addActions(createNewFileAction()); // just an example
       },
     });
   },
@@ -230,14 +263,17 @@ Idempotent action could be achieved via the usage of checkpoints.
 Example:
 
 ```ts title="plugins/my-company-scaffolder-actions-plugin/src/vendor/my-custom-action.ts"
-const res = await ctx.checkpoint?.('create.projects', async () => {
-  const projectStgId = createStagingProjectId();
-  const projectProId = createProductionProjectId();
+const res = await ctx.checkpoint?.({
+  key: 'create.projects',
+  fn: async () => {
+    const projectStgId = createStagingProjectId();
+    const projectProId = createProductionProjectId();
 
-  return {
-    projectStgId,
-    projectProId,
-  };
+    return {
+      projectStgId,
+      projectProId,
+    };
+  },
 });
 ```
 

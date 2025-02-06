@@ -221,7 +221,7 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          import('@backstage/plugin-catalog-backend'),
           mockServices.rootConfig.factory({ data: config }),
           mockServices.database.factory({ knex }),
           createBackendModule({

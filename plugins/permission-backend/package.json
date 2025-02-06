@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-backend",
-  "version": "0.5.51",
+  "version": "0.5.54-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "permission",
@@ -58,16 +58,16 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
-    "@types/express": "*",
+    "@types/express": "^4.17.6",
     "dataloader": "^2.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.7.0",
     "yn": "^4.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",

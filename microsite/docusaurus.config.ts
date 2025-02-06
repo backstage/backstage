@@ -405,6 +405,10 @@ const config: Config = {
               label: 'GitHub',
               to: 'https://github.com/backstage/',
             },
+            {
+              label: 'Assets',
+              to: 'https://github.com/cncf/artwork/tree/main/projects/backstage',
+            },
           ],
         },
       ],
@@ -444,8 +448,5 @@ const config: Config = {
       ],
     },
   } satisfies Preset.ThemeConfig,
-  future: {
-    experimental_faster: true,
-  },
 };
 export default config;

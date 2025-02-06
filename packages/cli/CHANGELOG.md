@@ -1,5 +1,217 @@
 # @backstage/cli
 
+## 0.30.0-next.2
+
+### Patch Changes
+
+- f17ef61: The `versions:bump` command will now reject `*` as a pattern.
+- 86c72c1: The packing process when running `build-workspace` with the `--alwaysYarnPack` flag now respects the `BACKSTAGE_CLI_BUILD_PARALLEL` environment variable, defaulting parallel work limits based on CPU availability.
+- 2167afc: Treat static file assets as always being free from side effects in package builds.
+- f54eed0: Fixed an issue where default feature type information wasn't being added to package.json/exports before publishing if exports didn't exist beforehand
+- 9638f6d: Only allow pass through of `.mjs` in Jest transform if static ESM is supported.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.30.0-next.1
+
+### Patch Changes
+
+- 207f88f: Fixed the file path pattern of many static assets output as part of the frontend build process, where there was an extra `.` before the extension, leading to names like `image-af7946b..png`.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.30.0-next.0
+
+### Minor Changes
+
+- cb76663: **BREAKING**: Add support for native ESM in Node.js code. This changes the behavior of dynamic import expressions in Node.js code. Typically this can be fixed by replacing `import(...)` with `require(...)`, with an `as typeof import(...)` cast if needed for types. This is because dynamic imports will no longer be transformed to `require(...)` calls, but instead be left as-is. This in turn allows you to load ESM modules from CommonJS code using `import(...)`.
+
+  This change adds support for the following in Node.js packages, across type checking, package builds, runtime transforms and Jest tests:
+
+  - Dynamic imports that load ESM modules from CommonJS code.
+  - Both `.mjs` and `.mts` files as explicit ESM files, as well as `.cjs` and `.cts` as explicit CommonJS files.
+  - Support for the `"type": "module"` field in `package.json` to indicate that the package is an ESM package.
+
+  There are a few caveats to be aware of:
+
+  - To enable support for native ESM in tests, you need to run the tests with the `--experimental-vm-modules` flag enabled, typically via `NODE_OPTIONS='--experimental-vm-modules'`.
+  - Declaring a package as `"type": "module"` in `package.json` is supported, but in tests it will cause all local transitive dependencies to also be treated as ESM, regardless of whether they declare `"type": "module"` or not.
+  - Node.js has an [ESM interoperability layer with CommonJS](https://nodejs.org/docs/latest-v22.x/api/esm.html#interoperability-with-commonjs) that allows for imports from ESM to identify named exports in CommonJS packages. This interoperability layer is **only** enabled when importing packages with a `.cts` or `.cjs` extension. This is because the interoperability layer is not fully compatible with the NPM ecosystem, and would break package if it was enabled for `.js` files.
+  - Dynamic imports of CommonJS packages will vary in shape depending on the runtime, i.e. test vs local development, etc. It is therefore recommended to avoid dynamic imports of CommonJS packages and instead use `require`, or to use the explicit CommonJS extensions as mentioned above. If you do need to dynamically import CommonJS packages, avoid using `default` exports, as the shape of them vary across different environments and you would otherwise need to manually unwrap the import based on the shape of the module object.
+
+### Patch Changes
+
+- f21b125: Ensure that both global-agent and undici agents are enabled when proxying is enabled.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.29.5
+
+### Patch Changes
+
+- e937ce0: Fixed incompatible `@typescript-eslint` versions with current `eslint@8.x.x`
+- 8557e09: Removed the `EXPERIMENTAL_VITE` flag for using Vite as a dev server. If you were using this feature, we recommend switching to Rspack via the `EXPERIMENTAL_RSPACK` flag.
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/config-loader@1.9.5
+  - @backstage/integration@1.16.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.12
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+
+## 0.29.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/cli-node@0.2.12-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/cli-common@0.1.15
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1-next.0
+
+## 0.29.5-next.0
+
+### Patch Changes
+
+- e937ce0: Fixed incompatible `@typescript-eslint` versions with current `eslint@8.x.x`
+- Updated dependencies
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.0
+
+## 0.29.4
+
+### Patch Changes
+
+- 2b6c1ea: If the Backstage yarn plugin is installed, it will now be automatically updated as part of `versions:bump`.
+- 7dcff85: Remove special-casing for `@types` packages when generating dependency entries
+  during templating
+- 3c3a7e6: Revert `css-loader@v7` bump
+- 0aff006: Bumped the version range for `html-webpack-plugin` to fix the `htmlPluginExports.getCompilationHooks is not a function` error when using experimental Rspack.
+- 583f3d4: Added `@backstage/cli/config/prettier` as a replacement for `@spotify/prettier-config`, but with the same configuration.
+- 62a9062: Updated dependency `@module-federation/enhanced` to `^0.8.0`.
+- 5f04976: Update `rollup` to avoid issues with build output when running `backstage-cli package build`.
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- a49030a: Add support for `--output-file` option from ESLint to `package lint` and `repo lint` commands.
+- 96331fa: Enhance the behavior of the experimental support for module federation in the backstage CLI,
+  by using the `package.json` exports (when present) to complete the list of exposed modules.
+  This allows, for example, using exported `alpha` definitions through module federation.
+- 5c9cc05: Use native fetch instead of node-fetch
+- dcd99d2: added experimental RSPack support for build command in the repo scope
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/cli-node@0.2.11
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.0
+
+## 0.29.3-next.2
+
+### Patch Changes
+
+- 62a9062: Updated dependency `@module-federation/enhanced` to `^0.8.0`.
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/cli-node@0.2.11-next.1
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/release-manifests@0.0.12-next.1
+  - @backstage/types@1.2.0
+
+## 0.29.3-next.1
+
+### Patch Changes
+
+- a49030a: Add support for `--output-file` option from ESLint to `package lint` and `repo lint` commands.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/release-manifests@0.0.12-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+
+## 0.29.3-next.0
+
+### Patch Changes
+
+- 2b6c1ea: If the Backstage yarn plugin is installed, it will now be automatically updated as part of `versions:bump`.
+- 7dcff85: Remove special-casing for `@types` packages when generating dependency entries
+  during templating
+- 0aff006: Bumped the version range for `html-webpack-plugin` to fix the `htmlPluginExports.getCompilationHooks is not a function` error when using experimental Rspack.
+- 583f3d4: Added `@backstage/cli/config/prettier` as a replacement for `@spotify/prettier-config`, but with the same configuration.
+- 5f04976: Update `rollup` to avoid issues with build output when running `backstage-cli package build`.
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/release-manifests@0.0.12-next.0
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/config-loader@1.9.2
+  - @backstage/errors@1.2.5
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.0
+
 ## 0.29.0
 
 ### Minor Changes

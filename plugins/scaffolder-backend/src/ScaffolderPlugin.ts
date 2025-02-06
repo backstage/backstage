@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  createBackendPlugin,
-  coreServices,
-} from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   TaskBroker,
   TemplateAction,
@@ -46,6 +47,7 @@ import {
   createFetchTemplateAction,
   createFetchTemplateFileAction,
   createFilesystemDeleteAction,
+  createFilesystemReadDirAction,
   createFilesystemRenameAction,
   createWaitAction,
 } from './scaffolder';
@@ -113,7 +115,9 @@ export const scaffolderPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
+        auditor: coreServices.auditor,
         catalogClient: catalogServiceRef,
+        events: eventsServiceRef,
       },
       async init({
         logger,
@@ -127,6 +131,8 @@ export const scaffolderPlugin = createBackendPlugin({
         httpAuth,
         catalogClient,
         permissions,
+        events,
+        auditor,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -164,6 +170,7 @@ export const scaffolderPlugin = createBackendPlugin({
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
+          createFilesystemReadDirAction(),
         ];
 
         const actionIds = actions.map(action => action.id).join(', ');
@@ -189,6 +196,8 @@ export const scaffolderPlugin = createBackendPlugin({
           permissions,
           autocompleteHandlers,
           additionalWorkspaceProviders,
+          events,
+          auditor,
         });
         httpRouter.use(router);
       },

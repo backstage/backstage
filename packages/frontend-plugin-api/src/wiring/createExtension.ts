@@ -15,7 +15,7 @@
  */
 
 import { ApiHolder, AppNode } from '../apis';
-import { Expand } from '../types';
+import { Expand } from '@backstage/types';
 import {
   ResolveInputValueOverrides,
   resolveInputOverrides,

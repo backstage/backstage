@@ -17,7 +17,6 @@
 import {
   DatabaseManager,
   loggerToWinstonLogger,
-  PluginDatabaseManager,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -51,6 +50,8 @@ import {
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { EventsService } from '@backstage/plugin-events-node';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 
 const mockAccess = jest.fn();
 
@@ -67,7 +68,7 @@ jest.mock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
-function createDatabase(): PluginDatabaseManager {
+function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
@@ -99,6 +100,9 @@ describe('createRouter', () => {
   const auth = mockServices.auth();
   const httpAuth = mockServices.httpAuth();
   const discovery = mockServices.discovery();
+  const events = {
+    publish: jest.fn(),
+  } as unknown as EventsService;
 
   const credentials = mockCredentials.user();
   const token = mockCredentials.service.token({
@@ -211,6 +215,7 @@ describe('createRouter', () => {
         auth,
         httpAuth,
         discovery,
+        events,
       });
       app = express().use(router);
 

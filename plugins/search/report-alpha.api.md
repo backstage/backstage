@@ -12,6 +12,7 @@ import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 
@@ -22,21 +23,6 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'api:search': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
-    }>;
     'nav-item:search': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -56,6 +42,21 @@ const _default: FrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
+      };
+    }>;
+    'api:search': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
       };
     }>;
     'page:search': ExtensionDefinition<{
@@ -91,6 +92,34 @@ const _default: FrontendPlugin<
               component: SearchResultItemExtensionComponent;
             },
             'search.search-result-list-item.item',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        resultTypes: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              value: string;
+              name: string;
+              icon: JSX.Element;
+            },
+            'search.filters.result-types.type',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        searchFilters: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              component: SearchFilterExtensionComponent;
+            },
+            'search.filters.filter',
             {}
           >,
           {
@@ -177,6 +206,34 @@ export const searchPage: ExtensionDefinition<{
           component: SearchResultItemExtensionComponent;
         },
         'search.search-result-list-item.item',
+        {}
+      >,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+    resultTypes: ExtensionInput<
+      ConfigurableExtensionDataRef<
+        {
+          value: string;
+          name: string;
+          icon: JSX.Element;
+        },
+        'search.filters.result-types.type',
+        {}
+      >,
+      {
+        singleton: false;
+        optional: false;
+      }
+    >;
+    searchFilters: ExtensionInput<
+      ConfigurableExtensionDataRef<
+        {
+          component: SearchFilterExtensionComponent;
+        },
+        'search.filters.filter',
         {}
       >,
       {

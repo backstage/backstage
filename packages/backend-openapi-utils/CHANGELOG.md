@@ -1,5 +1,119 @@
 # @backstage/backend-openapi-utils
 
+## 0.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 700d32b: **BREAKING**: The `wrapInOpenApiTestServer` and `wrapServer` functions are now exported via `/testUtils` subpath. If you were importing these functions directly from the root of the package, you will need to update your imports to use the `/testUtils` subpath:
+
+  ```diff
+  - import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+  + import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils/testUtils';
+  ```
+
+  or
+
+  ```diff
+  - import { wrapServer } from '@backstage/backend-openapi-utils';
+  + import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/errors@1.2.7
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/errors@1.2.7-next.0
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 0.4.0
+
+### Minor Changes
+
+- afcebea: Fixed a Typescript error when trying to use the new OpenAPI server-side generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- afcebea: Fixed a Typescript error when trying to use the new OpenAPI server-side generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/types@1.2.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 0.3.0
 
 ### Minor Changes

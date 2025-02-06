@@ -61,7 +61,11 @@ import {
 } from '@backstage/plugin-search-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchResultListItemBlueprint,
+  SearchFilterResultTypeBlueprint,
+  SearchFilterBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
@@ -106,6 +110,12 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
   inputs: {
     items: createExtensionInput([SearchResultListItemBlueprint.dataRefs.item]),
+    resultTypes: createExtensionInput([
+      SearchFilterResultTypeBlueprint.dataRefs.resultType,
+    ]),
+    searchFilters: createExtensionInput([
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    ]),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
@@ -123,6 +133,15 @@ export const searchPage = PageBlueprint.makeWithOverrides({
             DefaultResultListItem
           );
         };
+
+        const resultTypes = inputs.resultTypes.map(item =>
+          item.get(SearchFilterResultTypeBlueprint.dataRefs.resultType),
+        );
+
+        const additionalSearchFilters = inputs.searchFilters.map(
+          item =>
+            item.get(SearchFilterBlueprint.dataRefs.searchFilters).component,
+        );
 
         const Component = () => {
           const classes = useSearchPageStyles();
@@ -155,7 +174,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                             name: 'Documentation',
                             icon: <DocsIcon />,
                           },
-                        ]}
+                        ].concat(resultTypes)}
                       />
                       <Paper className={classes.filters}>
                         {types.includes('techdocs') && (
@@ -193,6 +212,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           name="lifecycle"
                           values={['experimental', 'production']}
                         />
+                        {additionalSearchFilters.map(SearchFilterComponent => (
+                          <SearchFilterComponent className={classes.filter} />
+                        ))}
                       </Paper>
                     </Grid>
                   )}

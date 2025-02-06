@@ -30,6 +30,7 @@ import {
   V1ResourceQuota,
   V1Service,
   V1StatefulSet,
+  V1Secret,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
@@ -139,7 +140,8 @@ export type FetchResponse =
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
-  | PodStatusFetchResponse;
+  | PodStatusFetchResponse
+  | SecretsFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -229,6 +231,12 @@ export interface DaemonSetsFetchResponse {
 export interface PodStatusFetchResponse {
   type: 'podstatus';
   resources: Array<PodStatus>;
+}
+
+/** @public */
+export interface SecretsFetchResponse {
+  type: 'secrets';
+  resources: Array<V1Secret>;
 }
 
 /** @public */

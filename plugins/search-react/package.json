@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-react",
-  "version": "1.8.2",
+  "version": "1.8.6-next.2",
   "backstage": {
     "role": "web-library",
     "pluginId": "search",
@@ -68,7 +68,8 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
-    "react-use": "^17.3.2"
+    "react-use": "^17.3.2",
+    "uuid": "^11.0.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -86,10 +87,10 @@
     "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

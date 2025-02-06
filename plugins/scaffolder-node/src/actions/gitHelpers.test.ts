@@ -98,18 +98,11 @@ describe('initRepoAndPush', () => {
       });
     });
 
-    it('adds the appropriate remote', () => {
-      expect(mockedGit.addRemote).toHaveBeenCalledWith({
-        dir: '/test/repo/dir/',
-        url: 'git@github.com:test/repo.git',
-        remote: 'origin',
-      });
-    });
-
     it('pushes to the remote', () => {
       expect(mockedGit.push).toHaveBeenCalledWith({
         dir: '/test/repo/dir/',
         remote: 'origin',
+        url: 'git@github.com:test/repo.git',
       });
     });
   });

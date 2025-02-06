@@ -22,10 +22,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { Observable } from '@backstage/types';
-import qs from 'qs';
-import queryString from 'qs';
-import ObservableImpl from 'zen-observable';
 import {
   ListActionsResponse,
   LogEvent,
@@ -40,10 +36,13 @@ import {
   ScaffolderTask,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
+import { Observable } from '@backstage/types';
 import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
+import { default as qs, default as queryString } from 'qs';
+import ObservableImpl from 'zen-observable';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -365,7 +364,7 @@ export class ScaffolderClient implements ScaffolderApi {
     provider: string;
     resource: string;
     context?: Record<string, string>;
-  }): Promise<{ results: { title: string }[] }> {
+  }): Promise<{ results: { title?: string; id: string }[] }> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
 
     const url = `${baseUrl}/v2/autocomplete/${provider}/${resource}`;

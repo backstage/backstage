@@ -14,7 +14,13 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    path: string[];
+    path: (
+      | string
+      | {
+          name: string;
+          slug: string;
+        }
+    )[];
     repoUrl: string;
     token?: string | undefined;
   },
@@ -76,11 +82,11 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
+    scopes: string[];
     repoUrl: string;
     projectId: string | number;
     username?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
   },
   {
     user: string;
@@ -132,7 +138,8 @@ export function createPublishGitlabAction(options: {
     repoUrl: string;
     defaultBranch?: string | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    sourcePath?: string | undefined;
+    sourcePath?: string | boolean | undefined;
+    skipExisting?: boolean | undefined;
     token?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
@@ -149,8 +156,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_off'
             | 'default_on'
+            | 'default_off'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
@@ -202,6 +209,8 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
+    assignReviewersFromApprovalRules?: boolean | undefined;
   },
   JsonObject
 >;

@@ -20,6 +20,7 @@ import { V1LimitRange } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1ResourceQuota } from '@kubernetes/client-node';
+import { V1Secret } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
 import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
@@ -264,7 +265,8 @@ export type FetchResponse =
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
-  | PodStatusFetchResponse;
+  | PodStatusFetchResponse
+  | SecretsFetchResponse;
 
 // @public (undocumented)
 export interface GroupedResponses extends DeploymentResources {
@@ -315,6 +317,9 @@ export interface JobsFetchResponse {
   type: 'jobs';
 }
 
+// @public
+export const kubernetesClustersReadPermission: BasicPermission;
+
 // @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
@@ -344,6 +349,9 @@ export interface KubernetesRequestBody {
   // (undocumented)
   entity: Entity;
 }
+
+// @public
+export const kubernetesResourcesReadPermission: BasicPermission;
 
 // @public (undocumented)
 export interface LimitRangeFetchResponse {
@@ -430,6 +438,14 @@ export interface ResourceRef {
   name: string;
   // (undocumented)
   namespace: string;
+}
+
+// @public (undocumented)
+export interface SecretsFetchResponse {
+  // (undocumented)
+  resources: Array<V1Secret>;
+  // (undocumented)
+  type: 'secrets';
 }
 
 // @public (undocumented)

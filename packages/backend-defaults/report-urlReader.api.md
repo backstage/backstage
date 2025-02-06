@@ -7,6 +7,8 @@
 
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
+import { AzureBlobStorageIntergation } from '@backstage/integration';
+import { AzureCredentialsManager } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
@@ -36,6 +38,38 @@ export class AwsS3UrlReader implements UrlReaderService {
   constructor(
     credsManager: AwsCredentialsManager,
     integration: AwsS3Integration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(
+    url: string,
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse>;
+  // (undocumented)
+  readUrl(
+    url: string,
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse>;
+  // (undocumented)
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export class AzureBlobStorageUrlReader implements UrlReaderService {
+  constructor(
+    credsManager: AzureCredentialsManager,
+    integration: AzureBlobStorageIntergation,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -199,7 +233,10 @@ export class FetchUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -234,7 +271,10 @@ export class GerritUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -262,7 +302,10 @@ export class GiteaUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -353,7 +396,10 @@ export class HarnessUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -384,17 +430,29 @@ export interface ReadTreeResponseFactory {
 }
 
 // @public
-export type ReadTreeResponseFactoryOptions = {
-  stream: Readable;
-  subpath?: string;
-  etag: string;
-  filter?: (
-    path: string,
-    info?: {
-      size: number;
-    },
-  ) => boolean;
-};
+export type ReadTreeResponseFactoryOptions =
+  | {
+      stream: Readable;
+      subpath?: string;
+      etag: string;
+      filter?: (
+        path: string,
+        info?: {
+          size: number;
+        },
+      ) => boolean;
+    }
+  | {
+      response: Response;
+      subpath?: string;
+      etag?: string;
+      filter?: (
+        path: string,
+        info?: {
+          size: number;
+        },
+      ) => boolean;
+    };
 
 // @public
 export class ReadUrlResponseFactory {
@@ -405,6 +463,9 @@ export class ReadUrlResponseFactory {
   static fromReadable(
     stream: Readable,
     options?: ReadUrlResponseFactoryFromStreamOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse>;
+  static fromResponse(
+    response: Response,
   ): Promise<UrlReaderServiceReadUrlResponse>;
 }
 

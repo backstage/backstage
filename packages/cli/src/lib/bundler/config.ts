@@ -235,13 +235,22 @@ export async function createConfig(
           .ModuleFederationPlugin as unknown as typeof ModuleFederationPlugin)
       : ModuleFederationPlugin;
 
+    const exposes = options.moduleFederation?.exposes
+      ? Object.fromEntries(
+          Object.entries(options.moduleFederation?.exposes).map(([k, v]) => [
+            k,
+            resolvePath(paths.targetPath, v),
+          ]),
+        )
+      : {
+          '.': paths.targetEntry,
+        };
+
     plugins.push(
       new AdaptedModuleFederationPlugin({
         ...(isRemote && {
           filename: 'remoteEntry.js',
-          exposes: {
-            '.': paths.targetEntry,
-          },
+          exposes,
         }),
         name: options.moduleFederation.name,
         runtime: false,

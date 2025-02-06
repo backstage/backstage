@@ -22,7 +22,7 @@ import {
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
 import * as inputProps from './inputProperties';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 
@@ -62,6 +62,7 @@ export function createGithubBranchProtectionAction(options: {
     requiredConversationResolution?: boolean;
     requireLastPushApproval?: boolean;
     requiredCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     token?: string;
   }>({
     id: 'github:branch-protection:create',
@@ -90,6 +91,7 @@ export function createGithubBranchProtectionAction(options: {
             inputProps.requiredConversationResolution,
           requireLastPushApproval: inputProps.requireLastPushApproval,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
           token: inputProps.token,
         },
       },
@@ -109,21 +111,24 @@ export function createGithubBranchProtectionAction(options: {
         requiredConversationResolution = false,
         requireLastPushApproval = false,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
 
       const repository = await client.rest.repos.get({
         owner: owner,
@@ -147,6 +152,7 @@ export function createGithubBranchProtectionAction(options: {
         enforceAdmins,
         dismissStaleReviews,
         requiredCommitSigning,
+        requiredLinearHistory,
       });
     },
   });

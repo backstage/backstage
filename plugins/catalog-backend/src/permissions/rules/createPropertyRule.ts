@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { createPermissionRule } from '@backstage/plugin-permission-node';
 import { get } from 'lodash';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
-import { createCatalogPermissionRule } from './util';
 import { z } from 'zod';
 
 export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
-  createCatalogPermissionRule({
+  createPermissionRule({
     name: `HAS_${propertyType.toUpperCase()}`,
     description: `Allow entities with the specified ${propertyType} subfield`,
-    resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+    resourceRef: catalogEntityPermissionResourceRef,
     paramsSchema: z.object({
       key: z
         .string()

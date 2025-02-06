@@ -20,7 +20,6 @@ import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
-import fetch from 'node-fetch';
 import openBrowser from 'react-dev-utils/openBrowser';
 
 // This is an experimental command that at this point does not support GitHub Enterprise

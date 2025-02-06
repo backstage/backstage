@@ -18,33 +18,24 @@ import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useState, ReactNode } from 'react';
+import React, { useState } from 'react';
 import { useEntityList } from '../../hooks';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      root: {},
-      input: {
-        backgroundColor: theme.palette.background.paper,
-      },
-      label: {
-        textTransform: 'none',
-        fontWeight: 'bold',
-      },
-    }),
+  {
+    root: {},
+    input: {},
+    label: {},
+  },
   { name: 'CatalogReactEntityProcessingStatusPickerPicker' },
 );
 
@@ -77,47 +68,34 @@ export const EntityProcessingStatusPicker = () => {
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
-      <Typography className={classes.label} variant="button" component="label">
-        {t('entityProcessingStatusPicker.title')}
-        <Autocomplete<string, true>
-          PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children as ReactNode}</div>
-          )}
-          multiple
-          disableCloseOnSelect
-          options={availableAdvancedItems}
-          value={selectedAdvancedItems}
-          onChange={(_: object, value: string[]) => {
-            setSelectedAdvancedItems(value);
-            orphanChange(value.includes('Is Orphan'));
-            errorChange(value.includes('Has Error'));
-          }}
-          renderOption={(option, { selected }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  checked={selected}
-                />
-              }
-              onClick={event => event.preventDefault()}
-              label={option}
-            />
-          )}
-          size="small"
-          popupIcon={
-            <ExpandMoreIcon data-testid="processing-status-picker-expand" />
-          }
-          renderInput={params => (
-            <TextField
-              {...params}
-              className={classes.input}
-              variant="outlined"
-            />
-          )}
-        />
-      </Typography>
+      <CatalogAutocomplete<string, true>
+        label={t('entityProcessingStatusPicker.title')}
+        multiple
+        disableCloseOnSelect
+        options={availableAdvancedItems}
+        value={selectedAdvancedItems}
+        onChange={(_: object, value: string[]) => {
+          setSelectedAdvancedItems(value);
+          orphanChange(value.includes('Is Orphan'));
+          errorChange(value.includes('Has Error'));
+        }}
+        renderOption={(option, { selected }) => (
+          <FormControlLabel
+            control={
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                checked={selected}
+              />
+            }
+            onClick={event => event.preventDefault()}
+            label={option}
+          />
+        )}
+        name="processing-status-picker"
+        LabelProps={{ className: classes.label }}
+        TextFieldProps={{ className: classes.input }}
+      />
     </Box>
   );
 };
