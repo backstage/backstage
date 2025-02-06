@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { OptionValues } from 'commander';
 import { Template } from './types';
 
 export interface Options extends Record<string, string | boolean> {
@@ -50,19 +51,21 @@ export const resolvePackageName = (options: {
 };
 
 export function populateOptions(
-  prompts: Record<string, string>,
+  options: Record<string, string>,
   template: Template,
+  argOpts?: OptionValues,
 ): Options {
   return {
-    id: prompts.id ?? '',
-    private: !!prompts.private,
-    baseVersion: prompts.baseVersion ?? '0.1.0',
-    owner: prompts.owner ?? '',
-    license: prompts.license ?? 'Apache-2.0',
+    id: '',
+    owner: '',
+    license: 'Apache-2.0',
+    scope: '',
+    moduleId: '',
+    baseVersion: '0.1.0',
+    private: true,
+    ...options,
+    ...argOpts,
     targetPath: template.targetPath,
-    scope: prompts.scope ?? '',
-    moduleId: prompts.moduleId ?? '',
-    ...prompts,
   };
 }
 

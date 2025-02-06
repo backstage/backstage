@@ -43,6 +43,23 @@ import { executePluginPackageTemplate } from '../../lib/new/executeTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { OptionValues } from 'commander';
 
+function parseOptions(optionStrings: string[]): Record<string, string> {
+  const options: Record<string, string> = {};
+
+  for (const str of optionStrings) {
+    const [key] = str.split('=', 1);
+    const value = str.slice(key.length + 1);
+    if (!key || str[key.length] !== '=') {
+      throw new Error(
+        `Invalid option '${str}', must be of the format <key>=<value>`,
+      );
+    }
+    options[key] = value;
+  }
+
+  return options;
+}
+
 export default async (opts: OptionValues) => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
@@ -54,12 +71,28 @@ export default async (opts: OptionValues) => {
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
-  const prompts = await promptOptions({
-    prompts: template.prompts || [],
+  const legacyOpts = parseOptions(opts.option);
+  const prefilledAnswers = Object.fromEntries(
+    (template.prompts ?? []).flatMap(prompt => {
+      const id = typeof prompt === 'string' ? prompt : prompt.id;
+      const answer = legacyOpts[id];
+      return answer ? [[id, answer]] : [];
+    }),
+  );
+  const promptAnswers = await promptOptions({
+    prompts:
+      template.prompts?.filter(
+        prompt =>
+          !Object.hasOwn(
+            prefilledAnswers,
+            typeof prompt === 'string' ? prompt : prompt.id,
+          ),
+      ) ?? [],
     globals,
     codeOwnersFilePath,
   });
-  const options = populateOptions(prompts, template);
+  const answers = { ...prefilledAnswers, ...promptAnswers };
+  const options = populateOptions(answers, template, opts);
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 
