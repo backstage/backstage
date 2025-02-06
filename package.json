@@ -1,6 +1,11 @@
 {
   "name": "root",
   "version": "1.36.0-next.2",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
+  },
   "backstage": {
     "cli": {
       "defaults": true,
@@ -10,11 +15,6 @@
       },
       "templates": []
     }
-  },
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage"
   },
   "workspaces": {
     "packages": [
