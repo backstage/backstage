@@ -33,14 +33,17 @@ export const resolvePackageName = (options: {
 }) => {
   const { baseName, scope, plugin } = options;
   if (scope) {
-    const scopeSanitized = scope.replace(/[@/]/g, '');
     if (plugin) {
-      const pluginPrefix = scopeSanitized.startsWith('backstage')
+      const pluginName = scope.startsWith('backstage')
         ? 'plugin'
         : 'backstage-plugin';
-      return `@${scopeSanitized}/${pluginPrefix}-${baseName}`;
+      return scope.includes('/')
+        ? `@${scope}${pluginName}-${baseName}`
+        : `@${scope}/${pluginName}-${baseName}`;
     }
-    return `@${scopeSanitized}/${baseName}`;
+    return scope.includes('/')
+      ? `@${scope}${baseName}`
+      : `@${scope}/${baseName}`;
   }
 
   return plugin ? `backstage-plugin-${baseName}` : baseName;
