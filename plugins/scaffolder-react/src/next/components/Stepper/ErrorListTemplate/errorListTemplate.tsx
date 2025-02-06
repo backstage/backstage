@@ -69,11 +69,9 @@ export const ErrorListTemplate = ({ errors, schema }: ErrorListProps) => {
         const restObjectFields: Object[] = Object.values(rest).filter(
           f => typeof f === 'object',
         );
-        return [
-          ...restObjectFields.map(childField =>
+        return restObjectFields.map(childField =>
             deepFindPropertyTitle(childField),
-          ),
-        ].find(s => typeof s === 'string');
+          ).find(s => typeof s === 'string');
       };
 
       return `'${deepFindPropertyTitle(schema) || startCase(propertyName)}' ${
