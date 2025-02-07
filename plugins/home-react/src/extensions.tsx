@@ -47,7 +47,9 @@ export type RendererProps = { title?: string } & ComponentParts;
 /**
  * @public
  */
-export type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
+export type CardExtensionProps<T> = ComponentRenderer & {
+  title?: string;
+} & T;
 
 /**
  * @public
@@ -150,7 +152,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   }
 
   const cardProps = {
-    ...(title && { title }),
+    ...(title && { title, divider: !!title }),
     ...(Settings && !isCustomizable
       ? {
           action: (
