@@ -5,6 +5,15 @@ title: Manual Rollback using Knex
 description: Guide on how to rollback Knex migrations.
 ---
 
+The most common case to use Knex directly is when you want to **rollback a migration** that was applied when you upgraded your Backstage instance and want to downgrade due to some problem. You can use the `migrate:down` command to rollback a specific migration. You can also use the `migrate:rollback` command to rollback the last batch of migrations. This is necessary because Knex will mark migrations as corrupted if you try to downgrade your Backstage instance without the rollback. Be aware to run those commands in the new version of the Backstage instance, so you can avoid the corrupted migrations for lower versions.
+
+You are likely to receive a message like this when you try a downgrade without the rollback:
+
+```sh
+Backend failed to start up Error: The migration directory is corrupt, the following files are missing: 20230428155633_sessions.js
+```
+
+Currently, we don't have a simple way to check which migrations and which plugins have been applied in the database, but you can follow this [issue](https://github.com/backstage/backstage/issues/22439) to get more information about this.
 This guide covers a simple way to rollback migrations using Knex. We have plans to support this in Backstage's CLI ([issue](https://github.com/backstage/backstage/issues/6366)), but for now it is possible to use Knex CLI to manage migrations in necessary cases.
 
 To start, you are going to need two things: database access and the plugin migrations directory you want to handle. We are going to use environment variables to access the database and we'll be using the `@backstage/plugin-catalog-backend` plugin as an example. In most cases, there is a `migrations` directory in the root of the plugin package, but you can check the `package.json` file to confirm the directory.
@@ -50,13 +59,3 @@ $ node_modules/.bin/knex migrate:currentVersion --connection "postgresql://$POST
 Using environment: production
 Current Version: 20240113144027
 ```
-
-The most common case to use Knex directly is when you want to **rollback a migration** that was applied when you upgraded your Backstage instance and want to downgrade due to some problem. You can use the `migrate:down` command to rollback a specific migration. You can also use the `migrate:rollback` command to rollback the last batch of migrations. This is necessary because Knex will mark migrations as corrupted if you try to downgrade your Backstage instance without the rollback. Be aware to run those commands in the new version of the Backstage instance, so you can avoid the corrupted migrations for lower versions.
-
-You are likely to receive a message like this when you try a downgrade without the rollback:
-
-```sh
-Backend failed to start up Error: The migration directory is corrupt, the following files are missing: 20230428155633_sessions.js
-```
-
-Currently, we don't have a simple way to check which migrations and which plugins have been applied in the database, but you can follow this [issue](https://github.com/backstage/backstage/issues/22439) to get more information about this.
