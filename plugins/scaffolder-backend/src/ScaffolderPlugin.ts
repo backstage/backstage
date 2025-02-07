@@ -82,10 +82,27 @@ export const scaffolderPlugin = createBackendPlugin({
     const additionalTemplateGlobals: Record<string, TemplateGlobal> = {};
     env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {
       addTemplateFilters(newFilters) {
-        Object.assign(additionalTemplateFilters, newFilters);
+        Object.assign(
+          additionalTemplateFilters,
+          Array.isArray(newFilters)
+            ? Object.fromEntries(
+                newFilters.map(tf => [tf.id, tf.filter as TemplateFilter]),
+              )
+            : newFilters,
+        );
       },
       addTemplateGlobals(newGlobals) {
-        Object.assign(additionalTemplateGlobals, newGlobals);
+        Object.assign(
+          additionalTemplateGlobals,
+          Array.isArray(newGlobals)
+            ? Object.fromEntries(
+                newGlobals.map(g => [
+                  g.id,
+                  ('value' in g ? g.value : g.fn) as TemplateGlobal,
+                ]),
+              )
+            : newGlobals,
+        );
       },
     });
 
