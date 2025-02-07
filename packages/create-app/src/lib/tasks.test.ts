@@ -281,7 +281,7 @@ describe('tasks', () => {
   });
 
   describe('templatingTask', () => {
-    it('should generate a project populating context parameters', async () => {
+    it('should generate a project and populate context parameters', async () => {
       const templateDir = resolvePath(__dirname, '../../templates/default-app');
       const destinationDir = 'templatedApp';
       const context = {
@@ -304,6 +304,20 @@ describe('tasks', () => {
       await expect(
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
       ).resolves.toContain('sqlite3"');
+    });
+
+    it('should generate a project and skip excluded directories', async () => {
+      const templateDir = resolvePath(__dirname, '../../templates/default-app');
+      const destinationDir = 'templatedApp';
+      const context = { name: 'Backstage', dbTypeSqlite: true };
+      const excludedDirs = ['packages/app-next'];
+      await templatingTask(templateDir, destinationDir, context, excludedDirs);
+      expect(fs.existsSync('templatedApp/packages/app/package.json')).toBe(
+        true,
+      );
+      expect(fs.existsSync('templatedApp/packages/app-next/package.json')).toBe(
+        false,
+      );
     });
   });
 

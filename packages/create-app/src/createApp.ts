@@ -65,17 +65,16 @@ export default async (opts: OptionValues): Promise<void> => {
     },
   ]);
 
-  // Use `default-app-next` as default template when `--experimental-frontend` is specified.
-  // Otherwise, use `default-app`.
-  const defaultTemplatePath = opts.experimentalFrontend
-    ? 'templates/default-app-next'
-    : 'templates/default-app';
-
-  // Use `--template-path` argument as template when specified.
-  // Otherwise, use the default template.
+  // Use `--template-path` argument as template when specified. Otherwise, use the default template.
   const templateDir = opts.templatePath
     ? paths.resolveTarget(opts.templatePath)
-    : paths.resolveOwn(defaultTemplatePath);
+    : paths.resolveOwn('templates/default-app');
+
+  // If using the default template, filter out `packages/app` when the `--experimental-frontend` flag
+  // is used or `packages/app-next` when its not used.
+  const excludedDirs = !opts.templatePath
+    ? [opts.experimentalFrontend ? 'packages/app/' : 'packages/app-next/']
+    : [];
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
@@ -96,10 +95,15 @@ export default async (opts: OptionValues): Promise<void> => {
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, opts.path, {
-        ...answers,
-        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
-      });
+      await templatingTask(
+        templateDir,
+        opts.path,
+        {
+          ...answers,
+          defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+        },
+        excludedDirs,
+      );
     } else {
       // Template to temporary location, and then move files
 
@@ -110,10 +114,15 @@ export default async (opts: OptionValues): Promise<void> => {
       const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), answers.name));
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, tempDir, {
-        ...answers,
-        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
-      });
+      await templatingTask(
+        templateDir,
+        tempDir,
+        {
+          ...answers,
+          defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+        },
+        excludedDirs,
+      );
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);
