@@ -22,9 +22,10 @@ describe('loadTemplate', () => {
     const mockDir = createMockDirectory({
       content: {
         'path/to/template1.yaml': `
-template: template1
-targetPath: plugins
-`,
+          template: template1
+          targetPath: plugins
+          role: frontend-plugin
+        `,
         'path/to/template1/hello.txt': 'hello world',
       },
     });
@@ -38,6 +39,7 @@ targetPath: plugins
       id: 'template1',
       templatePath: mockDir.resolve('path/to/template1'),
       targetPath: 'plugins',
+      role: 'frontend-plugin',
     });
   });
 
@@ -89,13 +91,14 @@ targetPath: plugins
     ).rejects.toThrow('Remote templates are not supported yet');
   });
 
-  it('should throw an error if template directory does not exist', async () => {
+  it('should throw an error if the package role is invalid', async () => {
     const mockDir = createMockDirectory({
       content: {
         'path/to/template1.yaml': `
-      template: template1
-      targetPath: plugins
-      `,
+          template: template1
+          targetPath: plugins
+          role: invalid-role
+        `,
       },
     });
 
@@ -107,7 +110,30 @@ targetPath: plugins
     ).rejects.toThrow(
       `Failed to load template contents from '${mockDir.resolve(
         'path/to/template1',
-      )}'`,
+      )}'; caused by Error: Unknown package role 'invalid-role'`,
+    );
+  });
+
+  it('should throw an error if template directory does not exist', async () => {
+    const mockDir = createMockDirectory({
+      content: {
+        'path/to/template1.yaml': `
+          template: template1
+          targetPath: plugins
+          role: frontend-plugin
+        `,
+      },
+    });
+
+    await expect(
+      loadTemplate({
+        id: 'template1',
+        target: mockDir.resolve('path/to/template1.yaml'),
+      }),
+    ).rejects.toThrow(
+      `Failed to load template contents from '${mockDir.resolve(
+        'path/to/template1',
+      )}'; caused by Error: Template directory does not exist`,
     );
   });
 });

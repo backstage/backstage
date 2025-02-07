@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { PackageRole } from '@backstage/cli-node';
+
 export type NewConfig = {
   /**
    * The pointers to templates that can be used.
@@ -52,9 +54,7 @@ export interface NewTemplate {
   description?: string;
   templatePath: string;
   targetPath: string;
-  plugin?: boolean;
-  backendModulePrefix?: boolean;
-  suffix?: string;
+  role: PackageRole;
   prompts?: NewTemplatePrompt[];
   additionalActions?: string[];
 }
