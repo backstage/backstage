@@ -92,6 +92,7 @@ export function createTemplateAction<
   TInputSchema
 >;
 /**
+ * @public
  * @deprecated migrate to using the new built in zod schema definitions for schemas
  */
 export function createTemplateAction<
@@ -110,6 +111,7 @@ export function createTemplateAction<
   >,
 ): TemplateAction<TActionInput, TActionOutput, TInputSchema>;
 /**
+ * @public
  * @deprecated migrate to using the new built in zod schema definitions for schemas
  */
 export function createTemplateAction<
@@ -167,7 +169,7 @@ export function createTemplateAction<
     TInputSchema,
     TOutputSchema
   >,
-): TemplateAction<TActionInput, TActionOutput, TInputSchema> {
+): TemplateAction<TActionInput, TActionOutput, TInputSchema, TOutputSchema> {
   const { inputSchema, outputSchema } = parseSchemas(action);
 
   return {
