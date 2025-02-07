@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { PackageRole } from '@backstage/cli-node';
-
 export type NewConfig = {
   /**
    * The pointers to templates that can be used.
@@ -49,12 +47,27 @@ export type NewTemplatePrompt =
     }
   | string;
 
+export const TEMPLATE_ROLES = [
+  'web-library',
+  'node-library',
+  'common-library',
+  'plugin-web-library',
+  'plugin-node-library',
+  'plugin-common-library',
+  'frontend-plugin',
+  'frontend-plugin-module',
+  'backend-plugin',
+  'backend-plugin-module',
+] as const;
+
+export type TemplateRole = (typeof TEMPLATE_ROLES)[number];
+
 export interface NewTemplate {
   id: string;
   description?: string;
   templatePath: string;
   targetPath: string;
-  role: PackageRole;
+  role: TemplateRole;
   prompts?: NewTemplatePrompt[];
   additionalActions?: string[];
 }
