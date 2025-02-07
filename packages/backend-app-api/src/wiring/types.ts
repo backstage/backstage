@@ -43,17 +43,3 @@ export interface CreateSpecializedBackendOptions {
 export type ServiceOrExtensionPoint<T = unknown> =
   | ExtensionPoint<T>
   | ServiceRef<T>;
-
-/**
- * @public
- */
-export type BackendStartupOptions = {
-  default?: {
-    optional?: boolean;
-  };
-  plugins?: {
-    [pluginId: string]: {
-      optional?: boolean;
-    };
-  };
-};
