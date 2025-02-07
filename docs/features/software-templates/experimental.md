@@ -19,6 +19,8 @@ Then you definitely will benefit from enabling the experimental scaffolder task 
 
 Whenever you do redeploy, on startup there will be a check of all tasks in "processing" state that you identified in your template as they are capable of starting over.
 
+More details about the motivation and the goal of this feature you can read in [BEP "Scaffolder Retries and Idempotency"](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
+
 This is an example of how you can do it:
 
 ```yaml
@@ -31,14 +33,14 @@ spec:
     EXPERIMENTAL_strategy: startOver
 ```
 
-And to enable the recovery feature itself, you can do it by adding this snippet into your app-config.yaml file:
+To enable the recovery feature, add this snippet into your app-config.yaml file:
 
 ```yaml
 scaffolder:
   EXPERIMENTAL_recoverTasks: true
 ```
 
-By default, all the tasks that are in a processing state and have a heartbeat of more than 30 seconds will be automatically recovered.
+By default, the tasks that are in a processing state and have a heartbeat of more than 30 seconds will be automatically recovered.
 This implies that the task's status will shift to "Open," initiating its execution from the beginning. So you have to be sure that your tasks can run multiple times.
 You can look at how to incorporate [checkpoints](https://backstage.io/docs/features/software-templates/writing-custom-actions#using-checkpoints-in-custom-actions-experimental) into your custom actions to achieve that.
 
