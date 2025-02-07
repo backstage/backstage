@@ -15,7 +15,7 @@
  */
 
 import {
-  collectPortableTemplateParams,
+  collectPortableTemplateInput,
   loadPortableTemplate,
   loadPortableTemplateConfig,
   selectTemplateInteractively,
@@ -40,7 +40,8 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
   );
   const template = await loadPortableTemplate(selectedTemplate);
 
-  const params = await collectPortableTemplateParams({
+  const input = await collectPortableTemplateInput({
+    config,
     template,
     prefilledParams: options.prefilledParams,
   });
@@ -48,6 +49,6 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
   await executePortableTemplate({
     config,
     template,
-    params,
+    input,
   });
 }

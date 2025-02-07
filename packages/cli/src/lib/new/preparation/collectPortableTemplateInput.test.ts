@@ -16,7 +16,7 @@
 
 import inquirer from 'inquirer';
 import { PortableTemplateConfig } from '../types';
-import { collectPortableTemplateParams } from './collectPortableTemplateParams';
+import { collectPortableTemplateInput } from './collectPortableTemplateInput';
 
 describe('collectTemplateParams', () => {
   const baseOptions = {
@@ -33,15 +33,24 @@ describe('collectTemplateParams', () => {
     },
     prefilledParams: {
       pluginId: 'test',
-      owner: '',
+      owner: 'me',
     },
   };
 
   it('should return default values if not provided', async () => {
-    await expect(collectPortableTemplateParams(baseOptions)).resolves.toEqual({
-      pluginId: 'test',
-      owner: '',
-      targetPath: '/example',
+    await expect(collectPortableTemplateInput(baseOptions)).resolves.toEqual({
+      roleParams: {
+        role: 'frontend-plugin',
+        pluginId: 'test',
+      },
+      builtInParams: {
+        owner: 'me',
+      },
+      params: {
+        pluginId: 'test',
+        owner: 'me',
+      },
+      globals: {},
     });
   });
 
@@ -49,13 +58,23 @@ describe('collectTemplateParams', () => {
     jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ pluginId: 'other' });
 
     await expect(
-      collectPortableTemplateParams({
+      collectPortableTemplateInput({
         ...baseOptions,
         prefilledParams: {},
       }),
     ).resolves.toEqual({
-      pluginId: 'other',
-      targetPath: '/example',
+      roleParams: {
+        role: 'frontend-plugin',
+        pluginId: 'other',
+      },
+      builtInParams: {
+        owner: undefined,
+      },
+      params: {
+        pluginId: 'other',
+        owner: undefined,
+      },
+      globals: {},
     });
   });
 });

@@ -78,3 +78,34 @@ export type PortableTemplateGlobals = {
   private?: boolean;
   scope?: string;
 };
+
+export type PortableTemplateInputRoleParams =
+  | {
+      role: 'web-library' | 'node-library' | 'common-library';
+      name: string;
+    }
+  | {
+      role:
+        | 'plugin-web-library'
+        | 'plugin-node-library'
+        | 'plugin-common-library'
+        | 'frontend-plugin'
+        | 'backend-plugin';
+      pluginId: string;
+    }
+  | {
+      role: 'frontend-plugin-module' | 'backend-plugin-module';
+      pluginId: string;
+      moduleId: string;
+    };
+
+export type PortableTemplateInputBuiltInParams = {
+  owner?: string;
+};
+
+export type PortableTemplateInput = {
+  roleParams: PortableTemplateInputRoleParams;
+  builtInParams: PortableTemplateInputBuiltInParams;
+  params: PortableTemplateParams;
+  globals: PortableTemplateParams;
+};

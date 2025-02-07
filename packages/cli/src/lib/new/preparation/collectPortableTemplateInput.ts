@@ -18,32 +18,38 @@ import inquirer, { DistinctQuestion } from 'inquirer';
 import { getCodeownersFilePath, parseOwnerIds } from '../../codeowners';
 import { paths } from '../../paths';
 import {
+  PortableTemplateConfig,
+  PortableTemplateInput,
+  PortableTemplateInputBuiltInParams,
+  PortableTemplateInputRoleParams,
   PortableTemplateParams,
   PortableTemplatePrompt,
   PortableTemplateRole,
 } from '../types';
 import { PortableTemplate } from '../types';
 
+const RESERVED_PROMPT_NAMES = ['name', 'pluginId', 'moduleId', 'owner'];
+
 type CollectTemplateParamsOptions = {
+  config: PortableTemplateConfig;
   template: PortableTemplate;
   prefilledParams: PortableTemplateParams;
 };
 
-export async function collectPortableTemplateParams(
+export async function collectPortableTemplateInput(
   options: CollectTemplateParamsOptions,
-): Promise<PortableTemplateParams> {
-  const { template, prefilledParams } = options;
+): Promise<PortableTemplateInput> {
+  const { config, template, prefilledParams } = options;
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
-  const prompts = getPromptsForRole(template.role);
+  const rolePrompts = getPromptsForRole(template.role);
 
-  if (codeOwnersFilePath) {
-    prompts.push(ownerPrompt());
-  }
-  if (template.prompts) {
-    prompts.push(...template.prompts.map(customPrompt));
-  }
+  const buildInPrompts = codeOwnersFilePath ? [ownerPrompt()] : [];
+
+  const templatePrompts = template.prompts?.map(customPrompt) ?? [];
+
+  const prompts = [...rolePrompts, ...buildInPrompts, ...templatePrompts];
 
   const needsAnswer = [];
   const prefilledAnswers = {} as PortableTemplateParams;
@@ -59,10 +65,23 @@ export async function collectPortableTemplateParams(
     needsAnswer,
   );
 
-  return {
+  const answers = {
     ...prefilledAnswers,
     ...promptAnswers,
-    targetPath: template.targetPath,
+  };
+
+  return {
+    roleParams: {
+      role: template.role,
+      name: answers.name,
+      pluginId: answers.pluginId,
+      moduleId: answers.moduleId,
+    } as PortableTemplateInputRoleParams,
+    builtInParams: {
+      owner: answers.owner,
+    } as PortableTemplateInputBuiltInParams,
+    params: answers,
+    globals: config.globals,
   };
 }
 
@@ -157,6 +176,11 @@ export function ownerPrompt(): DistinctQuestion {
 }
 
 export function customPrompt(prompt: PortableTemplatePrompt): DistinctQuestion {
+  if (RESERVED_PROMPT_NAMES.includes(prompt.id)) {
+    throw new Error(
+      `Prompt ID '${prompt.id}' is reserved and cannot be used in a template`,
+    );
+  }
   return {
     type: 'input',
     name: prompt.id,
