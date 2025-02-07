@@ -2,13 +2,8 @@ description: A module exporting custom actions for @backstage/plugin-scaffolder-
 template: ./scaffolder-module
 targetPath: plugins
 role: backend-plugin-module
-prompts:
-  - id: id
-    prompt: Enter the ID of the plugin [required]
-    default: scaffolder
-    validate: backstage-id
-  - moduleId
-  - owner
+params:
+  pluginId: scaffolder
 additionalActions:
   - install-backend
   - add-backend

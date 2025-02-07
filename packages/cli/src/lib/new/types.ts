@@ -38,14 +38,12 @@ export type NewTemplatePointer = {
   target: string;
 };
 
-export type NewTemplatePrompt =
-  | {
-      id: string;
-      prompt: string;
-      validate?: string;
-      default?: string | boolean | number;
-    }
-  | string;
+export type NewTemplatePrompt = {
+  id: string;
+  prompt: string;
+  validate?: string;
+  default?: string | boolean | number;
+};
 
 export const TEMPLATE_ROLES = [
   'web-library',

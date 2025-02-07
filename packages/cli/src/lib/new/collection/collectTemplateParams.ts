@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import inquirer from 'inquirer';
 import { getCodeownersFilePath } from '../../codeowners';
 import { paths } from '../../paths';
 import { NewConfig } from '../types';
-import { promptOptions } from './prompts';
+import { buildCustomPrompt, getPromptsForRole, ownerPrompt } from './prompts';
 import { NewTemplate } from '../types';
 import { Options } from '../execution/utils';
 
@@ -28,11 +29,9 @@ type CollectTemplateParamsOptions = {
 };
 
 const defaultParams = {
-  id: '',
   owner: '',
   license: 'Apache-2.0',
   scope: '',
-  moduleId: '',
   baseVersion: '0.1.0',
   private: true,
 };
@@ -44,27 +43,28 @@ export async function collectTemplateParams(
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
-  const prompts = template.prompts ?? [];
+  const prompts = getPromptsForRole(template.role);
 
-  const prefilledAnswers = Object.fromEntries(
-    prompts.flatMap(prompt => {
-      const id = typeof prompt === 'string' ? prompt : prompt.id;
-      const answer = prefilledParams[id];
-      return answer ? [[id, answer]] : [];
-    }),
-  );
+  if (codeOwnersFilePath) {
+    prompts.push(ownerPrompt());
+  }
+  if (template.prompts) {
+    prompts.push(...template.prompts.map(buildCustomPrompt));
+  }
 
-  const promptAnswers = await promptOptions({
-    prompts:
-      prompts.filter(
-        prompt =>
-          !Object.hasOwn(
-            prefilledAnswers,
-            typeof prompt === 'string' ? prompt : prompt.id,
-          ),
-      ) ?? [],
-    codeOwnersFilePath,
-  });
+  const needsAnswer = [];
+  const prefilledAnswers = {} as Record<string, string | number | boolean>;
+  for (const prompt of prompts) {
+    if (prefilledParams[prompt.name] !== undefined) {
+      prefilledAnswers[prompt.name] = prefilledParams[prompt.name];
+    } else {
+      needsAnswer.push(prompt);
+    }
+  }
+
+  const promptAnswers = await inquirer.prompt<
+    Record<string, string | number | boolean>
+  >(needsAnswer);
 
   return {
     ...defaultParams,

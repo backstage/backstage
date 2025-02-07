@@ -29,20 +29,23 @@ describe('collectTemplateParams', () => {
       id: 'test',
       templatePath: '/test',
       targetPath: '/example',
+      role: 'frontend-plugin' as const,
     },
-    prefilledParams: {},
+    prefilledParams: {
+      pluginId: 'test',
+      owner: '',
+    },
   };
 
   it('should return default values if not provided', async () => {
     await expect(collectTemplateParams(baseOptions)).resolves.toEqual({
-      id: '',
+      pluginId: 'test',
       private: true,
       baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',
       targetPath: '/example',
       scope: '',
-      moduleId: '',
     });
   });
 
@@ -53,61 +56,33 @@ describe('collectTemplateParams', () => {
         config: { ...baseOptions.config, globals: { foo: 'bar' } },
       }),
     ).resolves.toEqual({
-      id: '',
+      pluginId: 'test',
       private: true,
       baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',
       targetPath: '/example',
       scope: '',
-      moduleId: '',
       foo: 'bar',
     });
   });
 
-  it('should use prefilled parameters', async () => {
-    await expect(
-      collectTemplateParams({
-        ...baseOptions,
-        template: {
-          ...baseOptions.template,
-          prompts: ['id'],
-        },
-        prefilledParams: { id: 'test' },
-      }),
-    ).resolves.toEqual({
-      id: 'test',
-      private: true,
-      baseVersion: '0.1.0',
-      owner: '',
-      license: 'Apache-2.0',
-      targetPath: '/example',
-      scope: '',
-      moduleId: '',
-    });
-  });
-
-  it('should prompt for parameters', async () => {
-    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ id: 'test' });
+  it('should prompt for missing parameters', async () => {
+    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ pluginId: 'other' });
 
     await expect(
       collectTemplateParams({
         ...baseOptions,
-        template: {
-          ...baseOptions.template,
-          prompts: ['id'],
-        },
         prefilledParams: {},
       }),
     ).resolves.toEqual({
-      id: 'test',
+      pluginId: 'other',
       private: true,
       baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',
       targetPath: '/example',
       scope: '',
-      moduleId: '',
     });
   });
 });

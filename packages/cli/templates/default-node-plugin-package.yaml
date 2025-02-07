@@ -2,6 +2,3 @@ description: A new Node.js library plugin package
 template: ./default-node-plugin-package
 targetPath: plugins
 role: plugin-node-library
-prompts:
-  - id
-  - owner

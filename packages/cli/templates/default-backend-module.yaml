@@ -2,10 +2,6 @@ description: A new backend module that extends an existing backend plugin with a
 template: ./default-backend-module
 targetPath: plugins
 role: backend-plugin-module
-prompts:
-  - id
-  - moduleId
-  - owner
 additionalActions:
   - install-backend
   - add-backend
