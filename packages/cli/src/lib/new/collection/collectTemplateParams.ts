@@ -28,14 +28,6 @@ type CollectTemplateParamsOptions = {
   prefilledParams: Record<string, string | number | boolean>;
 };
 
-const defaultParams = {
-  owner: '',
-  license: 'Apache-2.0',
-  scope: '',
-  baseVersion: '0.1.0',
-  private: true,
-};
-
 export async function collectTemplateParams(
   options: CollectTemplateParamsOptions,
 ): Promise<Options> {
@@ -67,7 +59,6 @@ export async function collectTemplateParams(
   >(needsAnswer);
 
   return {
-    ...defaultParams,
     ...config.globals,
     ...prefilledAnswers,
     ...promptAnswers,
