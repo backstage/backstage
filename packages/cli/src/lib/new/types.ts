@@ -14,35 +14,31 @@
  * limitations under the License.
  */
 
-import { Answers, DistinctQuestion } from 'inquirer';
+export type NewConfig = {
+  /**
+   * The pointers to templates that can be used.
+   */
+  templatePointers: NewTemplatePointer[];
 
-export type CliConfig =
-  | {
-      /** Setting this to false will omit default backstage-cli new templates */
-      defaults?: boolean;
-      /** Where you can explicitly declare templates */
-      templates?: TemplateLocation[];
-      /** For configuring global values that applies to all new plugins/packages */
-      globals?: Record<string, string>;
-    }
-  | undefined;
+  /**
+   * Whether the default set of templates are being used or not.
+   */
+  isUsingDefaultTemplates: boolean;
 
-export interface CreateContext {
-  /** Whether we are creating something in a monorepo or not */
-  isMonoRepo: boolean;
-
-  /** Creates a temporary directory. This will always be deleted after creation is done. */
-  createTemporaryDirectory(name: string): Promise<string>;
-
-  /** Signal that the creation process got to a point where permanent modifications were made */
-  markAsModified(): void;
-}
-
-export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
-  name: string;
+  /**
+   * Templating globals that should apply to all templates.
+   */
+  globals: {
+    [KName in string]?: number | string | boolean;
+  };
 };
 
-export type ConfigurablePrompt =
+export type NewTemplatePointer = {
+  id: string;
+  target: string;
+};
+
+export type NewTemplatePrompt =
   | {
       id: string;
       prompt: string;
@@ -51,7 +47,7 @@ export type ConfigurablePrompt =
     }
   | string;
 
-export interface Template {
+export interface NewTemplate {
   id: string;
   description?: string;
   templatePath: string;
@@ -59,11 +55,6 @@ export interface Template {
   plugin?: boolean;
   backendModulePrefix?: boolean;
   suffix?: string;
-  prompts?: ConfigurablePrompt[];
+  prompts?: NewTemplatePrompt[];
   additionalActions?: string[];
-}
-
-export interface TemplateLocation {
-  id: string;
-  target: string;
 }

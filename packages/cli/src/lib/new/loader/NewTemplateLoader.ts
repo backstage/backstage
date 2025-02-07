@@ -21,8 +21,8 @@ import { resolve as resolvePath } from 'path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { paths } from '../../paths';
-import { NewConfig, NewTemplatePointer } from '../config/types';
-import { Template } from '../types';
+import { NewConfig, NewTemplatePointer } from '../types';
+import { NewTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
 import { fromZodError } from 'zod-validation-error';
 
@@ -87,7 +87,7 @@ export class NewTemplateLoader {
   static async loadTemplate({
     id,
     target,
-  }: NewTemplatePointer): Promise<Template> {
+  }: NewTemplatePointer): Promise<NewTemplate> {
     if (target.match(/https?:\/\//)) {
       throw new Error('Remote templates are not supported yet');
     }

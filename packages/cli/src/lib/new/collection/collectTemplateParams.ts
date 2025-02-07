@@ -16,14 +16,14 @@
 
 import { getCodeownersFilePath } from '../../codeowners';
 import { paths } from '../../paths';
-import { NewConfig } from '../config/types';
+import { NewConfig } from '../types';
 import { promptOptions } from './prompts';
-import { Template } from '../types';
+import { NewTemplate } from '../types';
 import { Options } from '../execution/utils';
 
 type CollectTemplateParamsOptions = {
   config: NewConfig;
-  template: Template;
+  template: NewTemplate;
   globals: Record<string, string | number | boolean>;
   prefilledParams: Record<string, string | number | boolean>;
 };

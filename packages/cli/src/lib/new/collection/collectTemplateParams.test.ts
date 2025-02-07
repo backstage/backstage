@@ -15,7 +15,7 @@
  */
 
 import inquirer from 'inquirer';
-import { NewConfig } from '../config/types';
+import { NewConfig } from '../types';
 import { collectTemplateParams } from './collectTemplateParams';
 
 describe('collectTemplateParams', () => {

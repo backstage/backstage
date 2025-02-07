@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Template } from '../types';
+import { NewTemplate } from '../types';
 
 export interface Options extends Record<string, string | boolean> {
   id: string;
@@ -49,7 +49,7 @@ export const resolvePackageName = (options: {
   return plugin ? `backstage-plugin-${baseName}` : baseName;
 };
 
-export function createDirName(template: Template, options: Options) {
+export function createDirName(template: NewTemplate, options: Options) {
   if (!options.id) {
     throw new Error(`id prompt is mandatory for all cli templates`);
   }

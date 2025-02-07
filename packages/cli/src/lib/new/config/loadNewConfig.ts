@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { NewConfig } from './types';
+import { NewConfig } from '../types';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
