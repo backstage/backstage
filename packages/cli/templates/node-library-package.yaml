@@ -1,7 +1,7 @@
 description: A new node-library package, exporting shared functionality for backend plugins and modules
 template: ./node-library-package
 targetPath: packages
-plugin: false
+role: node-library
 prompts:
   - id
   - owner

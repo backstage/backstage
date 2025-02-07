@@ -1,7 +1,7 @@
 description: A module exporting custom actions for @backstage/plugin-scaffolder-backend
 template: ./scaffolder-module
 targetPath: plugins
-backendModulePrefix: true
+role: backend-plugin-module
 prompts:
   - id: id
     prompt: Enter the ID of the plugin [required]
