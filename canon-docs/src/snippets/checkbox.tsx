@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox, Flex, Text } from '@backstage/canon';
+import { Checkbox, Flex, Text } from '../../../packages/canon';
 
 export const CheckboxPreview = () => {
   return <Checkbox label="Accept terms and conditions" />;

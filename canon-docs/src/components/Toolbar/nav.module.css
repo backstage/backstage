@@ -13,9 +13,7 @@
   width: 142px;
   border-radius: 0.375rem;
   background-color: var(--bg);
-  transition:
-    background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .list {

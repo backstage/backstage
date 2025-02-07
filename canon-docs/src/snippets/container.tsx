@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container } from '@backstage/canon';
+import { Box, Container } from '../../../packages/canon';
 
 const DecorativeBox = () => (
   <Box

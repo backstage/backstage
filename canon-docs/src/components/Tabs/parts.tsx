@@ -1,7 +1,7 @@
 'use client';
 
 import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
-import { Text } from '@backstage/canon';
+import { Text } from '../../../../packages/canon';
 import styles from './styles.module.css';
 
 export const Root = ({
