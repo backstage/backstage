@@ -28,14 +28,14 @@ import {
   extractGlobalValueMetadata,
 } from './templating';
 import { JsonValue } from '@backstage/types';
-import builtInFilters from '../lib/templating/filters';
+import { createDefaultFilters } from '../lib/templating/filters';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
 describe('templating utilities', () => {
   describe('built-in filters', () => {
     const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
-    const filters = builtInFilters({ integrations });
+    const filters = createDefaultFilters({ integrations });
     it('generates equivalent filter metadata', () => {
       const metadata = extractFilterMetadata(filters);
       expect(metadata).toMatchObject(extractFilterMetadata(filters));

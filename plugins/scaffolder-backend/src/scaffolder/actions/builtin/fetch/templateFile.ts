@@ -25,7 +25,7 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import createDefaultFilters from '../../../../lib/templating/filters';
+import { createDefaultFilters } from '../../../../lib/templating/filters';
 import path from 'path';
 import fs from 'fs-extra';
 import { convertFiltersToRecord } from '../../../../util/templating';
