@@ -27,13 +27,13 @@ import { createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executePluginPackageTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
-import { PortableTemplateConfig } from '../types';
+import { PortableTemplateConfig, PortableTemplateParams } from '../types';
 import { PortableTemplate } from '../types';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
   template: PortableTemplate;
-  params: Record<string, string | number | boolean>;
+  params: PortableTemplateParams;
 };
 
 export async function executePortableTemplate(

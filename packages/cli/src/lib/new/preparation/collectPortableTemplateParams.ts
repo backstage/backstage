@@ -19,6 +19,7 @@ import { getCodeownersFilePath, parseOwnerIds } from '../../codeowners';
 import { paths } from '../../paths';
 import {
   PortableTemplateConfig,
+  PortableTemplateParams,
   PortableTemplatePrompt,
   PortableTemplateRole,
 } from '../types';
@@ -27,12 +28,12 @@ import { PortableTemplate } from '../types';
 type CollectTemplateParamsOptions = {
   config: PortableTemplateConfig;
   template: PortableTemplate;
-  prefilledParams: Record<string, string | number | boolean>;
+  prefilledParams: PortableTemplateParams;
 };
 
 export async function collectPortableTemplateParams(
   options: CollectTemplateParamsOptions,
-): Promise<Record<string, string | number | boolean>> {
+): Promise<PortableTemplateParams> {
   const { config, template, prefilledParams } = options;
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
@@ -47,7 +48,7 @@ export async function collectPortableTemplateParams(
   }
 
   const needsAnswer = [];
-  const prefilledAnswers = {} as Record<string, string | number | boolean>;
+  const prefilledAnswers = {} as PortableTemplateParams;
   for (const prompt of prompts) {
     if (prompt.name && prefilledParams[prompt.name] !== undefined) {
       prefilledAnswers[prompt.name] = prefilledParams[prompt.name];
@@ -56,9 +57,9 @@ export async function collectPortableTemplateParams(
     }
   }
 
-  const promptAnswers = await inquirer.prompt<
-    Record<string, string | number | boolean>
-  >(needsAnswer);
+  const promptAnswers = await inquirer.prompt<PortableTemplateParams>(
+    needsAnswer,
+  );
 
   return {
     ...config.globals,
