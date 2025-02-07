@@ -88,7 +88,7 @@ describe('populateOptions', () => {
     expect(populateOptions({}, { targetPath: '/example' } as Template)).toEqual(
       {
         id: '',
-        private: false,
+        private: true,
         baseVersion: '0.1.0',
         owner: '',
         license: 'Apache-2.0',
@@ -106,7 +106,7 @@ describe('populateOptions', () => {
       } as Template),
     ).toEqual({
       id: '',
-      private: false,
+      private: true,
       baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',
@@ -124,7 +124,7 @@ describe('populateOptions', () => {
       } as Template),
     ).toEqual({
       id: '',
-      private: false,
+      private: true,
       baseVersion: '0.1.0',
       owner: '',
       license: 'Apache-2.0',

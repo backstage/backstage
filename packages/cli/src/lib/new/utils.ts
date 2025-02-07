@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OptionValues } from 'commander';
 import { Template } from './types';
 
 export interface Options extends Record<string, string | boolean> {
@@ -51,9 +50,8 @@ export const resolvePackageName = (options: {
 };
 
 export function populateOptions(
-  options: Record<string, string>,
+  options: { [name in string]?: string | boolean },
   template: Template,
-  argOpts?: OptionValues,
 ): Options {
   return {
     id: '',
@@ -63,9 +61,8 @@ export function populateOptions(
     moduleId: '',
     baseVersion: '0.1.0',
     private: true,
-    ...options,
-    ...argOpts,
     targetPath: template.targetPath,
+    ...options,
   };
 }
 
