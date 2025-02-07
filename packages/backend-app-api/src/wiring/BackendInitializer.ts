@@ -24,7 +24,8 @@ import {
   RootLifecycleService,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { BackendStartupOptions, ServiceOrExtensionPoint } from './types';
+import { Config } from '@backstage/config';
+import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
@@ -326,19 +327,14 @@ export class BackendInitializer {
       'root',
     );
 
-    const startupOptions =
-      rootConfig
-        ?.getOptionalConfig('backend.startup')
-        ?.get<BackendStartupOptions>() ?? {};
-
-    // Gather backend pluginIds marked as optional, since these should not cause a startup failure
-    const optionalBackends = Object.entries(startupOptions)
-      .filter(([_, value]) => value?.optional)
-      .map(([key]) => key);
-
     // All plugins are initialized in parallel
     const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
+        const isPluginOptional = this.#getPluginOptionalityPredicate(
+          pluginId,
+          rootConfig,
+        );
+
         try {
           // Initialize all eager services
           await this.#serviceRegistry.initializeEagerServicesWithScope(
@@ -407,7 +403,7 @@ export class BackendInitializer {
           await lifecycleService.startup();
         } catch (error: unknown) {
           assertError(error);
-          if (optionalBackends.includes(pluginId)) {
+          if (isPluginOptional) {
             initLogger.onOptionalPluginFailed(pluginId, error);
           } else {
             initLogger.onPluginFailed(pluginId, error);
@@ -638,6 +634,17 @@ export class BackendInitializer {
         await this.#applyBackendFeatureLoaders(newLoaders);
       }
     }
+  }
+
+  #getPluginOptionalityPredicate(pluginId: string, config?: Config): boolean {
+    const defaultStartupOptionalValue =
+      config?.getOptionalBoolean('backend.startup.default.optional') ?? false;
+
+    return (
+      config?.getOptionalBoolean(
+        `backend.startup.plugins.${pluginId}.optional`,
+      ) ?? defaultStartupOptionalValue
+    );
   }
 }
 

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { BackendStartupOptions } from './src';
-
 export interface Config {
   backend?: {
     /** Used by the feature discovery service */
@@ -26,6 +24,27 @@ export interface Config {
           exclude?: string[];
         };
 
-    startup?: BackendStartupOptions;
+    startup?: {
+      default?: {
+        /**
+         * The default value for `optional` if not specified for a particular plugin. This defaults to
+         * false, which means `optional: true` must be specified for individual plugins to be considered
+         * optional. This can also be set to true, which flips the logic for individual plugins so that
+         * they must be set to `optional: false` to be required.
+         */
+        optional?: boolean;
+      };
+      plugins?: {
+        [pluginId: string]: {
+          /**
+           * Used to mark plugins as optional, which allows the backend to start up even in the event
+           * of a plugin failure. Plugin failures without this configuration are fatal. This can
+           * enable leaving a crashing plugin installed, but still permit backend startup, which may
+           * help troubleshoot data-dependent issues.
+           */
+          optional?: boolean;
+        };
+      };
+    };
   };
 }

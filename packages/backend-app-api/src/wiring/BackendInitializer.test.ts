@@ -565,7 +565,9 @@ describe('BackendInitializer', () => {
       mockServices.rootLifecycle.factory(),
       mockServices.rootLogger.factory(),
       mockServices.rootConfig.factory({
-        data: { backend: { startup: { test: { optional: true } } } },
+        data: {
+          backend: { startup: { plugins: { test: { optional: true } } } },
+        },
       }),
     ]);
     init.add(
@@ -582,6 +584,63 @@ describe('BackendInitializer', () => {
       }),
     );
     await init.start();
+  });
+
+  it('should permit startup errors if the default is set', async () => {
+    const init = new BackendInitializer([
+      mockServices.rootLifecycle.factory(),
+      mockServices.rootLogger.factory(),
+      mockServices.rootConfig.factory({
+        data: { backend: { startup: { default: { optional: true } } } },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await init.start();
+  });
+
+  it('should forward errors for plugins explicitly marked as not optional when the default is true', async () => {
+    const init = new BackendInitializer([
+      mockServices.rootLifecycle.factory(),
+      mockServices.rootLogger.factory(),
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { optional: true },
+              plugins: { test: { optional: false } },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
   });
 
   it('should forward errors when multiple plugins fail to start', async () => {
