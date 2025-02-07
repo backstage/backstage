@@ -18,6 +18,7 @@ import { NewTemplateLoader } from './NewTemplateLoader';
 import { NewConfig } from '../config/types';
 import inquirer from 'inquirer';
 import { withLogCollector } from '@backstage/test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('NewTemplateLoader.selectTemplateInteractively', () => {
   const mockConfig: NewConfig = {
@@ -28,6 +29,10 @@ describe('NewTemplateLoader.selectTemplateInteractively', () => {
     ],
     globals: {},
   };
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
 
   it('should select a template interactively', async () => {
     jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ id: 'template1' });
@@ -81,6 +86,103 @@ describe('NewTemplateLoader.selectTemplateInteractively', () => {
         "DEPRECATION WARNING: The 'plugin' template is deprecated, use 'frontend-plugin' instead",
       ],
       error: [],
+    });
+  });
+});
+
+describe('NewTemplateLoader.loadTemplate', () => {
+  describe('NewTemplateLoader.loadTemplate', () => {
+    it('should load a valid template', async () => {
+      const mockDir = createMockDirectory({
+        content: {
+          'path/to/template1.yaml': `
+template: template1
+targetPath: plugins
+`,
+          'path/to/template1/hello.txt': 'hello world',
+        },
+      });
+
+      const result = await NewTemplateLoader.loadTemplate({
+        id: 'template1',
+        target: mockDir.resolve('path/to/template1.yaml'),
+      });
+
+      expect(result).toEqual({
+        id: 'template1',
+        templatePath: mockDir.resolve('path/to/template1'),
+        targetPath: 'plugins',
+      });
+    });
+
+    it('should throw an error if template file does not exist', async () => {
+      const mockDir = createMockDirectory();
+
+      await expect(
+        NewTemplateLoader.loadTemplate({
+          id: 'template1',
+          target: mockDir.resolve('path/to/template1.yaml'),
+        }),
+      ).rejects.toThrow(
+        /^Failed to load template definition from '.*'; caused by Error: ENOENT/,
+      );
+    });
+
+    it('should throw an error if template definition is invalid', async () => {
+      const mockDir = createMockDirectory({
+        content: {
+          'path/to/template1.yaml': `invalid: definition`,
+        },
+      });
+
+      await expect(
+        NewTemplateLoader.loadTemplate({
+          id: 'template1',
+          target: mockDir.resolve('path/to/template1.yaml'),
+        }),
+      ).rejects.toThrow(
+        /Invalid template definition at '.*'; caused by Validation error/,
+      );
+    });
+
+    it('should throw an error if target is a remote URL', async () => {
+      await expect(
+        NewTemplateLoader.loadTemplate({
+          id: 'template1',
+          target: 'http://example.com',
+        }),
+      ).rejects.toThrow('Remote templates are not supported yet');
+    });
+
+    it('should throw an error if target directory does not exist', async () => {
+      await expect(
+        NewTemplateLoader.loadTemplate({
+          id: 'template1',
+          target: 'http://example.com',
+        }),
+      ).rejects.toThrow('Remote templates are not supported yet');
+    });
+
+    it('should throw an error if template directory does not exist', async () => {
+      const mockDir = createMockDirectory({
+        content: {
+          'path/to/template1.yaml': `
+      template: template1
+      targetPath: plugins
+      `,
+        },
+      });
+
+      await expect(
+        NewTemplateLoader.loadTemplate({
+          id: 'template1',
+          target: mockDir.resolve('path/to/template1.yaml'),
+        }),
+      ).rejects.toThrow(
+        `Failed to load template contents from '${mockDir.resolve(
+          'path/to/template1',
+        )}'`,
+      );
     });
   });
 });
