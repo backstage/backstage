@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import { isMonoRepo } from '@backstage/cli-node';
@@ -24,16 +23,13 @@ import { paths } from '../paths';
 import { Task } from '../tasks';
 import { addCodeownersEntry, getCodeownersFilePath } from '../codeowners';
 
-import {
-  readCliConfig,
-  templateSelector,
-  verifyTemplate,
-} from './templateSelector';
+import { templateSelector, verifyTemplate } from './templateSelector';
 import { promptOptions } from './prompts';
 import { populateOptions, createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executeTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
+import { loadNewConfig } from './config/loadNewConfig';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -48,12 +44,13 @@ export type CreateNewPackageOptions = {
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
-  const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
-  const cliConfig = pkgJson.backstage?.cli;
+  const newConfig = await loadNewConfig();
 
-  const { templates, globals } = readCliConfig(cliConfig);
   const template = verifyTemplate(
-    await templateSelector(templates, options.preselectedTemplateId),
+    await templateSelector(
+      newConfig.templatePointers,
+      options.preselectedTemplateId,
+    ),
   );
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
@@ -74,7 +71,7 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
             typeof prompt === 'string' ? prompt : prompt.id,
           ),
       ) ?? [],
-    globals,
+    globals: newConfig.globals,
     codeOwnersFilePath,
   });
   const answers = { ...prefilledAnswers, ...promptAnswers };
