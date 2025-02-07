@@ -47,7 +47,7 @@ const pkgJsonWithNewConfigSchema = z.object({
     .optional(),
 });
 
-export async function loadNewConfig(): Promise<NewConfig> {
+export async function loadConfig(): Promise<NewConfig> {
   const pkgPath = paths.resolveTargetRoot('package.json');
   const pkgJson = await fs.readJson(pkgPath);
 
