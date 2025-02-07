@@ -42,14 +42,13 @@ export type ActionContext<
       secrets?: TaskSecrets;
       workspacePath: string;
       input: TActionInput;
-      checkpoint<U extends JsonValue>(
-        key: string,
-        fn: () => Promise<U>,
-      ): Promise<U>;
+      checkpoint<T extends JsonValue | void>(opts: {
+        key: string;
+        fn: () => Promise<T> | T;
+      }): Promise<T>;
       output(
-        ...params: {
-          [K in keyof TActionOutput]: [name: K, value: TActionOutput[K]];
-        }[keyof TActionOutput]
+        name: keyof TActionOutput,
+        value: TActionOutput[keyof TActionOutput],
       ): void;
       /**
        * Creates a temporary directory for use by the action, which is then cleaned up automatically.
