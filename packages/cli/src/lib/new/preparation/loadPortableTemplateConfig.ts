@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { PortableTemplateConfig } from '../types';
+import { PortableTemplateConfig, PortableTemplateParams } from '../types';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
@@ -55,7 +55,7 @@ const pkgJsonWithNewConfigSchema = z.object({
 
 type LoadConfigOptions = {
   packagePath?: string;
-  globalOverrides?: Record<string, string | number | boolean>;
+  globalOverrides?: PortableTemplateParams;
 };
 
 export async function loadPortableTemplateConfig(

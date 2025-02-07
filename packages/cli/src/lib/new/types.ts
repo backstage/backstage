@@ -60,7 +60,7 @@ export const TEMPLATE_ROLES = [
 
 export type PortableTemplateRole = (typeof TEMPLATE_ROLES)[number];
 
-export interface PortableTemplate {
+export type PortableTemplate = {
   id: string;
   description?: string;
   templatePath: string;
@@ -68,4 +68,8 @@ export interface PortableTemplate {
   role: PortableTemplateRole;
   prompts?: PortableTemplatePrompt[];
   additionalActions?: string[];
-}
+};
+
+export type PortableTemplateParams = {
+  [KName in string]?: string | number | boolean;
+};

@@ -21,6 +21,7 @@ import {
   selectTemplateInteractively,
 } from './preparation';
 import { executePortableTemplate } from './execution';
+import { PortableTemplateParams } from './types';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -31,7 +32,7 @@ export type CreateNewPackageOptions = {
     license?: string;
     baseVersion?: string;
   };
-  prefilledParams: Record<string, string>;
+  prefilledParams: PortableTemplateParams;
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
