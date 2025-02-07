@@ -19,11 +19,21 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Direction } from '../EntityRelationsGraph';
 import { DirectionFilter } from './DirectionFilter';
+import { mockApis, MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('<DirectionFilter/>', () => {
   test('should display current value', () => {
     render(
-      <DirectionFilter value={Direction.LEFT_RIGHT} onChange={() => {}} />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <DirectionFilter value={Direction.LEFT_RIGHT} onChange={() => {}} />
+      </TestApiProvider>,
     );
 
     expect(screen.getByText('Left to right')).toBeInTheDocument();
@@ -32,7 +42,14 @@ describe('<DirectionFilter/>', () => {
   test('should select direction', async () => {
     const onChange = jest.fn();
     render(
-      <DirectionFilter value={Direction.RIGHT_LEFT} onChange={onChange} />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <DirectionFilter value={Direction.RIGHT_LEFT} onChange={onChange} />
+      </TestApiProvider>,
     );
 
     expect(screen.getByText('Right to left')).toBeInTheDocument();

@@ -96,3 +96,5 @@ export default createFrontendPlugin({
   },
   extensions: [CatalogGraphPage, CatalogGraphEntityCard],
 });
+
+export { catalogGraphTranslationRef } from './translation';
