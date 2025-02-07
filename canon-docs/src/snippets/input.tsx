@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Grid } from '../../../packages/canon';
+import { Input, Grid } from '@backstage/canon';
 
 export const InputPreview = () => {
   return (

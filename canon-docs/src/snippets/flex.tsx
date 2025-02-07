@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex } from '../../../packages/canon';
+import { Flex } from '@backstage/canon';
 
 const DecorativeBox = () => {
   return (

@@ -1,10 +1,8 @@
 'use client';
 
 import { components } from '@/utils/data';
-import { Box } from '../../../../packages/canon/src/components/Box';
-import { Checkbox } from '../../../../packages/canon/src/components/Checkbox';
-import { Text } from '../../../../packages/canon/src/components/Text';
-import { motion } from 'framer-motion';
+import { Box, Checkbox, Text } from '@backstage/canon';
+import { motion } from 'motion/react';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
 import { screenSizes } from '@/utils/data';
@@ -54,7 +52,7 @@ export const Playground = () => {
       transition={{ duration: 0.2 }}
       style={{ position: 'absolute' }}
     >
-      <Box marginTop="lg" marginBottom="2xs">
+      <Box mt="lg" mb="2xs">
         <Text variant="body" weight="bold">
           Components
         </Text>
@@ -68,7 +66,7 @@ export const Playground = () => {
           />
         </div>
       ))}
-      <Box marginTop="lg" marginBottom="2xs">
+      <Box mt="lg" mb="2xs">
         <Text variant="body" weight="bold">
           Screen sizes
         </Text>
