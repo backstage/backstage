@@ -12,7 +12,7 @@ Options:
   -h, --help
 
 Commands:
-  new
+  new [options]
   config:docs [options]
   config:print [options]
   config:check [options]
@@ -177,6 +177,13 @@ Options:
 Usage: backstage-cli new [options]
 
 Options:
+  --select <name>
+  --option <name>=<value>
+  --scope <scope>
+  --npm-registry <URL>
+  --baseVersion <version>
+  --license <license>
+  --no-private
   -h, --help
 ```
 
