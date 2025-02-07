@@ -22,6 +22,12 @@ import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
 
+const defaultGlobals = {
+  license: 'Apache-2.0',
+  baseVersion: '0.1.0',
+  private: true,
+};
+
 const pkgJsonWithNewConfigSchema = z.object({
   backstage: z
     .object({
@@ -72,6 +78,10 @@ export async function loadConfig(
   return {
     isUsingDefaultTemplates: !newConfig?.templates,
     templatePointers: newConfig?.templates ?? defaultTemplates,
-    globals: { ...newConfig?.globals, ...options.globalOverrides },
+    globals: {
+      ...defaultGlobals,
+      ...newConfig?.globals,
+      ...options.globalOverrides,
+    },
   };
 }
