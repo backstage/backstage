@@ -17,13 +17,13 @@
 import inquirer from 'inquirer';
 import { getCodeownersFilePath } from '../../codeowners';
 import { paths } from '../../paths';
-import { NewConfig } from '../types';
+import { PortableTemplateConfig } from '../types';
 import { customPrompt, getPromptsForRole, ownerPrompt } from './prompts';
-import { NewTemplate } from '../types';
+import { PortableTemplate } from '../types';
 
 type CollectTemplateParamsOptions = {
-  config: NewConfig;
-  template: NewTemplate;
+  config: PortableTemplateConfig;
+  template: PortableTemplate;
   prefilledParams: Record<string, string | number | boolean>;
 };
 

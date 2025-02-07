@@ -20,8 +20,8 @@ import { resolve as resolvePath } from 'path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { paths } from '../../paths';
-import { NewTemplatePointer, TEMPLATE_ROLES } from '../types';
-import { NewTemplate } from '../types';
+import { PortableTemplatePointer, TEMPLATE_ROLES } from '../types';
+import { PortableTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
 import { fromZodError } from 'zod-validation-error';
 
@@ -48,7 +48,7 @@ const templateDefinitionSchema = z
 export async function loadTemplate({
   id,
   target,
-}: NewTemplatePointer): Promise<NewTemplate> {
+}: PortableTemplatePointer): Promise<PortableTemplate> {
   if (target.match(/https?:\/\//)) {
     throw new Error('Remote templates are not supported yet');
   }
