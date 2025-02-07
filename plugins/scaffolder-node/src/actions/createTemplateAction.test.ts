@@ -55,6 +55,8 @@ describe('createTemplateAction', () => {
         ctx.output('test2', 'value');
       },
     });
+
+    expect(action).toBeDefined();
   });
 
   it('should allow creating with zod and use the old deprecated types', () => {
@@ -87,6 +89,8 @@ describe('createTemplateAction', () => {
         ctx.output('test2', 'value');
       },
     });
+
+    expect(action).toBeDefined();
   });
 
   it('should allow creating with new first class zod support', () => {
@@ -121,5 +125,7 @@ describe('createTemplateAction', () => {
         ctx.output('test2', 'value');
       },
     });
+
+    expect(action).toBeDefined();
   });
 });

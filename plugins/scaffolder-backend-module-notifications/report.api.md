@@ -7,6 +7,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+import { Schema } from 'jsonschema';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public (undocumented)
@@ -23,7 +24,8 @@ export function createSendNotificationAction(options: {
     scope?: string | undefined;
     optional?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public

@@ -30,7 +30,7 @@ export * from './tasks/alpha';
  * @alpha
  */
 export interface ScaffolderActionsExtensionPoint {
-  addActions(...actions: TemplateAction<any, any>[]): void;
+  addActions(...actions: TemplateAction<any, any, any>[]): void;
 }
 
 /**
