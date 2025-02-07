@@ -7,8 +7,8 @@ description: Guide on how to rollback Knex migrations.
 
 This guide covers a simple way to rollback migrations using Knex. We have plans to support this in Backstage's CLI ([issue](https://github.com/backstage/backstage/issues/6366)), but for now it is possible to use Knex CLI to manage migrations in necessary cases.
 
-To start, you are going to need two things: the database access and the plugin migrations directory you want to handle. We are going to use environment variables to handle the database access and the `@backstage/plugin-catalog-backend` as an example. In most cases, there is a `migrations` directory in the root of the plugin package, but you can check the `package.json` file to confirm the directory.
-You can get more information about how Backstage handle Databases in [Configuring Plugin Databases](./configuring-plugin-databases.md). This tutorial follows the information in [Knex migration guide](https://knexjs.org/guide/migrations.html), so you can get more details about the commands there.
+To start, you are going to need two things: database access and the plugin migrations directory you want to handle. We are going to use environment variables to access the database and we'll be using the `@backstage/plugin-catalog-backend` plugin as an example. In most cases, there is a `migrations` directory in the root of the plugin package, but you can check the `package.json` file to confirm the directory.
+You can get more information about how Backstage handles Databases in [Configuring Plugin Databases](./configuring-plugin-databases.md). This tutorial follows the information in the [Knex migration guide](https://knexjs.org/guide/migrations.html), so you can get more details about the commands there.
 
 You can interact with Knex running the commands below in the project root:
 
@@ -43,7 +43,7 @@ Found 1 Pending Migration file/files.
 20240113144027_assets-namespace.js
 ```
 
-Now lets call `currentVersion` to retrieves and returns the current migration version, as a promise. If there aren't any migrations run yet, returns "none" as the value for the currentVersion
+Now lets use `migrate:currentVersion` which retrieves the current migration version. If there aren't any migrations run yet, it will return "none".
 
 ```sh
 $ node_modules/.bin/knex migrate:currentVersion --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_app" --client pg
