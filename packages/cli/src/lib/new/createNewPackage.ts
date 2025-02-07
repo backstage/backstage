@@ -33,7 +33,9 @@ export type CreateNewPackageOptions = {
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
-  const config = await loadConfig();
+  const config = await loadConfig({
+    globalOverrides: options.globals,
+  });
 
   const selectedTemplate = await selectTemplateInteractively(
     config,
@@ -44,7 +46,6 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
   const params = await collectTemplateParams({
     config,
     template,
-    globals: options.globals,
     prefilledParams: options.prefilledParams,
   });
 
