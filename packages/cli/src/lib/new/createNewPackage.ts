@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { collectPortableTemplateParams } from './collection/collectPortableTemplateParams';
+import { collectPortableTemplateParams } from './preparation/collectPortableTemplateParams';
 import { loadPortableTemplateConfig } from './preparation/loadPortableTemplateConfig';
 import { executePortableTemplate } from './execution/executePortableTemplate';
 import { selectTemplateInteractively } from './preparation/selectTemplateInteractively';
