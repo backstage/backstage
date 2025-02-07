@@ -15,9 +15,10 @@
  */
 
 import { collectTemplateParams } from './collection/collectTemplateParams';
-import { loadNewConfig } from './config/loadNewConfig';
+import { loadConfig } from './preparation/loadConfig';
 import { executeNewTemplate } from './execution/executeTemplate';
-import { NewTemplateLoader } from './loader/NewTemplateLoader';
+import { selectTemplateInteractively } from './preparation/selectTemplateInteractively';
+import { loadTemplate } from './preparation/loadTemplate';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -32,13 +33,13 @@ export type CreateNewPackageOptions = {
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
-  const config = await loadNewConfig();
+  const config = await loadConfig();
 
-  const selectedTemplate = await NewTemplateLoader.selectTemplateInteractively(
+  const selectedTemplate = await selectTemplateInteractively(
     config,
     options.preselectedTemplateId,
   );
-  const template = await NewTemplateLoader.loadTemplate(selectedTemplate);
+  const template = await loadTemplate(selectedTemplate);
 
   const params = await collectTemplateParams({
     config,
