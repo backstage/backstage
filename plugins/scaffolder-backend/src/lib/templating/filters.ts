@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import get from 'lodash/get';
 
-export const createDefaultFilters = ({
+export default ({
   integrations,
 }: {
   integrations: ScmIntegrations;
