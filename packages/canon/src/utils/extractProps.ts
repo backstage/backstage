@@ -25,7 +25,7 @@ export function extractProps(
   propDefs: { [key: string]: any },
 ) {
   let className: string[] = (props.className || '').split(' ');
-  let style: React.CSSProperties = props.style || {};
+  let style: React.CSSProperties = { ...props.style };
   const hasProp = (key: string) => props.hasOwnProperty(key);
 
   for (const key in propDefs) {
