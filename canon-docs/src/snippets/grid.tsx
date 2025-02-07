@@ -1,10 +1,9 @@
 'use client';
 
-import { Box, Grid } from '../../../packages/canon';
+import { Box, Grid } from '@backstage/canon';
 
 const FakeBox = () => (
   <Box
-    borderRadius="xs"
     style={{
       background: '#eaf2fd',
       borderRadius: '4px',

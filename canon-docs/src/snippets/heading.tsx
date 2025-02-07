@@ -1,6 +1,6 @@
 'use client';
 
-import { Heading, Flex, Text } from '../../../packages/canon';
+import { Heading, Flex, Text } from '@backstage/canon';
 
 export const HeadingPreview = () => {
   return <Heading>Look mum, no hands!</Heading>;

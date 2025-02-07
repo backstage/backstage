@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Field } from '../../../packages/canon';
+import { Input, Field } from '@backstage/canon';
 
 export const FieldPreview = () => {
   return (

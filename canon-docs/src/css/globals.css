@@ -1,13 +1,33 @@
+:root {
+  --bg: #f8f8f8;
+  --panel: #fff;
+  --primary: #000;
+  --secondary: #757575;
+  --font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
+    'Courier New', monospace;
+  --font-weight-regular: 400;
+  --font-weight-bold: 600;
+  --border: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --bg: #000;
+  --panel: #222222;
+  --primary: #fff;
+  --secondary: #9e9e9e;
+  --border: rgba(255, 255, 255, 0.1);
+}
+
 body {
   display: flex;
   flex-direction: row;
-  background-color: var(--canon-bg);
-  color: var(--canon-fg-text-primary);
+  background-color: var(--bg);
+  color: var(--primary);
+  font-family: var(--font-regular);
   transition: background-color 0.2s ease-in-out;
-
-  --docs-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 iframe {
@@ -22,7 +42,7 @@ iframe {
 .shiki,
 .shiki span {
   background-color: transparent !important;
-  font-family: var(--canon-font-monospace);
+  font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.7;
 }
@@ -41,9 +61,11 @@ iframe {
 }
 
 .ͼ2 .cm-gutters {
-  background-color: var(--canon-bg);
-  border-right: 1px solid var(--canon-border);
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  background-color: var(--bg);
+  border-right: 1px solid var(--border);
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
 }
 
 .ͼ1 .cm-lineNumbers .cm-gutterElement {

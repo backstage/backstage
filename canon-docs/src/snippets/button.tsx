@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Flex, ButtonProps, Text } from '../../../packages/canon';
+import { Button, Flex, ButtonProps, Text } from '@backstage/canon';
 
 export const ButtonPreview = () => {
   return (

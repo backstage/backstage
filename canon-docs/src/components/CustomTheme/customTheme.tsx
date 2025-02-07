@@ -5,8 +5,8 @@ import CodeMirror from '@uiw/react-codemirror';
 import { sass } from '@codemirror/lang-sass';
 import styles from './styles.module.css';
 import { usePlayground } from '@/utils/playground-context';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Icon } from '../../../../packages/canon';
+import { AnimatePresence, motion } from 'motion/react';
+import { Icon } from '@backstage/canon';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Icon } from '../../../packages/canon';
+import { Icon } from '@backstage/canon';
 
 export const IconPreview = () => {
   return <Icon name="heart" />;

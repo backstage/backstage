@@ -1,6 +1,6 @@
 'use client';
 
-import { Flex, Text } from '../../../packages/canon';
+import { Flex, Text } from '@backstage/canon';
 
 export const TextPreview = () => {
   return (
