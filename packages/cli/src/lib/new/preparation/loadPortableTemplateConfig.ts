@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { PortableTemplateConfig, PortableTemplateParams } from '../types';
+import { PortableTemplateConfig, PortableTemplateGlobals } from '../types';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
@@ -26,6 +26,7 @@ const defaultGlobals = {
   license: 'Apache-2.0',
   baseVersion: '0.1.0',
   private: true,
+  scope: undefined,
 };
 
 const pkgJsonWithNewConfigSchema = z.object({
@@ -44,7 +45,12 @@ const pkgJsonWithNewConfigSchema = z.object({
             )
             .optional(),
           globals: z
-            .record(z.union([z.string(), z.number(), z.boolean()]))
+            .object({
+              license: z.string().optional(),
+              baseVersion: z.string().optional(),
+              private: z.boolean().optional(),
+              scope: z.string().optional(),
+            })
             .optional(),
         })
         .strict()
@@ -55,7 +61,7 @@ const pkgJsonWithNewConfigSchema = z.object({
 
 type LoadConfigOptions = {
   packagePath?: string;
-  globalOverrides?: PortableTemplateParams;
+  globalOverrides?: PortableTemplateGlobals;
 };
 
 export async function loadPortableTemplateConfig(

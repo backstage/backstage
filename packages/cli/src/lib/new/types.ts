@@ -28,9 +28,7 @@ export type PortableTemplateConfig = {
   /**
    * Templating globals that should apply to all templates.
    */
-  globals: {
-    [KName in string]?: number | string | boolean;
-  };
+  globals: PortableTemplateGlobals;
 };
 
 export type PortableTemplatePointer = {
@@ -72,4 +70,11 @@ export type PortableTemplate = {
 
 export type PortableTemplateParams = {
   [KName in string]?: string | number | boolean;
+};
+
+export type PortableTemplateGlobals = {
+  license?: string;
+  baseVersion?: string;
+  private?: boolean;
+  scope?: string;
 };

@@ -19,22 +19,6 @@ import { defaultTemplates } from '../defaultTemplates';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('loadPortableTemplateConfig', () => {
-  const mockPkgJson = {
-    backstage: {
-      new: {
-        templates: [
-          { id: 'template1', target: 'path/to/template1' },
-          { id: 'template2', target: 'path/to/template2' },
-        ],
-        globals: {
-          key1: 'value1',
-          key2: 2,
-          key3: true,
-        },
-      },
-    },
-  };
-
   const mockDir = createMockDirectory();
 
   afterEach(() => {
@@ -51,9 +35,8 @@ describe('loadPortableTemplateConfig', () => {
               { id: 'template2', target: 'path/to/template2' },
             ],
             globals: {
-              key1: 'value1',
-              key2: 2,
-              key3: true,
+              license: 'MIT',
+              private: true,
             },
           },
         },
@@ -66,11 +49,14 @@ describe('loadPortableTemplateConfig', () => {
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: false,
-      templatePointers: mockPkgJson.backstage.new.templates,
+      templatePointers: [
+        { id: 'template1', target: 'path/to/template1' },
+        { id: 'template2', target: 'path/to/template2' },
+      ],
       globals: {
-        key1: 'value1',
-        key2: 2,
-        key3: true,
+        license: 'MIT',
+        private: true,
+        baseVersion: '0.1.0',
       },
     });
 
@@ -78,18 +64,20 @@ describe('loadPortableTemplateConfig', () => {
       loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
         globalOverrides: {
-          key2: 'override',
-          key4: 'override2',
+          license: 'nope',
+          private: false,
         },
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: false,
-      templatePointers: mockPkgJson.backstage.new.templates,
+      templatePointers: [
+        { id: 'template1', target: 'path/to/template1' },
+        { id: 'template2', target: 'path/to/template2' },
+      ],
       globals: {
-        key1: 'value1',
-        key2: 'override',
-        key3: true,
-        key4: 'override2',
+        license: 'nope',
+        private: false,
+        baseVersion: '0.1.0',
       },
     });
   });
@@ -100,9 +88,8 @@ describe('loadPortableTemplateConfig', () => {
         backstage: {
           new: {
             globals: {
-              key1: 'value1',
-              key2: 2,
-              key3: true,
+              license: 'MIT',
+              private: true,
             },
           },
         },
@@ -117,9 +104,9 @@ describe('loadPortableTemplateConfig', () => {
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates,
       globals: {
-        key1: 'value1',
-        key2: 2,
-        key3: true,
+        license: 'MIT',
+        private: true,
+        baseVersion: '0.1.0',
       },
     });
   });
@@ -156,21 +143,27 @@ describe('loadPortableTemplateConfig', () => {
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates,
-      globals: {},
+      globals: {
+        license: 'Apache-2.0',
+        baseVersion: '0.1.0',
+        private: true,
+      },
     });
 
     await expect(
       loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
         globalOverrides: {
-          key: 'override',
+          license: 'nope',
         },
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates,
       globals: {
-        key: 'override',
+        license: 'nope',
+        baseVersion: '0.1.0',
+        private: true,
       },
     });
   });
