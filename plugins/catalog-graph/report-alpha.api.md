@@ -14,6 +14,32 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha (undocumented)
+export const catalogGraphTranslationRef: TranslationRef<
+  'catalog-graph',
+  {
+    readonly 'catalogGraphCard.viewGraphTitle': 'View graph';
+    readonly 'catalogGraphPage.title': 'Catalog Graph';
+    readonly 'catalogGraphPage.graph.zoomLegendContent': 'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
+    readonly 'catalogGraphPage.filterListButtonLabel': 'Filters';
+    readonly 'catalogGraphPage.supportButtonContent': 'Start tracking your component in by adding it to the software catalog.';
+    readonly 'curveFilter.displayName.curveStepBefore': 'Step Before';
+    readonly 'curveFilter.displayName.curveMonotoneX': 'Monotone X';
+    readonly 'curveFilter.selectLabel': 'Curve';
+    readonly 'directionFilter.displayName.leftToRight': 'Left to right';
+    readonly 'directionFilter.displayName.rightToLeft': 'Right to left';
+    readonly 'directionFilter.displayName.topToBottom': 'Top to bottom';
+    readonly 'directionFilter.displayName.bottomToTop': 'Bottom to top';
+    readonly 'directionFilter.selectLabel': 'Direction';
+    readonly 'maxDepthFilter.selectLabel': 'Max Depth';
+    readonly 'maxDepthFilter.inputPlaceholder': '∞ Infinite';
+    readonly 'selectedKindsFilter.selectLabel': 'Kinds';
+    readonly 'selectedKindsFilter.failAlertMessage': 'Failed to load entity kinds';
+    readonly 'selectedRelationsFilter.selectedLabel': 'Relations';
+  }
+>;
 
 // @public (undocumented)
 const _default: FrontendPlugin<
