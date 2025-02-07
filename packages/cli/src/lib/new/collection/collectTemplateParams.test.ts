@@ -15,7 +15,7 @@
  */
 
 import inquirer from 'inquirer';
-import { NewConfig } from '../types';
+import { PortableTemplateConfig } from '../types';
 import { collectTemplateParams } from './collectTemplateParams';
 
 describe('collectTemplateParams', () => {
@@ -24,7 +24,7 @@ describe('collectTemplateParams', () => {
       isUsingDefaultTemplates: false,
       templatePointers: [],
       globals: {},
-    } satisfies NewConfig,
+    } satisfies PortableTemplateConfig,
     template: {
       id: 'test',
       templatePath: '/test',

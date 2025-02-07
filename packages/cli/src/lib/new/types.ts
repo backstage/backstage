@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export type NewConfig = {
+export type PortableTemplateConfig = {
   /**
    * The pointers to templates that can be used.
    */
-  templatePointers: NewTemplatePointer[];
+  templatePointers: PortableTemplatePointer[];
 
   /**
    * Whether the default set of templates are being used or not.
@@ -33,12 +33,12 @@ export type NewConfig = {
   };
 };
 
-export type NewTemplatePointer = {
+export type PortableTemplatePointer = {
   id: string;
   target: string;
 };
 
-export type NewTemplatePrompt = {
+export type PortableTemplatePrompt = {
   id: string;
   prompt: string;
   validate?: string;
@@ -58,14 +58,14 @@ export const TEMPLATE_ROLES = [
   'backend-plugin-module',
 ] as const;
 
-export type TemplateRole = (typeof TEMPLATE_ROLES)[number];
+export type PortableTemplateRole = (typeof TEMPLATE_ROLES)[number];
 
-export interface NewTemplate {
+export interface PortableTemplate {
   id: string;
   description?: string;
   templatePath: string;
   targetPath: string;
-  role: TemplateRole;
-  prompts?: NewTemplatePrompt[];
+  role: PortableTemplateRole;
+  prompts?: PortableTemplatePrompt[];
   additionalActions?: string[];
 }

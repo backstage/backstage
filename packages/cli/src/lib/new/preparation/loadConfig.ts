@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { NewConfig } from '../types';
+import { PortableTemplateConfig } from '../types';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
@@ -60,7 +60,7 @@ type LoadConfigOptions = {
 
 export async function loadConfig(
   options: LoadConfigOptions = {},
-): Promise<NewConfig> {
+): Promise<PortableTemplateConfig> {
   const pkgPath =
     options.packagePath ?? paths.resolveTargetRoot('package.json');
   const pkgJson = await fs.readJson(pkgPath);

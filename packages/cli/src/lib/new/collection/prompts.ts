@@ -15,7 +15,7 @@
  */
 
 import { DistinctQuestion } from 'inquirer';
-import { NewTemplatePrompt, TemplateRole } from '../types';
+import { PortableTemplatePrompt, PortableTemplateRole } from '../types';
 import { parseOwnerIds } from '../../codeowners';
 
 export function namePrompt(): DistinctQuestion {
@@ -66,7 +66,9 @@ export function moduleIdIdPrompt(): DistinctQuestion {
   };
 }
 
-export function getPromptsForRole(role: TemplateRole): Array<DistinctQuestion> {
+export function getPromptsForRole(
+  role: PortableTemplateRole,
+): Array<DistinctQuestion> {
   switch (role) {
     case 'web-library':
     case 'node-library':
@@ -106,7 +108,7 @@ export function ownerPrompt(): DistinctQuestion {
   };
 }
 
-export function customPrompt(prompt: NewTemplatePrompt): DistinctQuestion {
+export function customPrompt(prompt: PortableTemplatePrompt): DistinctQuestion {
   return {
     type: 'input',
     name: prompt.id,

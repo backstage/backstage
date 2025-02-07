@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { NewConfig } from '../types';
+import { PortableTemplateConfig } from '../types';
 import inquirer from 'inquirer';
 import { withLogCollector } from '@backstage/test-utils';
 import { selectTemplateInteractively } from './selectTemplateInteractively';
 
 describe('selectTemplateInteractively', () => {
-  const mockConfig: NewConfig = {
+  const mockConfig: PortableTemplateConfig = {
     isUsingDefaultTemplates: false,
     templatePointers: [
       { id: 'template1', target: 'path/to/template1' },

@@ -15,12 +15,12 @@
  */
 
 import inquirer from 'inquirer';
-import { NewConfig, NewTemplatePointer } from '../types';
+import { PortableTemplateConfig, PortableTemplatePointer } from '../types';
 
 export async function selectTemplateInteractively(
-  config: NewConfig,
+  config: PortableTemplateConfig,
   preselectedTemplateId?: string,
-): Promise<NewTemplatePointer> {
+): Promise<PortableTemplatePointer> {
   let selectedId = preselectedTemplateId;
 
   if (config.isUsingDefaultTemplates && selectedId === 'plugin') {
