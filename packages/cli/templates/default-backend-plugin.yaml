@@ -1,7 +1,7 @@
 description: A new backend plugin
 template: ./default-backend-plugin
 targetPath: plugins
-suffix: backend
+role: backend-plugin
 prompts:
   - id
   - owner

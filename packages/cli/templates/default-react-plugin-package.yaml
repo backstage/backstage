@@ -1,7 +1,7 @@
 description: A new web library plugin package
 template: ./default-react-plugin-package
 targetPath: plugins
-suffix: react
+role: plugin-web-library
 prompts:
   - id
   - owner
