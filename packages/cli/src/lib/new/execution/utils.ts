@@ -15,15 +15,6 @@
  */
 import { NewTemplate } from '../types';
 
-export interface Options extends Record<string, string | boolean> {
-  private: boolean;
-  baseVersion: string;
-  license: string;
-  targetPath: string;
-  owner: string;
-  scope: string;
-}
-
 export const resolvePackageName = (options: {
   baseName: string;
   scope?: string;

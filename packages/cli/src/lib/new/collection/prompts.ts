@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { Answers, DistinctQuestion } from 'inquirer';
+import { DistinctQuestion } from 'inquirer';
 import { NewTemplatePrompt, TemplateRole } from '../types';
 import { parseOwnerIds } from '../../codeowners';
 
-export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions>;
-export function namePrompt(): Prompt<{ name: string }> {
+export function namePrompt(): DistinctQuestion {
   return {
     type: 'input',
     name: 'name',
@@ -35,7 +34,7 @@ export function namePrompt(): Prompt<{ name: string }> {
   };
 }
 
-export function pluginIdPrompt(): Prompt<{ pluginId: string }> {
+export function pluginIdPrompt(): DistinctQuestion {
   return {
     type: 'input',
     name: 'pluginId',
@@ -51,7 +50,7 @@ export function pluginIdPrompt(): Prompt<{ pluginId: string }> {
   };
 }
 
-export function moduleIdIdPrompt(): Prompt<{ moduleId: string }> {
+export function moduleIdIdPrompt(): DistinctQuestion {
   return {
     type: 'input',
     name: 'moduleId',
@@ -67,7 +66,7 @@ export function moduleIdIdPrompt(): Prompt<{ moduleId: string }> {
   };
 }
 
-export function getPromptsForRole(role: TemplateRole) {
+export function getPromptsForRole(role: TemplateRole): Array<DistinctQuestion> {
   switch (role) {
     case 'web-library':
     case 'node-library':
@@ -87,7 +86,7 @@ export function getPromptsForRole(role: TemplateRole) {
   }
 }
 
-export function ownerPrompt(): Prompt<{ owner?: string }> {
+export function ownerPrompt(): DistinctQuestion {
   return {
     type: 'input',
     name: 'owner',
@@ -107,9 +106,7 @@ export function ownerPrompt(): Prompt<{ owner?: string }> {
   };
 }
 
-export function buildCustomPrompt(
-  prompt: NewTemplatePrompt,
-): Prompt<{ [key: string]: string }> {
+export function customPrompt(prompt: NewTemplatePrompt): DistinctQuestion {
   return {
     type: 'input',
     name: prompt.id,
