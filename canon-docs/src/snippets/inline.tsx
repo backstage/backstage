@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Inline } from '../../../packages/canon';
+import { Box, Flex } from '../../../packages/canon';
 
 const fakeBlockList = [
   { width: 45, height: 60 },
@@ -24,7 +24,6 @@ const FakeBox = ({
   height?: number;
 }) => (
   <Box
-    borderRadius="xs"
     style={{
       background: '#eaf2fd',
       borderRadius: '4px',
@@ -39,10 +38,10 @@ const FakeBox = ({
 
 export const InlinePreview = () => {
   return (
-    <Inline>
+    <Flex>
       {fakeBlockList.map((block, index) => (
         <FakeBox key={index} width={block.width} height={block.height} />
       ))}
-    </Inline>
+    </Flex>
   );
 };

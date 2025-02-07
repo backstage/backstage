@@ -6,8 +6,7 @@ import { Icon } from '@backstage/canon';
 import { usePlayground } from '@/utils/playground-context';
 
 const themes = [
-  { name: 'Backstage Default', value: 'default' },
-  { name: 'Backstage Legacy', value: 'legacy' },
+  { name: 'Backstage', value: 'default' },
   { name: 'Custom theme', value: 'custom' },
 ];
 
