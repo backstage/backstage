@@ -29,7 +29,17 @@ import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { Lockfile } from '../../versioning';
 import { createPackageVersionProvider } from '../../version';
-import { CreateContext } from '../types';
+
+export interface CreateContext {
+  /** Whether we are creating something in a monorepo or not */
+  isMonoRepo: boolean;
+
+  /** Creates a temporary directory. This will always be deleted after creation is done. */
+  createTemporaryDirectory(name: string): Promise<string>;
+
+  /** Signal that the creation process got to a point where permanent modifications were made */
+  markAsModified(): void;
+}
 
 export async function executePluginPackageTemplate(
   ctx: CreateContext,

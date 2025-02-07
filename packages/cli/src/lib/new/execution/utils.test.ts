@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { resolvePackageName, createDirName, Options } from './utils';
-import { Template } from '../types';
+import { NewTemplate } from '../types';
 
 describe('resolvePackageName', () => {
   it('should generate correct name without scope', () => {
@@ -82,7 +82,7 @@ describe('createDirName', () => {
   it('should return name in the backend-module format if backendModulePrefix is set to true', () => {
     expect(
       createDirName(
-        { backendModulePrefix: true } as Template,
+        { backendModulePrefix: true } as NewTemplate,
         {
           id: 'foo',
           moduleId: 'bar',
@@ -94,7 +94,7 @@ describe('createDirName', () => {
   it('should throw an error if backendModulePrefix is configured as true but is missing moduleId', () => {
     expect(() =>
       createDirName(
-        { backendModulePrefix: true } as Template,
+        { backendModulePrefix: true } as NewTemplate,
         {
           id: 'foo',
           moduleId: '',
@@ -105,12 +105,12 @@ describe('createDirName', () => {
 
   it('should append the suffix value if one is provided', () => {
     expect(
-      createDirName({ suffix: 'foo' } as Template, { id: 'bar' } as Options),
+      createDirName({ suffix: 'foo' } as NewTemplate, { id: 'bar' } as Options),
     ).toEqual('bar-foo');
   });
 
   it('should return id if neither backendModulePrefix nor suffix is specified', () => {
-    expect(createDirName({} as Template, { id: 'foo' } as Options)).toEqual(
+    expect(createDirName({} as NewTemplate, { id: 'foo' } as Options)).toEqual(
       'foo',
     );
   });

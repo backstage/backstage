@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import inquirer from 'inquirer';
-import { Prompt, ConfigurablePrompt } from '../types';
+import inquirer, { Answers, DistinctQuestion } from 'inquirer';
+import { NewTemplatePrompt } from '../types';
 import { parseOwnerIds } from '../../codeowners';
+
+export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
+  name: string;
+};
 
 export function pluginIdPrompt(): Prompt<{ id: string }> {
   return {
@@ -94,12 +98,12 @@ export async function promptOptions({
   globals,
   codeOwnersFilePath,
 }: {
-  prompts: ConfigurablePrompt[];
+  prompts: NewTemplatePrompt[];
   globals: { [name in string]?: string | boolean | number };
   codeOwnersFilePath: string | undefined;
 }): Promise<Record<string, string>> {
   const answers = await inquirer.prompt(
-    prompts.map((prompt: ConfigurablePrompt) => {
+    prompts.map((prompt: NewTemplatePrompt) => {
       if (typeof prompt === 'string') {
         switch (prompt) {
           case 'id':

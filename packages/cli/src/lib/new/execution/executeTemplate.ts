@@ -27,13 +27,13 @@ import { createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executePluginPackageTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
-import { NewConfig } from '../config/types';
-import { Template } from '../types';
+import { NewConfig } from '../types';
+import { NewTemplate } from '../types';
 import { Options } from './utils';
 
 type ExecuteNewTemplateOptions = {
   config: NewConfig;
-  template: Template;
+  template: NewTemplate;
   params: Options;
 };
 
