@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  resolvePackageName,
-  populateOptions,
-  createDirName,
-  Options,
-} from './utils';
+import { resolvePackageName, createDirName, Options } from './utils';
 import { Template } from './types';
 
 describe('resolvePackageName', () => {
@@ -80,58 +75,6 @@ describe('resolvePackageName', () => {
         plugin: false,
       }),
     ).toEqual('@custom/myapp.test');
-  });
-});
-
-describe('populateOptions', () => {
-  it('should return default values if not provided', () => {
-    expect(populateOptions({}, { targetPath: '/example' } as Template)).toEqual(
-      {
-        id: '',
-        private: true,
-        baseVersion: '0.1.0',
-        owner: '',
-        license: 'Apache-2.0',
-        targetPath: '/example',
-        scope: '',
-        moduleId: '',
-      },
-    );
-  });
-
-  it('should include all non-standard global and prompt values', () => {
-    expect(
-      populateOptions({ foo: 'bar' }, {
-        targetPath: '/example',
-      } as Template),
-    ).toEqual({
-      id: '',
-      private: true,
-      baseVersion: '0.1.0',
-      owner: '',
-      license: 'Apache-2.0',
-      targetPath: '/example',
-      scope: '',
-      moduleId: '',
-      foo: 'bar',
-    });
-  });
-
-  it('should priority global targetPath over the targetPath specified in template', () => {
-    expect(
-      populateOptions({ targetPath: '/global' }, {
-        targetPath: '/example',
-      } as Template),
-    ).toEqual({
-      id: '',
-      private: true,
-      baseVersion: '0.1.0',
-      owner: '',
-      license: 'Apache-2.0',
-      targetPath: '/global',
-      scope: '',
-      moduleId: '',
-    });
   });
 });
 

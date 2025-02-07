@@ -21,15 +21,15 @@ import { assertError } from '@backstage/errors';
 
 import { paths } from '../paths';
 import { Task } from '../tasks';
-import { addCodeownersEntry, getCodeownersFilePath } from '../codeowners';
+import { addCodeownersEntry } from '../codeowners';
 
-import { promptOptions } from './prompts';
-import { populateOptions, createDirName, resolvePackageName } from './utils';
+import { createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executeTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { loadNewConfig } from './config/loadNewConfig';
 import { NewTemplateLoader } from './loader/NewTemplateLoader';
+import { collectTemplateParams } from './collection/collectTemplateParams';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -40,7 +40,7 @@ export type CreateNewPackageOptions = {
     license?: string;
     baseVersion?: string;
   };
-  argOptions: { [name in string]?: string };
+  prefilledParams: Record<string, string>;
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
@@ -52,29 +52,12 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
   );
   const template = await NewTemplateLoader.loadTemplate(selectedTemplate);
 
-  const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
-
-  const prefilledAnswers = Object.fromEntries(
-    (template.prompts ?? []).flatMap(prompt => {
-      const id = typeof prompt === 'string' ? prompt : prompt.id;
-      const answer = options.argOptions[id];
-      return answer ? [[id, answer]] : [];
-    }),
-  );
-  const promptAnswers = await promptOptions({
-    prompts:
-      template.prompts?.filter(
-        prompt =>
-          !Object.hasOwn(
-            prefilledAnswers,
-            typeof prompt === 'string' ? prompt : prompt.id,
-          ),
-      ) ?? [],
-    globals: newConfig.globals,
-    codeOwnersFilePath,
+  const params = await collectTemplateParams({
+    config: newConfig,
+    template,
+    globals: options.globals,
+    prefilledParams: options.prefilledParams,
   });
-  const answers = { ...prefilledAnswers, ...promptAnswers };
-  const params = populateOptions({ ...answers, ...options.globals }, template);
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 

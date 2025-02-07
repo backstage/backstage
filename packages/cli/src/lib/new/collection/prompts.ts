@@ -15,8 +15,8 @@
  */
 
 import inquirer from 'inquirer';
-import { Prompt, ConfigurablePrompt } from './types';
-import { parseOwnerIds } from '../codeowners';
+import { Prompt, ConfigurablePrompt } from '../types';
+import { parseOwnerIds } from '../../codeowners';
 
 export function pluginIdPrompt(): Prompt<{ id: string }> {
   return {

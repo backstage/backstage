@@ -49,23 +49,6 @@ export const resolvePackageName = (options: {
   return plugin ? `backstage-plugin-${baseName}` : baseName;
 };
 
-export function populateOptions(
-  options: { [name in string]?: string | boolean },
-  template: Template,
-): Options {
-  return {
-    id: '',
-    owner: '',
-    license: 'Apache-2.0',
-    scope: '',
-    moduleId: '',
-    baseVersion: '0.1.0',
-    private: true,
-    targetPath: template.targetPath,
-    ...options,
-  };
-}
-
 export function createDirName(template: Template, options: Options) {
   if (!options.id) {
     throw new Error(`id prompt is mandatory for all cli templates`);

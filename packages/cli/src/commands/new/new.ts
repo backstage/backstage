@@ -33,16 +33,16 @@ export default async (opts: ArgOptions) => {
     ...globals
   } = opts;
 
-  const argOptions = parseOptions(rawArgOptions);
+  const prefilledParams = parseParams(rawArgOptions);
 
   await createNewPackage({
-    argOptions,
+    prefilledParams,
     preselectedTemplateId,
     globals,
   });
 };
 
-function parseOptions(optionStrings: string[]): Record<string, string> {
+function parseParams(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
 
   for (const str of optionStrings) {
