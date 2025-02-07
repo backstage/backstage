@@ -36,7 +36,9 @@ type ExecuteNewTemplateOptions = {
   params: Record<string, string | number | boolean>;
 };
 
-export async function executeNewTemplate(options: ExecuteNewTemplateOptions) {
+export async function executePortableTemplate(
+  options: ExecuteNewTemplateOptions,
+) {
   const { template, params } = options;
 
   const tmpDirManager = TemporaryDirectoryManager.create();

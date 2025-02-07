@@ -45,7 +45,7 @@ const templateDefinitionSchema = z
   })
   .strict();
 
-export async function loadTemplate({
+export async function loadPortableTemplate({
   id,
   target,
 }: PortableTemplatePointer): Promise<PortableTemplate> {

@@ -16,7 +16,7 @@
 
 import inquirer from 'inquirer';
 import { PortableTemplateConfig } from '../types';
-import { collectTemplateParams } from './collectTemplateParams';
+import { collectPortableTemplateParams } from './collectPortableTemplateParams';
 
 describe('collectTemplateParams', () => {
   const baseOptions = {
@@ -38,7 +38,7 @@ describe('collectTemplateParams', () => {
   };
 
   it('should return default values if not provided', async () => {
-    await expect(collectTemplateParams(baseOptions)).resolves.toEqual({
+    await expect(collectPortableTemplateParams(baseOptions)).resolves.toEqual({
       pluginId: 'test',
       private: true,
       baseVersion: '0.1.0',
@@ -51,7 +51,7 @@ describe('collectTemplateParams', () => {
 
   it('should include all non-standard global and prompt values', async () => {
     await expect(
-      collectTemplateParams({
+      collectPortableTemplateParams({
         ...baseOptions,
         config: { ...baseOptions.config, globals: { foo: 'bar' } },
       }),
@@ -71,7 +71,7 @@ describe('collectTemplateParams', () => {
     jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ pluginId: 'other' });
 
     await expect(
-      collectTemplateParams({
+      collectPortableTemplateParams({
         ...baseOptions,
         prefilledParams: {},
       }),
