@@ -55,6 +55,13 @@ const Card = () => {
 
 export const Default: Story = {
   args: {
+    children: 'Hello World',
+    mb: '4',
+  },
+};
+
+export const Preview: Story = {
+  args: {
     children: <Card />,
     display: 'inline',
   },
@@ -141,6 +148,25 @@ export const Padding: Story = {
           <Box {...args}>Padding Left</Box>
         </Box>
       </Flex>
+      <Flex gap="4" align="center">
+        <Box p="10px" style={styleInsideBox}>
+          <Box {...args}>Custom Padding</Box>
+        </Box>
+        <Box px="10px" style={styleInsideBox}>
+          <Box {...args}>Custom Padding X</Box>
+        </Box>
+        <Box py="10px" style={styleInsideBox}>
+          <Box {...args}>Custom Padding Y</Box>
+        </Box>
+      </Flex>
+      <Flex gap="4" align="center">
+        <Box pt="10px" pb="10px" style={styleInsideBox}>
+          <Box {...args}>Custom Padding Top Bottom</Box>
+        </Box>
+        <Box pl="10px" pr="10px" style={styleInsideBox}>
+          <Box {...args}>Custom Padding Left Right</Box>
+        </Box>
+      </Flex>
     </Flex>
   ),
 };
@@ -192,6 +218,35 @@ export const Margin: Story = {
         <Box style={styleInsideBox}>
           <Box ml="3" {...args}>
             Margin Left
+          </Box>
+        </Box>
+      </Flex>
+      <Flex align="center" gap="4">
+        <Box style={styleInsideBox}>
+          <Box m="10px" {...args}>
+            Custom Margin
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box mx="10px" {...args}>
+            Custom Margin X
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box my="10px" {...args}>
+            Custom Margin Y
+          </Box>
+        </Box>
+      </Flex>
+      <Flex align="center" gap="4">
+        <Box style={styleInsideBox}>
+          <Box mt="10px" mb="10px" {...args}>
+            Custom Margin Top Bottom
+          </Box>
+        </Box>
+        <Box style={styleInsideBox}>
+          <Box ml="10px" mr="10px" {...args}>
+            Custom Margin Left Right
           </Box>
         </Box>
       </Flex>
