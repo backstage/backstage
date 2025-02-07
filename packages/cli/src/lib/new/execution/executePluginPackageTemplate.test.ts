@@ -19,7 +19,7 @@ import { mockPaths } from './testUtils';
 import {
   executePluginPackageTemplate,
   templatingTask,
-} from './executeTemplate';
+} from './executePluginPackageTemplate';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('executePluginPackageTemplate', () => {

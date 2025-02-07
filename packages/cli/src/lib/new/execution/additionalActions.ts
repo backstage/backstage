@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { paths } from '../paths';
-import { Task } from '../tasks';
+import { paths } from '../../paths';
+import { Task } from '../../tasks';
 
 interface AdditionalActionsOptions {
   name: string;

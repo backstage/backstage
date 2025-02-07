@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-import camelCase from 'lodash/camelCase';
-import upperFirst from 'lodash/upperFirst';
-import { isMonoRepo } from '@backstage/cli-node';
-import { assertError } from '@backstage/errors';
-
-import { paths } from '../paths';
-import { Task } from '../tasks';
-import { addCodeownersEntry } from '../codeowners';
-
-import { createDirName, resolvePackageName } from './utils';
-import { runAdditionalActions } from './additionalActions';
-import { executePluginPackageTemplate } from './executeTemplate';
-import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
-import { loadNewConfig } from './config/loadNewConfig';
-import { NewTemplateLoader } from './loader/NewTemplateLoader';
 import { collectTemplateParams } from './collection/collectTemplateParams';
+import { loadNewConfig } from './config/loadNewConfig';
+import { executeNewTemplate } from './execution/executeTemplate';
+import { NewTemplateLoader } from './loader/NewTemplateLoader';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -44,107 +32,24 @@ export type CreateNewPackageOptions = {
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
-  const newConfig = await loadNewConfig();
+  const config = await loadNewConfig();
 
   const selectedTemplate = await NewTemplateLoader.selectTemplateInteractively(
-    newConfig,
+    config,
     options.preselectedTemplateId,
   );
   const template = await NewTemplateLoader.loadTemplate(selectedTemplate);
 
   const params = await collectTemplateParams({
-    config: newConfig,
+    config,
     template,
     globals: options.globals,
     prefilledParams: options.prefilledParams,
   });
 
-  const tmpDirManager = TemporaryDirectoryManager.create();
-
-  const dirName = createDirName(template, params);
-  const targetDir = paths.resolveTargetRoot(params.targetPath, dirName);
-
-  const packageName = resolvePackageName({
-    baseName: dirName,
-    scope: params.scope,
-    plugin: template.plugin ?? true,
+  await executeNewTemplate({
+    config,
+    template,
+    params,
   });
-
-  const moduleVar =
-    params.moduleId ??
-    `${camelCase(params.id)}Module${camelCase(
-      params.moduleId,
-    )[0].toUpperCase()}${camelCase(params.moduleId).slice(1)}`; // used in default-backend-module template
-  const extensionName = `${upperFirst(camelCase(params.id))}Page`; // used in default-plugin template
-  const pluginVar = `${camelCase(params.id)}Plugin`; // used in default-backend-plugin and default-plugin template
-
-  let modified = false;
-  try {
-    await executePluginPackageTemplate(
-      {
-        isMonoRepo: await isMonoRepo(),
-        createTemporaryDirectory: tmpDirManager.createDir,
-        markAsModified() {
-          modified = true;
-        },
-      },
-      {
-        targetDir,
-        templateDir: template.templatePath,
-        values: {
-          name: packageName,
-          privatePackage: params.private,
-          pluginVersion: params.baseVersion,
-          moduleVar,
-          extensionName,
-          pluginVar,
-          ...params,
-        },
-      },
-    );
-
-    if (template.additionalActions?.length) {
-      await runAdditionalActions(template.additionalActions, {
-        name: packageName,
-        version: params.baseVersion,
-        id: params.id, // for frontend legacy
-        extensionName, // for frontend legacy
-      });
-    }
-
-    if (params.owner) {
-      await addCodeownersEntry(targetDir, params.owner);
-    }
-
-    await Task.forCommand('yarn install', {
-      cwd: targetDir,
-      optional: true,
-    });
-    await Task.forCommand('yarn lint --fix', {
-      cwd: targetDir,
-      optional: true,
-    });
-
-    Task.log();
-    Task.log(`🎉  Successfully created ${template.id}`);
-    Task.log();
-  } catch (error) {
-    assertError(error);
-    Task.error(error.message);
-
-    if (modified) {
-      Task.log('It seems that something went wrong in the creation process 🤔');
-      Task.log();
-      Task.log(
-        'We have left the changes that were made intact in case you want to',
-      );
-      Task.log(
-        'continue manually, but you can also revert the changes and try again.',
-      );
-
-      Task.error(`🔥  Failed to create ${template.id}!`);
-    }
-  } finally {
-    tmpDirManager.cleanup();
-  }
 }

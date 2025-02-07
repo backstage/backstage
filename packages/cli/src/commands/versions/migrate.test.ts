@@ -21,7 +21,7 @@ import * as run from '../../lib/run';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
-import { expectLogsToMatch } from '../../lib/new/testUtils';
+import { expectLogsToMatch } from '../../lib/new/execution/testUtils';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
