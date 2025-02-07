@@ -27,7 +27,7 @@ type CollectTemplateParamsOptions = {
   prefilledParams: Record<string, string | number | boolean>;
 };
 
-export async function collectTemplateParams(
+export async function collectPortableTemplateParams(
   options: CollectTemplateParamsOptions,
 ): Promise<Record<string, string | number | boolean>> {
   const { config, template, prefilledParams } = options;

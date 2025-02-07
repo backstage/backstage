@@ -15,7 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { loadTemplate } from './loadTemplate';
+import { loadPortableTemplate } from './loadPortableTemplate';
 
 describe('loadTemplate', () => {
   it('should load a valid template', async () => {
@@ -30,7 +30,7 @@ describe('loadTemplate', () => {
       },
     });
 
-    const result = await loadTemplate({
+    const result = await loadPortableTemplate({
       id: 'template1',
       target: mockDir.resolve('path/to/template1.yaml'),
     });
@@ -47,7 +47,7 @@ describe('loadTemplate', () => {
     const mockDir = createMockDirectory();
 
     await expect(
-      loadTemplate({
+      loadPortableTemplate({
         id: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
@@ -64,7 +64,7 @@ describe('loadTemplate', () => {
     });
 
     await expect(
-      loadTemplate({
+      loadPortableTemplate({
         id: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
@@ -75,7 +75,7 @@ describe('loadTemplate', () => {
 
   it('should throw an error if target is a remote URL', async () => {
     await expect(
-      loadTemplate({
+      loadPortableTemplate({
         id: 'template1',
         target: 'http://example.com',
       }),
@@ -84,7 +84,7 @@ describe('loadTemplate', () => {
 
   it('should throw an error if target directory does not exist', async () => {
     await expect(
-      loadTemplate({
+      loadPortableTemplate({
         id: 'template1',
         target: 'http://example.com',
       }),
@@ -103,7 +103,7 @@ describe('loadTemplate', () => {
     });
 
     await expect(
-      loadTemplate({
+      loadPortableTemplate({
         id: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
@@ -126,7 +126,7 @@ describe('loadTemplate', () => {
     });
 
     await expect(
-      loadTemplate({
+      loadPortableTemplate({
         id: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),

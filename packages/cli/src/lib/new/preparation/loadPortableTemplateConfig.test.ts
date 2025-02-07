@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { loadConfig } from './loadConfig';
+import { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
 import { defaultTemplates } from '../defaultTemplates';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-describe('loadConfig', () => {
+describe('loadPortableTemplateConfig', () => {
   const mockPkgJson = {
     backstage: {
       new: {
@@ -61,7 +61,7 @@ describe('loadConfig', () => {
     });
 
     await expect(
-      loadConfig({
+      loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
@@ -75,7 +75,7 @@ describe('loadConfig', () => {
     });
 
     await expect(
-      loadConfig({
+      loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
         globalOverrides: {
           key2: 'override',
@@ -110,7 +110,7 @@ describe('loadConfig', () => {
     });
 
     await expect(
-      loadConfig({
+      loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
@@ -136,7 +136,7 @@ describe('loadConfig', () => {
     });
 
     await expect(
-      loadConfig({
+      loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
       }),
     ).rejects.toThrow(
@@ -150,7 +150,7 @@ describe('loadConfig', () => {
     });
 
     await expect(
-      loadConfig({
+      loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
@@ -160,7 +160,7 @@ describe('loadConfig', () => {
     });
 
     await expect(
-      loadConfig({
+      loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
         globalOverrides: {
           key: 'override',

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { collectTemplateParams } from './collection/collectTemplateParams';
-import { loadConfig } from './preparation/loadConfig';
-import { executeNewTemplate } from './execution/executeTemplate';
+import { collectPortableTemplateParams } from './collection/collectPortableTemplateParams';
+import { loadPortableTemplateConfig } from './preparation/loadPortableTemplateConfig';
+import { executePortableTemplate } from './execution/executePortableTemplate';
 import { selectTemplateInteractively } from './preparation/selectTemplateInteractively';
-import { loadTemplate } from './preparation/loadTemplate';
+import { loadPortableTemplate } from './preparation/loadPortableTemplate';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -33,7 +33,7 @@ export type CreateNewPackageOptions = {
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
-  const config = await loadConfig({
+  const config = await loadPortableTemplateConfig({
     globalOverrides: options.globals,
   });
 
@@ -41,15 +41,15 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
     config,
     options.preselectedTemplateId,
   );
-  const template = await loadTemplate(selectedTemplate);
+  const template = await loadPortableTemplate(selectedTemplate);
 
-  const params = await collectTemplateParams({
+  const params = await collectPortableTemplateParams({
     config,
     template,
     prefilledParams: options.prefilledParams,
   });
 
-  await executeNewTemplate({
+  await executePortableTemplate({
     config,
     template,
     params,

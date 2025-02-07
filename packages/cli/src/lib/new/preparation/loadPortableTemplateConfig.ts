@@ -58,7 +58,7 @@ type LoadConfigOptions = {
   globalOverrides?: Record<string, string | number | boolean>;
 };
 
-export async function loadConfig(
+export async function loadPortableTemplateConfig(
   options: LoadConfigOptions = {},
 ): Promise<PortableTemplateConfig> {
   const pkgPath =
