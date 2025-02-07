@@ -100,7 +100,13 @@ export async function templatingTask(
   for (const file of files) {
     const filePath = relativePath(templateDir, file);
 
-    if (excludedDirs?.some(excludedDir => filePath.startsWith(excludedDir))) {
+    if (
+      excludedDirs?.some(excludedDir => {
+        const normalizedFilePath = filePath.replace(/\\/g, '/');
+        const normalizedExcludedDir = excludedDir.replace(/\\/g, '/');
+        return normalizedFilePath.startsWith(normalizedExcludedDir);
+      })
+    ) {
       continue;
     }
 
