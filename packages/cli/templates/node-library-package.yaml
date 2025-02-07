@@ -2,6 +2,3 @@ description: A new node-library package, exporting shared functionality for back
 template: ./node-library-package
 targetPath: packages
 role: node-library
-prompts:
-  - id
-  - owner

@@ -16,14 +16,12 @@
 import { NewTemplate } from '../types';
 
 export interface Options extends Record<string, string | boolean> {
-  id: string;
   private: boolean;
   baseVersion: string;
   license: string;
   targetPath: string;
   owner: string;
   scope: string;
-  moduleId: string;
 }
 
 export const resolvePackageName = (options: {

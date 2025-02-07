@@ -2,6 +2,3 @@ description: A new isomorphic common plugin package
 template: ./default-common-plugin-package
 targetPath: plugins
 role: plugin-common-library
-prompts:
-  - id
-  - owner

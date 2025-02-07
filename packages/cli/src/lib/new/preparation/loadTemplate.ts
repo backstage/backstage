@@ -33,15 +33,12 @@ const templateDefinitionSchema = z
     role: z.enum(TEMPLATE_ROLES),
     prompts: z
       .array(
-        z.union([
-          z.string(),
-          z.object({
-            id: z.string(),
-            prompt: z.string(),
-            validate: z.string().optional(),
-            default: z.union([z.string(), z.boolean(), z.number()]).optional(),
-          }),
-        ]),
+        z.object({
+          id: z.string(),
+          prompt: z.string(),
+          validate: z.string().optional(),
+          default: z.union([z.string(), z.boolean(), z.number()]).optional(),
+        }),
       )
       .optional(),
     additionalActions: z.array(z.string()).optional(),
