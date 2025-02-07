@@ -583,7 +583,7 @@ describe('BackendInitializer', () => {
         },
       }),
     );
-    await init.start();
+    await expect(init.start()).resolves.not.toThrow();
   });
 
   it('should permit startup errors if the default is set', async () => {
@@ -607,7 +607,7 @@ describe('BackendInitializer', () => {
         },
       }),
     );
-    await init.start();
+    await expect(init.start()).resolves.not.toThrow();
   });
 
   it('should forward errors for plugins explicitly marked as not optional when the default is true', async () => {
