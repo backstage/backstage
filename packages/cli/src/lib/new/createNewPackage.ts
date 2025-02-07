@@ -21,17 +21,11 @@ import {
   selectTemplateInteractively,
 } from './preparation';
 import { executePortableTemplate } from './execution';
-import { PortableTemplateParams } from './types';
+import { PortableTemplateGlobals, PortableTemplateParams } from './types';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
-  globals: {
-    private?: boolean;
-    npmRegistry?: string;
-    scope?: string;
-    license?: string;
-    baseVersion?: string;
-  };
+  globals: PortableTemplateGlobals;
   prefilledParams: PortableTemplateParams;
 };
 
@@ -47,7 +41,6 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
   const template = await loadPortableTemplate(selectedTemplate);
 
   const params = await collectPortableTemplateParams({
-    config,
     template,
     prefilledParams: options.prefilledParams,
   });

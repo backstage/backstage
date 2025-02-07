@@ -18,7 +18,6 @@ import inquirer, { DistinctQuestion } from 'inquirer';
 import { getCodeownersFilePath, parseOwnerIds } from '../../codeowners';
 import { paths } from '../../paths';
 import {
-  PortableTemplateConfig,
   PortableTemplateParams,
   PortableTemplatePrompt,
   PortableTemplateRole,
@@ -26,7 +25,6 @@ import {
 import { PortableTemplate } from '../types';
 
 type CollectTemplateParamsOptions = {
-  config: PortableTemplateConfig;
   template: PortableTemplate;
   prefilledParams: PortableTemplateParams;
 };
@@ -34,7 +32,7 @@ type CollectTemplateParamsOptions = {
 export async function collectPortableTemplateParams(
   options: CollectTemplateParamsOptions,
 ): Promise<PortableTemplateParams> {
-  const { config, template, prefilledParams } = options;
+  const { template, prefilledParams } = options;
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
@@ -62,7 +60,6 @@ export async function collectPortableTemplateParams(
   );
 
   return {
-    ...config.globals,
     ...prefilledAnswers,
     ...promptAnswers,
     targetPath: template.targetPath,

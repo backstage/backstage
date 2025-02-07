@@ -40,30 +40,8 @@ describe('collectTemplateParams', () => {
   it('should return default values if not provided', async () => {
     await expect(collectPortableTemplateParams(baseOptions)).resolves.toEqual({
       pluginId: 'test',
-      private: true,
-      baseVersion: '0.1.0',
       owner: '',
-      license: 'Apache-2.0',
       targetPath: '/example',
-      scope: '',
-    });
-  });
-
-  it('should include all non-standard global and prompt values', async () => {
-    await expect(
-      collectPortableTemplateParams({
-        ...baseOptions,
-        config: { ...baseOptions.config, globals: { foo: 'bar' } },
-      }),
-    ).resolves.toEqual({
-      pluginId: 'test',
-      private: true,
-      baseVersion: '0.1.0',
-      owner: '',
-      license: 'Apache-2.0',
-      targetPath: '/example',
-      scope: '',
-      foo: 'bar',
     });
   });
 
@@ -77,12 +55,7 @@ describe('collectTemplateParams', () => {
       }),
     ).resolves.toEqual({
       pluginId: 'other',
-      private: true,
-      baseVersion: '0.1.0',
-      owner: '',
-      license: 'Apache-2.0',
       targetPath: '/example',
-      scope: '',
     });
   });
 });
