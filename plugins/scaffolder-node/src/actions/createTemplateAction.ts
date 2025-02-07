@@ -53,6 +53,17 @@ export type TemplateActionOptions<
 };
 
 /**
+ * @ignore
+ */
+type FlattenOptionalProperties<T extends { [key in string]: unknown }> = Expand<
+  {
+    [K in keyof T as undefined extends T[K] ? never : K]: T[K];
+  } & {
+    [K in keyof T as undefined extends T[K] ? K : never]?: T[K];
+  }
+>;
+
+/**
  * This function is used to create new template actions to get type safety.
  * Will convert zod schemas to json schemas for use throughout the system.
  * @public
@@ -72,10 +83,10 @@ export function createTemplateAction<
     TOutputSchema
   >,
 ): TemplateAction<
-  Expand<{
+  FlattenOptionalProperties<{
     [key in keyof TInputSchema]: z.output<ReturnType<TInputSchema[key]>>;
   }>,
-  Expand<{
+  FlattenOptionalProperties<{
     [key in keyof TOutputSchema]: z.output<ReturnType<TOutputSchema[key]>>;
   }>,
   TInputSchema

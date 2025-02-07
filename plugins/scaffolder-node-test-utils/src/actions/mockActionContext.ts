@@ -35,7 +35,7 @@ export const createMockActionContext = <
   TActionOutput extends JsonObject = JsonObject,
 >(
   options?: Partial<ActionContext<TActionInput, TActionOutput>>,
-): ActionContext<TActionInput, TActionOutput, any> => {
+): ActionContext<TActionInput, TActionOutput> => {
   const credentials = mockCredentials.user();
   const defaultContext = {
     logger: loggerToWinstonLogger(mockServices.logger.mock()),
