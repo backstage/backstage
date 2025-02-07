@@ -71,6 +71,7 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
+          - Template Extensions: 'features/software-templates/template-extensions.md'
           - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
           - Dry Run Testing: 'features/software-templates/dry-run-testing.md'
       - Backstage Search:
