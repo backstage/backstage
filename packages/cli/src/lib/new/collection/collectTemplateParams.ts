@@ -18,9 +18,8 @@ import inquirer from 'inquirer';
 import { getCodeownersFilePath } from '../../codeowners';
 import { paths } from '../../paths';
 import { NewConfig } from '../types';
-import { buildCustomPrompt, getPromptsForRole, ownerPrompt } from './prompts';
+import { customPrompt, getPromptsForRole, ownerPrompt } from './prompts';
 import { NewTemplate } from '../types';
-import { Options } from '../execution/utils';
 
 type CollectTemplateParamsOptions = {
   config: NewConfig;
@@ -30,7 +29,7 @@ type CollectTemplateParamsOptions = {
 
 export async function collectTemplateParams(
   options: CollectTemplateParamsOptions,
-): Promise<Options> {
+): Promise<Record<string, string | number | boolean>> {
   const { config, template, prefilledParams } = options;
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
@@ -41,13 +40,13 @@ export async function collectTemplateParams(
     prompts.push(ownerPrompt());
   }
   if (template.prompts) {
-    prompts.push(...template.prompts.map(buildCustomPrompt));
+    prompts.push(...template.prompts.map(customPrompt));
   }
 
   const needsAnswer = [];
   const prefilledAnswers = {} as Record<string, string | number | boolean>;
   for (const prompt of prompts) {
-    if (prefilledParams[prompt.name] !== undefined) {
+    if (prompt.name && prefilledParams[prompt.name] !== undefined) {
       prefilledAnswers[prompt.name] = prefilledParams[prompt.name];
     } else {
       needsAnswer.push(prompt);
