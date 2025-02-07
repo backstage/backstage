@@ -13,49 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import inquirer from 'inquirer';
+
 import { dirname } from 'path';
 import { parse } from 'yaml';
 import fs from 'fs-extra';
 
 import { paths } from '../paths';
 import { Template, TemplateLocation } from './types';
-
-import { defaultTemplates } from './defaultTemplates';
-
-export async function templateSelector(
-  templates: TemplateLocation[],
-  selected?: string,
-): Promise<TemplateLocation> {
-  if (selected) {
-    let selectedId = selected;
-    if (templates === defaultTemplates && selectedId === 'plugin') {
-      console.warn(
-        `DEPRECATION WARNING: The 'plugin' template is deprecated, use 'frontend-plugin' instead`,
-      );
-      selectedId = 'frontend-plugin';
-    }
-    const template = templates.find(t => t.id === selectedId);
-    if (!template) {
-      throw new Error(`Template '${selected}' not found`);
-    }
-    return template;
-  }
-  const answer = await inquirer.prompt<{ name: TemplateLocation }>([
-    {
-      type: 'list',
-      name: 'name',
-      message: 'What do you want to create?',
-      choices: templates.map(template => {
-        return {
-          name: template.id,
-          value: template,
-        };
-      }),
-    },
-  ]);
-  return answer.name;
-}
 
 export function verifyTemplate({ id, target }: TemplateLocation): Template {
   if (target.startsWith('http')) {
