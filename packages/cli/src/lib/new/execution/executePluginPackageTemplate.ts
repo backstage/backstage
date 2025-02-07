@@ -25,11 +25,11 @@ import {
   relative as relativePath,
 } from 'path';
 
-import { paths } from '../paths';
-import { Task } from '../tasks';
-import { Lockfile } from '../versioning';
-import { createPackageVersionProvider } from '../version';
-import { CreateContext } from './types';
+import { paths } from '../../paths';
+import { Task } from '../../tasks';
+import { Lockfile } from '../../versioning';
+import { createPackageVersionProvider } from '../../version';
+import { CreateContext } from '../types';
 
 export async function executePluginPackageTemplate(
   ctx: CreateContext,

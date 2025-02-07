@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Template } from './types';
+import { Template } from '../types';
 
 export interface Options extends Record<string, string | boolean> {
   id: string;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { resolvePackageName, createDirName, Options } from './utils';
-import { Template } from './types';
+import { Template } from '../types';
 
 describe('resolvePackageName', () => {
   it('should generate correct name without scope', () => {

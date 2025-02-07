@@ -19,7 +19,7 @@ import { paths } from '../../paths';
 import { NewConfig } from '../config/types';
 import { promptOptions } from './prompts';
 import { Template } from '../types';
-import { Options } from '../utils';
+import { Options } from '../execution/utils';
 
 type CollectTemplateParamsOptions = {
   config: NewConfig;
