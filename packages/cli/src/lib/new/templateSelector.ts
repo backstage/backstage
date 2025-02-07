@@ -50,7 +50,14 @@ export async function templateSelector(
   selected?: string,
 ): Promise<TemplateLocation> {
   if (selected) {
-    const template = templates.find(t => t.id === selected);
+    let selectedId = selected;
+    if (templates === defaultTemplates && selectedId === 'plugin') {
+      console.warn(
+        `DEPRECATION WARNING: The 'plugin' template is deprecated, use 'frontend-plugin' instead`,
+      );
+      selectedId = 'frontend-plugin';
+    }
+    const template = templates.find(t => t.id === selectedId);
     if (!template) {
       throw new Error(`Template '${selected}' not found`);
     }
