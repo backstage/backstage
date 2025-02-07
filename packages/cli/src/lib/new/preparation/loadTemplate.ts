@@ -24,15 +24,14 @@ import { NewTemplatePointer } from '../types';
 import { NewTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
 import { fromZodError } from 'zod-validation-error';
+import { PackageRoles } from '@backstage/cli-node';
 
 const templateDefinitionSchema = z
   .object({
     description: z.string().optional(),
     template: z.string(),
     targetPath: z.string(),
-    plugin: z.boolean().optional(),
-    backendModulePrefix: z.boolean().optional(),
-    suffix: z.string().optional(),
+    role: z.string(),
     prompts: z
       .array(
         z.union([
@@ -75,11 +74,20 @@ export async function loadTemplate({
     );
   }
 
-  const { template, ...templateData } = parsed.data;
-
+  const { template, role: rawRole, ...templateData } = parsed.data;
   const templatePath = resolvePath(dirname(target), template);
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(`Failed to load template contents from '${templatePath}'`);
+
+  try {
+    const { role } = PackageRoles.getRoleInfo(rawRole);
+
+    if (!fs.existsSync(templatePath)) {
+      throw new Error('Template directory does not exist');
+    }
+    return { id, templatePath, role, ...templateData };
+  } catch (error) {
+    throw new ForwardedError(
+      `Failed to load template contents from '${templatePath}'`,
+      error,
+    );
   }
-  return { id, templatePath, ...templateData };
 }
