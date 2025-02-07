@@ -27,7 +27,7 @@ import { displayPropDefs } from '../../props/display.props';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { as = 'div', children } = props;
+  const { children } = props;
 
   const propDefs = {
     ...spacingPropDefs,
@@ -39,7 +39,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   };
   const { className, style } = extractProps(props, propDefs);
 
-  return createElement(as, {
+  return createElement(props.as || 'div', {
     ref,
     className: clsx('canon-Box', className),
     style,
