@@ -27,19 +27,19 @@ import { createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executePluginPackageTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
-import { PortableTemplateConfig, PortableTemplateParams } from '../types';
+import { PortableTemplateConfig, PortableTemplateInput } from '../types';
 import { PortableTemplate } from '../types';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
   template: PortableTemplate;
-  params: PortableTemplateParams;
+  input: PortableTemplateInput;
 };
 
 export async function executePortableTemplate(
   options: ExecuteNewTemplateOptions,
 ) {
-  const { template, params } = options;
+  const { config, template, input } = options;
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 
