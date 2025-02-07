@@ -41,7 +41,6 @@ import {
 import { runAdditionalActions } from '../../lib/new/additionalActions';
 import { executePluginPackageTemplate } from '../../lib/new/executeTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
-import { OptionValues } from 'commander';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -60,18 +59,33 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
   return options;
 }
 
-export default async (opts: OptionValues) => {
+type ArgOptions = {
+  option: string[];
+  select?: string;
+  private?: boolean;
+  npmRegistry?: string;
+  scope?: string;
+  license?: string;
+  baseVersion?: string;
+};
+
+export default async ({
+  option: argOptions,
+  select: preselectedTemplateId,
+  ...argGlobals
+}: ArgOptions) => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
   const { templates, globals } = readCliConfig(cliConfig);
   const template = verifyTemplate(
-    await templateSelector(templates, opts.select),
+    await templateSelector(templates, preselectedTemplateId),
   );
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
-  const legacyOpts = parseOptions(opts.option);
+  const legacyOpts = parseOptions(argOptions);
+
   const prefilledAnswers = Object.fromEntries(
     (template.prompts ?? []).flatMap(prompt => {
       const id = typeof prompt === 'string' ? prompt : prompt.id;
@@ -92,7 +106,7 @@ export default async (opts: OptionValues) => {
     codeOwnersFilePath,
   });
   const answers = { ...prefilledAnswers, ...promptAnswers };
-  const options = populateOptions(answers, template, opts);
+  const options = populateOptions({ ...answers, ...argGlobals }, template);
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 
