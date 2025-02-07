@@ -7,13 +7,11 @@
     "url": "https://github.com/backstage/backstage"
   },
   "backstage": {
-    "cli": {
-      "defaults": true,
+    "new": {
       "globals": {
         "scope": "backstage",
         "private": false
-      },
-      "templates": []
+      }
     }
   },
   "workspaces": {

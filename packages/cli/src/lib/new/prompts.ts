@@ -95,7 +95,7 @@ export async function promptOptions({
   codeOwnersFilePath,
 }: {
   prompts: ConfigurablePrompt[];
-  globals: Record<string, string>;
+  globals: { [name in string]?: string | boolean | number };
   codeOwnersFilePath: string | undefined;
 }): Promise<Record<string, string>> {
   const answers = await inquirer.prompt(

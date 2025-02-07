@@ -19,31 +19,9 @@ import { parse } from 'yaml';
 import fs from 'fs-extra';
 
 import { paths } from '../paths';
-import { Template, TemplateLocation, CliConfig } from './types';
+import { Template, TemplateLocation } from './types';
 
-import defaultTemplates from '../../../templates/all-default-templates';
-
-export function readCliConfig(cliConfig: CliConfig) {
-  let templates: TemplateLocation[] = [];
-
-  if (!cliConfig || cliConfig?.defaults) {
-    templates = defaultTemplates;
-  }
-
-  const cliTemplates = cliConfig?.templates;
-  if (cliTemplates?.length) {
-    cliTemplates.forEach((template: TemplateLocation) => {
-      templates.push({
-        id: template.id,
-        target: template.target,
-      });
-    });
-  }
-  return {
-    templates,
-    globals: { ...cliConfig?.globals },
-  };
-}
+import { defaultTemplates } from './defaultTemplates';
 
 export async function templateSelector(
   templates: TemplateLocation[],
