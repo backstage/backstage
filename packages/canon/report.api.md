@@ -670,14 +670,14 @@ export const marginPropDefs: (spacingValues: string[]) => {
     type: 'enum | string';
     values: string[];
     className: string;
-    customProperties: ('--ml' | '--mr')[];
+    customProperties: '--mx'[];
     responsive: true;
   };
   my: {
     type: 'enum | string';
     values: string[];
     className: string;
-    customProperties: ('--mt' | '--mb')[];
+    customProperties: '--my'[];
     responsive: true;
   };
   mt: {
@@ -732,14 +732,14 @@ export const paddingPropDefs: (spacingValues: string[]) => {
   px: {
     type: 'enum | string';
     className: string;
-    customProperties: ('--pl' | '--pr')[];
+    customProperties: '--px'[];
     values: string[];
     responsive: true;
   };
   py: {
     type: 'enum | string';
     className: string;
-    customProperties: ('--pt' | '--pb')[];
+    customProperties: '--py'[];
     values: string[];
     responsive: true;
   };
