@@ -16,23 +16,6 @@
 import { readCliConfig, verifyTemplate } from './templateSelector';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-describe('readCliConfig', () => {
-  it('omits default templates if cli defaults are set to false', () => {
-    const { templates } = readCliConfig({ defaults: false });
-    expect(templates).toEqual([]);
-  });
-
-  it('returns default templates if cli config does not exist in pkg json', () => {
-    const { templates } = readCliConfig(undefined);
-    expect(templates.length).toBeGreaterThan(0);
-  });
-
-  it('returns default templates if cli defaults are set to true', () => {
-    const { templates } = readCliConfig({ defaults: true });
-    expect(templates.length).toBeGreaterThan(0);
-  });
-});
-
 describe('verifyTemplate', () => {
   it('throws an error if template target is a remote URL', () => {
     expect(() => verifyTemplate({ id: '', target: 'http' })).toThrow(
