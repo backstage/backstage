@@ -17,6 +17,7 @@
 import { z } from 'zod';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
+import { resolve as resolvePath } from 'path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { paths } from '../../paths';
@@ -90,12 +91,15 @@ export class NewTemplateLoader {
     if (target.match(/https?:\/\//)) {
       throw new Error('Remote templates are not supported yet');
     }
-    if (!fs.existsSync(paths.resolveTargetRoot(target))) {
-      throw new Error(`Your CLI template does not exist: ${target}`);
-    }
-    const rawTemplate = parseYaml(
-      fs.readFileSync(paths.resolveTargetRoot(target), 'utf-8'),
-    );
+    const templateContent = await fs
+      .readFile(paths.resolveTargetRoot(target), 'utf-8')
+      .catch(error => {
+        throw new ForwardedError(
+          `Failed to load template definition from '${target}'`,
+          error,
+        );
+      });
+    const rawTemplate = parseYaml(templateContent);
 
     const parsed = templateDefinitionSchema.safeParse(rawTemplate);
     if (!parsed.success) {
@@ -105,17 +109,14 @@ export class NewTemplateLoader {
       );
     }
 
-    const template = parsed.data;
+    const { template, ...templateData } = parsed.data;
 
-    const templatePath = paths.resolveTargetRoot(
-      dirname(target),
-      template.template,
-    );
+    const templatePath = resolvePath(dirname(target), template);
     if (!fs.existsSync(templatePath)) {
       throw new Error(
-        `Your CLI template skeleton does not exist: ${templatePath}`,
+        `Failed to load template contents from '${templatePath}'`,
       );
     }
-    return { id, templatePath, ...template };
+    return { id, templatePath, ...templateData };
   }
 }
