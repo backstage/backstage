@@ -47,14 +47,13 @@ export type ConfigurablePrompt =
       id: string;
       prompt: string;
       validate?: string;
-      default?: string | boolean;
+      default?: string | boolean | number;
     }
   | string;
 
 export interface Template {
   id: string;
   description?: string;
-  template: string;
   templatePath: string;
   targetPath: string;
   plugin?: boolean;

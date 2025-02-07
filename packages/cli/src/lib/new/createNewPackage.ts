@@ -23,7 +23,6 @@ import { paths } from '../paths';
 import { Task } from '../tasks';
 import { addCodeownersEntry, getCodeownersFilePath } from '../codeowners';
 
-import { verifyTemplate } from './templateSelector';
 import { promptOptions } from './prompts';
 import { populateOptions, createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
@@ -47,12 +46,11 @@ export type CreateNewPackageOptions = {
 export async function createNewPackage(options: CreateNewPackageOptions) {
   const newConfig = await loadNewConfig();
 
-  const template = verifyTemplate(
-    await NewTemplateLoader.selectTemplateInteractively(
-      newConfig,
-      options.preselectedTemplateId,
-    ),
+  const selectedTemplate = await NewTemplateLoader.selectTemplateInteractively(
+    newConfig,
+    options.preselectedTemplateId,
   );
+  const template = await NewTemplateLoader.loadTemplate(selectedTemplate);
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
