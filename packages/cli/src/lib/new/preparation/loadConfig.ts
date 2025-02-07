@@ -47,7 +47,13 @@ const pkgJsonWithNewConfigSchema = z.object({
     .optional(),
 });
 
-export async function loadConfig(): Promise<NewConfig> {
+type LoadConfigOptions = {
+  globalOverrides: Record<string, string | number | boolean>;
+};
+
+export async function loadConfig(
+  options: LoadConfigOptions,
+): Promise<NewConfig> {
   const pkgPath = paths.resolveTargetRoot('package.json');
   const pkgJson = await fs.readJson(pkgPath);
 
@@ -64,6 +70,6 @@ export async function loadConfig(): Promise<NewConfig> {
   return {
     isUsingDefaultTemplates: !newConfig?.templates,
     templatePointers: newConfig?.templates ?? defaultTemplates,
-    globals: newConfig?.globals ?? {},
+    globals: { ...newConfig?.globals, ...options.globalOverrides },
   };
 }

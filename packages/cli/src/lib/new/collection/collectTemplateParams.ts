@@ -24,7 +24,6 @@ import { Options } from '../execution/utils';
 type CollectTemplateParamsOptions = {
   config: NewConfig;
   template: NewTemplate;
-  globals: Record<string, string | number | boolean>;
   prefilledParams: Record<string, string | number | boolean>;
 };
 
@@ -41,7 +40,7 @@ const defaultParams = {
 export async function collectTemplateParams(
   options: CollectTemplateParamsOptions,
 ): Promise<Options> {
-  const { config, template, globals, prefilledParams } = options;
+  const { config, template, prefilledParams } = options;
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
@@ -64,13 +63,12 @@ export async function collectTemplateParams(
             typeof prompt === 'string' ? prompt : prompt.id,
           ),
       ) ?? [],
-    globals: config.globals,
     codeOwnersFilePath,
   });
 
   return {
     ...defaultParams,
-    ...globals,
+    ...config.globals,
     ...prefilledAnswers,
     ...promptAnswers,
     targetPath: template.targetPath,

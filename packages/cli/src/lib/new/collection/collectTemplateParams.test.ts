@@ -30,7 +30,6 @@ describe('collectTemplateParams', () => {
       templatePath: '/test',
       targetPath: '/example',
     },
-    globals: {},
     prefilledParams: {},
   };
 
@@ -49,7 +48,10 @@ describe('collectTemplateParams', () => {
 
   it('should include all non-standard global and prompt values', async () => {
     await expect(
-      collectTemplateParams({ ...baseOptions, globals: { foo: 'bar' } }),
+      collectTemplateParams({
+        ...baseOptions,
+        config: { ...baseOptions.config, globals: { foo: 'bar' } },
+      }),
     ).resolves.toEqual({
       id: '',
       private: true,

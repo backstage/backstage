@@ -95,11 +95,9 @@ export function ownerPrompt(
 
 export async function promptOptions({
   prompts,
-  globals,
   codeOwnersFilePath,
 }: {
   prompts: NewTemplatePrompt[];
-  globals: { [name in string]?: string | boolean | number };
   codeOwnersFilePath: string | undefined;
 }): Promise<Record<string, string>> {
   const answers = await inquirer.prompt(
@@ -124,10 +122,6 @@ export async function promptOptions({
         type: 'input',
         name: prompt.id,
         message: prompt.prompt,
-        default:
-          globals[prompt.id] !== undefined
-            ? globals[prompt.id]
-            : prompt.default,
         validate: (value: string) => {
           if (!value) {
             return `Please provide a value for ${prompt.id}`;
@@ -152,5 +146,5 @@ export async function promptOptions({
       };
     }),
   );
-  return { ...globals, ...answers };
+  return { ...answers };
 }
