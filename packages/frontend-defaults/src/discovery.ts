@@ -81,7 +81,12 @@ export function getAvailableFeatures(config: Config): FrontendFeature[] {
   );
 }
 
-function isBackstageFeature(obj: unknown): obj is FrontendFeature {
+/**
+ * Checks whether a given value is a valid backstage frontend feature.
+ *
+ * @public
+ */
+export function isBackstageFeature(obj: unknown): obj is FrontendFeature {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||

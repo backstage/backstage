@@ -15,15 +15,9 @@
  */
 
 /**
- * APIs for creating Backstage apps with a default setup.
+ * Core API used by Backstage frontend apps.
  *
  * @packageDocumentation
  */
 
-export {
-  createApp,
-  type CreateAppOptions,
-  type CreateAppFeatureLoader,
-} from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
-export { isBackstageFeature } from './discovery';
+export * from './loader';

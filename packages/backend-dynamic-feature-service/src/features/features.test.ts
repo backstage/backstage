@@ -389,15 +389,15 @@ Require stack:
     });
 
     const list = await fetch(
-      `http://localhost:${server.port()}/api/test/frontend-plugins`,
+      `http://localhost:${server.port()}/api/core.dynamicplugins.frontendRemotes/manifests`,
     );
     expect(list.ok).toBe(true);
     expect(await list.json()).toEqual({
-      'plugin-test-dynamic': `http://localhost:${server.port()}/api/test/frontend-plugins/plugin-test-dynamic/mf-manifest.json`,
+      'plugin-test-dynamic': `http://localhost:${server.port()}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-test-dynamic/mf-manifest.json`,
     });
 
     const manifest = await fetch(
-      `http://localhost:${server.port()}/api/test/frontend-plugins/plugin-test-dynamic/mf-manifest.json`,
+      `http://localhost:${server.port()}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-test-dynamic/mf-manifest.json`,
     );
     expect(manifest.ok).toBe(true);
     expect(await manifest.json()).toMatchObject({

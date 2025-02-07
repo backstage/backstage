@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * APIs for creating Backstage apps with a default setup.
- *
- * @packageDocumentation
- */
-
-export {
-  createApp,
-  type CreateAppOptions,
-  type CreateAppFeatureLoader,
-} from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
-export { isBackstageFeature } from './discovery';
+export const pluginId = 'core.dynamicplugins.frontendRemotes';
