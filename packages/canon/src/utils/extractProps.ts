@@ -75,8 +75,6 @@ export function extractProps(
     return acc;
   }, {} as { [key: string]: any });
 
-  console.log(className);
-
   const newClassNames = className
     .filter(name => name && name.trim() !== '')
     .join(' ');
