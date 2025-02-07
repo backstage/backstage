@@ -50,6 +50,8 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogGraphPageClassKey =
@@ -188,11 +190,12 @@ export const CatalogGraphPage = (
     },
     [catalogEntityRoute, navigate, setRootEntityNames, analytics],
   );
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   return (
     <Page themeId="home">
       <Header
-        title="Catalog Graph"
+        title={t('catalogGraphPage.title')}
         subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
@@ -203,14 +206,11 @@ export const CatalogGraphPage = (
               selected={showFilters}
               onChange={() => toggleShowFilters()}
             >
-              <FilterListIcon /> Filters
+              <FilterListIcon /> {t('catalogGraphPage.filterListButtonLabel')}
             </ToggleButton>
           }
         >
-          <SupportButton>
-            Start tracking your component in by adding it to the software
-            catalog.
-          </SupportButton>
+          <SupportButton title={t('catalogGraphPage.supportButtonContent')} />
         </ContentHeader>
         <Grid container alignItems="stretch" className={classes.container}>
           {showFilters && (
@@ -247,9 +247,8 @@ export const CatalogGraphPage = (
                 display="block"
                 className={classes.legend}
               >
-                <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move
-                around the diagram. Click to change active node, shift click to
-                navigate to entity.
+                <ZoomOutMap className="icon" />{' '}
+                {t('catalogGraphPage.graph.zoomLegendContent')}
               </Typography>
               <EntityRelationsGraph
                 {...props}

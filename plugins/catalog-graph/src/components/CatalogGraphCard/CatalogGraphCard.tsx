@@ -36,8 +36,10 @@ import {
   Direction,
   EntityNode,
   EntityRelationsGraph,
+  EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
-import { EntityRelationsGraphProps } from '../EntityRelationsGraph';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';
@@ -92,6 +94,7 @@ export const CatalogGraphCard = (
   const navigate = useNavigate();
   const classes = useStyles({ height });
   const analytics = useAnalytics();
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   const defaultOnNodeClick = useCallback(
     (node: EntityNode, _: MouseEvent<unknown>) => {
@@ -133,7 +136,7 @@ export const CatalogGraphCard = (
       variant={variant}
       noPadding
       deepLink={{
-        title: 'View graph',
+        title: t('catalogGraphCard.viewGraphTitle'),
         link: catalogGraphUrl,
       }}
     >
