@@ -23,13 +23,14 @@ import { paths } from '../paths';
 import { Task } from '../tasks';
 import { addCodeownersEntry, getCodeownersFilePath } from '../codeowners';
 
-import { templateSelector, verifyTemplate } from './templateSelector';
+import { verifyTemplate } from './templateSelector';
 import { promptOptions } from './prompts';
 import { populateOptions, createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executeTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { loadNewConfig } from './config/loadNewConfig';
+import { NewTemplateLoader } from './loader/NewTemplateLoader';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
@@ -47,8 +48,8 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
   const newConfig = await loadNewConfig();
 
   const template = verifyTemplate(
-    await templateSelector(
-      newConfig.templatePointers,
+    await NewTemplateLoader.selectTemplateInteractively(
+      newConfig,
       options.preselectedTemplateId,
     ),
   );
