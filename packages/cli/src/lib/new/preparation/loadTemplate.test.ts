@@ -108,9 +108,9 @@ describe('loadTemplate', () => {
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
     ).rejects.toThrow(
-      `Failed to load template contents from '${mockDir.resolve(
-        'path/to/template1',
-      )}'; caused by Error: Unknown package role 'invalid-role'`,
+      `Invalid template definition at '${mockDir.resolve(
+        'path/to/template1.yaml',
+      )}'; caused by Validation error: Invalid enum value`,
     );
   });
 
@@ -133,7 +133,7 @@ describe('loadTemplate', () => {
     ).rejects.toThrow(
       `Failed to load template contents from '${mockDir.resolve(
         'path/to/template1',
-      )}'; caused by Error: Template directory does not exist`,
+      )}'`,
     );
   });
 });

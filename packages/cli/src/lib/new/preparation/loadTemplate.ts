@@ -20,18 +20,17 @@ import { resolve as resolvePath } from 'path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { paths } from '../../paths';
-import { NewTemplatePointer } from '../types';
+import { NewTemplatePointer, TEMPLATE_ROLES } from '../types';
 import { NewTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
 import { fromZodError } from 'zod-validation-error';
-import { PackageRoles } from '@backstage/cli-node';
 
 const templateDefinitionSchema = z
   .object({
     description: z.string().optional(),
     template: z.string(),
     targetPath: z.string(),
-    role: z.string(),
+    role: z.enum(TEMPLATE_ROLES),
     prompts: z
       .array(
         z.union([
@@ -74,20 +73,11 @@ export async function loadTemplate({
     );
   }
 
-  const { template, role: rawRole, ...templateData } = parsed.data;
+  const { template, ...templateData } = parsed.data;
+
   const templatePath = resolvePath(dirname(target), template);
-
-  try {
-    const { role } = PackageRoles.getRoleInfo(rawRole);
-
-    if (!fs.existsSync(templatePath)) {
-      throw new Error('Template directory does not exist');
-    }
-    return { id, templatePath, role, ...templateData };
-  } catch (error) {
-    throw new ForwardedError(
-      `Failed to load template contents from '${templatePath}'`,
-      error,
-    );
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Failed to load template contents from '${templatePath}'`);
   }
+  return { id, templatePath, ...templateData };
 }
