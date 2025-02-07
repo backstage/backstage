@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,59 @@
  * limitations under the License.
  */
 
-import { DistinctQuestion } from 'inquirer';
-import { PortableTemplatePrompt, PortableTemplateRole } from '../types';
-import { parseOwnerIds } from '../../codeowners';
+import inquirer, { DistinctQuestion } from 'inquirer';
+import { getCodeownersFilePath, parseOwnerIds } from '../../codeowners';
+import { paths } from '../../paths';
+import {
+  PortableTemplateConfig,
+  PortableTemplatePrompt,
+  PortableTemplateRole,
+} from '../types';
+import { PortableTemplate } from '../types';
+
+type CollectTemplateParamsOptions = {
+  config: PortableTemplateConfig;
+  template: PortableTemplate;
+  prefilledParams: Record<string, string | number | boolean>;
+};
+
+export async function collectPortableTemplateParams(
+  options: CollectTemplateParamsOptions,
+): Promise<Record<string, string | number | boolean>> {
+  const { config, template, prefilledParams } = options;
+
+  const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
+
+  const prompts = getPromptsForRole(template.role);
+
+  if (codeOwnersFilePath) {
+    prompts.push(ownerPrompt());
+  }
+  if (template.prompts) {
+    prompts.push(...template.prompts.map(customPrompt));
+  }
+
+  const needsAnswer = [];
+  const prefilledAnswers = {} as Record<string, string | number | boolean>;
+  for (const prompt of prompts) {
+    if (prompt.name && prefilledParams[prompt.name] !== undefined) {
+      prefilledAnswers[prompt.name] = prefilledParams[prompt.name];
+    } else {
+      needsAnswer.push(prompt);
+    }
+  }
+
+  const promptAnswers = await inquirer.prompt<
+    Record<string, string | number | boolean>
+  >(needsAnswer);
+
+  return {
+    ...config.globals,
+    ...prefilledAnswers,
+    ...promptAnswers,
+    targetPath: template.targetPath,
+  };
+}
 
 export function namePrompt(): DistinctQuestion {
   return {
