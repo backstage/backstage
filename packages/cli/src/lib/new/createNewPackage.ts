@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { collectPortableTemplateParams } from './preparation/collectPortableTemplateParams';
-import { loadPortableTemplateConfig } from './preparation/loadPortableTemplateConfig';
-import { executePortableTemplate } from './execution/executePortableTemplate';
-import { selectTemplateInteractively } from './preparation/selectTemplateInteractively';
-import { loadPortableTemplate } from './preparation/loadPortableTemplate';
+import {
+  collectPortableTemplateParams,
+  loadPortableTemplate,
+  loadPortableTemplateConfig,
+  selectTemplateInteractively,
+} from './preparation';
+import { executePortableTemplate } from './execution';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
