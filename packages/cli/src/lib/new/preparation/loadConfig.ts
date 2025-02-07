@@ -48,13 +48,15 @@ const pkgJsonWithNewConfigSchema = z.object({
 });
 
 type LoadConfigOptions = {
-  globalOverrides: Record<string, string | number | boolean>;
+  packagePath?: string;
+  globalOverrides?: Record<string, string | number | boolean>;
 };
 
 export async function loadConfig(
-  options: LoadConfigOptions,
+  options: LoadConfigOptions = {},
 ): Promise<NewConfig> {
-  const pkgPath = paths.resolveTargetRoot('package.json');
+  const pkgPath =
+    options.packagePath ?? paths.resolveTargetRoot('package.json');
   const pkgJson = await fs.readJson(pkgPath);
 
   const parsed = pkgJsonWithNewConfigSchema.safeParse(pkgJson);
