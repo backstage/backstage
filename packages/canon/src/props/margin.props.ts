@@ -29,14 +29,14 @@ const marginPropDefs = (spacingValues: string[]) =>
       type: 'enum | string',
       values: spacingValues,
       className: 'cu-mx',
-      customProperties: ['--ml', '--mr'],
+      customProperties: ['--mx'],
       responsive: true,
     },
     my: {
       type: 'enum | string',
       values: spacingValues,
       className: 'cu-my',
-      customProperties: ['--mt', '--mb'],
+      customProperties: ['--my'],
       responsive: true,
     },
     mt: {
