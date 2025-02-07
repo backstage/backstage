@@ -421,31 +421,34 @@ describe('SearchContext', () => {
   });
 
   describe('analytics', () => {
-    it('captures analytics events if enabled in app', async () => {
-      const analyticsApiMock = mockApis.analytics();
+    const analyticsApiMock = mockApis.analytics();
+    const Wrapper = ({ children }: React.PropsWithChildren) => (
+      <TestApiProvider
+        apis={[
+          [configApiRef, mockApis.config()],
+          [searchApiRef, searchApiMock],
+          [analyticsApiRef, analyticsApiMock],
+        ]}
+      >
+        <SearchContextProvider initialState={initialState}>
+          {children}
+        </SearchContextProvider>
+      </TestApiProvider>
+    );
 
-      searchApiMock.query.mockResolvedValue({
-        results: [],
-        numberOfResults: 3,
-      });
+    it('captures analytics events if enabled in app', async () => {
+      searchApiMock.query
+        .mockResolvedValueOnce({
+          results: [],
+          numberOfResults: 10,
+        })
+        .mockResolvedValueOnce({
+          results: [],
+          numberOfResults: 3,
+        });
 
       const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => {
-          const configApiMock = mockApis.config();
-          return (
-            <TestApiProvider
-              apis={[
-                [configApiRef, configApiMock],
-                [searchApiRef, searchApiMock],
-                [analyticsApiRef, analyticsApiMock],
-              ]}
-            >
-              <SearchContextProvider initialState={initialState}>
-                {children}
-              </SearchContextProvider>
-            </TestApiProvider>
-          );
-        },
+        wrapper: Wrapper,
       });
 
       await waitFor(() => {
@@ -476,59 +479,62 @@ describe('SearchContext', () => {
         });
       });
     });
-  });
 
-  it('captures analytics events even if number of results does not exist', async () => {
-    const analyticsApiMock = mockApis.analytics();
-
-    searchApiMock.query.mockResolvedValue({
-      results: [],
-    });
-
-    const { result } = renderHook(() => useSearch(), {
-      wrapper: ({ children }) => {
-        const configApiMock = mockApis.config();
-        return (
-          <TestApiProvider
-            apis={[
-              [configApiRef, configApiMock],
-              [searchApiRef, searchApiMock],
-              [analyticsApiRef, analyticsApiMock],
-            ]}
-          >
-            <SearchContextProvider initialState={initialState}>
-              {children}
-            </SearchContextProvider>
-          </TestApiProvider>
-        );
-      },
-    });
-
-    await waitFor(() => {
-      expect(result.current).toEqual(expect.objectContaining(initialState));
-    });
-
-    const term = 'term';
-
-    await act(async () => {
-      result.current.setTerm(term);
-    });
-
-    await waitFor(() => {
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        term: 'term',
-        types: ['*'],
-        filters: {},
+    it('does not capture analytics events if term is empty', async () => {
+      searchApiMock.query.mockResolvedValue({
+        results: [],
+        numberOfResults: 10,
       });
-      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
-        action: 'search',
-        subject: 'term',
-        value: undefined,
-        context: {
-          extension: 'App',
-          pluginId: 'root',
-          routeRef: 'unknown',
-        },
+
+      renderHook(() => useSearch(), {
+        wrapper: Wrapper,
+      });
+
+      await waitFor(() => {
+        expect(searchApiMock.query).toHaveBeenCalledWith({
+          term: '',
+          types: ['*'],
+          filters: {},
+        });
+        expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
+      });
+    });
+
+    it('captures analytics events even if number of results does not exist', async () => {
+      searchApiMock.query.mockResolvedValue({
+        results: [],
+      });
+
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: Wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
+
+      const term = 'term';
+
+      await act(async () => {
+        result.current.setTerm(term);
+      });
+
+      await waitFor(() => {
+        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+          term: 'term',
+          types: ['*'],
+          filters: {},
+        });
+        expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+          action: 'search',
+          subject: 'term',
+          value: undefined,
+          context: {
+            extension: 'App',
+            pluginId: 'root',
+            routeRef: 'unknown',
+          },
+        });
       });
     });
   });
