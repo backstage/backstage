@@ -55,6 +55,13 @@ const Card = () => {
 
 export const Default: Story = {
   args: {
+    children: 'Hello World',
+    mb: '4',
+  },
+};
+
+export const Preview: Story = {
+  args: {
     children: <Card />,
     display: 'inline',
   },
@@ -192,6 +199,13 @@ export const Margin: Story = {
         <Box style={styleInsideBox}>
           <Box ml="3" {...args}>
             Margin Left
+          </Box>
+        </Box>
+      </Flex>
+      <Flex align="center" gap="4">
+        <Box style={styleInsideBox}>
+          <Box p="40px" {...args}>
+            Custom Margin
           </Box>
         </Box>
       </Flex>
