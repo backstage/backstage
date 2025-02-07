@@ -1,7 +1,7 @@
 'use client';
 
 import { CodeBlockProps } from '.';
-import { Text } from '@backstage/canon';
+import { Text } from '../../../../packages/canon';
 import styles from './styles.module.css';
 
 export const CodeBlockClient = ({

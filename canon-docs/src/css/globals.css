@@ -63,9 +63,7 @@ iframe {
 .ͼ2 .cm-gutters {
   background-color: var(--bg);
   border-right: 1px solid var(--border);
-  transition:
-    background-color 0.2s ease-in-out,
-    border-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
 .ͼ1 .cm-lineNumbers .cm-gutterElement {

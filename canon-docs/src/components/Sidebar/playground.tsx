@@ -1,7 +1,7 @@
 'use client';
 
 import { components } from '@/utils/data';
-import { Box, Checkbox, Text } from '@backstage/canon';
+import { Checkbox } from '../../../../packages/canon';
 import { motion } from 'motion/react';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
@@ -52,28 +52,20 @@ export const Playground = () => {
       transition={{ duration: 0.2 }}
       style={{ position: 'absolute' }}
     >
-      <Box mt="lg" mb="2xs">
-        <Text variant="body" weight="bold">
-          Components
-        </Text>
-      </Box>
+      <div className={styles.sectionTitle}>Components</div>
       {components.map(({ slug, title }) => (
         <div className={styles.line} key={slug}>
-          <Text variant="body">{title}</Text>
+          <div className={styles.lineTitle}>{title}</div>
           <Checkbox
             checked={selectedComponents.includes(slug)}
             onChange={() => handleComponentCheckboxChange(slug)}
           />
         </div>
       ))}
-      <Box mt="lg" mb="2xs">
-        <Text variant="body" weight="bold">
-          Screen sizes
-        </Text>
-      </Box>
+      <div className={styles.sectionTitle}> Screen sizes</div>
       {screenSizes.map(({ slug, title }) => (
         <div className={styles.line} key={slug}>
-          <Text variant="body">{title}</Text>
+          <div className={styles.lineTitle}>{title}</div>
           <Checkbox
             checked={selectedScreenSizes.includes(slug)}
             onChange={() => handleCheckboxChange(slug)}

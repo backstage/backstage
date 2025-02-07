@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Grid } from '@backstage/canon';
+import { Box, Grid } from '../../../packages/canon';
 
 const FakeBox = () => (
   <Box

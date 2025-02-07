@@ -2,7 +2,7 @@
 
 import * as Table from '../Table';
 import { Chip } from '../Chip';
-import { icons } from '@backstage/canon';
+import { icons } from '../../../../packages/canon';
 
 // Define a more specific type for the data object
 type PropData = {

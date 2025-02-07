@@ -48,9 +48,7 @@
   border: 1px solid var(--border);
   padding-inline: 0.25rem;
   transform-origin: var(--transform-origin);
-  transition:
-    transform 150ms,
-    opacity 150ms;
+  transition: transform 150ms, opacity 150ms;
 
   &[data-starting-style],
   &[data-ending-style] {
@@ -66,8 +64,7 @@
 
   @media (prefers-color-scheme: light) {
     outline: 1px solid var(--color-gray-200);
-    box-shadow:
-      0px 10px 15px -3px var(--color-gray-200),
+    box-shadow: 0px 10px 15px -3px var(--color-gray-200),
       0px 4px 6px -4px var(--color-gray-200);
   }
 

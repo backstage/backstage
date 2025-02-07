@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Flex } from '@backstage/canon';
+import { Box, Flex } from '../../../packages/canon';
 
 const fakeBlockList = [
   { width: 45, height: 60 },

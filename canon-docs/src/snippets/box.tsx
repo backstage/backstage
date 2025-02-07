@@ -1,6 +1,6 @@
 'use client';
 
-import { Box } from '@backstage/canon';
+import { Box } from '../../../packages/canon';
 
 export const BoxPreview = () => {
   return (
