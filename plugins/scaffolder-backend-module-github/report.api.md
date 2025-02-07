@@ -12,6 +12,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
+import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -32,7 +33,8 @@ export function createGithubActionsDispatchAction(options: {
       | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -47,7 +49,8 @@ export function createGithubAutolinksAction(options: {
     isAlphanumeric?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -83,7 +86,8 @@ export function createGithubBranchProtectionAction(options: {
     requiredLinearHistory?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -98,7 +102,8 @@ export function createGithubDeployKeyAction(options: {
     privateKeySecretName?: string | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -133,7 +138,8 @@ export function createGithubEnvironmentAction(options: {
     preventSelfReview?: boolean | undefined;
     reviewers?: string[] | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -147,7 +153,8 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -162,7 +169,8 @@ export function createGithubPagesEnableAction(options: {
     sourcePath?: '/' | '/docs' | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -281,7 +289,8 @@ export function createGithubRepoCreateAction(options: {
       | undefined;
     subscribe?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -325,7 +334,8 @@ export function createGithubRepoPushAction(options: {
     requiredLinearHistory?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -344,7 +354,8 @@ export function createGithubWebhookAction(options: {
     insecureSsl?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -444,7 +455,8 @@ export function createPublishGithubAction(options: {
       | undefined;
     subscribe?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -471,7 +483,8 @@ export const createPublishGithubPullRequestAction: (
     forceEmptyGitAuthor?: boolean | undefined;
     createWhenEmpty?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public

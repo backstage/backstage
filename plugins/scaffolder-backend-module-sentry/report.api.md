@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { Schema } from 'jsonschema';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
@@ -19,7 +20,8 @@ export function createSentryCreateProjectAction(options: {
     slug?: string | undefined;
     authToken?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public

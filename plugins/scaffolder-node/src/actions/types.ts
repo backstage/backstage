@@ -35,7 +35,12 @@ export type ActionContext<
   TActionOutput extends JsonObject = JsonObject,
   TInputSchema extends
     | { [key in string]: (zImpl: typeof z) => z.ZodType }
-    | Schema = Schema,
+    | Schema
+    | unknown = unknown,
+  _TOutputSchema extends
+    | { [key in string]: (zImpl: typeof z) => z.ZodType }
+    | Schema
+    | unknown = unknown,
 > = TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType }
   ? {
       logger: LoggerService;
@@ -173,7 +178,12 @@ export type TemplateAction<
   TActionOutput extends JsonObject = JsonObject,
   TInputSchema extends
     | { [key in string]: (zImpl: typeof z) => z.ZodType }
-    | Schema = Schema,
+    | Schema
+    | unknown = unknown,
+  TOutputSchema extends
+    | { [key in string]: (zImpl: typeof z) => z.ZodType }
+    | Schema
+    | unknown = unknown,
 > = {
   id: string;
   description?: string;
@@ -184,6 +194,11 @@ export type TemplateAction<
     output?: Schema;
   };
   handler: (
-    ctx: ActionContext<TActionInput, TActionOutput, TInputSchema>,
+    ctx: ActionContext<
+      TActionInput,
+      TActionOutput,
+      TInputSchema,
+      TOutputSchema
+    >,
   ) => Promise<void>;
 };

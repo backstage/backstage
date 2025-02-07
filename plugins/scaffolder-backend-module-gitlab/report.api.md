@@ -6,8 +6,10 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { z } from 'zod';
 
 // @public
 export const createGitlabGroupEnsureExistsAction: (options: {
@@ -26,7 +28,65 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   },
   {
     groupId?: number | undefined;
-  }
+  },
+  z.ZodObject<
+    z.objectUtil.extendShape<
+      {
+        repoUrl: z.ZodString;
+        token: z.ZodOptional<z.ZodString>;
+      },
+      {
+        path: z.ZodArray<
+          z.ZodUnion<
+            [
+              z.ZodString,
+              z.ZodObject<
+                {
+                  name: z.ZodString;
+                  slug: z.ZodString;
+                },
+                'strip',
+                z.ZodTypeAny,
+                {
+                  name: string;
+                  slug: string;
+                },
+                {
+                  name: string;
+                  slug: string;
+                }
+              >,
+            ]
+          >,
+          'many'
+        >;
+      }
+    >,
+    'strip',
+    z.ZodTypeAny,
+    {
+      path: (
+        | string
+        | {
+            name: string;
+            slug: string;
+          }
+      )[];
+      repoUrl: string;
+      token?: string | undefined;
+    },
+    {
+      path: (
+        | string
+        | {
+            name: string;
+            slug: string;
+          }
+      )[];
+      repoUrl: string;
+      token?: string | undefined;
+    }
+  >
 >;
 
 // @public
@@ -55,7 +115,69 @@ export const createGitlabIssueAction: (options: {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  z.ZodObject<
+    z.objectUtil.extendShape<
+      {
+        repoUrl: z.ZodString;
+        token: z.ZodOptional<z.ZodString>;
+      },
+      {
+        projectId: z.ZodNumber;
+        title: z.ZodString;
+        assignees: z.ZodOptional<z.ZodArray<z.ZodNumber, 'many'>>;
+        confidential: z.ZodOptional<z.ZodBoolean>;
+        description: z.ZodOptional<z.ZodString>;
+        createdAt: z.ZodOptional<z.ZodString>;
+        dueDate: z.ZodOptional<z.ZodString>;
+        discussionToResolve: z.ZodOptional<z.ZodString>;
+        epicId: z.ZodOptional<z.ZodNumber>;
+        labels: z.ZodOptional<z.ZodString>;
+        issueType: z.ZodOptional<z.ZodNativeEnum<typeof IssueType>>;
+        mergeRequestToResolveDiscussionsOf: z.ZodOptional<z.ZodNumber>;
+        milestoneId: z.ZodOptional<z.ZodNumber>;
+        weight: z.ZodOptional<z.ZodEffects<z.ZodNumber, number, number>>;
+      }
+    >,
+    'strip',
+    z.ZodTypeAny,
+    {
+      title: string;
+      repoUrl: string;
+      projectId: number;
+      labels?: string | undefined;
+      description?: string | undefined;
+      weight?: number | undefined;
+      token?: string | undefined;
+      assignees?: number[] | undefined;
+      createdAt?: string | undefined;
+      confidential?: boolean | undefined;
+      milestoneId?: number | undefined;
+      epicId?: number | undefined;
+      dueDate?: string | undefined;
+      discussionToResolve?: string | undefined;
+      issueType?: IssueType | undefined;
+      mergeRequestToResolveDiscussionsOf?: number | undefined;
+    },
+    {
+      title: string;
+      repoUrl: string;
+      projectId: number;
+      labels?: string | undefined;
+      description?: string | undefined;
+      weight?: number | undefined;
+      token?: string | undefined;
+      assignees?: number[] | undefined;
+      createdAt?: string | undefined;
+      confidential?: boolean | undefined;
+      milestoneId?: number | undefined;
+      epicId?: number | undefined;
+      dueDate?: string | undefined;
+      discussionToResolve?: string | undefined;
+      issueType?: IssueType | undefined;
+      mergeRequestToResolveDiscussionsOf?: number | undefined;
+    }
+  >
 >;
 
 // @public
@@ -73,7 +195,38 @@ export const createGitlabProjectAccessTokenAction: (options: {
   },
   {
     access_token: string;
-  }
+  },
+  z.ZodObject<
+    {
+      projectId: z.ZodUnion<[z.ZodNumber, z.ZodString]>;
+      token: z.ZodOptional<z.ZodString>;
+      name: z.ZodOptional<z.ZodString>;
+      repoUrl: z.ZodString;
+      accessLevel: z.ZodOptional<z.ZodNumber>;
+      scopes: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+      expiresAt: z.ZodOptional<z.ZodString>;
+    },
+    'strip',
+    z.ZodTypeAny,
+    {
+      repoUrl: string;
+      projectId: string | number;
+      name?: string | undefined;
+      token?: string | undefined;
+      scopes?: string[] | undefined;
+      expiresAt?: string | undefined;
+      accessLevel?: number | undefined;
+    },
+    {
+      repoUrl: string;
+      projectId: string | number;
+      name?: string | undefined;
+      token?: string | undefined;
+      scopes?: string[] | undefined;
+      expiresAt?: string | undefined;
+      accessLevel?: number | undefined;
+    }
+  >
 >;
 
 // @public
@@ -91,7 +244,39 @@ export const createGitlabProjectDeployTokenAction: (options: {
   {
     user: string;
     deploy_token: string;
-  }
+  },
+  z.ZodObject<
+    z.objectUtil.extendShape<
+      {
+        repoUrl: z.ZodString;
+        token: z.ZodOptional<z.ZodString>;
+      },
+      {
+        projectId: z.ZodUnion<[z.ZodNumber, z.ZodString]>;
+        name: z.ZodString;
+        username: z.ZodOptional<z.ZodString>;
+        scopes: z.ZodArray<z.ZodString, 'many'>;
+      }
+    >,
+    'strip',
+    z.ZodTypeAny,
+    {
+      name: string;
+      scopes: string[];
+      repoUrl: string;
+      projectId: string | number;
+      username?: string | undefined;
+      token?: string | undefined;
+    },
+    {
+      name: string;
+      scopes: string[];
+      repoUrl: string;
+      projectId: string | number;
+      username?: string | undefined;
+      token?: string | undefined;
+    }
+  >
 >;
 
 // @public
@@ -110,7 +295,51 @@ export const createGitlabProjectVariableAction: (options: {
     environmentScope?: string | undefined;
     variableProtected?: boolean | undefined;
   },
-  JsonObject
+  any,
+  z.ZodObject<
+    z.objectUtil.extendShape<
+      {
+        repoUrl: z.ZodString;
+        token: z.ZodOptional<z.ZodString>;
+      },
+      {
+        projectId: z.ZodUnion<[z.ZodNumber, z.ZodString]>;
+        key: z.ZodString;
+        value: z.ZodString;
+        variableType: z.ZodString;
+        variableProtected: z.ZodOptional<z.ZodDefault<z.ZodBoolean>>;
+        masked: z.ZodOptional<z.ZodDefault<z.ZodBoolean>>;
+        raw: z.ZodOptional<z.ZodDefault<z.ZodBoolean>>;
+        environmentScope: z.ZodOptional<z.ZodDefault<z.ZodString>>;
+      }
+    >,
+    'strip',
+    z.ZodTypeAny,
+    {
+      key: string;
+      value: string;
+      repoUrl: string;
+      projectId: string | number;
+      variableType: string;
+      raw?: boolean | undefined;
+      token?: string | undefined;
+      masked?: boolean | undefined;
+      environmentScope?: string | undefined;
+      variableProtected?: boolean | undefined;
+    },
+    {
+      key: string;
+      value: string;
+      repoUrl: string;
+      projectId: string | number;
+      variableType: string;
+      raw?: boolean | undefined;
+      token?: string | undefined;
+      masked?: boolean | undefined;
+      environmentScope?: string | undefined;
+      variableProtected?: boolean | undefined;
+    }
+  >
 >;
 
 // @public
@@ -126,7 +355,8 @@ export const createGitlabRepoPushAction: (options: {
     token?: string | undefined;
     commitAction?: 'update' | 'delete' | 'create' | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -189,7 +419,8 @@ export function createPublishGitlabAction(options: {
         }[]
       | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -212,7 +443,8 @@ export const createPublishGitlabMergeRequestAction: (options: {
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -229,7 +461,39 @@ export const createTriggerGitlabPipelineAction: (options: {
   },
   {
     pipelineUrl: string;
-  }
+  },
+  z.ZodObject<
+    z.objectUtil.extendShape<
+      {
+        repoUrl: z.ZodString;
+        token: z.ZodOptional<z.ZodString>;
+      },
+      {
+        projectId: z.ZodNumber;
+        tokenDescription: z.ZodString;
+        branch: z.ZodString;
+        variables: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+      }
+    >,
+    'strip',
+    z.ZodTypeAny,
+    {
+      branch: string;
+      repoUrl: string;
+      projectId: number;
+      tokenDescription: string;
+      token?: string | undefined;
+      variables?: Record<string, string> | undefined;
+    },
+    {
+      branch: string;
+      repoUrl: string;
+      projectId: number;
+      tokenDescription: string;
+      token?: string | undefined;
+      variables?: Record<string, string> | undefined;
+    }
+  >
 >;
 
 // @public
@@ -265,7 +529,78 @@ export const editGitlabIssueAction: (options: {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  z.ZodObject<
+    z.objectUtil.extendShape<
+      {
+        repoUrl: z.ZodString;
+        token: z.ZodOptional<z.ZodString>;
+      },
+      {
+        projectId: z.ZodNumber;
+        issueIid: z.ZodNumber;
+        addLabels: z.ZodOptional<z.ZodString>;
+        assignees: z.ZodOptional<z.ZodArray<z.ZodNumber, 'many'>>;
+        confidential: z.ZodOptional<z.ZodBoolean>;
+        description: z.ZodOptional<z.ZodString>;
+        discussionLocked: z.ZodOptional<z.ZodBoolean>;
+        dueDate: z.ZodOptional<z.ZodString>;
+        epicId: z.ZodOptional<z.ZodNumber>;
+        issueType: z.ZodOptional<z.ZodNativeEnum<typeof IssueType>>;
+        labels: z.ZodOptional<z.ZodString>;
+        milestoneId: z.ZodOptional<z.ZodNumber>;
+        removeLabels: z.ZodOptional<z.ZodString>;
+        stateEvent: z.ZodOptional<z.ZodNativeEnum<typeof IssueStateEvent>>;
+        title: z.ZodOptional<z.ZodString>;
+        updatedAt: z.ZodOptional<z.ZodString>;
+        weight: z.ZodOptional<z.ZodNumber>;
+      }
+    >,
+    'strip',
+    z.ZodTypeAny,
+    {
+      repoUrl: string;
+      projectId: number;
+      issueIid: number;
+      title?: string | undefined;
+      labels?: string | undefined;
+      description?: string | undefined;
+      weight?: number | undefined;
+      token?: string | undefined;
+      assignees?: number[] | undefined;
+      addLabels?: string | undefined;
+      confidential?: boolean | undefined;
+      milestoneId?: number | undefined;
+      removeLabels?: string | undefined;
+      stateEvent?: IssueStateEvent | undefined;
+      discussionLocked?: boolean | undefined;
+      epicId?: number | undefined;
+      dueDate?: string | undefined;
+      updatedAt?: string | undefined;
+      issueType?: IssueType | undefined;
+    },
+    {
+      repoUrl: string;
+      projectId: number;
+      issueIid: number;
+      title?: string | undefined;
+      labels?: string | undefined;
+      description?: string | undefined;
+      weight?: number | undefined;
+      token?: string | undefined;
+      assignees?: number[] | undefined;
+      addLabels?: string | undefined;
+      confidential?: boolean | undefined;
+      milestoneId?: number | undefined;
+      removeLabels?: string | undefined;
+      stateEvent?: IssueStateEvent | undefined;
+      discussionLocked?: boolean | undefined;
+      epicId?: number | undefined;
+      dueDate?: string | undefined;
+      updatedAt?: string | undefined;
+      issueType?: IssueType | undefined;
+    }
+  >
 >;
 
 // @public

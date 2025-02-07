@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -23,7 +24,8 @@ export const createBitbucketPipelinesRunAction: (options: {
     body?: object | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -40,7 +42,8 @@ export function createPublishBitbucketCloudAction(options: {
     sourcePath?: string | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 
 // @public
@@ -58,6 +61,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  Schema
 >;
 ```
