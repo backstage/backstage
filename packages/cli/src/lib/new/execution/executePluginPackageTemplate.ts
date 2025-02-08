@@ -15,17 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import chalk from 'chalk';
-import {
-  dirname,
-  resolve as resolvePath,
-  relative as relativePath,
-} from 'path';
+import { dirname, resolve as resolvePath } from 'path';
 
 import { paths } from '../../paths';
 import { PortableTemplate, PortableTemplateInput } from '../types';
-import { ForwardedError } from '@backstage/errors';
-import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
+import { ForwardedError, InputError } from '@backstage/errors';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
 import { PortableTemplater } from './PortableTemplater';
 
@@ -35,19 +29,13 @@ export async function executePluginPackageTemplate(
 ): Promise<{ targetDir: string }> {
   const targetDir = paths.resolveTargetRoot(input.packageParams.packagePath);
 
-  const shortPluginDir = relativePath(paths.targetRoot, targetDir);
   if (await fs.pathExists(targetDir)) {
-    throw new Error(
-      `A package with the same plugin ID already exists at ${chalk.cyan(
-        shortPluginDir,
-      )}. Please try again with a different ID.`,
+    throw new InputError(
+      `Package '${input.packageParams.packagePath}' already exists`,
     );
   }
 
-  const tmpDirManager = TemporaryDirectoryManager.create();
-
   try {
-    const tempDir = await tmpDirManager.createDir('backstage-create');
     const isMonoRepo = await getIsMonoRepo();
 
     const templater = await PortableTemplater.create({
@@ -60,34 +48,31 @@ export async function executePluginPackageTemplate(
         continue;
       }
 
-      const destPath = resolvePath(tempDir, file.path);
+      const destPath = resolvePath(targetDir, file.path);
       await fs.ensureDir(dirname(destPath));
 
-      const content =
+      let content =
         file.syntax === 'handlebars'
           ? templater.template(file.content)
           : file.content;
+
+      // Try to format JSON files
+      if (file.path.endsWith('.json')) {
+        try {
+          content = JSON.stringify(JSON.parse(content), null, 2);
+        } catch {
+          /* ignore */
+        }
+      }
 
       await fs.writeFile(destPath, content).catch(error => {
         throw new ForwardedError(`Failed to copy file to ${destPath}`, error);
       });
     }
 
-    // Format package.json if it exists
-    const pkgJsonPath = resolvePath(tempDir, 'package.json');
-    if (await fs.pathExists(pkgJsonPath)) {
-      const pkgJson = await fs.readJson(pkgJsonPath);
-      await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-    }
-
-    await fs.move(tempDir, targetDir).catch(error => {
-      throw new Error(
-        `Failed to move package from ${tempDir} to ${targetDir}, ${error.message}`,
-      );
-    });
-
     return { targetDir };
-  } finally {
-    tmpDirManager.cleanup();
+  } catch (error) {
+    await fs.rm(targetDir, { recursive: true, force: true, maxRetries: 10 });
+    throw error;
   }
 }
