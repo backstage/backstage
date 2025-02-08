@@ -30,6 +30,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DescriptionIcon from '@material-ui/icons/Description';
+import FunctionsIcon from '@material-ui/icons/Functions';
 
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
@@ -37,6 +38,7 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { ActionPageContent } from '../../../components/ActionsPage/ActionsPage';
 import { scaffolderTranslationRef } from '../../../translation';
 import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
+import { TemplateExtensionsPageContent } from '../../../components/TemplateExtensionsPage/TemplateExtensionsPage';
 
 const useStyles = makeStyles(
   theme => ({
@@ -83,6 +85,7 @@ export function TemplateEditorToolbar(props: {
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [showFieldsDrawer, setShowFieldsDrawer] = useState(false);
   const [showActionsDrawer, setShowActionsDrawer] = useState(false);
+  const [showExtensionsDrawer, setShowExtensionsDrawer] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
 
   return (
@@ -106,6 +109,15 @@ export function TemplateEditorToolbar(props: {
               <DescriptionIcon />
             </Button>
           </Tooltip>
+          <Tooltip
+            title={t(
+              'templateEditorToolbar.templateExtensionsDocumentationTooltip',
+            )}
+          >
+            <Button onClick={() => setShowExtensionsDrawer(true)}>
+              <FunctionsIcon />
+            </Button>
+          </Tooltip>
           <Button onClick={() => setShowPublishModal(true)}>
             {t('templateEditorToolbar.addToCatalogButton')}
           </Button>
@@ -125,6 +137,14 @@ export function TemplateEditorToolbar(props: {
           onClose={() => setShowActionsDrawer(false)}
         >
           <ActionPageContent />
+        </Drawer>
+        <Drawer
+          classes={{ paper: classes.paper }}
+          anchor="right"
+          open={showExtensionsDrawer}
+          onClose={() => setShowExtensionsDrawer(false)}
+        >
+          <TemplateExtensionsPageContent />
         </Drawer>
         <Dialog
           onClose={() => setShowPublishModal(false)}

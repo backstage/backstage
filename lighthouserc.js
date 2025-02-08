@@ -29,6 +29,7 @@ module.exports = {
         'http://localhost:3000/create/tasks',
         'http://localhost:3000/create/actions',
         'http://localhost:3000/create/edit',
+        'http://localhost:3000/create/template-extensions',
         'http://localhost:3000/create/templates/default/react-ssr-template',
         /** Search */
         'http://localhost:3000/search',

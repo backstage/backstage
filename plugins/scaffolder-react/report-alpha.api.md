@@ -317,6 +317,7 @@ export type ScaffolderPageContextMenuProps = {
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
   onCreateClicked?: () => void;
+  onTemplateExtensionsClicked?: () => void;
 };
 
 // @alpha (undocumented)
@@ -338,6 +339,7 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.moreLabel': 'more';
     readonly 'scaffolderPageContextMenu.editorLabel': 'Manage Templates';
     readonly 'scaffolderPageContextMenu.actionsLabel': 'Installed Actions';
+    readonly 'scaffolderPageContextMenu.extensionsLabel': 'Template Extensions';
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'stepper.backButtonText': 'Back';
     readonly 'stepper.createButtonText': 'Create';
