@@ -105,9 +105,15 @@ export type PortableTemplateInputBuiltInParams = {
   owner?: string;
 };
 
+export type PortableTemplateInputPackageParams = {
+  packageName: string;
+  packagePath: string;
+};
+
 export type PortableTemplateInput = {
   roleParams: PortableTemplateInputRoleParams;
   builtInParams: PortableTemplateInputBuiltInParams;
+  packageParams: PortableTemplateInputPackageParams;
   params: PortableTemplateParams;
   globals: PortableTemplateGlobals;
 };

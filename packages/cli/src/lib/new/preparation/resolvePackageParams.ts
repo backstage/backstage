@@ -16,7 +16,7 @@
 
 import { join as joinPath } from 'path';
 import {
-  PortableTemplateInput,
+  PortableTemplateGlobals,
   PortableTemplateInputRoleParams,
 } from '../types';
 
@@ -25,14 +25,15 @@ export type PortableTemplatePackageInfo = {
   packagePath: string;
 };
 
-export function resolvePackageInfo(
-  input: PortableTemplateInput,
+export function resolvePackageParams(
+  roleParams: PortableTemplateInputRoleParams,
+  globals: PortableTemplateGlobals,
 ): PortableTemplatePackageInfo {
-  const baseName = getBaseNameForRole(input.roleParams);
-  const isPlugin = input.roleParams.role.includes('plugin');
-  const pluginInfix = isPlugin ? input.globals.pluginInfix : '';
+  const baseName = getBaseNameForRole(roleParams);
+  const isPlugin = roleParams.role.includes('plugin');
+  const pluginInfix = isPlugin ? globals.pluginInfix : '';
   return {
-    packageName: `${input.globals.packagePrefix}${pluginInfix}${baseName}`,
+    packageName: `${globals.packagePrefix}${pluginInfix}${baseName}`,
     packagePath: joinPath(isPlugin ? 'plugins' : 'packages', baseName),
   };
 }

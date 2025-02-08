@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackageInfo } from './resolvePackageInfo';
+import { resolvePackageParams } from './resolvePackageParams';
 
 const baseGlobals = {
   baseVersion: '0.0.0',
@@ -96,13 +96,6 @@ describe.each([
   ],
 ] as const)('resolvePackageInfo', (roleParams, packageInfo) => {
   it(`should generate correct info with default config for ${roleParams.role}`, () => {
-    expect(
-      resolvePackageInfo({
-        builtInParams: {},
-        roleParams,
-        params: {},
-        globals: baseGlobals,
-      }),
-    ).toEqual(packageInfo);
+    expect(resolvePackageParams(roleParams, baseGlobals)).toEqual(packageInfo);
   });
 });
