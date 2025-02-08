@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import camelCase from 'lodash/camelCase';
-import upperFirst from 'lodash/upperFirst';
 import { isMonoRepo } from '@backstage/cli-node';
 import { assertError } from '@backstage/errors';
 
@@ -47,14 +45,6 @@ export async function executePortableTemplate(
 
   const targetDir = paths.resolveTargetRoot(packageInfo.packagePath);
 
-  const moduleVar =
-    params.moduleId ??
-    `${camelCase(params.id)}Module${camelCase(
-      params.moduleId,
-    )[0].toUpperCase()}${camelCase(params.moduleId).slice(1)}`; // used in default-backend-module template
-  const extensionName = `${upperFirst(camelCase(params.id))}Page`; // used in default-plugin template
-  const pluginVar = `${camelCase(params.id)}Plugin`; // used in default-backend-plugin and default-plugin template
-
   let modified = false;
   try {
     await executePluginPackageTemplate(
@@ -68,14 +58,13 @@ export async function executePortableTemplate(
       {
         targetDir,
         templateDir: template.templatePath,
+        templateValues: template.templateValues,
         values: {
-          name: packageName,
-          privatePackage: params.private,
-          pluginVersion: params.baseVersion,
-          moduleVar,
-          extensionName,
-          pluginVar,
-          ...params,
+          packageName: packageInfo.packageName,
+          privatePackage: input.globals.private,
+          packageVersion: input.globals.baseVersion,
+          license: input.globals.license,
+          ...input.params,
         },
       },
     );

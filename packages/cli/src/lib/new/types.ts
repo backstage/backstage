@@ -66,6 +66,7 @@ export type PortableTemplate = {
   role: PortableTemplateRole;
   prompts?: PortableTemplatePrompt[];
   additionalActions?: string[];
+  templateValues: Record<string, string>;
 };
 
 export type PortableTemplateParams = {

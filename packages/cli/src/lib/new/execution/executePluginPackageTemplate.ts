@@ -24,11 +24,30 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
+import camelCase from 'lodash/camelCase';
+import kebabCase from 'lodash/kebabCase';
+import lowerCase from 'lodash/lowerCase';
+import snakeCase from 'lodash/snakeCase';
+import startCase from 'lodash/startCase';
+import upperCase from 'lodash/upperCase';
+import upperFirst from 'lodash/upperFirst';
+import lowerFirst from 'lodash/lowerFirst';
 
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { Lockfile } from '../../versioning';
 import { createPackageVersionProvider } from '../../version';
+
+const helpers = {
+  camelCase,
+  kebabCase,
+  lowerCase,
+  snakeCase,
+  startCase,
+  upperCase,
+  upperFirst,
+  lowerFirst,
+};
 
 export interface CreateContext {
   /** Whether we are creating something in a monorepo or not */
@@ -44,6 +63,7 @@ export interface CreateContext {
 export async function executePluginPackageTemplate(
   ctx: CreateContext,
   options: {
+    templateValues: Record<string, string>;
     templateDir: string;
     targetDir: string;
     values: Record<string, unknown>;
@@ -77,6 +97,7 @@ export async function executePluginPackageTemplate(
   Task.section('Executing Template');
   await templatingTask(
     templateDir,
+    options.templateValues,
     tempDir,
     values,
     createPackageVersionProvider(lockfile),
@@ -104,6 +125,7 @@ export async function executePluginPackageTemplate(
 
 export async function templatingTask(
   templateDir: string,
+  templateValues: Record<string, string>,
   destinationDir: string,
   context: any,
   versionProvider: (name: string, versionHint?: string) => string,
@@ -112,6 +134,12 @@ export async function templatingTask(
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
+
+  const templatedValues = Object.fromEntries(
+    Object.entries(templateValues).map(([name, tmpl]) => {
+      return [name, handlebars.compile(tmpl)(context, { helpers })];
+    }),
+  );
 
   for (const file of files) {
     const destinationFile = file.replace(templateDir, destinationDir);
@@ -126,7 +154,7 @@ export async function templatingTask(
           strict: true,
         });
         const contents = compiled(
-          { name: basename(destination), ...context },
+          { name: basename(destination), ...context, ...templatedValues },
           {
             helpers: {
               versionQuery(name: string, versionHint: string | unknown) {
@@ -135,6 +163,7 @@ export async function templatingTask(
                   typeof versionHint === 'string' ? versionHint : undefined,
                 );
               },
+              ...helpers,
             },
           },
         );
