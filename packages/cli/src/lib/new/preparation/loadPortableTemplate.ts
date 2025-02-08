@@ -16,11 +16,16 @@
 
 import { z } from 'zod';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import recursiveReaddir from 'recursive-readdir';
+import { resolve as resolvePath, relative as relativePath } from 'path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { paths } from '../../paths';
-import { PortableTemplatePointer, TEMPLATE_ROLES } from '../types';
+import {
+  PortableTemplateFile,
+  PortableTemplatePointer,
+  TEMPLATE_ROLES,
+} from '../types';
 import { PortableTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
 import { fromZodError } from 'zod-validation-error';
@@ -74,8 +79,31 @@ export async function loadPortableTemplate({
   const { template, templateValues = {}, ...templateData } = parsed.data;
 
   const templatePath = resolvePath(dirname(target), template);
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(`Failed to load template contents from '${templatePath}'`);
+  const filePaths = await recursiveReaddir(templatePath).catch(error => {
+    throw new ForwardedError(
+      `Failed to load template contents from '${templatePath}'`,
+      error,
+    );
+  });
+
+  const files = new Array<PortableTemplateFile>();
+
+  for (const filePath of filePaths) {
+    const path = relativePath(templatePath, filePath);
+
+    const content = await fs.readFile(filePath, 'utf-8').catch(error => {
+      throw new ForwardedError(
+        `Failed to load file contents from '${path}'`,
+        error,
+      );
+    });
+
+    if (path.endsWith('.hbs')) {
+      files.push({ path: path.slice(0, -4), content, syntax: 'handlebars' });
+    } else {
+      files.push({ path, content });
+    }
   }
-  return { id, templatePath, templateValues, ...templateData };
+
+  return { id, templateValues, ...templateData, files };
 }
