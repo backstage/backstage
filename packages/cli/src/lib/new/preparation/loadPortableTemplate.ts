@@ -42,6 +42,7 @@ const templateDefinitionSchema = z
       )
       .optional(),
     additionalActions: z.array(z.string()).optional(),
+    templateValues: z.record(z.string()).optional(),
   })
   .strict();
 
@@ -70,11 +71,11 @@ export async function loadPortableTemplate({
     );
   }
 
-  const { template, ...templateData } = parsed.data;
+  const { template, templateValues = {}, ...templateData } = parsed.data;
 
   const templatePath = resolvePath(dirname(target), template);
   if (!fs.existsSync(templatePath)) {
     throw new Error(`Failed to load template contents from '${templatePath}'`);
   }
-  return { id, templatePath, ...templateData };
+  return { id, templatePath, templateValues, ...templateData };
 }
