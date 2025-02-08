@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { isMonoRepo } from '@backstage/cli-node';
 import { assertError } from '@backstage/errors';
 import { addCodeownersEntry } from '../../codeowners';
 import { Task } from '../../tasks';
@@ -23,7 +22,6 @@ import {
   PortableTemplateConfig,
   PortableTemplateInput,
 } from '../types';
-import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executePluginPackageTemplate';
 
@@ -38,17 +36,11 @@ export async function executePortableTemplate(
 ) {
   const { template, input } = options;
 
-  const tmpDirManager = TemporaryDirectoryManager.create();
-
   let modified = false;
   try {
-    const { targetDir } = await executePluginPackageTemplate(template, input, {
-      isMonoRepo: await isMonoRepo(),
-      createTemporaryDirectory: tmpDirManager.createDir,
-      markAsModified() {
-        modified = true;
-      },
-    });
+    const { targetDir } = await executePluginPackageTemplate(template, input);
+
+    modified = true;
 
     if (template.additionalActions?.length) {
       await runAdditionalActions(template, input);
@@ -86,7 +78,5 @@ export async function executePortableTemplate(
 
       Task.error(`🔥  Failed to create ${template.id}!`);
     }
-  } finally {
-    tmpDirManager.cleanup();
   }
 }
