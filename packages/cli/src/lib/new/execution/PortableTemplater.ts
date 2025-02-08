@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import handlebars, { HelperDeclareSpec } from 'handlebars';
+import handlebars from 'handlebars';
 import { PortableTemplateParams } from '../types';
 import camelCase from 'lodash/camelCase';
 import kebabCase from 'lodash/kebabCase';
@@ -39,12 +39,13 @@ const builtInHelpers = {
   lowerFirst,
 };
 
-type CreateTemplaterOptions = {
-  helpers?: HelperDeclareSpec;
+type CreatePortableTemplaterOptions = {
+  values?: PortableTemplateParams;
+  templatedValues?: Record<string, string>;
 };
 
 export class PortableTemplater {
-  static async create() {
+  static async create(options: CreatePortableTemplaterOptions = {}) {
     let lockfile: Lockfile | undefined;
     try {
       lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
@@ -54,8 +55,8 @@ export class PortableTemplater {
 
     const versionProvider = createPackageVersionProvider(lockfile);
 
-    return new PortableTemplater({
-      helpers: {
+    const templater = new PortableTemplater(
+      {
         versionQuery(name: string, versionHint: string | unknown) {
           return versionProvider(
             name,
@@ -63,36 +64,44 @@ export class PortableTemplater {
           );
         },
       },
-    });
+      options.values ?? {},
+    );
+
+    if (options.templatedValues) {
+      templater.appendTemplatedValues(options.templatedValues);
+    }
+
+    return templater;
   }
 
   readonly #templater: typeof handlebars;
+  #values: PortableTemplateParams;
 
-  private constructor(options: CreateTemplaterOptions = {}) {
+  private constructor(
+    helpers: handlebars.HelperDeclareSpec,
+    values: PortableTemplateParams,
+  ) {
     this.#templater = handlebars.create();
 
     this.#templater.registerHelper(builtInHelpers);
 
-    if (options.helpers) {
-      this.#templater.registerHelper(options.helpers);
+    if (helpers) {
+      this.#templater.registerHelper(helpers);
     }
+
+    this.#values = values;
   }
 
-  template(content: string, values: PortableTemplateParams): string {
+  template(content: string): string {
     return this.#templater.compile(content, {
       strict: true,
-    })(values);
+    })(this.#values);
   }
 
-  templateRecord(
-    record: Record<string, string>,
-    values: PortableTemplateParams,
-  ): Record<string, string> {
-    return Object.fromEntries(
-      Object.entries(record).map(([key, value]) => [
-        key,
-        this.template(value, values),
-      ]),
+  appendTemplatedValues(record: Record<string, string>): void {
+    const newValues = Object.fromEntries(
+      Object.entries(record).map(([key, value]) => [key, this.template(value)]),
     );
+    this.#values = { ...this.#values, ...newValues };
   }
 }
