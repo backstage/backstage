@@ -17,12 +17,12 @@ describe('plugin', () => {
       features: [{{pluginVar}}],
     });
 
-    await request(server).get('/api/{{id}}/todos').expect(200, {
+    await request(server).get('/api/{{pluginId}}/todos').expect(200, {
       items: [],
     });
 
     const createRes = await request(server)
-      .post('/api/{{id}}/todos')
+      .post('/api/{{pluginId}}/todos')
       .send({ title: 'My Todo' });
 
     expect(createRes.status).toBe(201);
@@ -36,13 +36,13 @@ describe('plugin', () => {
     const createdTodoItem = createRes.body;
 
     await request(server)
-      .get('/api/{{id}}/todos')
+      .get('/api/{{pluginId}}/todos')
       .expect(200, {
         items: [createdTodoItem],
       });
 
     await request(server)
-      .get(`/api/{{id}}/todos/${createdTodoItem.id}`)
+      .get(`/api/{{pluginId}}/todos/${createdTodoItem.id}`)
       .expect(200, createdTodoItem);
   });
 
@@ -71,7 +71,7 @@ describe('plugin', () => {
     });
 
     const createRes = await request(server)
-      .post('/api/{{id}}/todos')
+      .post('/api/{{pluginId}}/todos')
       .send({ title: 'My Todo', entityRef: 'component:default/my-component' });
 
     expect(createRes.status).toBe(201);

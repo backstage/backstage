@@ -11,17 +11,17 @@ import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 //
 // Create a new todo item, standalone or for the sample component:
 //
-//   curl http://localhost:7007/api/{{id}}/todos -H 'Content-Type: application/json' -d '{"title": "My Todo"}'
-//   curl http://localhost:7007/api/{{id}}/todos -H 'Content-Type: application/json' -d '{"title": "My Todo", "entityRef": "component:default/sample"}'
+//   curl http://localhost:7007/api/{{pluginId}}/todos -H 'Content-Type: application/json' -d '{"title": "My Todo"}'
+//   curl http://localhost:7007/api/{{pluginId}}/todos -H 'Content-Type: application/json' -d '{"title": "My Todo", "entityRef": "component:default/sample"}'
 //
 // List TODOs:
 //
-//   curl http://localhost:7007/api/{{id}}/todos
+//   curl http://localhost:7007/api/{{pluginId}}/todos
 //
 // Explicitly make an unauthenticated request, or with service auth:
 //
-//   curl http://localhost:7007/api/{{id}}/todos -H 'Authorization: Bearer mock-none-token'
-//   curl http://localhost:7007/api/{{id}}/todos -H 'Authorization: Bearer mock-service-token'
+//   curl http://localhost:7007/api/{{pluginId}}/todos -H 'Authorization: Bearer mock-none-token'
+//   curl http://localhost:7007/api/{{pluginId}}/todos -H 'Authorization: Bearer mock-service-token'
 
 const backend = createBackend();
 
