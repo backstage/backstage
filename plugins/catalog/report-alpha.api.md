@@ -146,27 +146,6 @@ const _default: FrontendPlugin<
     unregisterRedirect: ExternalRouteRef<undefined>;
   },
   {
-    'nav-item:catalog': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
     'api:catalog': ExtensionDefinition<{
       kind: 'api';
       name: undefined;
@@ -210,6 +189,278 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         factory: AnyApiFactory;
+      };
+    }>;
+    'page:catalog': ExtensionDefinition<{
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
+        filters: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: undefined;
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
+    }>;
+    'page:catalog/entity': ExtensionDefinition<{
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
+        contents: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-content-title',
+              {}
+            >
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: 'entity';
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
+    }>;
+    'catalog-filter:catalog/tag': ExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'tag';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/kind': ExtensionDefinition<{
+      config: {
+        initialFilter: string;
+      };
+      configInput: {
+        initialFilter?: string | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      };
+      kind: 'catalog-filter';
+      name: 'kind';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/type': ExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'type';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/mode': ExtensionDefinition<{
+      config: {
+        mode: 'all' | 'owners-only' | undefined;
+      };
+      configInput: {
+        mode?: 'all' | 'owners-only' | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      };
+      kind: 'catalog-filter';
+      name: 'mode';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/namespace': ExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'namespace';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/lifecycle': ExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'lifecycle';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/processing-status': ExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'processing-status';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/list': ExtensionDefinition<{
+      config: {
+        initialFilter: 'all' | 'owned' | 'starred';
+      };
+      configInput: {
+        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      };
+      kind: 'catalog-filter';
+      name: 'list';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'nav-item:catalog': ExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
       };
     }>;
     'entity-card:catalog/about': ExtensionDefinition<{
@@ -593,257 +844,6 @@ const _default: FrontendPlugin<
         defaultTitle: string;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'catalog-filter:catalog/tag': ExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'tag';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/kind': ExtensionDefinition<{
-      config: {
-        initialFilter: string;
-      };
-      configInput: {
-        initialFilter?: string | undefined;
-      };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
-      kind: 'catalog-filter';
-      name: 'kind';
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/type': ExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'type';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/mode': ExtensionDefinition<{
-      config: {
-        mode: 'all' | 'owners-only' | undefined;
-      };
-      configInput: {
-        mode?: 'all' | 'owners-only' | undefined;
-      };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
-      kind: 'catalog-filter';
-      name: 'mode';
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/namespace': ExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'namespace';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/lifecycle': ExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'lifecycle';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/processing-status': ExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'processing-status';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/list': ExtensionDefinition<{
-      config: {
-        initialFilter: 'all' | 'owned' | 'starred';
-      };
-      configInput: {
-        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
-      };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
-      kind: 'catalog-filter';
-      name: 'list';
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'page:catalog': ExtensionDefinition<{
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        filters: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      kind: 'page';
-      name: undefined;
-      params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'page:catalog/entity': ExtensionDefinition<{
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        contents: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-          | ConfigurableExtensionDataRef<
-              RouteRef<AnyRouteRefParams>,
-              'core.routing.ref',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-content-title',
-              {}
-            >
-          | ConfigurableExtensionDataRef<
-              (entity: Entity) => boolean,
-              'catalog.entity-filter-function',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-filter-expression',
-              {
-                optional: true;
-              }
-            >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      kind: 'page';
-      name: 'entity';
-      params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
       };
     }>;
     'search-result-list-item:catalog': ExtensionDefinition<{
