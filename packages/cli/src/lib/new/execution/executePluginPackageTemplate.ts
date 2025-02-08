@@ -49,12 +49,11 @@ export async function executePluginPackageTemplate(
   try {
     const tempDir = await tmpDirManager.createDir('backstage-create');
     const isMonoRepo = await getIsMonoRepo();
-    const templater = await PortableTemplater.create();
 
-    const templatedValues = templater.templateRecord(
-      template.templateValues,
-      input.params,
-    );
+    const templater = await PortableTemplater.create({
+      values: input.params,
+      templatedValues: template.templateValues,
+    });
 
     for (const file of template.files) {
       if (isMonoRepo && file.path === 'tsconfig.json') {
@@ -64,20 +63,14 @@ export async function executePluginPackageTemplate(
       const destPath = resolvePath(tempDir, file.path);
       await fs.ensureDir(dirname(destPath));
 
-      if (file.syntax === 'handlebars') {
-        let content = file.content;
+      const content =
+        file.syntax === 'handlebars'
+          ? templater.template(file.content)
+          : file.content;
 
-        if (file.syntax === 'handlebars') {
-          content = templater.template(file.content, {
-            ...input.params,
-            ...templatedValues,
-          });
-        }
-
-        await fs.writeFile(destPath, content).catch(error => {
-          throw new ForwardedError(`Failed to copy file to ${destPath}`, error);
-        });
-      }
+      await fs.writeFile(destPath, content).catch(error => {
+        throw new ForwardedError(`Failed to copy file to ${destPath}`, error);
+      });
     }
 
     // Format package.json if it exists
