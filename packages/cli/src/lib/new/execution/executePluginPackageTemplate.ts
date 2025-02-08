@@ -38,6 +38,8 @@ import { Lockfile } from '../../versioning';
 import { createPackageVersionProvider } from '../../version';
 import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError } from '@backstage/errors';
+import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
+import { isMonoRepo } from '@backstage/cli-node';
 
 const helpers = {
   camelCase,
@@ -50,21 +52,9 @@ const helpers = {
   lowerFirst,
 };
 
-export interface CreateContext {
-  /** Whether we are creating something in a monorepo or not */
-  isMonoRepo: boolean;
-
-  /** Creates a temporary directory. This will always be deleted after creation is done. */
-  createTemporaryDirectory(name: string): Promise<string>;
-
-  /** Signal that the creation process got to a point where permanent modifications were made */
-  markAsModified(): void;
-}
-
 export async function executePluginPackageTemplate(
   template: PortableTemplate,
   input: PortableTemplateInput,
-  ctx: CreateContext,
 ): Promise<{ targetDir: string }> {
   const targetDir = paths.resolveTargetRoot(input.packageParams.packagePath);
 
@@ -87,38 +77,42 @@ export async function executePluginPackageTemplate(
     }
   });
 
-  const tempDir = await Task.forItem('creating', 'temp dir', async () => {
-    return await ctx.createTemporaryDirectory('backstage-create');
-  });
+  const tmpDirManager = TemporaryDirectoryManager.create();
 
-  Task.section('Executing Template');
-  await templatingTask(
-    tempDir,
-    template,
-    input,
-    createPackageVersionProvider(lockfile),
-    ctx.isMonoRepo,
-  );
-
-  // Format package.json if it exists
-  const pkgJsonPath = resolvePath(tempDir, 'package.json');
-  if (await fs.pathExists(pkgJsonPath)) {
-    const pkgJson = await fs.readJson(pkgJsonPath);
-    await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-  }
-
-  Task.section('Installing');
-  await Task.forItem('moving', shortPluginDir, async () => {
-    await fs.move(tempDir, targetDir).catch(error => {
-      throw new Error(
-        `Failed to move package from ${tempDir} to ${targetDir}, ${error.message}`,
-      );
+  try {
+    const tempDir = await Task.forItem('creating', 'temp dir', async () => {
+      return tmpDirManager.createDir('backstage-create');
     });
-  });
 
-  ctx.markAsModified();
+    Task.section('Executing Template');
+    await templatingTask(
+      tempDir,
+      template,
+      input,
+      createPackageVersionProvider(lockfile),
+      await isMonoRepo(),
+    );
 
-  return { targetDir };
+    // Format package.json if it exists
+    const pkgJsonPath = resolvePath(tempDir, 'package.json');
+    if (await fs.pathExists(pkgJsonPath)) {
+      const pkgJson = await fs.readJson(pkgJsonPath);
+      await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
+    }
+
+    Task.section('Installing');
+    await Task.forItem('moving', shortPluginDir, async () => {
+      await fs.move(tempDir, targetDir).catch(error => {
+        throw new Error(
+          `Failed to move package from ${tempDir} to ${targetDir}, ${error.message}`,
+        );
+      });
+    });
+
+    return { targetDir };
+  } finally {
+    tmpDirManager.cleanup();
+  }
 }
 
 export async function templatingTask(
@@ -126,7 +120,7 @@ export async function templatingTask(
   template: PortableTemplate,
   input: PortableTemplateInput,
   versionProvider: (name: string, versionHint?: string) => string,
-  isMonoRepo: boolean,
+  inMonoRepo: boolean,
 ) {
   const templatedValues = Object.fromEntries(
     Object.entries(template.templateValues).map(([name, tmpl]) => {
@@ -135,7 +129,7 @@ export async function templatingTask(
   );
 
   for (const file of template.files) {
-    if (isMonoRepo && file.path === 'tsconfig.json') {
+    if (inMonoRepo && file.path === 'tsconfig.json') {
       continue;
     }
 
