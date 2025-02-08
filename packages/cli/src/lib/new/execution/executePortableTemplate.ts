@@ -26,7 +26,6 @@ import { executePluginPackageTemplate } from './executePluginPackageTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { PortableTemplateConfig, PortableTemplateInput } from '../types';
 import { PortableTemplate } from '../types';
-import { resolvePackageInfo } from './resolvePackageInfo';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
@@ -37,13 +36,11 @@ type ExecuteNewTemplateOptions = {
 export async function executePortableTemplate(
   options: ExecuteNewTemplateOptions,
 ) {
-  const { config, template, input } = options;
+  const { template, input } = options;
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 
-  const packageInfo = resolvePackageInfo(input);
-
-  const targetDir = paths.resolveTargetRoot(packageInfo.packagePath);
+  const targetDir = paths.resolveTargetRoot(input.packageParams.packagePath);
 
   let modified = false;
   try {
@@ -59,13 +56,7 @@ export async function executePortableTemplate(
         targetDir,
         templateDir: template.templatePath,
         templateValues: template.templateValues,
-        values: {
-          packageName: packageInfo.packageName,
-          privatePackage: input.globals.private,
-          packageVersion: input.globals.baseVersion,
-          license: input.globals.license,
-          ...input.params,
-        },
+        values: input.params,
       },
     );
 

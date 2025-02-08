@@ -27,6 +27,7 @@ import {
   PortableTemplateRole,
 } from '../types';
 import { PortableTemplate } from '../types';
+import { resolvePackageParams } from './resolvePackageParams';
 
 const RESERVED_PROMPT_NAMES = ['name', 'pluginId', 'moduleId', 'owner'];
 
@@ -70,17 +71,28 @@ export async function collectPortableTemplateInput(
     ...promptAnswers,
   };
 
+  const roleParams = {
+    role: template.role,
+    name: answers.name,
+    pluginId: answers.pluginId,
+    moduleId: answers.moduleId,
+  } as PortableTemplateInputRoleParams;
+
+  const packageParams = resolvePackageParams(roleParams, config.globals);
+
   return {
-    roleParams: {
-      role: template.role,
-      name: answers.name,
-      pluginId: answers.pluginId,
-      moduleId: answers.moduleId,
-    } as PortableTemplateInputRoleParams,
+    roleParams,
+    packageParams,
     builtInParams: {
       owner: answers.owner,
     } as PortableTemplateInputBuiltInParams,
-    params: answers,
+    params: {
+      ...answers,
+      packageName: packageParams.packageName,
+      privatePackage: config.globals.private,
+      packageVersion: config.globals.baseVersion,
+      license: config.globals.license,
+    },
     globals: config.globals,
   };
 }
