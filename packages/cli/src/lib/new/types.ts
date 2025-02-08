@@ -73,10 +73,11 @@ export type PortableTemplateParams = {
 };
 
 export type PortableTemplateGlobals = {
-  license?: string;
-  baseVersion?: string;
-  private?: boolean;
-  scope?: string;
+  license: string;
+  baseVersion: string;
+  private: boolean;
+  packagePrefix: string;
+  pluginInfix: string;
 };
 
 export type PortableTemplateInputRoleParams =
@@ -107,5 +108,5 @@ export type PortableTemplateInput = {
   roleParams: PortableTemplateInputRoleParams;
   builtInParams: PortableTemplateInputBuiltInParams;
   params: PortableTemplateParams;
-  globals: PortableTemplateParams;
+  globals: PortableTemplateGlobals;
 };

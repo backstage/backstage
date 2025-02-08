@@ -30,15 +30,30 @@ export default async (opts: ArgOptions) => {
   const {
     option: rawArgOptions,
     select: preselectedTemplateId,
-    ...globals
+    scope,
+    ...otherGlobals
   } = opts;
 
   const prefilledParams = parseParams(rawArgOptions);
 
+  let pluginInfix: string | undefined = undefined;
+  let packagePrefix: string | undefined = undefined;
+  if (scope) {
+    const backstagePrefix = scope.startsWith('backstage') ? '' : 'backstage-';
+    packagePrefix = scope.includes('/')
+      ? `@${scope}${backstagePrefix}`
+      : `@${scope}/${backstagePrefix}`;
+    pluginInfix = scope.includes('backstage') ? 'plugin-' : 'backstage-plugin-';
+  }
+
   await createNewPackage({
     prefilledParams,
     preselectedTemplateId,
-    globals,
+    globals: {
+      ...otherGlobals,
+      packagePrefix,
+      pluginInfix,
+    },
   });
 };
 

@@ -23,12 +23,12 @@ import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { addCodeownersEntry } from '../../codeowners';
 
-import { createDirName, resolvePackageName } from './utils';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executePluginPackageTemplate';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { PortableTemplateConfig, PortableTemplateInput } from '../types';
 import { PortableTemplate } from '../types';
+import { resolvePackageInfo } from './resolvePackageInfo';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
@@ -43,14 +43,9 @@ export async function executePortableTemplate(
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 
-  const dirName = createDirName(template, params);
-  const targetDir = paths.resolveTargetRoot(params.targetPath, dirName);
+  const packageInfo = resolvePackageInfo(input);
 
-  const packageName = resolvePackageName({
-    baseName: dirName,
-    scope: params.scope,
-    plugin: template.plugin ?? true,
-  });
+  const targetDir = paths.resolveTargetRoot(packageInfo.packagePath);
 
   const moduleVar =
     params.moduleId ??
