@@ -16,54 +16,25 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import handlebars from 'handlebars';
 import {
-  basename,
   dirname,
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
-import camelCase from 'lodash/camelCase';
-import kebabCase from 'lodash/kebabCase';
-import lowerCase from 'lodash/lowerCase';
-import snakeCase from 'lodash/snakeCase';
-import startCase from 'lodash/startCase';
-import upperCase from 'lodash/upperCase';
-import upperFirst from 'lodash/upperFirst';
-import lowerFirst from 'lodash/lowerFirst';
 
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
-import { Lockfile } from '../../versioning';
-import { createPackageVersionProvider } from '../../version';
 import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError } from '@backstage/errors';
 import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { isMonoRepo } from '@backstage/cli-node';
-
-const helpers = {
-  camelCase,
-  kebabCase,
-  lowerCase,
-  snakeCase,
-  startCase,
-  upperCase,
-  upperFirst,
-  lowerFirst,
-};
+import { PortableTemplater } from './PortableTemplater';
 
 export async function executePluginPackageTemplate(
   template: PortableTemplate,
   input: PortableTemplateInput,
 ): Promise<{ targetDir: string }> {
   const targetDir = paths.resolveTargetRoot(input.packageParams.packagePath);
-
-  let lockfile: Lockfile | undefined;
-  try {
-    lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
-  } catch {
-    /* ignored */
-  }
 
   Task.section('Checking Prerequisites');
   const shortPluginDir = relativePath(paths.targetRoot, targetDir);
@@ -85,13 +56,7 @@ export async function executePluginPackageTemplate(
     });
 
     Task.section('Executing Template');
-    await templatingTask(
-      tempDir,
-      template,
-      input,
-      createPackageVersionProvider(lockfile),
-      await isMonoRepo(),
-    );
+    await templatingTask(tempDir, template, input, await isMonoRepo());
 
     // Format package.json if it exists
     const pkgJsonPath = resolvePath(tempDir, 'package.json');
@@ -119,13 +84,13 @@ export async function templatingTask(
   destinationDir: string,
   template: PortableTemplate,
   input: PortableTemplateInput,
-  versionProvider: (name: string, versionHint?: string) => string,
   inMonoRepo: boolean,
 ) {
-  const templatedValues = Object.fromEntries(
-    Object.entries(template.templateValues).map(([name, tmpl]) => {
-      return [name, handlebars.compile(tmpl)(input.params, { helpers })];
-    }),
+  const templater = await PortableTemplater.create();
+
+  const templatedValues = templater.templateRecord(
+    template.templateValues,
+    input.params,
   );
 
   for (const file of template.files) {
@@ -144,23 +109,10 @@ export async function templatingTask(
           let content = file.content;
 
           if (file.syntax === 'handlebars') {
-            const compiled = handlebars.compile(file.content, {
-              strict: true,
+            content = templater.template(file.content, {
+              ...input.params,
+              ...templatedValues,
             });
-            content = compiled(
-              { name: basename(destPath), ...input.params, ...templatedValues },
-              {
-                helpers: {
-                  versionQuery(name: string, versionHint: string | unknown) {
-                    return versionProvider(
-                      name,
-                      typeof versionHint === 'string' ? versionHint : undefined,
-                    );
-                  },
-                  ...helpers,
-                },
-              },
-            );
           }
 
           await fs.writeFile(destPath, content).catch(error => {
