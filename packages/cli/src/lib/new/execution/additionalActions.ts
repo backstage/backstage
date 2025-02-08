@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
+import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash/camelCase';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
-
-interface AdditionalActionsOptions {
-  name: string;
-  version: string;
-  id: string;
-  extensionName: string;
-}
+import { PortableTemplate, PortableTemplateInput } from '../types';
 
 export async function runAdditionalActions(
-  additionalActions: string[],
-  options: AdditionalActionsOptions,
+  template: PortableTemplate,
+  input: PortableTemplateInput,
 ) {
-  for (const action of additionalActions) {
+  if (!template.additionalActions) {
+    return;
+  }
+  for (const action of template.additionalActions) {
     switch (action) {
       case 'install-frontend':
-        await installFrontend(options);
+        await installFrontend(input);
         break;
       case 'add-frontend-legacy':
-        await addFrontendLegacy(options);
+        await addFrontendLegacy(input);
         break;
       case 'install-backend':
-        await installBackend(options);
+        await installBackend(input);
         break;
       case 'add-backend':
-        await addBackend(options);
+        await addBackend(input);
         break;
       default:
         throw new Error(`${action} is not a valid additional action`);
@@ -89,14 +88,14 @@ async function addPackageDependency(
   }
 }
 
-async function installFrontend(options: AdditionalActionsOptions) {
+async function installFrontend(input: PortableTemplateInput) {
   if (await fs.pathExists(paths.resolveTargetRoot('packages/app'))) {
     await Task.forItem('app', 'adding dependency', async () => {
       await addPackageDependency(
         paths.resolveTargetRoot('packages/app/package.json'),
         {
           dependencies: {
-            [options.name]: `workspace:^`,
+            [input.packageParams.packageName]: `workspace:^`,
           },
         },
       );
@@ -104,7 +103,13 @@ async function installFrontend(options: AdditionalActionsOptions) {
   }
 }
 
-async function addFrontendLegacy(options: AdditionalActionsOptions) {
+async function addFrontendLegacy(input: PortableTemplateInput) {
+  const { roleParams, packageParams } = input;
+  if (roleParams.role !== 'frontend-plugin') {
+    throw new Error(
+      'add-frontend-legacy can only be used for frontend plugins',
+    );
+  }
   await Task.forItem('app', 'adding import', async () => {
     const pluginsFilePath = paths.resolveTargetRoot('packages/app/src/App.tsx');
     if (!(await fs.pathExists(pluginsFilePath))) {
@@ -122,12 +127,15 @@ async function addFrontendLegacy(options: AdditionalActionsOptions) {
     );
 
     if (lastImportIndex !== -1 && lastRouteIndex !== -1) {
-      const importLine = `import { ${options.extensionName} } from '${options.name}';`;
+      const extensionName = upperFirst(
+        `${camelCase(packageParams.packageName)}Page`,
+      );
+      const importLine = `import { ${extensionName} } from '${packageParams.packageName}';`;
       if (!content.includes(importLine)) {
         revLines.splice(lastImportIndex, 0, importLine);
       }
 
-      const componentLine = `<Route path="/${options.id}" element={<${options.extensionName} />} />`;
+      const componentLine = `<Route path="/${roleParams.pluginId}" element={<${extensionName} />} />`;
       if (!content.includes(componentLine)) {
         const [indentation] = revLines[lastRouteIndex + 1].match(/^\s*/) ?? [];
         revLines.splice(lastRouteIndex + 1, 0, indentation + componentLine);
@@ -139,14 +147,14 @@ async function addFrontendLegacy(options: AdditionalActionsOptions) {
   });
 }
 
-async function installBackend(options: AdditionalActionsOptions) {
+async function installBackend(input: PortableTemplateInput) {
   if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
     await Task.forItem('backend', 'adding dependency', async () => {
       await addPackageDependency(
         paths.resolveTargetRoot('packages/backend/package.json'),
         {
           dependencies: {
-            [options.name]: `workspace:^`,
+            [input.packageParams.packageName]: `workspace:^`,
           },
         },
       );
@@ -154,31 +162,35 @@ async function installBackend(options: AdditionalActionsOptions) {
   }
 }
 
-async function addBackend({ name }: AdditionalActionsOptions) {
+async function addBackend(input: PortableTemplateInput) {
   if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
-    await Task.forItem('backend', `adding ${name}`, async () => {
-      const backendFilePath = paths.resolveTargetRoot(
-        'packages/backend/src/index.ts',
-      );
-      if (!(await fs.pathExists(backendFilePath))) {
-        return;
-      }
+    await Task.forItem(
+      'backend',
+      `adding ${input.packageParams.packageName}`,
+      async () => {
+        const backendFilePath = paths.resolveTargetRoot(
+          'packages/backend/src/index.ts',
+        );
+        if (!(await fs.pathExists(backendFilePath))) {
+          return;
+        }
 
-      const content = await fs.readFile(backendFilePath, 'utf8');
-      const lines = content.split('\n');
-      const backendAddLine = `backend.add(import('${name}'));`;
+        const content = await fs.readFile(backendFilePath, 'utf8');
+        const lines = content.split('\n');
+        const backendAddLine = `backend.add(import('${input.packageParams.packageName}'));`;
 
-      const backendStartIndex = lines.findIndex(line =>
-        line.match(/backend.start/),
-      );
+        const backendStartIndex = lines.findIndex(line =>
+          line.match(/backend.start/),
+        );
 
-      if (backendStartIndex !== -1) {
-        const [indentation] = lines[backendStartIndex].match(/^\s*/)!;
-        lines.splice(backendStartIndex, 0, `${indentation}${backendAddLine}`);
+        if (backendStartIndex !== -1) {
+          const [indentation] = lines[backendStartIndex].match(/^\s*/)!;
+          lines.splice(backendStartIndex, 0, `${indentation}${backendAddLine}`);
 
-        const newContent = lines.join('\n');
-        await fs.writeFile(backendFilePath, newContent, 'utf8');
-      }
-    });
+          const newContent = lines.join('\n');
+          await fs.writeFile(backendFilePath, newContent, 'utf8');
+        }
+      },
+    );
   }
 }

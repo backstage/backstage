@@ -61,16 +61,11 @@ export async function executePortableTemplate(
     );
 
     if (template.additionalActions?.length) {
-      await runAdditionalActions(template.additionalActions, {
-        name: packageName,
-        version: params.baseVersion,
-        id: params.id, // for frontend legacy
-        extensionName, // for frontend legacy
-      });
+      await runAdditionalActions(template, input);
     }
 
-    if (params.owner) {
-      await addCodeownersEntry(targetDir, params.owner);
+    if (input.builtInParams.owner) {
+      await addCodeownersEntry(targetDir, input.builtInParams.owner);
     }
 
     await Task.forCommand('yarn install', {
