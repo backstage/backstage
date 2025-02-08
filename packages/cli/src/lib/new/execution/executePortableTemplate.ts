@@ -16,16 +16,16 @@
 
 import { isMonoRepo } from '@backstage/cli-node';
 import { assertError } from '@backstage/errors';
-
-import { paths } from '../../paths';
-import { Task } from '../../tasks';
 import { addCodeownersEntry } from '../../codeowners';
-
+import { Task } from '../../tasks';
+import {
+  PortableTemplate,
+  PortableTemplateConfig,
+  PortableTemplateInput,
+} from '../types';
+import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
 import { runAdditionalActions } from './additionalActions';
 import { executePluginPackageTemplate } from './executePluginPackageTemplate';
-import { TemporaryDirectoryManager } from './TemporaryDirectoryManager';
-import { PortableTemplateConfig, PortableTemplateInput } from '../types';
-import { PortableTemplate } from '../types';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
@@ -40,25 +40,15 @@ export async function executePortableTemplate(
 
   const tmpDirManager = TemporaryDirectoryManager.create();
 
-  const targetDir = paths.resolveTargetRoot(input.packageParams.packagePath);
-
   let modified = false;
   try {
-    await executePluginPackageTemplate(
-      {
-        isMonoRepo: await isMonoRepo(),
-        createTemporaryDirectory: tmpDirManager.createDir,
-        markAsModified() {
-          modified = true;
-        },
+    const { targetDir } = await executePluginPackageTemplate(template, input, {
+      isMonoRepo: await isMonoRepo(),
+      createTemporaryDirectory: tmpDirManager.createDir,
+      markAsModified() {
+        modified = true;
       },
-      {
-        targetDir,
-        templateDir: template.templatePath,
-        templateValues: template.templateValues,
-        values: input.params,
-      },
-    );
+    });
 
     if (template.additionalActions?.length) {
       await runAdditionalActions(template, input);

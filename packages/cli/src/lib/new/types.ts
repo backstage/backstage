@@ -58,14 +58,20 @@ export const TEMPLATE_ROLES = [
 
 export type PortableTemplateRole = (typeof TEMPLATE_ROLES)[number];
 
+export type PortableTemplateFile = {
+  path: string;
+  content: string;
+  syntax?: 'handlebars';
+};
+
 export type PortableTemplate = {
   id: string;
   description?: string;
-  templatePath: string;
   targetPath: string;
   role: PortableTemplateRole;
   prompts?: PortableTemplatePrompt[];
   additionalActions?: string[];
+  files: PortableTemplateFile[];
   templateValues: Record<string, string>;
 };
 
