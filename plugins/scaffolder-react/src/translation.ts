@@ -29,6 +29,7 @@ export const scaffolderReactTranslationRef = createTranslationRef({
       editorLabel: 'Manage Templates',
       actionsLabel: 'Installed Actions',
       tasksLabel: 'Task List',
+      templatingExtensionsLabel: 'Templating Extensions',
     },
     stepper: {
       backButtonText: 'Back',

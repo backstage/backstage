@@ -24,6 +24,7 @@ import {
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templatingExtensionsRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
 import {
@@ -45,6 +46,7 @@ export default createFrontendPlugin({
     actions: actionsRouteRef,
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
+    templatingExtensions: templatingExtensionsRouteRef,
   }),
   externalRoutes: convertLegacyRouteRefs({
     registerComponent: registerComponentRouteRef,

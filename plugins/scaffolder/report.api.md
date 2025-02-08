@@ -618,6 +618,7 @@ export const scaffolderPlugin: BackstagePlugin<
     editor: SubRouteRef<undefined>;
     customFields: SubRouteRef<undefined>;
     templateForm: SubRouteRef<undefined>;
+    templatingExtensions: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;

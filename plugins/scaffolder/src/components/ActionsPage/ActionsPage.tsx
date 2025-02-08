@@ -46,6 +46,7 @@ import {
   editRouteRef,
   rootRouteRef,
   scaffolderListTaskRouteRef,
+  templatingExtensionsRouteRef,
 } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
@@ -247,6 +248,7 @@ export const ActionsPage = (props: ActionsPageProps) => {
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const templatingExtensionsLink = useRouteRef(templatingExtensionsRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
@@ -263,6 +265,7 @@ export const ActionsPage = (props: ActionsPageProps) => {
       props?.contextMenu?.create !== false
         ? () => navigate(createLink())
         : undefined,
+    onTemplatingExtensionsClicked: () => navigate(templatingExtensionsLink()),
   };
 
   return (
