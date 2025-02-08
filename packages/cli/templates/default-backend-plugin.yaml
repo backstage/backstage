@@ -5,3 +5,5 @@ role: backend-plugin
 additionalActions:
   - install-backend
   - add-backend
+templateValues:
+  pluginVar: '{{ camelCase pluginId }}Plugin'

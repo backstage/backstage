@@ -4,6 +4,8 @@ targetPath: plugins
 role: backend-plugin-module
 params:
   pluginId: scaffolder
+templateValues:
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
 additionalActions:
   - install-backend
   - add-backend
