@@ -26,7 +26,8 @@ const defaultGlobals = {
   license: 'Apache-2.0',
   baseVersion: '0.1.0',
   private: true,
-  scope: undefined,
+  packagePrefix: '@internal/',
+  pluginInfix: 'plugin-',
 };
 
 const pkgJsonWithNewConfigSchema = z.object({
@@ -49,7 +50,8 @@ const pkgJsonWithNewConfigSchema = z.object({
               license: z.string().optional(),
               baseVersion: z.string().optional(),
               private: z.boolean().optional(),
-              scope: z.string().optional(),
+              packagePrefix: z.string().optional(),
+              pluginInfix: z.string().optional(),
             })
             .optional(),
         })
@@ -61,7 +63,7 @@ const pkgJsonWithNewConfigSchema = z.object({
 
 type LoadConfigOptions = {
   packagePath?: string;
-  globalOverrides?: PortableTemplateGlobals;
+  globalOverrides?: Partial<PortableTemplateGlobals>;
 };
 
 export async function loadPortableTemplateConfig(

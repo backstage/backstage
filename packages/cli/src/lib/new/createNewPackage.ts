@@ -25,7 +25,7 @@ import { PortableTemplateGlobals, PortableTemplateParams } from './types';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
-  globals: PortableTemplateGlobals;
+  globals: Partial<PortableTemplateGlobals>;
   prefilledParams: PortableTemplateParams;
 };
 
