@@ -22,7 +22,7 @@ import {
   PortableTemplateConfig,
   PortableTemplateInput,
 } from '../types';
-import { runAdditionalActions } from './additionalActions';
+import { installNewPackage } from './installNewPackage';
 import { writeTemplateContents } from './writeTemplateContents';
 
 type ExecuteNewTemplateOptions = {
@@ -42,9 +42,7 @@ export async function executePortableTemplate(
 
     modified = true;
 
-    if (template.additionalActions?.length) {
-      await runAdditionalActions(template, input);
-    }
+    await installNewPackage(input);
 
     if (input.builtInParams.owner) {
       await addCodeownersEntry(targetDir, input.builtInParams.owner);
