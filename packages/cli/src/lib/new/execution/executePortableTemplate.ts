@@ -23,7 +23,7 @@ import {
   PortableTemplateInput,
 } from '../types';
 import { runAdditionalActions } from './additionalActions';
-import { executePluginPackageTemplate } from './executePluginPackageTemplate';
+import { writeTemplateContents } from './writeTemplateContents';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
@@ -38,7 +38,7 @@ export async function executePortableTemplate(
 
   let modified = false;
   try {
-    const { targetDir } = await executePluginPackageTemplate(template, input);
+    const { targetDir } = await writeTemplateContents(template, input);
 
     modified = true;
 
