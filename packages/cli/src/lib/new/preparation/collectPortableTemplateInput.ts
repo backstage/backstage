@@ -84,13 +84,6 @@ export async function collectPortableTemplateInput(
     builtInParams: {
       owner: answers.owner,
     } as PortableTemplateInputBuiltInParams,
-    params: {
-      ...answers,
-      packageName: packageParams.packageName,
-      privatePackage: config.private,
-      packageVersion: config.version,
-      license: config.license,
-    },
     license: config.license,
     version: config.version,
     private: config.private,

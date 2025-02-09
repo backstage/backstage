@@ -109,7 +109,6 @@ export type PortableTemplateInputBuiltInParams = {
 export type PortableTemplateInput = {
   roleParams: PortableTemplateInputRoleParams;
   builtInParams: PortableTemplateInputBuiltInParams;
-  params: PortableTemplateParams;
 
   license: string;
 
