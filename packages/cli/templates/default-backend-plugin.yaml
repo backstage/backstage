@@ -1,6 +1,5 @@
 description: A new backend plugin
 template: ./default-backend-plugin
-targetPath: plugins
 role: backend-plugin
 additionalActions:
   - install-backend

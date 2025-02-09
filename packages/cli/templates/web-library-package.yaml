@@ -1,4 +1,3 @@
 description: A new web-library package, exporting shared functionality for frontend plugins
 template: ./web-library-package
-targetPath: packages
 role: web-library

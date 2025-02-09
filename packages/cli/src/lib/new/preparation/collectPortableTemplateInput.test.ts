@@ -34,7 +34,6 @@ describe('collectTemplateParams', () => {
     template: {
       id: 'test',
       templatePath: '/test',
-      targetPath: '/example',
       role: 'frontend-plugin' as const,
       files: [],
       templateValues: {},

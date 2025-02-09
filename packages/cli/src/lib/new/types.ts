@@ -67,7 +67,6 @@ export type PortableTemplateFile = {
 export type PortableTemplate = {
   id: string;
   description?: string;
-  targetPath: string;
   role: PortableTemplateRole;
   additionalActions?: string[];
   files: PortableTemplateFile[];

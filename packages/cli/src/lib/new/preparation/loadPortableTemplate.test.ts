@@ -23,7 +23,6 @@ describe('loadTemplate', () => {
       content: {
         'path/to/template1.yaml': `
           template: template1
-          targetPath: plugins
           role: frontend-plugin
         `,
         'path/to/template1/hello.txt': 'hello world',
@@ -37,9 +36,9 @@ describe('loadTemplate', () => {
 
     expect(result).toEqual({
       id: 'template1',
-      templatePath: mockDir.resolve('path/to/template1'),
-      targetPath: 'plugins',
       role: 'frontend-plugin',
+      files: [{ path: 'hello.txt', content: 'hello world' }],
+      templateValues: {},
     });
   });
 
@@ -96,7 +95,6 @@ describe('loadTemplate', () => {
       content: {
         'path/to/template1.yaml': `
           template: template1
-          targetPath: plugins
           role: invalid-role
         `,
       },
@@ -119,7 +117,6 @@ describe('loadTemplate', () => {
       content: {
         'path/to/template1.yaml': `
           template: template1
-          targetPath: plugins
           role: frontend-plugin
         `,
       },
