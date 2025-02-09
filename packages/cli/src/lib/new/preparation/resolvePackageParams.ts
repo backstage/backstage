@@ -15,10 +15,13 @@
  */
 
 import { join as joinPath } from 'path';
-import {
-  PortableTemplateGlobals,
-  PortableTemplateInputRoleParams,
-} from '../types';
+import { PortableTemplateInputRoleParams } from '../types';
+
+export type ResolvePackageParamsOptions = {
+  roleParams: PortableTemplateInputRoleParams;
+  pluginInfix: string;
+  packagePrefix: string;
+};
 
 export type PortableTemplatePackageInfo = {
   packageName: string;
@@ -26,14 +29,13 @@ export type PortableTemplatePackageInfo = {
 };
 
 export function resolvePackageParams(
-  roleParams: PortableTemplateInputRoleParams,
-  globals: PortableTemplateGlobals,
+  options: ResolvePackageParamsOptions,
 ): PortableTemplatePackageInfo {
-  const baseName = getBaseNameForRole(roleParams);
-  const isPlugin = roleParams.role.includes('plugin');
-  const pluginInfix = isPlugin ? globals.pluginInfix : '';
+  const baseName = getBaseNameForRole(options.roleParams);
+  const isPlugin = options.roleParams.role.includes('plugin');
+  const pluginInfix = isPlugin ? options.pluginInfix : '';
   return {
-    packageName: `${globals.packagePrefix}${pluginInfix}${baseName}`,
+    packageName: `${options.packagePrefix}${pluginInfix}${baseName}`,
     packagePath: joinPath(isPlugin ? 'plugins' : 'packages', baseName),
   };
 }

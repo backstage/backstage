@@ -21,17 +21,17 @@ import {
   selectTemplateInteractively,
 } from './preparation';
 import { executePortableTemplate } from './execution';
-import { PortableTemplateGlobals, PortableTemplateParams } from './types';
+import { PortableTemplateConfig, PortableTemplateParams } from './types';
 
 export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
-  globals: Partial<PortableTemplateGlobals>;
+  configOverrides: Partial<PortableTemplateConfig>;
   prefilledParams: PortableTemplateParams;
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
   const config = await loadPortableTemplateConfig({
-    globalOverrides: options.globals,
+    overrides: options.configOverrides,
   });
 
   const selectedTemplate = await selectTemplateInteractively(

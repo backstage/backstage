@@ -37,6 +37,8 @@ describe('loadPortableTemplateConfig', () => {
             globals: {
               license: 'MIT',
               private: true,
+              namePrefix: '@acme/',
+              namePluginInfix: 'backstage-plugin-',
             },
           },
         },
@@ -53,17 +55,17 @@ describe('loadPortableTemplateConfig', () => {
         { id: 'template1', target: 'path/to/template1' },
         { id: 'template2', target: 'path/to/template2' },
       ],
-      globals: {
-        license: 'MIT',
-        private: true,
-        baseVersion: '0.1.0',
-      },
+      license: 'MIT',
+      private: true,
+      version: '0.1.0',
+      packageNamePrefix: '@acme/',
+      packageNamePluginInfix: 'backstage-plugin-',
     });
 
     await expect(
       loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
-        globalOverrides: {
+        overrides: {
           license: 'nope',
           private: false,
         },
@@ -74,11 +76,11 @@ describe('loadPortableTemplateConfig', () => {
         { id: 'template1', target: 'path/to/template1' },
         { id: 'template2', target: 'path/to/template2' },
       ],
-      globals: {
-        license: 'nope',
-        private: false,
-        baseVersion: '0.1.0',
-      },
+      license: 'nope',
+      version: '0.1.0',
+      private: false,
+      packageNamePrefix: '@acme/',
+      packageNamePluginInfix: 'backstage-plugin-',
     });
   });
 
@@ -103,11 +105,11 @@ describe('loadPortableTemplateConfig', () => {
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates,
-      globals: {
-        license: 'MIT',
-        private: true,
-        baseVersion: '0.1.0',
-      },
+      license: 'MIT',
+      private: true,
+      version: '0.1.0',
+      packageNamePrefix: '@internal/',
+      packageNamePluginInfix: 'plugin-',
     });
   });
 
@@ -143,28 +145,28 @@ describe('loadPortableTemplateConfig', () => {
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates,
-      globals: {
-        license: 'Apache-2.0',
-        baseVersion: '0.1.0',
-        private: true,
-      },
+      license: 'Apache-2.0',
+      version: '0.1.0',
+      private: true,
+      packageNamePrefix: '@internal/',
+      packageNamePluginInfix: 'plugin-',
     });
 
     await expect(
       loadPortableTemplateConfig({
         packagePath: mockDir.resolve('package.json'),
-        globalOverrides: {
+        overrides: {
           license: 'nope',
         },
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates,
-      globals: {
-        license: 'nope',
-        baseVersion: '0.1.0',
-        private: true,
-      },
+      license: 'nope',
+      version: '0.1.0',
+      private: true,
+      packageNamePrefix: '@internal/',
+      packageNamePluginInfix: 'plugin-',
     });
   });
 });

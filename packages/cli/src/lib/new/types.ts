@@ -25,10 +25,15 @@ export type PortableTemplateConfig = {
    */
   isUsingDefaultTemplates: boolean;
 
-  /**
-   * Templating globals that should apply to all templates.
-   */
-  globals: PortableTemplateGlobals;
+  license: string;
+
+  version: string;
+
+  private: boolean;
+
+  packageNamePrefix: string;
+
+  packageNamePluginInfix: string;
 };
 
 export type PortableTemplatePointer = {
@@ -77,14 +82,6 @@ export type PortableTemplateParams = {
   [KName in string]?: string | number | boolean;
 };
 
-export type PortableTemplateGlobals = {
-  license: string;
-  baseVersion: string;
-  private: boolean;
-  packagePrefix: string;
-  pluginInfix: string;
-};
-
 export type PortableTemplateInputRoleParams =
   | {
       role: 'web-library' | 'node-library' | 'common-library';
@@ -109,15 +106,18 @@ export type PortableTemplateInputBuiltInParams = {
   owner?: string;
 };
 
-export type PortableTemplateInputPackageParams = {
-  packageName: string;
-  packagePath: string;
-};
-
 export type PortableTemplateInput = {
   roleParams: PortableTemplateInputRoleParams;
   builtInParams: PortableTemplateInputBuiltInParams;
-  packageParams: PortableTemplateInputPackageParams;
   params: PortableTemplateParams;
-  globals: PortableTemplateGlobals;
+
+  license: string;
+
+  version: string;
+
+  private: boolean;
+
+  packageName: string;
+
+  packagePath: string;
 };
