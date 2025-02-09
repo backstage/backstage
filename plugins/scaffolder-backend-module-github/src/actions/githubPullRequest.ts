@@ -156,7 +156,8 @@ export const createPublishGithubPullRequestAction = (
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the repository name and `owner` is an organization or username',
             type: 'string',
           },
           branchName: {
@@ -167,7 +168,7 @@ export const createPublishGithubPullRequestAction = (
           targetBranchName: {
             type: 'string',
             title: 'Target Branch Name',
-            description: 'The target branch name of the merge request',
+            description: 'The target branch name of the pull request',
           },
           title: {
             type: 'string',
@@ -237,13 +238,13 @@ export const createPublishGithubPullRequestAction = (
             type: 'string',
             title: 'Default Author Name',
             description:
-              "Sets the default author name for the commit. The default value is the authenticated user or 'Scaffolder'",
+              'Sets the default author name for the commit. The default value is the authenticated user or `Scaffolder`',
           },
           gitAuthorEmail: {
             type: 'string',
             title: 'Default Author Email',
             description:
-              "Sets the default author email for the commit. The default value is the authenticated user or 'scaffolder@backstage.io'",
+              'Sets the default author email for the commit. The default value is the authenticated user or `scaffolder@backstage.io`',
           },
           forceEmptyGitAuthor: {
             type: 'boolean',
