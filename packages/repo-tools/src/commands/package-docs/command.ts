@@ -106,7 +106,6 @@ async function generateDocJson(pkg: string) {
   } catch (e) {
     console.error('Failed to generate docs for', pkg);
     console.error(e);
-    // test
   }
 }
 
