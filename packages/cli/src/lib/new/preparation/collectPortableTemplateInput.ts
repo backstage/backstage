@@ -23,13 +23,10 @@ import {
   PortableTemplateInputBuiltInParams,
   PortableTemplateInputRoleParams,
   PortableTemplateParams,
-  PortableTemplatePrompt,
   PortableTemplateRole,
 } from '../types';
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
-
-const RESERVED_PROMPT_NAMES = ['name', 'pluginId', 'moduleId', 'owner'];
 
 type CollectTemplateParamsOptions = {
   config: PortableTemplateConfig;
@@ -44,13 +41,11 @@ export async function collectPortableTemplateInput(
 
   const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
 
-  const rolePrompts = getPromptsForRole(template.role);
+  const prompts = getPromptsForRole(template.role);
 
-  const buildInPrompts = codeOwnersFilePath ? [ownerPrompt()] : [];
-
-  const templatePrompts = template.prompts?.map(customPrompt) ?? [];
-
-  const prompts = [...rolePrompts, ...buildInPrompts, ...templatePrompts];
+  if (codeOwnersFilePath) {
+    prompts.push(ownerPrompt());
+  }
 
   const needsAnswer = [];
   const prefilledAnswers = {} as PortableTemplateParams;
@@ -182,40 +177,6 @@ export function ownerPrompt(): DistinctQuestion {
         return 'The owner must be a space separated list of team names (e.g. @org/team-name), usernames (e.g. @username), or the email addresses (e.g. user@example.com).';
       }
 
-      return true;
-    },
-  };
-}
-
-export function customPrompt(prompt: PortableTemplatePrompt): DistinctQuestion {
-  if (RESERVED_PROMPT_NAMES.includes(prompt.id)) {
-    throw new Error(
-      `Prompt ID '${prompt.id}' is reserved and cannot be used in a template`,
-    );
-  }
-  return {
-    type: 'input',
-    name: prompt.id,
-    message: prompt.prompt,
-    validate: (value: string) => {
-      if (!value) {
-        return `Please provide a value for ${prompt.id}`;
-      } else if (prompt.validate) {
-        let valid: boolean;
-        let message: string;
-        switch (prompt.validate) {
-          case 'backstage-id':
-            valid = /^[a-z0-9]+(-[a-z0-9]+)*$/.test(value);
-            message =
-              'Value must be lowercase and contain only letters, digits, and dashes.';
-            break;
-          default:
-            throw new Error(
-              `There is no built-in validator with the following id: ${prompt.validate}`,
-            );
-        }
-        return valid || message;
-      }
       return true;
     },
   };

@@ -23,13 +23,21 @@ describe('collectTemplateParams', () => {
     config: {
       isUsingDefaultTemplates: false,
       templatePointers: [],
-      globals: {},
+      globals: {
+        baseVersion: '0.1.0',
+        license: 'Apache-2.0',
+        private: true,
+        packagePrefix: '@internal/',
+        pluginInfix: 'plugin-',
+      },
     } satisfies PortableTemplateConfig,
     template: {
       id: 'test',
       templatePath: '/test',
       targetPath: '/example',
       role: 'frontend-plugin' as const,
+      files: [],
+      templateValues: {},
     },
     prefilledParams: {
       pluginId: 'test',
@@ -46,11 +54,19 @@ describe('collectTemplateParams', () => {
       builtInParams: {
         owner: 'me',
       },
+      packageParams: {
+        packageName: '@internal/plugin-test',
+        packagePath: 'plugins/test',
+      },
       params: {
+        license: 'Apache-2.0',
+        packageName: '@internal/plugin-test',
+        packageVersion: '0.1.0',
+        privatePackage: true,
         pluginId: 'test',
         owner: 'me',
       },
-      globals: {},
+      globals: baseOptions.config.globals,
     });
   });
 
@@ -70,11 +86,19 @@ describe('collectTemplateParams', () => {
       builtInParams: {
         owner: undefined,
       },
+      packageParams: {
+        packageName: '@internal/plugin-other',
+        packagePath: 'plugins/other',
+      },
       params: {
+        license: 'Apache-2.0',
+        packageName: '@internal/plugin-other',
+        packageVersion: '0.1.0',
+        privatePackage: true,
         pluginId: 'other',
         owner: undefined,
       },
-      globals: {},
+      globals: baseOptions.config.globals,
     });
   });
 });
