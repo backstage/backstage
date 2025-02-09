@@ -23,13 +23,11 @@ describe('collectTemplateParams', () => {
     config: {
       isUsingDefaultTemplates: false,
       templatePointers: [],
-      globals: {
-        baseVersion: '0.1.0',
-        license: 'Apache-2.0',
-        private: true,
-        packagePrefix: '@internal/',
-        pluginInfix: 'plugin-',
-      },
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageNamePrefix: '@internal/',
+      packageNamePluginInfix: 'plugin-',
     } satisfies PortableTemplateConfig,
     template: {
       id: 'test',
@@ -53,10 +51,6 @@ describe('collectTemplateParams', () => {
       builtInParams: {
         owner: 'me',
       },
-      packageParams: {
-        packageName: '@internal/plugin-test',
-        packagePath: 'plugins/test',
-      },
       params: {
         license: 'Apache-2.0',
         packageName: '@internal/plugin-test',
@@ -65,7 +59,11 @@ describe('collectTemplateParams', () => {
         pluginId: 'test',
         owner: 'me',
       },
-      globals: baseOptions.config.globals,
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageName: '@internal/plugin-test',
+      packagePath: 'plugins/test',
     });
   });
 
@@ -85,10 +83,6 @@ describe('collectTemplateParams', () => {
       builtInParams: {
         owner: undefined,
       },
-      packageParams: {
-        packageName: '@internal/plugin-other',
-        packagePath: 'plugins/other',
-      },
       params: {
         license: 'Apache-2.0',
         packageName: '@internal/plugin-other',
@@ -97,7 +91,11 @@ describe('collectTemplateParams', () => {
         pluginId: 'other',
         owner: undefined,
       },
-      globals: baseOptions.config.globals,
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageName: '@internal/plugin-other',
+      packagePath: 'plugins/other',
     });
   });
 });

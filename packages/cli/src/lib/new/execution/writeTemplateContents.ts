@@ -27,12 +27,10 @@ export async function writeTemplateContents(
   template: PortableTemplate,
   input: PortableTemplateInput,
 ): Promise<{ targetDir: string }> {
-  const targetDir = paths.resolveTargetRoot(input.packageParams.packagePath);
+  const targetDir = paths.resolveTargetRoot(input.packagePath);
 
   if (await fs.pathExists(targetDir)) {
-    throw new InputError(
-      `Package '${input.packageParams.packagePath}' already exists`,
-    );
+    throw new InputError(`Package '${input.packagePath}' already exists`);
   }
 
   try {

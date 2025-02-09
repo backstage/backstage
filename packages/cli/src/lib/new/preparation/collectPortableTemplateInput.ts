@@ -73,22 +73,29 @@ export async function collectPortableTemplateInput(
     moduleId: answers.moduleId,
   } as PortableTemplateInputRoleParams;
 
-  const packageParams = resolvePackageParams(roleParams, config.globals);
+  const packageParams = resolvePackageParams({
+    roleParams,
+    packagePrefix: config.packageNamePrefix,
+    pluginInfix: config.packageNamePluginInfix,
+  });
 
   return {
     roleParams,
-    packageParams,
     builtInParams: {
       owner: answers.owner,
     } as PortableTemplateInputBuiltInParams,
     params: {
       ...answers,
       packageName: packageParams.packageName,
-      privatePackage: config.globals.private,
-      packageVersion: config.globals.baseVersion,
-      license: config.globals.license,
+      privatePackage: config.private,
+      packageVersion: config.version,
+      license: config.license,
     },
-    globals: config.globals,
+    license: config.license,
+    version: config.version,
+    private: config.private,
+    packageName: packageParams.packageName,
+    packagePath: packageParams.packagePath,
   };
 }
 

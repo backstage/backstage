@@ -15,14 +15,6 @@
  */
 import { resolvePackageParams } from './resolvePackageParams';
 
-const baseGlobals = {
-  baseVersion: '0.0.0',
-  license: 'Apache-2.0',
-  private: true,
-  packagePrefix: '@internal/',
-  pluginInfix: 'plugin-',
-};
-
 describe.each([
   [
     { role: 'web-library', name: 'test' },
@@ -96,6 +88,12 @@ describe.each([
   ],
 ] as const)('resolvePackageInfo', (roleParams, packageInfo) => {
   it(`should generate correct info with default config for ${roleParams.role}`, () => {
-    expect(resolvePackageParams(roleParams, baseGlobals)).toEqual(packageInfo);
+    expect(
+      resolvePackageParams({
+        roleParams,
+        packagePrefix: '@internal/',
+        pluginInfix: 'plugin-',
+      }),
+    ).toEqual(packageInfo);
   });
 });

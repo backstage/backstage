@@ -49,10 +49,12 @@ export default async (opts: ArgOptions) => {
   await createNewPackage({
     prefilledParams,
     preselectedTemplateId,
-    globals: {
-      ...otherGlobals,
-      packagePrefix,
-      pluginInfix,
+    configOverrides: {
+      license: otherGlobals.license,
+      version: otherGlobals.baseVersion,
+      private: otherGlobals.private,
+      packageNamePrefix: packagePrefix,
+      packageNamePluginInfix: pluginInfix,
     },
   });
 };

@@ -17,17 +17,17 @@
 import fs from 'fs-extra';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { PortableTemplateConfig, PortableTemplateGlobals } from '../types';
+import { PortableTemplateConfig } from '../types';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
 
-const defaultGlobals = {
+const defaults = {
   license: 'Apache-2.0',
-  baseVersion: '0.1.0',
+  version: '0.1.0',
   private: true,
-  packagePrefix: '@internal/',
-  pluginInfix: 'plugin-',
+  packageNamePrefix: '@internal/',
+  packageNamePluginInfix: 'plugin-',
 };
 
 const pkgJsonWithNewConfigSchema = z.object({
@@ -48,10 +48,10 @@ const pkgJsonWithNewConfigSchema = z.object({
           globals: z
             .object({
               license: z.string().optional(),
-              baseVersion: z.string().optional(),
+              version: z.string().optional(),
               private: z.boolean().optional(),
-              packagePrefix: z.string().optional(),
-              pluginInfix: z.string().optional(),
+              namePrefix: z.string().optional(),
+              namePluginInfix: z.string().optional(),
             })
             .optional(),
         })
@@ -63,12 +63,13 @@ const pkgJsonWithNewConfigSchema = z.object({
 
 type LoadConfigOptions = {
   packagePath?: string;
-  globalOverrides?: Partial<PortableTemplateGlobals>;
+  overrides?: Partial<PortableTemplateConfig>;
 };
 
 export async function loadPortableTemplateConfig(
   options: LoadConfigOptions = {},
 ): Promise<PortableTemplateConfig> {
+  const { overrides = {} } = options;
   const pkgPath =
     options.packagePath ?? paths.resolveTargetRoot('package.json');
   const pkgJson = await fs.readJson(pkgPath);
@@ -81,15 +82,21 @@ export async function loadPortableTemplateConfig(
     );
   }
 
-  const newConfig = parsed.data.backstage?.new;
+  const config = parsed.data.backstage?.new;
 
   return {
-    isUsingDefaultTemplates: !newConfig?.templates,
-    templatePointers: newConfig?.templates ?? defaultTemplates,
-    globals: {
-      ...defaultGlobals,
-      ...newConfig?.globals,
-      ...options.globalOverrides,
-    },
+    isUsingDefaultTemplates: !config?.templates,
+    templatePointers: config?.templates ?? defaultTemplates,
+    license: overrides.license ?? config?.globals?.license ?? defaults.license,
+    version: overrides.version ?? config?.globals?.version ?? defaults.version,
+    private: overrides.private ?? config?.globals?.private ?? defaults.private,
+    packageNamePrefix:
+      overrides.packageNamePrefix ??
+      config?.globals?.namePrefix ??
+      defaults.packageNamePrefix,
+    packageNamePluginInfix:
+      overrides.packageNamePluginInfix ??
+      config?.globals?.namePluginInfix ??
+      defaults.packageNamePluginInfix,
   };
 }

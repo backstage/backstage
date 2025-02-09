@@ -19,12 +19,10 @@ import { writeTemplateContents } from './writeTemplateContents';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { paths } from '../../paths';
 
-const mockGlobals = {
-  baseVersion: '0.1.0',
+const baseConfig = {
+  version: '0.1.0',
   license: 'Apache-2.0',
   private: true,
-  packagePrefix: '@internal/',
-  pluginInfix: 'plugin-',
 };
 
 describe('writeTemplateContents', () => {
@@ -47,14 +45,12 @@ describe('writeTemplateContents', () => {
         templateValues: {},
       },
       {
+        ...baseConfig,
         roleParams: { role: 'frontend-plugin', pluginId: 'test' },
-        globals: mockGlobals,
         builtInParams: {},
-        packageParams: {
-          packageName: '@internal/plugin-test',
-          packagePath: 'plugins/plugin-test',
-        },
         params: {},
+        packageName: '@internal/plugin-test',
+        packagePath: 'plugins/plugin-test',
       },
     );
 
@@ -85,16 +81,14 @@ describe('writeTemplateContents', () => {
         templateValues: {},
       },
       {
+        ...baseConfig,
         roleParams: { role: 'frontend-plugin', pluginId: 'test' },
-        globals: mockGlobals,
         builtInParams: {},
-        packageParams: {
-          packageName: '@internal/plugin-test',
-          packagePath: 'out',
-        },
         params: {
           pluginId: 'test',
         },
+        packageName: '@internal/plugin-test',
+        packagePath: 'out',
       },
     );
 
