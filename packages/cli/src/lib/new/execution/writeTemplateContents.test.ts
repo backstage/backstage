@@ -48,7 +48,6 @@ describe('writeTemplateContents', () => {
         ...baseConfig,
         roleParams: { role: 'frontend-plugin', pluginId: 'test' },
         builtInParams: {},
-        params: {},
         packageName: '@internal/plugin-test',
         packagePath: 'plugins/plugin-test',
       },
@@ -84,9 +83,6 @@ describe('writeTemplateContents', () => {
         ...baseConfig,
         roleParams: { role: 'frontend-plugin', pluginId: 'test' },
         builtInParams: {},
-        params: {
-          pluginId: 'test',
-        },
         packageName: '@internal/plugin-test',
         packagePath: 'out',
       },

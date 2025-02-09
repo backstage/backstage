@@ -36,8 +36,17 @@ export async function writeTemplateContents(
   try {
     const isMonoRepo = await getIsMonoRepo();
 
+    const { role, ...roleValues } = input.roleParams;
+
     const templater = await PortableTemplater.create({
-      values: input.params,
+      values: {
+        ...roleValues,
+        ...input.builtInParams,
+        packageName: input.packageName,
+        privatePackage: input.private,
+        packageVersion: input.version,
+        license: input.license,
+      },
       templatedValues: template.templateValues,
     });
 

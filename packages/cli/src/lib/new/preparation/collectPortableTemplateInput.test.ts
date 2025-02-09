@@ -51,14 +51,6 @@ describe('collectTemplateParams', () => {
       builtInParams: {
         owner: 'me',
       },
-      params: {
-        license: 'Apache-2.0',
-        packageName: '@internal/plugin-test',
-        packageVersion: '0.1.0',
-        privatePackage: true,
-        pluginId: 'test',
-        owner: 'me',
-      },
       version: '0.1.0',
       license: 'Apache-2.0',
       private: true,
@@ -81,14 +73,6 @@ describe('collectTemplateParams', () => {
         pluginId: 'other',
       },
       builtInParams: {
-        owner: undefined,
-      },
-      params: {
-        license: 'Apache-2.0',
-        packageName: '@internal/plugin-other',
-        packageVersion: '0.1.0',
-        privatePackage: true,
-        pluginId: 'other',
         owner: undefined,
       },
       version: '0.1.0',
