@@ -1,8 +1,5 @@
 description: A new backend plugin
 template: ./default-backend-plugin
 role: backend-plugin
-additionalActions:
-  - install-backend
-  - add-backend
 templateValues:
   pluginVar: '{{ camelCase pluginId }}Plugin'

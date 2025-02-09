@@ -1,9 +1,6 @@
 description: A new frontend plugin
 template: ./default-plugin
 role: frontend-plugin
-additionalActions:
-  - install-frontend
-  - add-frontend-legacy
 templateValues:
   pluginVar: '{{ camelCase pluginId }}Plugin'
   extensionName: '{{ upperFirst ( camelCase pluginId ) }}Page'

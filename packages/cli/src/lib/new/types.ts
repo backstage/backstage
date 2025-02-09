@@ -73,7 +73,6 @@ export type PortableTemplate = {
   id: string;
   description?: string;
   role: PortableTemplateRole;
-  additionalActions?: string[];
   files: PortableTemplateFile[];
   templateValues: Record<string, string>;
 };
