@@ -1,6 +1,5 @@
 description: A new frontend plugin
 template: ./default-plugin
-targetPath: plugins
 role: frontend-plugin
 additionalActions:
   - install-frontend

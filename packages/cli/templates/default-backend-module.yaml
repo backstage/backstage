@@ -1,6 +1,5 @@
 description: A new backend module that extends an existing backend plugin with additional features
 template: ./default-backend-module
-targetPath: plugins
 role: backend-plugin-module
 additionalActions:
   - install-backend

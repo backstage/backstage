@@ -44,7 +44,6 @@ describe('writeTemplateContents', () => {
         id: 'test',
         files: [],
         role: 'frontend-plugin',
-        targetPath: 'plugins/plugin-test',
         templateValues: {},
       },
       {
@@ -83,7 +82,6 @@ describe('writeTemplateContents', () => {
           },
         ],
         role: 'frontend-plugin',
-        targetPath: 'plugins/plugin-test',
         templateValues: {},
       },
       {
