@@ -31,6 +31,7 @@ export default async (opts: ArgOptions) => {
     option: rawArgOptions,
     select: preselectedTemplateId,
     scope,
+    private: isPrivate,
     ...otherGlobals
   } = opts;
 
@@ -46,13 +47,22 @@ export default async (opts: ArgOptions) => {
     pluginInfix = scope.includes('backstage') ? 'plugin-' : 'backstage-plugin-';
   }
 
+  if (
+    isPrivate === false || // set to false with --no-private flag
+    Object.values(otherGlobals).filter(Boolean).length !== 0
+  ) {
+    console.warn(
+      `Global template configuration via CLI flags is deprecated, see https://backstage.io/docs/cli/new for information on how to configure package templating`,
+    );
+  }
+
   await createNewPackage({
     prefilledParams,
     preselectedTemplateId,
     configOverrides: {
       license: otherGlobals.license,
       version: otherGlobals.baseVersion,
-      private: otherGlobals.private,
+      private: isPrivate,
       publishRegistry: otherGlobals.npmRegistry,
       packageNamePrefix: packagePrefix,
       packageNamePluginInfix: pluginInfix,
