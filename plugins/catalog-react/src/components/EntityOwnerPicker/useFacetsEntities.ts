@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
+import { ProfileInfo, useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import { useState } from 'react';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 type FacetsCursor = {
   start: number;
@@ -44,36 +44,38 @@ type FacetsInitialRequest = {
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
 
-  const [facetsPromise] = useState(async () => {
+  const [getEntitiesPromise] = useState(async () => {
     if (!enabled) {
       return [];
     }
     const facet = 'relations.ownedBy';
 
-    return catalogApi
-      .getEntityFacets({ facets: [facet] })
-      .then(response =>
-        response.facets[facet]
-          .map(e => e.value)
-          .map(ref => {
-            const { kind, name, namespace } = parseEntityRef(ref);
-            return {
-              apiVersion: 'backstage.io/v1beta1',
-              kind,
-              metadata: { name, namespace },
-            };
-          })
-          .sort(
-            (a, b) =>
-              a.kind.localeCompare(b.kind, 'en-US') ||
-              a.metadata.namespace.localeCompare(
-                b.metadata.namespace,
-                'en-US',
-              ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
-          ),
-      )
-      .catch(() => []);
+    try {
+      const entityRefs = await catalogApi
+        .getEntityFacets({ facets: [facet] })
+        .then(response => response.facets[facet].map(e => e.value));
+
+      const catalogResponse = await catalogApi.getEntitiesByRefs({
+        entityRefs: entityRefs,
+        fields: [
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+          'kind',
+          'spec.profile.displayName',
+        ],
+      });
+
+      const ownerEntities = catalogResponse.items.filter(entity => !!entity);
+
+      return ownerEntities.sort(
+        (a, b) =>
+          entityRefs.indexOf(a.metadata.name) -
+          entityRefs.indexOf(b.metadata.name),
+      );
+    } catch {
+      return [];
+    }
   });
 
   return useAsyncFn<
@@ -83,23 +85,22 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
     ) => Promise<FacetsEntitiesResponse>
   >(
     async (request, options) => {
-      const facets = await facetsPromise;
-
-      if (!facets) {
+      const entities = await getEntitiesPromise;
+      if (!entities) {
         return {
           items: [],
         };
       }
 
       const limit = options?.limit ?? 20;
-
       const { text, start } = decodeCursor(request);
-      const filteredRefs = facets.filter(e => filterEntity(text, e));
+      const filteredEntities = entities.filter(e => filterEntity(text, e));
       const end = start + limit;
+
       return {
-        items: filteredRefs.slice(0, end),
+        items: filteredEntities.slice(0, end),
         ...encodeCursor({
-          entities: filteredRefs,
+          entities: filteredEntities,
           limit: end,
           payload: {
             text,
@@ -108,7 +109,7 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
         }),
       };
     },
-    [facetsPromise],
+    [getEntitiesPromise],
     { loading: true, value: { items: [] } },
   );
 }
@@ -147,10 +148,17 @@ function encodeCursor({
 }
 
 function filterEntity(text: string, entity: Entity) {
-  const normalizedText = text.trim();
+  const normalizedText = text.trim().toLocaleLowerCase();
+
+  const profile: ProfileInfo | undefined =
+    (entity.spec?.profile as ProfileInfo) ?? undefined;
+  const displayName = profile?.displayName?.toLocaleLowerCase() ?? '';
+
   return (
-    entity.kind.includes(normalizedText) ||
-    entity.metadata.namespace?.includes(normalizedText) ||
-    entity.metadata.name.includes(normalizedText)
+    entity.kind.toLocaleLowerCase().includes(normalizedText) ||
+    entity.metadata.namespace?.toLocaleLowerCase().includes(normalizedText) ||
+    entity.metadata.name.toLocaleLowerCase().includes(normalizedText) ||
+    entity.metadata.title?.toLocaleLowerCase().includes(normalizedText) ||
+    displayName.includes(normalizedText)
   );
 }

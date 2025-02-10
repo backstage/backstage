@@ -407,24 +407,26 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
       expect(screen.getByText('some-owner')).toBeInTheDocument(),
     );
 
-    ['some-owner-2', 'another-owner', 'test-namespace/another-owner-2'].forEach(
-      owner => {
-        expect(screen.getByText(owner)).toBeInTheDocument();
-      },
-    );
+    [
+      'Some Owner 2',
+      'Another Owner',
+      'Another Owner in Another Namespace',
+    ].forEach(owner => {
+      expect(screen.getByText(owner)).toBeInTheDocument();
+    });
 
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
 
     fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
 
     await waitFor(() =>
-      expect(screen.getByText('some-owner-batch-2')).toBeInTheDocument(),
+      expect(screen.getByText('Some Owner Batch 2')).toBeInTheDocument(),
     );
 
     [
-      'some-owner-2-batch-2',
-      'another-owner-batch-2',
-      'test-namespace/another-owner-2-batch-2',
+      'Some Owner Batch 2',
+      'Another Owner Batch 2',
+      'Another Owner in Another Namespace Batch 2',
     ].forEach(owner => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
