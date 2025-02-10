@@ -1,3 +1,2 @@
-description: A new Node.js library plugin package
-template: ./default-node-plugin-package
 role: plugin-node-library
+template: ./default-node-plugin-package

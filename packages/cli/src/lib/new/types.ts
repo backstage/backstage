@@ -38,6 +38,7 @@ export type PortableTemplateConfig = {
 
 export type PortableTemplatePointer = {
   id: string;
+  description?: string;
   target: string;
 };
 
@@ -71,7 +72,6 @@ export type PortableTemplateFile = {
 
 export type PortableTemplate = {
   id: string;
-  description?: string;
   role: PortableTemplateRole;
   files: PortableTemplateFile[];
   templateValues: Record<string, string>;

@@ -40,6 +40,7 @@ const pkgJsonWithNewConfigSchema = z.object({
               z
                 .object({
                   id: z.string(),
+                  description: z.string().optional(),
                   target: z.string(),
                 })
                 .strict(),

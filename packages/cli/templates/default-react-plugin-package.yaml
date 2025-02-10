@@ -1,3 +1,2 @@
-description: A new web library plugin package
-template: ./default-react-plugin-package
 role: plugin-web-library
+template: ./default-react-plugin-package
