@@ -29,16 +29,18 @@ describe('loadPortableTemplateConfig', () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         backstage: {
-          new: {
-            templates: [
-              { id: 'template1', target: 'path/to/template1' },
-              { id: 'template2', target: 'path/to/template2' },
-            ],
-            globals: {
-              license: 'MIT',
-              private: true,
-              namePrefix: '@acme/',
-              namePluginInfix: 'backstage-plugin-',
+          cli: {
+            new: {
+              templates: [
+                { id: 'template1', target: 'path/to/template1' },
+                { id: 'template2', target: 'path/to/template2' },
+              ],
+              globals: {
+                license: 'MIT',
+                private: true,
+                namePrefix: '@acme/',
+                namePluginInfix: 'backstage-plugin-',
+              },
             },
           },
         },
@@ -88,17 +90,19 @@ describe('loadPortableTemplateConfig', () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         backstage: {
-          new: {
-            templates: [
-              'default-backend-plugin',
-              { id: 'template1', target: 'path/to/template1' },
-              'default-frontend-plugin',
-            ],
-            globals: {
-              license: 'MIT',
-              private: true,
-              namePrefix: '@acme/',
-              namePluginInfix: 'backstage-plugin-',
+          cli: {
+            new: {
+              templates: [
+                'default-backend-plugin',
+                { id: 'template1', target: 'path/to/template1' },
+                'default-frontend-plugin',
+              ],
+              globals: {
+                license: 'MIT',
+                private: true,
+                namePrefix: '@acme/',
+                namePluginInfix: 'backstage-plugin-',
+              },
             },
           },
         },
@@ -136,10 +140,12 @@ describe('loadPortableTemplateConfig', () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         backstage: {
-          new: {
-            globals: {
-              license: 'MIT',
-              private: true,
+          cli: {
+            new: {
+              globals: {
+                license: 'MIT',
+                private: true,
+              },
             },
           },
         },
@@ -165,8 +171,10 @@ describe('loadPortableTemplateConfig', () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         backstage: {
-          new: {
-            templates: 'invalid',
+          cli: {
+            new: {
+              templates: 'invalid',
+            },
           },
         },
       }),
@@ -185,8 +193,10 @@ describe('loadPortableTemplateConfig', () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         backstage: {
-          new: {
-            templates: ['invalid'],
+          cli: {
+            new: {
+              templates: ['invalid'],
+            },
           },
         },
       }),
