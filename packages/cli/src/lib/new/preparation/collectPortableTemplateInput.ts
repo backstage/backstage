@@ -47,11 +47,13 @@ export async function collectPortableTemplateInput(
     prompts.push(ownerPrompt());
   }
 
+  const parameters = { ...template.parameters, ...prefilledParams };
+
   const needsAnswer = [];
   const prefilledAnswers = {} as PortableTemplateParams;
   for (const prompt of prompts) {
-    if (prompt.name && prefilledParams[prompt.name] !== undefined) {
-      prefilledAnswers[prompt.name] = prefilledParams[prompt.name];
+    if (prompt.name && parameters[prompt.name] !== undefined) {
+      prefilledAnswers[prompt.name] = parameters[prompt.name];
     } else {
       needsAnswer.push(prompt);
     }

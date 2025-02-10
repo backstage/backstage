@@ -24,6 +24,8 @@ describe('loadTemplate', () => {
         'path/to/template1.yaml': `
           template: template1
           role: frontend-plugin
+          parameters:
+            foo: bar
         `,
         'path/to/template1/hello.txt': 'hello world',
       },
@@ -38,6 +40,7 @@ describe('loadTemplate', () => {
       id: 'template1',
       role: 'frontend-plugin',
       files: [{ path: 'hello.txt', content: 'hello world' }],
+      parameters: { foo: 'bar' },
       templateValues: {},
     });
   });
