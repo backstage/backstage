@@ -34,6 +34,7 @@ describe('collectTemplateParams', () => {
       templatePath: '/test',
       role: 'frontend-plugin' as const,
       files: [],
+      parameters: {},
       templateValues: {},
     },
     prefilledParams: {
@@ -48,9 +49,7 @@ describe('collectTemplateParams', () => {
         role: 'frontend-plugin',
         pluginId: 'test',
       },
-      builtInParams: {
-        owner: 'me',
-      },
+      owner: 'me',
       version: '0.1.0',
       license: 'Apache-2.0',
       private: true,
@@ -72,9 +71,7 @@ describe('collectTemplateParams', () => {
         role: 'frontend-plugin',
         pluginId: 'other',
       },
-      builtInParams: {
-        owner: undefined,
-      },
+      owner: undefined,
       version: '0.1.0',
       license: 'Apache-2.0',
       private: true,

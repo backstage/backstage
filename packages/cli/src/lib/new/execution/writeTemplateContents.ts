@@ -41,7 +41,6 @@ export async function writeTemplateContents(
     const templater = await PortableTemplater.create({
       values: {
         ...roleValues,
-        ...input.builtInParams,
         packageName: input.packageName,
         privatePackage: input.private,
         packageVersion: input.version,

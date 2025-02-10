@@ -44,8 +44,8 @@ export async function executePortableTemplate(
 
     await installNewPackage(input);
 
-    if (input.builtInParams.owner) {
-      await addCodeownersEntry(targetDir, input.builtInParams.owner);
+    if (input.owner) {
+      await addCodeownersEntry(targetDir, input.owner);
     }
 
     await Task.forCommand('yarn install', {
