@@ -26,6 +26,7 @@ const defaults = {
   license: 'Apache-2.0',
   version: '0.1.0',
   private: true,
+  publishRegistry: undefined,
   packageNamePrefix: '@internal/',
   packageNamePluginInfix: 'plugin-',
 };
@@ -56,6 +57,7 @@ const newConfigSchema = z
         license: z.string().optional(),
         version: z.string().optional(),
         private: z.boolean().optional(),
+        publishRegistry: z.string().optional(),
         namePrefix: z.string().optional(),
         namePluginInfix: z.string().optional(),
       })
@@ -118,6 +120,10 @@ export async function loadPortableTemplateConfig(
     license: overrides.license ?? config?.globals?.license ?? defaults.license,
     version: overrides.version ?? config?.globals?.version ?? defaults.version,
     private: overrides.private ?? config?.globals?.private ?? defaults.private,
+    publishRegistry:
+      overrides.publishRegistry ??
+      config?.globals?.publishRegistry ??
+      defaults.publishRegistry,
     packageNamePrefix:
       overrides.packageNamePrefix ??
       config?.globals?.namePrefix ??

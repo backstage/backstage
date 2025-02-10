@@ -31,6 +31,8 @@ export type PortableTemplateConfig = {
 
   private: boolean;
 
+  publishRegistry?: string;
+
   packageNamePrefix: string;
 
   packageNamePluginInfix: string;
@@ -112,6 +114,8 @@ export type PortableTemplateInput = {
   version: string;
 
   private: boolean;
+
+  publishRegistry?: string;
 
   packageName: string;
 
