@@ -20,7 +20,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useUserProfile } from '../useUserProfileInfo';
-import Button from '@material-ui/core/Button';
 
 const Contents = () => {
   const { backstageIdentity } = useUserProfile();
@@ -50,9 +49,6 @@ const Contents = () => {
 /** @public */
 export const UserSettingsIdentityCard = () => (
   <InfoCard title="Backstage Identity">
-    <Button variant="contained" color="primary">
-      werfg
-    </Button>
     <Contents />
   </InfoCard>
 );
