@@ -35,36 +35,41 @@ const builtInTemplateIds = defaultTemplates.map(t => `default-${t.id}`) as [
   ...string[],
 ];
 
+const newConfigSchema = z
+  .object({
+    templates: z
+      .array(
+        z.union([
+          z.enum(builtInTemplateIds),
+          z
+            .object({
+              id: z.string(),
+              description: z.string().optional(),
+              target: z.string(),
+            })
+            .strict(),
+        ]),
+      )
+      .optional(),
+    globals: z
+      .object({
+        license: z.string().optional(),
+        version: z.string().optional(),
+        private: z.boolean().optional(),
+        namePrefix: z.string().optional(),
+        namePluginInfix: z.string().optional(),
+      })
+      .optional(),
+  })
+  .strict();
+
 const pkgJsonWithNewConfigSchema = z.object({
   backstage: z
     .object({
-      new: z
+      cli: z
         .object({
-          templates: z
-            .array(
-              z.union([
-                z.enum(builtInTemplateIds),
-                z
-                  .object({
-                    id: z.string(),
-                    description: z.string().optional(),
-                    target: z.string(),
-                  })
-                  .strict(),
-              ]),
-            )
-            .optional(),
-          globals: z
-            .object({
-              license: z.string().optional(),
-              version: z.string().optional(),
-              private: z.boolean().optional(),
-              namePrefix: z.string().optional(),
-              namePluginInfix: z.string().optional(),
-            })
-            .optional(),
+          new: newConfigSchema.optional(),
         })
-        .strict()
         .optional(),
     })
     .optional(),
@@ -91,7 +96,7 @@ export async function loadPortableTemplateConfig(
     );
   }
 
-  const config = parsed.data.backstage?.new;
+  const config = parsed.data.backstage?.cli?.new;
 
   const templatePointers =
     config?.templates?.map(t => {

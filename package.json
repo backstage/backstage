@@ -1,6 +1,16 @@
 {
   "name": "root",
   "version": "1.36.0-next.2",
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "scope": "backstage",
+          "private": false
+        }
+      }
+    }
+  },
   "private": true,
   "repository": {
     "type": "git",
