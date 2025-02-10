@@ -17,7 +17,8 @@
 import React, { forwardRef } from 'react';
 import { Icon } from '../Icon';
 import clsx from 'clsx';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { extractProps } from '../../utils/extractProps';
+import { buttonPropDefs } from './Button.props';
 
 import type { ButtonProps } from './types';
 
@@ -31,25 +32,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconStart,
       iconEnd,
       children,
-      className,
-      style,
       ...rest
     } = props;
 
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
-    const responsiveVariant = useResponsiveValue(variant);
+    const { className, style } = extractProps(props, buttonPropDefs);
 
     return (
       <button
         ref={ref}
         disabled={disabled}
-        className={clsx(
-          'canon-Button',
-          `canon-Button--size-${responsiveSize}`,
-          `canon-Button--variant-${responsiveVariant}`,
-          className,
-        )}
+        className={clsx('canon-Button', className)}
         style={style}
         {...rest}
       >

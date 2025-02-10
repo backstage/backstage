@@ -25,8 +25,7 @@ export interface ButtonProps {
   variant?:
     | 'primary'
     | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
