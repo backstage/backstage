@@ -42,9 +42,6 @@ export async function writeTemplateContents(
       values: {
         ...roleValues,
         packageName: input.packageName,
-        privatePackage: input.private,
-        packageVersion: input.version,
-        license: input.license,
       },
       templatedValues: template.templateValues,
     });
@@ -112,6 +109,17 @@ export function injectPackageJsonInput(
     }
   } else {
     delete pkgJson.private;
+  }
+
+  if (input.publishRegistry) {
+    if (pkgJson.publishConfig) {
+      pkgJson.publishConfig = {
+        ...pkgJson.publishConfig,
+        registry: input.publishRegistry,
+      };
+    } else {
+      toAdd.push(['publishConfig', { registry: input.publishRegistry }]);
+    }
   }
 
   const entries = Object.entries(pkgJson);

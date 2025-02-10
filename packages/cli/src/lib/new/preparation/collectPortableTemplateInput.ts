@@ -93,6 +93,7 @@ export async function collectPortableTemplateInput(
     license: config.license,
     version: config.version,
     private: config.private,
+    publishRegistry: config.publishRegistry,
     packageName: packageParams.packageName,
     packagePath: packageParams.packagePath,
   };

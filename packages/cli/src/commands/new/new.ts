@@ -53,6 +53,7 @@ export default async (opts: ArgOptions) => {
       license: otherGlobals.license,
       version: otherGlobals.baseVersion,
       private: otherGlobals.private,
+      publishRegistry: otherGlobals.npmRegistry,
       packageNamePrefix: packagePrefix,
       packageNamePluginInfix: pluginInfix,
     },
