@@ -22,6 +22,7 @@ import {
   CATALOG_FILTER_EXISTS,
   CatalogApi,
   CatalogClient,
+  EntityFilterQuery,
 } from '@backstage/catalog-client';
 import {
   Entity,
@@ -68,7 +69,8 @@ export type TechDocsCollatorFactoryOptions = {
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
   documentTransformer?: TechDocsCollatorDocumentTransformer;
-  entityFilter?: (entity: Entity[]) => Entity[];
+  entityFilterFunction?: (entity: Entity[]) => Entity[];
+  customCatalogApiFilters?: EntityFilterQuery;
 };
 
 type EntityInfo = {
@@ -98,7 +100,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private readonly legacyPathCasing: boolean;
   private entityTransformer: TechDocsCollatorEntityTransformer;
   private documentTransformer: TechDocsCollatorDocumentTransformer;
-  private entityFilter: Function | undefined;
+  private entityFilterFunction: Function | undefined;
+  private customCatalogApiFilters: EntityFilterQuery | undefined;
 
   private constructor(options: TechDocsCollatorFactoryOptions) {
     this.discovery = options.discovery;
@@ -112,7 +115,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     this.legacyPathCasing = options.legacyPathCasing ?? false;
     this.entityTransformer = options.entityTransformer ?? (() => ({}));
     this.documentTransformer = options.documentTransformer ?? (() => ({}));
-    this.entityFilter = options.entityFilter;
+    this.entityFilterFunction = options.entityFilterFunction;
+    this.customCatalogApiFilters = options.customCatalogApiFilters;
 
     this.auth = createLegacyAuthAdapters({
       auth: options.auth,
@@ -168,6 +172,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
             filter: {
               'metadata.annotations.backstage.io/techdocs-ref':
                 CATALOG_FILTER_EXISTS,
+              ...this.customCatalogApiFilters,
             },
             limit: batchSize,
             offset: entitiesRetrieved,
@@ -180,8 +185,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       moreEntitiesToGet = entities.length === batchSize;
       entitiesRetrieved += entities.length;
 
-      const filteredEntities = this.entityFilter
-        ? this.entityFilter(entities)
+      const filteredEntities = this.entityFilterFunction
+        ? this.entityFilterFunction(entities)
         : this.defaultFilteringFunction(entities);
 
       const docPromises = filteredEntities.map((entity: Entity) =>

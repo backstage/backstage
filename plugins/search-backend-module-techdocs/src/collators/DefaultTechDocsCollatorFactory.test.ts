@@ -196,7 +196,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     it('should filter catalog entities when a custom filter is set', async () => {
       factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
         ...options,
-        entityFilter: entities =>
+        entityFilterFunction: entities =>
           entities.filter(entity => entity.kind !== 'Component'),
       });
       collator = await factory.getCollator();

@@ -25,6 +25,7 @@ import {
   createExtensionPoint,
   readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
@@ -54,7 +55,10 @@ export const techdocsCollatorEntityTransformerExtensionPoint =
 
 /** @public */
 export interface TechDocsCollatorEntityFilterExtensionPoint {
-  setEntityFilter(filterFunction: (entities: Entity[]) => Entity[]): void;
+  setEntityFilterFunction(
+    filterFunction: (entities: Entity[]) => Entity[],
+  ): void;
+  setCustomCatalogApiFilters(apiFilters: EntityFilterQuery): void;
 }
 
 /**
@@ -77,7 +81,8 @@ export default createBackendModule({
   register(env) {
     let entityTransformer: TechDocsCollatorEntityTransformer | undefined;
     let documentTransformer: TechDocsCollatorDocumentTransformer | undefined;
-    let entityFilter: ((e: Entity[]) => Entity[]) | undefined;
+    let entityFilterFunction: ((e: Entity[]) => Entity[]) | undefined;
+    let customCatalogApiFilters: EntityFilterQuery | undefined;
 
     env.registerExtensionPoint(
       techdocsCollatorEntityTransformerExtensionPoint,
@@ -102,11 +107,21 @@ export default createBackendModule({
     );
 
     env.registerExtensionPoint(techDocsCollatorEntityFilterExtensionPoint, {
-      setEntityFilter(newEntityFilter) {
-        if (entityFilter) {
-          throw new Error('TechDocs entity filters may only be set once');
+      setEntityFilterFunction(newEntityFilterFunction) {
+        if (entityFilterFunction) {
+          throw new Error(
+            'TechDocs entity filter functions may only be set once',
+          );
         }
-        entityFilter = newEntityFilter;
+        entityFilterFunction = newEntityFilterFunction;
+      },
+      setCustomCatalogApiFilters(newCatalogApiFilters) {
+        if (customCatalogApiFilters) {
+          throw new Error(
+            'TechDocs catalog entity filters may only be set once',
+          );
+        }
+        customCatalogApiFilters = newCatalogApiFilters;
       },
     });
 
@@ -153,7 +168,8 @@ export default createBackendModule({
             catalogClient: catalog,
             entityTransformer,
             documentTransformer,
-            entityFilter,
+            customCatalogApiFilters,
+            entityFilterFunction,
           }),
         });
       },
