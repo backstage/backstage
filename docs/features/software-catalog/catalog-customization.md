@@ -17,7 +17,7 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 
 ## Initially Selected Filter
 
-By default the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
+By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route
@@ -30,7 +30,7 @@ Possible options are: owned, starred, or all
 
 ## Initially Selected Kind
 
-By default the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+By default, the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
@@ -107,7 +107,6 @@ const createUserEmailColumn = (): TableColumn<CatalogTableRow> => ({
 
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
-    return [
     return [
       // Render existing columns
       ...CatalogTable.defaultColumnsFunc(entityListContext),
