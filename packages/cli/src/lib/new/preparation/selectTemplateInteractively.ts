@@ -38,15 +38,15 @@ export async function selectTemplateInteractively(
         message: 'What do you want to create?',
         choices: config.templatePointers.map(t =>
           t.description
-            ? { name: `${t.id} - ${t.description}`, value: t.id }
-            : t.id,
+            ? { name: `${t.name} - ${t.description}`, value: t.name }
+            : t.name,
         ),
       },
     ]);
     selectedId = answers.id;
   }
 
-  const template = config.templatePointers.find(t => t.id === selectedId);
+  const template = config.templatePointers.find(t => t.name === selectedId);
   if (!template) {
     throw new Error(`Template '${selectedId}' not found`);
   }
