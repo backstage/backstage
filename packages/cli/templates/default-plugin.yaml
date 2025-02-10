@@ -1,6 +1,5 @@
-description: A new frontend plugin
-template: ./default-plugin
 role: frontend-plugin
+template: ./default-plugin
 templateValues:
   pluginVar: '{{ camelCase pluginId }}Plugin'
   extensionName: '{{ upperFirst ( camelCase pluginId ) }}Page'

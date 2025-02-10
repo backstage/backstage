@@ -1,6 +1,5 @@
-description: A module exporting custom actions for @backstage/plugin-scaffolder-backend
-template: ./scaffolder-module
 role: backend-plugin-module
+template: ./scaffolder-module
 params:
   pluginId: scaffolder
 templateValues:

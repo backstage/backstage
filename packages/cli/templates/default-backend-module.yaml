@@ -1,5 +1,4 @@
-description: A new backend module that extends an existing backend plugin with additional features
-template: ./default-backend-module
 role: backend-plugin-module
+template: ./default-backend-module
 templateValues:
   moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'

@@ -1,3 +1,2 @@
-description: A new node-library package, exporting shared functionality for backend plugins and modules
-template: ./node-library-package
 role: node-library
+template: ./node-library-package

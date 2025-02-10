@@ -32,25 +32,23 @@ import { fromZodError } from 'zod-validation-error';
 
 const templateDefinitionSchema = z
   .object({
-    description: z.string().optional(),
-    template: z.string(),
     role: z.enum(TEMPLATE_ROLES),
+    template: z.string(),
     templateValues: z.record(z.string()).optional(),
   })
   .strict();
 
-export async function loadPortableTemplate({
-  id,
-  target,
-}: PortableTemplatePointer): Promise<PortableTemplate> {
-  if (target.match(/https?:\/\//)) {
+export async function loadPortableTemplate(
+  pointer: PortableTemplatePointer,
+): Promise<PortableTemplate> {
+  if (pointer.target.match(/https?:\/\//)) {
     throw new Error('Remote templates are not supported yet');
   }
   const templateContent = await fs
-    .readFile(paths.resolveTargetRoot(target), 'utf-8')
+    .readFile(paths.resolveTargetRoot(pointer.target), 'utf-8')
     .catch(error => {
       throw new ForwardedError(
-        `Failed to load template definition from '${target}'`,
+        `Failed to load template definition from '${pointer.target}'`,
         error,
       );
     });
@@ -59,14 +57,14 @@ export async function loadPortableTemplate({
   const parsed = templateDefinitionSchema.safeParse(rawTemplate);
   if (!parsed.success) {
     throw new ForwardedError(
-      `Invalid template definition at '${target}'`,
+      `Invalid template definition at '${pointer.target}'`,
       fromZodError(parsed.error),
     );
   }
 
-  const { template, templateValues = {}, ...templateData } = parsed.data;
+  const { role, template, templateValues = {} } = parsed.data;
 
-  const templatePath = resolvePath(dirname(target), template);
+  const templatePath = resolvePath(dirname(pointer.target), template);
   const filePaths = await recursiveReaddir(templatePath).catch(error => {
     throw new ForwardedError(
       `Failed to load template contents from '${templatePath}'`,
@@ -93,5 +91,5 @@ export async function loadPortableTemplate({
     }
   }
 
-  return { id, templateValues, ...templateData, files };
+  return { id: pointer.id, role, files, templateValues };
 }

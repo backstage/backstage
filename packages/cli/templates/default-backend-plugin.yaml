@@ -1,5 +1,4 @@
-description: A new backend plugin
-template: ./default-backend-plugin
 role: backend-plugin
+template: ./default-backend-plugin
 templateValues:
   pluginVar: '{{ camelCase pluginId }}Plugin'

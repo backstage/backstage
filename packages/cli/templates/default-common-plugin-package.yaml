@@ -1,3 +1,2 @@
-description: A new isomorphic common plugin package
-template: ./default-common-plugin-package
 role: plugin-common-library
+template: ./default-common-plugin-package

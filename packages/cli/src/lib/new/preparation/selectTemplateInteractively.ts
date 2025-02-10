@@ -36,7 +36,9 @@ export async function selectTemplateInteractively(
         type: 'list',
         name: 'id',
         message: 'What do you want to create?',
-        choices: config.templatePointers.map(t => t.id),
+        choices: config.templatePointers.map(t =>
+          t.description ? `${t.id} - ${t.description}` : t.id,
+        ),
       },
     ]);
     selectedId = answers.id;

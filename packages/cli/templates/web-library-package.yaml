@@ -1,3 +1,2 @@
-description: A new web-library package, exporting shared functionality for frontend plugins
-template: ./web-library-package
 role: web-library
+template: ./web-library-package
