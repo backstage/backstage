@@ -62,81 +62,90 @@
   --canon-space-14: calc(var(--canon-space) * 14); /* 56px */
 
   /* Radius */
-  --canon-radius-factor: 1.5;
-  --canon-radius-1: calc(3px * var(--canon-radius-factor));
-  --canon-radius-2: calc(4px * var(--canon-radius-factor));
-  --canon-radius-3: calc(6px * var(--canon-radius-factor));
-  --canon-radius-4: calc(8px * var(--canon-radius-factor));
-  --canon-radius-5: calc(12px * var(--canon-radius-factor));
-  --canon-radius-6: calc(16px * var(--canon-radius-factor));
+  --canon-radius-1: calc(0.125rem);
+  --canon-radius-2: calc(0.25rem);
+  --canon-radius-3: calc(0.5rem);
+  --canon-radius-4: calc(0.75rem);
+  --canon-radius-5: calc(1rem);
+  --canon-radius-6: calc(1.25rem);
   --canon-radius-full: 9999px;
 
-  /* Colors */
+  /* Background Colors */
   --canon-bg: #f8f8f8;
   --canon-bg-elevated: #fff;
-  --canon-bg-accent: #000;
-  --canon-bg-accent-focus: #000;
-  --canon-bg-accent-disabled: #000;
-  --canon-bg-accent-hover: #000;
-  --canon-bg-tint: #edf2fe;
-  --canon-bg-tint-active: #c7d7ff;
-  --canon-bg-tint-disabled: #f8f8f8;
-  --canon-bg-tint-hover: #dbe4ff;
-  --canon-bg-danger: #f8f8f8;
-  --canon-bg-elevated: #fff;
-  --canon-bg-success: #f8f8f8;
-  --canon-bg-warning: #f8f8f8;
-  --canon-border: rgba(0, 0, 0, 0.1);
-  --canon-border-accent: #000;
-  --canon-border-accent-focus: #000;
-  --canon-border-accent-hover: #000;
-  --canon-border-danger: #e22b2b;
-  --canon-border-focus: rgba(0, 0, 0, 0.4);
-  --canon-border-hover: rgba(0, 0, 0, 0.2);
-  --canon-border-success: #008000;
-  --canon-border-warning: #e36d05;
-  --canon-fg-text-primary: #000;
-  --canon-fg-text-secondary: #646464;
-  --canon-fg-link: #fff;
-  --canon-fg-link-hover: #fff;
-  --canon-fg-accent: #fff;
-  --canon-fg-tint: #000;
+  --canon-bg-solid: #1f5493;
+  --canon-bg-solid-hover: #163a66;
+  --canon-bg-solid-pressed: #0f2b4e;
+  --canon-bg-solid-disabled: #ebebeb;
+  --canon-bg-tint: transparent;
+  --canon-bg-tint-hover: rgba(31, 84, 147, 0.4);
+  --canon-bg-tint-pressed: rgba(31, 84, 147, 0.6);
+  --canon-bg-tint-disabled: #ebebeb;
+  --canon-bg-danger: #feebe7;
+  --canon-bg-warning: #fff2b2;
+  --canon-bg-success: #e6f6eb;
+
+  /* Foreground Colors */
+  --canon-fg-primary: #000000;
+  --canon-fg-secondary: #757575;
+  --canon-fg-link: #1f5493;
+  --canon-fg-link-hover: #1f2d5c;
+  --canon-fg-disabled: #9e9e9e;
+  --canon-fg-solid: #ffffff;
+  --canon-fg-solid-disabled: #9c9c9c;
+  --canon-fg-tint: #1f5493;
+  --canon-fg-tint-disabled: #9e9e9e;
   --canon-fg-danger: #e22b2b;
   --canon-fg-warning: #e36d05;
-  --canon-fg-success: #008000;
+  --canon-fg-success: #1db954;
+
+  /* Border Colors */
+  --canon-border: rgba(0, 0, 0, 0.1);
+  --canon-border-hover: rgba(0, 0, 0, 0.2);
+  --canon-border-focus: rgba(0, 0, 0, 0.4);
+  --canon-border-disabled: rgba(0, 0, 0, 0.1);
+  --canon-border-danger: #f87a7a;
+  --canon-border-warning: #e36d05;
+  --canon-border-success: #53db83;
 }
 
 /* Dark theme tokens */
 [data-theme='dark'] {
-  --canon-bg: #f8f8f8;
-  --canon-bg-elevated: #fff;
-  --canon-bg-accent: #000;
-  --canon-bg-accent-focus: #000;
-  --canon-bg-accent-disabled: #000;
-  --canon-bg-accent-hover: #000;
-  --canon-bg-tint: #edf2fe;
-  --canon-bg-tint-active: #c7d7ff;
-  --canon-bg-tint-disabled: #f8f8f8;
-  --canon-bg-tint-hover: #dbe4ff;
-  --canon-bg-danger: #f8f8f8;
-  --canon-bg-elevated: #fff;
-  --canon-bg-success: #f8f8f8;
-  --canon-bg-warning: #f8f8f8;
-  --canon-border: rgba(0, 0, 0, 0.1);
-  --canon-border-accent: #000;
-  --canon-border-accent-focus: #000;
-  --canon-border-accent-hover: #000;
-  --canon-border-danger: #e22b2b;
-  --canon-border-focus: rgba(0, 0, 0, 0.4);
-  --canon-border-hover: rgba(0, 0, 0, 0.2);
-  --canon-border-success: #008000;
-  --canon-border-warning: #e36d05;
-  --canon-fg-accent: #000;
+  /* Background Colors */
+  --canon-bg: #000000;
+  --canon-bg-elevated: #191919;
+  --canon-bg-solid: #9cc9ff;
+  --canon-bg-solid-hover: #83b9fd;
+  --canon-bg-solid-pressed: #83b9fd;
+  --canon-bg-solid-disabled: #222222;
+  --canon-bg-tint: transparent;
+  --canon-bg-tint-hover: rgba(156, 201, 255, 0.12);
+  --canon-bg-tint-pressed: rgba(156, 201, 255, 0.16);
+  --canon-bg-tint-disabled: transparent;
+  --canon-bg-danger: #3b1219;
+  --canon-bg-warning: #302008;
+  --canon-bg-success: #132d21;
+
+  /* Foreground Colors */
+  --canon-fg-primary: #ffffff;
+  --canon-fg-secondary: #9e9e9e;
+  --canon-fg-link: #9cc9ff;
+  --canon-fg-link-hover: #7eb5f7;
+  --canon-fg-disabled: #9e9e9e;
+  --canon-fg-solid: #101821;
+  --canon-fg-solid-disabled: #575757;
+  --canon-fg-tint: #9cc9ff;
+  --canon-fg-tint-disabled: #575757;
   --canon-fg-danger: #e22b2b;
-  --canon-fg-success: #008000;
   --canon-fg-warning: #e36d05;
-  --canon-fg-link: #fff;
-  --canon-fg-link-hover: #fff;
-  --canon-fg-text-primary: #000;
-  --canon-fg-text-secondary: #646464;
+  --canon-fg-success: #1db954;
+
+  /* Border Colors */
+  --canon-border: rgba(255, 255, 255, 0.2);
+  --canon-border-hover: rgba(255, 255, 255, 0.4);
+  --canon-border-focus: rgba(255, 255, 255, 0.5);
+  --canon-border-disabled: rgba(255, 255, 255, 0.2);
+  --canon-border-danger: #f87a7a;
+  --canon-border-warning: #e36d05;
+  --canon-border-success: #53db83;
 }

@@ -24,7 +24,7 @@
 .canon-FieldLabel {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-text-primary);
+  color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
 }
 

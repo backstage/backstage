@@ -138,6 +138,12 @@ export const Playground: Story = {
           {['small', 'medium'].map(size => (
             <Flex align="center" key={size}>
               <Button
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
                 iconStart="cloud"
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
@@ -157,6 +163,29 @@ export const Playground: Story = {
                 style={{ width: '200px' }}
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
+              <Button
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+                disabled
+              >
+                Button
+              </Button>
+              <Button
+                iconStart="cloud"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+                disabled
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd="chevronRight"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+                disabled
               >
                 Button
               </Button>
