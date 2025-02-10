@@ -37,13 +37,18 @@ const pkgJsonWithNewConfigSchema = z.object({
         .object({
           templates: z
             .array(
-              z
-                .object({
-                  id: z.string(),
-                  description: z.string().optional(),
-                  target: z.string(),
-                })
-                .strict(),
+              z.union([
+                z.enum(
+                  defaultTemplates.map(t => t.id) as [string, ...string[]],
+                ),
+                z
+                  .object({
+                    id: z.string(),
+                    description: z.string().optional(),
+                    target: z.string(),
+                  })
+                  .strict(),
+              ]),
             )
             .optional(),
           globals: z
@@ -85,9 +90,21 @@ export async function loadPortableTemplateConfig(
 
   const config = parsed.data.backstage?.new;
 
+  const templatePointers =
+    config?.templates?.map(t => {
+      if (typeof t === 'string') {
+        const defaultTemplate = defaultTemplates.find(d => d.id === t);
+        if (!defaultTemplate) {
+          throw new Error(`Built-in template '${t}' does not exist`);
+        }
+        return defaultTemplate;
+      }
+      return t;
+    }) ?? defaultTemplates;
+
   return {
     isUsingDefaultTemplates: !config?.templates,
-    templatePointers: config?.templates ?? defaultTemplates,
+    templatePointers,
     license: overrides.license ?? config?.globals?.license ?? defaults.license,
     version: overrides.version ?? config?.globals?.version ?? defaults.version,
     private: overrides.private ?? config?.globals?.private ?? defaults.private,
