@@ -48,6 +48,13 @@ export async function collectPortableTemplateInput(
 
   const parameters = { ...template.parameters, ...prefilledParams };
 
+  if (config.isUsingDefaultTemplates && parameters.id) {
+    console.warn(
+      `DEPRECATION WARNING: The 'id' parameter is deprecated, use 'pluginId' instead`,
+    );
+    parameters.pluginId = parameters.id;
+  }
+
   const needsAnswer = [];
   const prefilledAnswers = {} as PortableTemplateParams;
   for (const prompt of prompts) {
