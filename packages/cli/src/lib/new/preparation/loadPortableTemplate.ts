@@ -32,8 +32,10 @@ import { fromZodError } from 'zod-validation-error';
 
 const templateDefinitionSchema = z
   .object({
+    name: z.string(),
     role: z.enum(TEMPLATE_ROLES),
-    template: z.string(),
+    description: z.string().optional(),
+    files: z.string().optional(),
     parameters: z.record(z.string()).optional(),
     templateValues: z.record(z.string()).optional(),
   })
@@ -63,9 +65,14 @@ export async function loadPortableTemplate(
     );
   }
 
-  const { role, template, parameters = {}, templateValues = {} } = parsed.data;
+  const {
+    role,
+    files = '.',
+    parameters = {},
+    templateValues = {},
+  } = parsed.data;
 
-  const templatePath = resolvePath(dirname(pointer.target), template);
+  const templatePath = resolvePath(dirname(pointer.target), files);
   const filePaths = await recursiveReaddir(templatePath).catch(error => {
     throw new ForwardedError(
       `Failed to load template contents from '${templatePath}'`,
@@ -73,10 +80,13 @@ export async function loadPortableTemplate(
     );
   });
 
-  const files = new Array<PortableTemplateFile>();
+  const loadedFiles = new Array<PortableTemplateFile>();
 
   for (const filePath of filePaths) {
     const path = relativePath(templatePath, filePath);
+    if (filePath === pointer.target) {
+      continue;
+    }
 
     const content = await fs.readFile(filePath, 'utf-8').catch(error => {
       throw new ForwardedError(
@@ -86,11 +96,21 @@ export async function loadPortableTemplate(
     });
 
     if (path.endsWith('.hbs')) {
-      files.push({ path: path.slice(0, -4), content, syntax: 'handlebars' });
+      loadedFiles.push({
+        path: path.slice(0, -4),
+        content,
+        syntax: 'handlebars',
+      });
     } else {
-      files.push({ path, content });
+      loadedFiles.push({ path, content });
     }
   }
 
-  return { id: pointer.id, role, files, parameters, templateValues };
+  return {
+    name: pointer.name,
+    role,
+    files: loadedFiles,
+    parameters,
+    templateValues,
+  };
 }

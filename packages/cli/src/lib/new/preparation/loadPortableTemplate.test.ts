@@ -18,26 +18,56 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { loadPortableTemplate } from './loadPortableTemplate';
 
 describe('loadTemplate', () => {
+  const mockDir = createMockDirectory();
+
+  afterEach(() => {
+    mockDir.clear();
+  });
+
   it('should load a valid template', async () => {
-    const mockDir = createMockDirectory({
-      content: {
-        'path/to/template1.yaml': `
-          template: template1
+    mockDir.setContent({
+      'path/to/template.yaml': `
+          name: template1
           role: frontend-plugin
           parameters:
             foo: bar
         `,
-        'path/to/template1/hello.txt': 'hello world',
-      },
+      'path/to/hello.txt': 'hello world',
     });
 
-    const result = await loadPortableTemplate({
-      id: 'template1',
-      target: mockDir.resolve('path/to/template1.yaml'),
+    await expect(
+      loadPortableTemplate({
+        name: 'template1',
+        target: mockDir.resolve('path/to/template.yaml'),
+      }),
+    ).resolves.toEqual({
+      name: 'template1',
+      role: 'frontend-plugin',
+      files: [{ path: 'hello.txt', content: 'hello world' }],
+      parameters: { foo: 'bar' },
+      templateValues: {},
+    });
+  });
+
+  it('should load a valid template with files in a separate dir', async () => {
+    mockDir.setContent({
+      'path/to/template.yaml': `
+          name: template1
+          role: frontend-plugin
+          files: content
+          parameters:
+            foo: bar
+        `,
+      'path/to/content/hello.txt': 'hello world',
     });
 
-    expect(result).toEqual({
-      id: 'template1',
+    await expect(
+      loadPortableTemplate({
+        name: 'template1',
+        target: mockDir.resolve('path/to/template.yaml'),
+      }),
+    ).resolves.toEqual({
+      name: 'template1',
       role: 'frontend-plugin',
       files: [{ path: 'hello.txt', content: 'hello world' }],
       parameters: { foo: 'bar' },
@@ -46,11 +76,11 @@ describe('loadTemplate', () => {
   });
 
   it('should throw an error if template file does not exist', async () => {
-    const mockDir = createMockDirectory();
+    mockDir.setContent({});
 
     await expect(
       loadPortableTemplate({
-        id: 'template1',
+        name: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
     ).rejects.toThrow(
@@ -59,15 +89,13 @@ describe('loadTemplate', () => {
   });
 
   it('should throw an error if template definition is invalid', async () => {
-    const mockDir = createMockDirectory({
-      content: {
-        'path/to/template1.yaml': `invalid: definition`,
-      },
+    mockDir.setContent({
+      'path/to/template1.yaml': `invalid: definition`,
     });
 
     await expect(
       loadPortableTemplate({
-        id: 'template1',
+        name: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
     ).rejects.toThrow(
@@ -78,34 +106,24 @@ describe('loadTemplate', () => {
   it('should throw an error if target is a remote URL', async () => {
     await expect(
       loadPortableTemplate({
-        id: 'template1',
-        target: 'http://example.com',
-      }),
-    ).rejects.toThrow('Remote templates are not supported yet');
-  });
-
-  it('should throw an error if target directory does not exist', async () => {
-    await expect(
-      loadPortableTemplate({
-        id: 'template1',
+        name: 'template1',
         target: 'http://example.com',
       }),
     ).rejects.toThrow('Remote templates are not supported yet');
   });
 
   it('should throw an error if the package role is invalid', async () => {
-    const mockDir = createMockDirectory({
-      content: {
-        'path/to/template1.yaml': `
-          template: template1
-          role: invalid-role
-        `,
-      },
+    mockDir.setContent({
+      'path/to/template1.yaml': `
+        name: x
+        role: invalid-role
+        files: template1
+      `,
     });
 
     await expect(
       loadPortableTemplate({
-        id: 'template1',
+        name: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
     ).rejects.toThrow(
@@ -116,18 +134,17 @@ describe('loadTemplate', () => {
   });
 
   it('should throw an error if template directory does not exist', async () => {
-    const mockDir = createMockDirectory({
-      content: {
-        'path/to/template1.yaml': `
-          template: template1
-          role: frontend-plugin
-        `,
-      },
+    mockDir.setContent({
+      'path/to/template1.yaml': `
+        name: x
+        role: frontend-plugin
+        files: template1
+      `,
     });
 
     await expect(
       loadPortableTemplate({
-        id: 'template1',
+        name: 'template1',
         target: mockDir.resolve('path/to/template1.yaml'),
       }),
     ).rejects.toThrow(
