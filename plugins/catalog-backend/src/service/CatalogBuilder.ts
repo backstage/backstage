@@ -26,15 +26,13 @@ import {
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
-  parseEntityRef,
   SchemaValidEntityPolicy,
-  stringifyEntityRef,
   Validators,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
-import lodash, { keyBy } from 'lodash';
+import lodash from 'lodash';
 
 import {
   CatalogProcessor,
@@ -554,33 +552,16 @@ export class CatalogBuilder {
       permissionsService,
       createConditionTransformer(this.permissionRules),
     );
+
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
       resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
       getResources: async (resourceRefs: string[]) => {
-        const { entities } = await unauthorizedEntitiesCatalog.entities({
+        const { items } = await unauthorizedEntitiesCatalog.entitiesBatch({
           credentials: await auth.getOwnServiceCredentials(),
-          filter: {
-            anyOf: resourceRefs.map(resourceRef => {
-              const { kind, namespace, name } = parseEntityRef(resourceRef);
-
-              return basicEntityFilter({
-                kind,
-                'metadata.namespace': namespace,
-                'metadata.name': name,
-              });
-            }),
-          },
+          entityRefs: resourceRefs,
         });
 
-        const entitiesByRef = keyBy(
-          entitiesResponseToObjects(entities),
-          stringifyEntityRef,
-        );
-
-        return resourceRefs.map(
-          resourceRef =>
-            entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
-        );
+        return entitiesResponseToObjects(items).map(e => e || undefined);
       },
       permissions: this.permissions,
       rules: this.permissionRules,
