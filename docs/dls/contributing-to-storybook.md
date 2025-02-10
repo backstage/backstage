@@ -55,11 +55,8 @@ core
             └── Progress.stories.tsx
 ```
 
-:::note Note
-
-Make sure your component story file has the following format `componentName.stories.tsx`
-
-:::
+> _Note: make sure your component story file has the following format
+> componentName.stories.tsx_
 
 ## Running locally
 
