@@ -83,6 +83,18 @@ export interface Config {
           | {
               /** Only for debugging, disables the actual sending of emails */
               transport: 'stream';
+            }
+          | {
+              transport: 'azure';
+              /**
+               * Azure Communication Services endpoint
+               */
+              endpoint: string;
+              /**
+               * Optional Azure Communication Services access key
+               * @visibility secret
+               */
+              accessKey?: string;
             };
         /**
          * Sender email address
