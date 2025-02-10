@@ -13,72 +13,124 @@ The behavior of the `backstage-cli new` command is configurable through your roo
   "name": "root",
   "backstage": {
     "cli": {
-      "defaults": true,
-      "globals": {
-        "license": "MIT"
-      },
-      "templates": []
+      "new": {
+        "globals": {
+          "license": "MIT",
+          "namePrefix": "@my-org/"
+        }
+      }
     }
   }
 }
 ```
 
-- `defaults` - This toggles the inclusion of default templates.
-  - If not configured, the default value is true, meaning all the built-in CLI templates will be included by default.
-  - Setting this to false excludes all built-in templates so use this setting if you want to rely solely on custom templates.
-- `globals` - Configures default values for every generated package and plugin.
-  - These values populate placeholders in your skeleton template files.
-  - You can provide a default value in globals and still include a user prompt for the same key. In such cases, the user-provided value will take precedence.
+- `globals` - Configures input for all generated packages and plugins.
+  - `version` - Sets the value of the `version` field in `package.json` of all generated packages. Defaults to `Apache-2.0`.
+  - `license` - Sets the value of the `license` field in `package.json` of all generated packages. Defaults to `0.1.0`.
+  - `private` - Sets the value of the `private` field in `package.json` of all generated packages. Defaults to `true`.
+  - `publishRegistry` - Sets the value of the `publishConfig.registry` field in `package.json` of all generated packages.
+  - `namePrefix` - The prefix used to generate the full package name. Defaults to `@internal/`.
+  - `namePluginInfix` - The infix used to generate the full package name for plugin packages. Defaults to `plugin-`.
 - `templates` - Specifies custom templates.
-  - See [Creating your own CLI Templates](#creating-your-own-cli-templates) for more information.
+  - See [Installing custom templates](#installing-custom-templates) and [Creating your own CLI templates](#creating-your-own-cli-templates) for more information.
 
-## Creating your own CLI Templates
+The generated package name is based on the `namePrefix` and `namePluginInfix` globals, as well as the "base name" which is derived from the package role and user input. For plugin packages the final package name will be `<namePrefix><namePluginInfix><baseName>`, and for other packages it will be `<namePrefix><baseName>`.
+
+For example, if you want your plugin frontend packages to end up with the name `@acme/backstage-plugin-<pluginId>`, you should use the following configuration:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "namePrefix": "@acme/",
+          "namePluginInfix": "backstage-plugin-"
+        }
+      }
+    }
+  }
+}
+```
+
+## Installing custom templates
+
+Custom templates can be installed from local directories. To install a template you add it to the `backstage.cli.new.templates` configuration array in your root `package.json`:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "templates": ["./templates/custom-plugin.yaml"]
+      }
+    }
+  }
+}
+```
+
+Each entry in the `templates` array should be relative path that points either directly to a template YAML file or a directory containing a `template.yaml` file. If the path starts with `./` it will be use as is, otherwise it will be resolved as a module within `node_modules`.
+
+When defining the `templates` array it will override the default set of templates. If you want to keep using and of the build-in templates in the Backstage CLI you can reference them directly within the CLI package. This following is the full list of built-in templates:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "templates": [
+          "@backstage/cli/templates/frontend-plugin",
+          "@backstage/cli/templates/backend-plugin",
+          "@backstage/cli/templates/backend-plugin-module",
+          "@backstage/cli/templates/plugin-web-library",
+          "@backstage/cli/templates/plugin-node-library",
+          "@backstage/cli/templates/plugin-common-library",
+          "@backstage/cli/templates/web-library",
+          "@backstage/cli/templates/node-library",
+          "@backstage/cli/templates/scaffolder-backend-module"
+        ]
+      }
+    }
+  }
+}
+```
+
+## Creating your own CLI templates
 
 Your first step in creating your own CLI template is composing your yaml file:
 
-```yaml
-# ./custom-template.yaml
-description: Description of my CLI template
-template: ./template # required
-targetPath: packages # required
-
-suffix: hello
-backendModulePrefix: true
-
-prompts:
-  - id # required
-additionalActions:
-  - install-backend
+```yaml title="in templates/custom-plugin.yaml"
+name: custom-plugin
+role: frontend-plugin
+description: Description of my CLI template # optional
+files: ./template # optional
+templateValues: # optional
+  pluginVar: '{{ camelCase pluginId }}Plugin'
 ```
 
-There are three required properties:
+The following properties are supported:
 
-- `template` - Path to the skeleton files of your template.
-- `targetPath` - Directory where the package of plugin will be created. For a plugin template, you would want to use `plugins` if that's where you keep all of your other Backstage plugins.
-- `prompts.id` - Configures prompts to gather user input. The `id` prompt is required for all templates. See [Prompts](#prompts) for more details.
+- `name` **(required)** - The name of your template, used by the user to select it.
+- `role` **(required)** - The role of the template, similar to package role. See [Template Roles](#template-roles) for more details.
+- `description` - A description of the type of package that this template produces.
+- `files` - A directory or list of relative file paths pointing to the contents of your template. Defaults to the current directory.
+- `templateValues` - A map of additional values that will be present during templating. The values are themselves templated and can reference other values.
 
-Optional configurations include:
-
-- `suffix` - Adds a suffix to package/plugin names. For example, a suffix of `hello` results in `${plugin-id}-hello`.
-- `backendModulePrefix` - Setting this to `true` will apply the naming pattern for backend modules: `{plugin_id}-backend-module-{module_id}`.
-  - This setting will require that you have `moduleid` as one of the prompts.
-  - This setting takes higher precedence over `suffix`, so if you were to configure both, it would only apply the backend module prefix and ignore `suffix`.
-- `additionalActions` - There might be additional steps you want taken after your package is generated. See [Additional Actions](#additional-actions) for more details.
-
-Once you have your composed template yaml file, add your new template to the CLI config in your root `package.json`:
+Once you have your composed template yaml file, [add your new template](#installing-custom-templates) to the CLI config in your root `package.json`:
 
 ```diff
 {
   // ...
   "backstage": {
     "cli": {
-      // ...
+      "new": {
 +       "templates": [
-+         {
-+           "id": "my custom CLI template",
-+           "target": "./custom-template.yaml"
-+         }
++         "./templates/custom-plugin.yaml"
 +       ]
+      }
     }
   }
 }
@@ -86,53 +138,19 @@ Once you have your composed template yaml file, add your new template to the CLI
 
 If you'd like to see more examples, you can find all the default templates and its yaml files [here](https://github.com/backstage/backstage/tree/master/packages/cli/templates).
 
-### Prompts
+### Template Roles
 
-Prompts elicit values from users and replace variables in skeleton templates.
+The `role` property in the template yaml file is used to determine what input will be gathered for the template, as well as what actions will be taken after the new package has been created. The following roles are supported:
 
-There are four pre-defined prompts:
-
-```yaml
-prompts:
-  - id
-  - moduleid
-  - npmregistry
-  - owner
-```
-
-If your template requires more information, you can also configure your own custom prompts:
-
-```yaml
-prompts:
-  - id: color
-    prompt: Enter your favorite color
-    default: red
-    validate: backstage-id
-```
-
-- `id` - The `id` is the value that will be applied to your template. An `id` of `color`, like in the example above, will be used to replace placeholder values you configure in your skeleton template:
-  ```ts
-  // ./template/index.ts.hbs
-  console.log('My favorite color is {{color}}');
-  ```
-- `prompt` - The `prompt` value is the text that is displayed to the user:
-  ```
-  ? What do you want to create? custom-template
-  ? Enter the ID of the plugin [required] my-plugin
-  ? Enter your favorite color (red)
-  ```
-- `default` - You can also provide a `default` value for the convenience of the user.
-- `validate` - There is only one built-in validator at the moment and it is `backstage-id`. The `backstage-id` validator enforces the user-provided value to be all lowercase and only contain letters, digits, and dashes.
-
-### Additional Actions
-
-Additional actions are useful for running tasks. For example, if you want your newly created package to be automatically added as a dependency to `packages/backend/package.json` so that your users won't have to do so manually, you could add `install-backend` as one of the `additionalActions` to your template.
-
-There are four `additionalActions`:
-
-|        Action         | Description                                                            |
-| :-------------------: | :--------------------------------------------------------------------- |
-|  `install-frontend`   | Installs your new package/plugin as a dependency to `packages/app`     |
-| `add-frontend-legacy` | Adds your new frontend plugin to `packages/app/src/App.tsx`            |
-|   `install-backend`   | Installs your new package/plugin as a dependency to `packages/backend` |
-|     `add-backend`     | Adds your module/extension/plugin to `packages/backend/index.ts`       |
+| Role                     | Prompts                | Output Directory | Additional Actions                                                                |
+| :----------------------- | :--------------------- | :--------------- | :-------------------------------------------------------------------------------- |
+| `frontend-plugin`        | `pluginId`             | `plugins`        | Add dependency to `packages/app` and entry to `packages/backend/src/App.tsx`      |
+| `frontend-plugin-module` | `pluginId`, `moduleId` | `plugins`        | Add dependency to `packages/app`                                                  |
+| `backend-plugin`         | `pluginId`             | `plugins`        | Add dependency to `packages/backend` and entry to `packages/backend/src/index.ts` |
+| `backend-plugin-module`  | `pluginId`, `moduleId` | `plugins`        | Add dependency to `packages/backend` and entry to `packages/backend/src/index.ts` |
+| `web-library`            | `name`                 | `packages`       | none                                                                              |
+| `node-library`           | `name`                 | `packages`       | none                                                                              |
+| `common-library`         | `name`                 | `packages`       | none                                                                              |
+| `plugin-web-library`     | `pluginId`             | `plugins`        | none                                                                              |
+| `plugin-node-library`    | `pluginId`             | `plugins`        | none                                                                              |
+| `plugin-common-library`  | `pluginId`             | `plugins`        | none                                                                              |

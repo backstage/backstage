@@ -72,10 +72,8 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new
+yarn new --select backend-module --option pluginId=catalog
 ```
-
-Select `backend-module` and enter `catalog` for the id.
 
 The class will have this basic structure:
 
@@ -652,10 +650,8 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new
+yarn new --select backend-module --option pluginId=catalog
 ```
-
-Select `backend-module` and enter `catalog` for the id.
 
 The class will have this basic structure:
 
