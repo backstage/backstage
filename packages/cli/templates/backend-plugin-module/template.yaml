@@ -1,4 +1,5 @@
+name: backend-plugin-module
 role: backend-plugin-module
-template: ./default-backend-module
+description: A new backend module that extends an existing backend plugin
 templateValues:
   moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'

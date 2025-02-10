@@ -1,5 +1,6 @@
+name: frontend-plugin
 role: frontend-plugin
-template: ./default-plugin
+description: A new frontend plugin
 templateValues:
   pluginVar: '{{ camelCase pluginId }}Plugin'
   extensionName: '{{ upperFirst ( camelCase pluginId ) }}Page'
