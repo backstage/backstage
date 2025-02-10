@@ -44,13 +44,6 @@ export type PortableTemplatePointer = {
   target: string;
 };
 
-export type PortableTemplatePrompt = {
-  id: string;
-  prompt: string;
-  validate?: string;
-  default?: string | boolean | number;
-};
-
 export const TEMPLATE_ROLES = [
   'web-library',
   'node-library',
