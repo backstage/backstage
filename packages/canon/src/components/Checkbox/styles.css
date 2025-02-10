@@ -11,7 +11,7 @@
   transition: all 0.2s ease-in-out;
 
   &[data-checked] {
-    background-color: var(--canon-bg-accent);
+    background-color: var(--canon-bg-solid);
   }
 }
 
@@ -23,7 +23,7 @@
   gap: var(--canon-space-2);
   font-size: var(--canon-font-size-xs);
   font-family: var(--canon-font-regular);
-  color: var(--canon-fg-text-primary);
+  color: var(--canon-fg-primary);
   user-select: none;
 
   &:hover {

@@ -1,14 +1,11 @@
 import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
+import { CanonProvider } from '../src/contexts/canon';
 
 // Canon specific styles
 import '../src/css/core.css';
 import '../src/css/components.css';
-
-// Custom themes
-import './themes/backstage.css';
-import { CanonProvider } from '../src/contexts/canon';
 
 const preview: Preview = {
   parameters: {
@@ -79,8 +76,6 @@ const preview: Preview = {
       themes: {
         Light: 'light',
         Dark: 'dark',
-        'Backstage Light': 'backstage-light',
-        'Backstage Dark': 'backstage-dark',
       },
       defaultTheme: 'Light',
     }),

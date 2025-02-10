@@ -10,7 +10,7 @@
 }
 
 .icon path {
-  fill: var(--canon-fg-text-primary);
+  fill: var(--canon-fg-primary);
 }
 
 .content {
