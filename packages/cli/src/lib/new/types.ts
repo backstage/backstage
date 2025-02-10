@@ -102,13 +102,10 @@ export type PortableTemplateInputRoleParams =
       moduleId: string;
     };
 
-export type PortableTemplateInputBuiltInParams = {
-  owner?: string;
-};
-
 export type PortableTemplateInput = {
   roleParams: PortableTemplateInputRoleParams;
-  builtInParams: PortableTemplateInputBuiltInParams;
+
+  owner?: string;
 
   license: string;
 

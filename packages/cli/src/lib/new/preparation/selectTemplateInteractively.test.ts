@@ -20,14 +20,13 @@ import { withLogCollector } from '@backstage/test-utils';
 import { selectTemplateInteractively } from './selectTemplateInteractively';
 
 describe('selectTemplateInteractively', () => {
-  const mockConfig: PortableTemplateConfig = {
+  const mockConfig = {
     isUsingDefaultTemplates: false,
     templatePointers: [
       { id: 'template1', target: 'path/to/template1' },
       { id: 'template2', target: 'path/to/template2' },
     ],
-    globals: {},
-  };
+  } as PortableTemplateConfig;
 
   beforeEach(() => {
     jest.resetAllMocks();

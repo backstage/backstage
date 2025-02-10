@@ -20,7 +20,6 @@ import { paths } from '../../paths';
 import {
   PortableTemplateConfig,
   PortableTemplateInput,
-  PortableTemplateInputBuiltInParams,
   PortableTemplateInputRoleParams,
   PortableTemplateParams,
   PortableTemplateRole,
@@ -83,9 +82,7 @@ export async function collectPortableTemplateInput(
 
   return {
     roleParams,
-    builtInParams: {
-      owner: answers.owner,
-    } as PortableTemplateInputBuiltInParams,
+    owner: answers.owner as string | undefined,
     license: config.license,
     version: config.version,
     private: config.private,
