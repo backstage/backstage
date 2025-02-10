@@ -71,15 +71,6 @@
   }
 }
 
-.canon-Button--variant-tertiary {
-  background-color: transparent;
-  color: var(--canon-fg-primary);
-
-  &:hover {
-    color: var(--canon-fg-text-secondary);
-  }
-}
-
 .canon-Button--size-medium {
   font-size: var(--canon-font-size-4);
   padding: 0 var(--canon-space-3);

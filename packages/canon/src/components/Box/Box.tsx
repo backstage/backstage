@@ -37,6 +37,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     ...displayPropDefs,
     ...boxPropDefs,
   };
+
   const { className, style } = extractProps(props, propDefs);
 
   return createElement(props.as || 'div', {

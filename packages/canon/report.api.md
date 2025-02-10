@@ -141,8 +141,7 @@ export interface ButtonProps {
   variant?:
     | 'primary'
     | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
 }
 
 // @public (undocumented)

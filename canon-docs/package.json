@@ -6,7 +6,7 @@
     "build": "npm run build:css && next build",
     "build:css": "node scripts/build-css.js",
     "lint": "next lint",
-    "start": "next dev"
+    "start": "npm run build:css && next dev"
   },
   "dependencies": {
     "@codemirror/lang-sass": "^6.0.2",
