@@ -34,7 +34,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
-import lodash from 'lodash';
+import lodash, { keyBy } from 'lodash';
 
 import {
   AuditorService,
@@ -381,7 +381,7 @@ export class CatalogBuilder {
 
     return [
       new FileReaderProcessor(),
-      new UrlReaderProcessor({ reader, logger, config }),
+      new UrlReaderProcessor({ reader, logger }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),
       new AnnotateLocationEntityProcessor({ integrations }),
     ];
@@ -559,60 +559,35 @@ export class CatalogBuilder {
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
       permissionsService,
-      permissionsRegistry
-        ? createConditionTransformer(
-            permissionsRegistry.getPermissionRuleset(
-              catalogEntityPermissionResourceRef,
-            ),
-          )
-        : createConditionTransformer(this.permissionRules),
+      createConditionTransformer(this.permissionRules),
     );
 
-    const catalogPermissionResource = {
-      resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-      getResources: async (resourceRefs: string[]) => {
-        const { entities } = await unauthorizedEntitiesCatalog.entities({
-          credentials: await auth.getOwnServiceCredentials(),
-          filter: {
-            anyOf: resourceRefs.map(resourceRef => {
-              const { kind, namespace, name } = parseEntityRef(resourceRef);
+    const getResources = async (resourceRefs: string[]) => {
+      const { items } = await unauthorizedEntitiesCatalog.entitiesBatch({
+        credentials: await auth.getOwnServiceCredentials(),
+        entityRefs: resourceRefs,
+      });
 
-              return basicEntityFilter({
-                kind,
-                'metadata.namespace': namespace,
-                'metadata.name': name,
-              });
-            }),
-          },
-        });
-
-        const entitiesByRef = Object.fromEntries(
-          entitiesResponseToObjects(entities)
-            .filter((x): x is Entity => Boolean(x))
-            .map(entity => [stringifyEntityRef(entity), entity]),
-        );
-
-        return resourceRefs.map(
-          resourceRef =>
-            entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
-        );
-      },
-      permissions: this.permissions,
-      rules: this.permissionRules,
-    } as const;
+      return entitiesResponseToObjects(items).map(e => e || undefined);
+    };
 
     let permissionIntegrationRouter:
       | ReturnType<typeof createPermissionIntegrationRouter>
       | undefined;
     if (permissionsRegistry) {
       permissionsRegistry.addResourceType({
-        ...catalogPermissionResource,
         resourceRef: catalogEntityPermissionResourceRef,
+        getResources,
+        permissions: this.permissions,
+        rules: this.permissionRules,
       });
     } else {
-      permissionIntegrationRouter = createPermissionIntegrationRouter(
-        catalogPermissionResource,
-      );
+      permissionIntegrationRouter = createPermissionIntegrationRouter({
+        resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+        getResources,
+        permissions: this.permissions,
+        rules: this.permissionRules,
+      });
     }
 
     const locationStore = new DefaultLocationStore(dbClient);
