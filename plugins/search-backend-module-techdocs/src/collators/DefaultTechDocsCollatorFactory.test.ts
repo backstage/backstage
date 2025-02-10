@@ -193,6 +193,18 @@ describe('DefaultTechDocsCollatorFactory', () => {
       });
     });
 
+    it('should filter catalog entities when a custom filter is set', async () => {
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        entityFilter: entities =>
+          entities.filter(entity => entity.kind !== 'Component'),
+      });
+      collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(0);
+    });
+
     it('paginates through catalog entities using batchSize', async () => {
       // A parallelismLimit of 1 is a catalog limit of 50 per request. Code
       // above in the /entities handler ensures valid entities are only

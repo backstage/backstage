@@ -68,6 +68,7 @@ export type TechDocsCollatorFactoryOptions = {
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
   documentTransformer?: TechDocsCollatorDocumentTransformer;
+  entityFilter?: (entity: Entity[]) => Entity[];
 };
 
 type EntityInfo = {
@@ -97,6 +98,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private readonly legacyPathCasing: boolean;
   private entityTransformer: TechDocsCollatorEntityTransformer;
   private documentTransformer: TechDocsCollatorDocumentTransformer;
+  private entityFilter: Function | undefined;
 
   private constructor(options: TechDocsCollatorFactoryOptions) {
     this.discovery = options.discovery;
@@ -110,6 +112,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     this.legacyPathCasing = options.legacyPathCasing ?? false;
     this.entityTransformer = options.entityTransformer ?? (() => ({}));
     this.documentTransformer = options.documentTransformer ?? (() => ({}));
+    this.entityFilter = options.entityFilter;
 
     this.auth = createLegacyAuthAdapters({
       auth: options.auth,
@@ -177,81 +180,83 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       moreEntitiesToGet = entities.length === batchSize;
       entitiesRetrieved += entities.length;
 
-      const docPromises = entities
-        .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
-        .map((entity: Entity) =>
-          limit(async (): Promise<TechDocsDocument[]> => {
-            const entityInfo =
-              DefaultTechDocsCollatorFactory.handleEntityInfoCasing(
-                this.legacyPathCasing,
+      const filteredEntities = this.entityFilter
+        ? this.entityFilter(entities)
+        : this.defaultFilteringFunction(entities);
+
+      const docPromises = filteredEntities.map((entity: Entity) =>
+        limit(async (): Promise<TechDocsDocument[]> => {
+          const entityInfo =
+            DefaultTechDocsCollatorFactory.handleEntityInfoCasing(
+              this.legacyPathCasing,
+              {
+                kind: entity.kind,
+                namespace: entity.metadata.namespace || 'default',
+                name: entity.metadata.name,
+              },
+            );
+
+          try {
+            const { token: techdocsToken } =
+              await this.auth.getPluginRequestToken({
+                onBehalfOf: await this.auth.getOwnServiceCredentials(),
+                targetPluginId: 'techdocs',
+              });
+
+            const searchIndexResponse = await fetch(
+              DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
+                techDocsBaseUrl,
+                entityInfo,
+              ),
+              {
+                headers: {
+                  Authorization: `Bearer ${techdocsToken}`,
+                },
+              },
+            );
+
+            // todo(@backstage/techdocs-core): remove Promise.race() when node-fetch is 3.x+
+            // workaround for fetch().json() hanging in node-fetch@2.x.x, fixed in 3.x.x
+            // https://github.com/node-fetch/node-fetch/issues/665
+            const searchIndex = await Promise.race([
+              searchIndexResponse.json(),
+              new Promise((_resolve, reject) => {
+                setTimeout(() => {
+                  reject('Could not parse JSON in 5 seconds.');
+                }, 5000);
+              }),
+            ]);
+
+            return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+              ...defaultTechDocsCollatorEntityTransformer(entity),
+              ...defaultTechDocsCollatorDocumentTransformer(doc),
+              ...this.entityTransformer(entity),
+              ...this.documentTransformer(doc),
+              location: this.applyArgsToFormat(
+                this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
                 {
-                  kind: entity.kind,
-                  namespace: entity.metadata.namespace || 'default',
-                  name: entity.metadata.name,
+                  ...entityInfo,
+                  path: doc.location,
                 },
-              );
-
-            try {
-              const { token: techdocsToken } =
-                await this.auth.getPluginRequestToken({
-                  onBehalfOf: await this.auth.getOwnServiceCredentials(),
-                  targetPluginId: 'techdocs',
-                });
-
-              const searchIndexResponse = await fetch(
-                DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
-                  techDocsBaseUrl,
-                  entityInfo,
-                ),
-                {
-                  headers: {
-                    Authorization: `Bearer ${techdocsToken}`,
-                  },
-                },
-              );
-
-              // todo(@backstage/techdocs-core): remove Promise.race() when node-fetch is 3.x+
-              // workaround for fetch().json() hanging in node-fetch@2.x.x, fixed in 3.x.x
-              // https://github.com/node-fetch/node-fetch/issues/665
-              const searchIndex = await Promise.race([
-                searchIndexResponse.json(),
-                new Promise((_resolve, reject) => {
-                  setTimeout(() => {
-                    reject('Could not parse JSON in 5 seconds.');
-                  }, 5000);
-                }),
-              ]);
-
-              return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-                ...defaultTechDocsCollatorEntityTransformer(entity),
-                ...defaultTechDocsCollatorDocumentTransformer(doc),
-                ...this.entityTransformer(entity),
-                ...this.documentTransformer(doc),
-                location: this.applyArgsToFormat(
-                  this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
-                  {
-                    ...entityInfo,
-                    path: doc.location,
-                  },
-                ),
-                ...entityInfo,
-                entityTitle: entity.metadata.title,
-                componentType: entity.spec?.type?.toString() || 'other',
-                lifecycle: (entity.spec?.lifecycle as string) || '',
-                owner: getSimpleEntityOwnerString(entity),
-                authorization: {
-                  resourceRef: stringifyEntityRef(entity),
-                },
-              }));
-            } catch (e) {
-              this.logger.debug(
-                `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
-                e,
-              );
-              return [];
-            }
-          }),
-        );
+              ),
+              ...entityInfo,
+              entityTitle: entity.metadata.title,
+              componentType: entity.spec?.type?.toString() || 'other',
+              lifecycle: (entity.spec?.lifecycle as string) || '',
+              owner: getSimpleEntityOwnerString(entity),
+              authorization: {
+                resourceRef: stringifyEntityRef(entity),
+              },
+            }));
+          } catch (e) {
+            this.logger.debug(
+              `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
+              e,
+            );
+            return [];
+          }
+        }),
+      );
       yield* (await Promise.all(docPromises)).flat();
     }
   }
@@ -265,6 +270,12 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       formatted = formatted.replace(`:${key}`, value);
     }
     return formatted;
+  }
+
+  private defaultFilteringFunction(entities: Entity[]): Entity[] {
+    return entities.filter(
+      entity => entity.metadata?.annotations?.['backstage.io/techdocs-ref'],
+    );
   }
 
   private static constructDocsIndexUrl(

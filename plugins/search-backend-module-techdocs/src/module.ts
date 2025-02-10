@@ -25,6 +25,7 @@ import {
   createExtensionPoint,
   readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DefaultTechDocsCollatorFactory,
@@ -51,6 +52,21 @@ export const techdocsCollatorEntityTransformerExtensionPoint =
     id: 'search.techdocsCollator.transformer',
   });
 
+/** @public */
+export interface TechDocsCollatorEntityFilterExtensionPoint {
+  setEntityFilter(filterFunction: (entities: Entity[]) => Entity[]): void;
+}
+
+/**
+ * Extension point used to filter the entities that the collator will use.
+ *
+ * @public
+ */
+export const techDocsCollatorEntityFilterExtensionPoint =
+  createExtensionPoint<TechDocsCollatorEntityFilterExtensionPoint>({
+    id: 'search.techdocsCollator.entityFilter',
+  });
+
 /**
  * @public
  * Search backend module for the TechDocs index.
@@ -61,6 +77,7 @@ export default createBackendModule({
   register(env) {
     let entityTransformer: TechDocsCollatorEntityTransformer | undefined;
     let documentTransformer: TechDocsCollatorDocumentTransformer | undefined;
+    let entityFilter: ((e: Entity[]) => Entity[]) | undefined;
 
     env.registerExtensionPoint(
       techdocsCollatorEntityTransformerExtensionPoint,
@@ -83,6 +100,15 @@ export default createBackendModule({
         },
       },
     );
+
+    env.registerExtensionPoint(techDocsCollatorEntityFilterExtensionPoint, {
+      setEntityFilter(newEntityFilter) {
+        if (entityFilter) {
+          throw new Error('TechDocs entity filters may only be set once');
+        }
+        entityFilter = newEntityFilter;
+      },
+    });
 
     env.registerInit({
       deps: {
@@ -127,6 +153,7 @@ export default createBackendModule({
             catalogClient: catalog,
             entityTransformer,
             documentTransformer,
+            entityFilter,
           }),
         });
       },

@@ -73,6 +73,15 @@ export type TechDocsCollatorDocumentTransformer = (
 >;
 
 // @public (undocumented)
+export interface TechDocsCollatorEntityFilterExtensionPoint {
+  // (undocumented)
+  setEntityFilter(filterFunction: (entities: Entity[]) => Entity[]): void;
+}
+
+// @public
+export const techDocsCollatorEntityFilterExtensionPoint: ExtensionPoint<TechDocsCollatorEntityFilterExtensionPoint>;
+
+// @public (undocumented)
 export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
 ) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;
@@ -103,5 +112,6 @@ export type TechDocsCollatorFactoryOptions = {
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
   documentTransformer?: TechDocsCollatorDocumentTransformer;
+  entityFilter?: (entity: Entity[]) => Entity[];
 };
 ```
