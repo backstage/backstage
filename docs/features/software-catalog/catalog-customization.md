@@ -70,9 +70,7 @@ The columns you see in the `CatalogIndexPage` were selected to be a good startin
 Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
 
 ```tsx title="packages/app/src/App.tsx"
-{
-  /* highlight-add-start */
-}
+{/* prettier-ignore */ /* highlight-add-start */}
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
     return [
@@ -84,9 +82,7 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 
   return CatalogTable.defaultColumnsFunc(entityListContext);
 };
-{
-  /* highlight-add-end */
-}
+{/* prettier-ignore */ /* highlight-add-end */}
 ```
 
 Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
@@ -390,13 +386,9 @@ export const EntitySecurityTierPicker = () => {
 Now we can add the component to `CatalogIndexPage`:
 
 ```tsx title="packages/app/src/App.tsx"
-{
-  /* highlight-add-start */
-}
+{/* prettier-ignore */ /* highlight-add-start */}
 import { DefaultFilters } from '@backstage/plugin-catalog-react';
-{
-  /* highlight-add-end */
-}
+{/* prettier-ignore */ /* highlight-add-end */}
 
 const routes = (
   <FlatRoutes>
