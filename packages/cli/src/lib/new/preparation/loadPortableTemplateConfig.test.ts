@@ -84,6 +84,54 @@ describe('loadPortableTemplateConfig', () => {
     });
   });
 
+  it('should support pointing to built-in templates', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        backstage: {
+          new: {
+            templates: [
+              'backend-plugin',
+              { id: 'template1', target: 'path/to/template1' },
+              'frontend-plugin',
+            ],
+            globals: {
+              license: 'MIT',
+              private: true,
+              namePrefix: '@acme/',
+              namePluginInfix: 'backstage-plugin-',
+            },
+          },
+        },
+      }),
+    });
+
+    await expect(
+      loadPortableTemplateConfig({
+        packagePath: mockDir.resolve('package.json'),
+      }),
+    ).resolves.toEqual({
+      isUsingDefaultTemplates: false,
+      templatePointers: [
+        {
+          id: 'backend-plugin',
+          description: 'A new backend plugin',
+          target: expect.stringMatching(/default-backend-plugin.yaml$/),
+        },
+        { id: 'template1', target: 'path/to/template1' },
+        {
+          id: 'frontend-plugin',
+          description: 'A new frontend plugin',
+          target: expect.stringMatching(/default-plugin.yaml$/),
+        },
+      ],
+      license: 'MIT',
+      private: true,
+      version: '0.1.0',
+      packageNamePrefix: '@acme/',
+      packageNamePluginInfix: 'backstage-plugin-',
+    });
+  });
+
   it('should use default templates if none are specified', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
@@ -129,7 +177,27 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).rejects.toThrow(
-      /^Failed to load templating configuration from '.*'; caused by Validation error/,
+      /^Failed to load templating configuration from '.*'; caused by Validation error: Expected array/,
+    );
+  });
+
+  it('should throw an error if built-in template does not exist', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        backstage: {
+          new: {
+            templates: ['invalid'],
+          },
+        },
+      }),
+    });
+
+    await expect(
+      loadPortableTemplateConfig({
+        packagePath: mockDir.resolve('package.json'),
+      }),
+    ).rejects.toThrow(
+      /^Failed to load templating configuration from '.*'; caused by Validation error: Invalid enum value/,
     );
   });
 
