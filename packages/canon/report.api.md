@@ -121,6 +121,27 @@ export const Button: React_2.ForwardRefExoticComponent<
   ButtonProps & React_2.RefAttributes<HTMLButtonElement>
 >;
 
+// @public (undocumented)
+export type ButtonOwnProps = GetPropDefTypes<typeof buttonPropDefs>;
+
+// @public (undocumented)
+export const buttonPropDefs: {
+  variant: {
+    type: 'enum';
+    values: ('primary' | 'secondary')[];
+    className: string;
+    default: 'primary';
+    responsive: true;
+  };
+  size: {
+    type: 'enum';
+    values: ('small' | 'medium')[];
+    className: string;
+    default: 'medium';
+    responsive: true;
+  };
+};
+
 // @public
 export interface ButtonProps {
   // (undocumented)
@@ -134,14 +155,11 @@ export interface ButtonProps {
   // (undocumented)
   iconStart?: IconNames;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  size?: ButtonOwnProps['size'];
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  variant?: ButtonOwnProps['variant'];
 }
 
 // @public (undocumented)
