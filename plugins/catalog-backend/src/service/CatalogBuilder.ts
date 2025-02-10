@@ -26,15 +26,13 @@ import {
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
-  parseEntityRef,
   SchemaValidEntityPolicy,
-  stringifyEntityRef,
   Validators,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
-import lodash, { keyBy } from 'lodash';
+import lodash from 'lodash';
 
 import {
   AuditorService,
