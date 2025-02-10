@@ -90,9 +90,9 @@ describe('loadPortableTemplateConfig', () => {
         backstage: {
           new: {
             templates: [
-              'backend-plugin',
+              'default-backend-plugin',
               { id: 'template1', target: 'path/to/template1' },
-              'frontend-plugin',
+              'default-frontend-plugin',
             ],
             globals: {
               license: 'MIT',

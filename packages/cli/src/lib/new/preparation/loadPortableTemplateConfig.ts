@@ -30,6 +30,11 @@ const defaults = {
   packageNamePluginInfix: 'plugin-',
 };
 
+const builtInTemplateIds = defaultTemplates.map(t => `default-${t.id}`) as [
+  string,
+  ...string[],
+];
+
 const pkgJsonWithNewConfigSchema = z.object({
   backstage: z
     .object({
@@ -38,9 +43,7 @@ const pkgJsonWithNewConfigSchema = z.object({
           templates: z
             .array(
               z.union([
-                z.enum(
-                  defaultTemplates.map(t => t.id) as [string, ...string[]],
-                ),
+                z.enum(builtInTemplateIds),
                 z
                   .object({
                     id: z.string(),
@@ -93,7 +96,9 @@ export async function loadPortableTemplateConfig(
   const templatePointers =
     config?.templates?.map(t => {
       if (typeof t === 'string') {
-        const defaultTemplate = defaultTemplates.find(d => d.id === t);
+        const defaultTemplate = defaultTemplates.find(
+          d => t === `default-${d.id}`,
+        );
         if (!defaultTemplate) {
           throw new Error(`Built-in template '${t}' does not exist`);
         }
