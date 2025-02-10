@@ -1,6 +1,6 @@
 role: backend-plugin-module
 template: ./scaffolder-module
-params:
+parameters:
   pluginId: scaffolder
 templateValues:
   moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
