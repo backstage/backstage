@@ -39,7 +39,7 @@ export type PortableTemplateConfig = {
 };
 
 export type PortableTemplatePointer = {
-  id: string;
+  name: string;
   description?: string;
   target: string;
 };

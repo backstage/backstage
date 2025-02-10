@@ -15,9 +15,11 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath, dirname, extname } from 'node:path';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { PortableTemplateConfig } from '../types';
+import { PortableTemplateConfig, PortableTemplatePointer } from '../types';
+import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
@@ -31,27 +33,9 @@ const defaults = {
   packageNamePluginInfix: 'plugin-',
 };
 
-const builtInTemplateIds = defaultTemplates.map(t => `default-${t.id}`) as [
-  string,
-  ...string[],
-];
-
 const newConfigSchema = z
   .object({
-    templates: z
-      .array(
-        z.union([
-          z.enum(builtInTemplateIds),
-          z
-            .object({
-              id: z.string(),
-              description: z.string().optional(),
-              target: z.string(),
-            })
-            .strict(),
-        ]),
-      )
-      .optional(),
+    templates: z.array(z.string()).optional(),
     globals: z
       .object({
         license: z.string().optional(),
@@ -100,19 +84,21 @@ export async function loadPortableTemplateConfig(
 
   const config = parsed.data.backstage?.cli?.new;
 
-  const templatePointers =
-    config?.templates?.map(t => {
-      if (typeof t === 'string') {
-        const defaultTemplate = defaultTemplates.find(
-          d => t === `default-${d.id}`,
+  const basePath = dirname(pkgPath);
+  const templatePointers = await Promise.all(
+    (config?.templates ?? defaultTemplates).map(pointer => {
+      try {
+        const templatePath = resolveLocalTemplatePath(pointer, basePath);
+
+        return peekLocalTemplateDefinition(templatePath);
+      } catch (error) {
+        throw new ForwardedError(
+          `Failed to load template definition '${pointer}'`,
+          error,
         );
-        if (!defaultTemplate) {
-          throw new Error(`Built-in template '${t}' does not exist`);
-        }
-        return defaultTemplate;
       }
-      return t;
-    }) ?? defaultTemplates;
+    }),
+  );
 
   return {
     isUsingDefaultTemplates: !config?.templates,
@@ -132,5 +118,44 @@ export async function loadPortableTemplateConfig(
       overrides.packageNamePluginInfix ??
       config?.globals?.namePluginInfix ??
       defaults.packageNamePluginInfix,
+  };
+}
+
+function resolveLocalTemplatePath(pointer: string, basePath: string): string {
+  const isDirectoryPointer = extname(pointer) === '';
+
+  if (pointer.startsWith('.')) {
+    if (isDirectoryPointer) {
+      return resolvePath(basePath, pointer, 'template.yaml');
+    }
+    return resolvePath(basePath, pointer);
+  }
+
+  if (isDirectoryPointer) {
+    return require.resolve(`${pointer}/template.yaml`, { paths: [basePath] });
+  }
+  return require.resolve(pointer, { paths: [basePath] });
+}
+
+const partialTemplateDefinitionSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+});
+
+async function peekLocalTemplateDefinition(
+  target: string,
+): Promise<PortableTemplatePointer> {
+  const content = await fs.readFile(target, 'utf8');
+
+  const rawTemplate = parseYaml(content);
+  const parsed = partialTemplateDefinitionSchema.safeParse(rawTemplate);
+  if (!parsed.success) {
+    throw fromZodError(parsed.error);
+  }
+
+  return {
+    name: parsed.data.name,
+    description: parsed.data.description,
+    target,
   };
 }
