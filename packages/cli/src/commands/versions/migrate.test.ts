@@ -21,7 +21,6 @@ import * as run from '../../lib/run';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
-import { expectLogsToMatch } from '../../lib/new/execution/testUtils';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
@@ -51,6 +50,10 @@ jest.mock('../../lib/run', () => {
     run: jest.fn(),
   };
 });
+
+function expectLogsToMatch(recievedLogs: String[], expected: String[]): void {
+  expect(recievedLogs.filter(Boolean).sort()).toEqual(expected.sort());
+}
 
 describe('versions:migrate', () => {
   mockDir = createMockDirectory();
