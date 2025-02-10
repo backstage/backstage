@@ -10,8 +10,8 @@
     "cli": {
       "new": {
         "globals": {
-          "scope": "backstage",
-          "private": false
+          "private": false,
+          "namePrefix": "@backstage/"
         }
       }
     }
