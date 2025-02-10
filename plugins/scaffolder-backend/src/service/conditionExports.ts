@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-} from '@backstage/plugin-scaffolder-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
+import {
+  scaffolderActionPermissionResourceRef,
+  scaffolderActionRules,
+  scaffolderTemplatePermissionResourceRef,
+  scaffolderTemplateRules,
+} from './rules';
 
 const templateConditionExports = createConditionExports({
-  pluginId: 'scaffolder',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  resourceRef: scaffolderTemplatePermissionResourceRef,
   rules: scaffolderTemplateRules,
 });
 
 const actionsConditionExports = createConditionExports({
-  pluginId: 'scaffolder',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  resourceRef: scaffolderActionPermissionResourceRef,
   rules: scaffolderActionRules,
 });
 

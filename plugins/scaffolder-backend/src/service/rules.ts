@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  createPermissionResourceRef,
+  createPermissionRule,
+  makeCreatePermissionRule,
+} from '@backstage/plugin-permission-node';
+import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 import {
@@ -29,15 +33,38 @@ import { z } from 'zod';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get } from 'lodash';
 
+/**
+ * @alpha
+ */
+export type ScaffolderTemplatePermissionResource =
+  | TemplateEntityStepV1beta3
+  | TemplateParametersV1beta3;
+
+/**
+ * @alpha
+ */
+export const scaffolderTemplatePermissionResourceRef =
+  createPermissionResourceRef<ScaffolderTemplatePermissionResource, {}>().with({
+    pluginId: 'scaffolder',
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  });
+
+/**
+ * @alpha
+ * @deprecated Use `createPermissionRule` directly instead with the resourceRef option.
+ */
 export const createTemplatePermissionRule = makeCreatePermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  ScaffolderTemplatePermissionResource,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
-export const hasTag = createTemplatePermissionRule({
+/**
+ * @alpha
+ */
+export const hasTag = createPermissionRule({
   name: 'HAS_TAG',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  resourceRef: scaffolderTemplatePermissionResourceRef,
   description: `Match parameters or steps with the given tag`,
   paramsSchema: z.object({
     tag: z.string().describe('Name of the tag to match on'),
@@ -48,18 +75,41 @@ export const hasTag = createTemplatePermissionRule({
   toQuery: () => ({}),
 });
 
+/**
+ * @alpha
+ */
+export type ScaffolderActionPermissionResource =
+  | {
+      action: string;
+      input: JsonObject | undefined;
+    }
+  | ScaffolderTemplatePermissionResource;
+
+/**
+ * @alpha
+ */
+export const scaffolderActionPermissionResourceRef =
+  createPermissionResourceRef<ScaffolderActionPermissionResource, {}>().with({
+    pluginId: 'scaffolder',
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  });
+
+/**
+ * @alpha
+ * @deprecated Use `createPermissionRule` directly instead with the resourceRef option.
+ */
 export const createActionPermissionRule = makeCreatePermissionRule<
-  {
-    action: string;
-    input: JsonObject | undefined;
-  },
+  ScaffolderActionPermissionResource,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION
 >();
 
-export const hasActionId = createActionPermissionRule({
+/**
+ * @alpha
+ */
+export const hasActionId = createPermissionRule({
   name: 'HAS_ACTION_ID',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  resourceRef: scaffolderActionPermissionResourceRef,
   description: `Match actions with the given actionId`,
   paramsSchema: z.object({
     actionId: z.string().describe('Name of the actionId to match on'),
@@ -70,20 +120,34 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
+/**
+ * @alpha
+ */
 export const hasProperty = buildHasProperty({
   name: 'HAS_PROPERTY',
   valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
   validateProperty: false,
 });
 
+/**
+ * @alpha
+ */
 export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
 });
+
+/**
+ * @alpha
+ */
 export const hasNumberProperty = buildHasProperty({
   name: 'HAS_NUMBER_PROPERTY',
   valueSchema: z.number(),
 });
+
+/**
+ * @alpha
+ */
 export const hasStringProperty = buildHasProperty({
   name: 'HAS_STRING_PROPERTY',
   valueSchema: z.string(),
@@ -98,10 +162,10 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   valueSchema: Schema;
   validateProperty?: boolean;
 }) {
-  return createActionPermissionRule({
+  return createPermissionRule({
     name,
     description: `Allow actions with the specified property`,
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+    resourceRef: scaffolderActionPermissionResourceRef,
     paramsSchema: z.object({
       key: z
         .string()
@@ -129,7 +193,14 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
+/**
+ * @alpha
+ */
 export const scaffolderTemplateRules = { hasTag };
+
+/**
+ * @alpha
+ */
 export const scaffolderActionRules = {
   hasActionId,
   hasBooleanProperty,

@@ -49,6 +49,7 @@ import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
@@ -84,7 +85,7 @@ import { ZodTypeDef } from 'zod';
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ActionPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<
@@ -579,12 +580,14 @@ export interface RouterOptions {
   lifecycle?: LifecycleService;
   // (undocumented)
   logger: Logger;
-  // (undocumented)
+  // @deprecated (undocumented)
   permissionRules?: Array<
     TemplatePermissionRuleInput | ActionPermissionRuleInput
   >;
   // (undocumented)
   permissions?: PermissionsService;
+  // (undocumented)
+  permissionsRegistry?: PermissionsRegistryService;
   // (undocumented)
   reader: UrlReaderService;
   // (undocumented)
@@ -875,7 +878,7 @@ export type TemplateFilter = TemplateFilter_2;
 // @public @deprecated (undocumented)
 export type TemplateGlobal = TemplateGlobal_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type TemplatePermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<

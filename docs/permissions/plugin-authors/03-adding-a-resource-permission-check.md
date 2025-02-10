@@ -135,7 +135,7 @@ export const todoListPermissionResourceRef = createPermissionResourceRef<
   TodoFilter
 >().with({
   pluginId: 'todolist',
-  type: TODO_LIST_RESOURCE_TYPE,
+  resourceType: TODO_LIST_RESOURCE_TYPE,
 });
 
 export const isOwner = createPermissionRule({

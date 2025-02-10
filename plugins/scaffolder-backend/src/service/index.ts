@@ -14,4 +14,18 @@
  * limitations under the License.
  */
 
+export {
+  scaffolderTemplateRules,
+  scaffolderActionRules,
+  scaffolderTemplatePermissionResourceRef,
+  createTemplatePermissionRule,
+  scaffolderActionPermissionResourceRef,
+  createActionPermissionRule,
+} from './rules';
+
+export type {
+  ScaffolderTemplatePermissionResource,
+  ScaffolderActionPermissionResource,
+} from './rules';
+
 export * from './conditionExports';
