@@ -12,6 +12,7 @@
 
   &[data-checked] {
     background-color: var(--canon-bg-solid);
+    color: var(--canon-fg-solid);
   }
 }
 
