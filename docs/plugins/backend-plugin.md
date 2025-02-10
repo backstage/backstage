@@ -13,7 +13,7 @@ A new, bare-bones backend plugin package can be created by issuing the following
 command in your Backstage repository root and selecting `backend-plugin`:
 
 ```sh
-yarn backstage-cli new
+yarn new
 ```
 
 You will be asked to supply a name for the plugin. This is an identifier that
