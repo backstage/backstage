@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
+import React from 'react';
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
 import { Icon } from '@backstage/canon';
 import type { CheckboxProps } from './types';
