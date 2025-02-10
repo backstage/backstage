@@ -15,16 +15,12 @@
  */
 
 import React, { JSX, ReactNode } from 'react';
-<<<<<<< HEAD
-import { ConfigApi, coreExtensionData } from '@backstage/frontend-plugin-api';
-=======
 import {
   ConfigApi,
   coreExtensionData,
   ExtensionFactoryMiddleware,
 } from '@backstage/frontend-plugin-api';
 import { stringifyError } from '@backstage/errors';
->>>>>>> e23f5e0762679 (frontend-app-api: support array of extension factory middlewares)
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports

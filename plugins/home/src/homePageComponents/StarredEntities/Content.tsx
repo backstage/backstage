@@ -85,9 +85,9 @@ export const Content = ({
         fields: [
           'kind',
           'metadata.namespace',
-          'metadata.title',
           'metadata.name',
           'spec.type',
+          'metadata.title',
           'spec.profile.displayName',
         ],
       })
