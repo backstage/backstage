@@ -83,14 +83,15 @@ async function generate(
   );
 
   const parentDirectory = resolve(resolvedOutputDirectory, '..');
+  const indexFile = resolve(parentDirectory, 'index.ts');
 
   await fs.writeFile(
-    resolve(parentDirectory, 'index.ts'),
+    indexFile,
     `// 
     export * from './generated';`,
   );
 
-  await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
+  await exec(`yarn backstage-cli package lint --fix ${indexFile}`, [], {
     signal: abortSignal?.signal,
   });
 
