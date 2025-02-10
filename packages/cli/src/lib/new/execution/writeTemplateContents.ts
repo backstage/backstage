@@ -62,12 +62,15 @@ export async function writeTemplateContents(
           ? templater.template(file.content)
           : file.content;
 
-      // Try to format JSON files
-      if (file.path.endsWith('.json')) {
+      // Automatically inject input values into package.json
+      if (file.path === 'package.json') {
         try {
-          content = JSON.stringify(JSON.parse(content), null, 2);
-        } catch {
-          /* ignore */
+          content = injectPackageJsonInput(input, content);
+        } catch (error) {
+          throw new ForwardedError(
+            'Failed to transform templated package.json',
+            error,
+          );
         }
       }
 
@@ -81,4 +84,44 @@ export async function writeTemplateContents(
     await fs.rm(targetDir, { recursive: true, force: true, maxRetries: 10 });
     throw error;
   }
+}
+
+export function injectPackageJsonInput(
+  input: PortableTemplateInput,
+  content: string,
+) {
+  const pkgJson = JSON.parse(content);
+
+  const toAdd = new Array<[name: string, value: unknown]>();
+
+  if (pkgJson.version) {
+    pkgJson.version = input.version;
+  } else {
+    toAdd.push(['version', input.version]);
+  }
+  if (pkgJson.license) {
+    pkgJson.license = input.license;
+  } else {
+    toAdd.push(['license', input.license]);
+  }
+  if (input.private) {
+    if (pkgJson.private === false) {
+      pkgJson.private = true;
+    } else if (!pkgJson.private) {
+      toAdd.push(['private', true]);
+    }
+  } else {
+    delete pkgJson.private;
+  }
+
+  const entries = Object.entries(pkgJson);
+
+  const nameIndex = entries.findIndex(([name]) => name === 'name');
+  if (nameIndex === -1) {
+    throw new Error('templated package.json does not contain a name field');
+  }
+
+  entries.splice(nameIndex + 1, 0, ...toAdd);
+
+  return JSON.stringify(Object.fromEntries(entries), null, 2);
 }

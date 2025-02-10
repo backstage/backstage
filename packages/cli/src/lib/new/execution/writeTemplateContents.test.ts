@@ -92,7 +92,7 @@ describe('writeTemplateContents', () => {
       out: {
         'test.txt': 'test',
         'plugin.txt': 'id=test',
-        'test.json': '{\n  "x": 1\n}',
+        'test.json': '{"x":1}',
       },
     });
   });
