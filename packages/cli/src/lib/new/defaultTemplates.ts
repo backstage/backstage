@@ -15,54 +15,13 @@
  */
 
 export const defaultTemplates = [
-  {
-    id: 'backend-module',
-    target: require.resolve(
-      '@backstage/cli/templates/default-backend-module.yaml',
-    ),
-  },
-  {
-    id: 'backend-plugin',
-    target: require.resolve(
-      '@backstage/cli/templates/default-backend-plugin.yaml',
-    ),
-  },
-  {
-    id: 'plugin-common',
-    target: require.resolve(
-      '@backstage/cli/templates/default-common-plugin-package.yaml',
-    ),
-  },
-  {
-    id: 'plugin-node',
-    target: require.resolve(
-      '@backstage/cli/templates/default-node-plugin-package.yaml',
-    ),
-  },
-  {
-    id: 'frontend-plugin',
-    target: require.resolve('@backstage/cli/templates/default-plugin.yaml'),
-  },
-  {
-    id: 'plugin-react',
-    target: require.resolve(
-      '@backstage/cli/templates/default-react-plugin-package.yaml',
-    ),
-  },
-  {
-    id: 'node-library',
-    target: require.resolve(
-      '@backstage/cli/templates/node-library-package.yaml',
-    ),
-  },
-  {
-    id: 'web-library',
-    target: require.resolve(
-      '@backstage/cli/templates/web-library-package.yaml',
-    ),
-  },
-  {
-    id: 'scaffolder-module',
-    target: require.resolve('@backstage/cli/templates/scaffolder-module.yaml'),
-  },
+  '@backstage/cli/templates/frontend-plugin',
+  '@backstage/cli/templates/backend-plugin',
+  '@backstage/cli/templates/backend-plugin-module',
+  '@backstage/cli/templates/plugin-web-library',
+  '@backstage/cli/templates/plugin-node-library',
+  '@backstage/cli/templates/plugin-common-library',
+  '@backstage/cli/templates/web-library',
+  '@backstage/cli/templates/node-library',
+  '@backstage/cli/templates/scaffolder-backend-module',
 ];
