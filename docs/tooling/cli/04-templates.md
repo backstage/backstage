@@ -71,9 +71,9 @@ Custom templates can be installed from local directories. To install a template 
 }
 ```
 
-Each entry in the `templates` array should be relative path that points to a directory containing a `portable-template.yaml` file. If the path starts with `./` it will be use as is, otherwise it will be resolved as a module within `node_modules`.
+Each entry in the `templates` array should be a relative path that points to a directory containing a `portable-template.yaml` file. If the path starts with `./` it will be use as is, otherwise it will be resolved as a module within `node_modules`.
 
-When defining the `templates` array it will override the default set of templates. If you want to keep using and of the build-in templates in the Backstage CLI you can reference them directly within the CLI package. This following is the full list of built-in templates:
+When defining the `templates` array it will override the default set of templates. If you want to keep using one of the build-in templates in the Backstage CLI you can reference them directly within the CLI package. This following is the full list of built-in templates:
 
 ```json
 {
