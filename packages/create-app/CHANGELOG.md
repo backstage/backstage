@@ -1,5 +1,17 @@
 # @backstage/create-app
 
+## 0.5.25-next.3
+
+### Patch Changes
+
+- bfa4ea9: Enable `catalog.useUrlReadersSearch` configuration by default in newly created Backstage installations.
+
+  This parameter makes `UrlReaderProcessor` always use the search method.
+  New adopters are encouraged to enable it as this behavior will be the default in a future release.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.25-next.2
 
 ### Patch Changes
