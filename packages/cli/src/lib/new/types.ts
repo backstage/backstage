@@ -38,6 +38,8 @@ export type PortableTemplateConfig = {
   packageNamePluginInfix: string;
 };
 
+export const TEMPLATE_FILE_NAME = 'template.yaml';
+
 export type PortableTemplatePointer = {
   name: string;
   description?: string;

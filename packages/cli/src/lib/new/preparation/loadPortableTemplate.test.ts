@@ -16,6 +16,7 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { loadPortableTemplate } from './loadPortableTemplate';
+import { TEMPLATE_FILE_NAME } from '../types';
 
 describe('loadTemplate', () => {
   const mockDir = createMockDirectory();
@@ -26,19 +27,21 @@ describe('loadTemplate', () => {
 
   it('should load a valid template', async () => {
     mockDir.setContent({
-      'path/to/template.yaml': `
+      'path/to': {
+        [TEMPLATE_FILE_NAME]: `
           name: template1
           role: frontend-plugin
           values:
             foo: bar
         `,
+      },
       'path/to/hello.txt': 'hello world',
     });
 
     await expect(
       loadPortableTemplate({
         name: 'template1',
-        target: mockDir.resolve('path/to/template.yaml'),
+        target: mockDir.resolve('path/to', TEMPLATE_FILE_NAME),
       }),
     ).resolves.toEqual({
       name: 'template1',
