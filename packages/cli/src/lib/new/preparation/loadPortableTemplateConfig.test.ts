@@ -19,6 +19,7 @@ import { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
 import { defaultTemplates } from '../defaultTemplates';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { TEMPLATE_FILE_NAME } from '../types';
+import { basename } from 'node:path';
 
 describe('loadPortableTemplateConfig', () => {
   const mockDir = createMockDirectory();
@@ -174,7 +175,7 @@ describe('loadPortableTemplateConfig', () => {
       node_modules: Object.fromEntries(
         defaultTemplates.map(t => [
           t,
-          { [TEMPLATE_FILE_NAME]: `name: x\nrole: web-library\n` },
+          { [TEMPLATE_FILE_NAME]: `name: ${basename(t)}\nrole: web-library\n` },
         ]),
       ),
     });
@@ -186,7 +187,7 @@ describe('loadPortableTemplateConfig', () => {
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates.map(t => ({
-        name: 'x',
+        name: basename(t),
         target: realpathSync(
           mockDir.resolve(`node_modules/${t}`, TEMPLATE_FILE_NAME),
         ),
@@ -197,6 +198,34 @@ describe('loadPortableTemplateConfig', () => {
       packageNamePrefix: '@internal/',
       packageNamePluginInfix: 'plugin-',
     });
+  });
+
+  it('should reject templates with conflicting names', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        backstage: {
+          cli: {
+            new: {
+              templates: ['./template1', './template2'],
+            },
+          },
+        },
+      }),
+      template1: {
+        [TEMPLATE_FILE_NAME]: 'name: test\nrole: frontend-plugin\n',
+      },
+      template2: {
+        [TEMPLATE_FILE_NAME]: 'name: test\nrole: backend-plugin\n',
+      },
+    });
+
+    await expect(
+      loadPortableTemplateConfig({
+        packagePath: mockDir.resolve('package.json'),
+      }),
+    ).rejects.toThrow(
+      `Invalid template configuration, received conflicting template name 'test' from './template1' and './template2'`,
+    );
   });
 
   it('should throw an error if package.json is invalid', async () => {
@@ -271,7 +300,7 @@ describe('loadPortableTemplateConfig', () => {
       node_modules: Object.fromEntries(
         defaultTemplates.map(t => [
           t,
-          { [TEMPLATE_FILE_NAME]: `name: x\nrole: web-library\n` },
+          { [TEMPLATE_FILE_NAME]: `name: ${basename(t)}\nrole: web-library\n` },
         ]),
       ),
     });

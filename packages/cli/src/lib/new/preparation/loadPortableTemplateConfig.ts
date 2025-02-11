@@ -89,24 +89,36 @@ export async function loadPortableTemplateConfig(
   const config = parsed.data.backstage?.cli?.new;
 
   const basePath = dirname(pkgPath);
-  const templatePointers = await Promise.all(
-    (config?.templates ?? defaultTemplates).map(async pointer => {
+  const templatePointerEntries = await Promise.all(
+    (config?.templates ?? defaultTemplates).map(async rawPointer => {
       try {
-        const templatePath = resolveLocalTemplatePath(pointer, basePath);
+        const templatePath = resolveLocalTemplatePath(rawPointer, basePath);
 
-        return await peekLocalTemplateDefinition(templatePath);
+        const pointer = await peekLocalTemplateDefinition(templatePath);
+        return { pointer, rawPointer };
       } catch (error) {
         throw new ForwardedError(
-          `Failed to load template definition '${pointer}'`,
+          `Failed to load template definition '${rawPointer}'`,
           error,
         );
       }
     }),
   );
 
+  const templateNameConflicts = new Map<string, string>();
+  for (const { pointer, rawPointer } of templatePointerEntries) {
+    const conflict = templateNameConflicts.get(pointer.name);
+    if (conflict) {
+      throw new Error(
+        `Invalid template configuration, received conflicting template name '${pointer.name}' from '${conflict}' and '${rawPointer}'`,
+      );
+    }
+    templateNameConflicts.set(pointer.name, rawPointer);
+  }
+
   return {
     isUsingDefaultTemplates: !config?.templates,
-    templatePointers,
+    templatePointers: templatePointerEntries.map(({ pointer }) => pointer),
     license: overrides.license ?? config?.globals?.license ?? defaults.license,
     version: overrides.version ?? config?.globals?.version ?? defaults.version,
     private: overrides.private ?? config?.globals?.private ?? defaults.private,
