@@ -35,8 +35,7 @@ const templateDefinitionSchema = z
     name: z.string(),
     role: z.enum(TEMPLATE_ROLES),
     description: z.string().optional(),
-    parameters: z.record(z.string()).optional(),
-    templateValues: z.record(z.string()).optional(),
+    values: z.record(z.string()).optional(),
   })
   .strict();
 
@@ -64,7 +63,7 @@ export async function loadPortableTemplate(
     );
   }
 
-  const { role, parameters = {}, templateValues = {} } = parsed.data;
+  const { role, values = {} } = parsed.data;
 
   const templatePath = resolvePath(dirname(pointer.target));
   const filePaths = await recursiveReaddir(templatePath).catch(error => {
@@ -104,7 +103,6 @@ export async function loadPortableTemplate(
     name: pointer.name,
     role,
     files: loadedFiles,
-    parameters,
-    templateValues,
+    values,
   };
 }

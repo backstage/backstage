@@ -17,6 +17,7 @@
 import inquirer from 'inquirer';
 import { PortableTemplateConfig } from '../types';
 import { collectPortableTemplateInput } from './collectPortableTemplateInput';
+import { withLogCollector } from '@backstage/test-utils';
 
 describe('collectTemplateParams', () => {
   const baseOptions = {
@@ -33,28 +34,13 @@ describe('collectTemplateParams', () => {
       name: 'test',
       role: 'frontend-plugin' as const,
       files: [],
-      parameters: {},
-      templateValues: {},
+      values: {},
     },
-    prefilledParams: {
-      pluginId: 'test',
-      owner: 'me',
-    },
+    prefilledParams: {},
   };
 
-  it('should return default values if not provided', async () => {
-    await expect(collectPortableTemplateInput(baseOptions)).resolves.toEqual({
-      roleParams: {
-        role: 'frontend-plugin',
-        pluginId: 'test',
-      },
-      owner: 'me',
-      version: '0.1.0',
-      license: 'Apache-2.0',
-      private: true,
-      packageName: '@internal/plugin-test',
-      packagePath: 'plugins/test',
-    });
+  beforeEach(() => {
+    jest.resetAllMocks();
   });
 
   it('should prompt for missing parameters', async () => {
@@ -76,6 +62,91 @@ describe('collectTemplateParams', () => {
       private: true,
       packageName: '@internal/plugin-other',
       packagePath: 'plugins/other',
+    });
+  });
+
+  it('should pick up prefilled parameters', async () => {
+    await expect(
+      collectPortableTemplateInput({
+        ...baseOptions,
+        prefilledParams: {
+          pluginId: 'test1',
+          owner: 'me',
+        },
+      }),
+    ).resolves.toEqual({
+      roleParams: {
+        role: 'frontend-plugin',
+        pluginId: 'test1',
+      },
+      owner: 'me',
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageName: '@internal/plugin-test1',
+      packagePath: 'plugins/test1',
+    });
+  });
+
+  it('should pick up template values', async () => {
+    await expect(
+      collectPortableTemplateInput({
+        ...baseOptions,
+        template: {
+          ...baseOptions.template,
+          values: {
+            pluginId: 'test2',
+            owner: 'me',
+          },
+        },
+      }),
+    ).resolves.toEqual({
+      roleParams: {
+        role: 'frontend-plugin',
+        pluginId: 'test2',
+      },
+      owner: 'me',
+      version: '0.1.0',
+      license: 'Apache-2.0',
+      private: true,
+      packageName: '@internal/plugin-test2',
+      packagePath: 'plugins/test2',
+    });
+  });
+
+  it('should map deprecated id param to pluginId', async () => {
+    const logs = await withLogCollector(async () => {
+      await expect(
+        collectPortableTemplateInput({
+          ...baseOptions,
+          config: {
+            ...baseOptions.config,
+            isUsingDefaultTemplates: true,
+          },
+          prefilledParams: {
+            id: 'test3',
+            owner: 'me',
+          },
+        }),
+      ).resolves.toEqual({
+        roleParams: {
+          role: 'frontend-plugin',
+          pluginId: 'test3',
+        },
+        owner: 'me',
+        version: '0.1.0',
+        license: 'Apache-2.0',
+        private: true,
+        packageName: '@internal/plugin-test3',
+        packagePath: 'plugins/test3',
+      });
+    });
+    expect(logs).toEqual({
+      error: [],
+      log: [],
+      warn: [
+        `DEPRECATION WARNING: The 'id' parameter is deprecated, use 'pluginId' instead`,
+      ],
     });
   });
 });

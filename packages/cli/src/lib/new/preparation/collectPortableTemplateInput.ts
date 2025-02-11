@@ -46,14 +46,19 @@ export async function collectPortableTemplateInput(
     prompts.push(ownerPrompt());
   }
 
-  const parameters = { ...template.parameters, ...prefilledParams };
-
-  if (config.isUsingDefaultTemplates && parameters.id) {
+  const deprecatedParams: PortableTemplateParams = {};
+  if (config.isUsingDefaultTemplates && prefilledParams.id) {
     console.warn(
       `DEPRECATION WARNING: The 'id' parameter is deprecated, use 'pluginId' instead`,
     );
-    parameters.pluginId = parameters.id;
+    deprecatedParams.pluginId = prefilledParams.id;
   }
+
+  const parameters = {
+    ...template.values,
+    ...prefilledParams,
+    ...deprecatedParams,
+  };
 
   const needsAnswer = [];
   const prefilledAnswers = {} as PortableTemplateParams;
