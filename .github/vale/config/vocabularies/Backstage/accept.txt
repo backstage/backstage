@@ -157,6 +157,7 @@ Gitiles
 gitlab
 GitLab
 globals
+globbing
 Gource
 Grafana
 graphql
