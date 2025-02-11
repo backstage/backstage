@@ -6,7 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -30,6 +29,6 @@ export function createPublishAzureAction(options: {
     gitAuthorEmail?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 ```

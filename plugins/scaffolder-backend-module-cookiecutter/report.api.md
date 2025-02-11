@@ -8,7 +8,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -32,6 +31,6 @@ export function createFetchCookiecutterAction(options: {
     imageName?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 ```

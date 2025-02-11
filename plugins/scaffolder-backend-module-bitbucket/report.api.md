@@ -8,7 +8,6 @@ import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bit
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -27,7 +26,7 @@ export const createBitbucketPipelinesRunAction: (options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public @deprecated
@@ -48,7 +47,7 @@ export function createPublishBitbucketAction(options: {
     gitAuthorEmail?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public @deprecated (undocumented)
