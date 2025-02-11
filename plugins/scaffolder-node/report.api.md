@@ -482,7 +482,10 @@ export type TemplateExample = {
 };
 
 // @public (undocumented)
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+export type TemplateFilter = (
+  arg: JsonValue,
+  ...rest: JsonValue[]
+) => JsonValue | undefined;
 
 // @public (undocumented)
 export type TemplateGlobal =
