@@ -253,7 +253,7 @@ Restores the changes made by the prepack command
 ## new
 
 The `new` command opens up an interactive guide for you to create new things
-in your app. If you do not pass in any options it is completely interactive, but in your app.
+in your app. If you do not pass in any options it is completely interactive, but
 it is possible to pre-select what you want to create using the `--select` flag,
 and provide options using `--option`, for example:
 
