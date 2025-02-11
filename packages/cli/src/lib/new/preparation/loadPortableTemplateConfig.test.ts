@@ -18,6 +18,7 @@ import { realpathSync } from 'node:fs';
 import { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
 import { defaultTemplates } from '../defaultTemplates';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { TEMPLATE_FILE_NAME } from '../types';
 
 describe('loadPortableTemplateConfig', () => {
   const mockDir = createMockDirectory();
@@ -32,7 +33,7 @@ describe('loadPortableTemplateConfig', () => {
         backstage: {
           cli: {
             new: {
-              templates: ['./path/to/template1', './path/to/template2.yaml'],
+              templates: ['./path/to/template1'],
               globals: {
                 license: 'MIT',
                 private: true,
@@ -43,9 +44,9 @@ describe('loadPortableTemplateConfig', () => {
           },
         },
       }),
-      'path/to/template1/template.yaml':
-        'name: template1\nrole: frontend-plugin\n',
-      'path/to/template2.yaml': 'name: template2\nrole: frontend-plugin\n',
+      'path/to/template1': {
+        [TEMPLATE_FILE_NAME]: 'name: template1\nrole: frontend-plugin\n',
+      },
     });
 
     await expect(
@@ -57,11 +58,7 @@ describe('loadPortableTemplateConfig', () => {
       templatePointers: [
         {
           name: 'template1',
-          target: mockDir.resolve('path/to/template1/template.yaml'),
-        },
-        {
-          name: 'template2',
-          target: mockDir.resolve('path/to/template2.yaml'),
+          target: mockDir.resolve('path/to/template1', TEMPLATE_FILE_NAME),
         },
       ],
       license: 'MIT',
@@ -84,11 +81,7 @@ describe('loadPortableTemplateConfig', () => {
       templatePointers: [
         {
           name: 'template1',
-          target: mockDir.resolve('path/to/template1/template.yaml'),
-        },
-        {
-          name: 'template2',
-          target: mockDir.resolve('path/to/template2.yaml'),
+          target: mockDir.resolve('path/to/template1', TEMPLATE_FILE_NAME),
         },
       ],
       license: 'nope',
@@ -121,14 +114,14 @@ describe('loadPortableTemplateConfig', () => {
           package: {
             templates: {
               plugin: {
-                'template.yaml':
+                [TEMPLATE_FILE_NAME]:
                   'name: frontend-plugin\nrole: frontend-plugin\n',
               },
             },
           },
         },
         'my-package': {
-          'template.yaml': 'name: backend-plugin\nrole: backend-plugin\n',
+          [TEMPLATE_FILE_NAME]: 'name: backend-plugin\nrole: backend-plugin\n',
         },
       },
     });
@@ -144,14 +137,15 @@ describe('loadPortableTemplateConfig', () => {
           name: 'frontend-plugin',
           target: realpathSync(
             mockDir.resolve(
-              'node_modules/@my/package/templates/plugin/template.yaml',
+              'node_modules/@my/package/templates/plugin',
+              TEMPLATE_FILE_NAME,
             ),
           ),
         },
         {
           name: 'backend-plugin',
           target: realpathSync(
-            mockDir.resolve('node_modules/my-package/template.yaml'),
+            mockDir.resolve('node_modules/my-package', TEMPLATE_FILE_NAME),
           ),
         },
       ],
@@ -180,7 +174,7 @@ describe('loadPortableTemplateConfig', () => {
       node_modules: Object.fromEntries(
         defaultTemplates.map(t => [
           t,
-          { 'template.yaml': `name: x\nrole: web-library\n` },
+          { [TEMPLATE_FILE_NAME]: `name: x\nrole: web-library\n` },
         ]),
       ),
     });
@@ -194,7 +188,7 @@ describe('loadPortableTemplateConfig', () => {
       templatePointers: defaultTemplates.map(t => ({
         name: 'x',
         target: realpathSync(
-          mockDir.resolve(`node_modules/${t}/template.yaml`),
+          mockDir.resolve(`node_modules/${t}`, TEMPLATE_FILE_NAME),
         ),
       })),
       license: 'MIT',
@@ -255,7 +249,7 @@ describe('loadPortableTemplateConfig', () => {
       node_modules: Object.fromEntries(
         defaultTemplates.map(t => [
           t,
-          { 'template.yaml': `name: x\nrole: web-library\n` },
+          { [TEMPLATE_FILE_NAME]: `name: x\nrole: web-library\n` },
         ]),
       ),
     });

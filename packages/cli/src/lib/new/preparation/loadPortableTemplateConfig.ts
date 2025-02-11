@@ -15,10 +15,14 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname, extname } from 'node:path';
+import { resolve as resolvePath, dirname } from 'node:path';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
-import { PortableTemplateConfig, PortableTemplatePointer } from '../types';
+import {
+  PortableTemplateConfig,
+  PortableTemplatePointer,
+  TEMPLATE_FILE_NAME,
+} from '../types';
 import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
@@ -122,19 +126,13 @@ export async function loadPortableTemplateConfig(
 }
 
 function resolveLocalTemplatePath(pointer: string, basePath: string): string {
-  const isDirectoryPointer = extname(pointer) === '';
-
   if (pointer.startsWith('.')) {
-    if (isDirectoryPointer) {
-      return resolvePath(basePath, pointer, 'template.yaml');
-    }
-    return resolvePath(basePath, pointer);
+    return resolvePath(basePath, pointer, TEMPLATE_FILE_NAME);
   }
 
-  if (isDirectoryPointer) {
-    return require.resolve(`${pointer}/template.yaml`, { paths: [basePath] });
-  }
-  return require.resolve(pointer, { paths: [basePath] });
+  return require.resolve(`${pointer}/${TEMPLATE_FILE_NAME}`, {
+    paths: [basePath],
+  });
 }
 
 const partialTemplateDefinitionSchema = z.object({
