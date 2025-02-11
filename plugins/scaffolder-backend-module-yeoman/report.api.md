@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
@@ -16,7 +15,7 @@ export function createRunYeomanAction(): TemplateAction<
     options?: JsonObject | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public

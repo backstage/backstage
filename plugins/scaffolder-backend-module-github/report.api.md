@@ -12,7 +12,6 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -34,7 +33,7 @@ export function createGithubActionsDispatchAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -50,7 +49,7 @@ export function createGithubAutolinksAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -87,7 +86,7 @@ export function createGithubBranchProtectionAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -103,7 +102,7 @@ export function createGithubDeployKeyAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -139,7 +138,7 @@ export function createGithubEnvironmentAction(options: {
     reviewers?: string[] | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -154,7 +153,7 @@ export function createGithubIssuesLabelAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -170,7 +169,7 @@ export function createGithubPagesEnableAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -290,7 +289,7 @@ export function createGithubRepoCreateAction(options: {
     subscribe?: boolean | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -335,7 +334,7 @@ export function createGithubRepoPushAction(options: {
     requireLastPushApproval?: boolean | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -355,7 +354,7 @@ export function createGithubWebhookAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -456,7 +455,7 @@ export function createPublishGithubAction(options: {
     subscribe?: boolean | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -484,7 +483,7 @@ export const createPublishGithubPullRequestAction: (
     createWhenEmpty?: boolean | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public

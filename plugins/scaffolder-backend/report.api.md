@@ -57,7 +57,6 @@ import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-co
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SerializedTask as SerializedTask_2 } from '@backstage/plugin-scaffolder-node';
@@ -80,12 +79,6 @@ import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
-import { z } from 'zod';
-import { ZodArray } from 'zod';
-import { ZodBoolean } from 'zod';
-import { zodLibExternal } from 'zod/lib/external';
-import { ZodOptional } from 'zod';
-import { ZodString } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
@@ -133,7 +126,7 @@ export function createCatalogRegisterAction(options: {
       optional?: boolean | undefined;
     },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -143,30 +136,11 @@ export function createCatalogWriteAction(): TemplateAction_2<
     filePath?: string | undefined;
   },
   any,
-  z.ZodObject<
-    {
-      filePath: z.ZodOptional<z.ZodString>;
-      entity: z.ZodRecord<z.ZodString, z.ZodAny>;
-    },
-    'strip',
-    z.ZodTypeAny,
-    {
-      entity: Record<string, any>;
-      filePath?: string | undefined;
-    },
-    {
-      entity: Record<string, any>;
-      filePath?: string | undefined;
-    }
-  >
+  'v1'
 >;
 
 // @public
-export function createDebugLogAction(): TemplateAction_2<
-  any,
-  any,
-  z.ZodType<any, z.ZodTypeDef, any>
->;
+export function createDebugLogAction(): TemplateAction_2<any, any, 'v1'>;
 
 // @public
 export function createFetchCatalogEntityAction(options: {
@@ -184,13 +158,7 @@ export function createFetchCatalogEntityAction(options: {
     entity?: any;
     entities?: any[] | undefined;
   },
-  {
-    entityRef: (z: zodLibExternal) => ZodOptional<ZodString>;
-    entityRefs: (z: zodLibExternal) => ZodOptional<ZodArray<ZodString, 'many'>>;
-    optional: (z: zodLibExternal) => ZodOptional<ZodBoolean>;
-    defaultKind: (z: zodLibExternal) => ZodOptional<ZodString>;
-    defaultNamespace: (z: zodLibExternal) => ZodOptional<ZodString>;
-  }
+  'v2'
 >;
 
 // @public
@@ -204,7 +172,7 @@ export function createFetchPlainAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -218,7 +186,7 @@ export function createFetchPlainFileAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -242,7 +210,7 @@ export function createFetchTemplateAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -263,7 +231,7 @@ export function createFetchTemplateFileAction(options: {
     token?: string | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -272,7 +240,7 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
     files: string[];
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public
@@ -293,22 +261,7 @@ export const createFilesystemReadDirAction: () => TemplateAction_2<
       fullPath: string;
     }[];
   },
-  z.ZodObject<
-    {
-      paths: z.ZodArray<z.ZodString, 'many'>;
-      recursive: z.ZodDefault<z.ZodBoolean>;
-    },
-    'strip',
-    z.ZodTypeAny,
-    {
-      recursive: boolean;
-      paths: string[];
-    },
-    {
-      paths: string[];
-      recursive?: boolean | undefined;
-    }
-  >
+  'v1'
 >;
 
 // @public
@@ -321,7 +274,7 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
     }>;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public @deprecated (undocumented)
@@ -398,7 +351,7 @@ export const createPublishGithubPullRequestAction: (
     createWhenEmpty?: boolean | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public @deprecated (undocumented)
@@ -425,7 +378,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     assignReviewersFromApprovalRules?: boolean | undefined;
   },
   JsonObject,
-  Schema
+  'v1'
 >;
 
 // @public @deprecated
@@ -437,7 +390,7 @@ export const createTemplateAction: typeof createTemplateAction_2;
 // @public
 export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
-}): TemplateAction_2<HumanDuration, JsonObject, Schema>;
+}): TemplateAction_2<HumanDuration, JsonObject, 'v1'>;
 
 // @public
 export type CreateWorkerOptions = {

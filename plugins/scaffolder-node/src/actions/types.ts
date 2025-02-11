@@ -25,7 +25,6 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { z } from 'zod';
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
@@ -33,15 +32,8 @@ import { z } from 'zod';
 export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-  TInputSchema extends
-    | { [key in string]: (zImpl: typeof z) => z.ZodType }
-    | Schema
-    | unknown = unknown,
-  _TOutputSchema extends
-    | { [key in string]: (zImpl: typeof z) => z.ZodType }
-    | Schema
-    | unknown = unknown,
-> = TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType }
+  TSchemaType extends 'v1' | 'v2' = 'v1',
+> = TSchemaType extends 'v2'
   ? {
       logger: LoggerService;
       secrets?: TaskSecrets;
@@ -176,14 +168,7 @@ export type ActionContext<
 export type TemplateAction<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-  TInputSchema extends
-    | { [key in string]: (zImpl: typeof z) => z.ZodType }
-    | Schema
-    | unknown = unknown,
-  TOutputSchema extends
-    | { [key in string]: (zImpl: typeof z) => z.ZodType }
-    | Schema
-    | unknown = unknown,
+  TSchemaType extends 'v1' | 'v2' = 'v1',
 > = {
   id: string;
   description?: string;
@@ -194,11 +179,6 @@ export type TemplateAction<
     output?: Schema;
   };
   handler: (
-    ctx: ActionContext<
-      TActionInput,
-      TActionOutput,
-      TInputSchema,
-      TOutputSchema
-    >,
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
   ) => Promise<void>;
 };
