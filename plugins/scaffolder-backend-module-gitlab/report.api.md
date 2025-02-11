@@ -26,7 +26,8 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   },
   {
     groupId?: number | undefined;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -55,7 +56,8 @@ export const createGitlabIssueAction: (options: {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -73,7 +75,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
   },
   {
     access_token: string;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -91,7 +94,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
   {
     user: string;
     deploy_token: string;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -110,7 +114,8 @@ export const createGitlabProjectVariableAction: (options: {
     environmentScope?: string | undefined;
     variableProtected?: boolean | undefined;
   },
-  JsonObject
+  any,
+  'v1'
 >;
 
 // @public
@@ -126,7 +131,8 @@ export const createGitlabRepoPushAction: (options: {
     token?: string | undefined;
     commitAction?: 'update' | 'delete' | 'create' | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -189,7 +195,8 @@ export function createPublishGitlabAction(options: {
         }[]
       | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -212,7 +219,8 @@ export const createPublishGitlabMergeRequestAction: (options: {
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -229,7 +237,8 @@ export const createTriggerGitlabPipelineAction: (options: {
   },
   {
     pipelineUrl: string;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -265,7 +274,8 @@ export const editGitlabIssueAction: (options: {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  'v1'
 >;
 
 // @public
