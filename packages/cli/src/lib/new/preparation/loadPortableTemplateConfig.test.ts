@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { realpathSync } from 'node:fs';
 import { loadPortableTemplateConfig } from './loadPortableTemplateConfig';
 import { defaultTemplates } from '../defaultTemplates';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -31,10 +32,7 @@ describe('loadPortableTemplateConfig', () => {
         backstage: {
           cli: {
             new: {
-              templates: [
-                { id: 'template1', target: 'path/to/template1' },
-                { id: 'template2', target: 'path/to/template2' },
-              ],
+              templates: ['./path/to/template1', './path/to/template2.yaml'],
               globals: {
                 license: 'MIT',
                 private: true,
@@ -45,6 +43,9 @@ describe('loadPortableTemplateConfig', () => {
           },
         },
       }),
+      'path/to/template1/template.yaml':
+        'name: template1\nrole: frontend-plugin\n',
+      'path/to/template2.yaml': 'name: template2\nrole: frontend-plugin\n',
     });
 
     await expect(
@@ -54,8 +55,14 @@ describe('loadPortableTemplateConfig', () => {
     ).resolves.toEqual({
       isUsingDefaultTemplates: false,
       templatePointers: [
-        { id: 'template1', target: 'path/to/template1' },
-        { id: 'template2', target: 'path/to/template2' },
+        {
+          name: 'template1',
+          target: mockDir.resolve('path/to/template1/template.yaml'),
+        },
+        {
+          name: 'template2',
+          target: mockDir.resolve('path/to/template2.yaml'),
+        },
       ],
       license: 'MIT',
       private: true,
@@ -75,8 +82,14 @@ describe('loadPortableTemplateConfig', () => {
     ).resolves.toEqual({
       isUsingDefaultTemplates: false,
       templatePointers: [
-        { id: 'template1', target: 'path/to/template1' },
-        { id: 'template2', target: 'path/to/template2' },
+        {
+          name: 'template1',
+          target: mockDir.resolve('path/to/template1/template.yaml'),
+        },
+        {
+          name: 'template2',
+          target: mockDir.resolve('path/to/template2.yaml'),
+        },
       ],
       license: 'nope',
       version: '0.1.0',
@@ -92,11 +105,7 @@ describe('loadPortableTemplateConfig', () => {
         backstage: {
           cli: {
             new: {
-              templates: [
-                'default-backend-plugin',
-                { id: 'template1', target: 'path/to/template1' },
-                'default-frontend-plugin',
-              ],
+              templates: ['@my/package/templates/plugin', 'my-package'],
               globals: {
                 license: 'MIT',
                 private: true,
@@ -107,6 +116,21 @@ describe('loadPortableTemplateConfig', () => {
           },
         },
       }),
+      node_modules: {
+        '@my': {
+          package: {
+            templates: {
+              plugin: {
+                'template.yaml':
+                  'name: frontend-plugin\nrole: frontend-plugin\n',
+              },
+            },
+          },
+        },
+        'my-package': {
+          'template.yaml': 'name: backend-plugin\nrole: backend-plugin\n',
+        },
+      },
     });
 
     await expect(
@@ -117,15 +141,18 @@ describe('loadPortableTemplateConfig', () => {
       isUsingDefaultTemplates: false,
       templatePointers: [
         {
-          id: 'backend-plugin',
-          description: 'A new backend plugin',
-          target: expect.stringMatching(/default-backend-plugin.yaml$/),
+          name: 'frontend-plugin',
+          target: realpathSync(
+            mockDir.resolve(
+              'node_modules/@my/package/templates/plugin/template.yaml',
+            ),
+          ),
         },
-        { id: 'template1', target: 'path/to/template1' },
         {
-          id: 'frontend-plugin',
-          description: 'A new frontend plugin',
-          target: expect.stringMatching(/default-plugin.yaml$/),
+          name: 'backend-plugin',
+          target: realpathSync(
+            mockDir.resolve('node_modules/my-package/template.yaml'),
+          ),
         },
       ],
       license: 'MIT',
@@ -150,6 +177,12 @@ describe('loadPortableTemplateConfig', () => {
           },
         },
       }),
+      node_modules: Object.fromEntries(
+        defaultTemplates.map(t => [
+          t,
+          { 'template.yaml': `name: x\nrole: web-library\n` },
+        ]),
+      ),
     });
 
     await expect(
@@ -158,7 +191,12 @@ describe('loadPortableTemplateConfig', () => {
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
-      templatePointers: defaultTemplates,
+      templatePointers: defaultTemplates.map(t => ({
+        name: 'x',
+        target: realpathSync(
+          mockDir.resolve(`node_modules/${t}/template.yaml`),
+        ),
+      })),
       license: 'MIT',
       private: true,
       version: '0.1.0',
@@ -195,7 +233,7 @@ describe('loadPortableTemplateConfig', () => {
         backstage: {
           cli: {
             new: {
-              templates: ['invalid'],
+              templates: ['./invalid'],
             },
           },
         },
@@ -207,13 +245,19 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).rejects.toThrow(
-      /^Failed to load templating configuration from '.*'; caused by Validation error: Invalid enum value/,
+      `Failed to load template definition '.\/invalid'; caused by Error: ENOENT`,
     );
   });
 
   it('should handle missing backstage.new configuration', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({}),
+      node_modules: Object.fromEntries(
+        defaultTemplates.map(t => [
+          t,
+          { 'template.yaml': `name: x\nrole: web-library\n` },
+        ]),
+      ),
     });
 
     await expect(
@@ -222,7 +266,7 @@ describe('loadPortableTemplateConfig', () => {
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
-      templatePointers: defaultTemplates,
+      templatePointers: expect.any(Array),
       license: 'Apache-2.0',
       version: '0.1.0',
       private: true,
@@ -239,7 +283,7 @@ describe('loadPortableTemplateConfig', () => {
       }),
     ).resolves.toEqual({
       isUsingDefaultTemplates: true,
-      templatePointers: defaultTemplates,
+      templatePointers: expect.any(Array),
       license: 'nope',
       version: '0.1.0',
       private: true,

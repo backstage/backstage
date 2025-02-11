@@ -30,8 +30,7 @@ describe('collectTemplateParams', () => {
       packageNamePluginInfix: 'plugin-',
     } satisfies PortableTemplateConfig,
     template: {
-      id: 'test',
-      templatePath: '/test',
+      name: 'test',
       role: 'frontend-plugin' as const,
       files: [],
       parameters: {},

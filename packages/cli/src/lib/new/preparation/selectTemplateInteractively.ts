@@ -19,22 +19,22 @@ import { PortableTemplateConfig, PortableTemplatePointer } from '../types';
 
 export async function selectTemplateInteractively(
   config: PortableTemplateConfig,
-  preselectedTemplateId?: string,
+  preselectedTemplateName?: string,
 ): Promise<PortableTemplatePointer> {
-  let selectedId = preselectedTemplateId;
+  let selectedName = preselectedTemplateName;
 
-  if (config.isUsingDefaultTemplates && selectedId === 'plugin') {
+  if (config.isUsingDefaultTemplates && selectedName === 'plugin') {
     console.warn(
       `DEPRECATION WARNING: The 'plugin' template is deprecated, use 'frontend-plugin' instead`,
     );
-    selectedId = 'frontend-plugin';
+    selectedName = 'frontend-plugin';
   }
 
-  if (!selectedId) {
-    const answers = await inquirer.prompt<{ id: string }>([
+  if (!selectedName) {
+    const answers = await inquirer.prompt<{ name: string }>([
       {
         type: 'list',
-        name: 'id',
+        name: 'name',
         message: 'What do you want to create?',
         choices: config.templatePointers.map(t =>
           t.description
@@ -43,12 +43,12 @@ export async function selectTemplateInteractively(
         ),
       },
     ]);
-    selectedId = answers.id;
+    selectedName = answers.name;
   }
 
-  const template = config.templatePointers.find(t => t.name === selectedId);
+  const template = config.templatePointers.find(t => t.name === selectedName);
   if (!template) {
-    throw new Error(`Template '${selectedId}' not found`);
+    throw new Error(`Template '${selectedName}' not found`);
   }
   return template;
 }

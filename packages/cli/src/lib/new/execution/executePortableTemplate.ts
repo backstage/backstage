@@ -58,7 +58,7 @@ export async function executePortableTemplate(
     });
 
     Task.log();
-    Task.log(`🎉  Successfully created ${template.id}`);
+    Task.log(`🎉  Successfully created ${template.name}`);
     Task.log();
   } catch (error) {
     assertError(error);
@@ -74,7 +74,7 @@ export async function executePortableTemplate(
         'continue manually, but you can also revert the changes and try again.',
       );
 
-      Task.error(`🔥  Failed to create ${template.id}!`);
+      Task.error(`🔥  Failed to create ${template.name}!`);
     }
   }
 }

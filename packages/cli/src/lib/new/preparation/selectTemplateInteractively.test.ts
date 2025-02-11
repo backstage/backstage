@@ -23,8 +23,8 @@ describe('selectTemplateInteractively', () => {
   const mockConfig = {
     isUsingDefaultTemplates: false,
     templatePointers: [
-      { id: 'template1', target: 'path/to/template1' },
-      { id: 'template2', target: 'path/to/template2' },
+      { name: 'template1', target: '/path/to/template1' },
+      { name: 'template2', target: '/path/to/template2' },
     ],
   } as PortableTemplateConfig;
 
@@ -33,25 +33,27 @@ describe('selectTemplateInteractively', () => {
   });
 
   it('should select a template interactively', async () => {
-    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ id: 'template1' });
+    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ name: 'template1' });
 
     const result = await selectTemplateInteractively(mockConfig);
 
-    expect(result).toEqual({ id: 'template1', target: 'path/to/template1' });
+    expect(result).toEqual({ name: 'template1', target: '/path/to/template1' });
   });
 
   it('should error if interactive selections is not found', async () => {
-    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ id: 'nonexistent' });
+    jest
+      .spyOn(inquirer, 'prompt')
+      .mockResolvedValueOnce({ name: 'nonexistent' });
 
     await expect(selectTemplateInteractively(mockConfig)).rejects.toThrow(
       "Template 'nonexistent' not found",
     );
   });
 
-  it('should use preselected template id', async () => {
+  it('should use preselected template name', async () => {
     const result = await selectTemplateInteractively(mockConfig, 'template2');
 
-    expect(result).toEqual({ id: 'template2', target: 'path/to/template2' });
+    expect(result).toEqual({ name: 'template2', target: '/path/to/template2' });
   });
 
   it('should throw an error if template is not found', async () => {
