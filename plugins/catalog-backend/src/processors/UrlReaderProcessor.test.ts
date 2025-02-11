@@ -18,7 +18,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -31,6 +30,8 @@ import {
 import { defaultEntityDataParser } from '../util/parse';
 import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { mockApis } from '@backstage/test-utils';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -49,8 +50,10 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
-      config: new ConfigReader({
-        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      config: mockServices.rootConfig({
+        data: {
+          backend: { reading: { allow: [{ host: 'localhost' }] } },
+        },
       }),
     });
     const processor = new UrlReaderProcessor({ reader, logger });
@@ -107,8 +110,10 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
-      config: new ConfigReader({
-        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      config: mockServices.rootConfig({
+        data: {
+          backend: { reading: { allow: [{ host: 'localhost' }] } },
+        },
       }),
     });
     server.use(
@@ -155,8 +160,10 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
-      config: new ConfigReader({
-        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      config: mockServices.rootConfig({
+        data: {
+          backend: { reading: { allow: [{ host: 'localhost' }] } },
+        },
       }),
     });
     const processor = new UrlReaderProcessor({ reader, logger });
@@ -180,7 +187,6 @@ describe('UrlReaderProcessor', () => {
         mockCache,
       ),
     )) as CatalogProcessorErrorResult;
-
     expect(generated.type).toBe('error');
     expect(generated.location).toBe(spec);
     expect(generated.error.name).toBe('NotFoundError');
@@ -202,6 +208,38 @@ describe('UrlReaderProcessor', () => {
 
     await processor.readLocation(
       { type: 'url', target: 'https://github.com/a/b/blob/x/**/b.yaml' },
+      false,
+      emit,
+      defaultEntityDataParser,
+      mockCache,
+    );
+
+    expect(reader.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses search when catalog.useUrlReadersSearch flag is set to true', async () => {
+    const logger = mockServices.logger.mock();
+
+    const reader: jest.Mocked<UrlReaderService> = {
+      readUrl: jest.fn(),
+      readTree: jest.fn(),
+      search: jest.fn().mockImplementation(async () => []),
+    };
+
+    const config = mockApis.config({
+      data: {
+        catalog: {
+          useUrlReadersSearch: true,
+        },
+      },
+    });
+
+    const processor = new UrlReaderProcessor({ reader, logger, config });
+
+    const emit = jest.fn();
+
+    await processor.readLocation(
+      { type: 'url', target: 'https://github.com/a/b/blob/x/b.yaml' },
       false,
       emit,
       defaultEntityDataParser,

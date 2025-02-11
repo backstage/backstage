@@ -1,6 +1,6 @@
 import React from 'react';
 import { BoxSvg } from './svgs/box';
-import { StackSvg } from './svgs/stack';
+import { FlexSvg } from './svgs/flex';
 import { GridSvg } from './svgs/grid';
 import { InlineSvg } from './svgs/inline';
 import { ContainerSvg } from './svgs/container';
@@ -20,10 +20,10 @@ export const LayoutComponents = () => {
         </div>
       </div>
       <div className={styles.box}>
-        <Link className={styles.content} href="/components/stack">
-          <StackSvg />
+        <Link className={styles.content} href="/components/flex">
+          <FlexSvg />
         </Link>
-        <div className={styles.title}>Stack</div>
+        <div className={styles.title}>Flex</div>
         <div className={styles.description}>
           Arrange your components vertically
         </div>

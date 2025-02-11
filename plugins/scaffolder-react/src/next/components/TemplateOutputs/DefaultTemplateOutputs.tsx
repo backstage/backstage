@@ -56,7 +56,8 @@ export const DefaultTemplateOutputs = (props: {
     return null;
   }
 
-  const emptyOutput = Object.keys(output).length === 0;
+  const displayTextButtons = (output.text || []).length > 1;
+  const emptyOutput = (output.links || []).length === 0 && !displayTextButtons;
 
   return (
     <>
@@ -70,11 +71,14 @@ export const DefaultTemplateOutputs = (props: {
               gridGap={16}
               flexWrap="wrap"
             >
-              <TextOutputs
-                output={output}
-                index={textOutputIndex}
-                setIndex={setTextOutputIndex}
-              />
+              {displayTextButtons && (
+                <TextOutputs
+                  data-testid="text-outputs"
+                  output={output}
+                  index={textOutputIndex}
+                  setIndex={setTextOutputIndex}
+                />
+              )}
               <LinkOutputs output={output} />
             </Box>
           </Paper>

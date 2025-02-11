@@ -4,7 +4,6 @@ import { Box, Grid } from '../../../packages/canon';
 
 const FakeBox = () => (
   <Box
-    borderRadius="xs"
     style={{
       background: '#eaf2fd',
       borderRadius: '4px',

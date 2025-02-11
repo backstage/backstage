@@ -228,6 +228,7 @@ LocalStack
 lockdown
 lockfile
 lookbehind
+lowercased
 lunr
 Luxon
 magiclink
@@ -513,3 +514,4 @@ zoomable
 zsh
 scrollable
 severities
+intellij

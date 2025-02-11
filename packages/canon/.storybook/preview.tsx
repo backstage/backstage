@@ -29,43 +29,43 @@ const preview: Preview = {
     },
     viewport: {
       viewports: {
-        xs: {
-          name: 'XSmall',
+        initial: {
+          name: 'Initial',
           styles: {
             width: '320px',
             height: '100%',
           },
         },
-        small: {
-          name: 'Small',
+        xs: {
+          name: 'Extra Small',
           styles: {
             width: '640px',
             height: '100%',
           },
         },
-        medium: {
-          name: 'Medium',
+        sm: {
+          name: 'Small',
           styles: {
             width: '768px',
             height: '100%',
           },
         },
-        large: {
-          name: 'Large',
+        md: {
+          name: 'Medium',
           styles: {
             width: '1024px',
             height: '100%',
           },
         },
-        xlarge: {
-          name: 'XLarge',
+        lg: {
+          name: 'Large',
           styles: {
             width: '1280px',
             height: '100%',
           },
         },
-        '2xl': {
-          name: '2XL',
+        xl: {
+          name: 'Extra Large',
           styles: {
             width: '1536px',
             height: '100%',

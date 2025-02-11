@@ -16,23 +16,35 @@
 
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
-import { getClassNames } from '../../utils/getClassNames';
 import clsx from 'clsx';
+import { extractProps } from '../../utils/extractProps';
+import { spacingPropDefs } from '../../props/spacing.props';
+import { boxPropDefs } from './Box.props';
+import { widthPropDefs } from '../../props/width.props';
+import { heightPropDefs } from '../../props/height.props';
+import { positionPropDefs } from '../../props/position.props';
+import { displayPropDefs } from '../../props/display.props';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { as = 'div', className, style, children, ...restProps } = props;
+  const { children } = props;
 
-  // Generate utility class names
-  const utilityClassNames = getClassNames(restProps);
+  const propDefs = {
+    ...spacingPropDefs,
+    ...widthPropDefs,
+    ...heightPropDefs,
+    ...positionPropDefs,
+    ...displayPropDefs,
+    ...boxPropDefs,
+  };
+  const { className, style } = extractProps(props, propDefs);
 
-  // Combine the base class name, the sprinkles class name, and any additional class names
-  const classNames = clsx('canon-Box', utilityClassNames, className);
-
-  return createElement(as, {
+  return createElement(props.as || 'div', {
     ref,
-    className: classNames,
+    className: clsx('canon-Box', className),
     style,
     children,
   });
 });
+
+Box.displayName = 'Box';

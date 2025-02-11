@@ -40,20 +40,20 @@ describe('StatefulSetDrawer', () => {
     expect(getByText('StatefulSet')).toBeInTheDocument();
     expect(getByText('YAML')).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('Type: RollingUpdate')),
+      getByText(textContentMatcher('type: RollingUpdate')),
     ).toBeInTheDocument();
-    expect(getByText('Rolling Update:')).toBeInTheDocument();
-    expect(getByText(textContentMatcher('Max Surge: 25%'))).toBeInTheDocument();
+    expect(getByText('rollingUpdate:')).toBeInTheDocument();
+    expect(getByText(textContentMatcher('maxSurge: 25%'))).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('Max Unavailable: 25%')),
+      getByText(textContentMatcher('maxUnavailable: 25%')),
     ).toBeInTheDocument();
     expect(getByText('Pod Management Policy')).toBeInTheDocument();
     expect(getByText('Parallel')).toBeInTheDocument();
     expect(getByText('Service Name')).toBeInTheDocument();
     expect(getByText('Selector')).toBeInTheDocument();
-    expect(getByText('Match Labels:')).toBeInTheDocument();
+    expect(getByText('matchLabels:')).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('App: dice-roller')),
+      getByText(textContentMatcher('app: dice-roller')),
     ).toBeInTheDocument();
     expect(getByText('Revision History Limit')).toBeInTheDocument();
     expect(getByText('10')).toBeInTheDocument();

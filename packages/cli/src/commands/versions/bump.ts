@@ -88,6 +88,8 @@ export default async (opts: OptionValues) => {
   if (!pattern) {
     console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
     pattern = DEFAULT_PATTERN_GLOB;
+  } else if (pattern === '*') {
+    throw new Error(`Rejected pattern '*', please use a more specific pattern`);
   } else {
     console.log(`Using custom pattern glob ${pattern}`);
   }

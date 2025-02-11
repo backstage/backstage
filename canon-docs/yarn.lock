@@ -518,8 +518,8 @@ __metadata:
   linkType: hard
 
 "@next/mdx@npm:^15.1.4":
-  version: 15.1.5
-  resolution: "@next/mdx@npm:15.1.5"
+  version: 15.1.6
+  resolution: "@next/mdx@npm:15.1.6"
   dependencies:
     source-map: ^0.7.0
   peerDependencies:
@@ -530,7 +530,7 @@ __metadata:
       optional: true
     "@mdx-js/react":
       optional: true
-  checksum: f73103abce4ca2e15a6d06b0c6e16988e5651ca09890d6a0017c913b30018dc87d275dc7a8fed30dab338af5e1c3822f1a74af83d6fa6bee02edb936bbd51566
+  checksum: 3b46e99934543df94bcb335dddab794db4fcaff09223343e9e00597d3df1e094f16dd619c433fb2fa7fff38c3da57b3118cbc010cdeb9790d0cf01e6c37016e8
   languageName: node
   linkType: hard
 
@@ -925,11 +925,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^20":
-  version: 20.17.12
-  resolution: "@types/node@npm:20.17.12"
+  version: 20.17.16
+  resolution: "@types/node@npm:20.17.16"
   dependencies:
     undici-types: ~6.19.2
-  checksum: 0c0dbeb4e1480a23071ec38e97bb3d776e0ae9828174bf45f9edcf277caa955945cb10d31d84f7a73c66aaf92ae2e022be6331bd00a4bed1f2ad9639a411d17e
+  checksum: dd19c04c592b602f20448187b4b6ab0293f22173a8bbe53aa3b559188f078b5261d748a107b84ee0580e2074cda760049b13d6e210f9850039bead01cb666a3f
   languageName: node
   linkType: hard
 
@@ -940,7 +940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
+"@types/react-dom@npm:^18.0.0":
   version: 18.3.5
   resolution: "@types/react-dom@npm:18.3.5"
   peerDependencies:
@@ -949,7 +949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18":
+"@types/react@npm:^18.0.0":
   version: 18.3.18
   resolution: "@types/react@npm:18.3.18"
   dependencies:
@@ -1109,8 +1109,8 @@ __metadata:
   linkType: hard
 
 "@uiw/codemirror-themes@npm:^4.23.7":
-  version: 4.23.7
-  resolution: "@uiw/codemirror-themes@npm:4.23.7"
+  version: 4.23.8
+  resolution: "@uiw/codemirror-themes@npm:4.23.8"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.0.0
@@ -1119,7 +1119,7 @@ __metadata:
     "@codemirror/language": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 8c2a9a7ee8df2de3f09ad1f18979c4b407f7dd03e1f6ddfe47837b9e4769b566a70259ec8c398473b6b6db79cdb8809d4acc2f2ed7851743e13ff95308f52e33
+  checksum: cffeed6693950c8dfa77d7880d48211019055099d6f3d9f76717d718d8145716ca19ea50e97b6ef50036115f2c2fe67e3d560f344f5c7145429f98b8e43a3240
   languageName: node
   linkType: hard
 
@@ -1503,16 +1503,17 @@ __metadata:
     "@storybook/react": ^8.4.7
     "@types/mdx": ^2.0.13
     "@types/node": ^20
-    "@types/react": ^18
-    "@types/react-dom": ^18
+    "@types/react": ^18.0.0
+    "@types/react-dom": ^18.0.0
     "@uiw/codemirror-themes": ^4.23.7
     "@uiw/react-codemirror": ^4.23.7
     eslint: ^8
     eslint-config-next: 14.2.23
     lightningcss: ^1.28.2
+    motion: ^12.4.1
     next: 14.2.23
-    react: ^18
-    react-dom: ^18
+    react: ^18.0.2
+    react-dom: ^18.0.2
     react-frame-component: ^5.2.7
     shiki: ^1.26.1
     storybook: ^8.4.7
@@ -2581,6 +2582,28 @@ __metadata:
     cross-spawn: ^7.0.0
     signal-exit: ^4.0.1
   checksum: 1989698488f725b05b26bc9afc8a08f08ec41807cd7b92ad85d96004ddf8243fd3e79486b8348c64a3011ae5cc2c9f0936af989e1f28339805d8bc178a75b451
+  languageName: node
+  linkType: hard
+
+"framer-motion@npm:^12.4.1":
+  version: 12.4.1
+  resolution: "framer-motion@npm:12.4.1"
+  dependencies:
+    motion-dom: ^12.0.0
+    motion-utils: ^12.0.0
+    tslib: ^2.4.0
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 42679a16d9b99d5651b4cce157e56305b7341d94593d167647a478b3b934a6056693c8b274b5cd775557e6cc6b78e97981395c1a161c0467be922f58146b82ce
   languageName: node
   linkType: hard
 
@@ -4104,6 +4127,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"motion-dom@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "motion-dom@npm:12.0.0"
+  dependencies:
+    motion-utils: ^12.0.0
+  checksum: 58b6c7e678ac29b0d68b966e3e5879d2b3cc6b85ad4e3d141013e44666919669c42e9344508f91a4d35c3c6ddb71660a92a04414998046d10c2309bb630ebeb0
+  languageName: node
+  linkType: hard
+
+"motion-utils@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "motion-utils@npm:12.0.0"
+  checksum: 0b6ad4e10206e32a27fdd857df61ffdf929390eebda1d4832f6c85776677c7f8decdaf0f1eea10aa19e202f43a828bb32cade6e74a55ce7aec9d0c3fbd20dcf4
+  languageName: node
+  linkType: hard
+
+"motion@npm:^12.4.1":
+  version: 12.4.1
+  resolution: "motion@npm:12.4.1"
+  dependencies:
+    framer-motion: ^12.4.1
+    tslib: ^2.4.0
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 4c6711da834de4e266dd64f6d81fcf1668193fed9afc011722b575d874412d2ac0206fbcb7675eccb4383fe5480e292d7d71652acfe6dab0b476515b72d9a601
+  languageName: node
+  linkType: hard
+
 "ms@npm:^2.1.1, ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
@@ -4480,7 +4540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18":
+"react-dom@npm:^18.0.2":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -4510,7 +4570,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18":
+"react@npm:^18.0.2":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
@@ -5368,22 +5428,22 @@ __metadata:
   linkType: hard
 
 "typescript@npm:^5":
-  version: 5.7.2
-  resolution: "typescript@npm:5.7.2"
+  version: 5.7.3
+  resolution: "typescript@npm:5.7.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: b55300c4cefee8ee380d14fa9359ccb41ff8b54c719f6bc49b424899d662a5ce62ece390ce769568c7f4d14af844085255e63788740084444eb12ef423b13433
+  checksum: 6c38b1e989918e576f0307e6ee013522ea480dfce5f3ca85c9b2d8adb1edeffd37f4f30cd68de0c38a44563d12ba922bdb7e36aa2dac9c51de5d561e6e9a2e9c
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^5#~builtin<compat/typescript>":
-  version: 5.7.2
-  resolution: "typescript@patch:typescript@npm%3A5.7.2#~builtin<compat/typescript>::version=5.7.2&hash=5adc0c"
+  version: 5.7.3
+  resolution: "typescript@patch:typescript@npm%3A5.7.3#~builtin<compat/typescript>::version=5.7.3&hash=5adc0c"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 803430c6da2ba73c25a21880d8d4f08a56d9d2444e6db2ea949ac4abceeece8e4a442b7b9b585db7d8a0b47ebda2060e45fe8ee8b8aca23e27ec1d4844987ee6
+  checksum: 633cd749d6cd7bc842c6b6245847173bba99742a60776fae3c0fbcc0d1733cd51a733995e5f4dadd8afb0e64e57d3c7dbbeae953a072ee303940eca69e22f311
   languageName: node
   linkType: hard
 

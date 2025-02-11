@@ -19,9 +19,14 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import { ReaderFactory } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -162,8 +167,39 @@ export class FetchUrlReader implements UrlReaderService {
     throw new Error('FetchUrlReader does not implement readTree');
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('FetchUrlReader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { pathname } = new URL(url);
+
+    if (pathname.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {

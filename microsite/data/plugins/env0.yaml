@@ -1,0 +1,10 @@
+---
+title: env0
+author: env0
+authorUrl: https://www.env0.com/
+category: Infrastructure
+description: Use env0 scaffolder actions to deploy and manage your infrastructure using env0 directly from Backstage
+documentation: https://github.com/env0/env0-backstage-plugin
+iconUrl: https://avatars.githubusercontent.com/u/46656519?s=200&v=4
+npmPackageName: '@env0/backstage-plugin-env0'
+addedDate: '2025-01-15'

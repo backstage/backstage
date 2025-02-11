@@ -34,10 +34,9 @@ import type {
 } from '../../../backend-plugin-api/src/wiring/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
-import { ForwardedError, ConflictError } from '@backstage/errors';
+import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import {
   instanceMetadataServiceRef,
-  featureDiscoveryServiceRef,
   BackendFeatureMeta,
 } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
@@ -252,20 +251,6 @@ export class BackendInitializer {
       this.#addFeature(await feature);
     }
 
-    const featureDiscovery = await this.#serviceRegistry.get(
-      // TODO: Let's leave this in place and remove it once the deprecated service is removed. We can do that post-1.0 since it's alpha
-      featureDiscoveryServiceRef,
-      'root',
-    );
-
-    if (featureDiscovery) {
-      const { features } = await featureDiscovery.getBackendFeatures();
-      for (const feature of features) {
-        this.#addFeature(unwrapFeature(feature));
-      }
-      this.#serviceRegistry.checkForCircularDeps();
-    }
-
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
     this.#serviceRegistry.add(
@@ -405,8 +390,9 @@ export class BackendInitializer {
           // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
           const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
           await lifecycleService.startup();
-        } catch (error) {
-          initLogger.onPluginFailed(pluginId);
+        } catch (error: unknown) {
+          assertError(error);
+          initLogger.onPluginFailed(pluginId, error);
           throw error;
         }
       }),

@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import { createConditionFactory } from './createConditionFactory';
+import { PermissionResourceRef } from './createPermissionResourceRef';
 
 /**
  * A utility type for mapping a single {@link PermissionRule} to its
@@ -73,7 +74,25 @@ export type Conditions<
  *
  * @public
  */
-export const createConditionExports = <
+export function createConditionExports<
+  TResourceType extends string,
+  TResource,
+  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
+>(options: {
+  resourceRef: PermissionResourceRef<TResource, any, TResourceType>;
+  rules: TRules;
+}): {
+  conditions: Conditions<TRules>;
+  createConditionalDecision: (
+    permission: ResourcePermission<TResourceType>,
+    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
+  ) => ConditionalPolicyDecision;
+};
+/**
+ * @public
+ * @deprecated Use the version of `createConditionExports` that accepts a `resourceRef` option instead.
+ */
+export function createConditionExports<
   TResourceType extends string,
   TResource,
   TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
@@ -87,8 +106,32 @@ export const createConditionExports = <
     permission: ResourcePermission<TResourceType>,
     conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
   ) => ConditionalPolicyDecision;
-} => {
-  const { pluginId, resourceType, rules } = options;
+};
+export function createConditionExports<
+  TResourceType extends string,
+  TResource,
+  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
+>(
+  options:
+    | {
+        resourceRef: PermissionResourceRef<TResource, any, TResourceType>;
+        rules: TRules;
+      }
+    | {
+        pluginId: string;
+        resourceType: TResourceType;
+        rules: TRules;
+      },
+): {
+  conditions: Conditions<TRules>;
+  createConditionalDecision: (
+    permission: ResourcePermission<TResourceType>,
+    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
+  ) => ConditionalPolicyDecision;
+} {
+  const { rules } = options;
+  const { pluginId, resourceType } =
+    'resourceRef' in options ? options.resourceRef : options;
 
   return {
     conditions: Object.entries(rules).reduce(
@@ -108,4 +151,4 @@ export const createConditionExports = <
       conditions,
     }),
   };
-};
+}

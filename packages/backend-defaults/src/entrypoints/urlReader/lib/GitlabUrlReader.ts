@@ -26,7 +26,11 @@ import {
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import {
   GitLabIntegration,
   ScmIntegrations,
@@ -74,6 +78,7 @@ export class GitlabUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
     const { etag, lastModifiedAfter, signal, token } = options ?? {};
+    const isArtifact = url.includes('/-/jobs/artifacts/');
     const builtUrl = await this.getGitlabFetchUrl(url);
 
     let response: Response;
@@ -81,10 +86,11 @@ export class GitlabUrlReader implements UrlReaderService {
       response = await fetch(builtUrl, {
         headers: {
           ...getGitLabRequestOptions(this.integration.config, token).headers,
-          ...(etag && { 'If-None-Match': etag }),
-          ...(lastModifiedAfter && {
-            'If-Modified-Since': lastModifiedAfter.toUTCString(),
-          }),
+          ...(etag && !isArtifact && { 'If-None-Match': etag }),
+          ...(lastModifiedAfter &&
+            !isArtifact && {
+              'If-Modified-Since': lastModifiedAfter.toUTCString(),
+            }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -242,6 +248,34 @@ export class GitlabUrlReader implements UrlReaderService {
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
     const { filepath } = parseGitUrl(url);
+
+    // If it's a direct URL we use readUrl instead
+    if (!filepath?.match(/[*?]/)) {
+      try {
+        const data = await this.readUrl(url, options);
+
+        return {
+          files: [
+            {
+              url: url,
+              content: data.buffer,
+              lastModifiedAt: data.lastModifiedAt,
+            },
+          ],
+          etag: data.etag ?? '',
+        };
+      } catch (error) {
+        assertError(error);
+        if (error.name === 'NotFoundError') {
+          return {
+            files: [],
+            etag: '',
+          };
+        }
+        throw error;
+      }
+    }
+
     const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);
     const treeUrl = trimEnd(url.replace(filepath, staticPart), `/`);

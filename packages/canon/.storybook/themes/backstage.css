@@ -60,9 +60,9 @@
   --canon-bg: #f4f4f4;
 
   /* Text colors */
-  --canon-text-primary: #000;
+  --canon-fg-text-primary: #000;
   --canon-fg-accent: #fff;
-  --canon-text-secondary: #646464;
+  --canon-fg-text-secondary: #646464;
 }
 
 [data-theme-name='legacy'][data-theme='dark'] {
@@ -82,7 +82,7 @@
   --canon-fg-danger: #f50000;
 
   /* Text colors */
-  --canon-text-primary: #fff;
+  --canon-fg-text-primary: #fff;
   --canon-fg-accent: #000;
-  --canon-text-secondary: #b3b3b3;
+  --canon-fg-text-secondary: #b3b3b3;
 }

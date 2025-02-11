@@ -263,6 +263,7 @@ check the App Registration you created:
   basically the same thing.
 - `prompt`: Recommended to use `auto` so the browser will request login to the IDP if the
   user has no active session.
+- `sessionDuration` (optional): Lifespan of the user session.
 
 Note that for the time being, any change in this yaml file requires a restart of the app,
 also you need to have the `session.secret` part to use OIDC (some other providers might
@@ -274,12 +275,14 @@ The last step is to add the provider to the `SignInPage` so users can sign in wi
 new provider, please follow the [Sign In Configuration][3] docs, here's where you import
 and use the API reference we defined earlier.
 
-## Note
+:::note Note
 
 These steps apply to most if not all the providers, including custom providers, the main
 difference between different providers will be the contents of the API factory, the code
 in the Auth Provider Factory, the resolver, and the different variables each provider
 needs in the YAML config or env variables.
+
+:::
 
 [1]: https://backstage.io/docs/auth/identity-resolver
 [2]: https://backstage.io/docs/auth/microsoft/provider#create-an-app-registration-on-azure

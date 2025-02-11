@@ -138,7 +138,8 @@ export function createPublishGitlabAction(options: {
     repoUrl: string;
     defaultBranch?: string | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    sourcePath?: string | undefined;
+    sourcePath?: string | boolean | undefined;
+    skipExisting?: boolean | undefined;
     token?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
@@ -209,6 +210,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
     reviewers?: string[] | undefined;
+    assignReviewersFromApprovalRules?: boolean | undefined;
   },
   JsonObject
 >;

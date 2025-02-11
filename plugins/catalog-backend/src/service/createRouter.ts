@@ -15,6 +15,14 @@
  */
 
 import {
+  AuditorService,
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+  PermissionsService,
+  SchedulerService,
+} from '@backstage/backend-plugin-api';
+import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
@@ -23,12 +31,15 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
+import { createOpenApiRouter } from '../schema/openapi';
+import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
   basicEntityFilter,
   entitiesBatchRequest,
@@ -38,6 +49,12 @@ import {
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
+import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
+import {
+  createEntityArrayJsonStream,
+  writeEntitiesResponse,
+  writeSingleEntityResponse,
+} from './response';
 import { LocationService, RefreshService } from './types';
 import {
   disallowReadonlyMode,
@@ -45,22 +62,6 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import { createOpenApiRouter } from '../schema/openapi';
-import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
-import {
-  AuthService,
-  HttpAuthService,
-  LoggerService,
-  SchedulerService,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { AuthorizedValidationService } from './AuthorizedValidationService';
-import {
-  createEntityArrayJsonStream,
-  writeEntitiesResponse,
-  writeSingleEntityResponse,
-} from './response';
 
 /**
  * Options used by {@link createRouter}.
@@ -81,6 +82,8 @@ export interface RouterOptions {
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
+  // TODO: Require AuditorService once `backend-legacy` is removed
+  auditor?: AuditorService;
   disableRelationsCompatibility?: boolean;
 }
 
@@ -109,6 +112,7 @@ export async function createRouter(
     permissionsService,
     auth,
     httpAuth,
+    auditor,
     disableRelationsCompatibility = false,
   } = options;
 
@@ -119,18 +123,36 @@ export async function createRouter(
   }
 
   if (refreshService) {
+    // TODO: Potentially find a way to track the ancestor that gets refreshed to refresh this entity (as well as the child of that ancestor?)
     router.post('/refresh', async (req, res) => {
       const { authorizationToken, ...restBody } = req.body;
 
-      const credentials = authorizationToken
-        ? await auth.authenticate(authorizationToken)
-        : await httpAuth.credentials(req);
-
-      await refreshService.refresh({
-        ...restBody,
-        credentials,
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'entity-mutate',
+        severityLevel: 'medium',
+        meta: {
+          queryType: 'refresh',
+          entityRef: restBody.entityRef,
+        },
+        request: req,
       });
-      res.status(200).end();
+
+      try {
+        const credentials = authorizationToken
+          ? await auth.authenticate(authorizationToken)
+          : await httpAuth.credentials(req);
+
+        await refreshService.refresh({
+          ...restBody,
+          credentials,
+        });
+
+        await auditorEvent?.success();
+        res.status(200).end();
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        throw err;
+      }
     });
   }
 
@@ -141,95 +163,122 @@ export async function createRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
-        const filter = parseEntityFilterParams(req.query);
-        const fields = parseEntityTransformParams(req.query);
-        const order = parseEntityOrderParams(req.query);
-        const pagination = parseEntityPaginationParams(req.query);
-        const credentials = await httpAuth.credentials(req);
-
-        // When pagination parameters are passed in, use the legacy slow path
-        // that loads all entities into memory
-
-        if (pagination || disableRelationsCompatibility !== true) {
-          const { entities, pageInfo } = await entitiesCatalog.entities({
-            filter,
-            fields,
-            order,
-            pagination,
-            credentials,
-          });
-
-          // Add a Link header to the next page
-          if (pageInfo.hasNextPage) {
-            const url = new URL(`http://ignored${req.url}`);
-            url.searchParams.delete('offset');
-            url.searchParams.set('after', pageInfo.endCursor);
-            res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
-          }
-
-          await writeEntitiesResponse({
-            res,
-            items: entities,
-            alwaysUseObjectMode: !disableRelationsCompatibility,
-          });
-          return;
-        }
-
-        const responseStream = createEntityArrayJsonStream(res);
-        const limit = 10000;
-        let cursor: Cursor | undefined;
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'all',
+            query: req.query,
+          },
+        });
 
         try {
-          let currentWrite: Promise<boolean> | undefined = undefined;
-          do {
-            const result = await entitiesCatalog.queryEntities(
-              !cursor
-                ? {
-                    credentials,
-                    fields,
-                    limit,
-                    filter,
-                    orderFields: order,
-                    skipTotalItems: true,
-                  }
-                : { credentials, fields, limit, cursor },
-            );
+          const filter = parseEntityFilterParams(req.query);
+          const fields = parseEntityTransformParams(req.query);
+          const order = parseEntityOrderParams(req.query);
+          const pagination = parseEntityPaginationParams(req.query);
+          const credentials = await httpAuth.credentials(req);
 
-            // Wait for previous write to complete
-            if (await currentWrite) {
-              return; // Client closed connection
+          // When pagination parameters are passed in, use the legacy slow path
+          // that loads all entities into memory
+
+          if (pagination || disableRelationsCompatibility !== true) {
+            const { entities, pageInfo } = await entitiesCatalog.entities({
+              filter,
+              fields,
+              order,
+              pagination,
+              credentials,
+            });
+
+            // Add a Link header to the next page
+            if (pageInfo.hasNextPage) {
+              const url = new URL(`http://ignored${req.url}`);
+              url.searchParams.delete('offset');
+              url.searchParams.set('after', pageInfo.endCursor);
+              res.setHeader(
+                'link',
+                `<${url.pathname}${url.search}>; rel="next"`,
+              );
             }
 
-            if (result.items.entities.length) {
-              currentWrite = responseStream.send(result.items);
-            }
+            await auditorEvent?.success();
 
-            cursor = result.pageInfo?.nextCursor;
-          } while (cursor);
+            await writeEntitiesResponse({
+              res,
+              items: entities,
+              alwaysUseObjectMode: !disableRelationsCompatibility,
+            });
+            return;
+          }
 
-          // Wait for last write to complete
-          await currentWrite;
+          const responseStream = createEntityArrayJsonStream(res);
+          const limit = 10000;
+          let cursor: Cursor | undefined;
 
-          responseStream.complete();
-        } finally {
-          responseStream.close();
+          try {
+            let currentWrite: Promise<boolean> | undefined = undefined;
+            do {
+              const result = await entitiesCatalog.queryEntities(
+                !cursor
+                  ? {
+                      credentials,
+                      fields,
+                      limit,
+                      filter,
+                      orderFields: order,
+                      skipTotalItems: true,
+                    }
+                  : { credentials, fields, limit, cursor },
+              );
+
+              // Wait for previous write to complete
+              if (await currentWrite) {
+                return; // Client closed connection
+              }
+
+              if (result.items.entities.length) {
+                currentWrite = responseStream.send(result.items);
+              }
+
+              cursor = result.pageInfo?.nextCursor;
+            } while (cursor);
+
+            // Wait for last write to complete
+            await currentWrite;
+
+            await auditorEvent?.success();
+
+            responseStream.complete();
+          } finally {
+            responseStream.close();
+          }
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
         }
       })
       .get('/entities/by-query', async (req, res) => {
-        const { items, pageInfo, totalItems } =
-          await entitiesCatalog.queryEntities({
-            limit: req.query.limit,
-            offset: req.query.offset,
-            ...parseQueryEntitiesParams(req.query),
-            credentials: await httpAuth.credentials(req),
-          });
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-query',
+          },
+        });
 
-        await writeEntitiesResponse({
-          res,
-          items,
-          alwaysUseObjectMode: !disableRelationsCompatibility,
-          responseWrapper: entities => ({
-            items: entities,
+        try {
+          const { items, pageInfo, totalItems } =
+            await entitiesCatalog.queryEntities({
+              limit: req.query.limit,
+              offset: req.query.offset,
+              ...parseQueryEntitiesParams(req.query),
+              credentials: await httpAuth.credentials(req),
+            });
+
+          const meta = {
             totalItems,
             pageInfo: {
               ...(pageInfo.nextCursor && {
@@ -239,71 +288,237 @@ export async function createRouter(
                 prevCursor: encodeCursor(pageInfo.prevCursor),
               }),
             },
-          }),
-        });
+          };
+
+          await auditorEvent?.success({
+            // Let's not log out the entities since this can make the log very big
+            meta,
+          });
+
+          await writeEntitiesResponse({
+            res,
+            items,
+            alwaysUseObjectMode: !disableRelationsCompatibility,
+            responseWrapper: entities => ({
+              items: entities,
+              ...meta,
+            }),
+          });
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const { entities } = await entitiesCatalog.entities({
-          filter: basicEntityFilter({ 'metadata.uid': uid }),
-          credentials: await httpAuth.credentials(req),
+
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-uid',
+            uid: uid,
+          },
         });
-        writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
+
+        try {
+          const { entities } = await entitiesCatalog.entities({
+            filter: basicEntityFilter({ 'metadata.uid': uid }),
+            credentials: await httpAuth.credentials(req),
+          });
+
+          writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
+
+          await auditorEvent?.success({
+            meta: {
+              // stringify to entity refs
+              entities: entities.entities.reduce((arr, element) => {
+                if (!element) {
+                  return arr;
+                }
+
+                if (typeof element === 'string') {
+                  arr.push(element);
+                  return arr;
+                }
+
+                arr.push(stringifyEntityRef(element));
+                return arr;
+              }, [] as string[]),
+            },
+          });
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        await entitiesCatalog.removeEntityByUid(uid, {
-          credentials: await httpAuth.credentials(req),
+
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-mutate',
+          severityLevel: 'medium',
+          request: req,
+          meta: {
+            actionType: 'delete',
+            uid: uid,
+          },
         });
-        res.status(204).end();
+
+        try {
+          await entitiesCatalog.removeEntityByUid(uid, {
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          res.status(204).end();
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const { items } = await entitiesCatalog.entitiesBatch({
-          entityRefs: [stringifyEntityRef({ kind, namespace, name })],
-          credentials: await httpAuth.credentials(req),
+        const entityRef = stringifyEntityRef({ kind, namespace, name });
+
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-name',
+            entityRef: entityRef,
+          },
         });
-        writeSingleEntityResponse(
-          res,
-          items,
-          `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
-        );
+
+        try {
+          const { items } = await entitiesCatalog.entitiesBatch({
+            entityRefs: [stringifyEntityRef({ kind, namespace, name })],
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          writeSingleEntityResponse(
+            res,
+            items,
+            `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+          );
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .get(
         '/entities/by-name/:kind/:namespace/:name/ancestry',
         async (req, res) => {
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
-          const response = await entitiesCatalog.entityAncestry(entityRef, {
-            credentials: await httpAuth.credentials(req),
+
+          const auditorEvent = await auditor?.createEvent({
+            eventId: 'entity-fetch',
+            request: req,
+            meta: {
+              actionType: 'ancestry',
+              entityRef: entityRef,
+            },
           });
-          res.status(200).json(response);
+
+          try {
+            const response = await entitiesCatalog.entityAncestry(entityRef, {
+              credentials: await httpAuth.credentials(req),
+            });
+
+            await auditorEvent?.success({
+              meta: {
+                rootEntityRef: response.rootEntityRef,
+                ancestry: response.items.map(ancestryLink => {
+                  return {
+                    entityRef: stringifyEntityRef(ancestryLink.entity),
+                    parentEntityRefs: ancestryLink.parentEntityRefs,
+                  };
+                }),
+              },
+            });
+
+            res.status(200).json(response);
+          } catch (err) {
+            await auditorEvent?.fail({
+              error: err,
+            });
+            throw err;
+          }
         },
       )
       .post('/entities/by-refs', async (req, res) => {
-        const request = entitiesBatchRequest(req);
-        const { items } = await entitiesCatalog.entitiesBatch({
-          entityRefs: request.entityRefs,
-          filter: parseEntityFilterParams(req.query),
-          fields: parseEntityTransformParams(req.query, request.fields),
-          credentials: await httpAuth.credentials(req),
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-refs',
+          },
         });
-        await writeEntitiesResponse({
-          res,
-          items,
-          alwaysUseObjectMode: !disableRelationsCompatibility,
-          responseWrapper: entities => ({
-            items: entities,
-          }),
-        });
+
+        try {
+          const request = entitiesBatchRequest(req);
+          const { items } = await entitiesCatalog.entitiesBatch({
+            entityRefs: request.entityRefs,
+            filter: parseEntityFilterParams(req.query),
+            fields: parseEntityTransformParams(req.query, request.fields),
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success({
+            meta: {
+              ...request,
+            },
+          });
+
+          await writeEntitiesResponse({
+            res,
+            items,
+            alwaysUseObjectMode: !disableRelationsCompatibility,
+            responseWrapper: entities => ({
+              items: entities,
+            }),
+          });
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .get('/entity-facets', async (req, res) => {
-        const response = await entitiesCatalog.facets({
-          filter: parseEntityFilterParams(req.query),
-          facets: parseEntityFacetParams(req.query),
-          credentials: await httpAuth.credentials(req),
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'entity-facets',
+          request: req,
         });
-        res.status(200).json(response);
+
+        try {
+          const response = await entitiesCatalog.facets({
+            filter: parseEntityFilterParams(req.query),
+            facets: parseEntityFacetParams(req.query),
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          res.status(200).json(response);
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       });
   }
 
@@ -313,79 +528,219 @@ export async function createRouter(
         const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
 
-        // when in dryRun addLocation is effectively a read operation so we don't
-        // need to disallow readonly
-        if (!dryRun) {
-          disallowReadonlyMode(readonlyEnabled);
-        }
-
-        const output = await locationService.createLocation(location, dryRun, {
-          credentials: await httpAuth.credentials(req),
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'location-mutate',
+          severityLevel: dryRun ? 'low' : 'medium',
+          request: req,
+          meta: {
+            actionType: 'create',
+            location: location,
+            isDryRun: dryRun,
+          },
         });
-        res.status(201).json(output);
+
+        try {
+          // when in dryRun addLocation is effectively a read operation so we don't
+          // need to disallow readonly
+          if (!dryRun) {
+            disallowReadonlyMode(readonlyEnabled);
+          }
+
+          const output = await locationService.createLocation(
+            location,
+            dryRun,
+            {
+              credentials: await httpAuth.credentials(req),
+            },
+          );
+
+          await auditorEvent?.success({
+            meta: {
+              location: output.location,
+            },
+          });
+
+          res.status(201).json(output);
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+            meta: {
+              location: location,
+              isDryRun: dryRun,
+            },
+          });
+          throw err;
+        }
       })
       .get('/locations', async (req, res) => {
-        const locations = await locationService.listLocations({
-          credentials: await httpAuth.credentials(req),
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'location-fetch',
+          request: req,
+          meta: {
+            queryType: 'all',
+          },
         });
-        res.status(200).json(locations.map(l => ({ data: l })));
+
+        try {
+          const locations = await locationService.listLocations({
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          res.status(200).json(locations.map(l => ({ data: l })));
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
 
       .get('/locations/:id', async (req, res) => {
         const { id } = req.params;
-        const output = await locationService.getLocation(id, {
-          credentials: await httpAuth.credentials(req),
+
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'location-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-id',
+            id: id,
+          },
         });
-        res.status(200).json(output);
+
+        try {
+          const output = await locationService.getLocation(id, {
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success({
+            meta: {
+              output: output,
+            },
+          });
+
+          res.status(200).json(output);
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .delete('/locations/:id', async (req, res) => {
+        const { id } = req.params;
+
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'location-mutate',
+          severityLevel: 'medium',
+          request: req,
+          meta: {
+            actionType: 'delete',
+            id: id,
+          },
+        });
+
         disallowReadonlyMode(readonlyEnabled);
 
-        const { id } = req.params;
-        await locationService.deleteLocation(id, {
-          credentials: await httpAuth.credentials(req),
-        });
-        res.status(204).end();
+        try {
+          await locationService.deleteLocation(id, {
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          res.status(204).end();
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       })
       .get('/locations/by-entity/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const output = await locationService.getLocationByEntity(
-          { kind, namespace, name },
-          { credentials: await httpAuth.credentials(req) },
-        );
-        res.status(200).json(output);
+        const locationRef = `${kind}:${namespace}/${name}`;
+
+        const auditorEvent = await auditor?.createEvent({
+          eventId: 'location-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-entity',
+            locationRef: locationRef,
+          },
+        });
+
+        try {
+          const output = await locationService.getLocationByEntity(
+            { kind, namespace, name },
+            { credentials: await httpAuth.credentials(req) },
+          );
+
+          await auditorEvent?.success({
+            meta: {
+              output: output,
+            },
+          });
+
+          res.status(200).json(output);
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       });
   }
 
   if (locationAnalyzer) {
     router.post('/analyze-location', async (req, res) => {
-      const body = await validateRequestBody(
-        req,
-        z.object({
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'location-analyze',
+        request: req,
+      });
+
+      try {
+        const body = await validateRequestBody(
+          req,
+          z.object({
+            location: locationInput,
+            catalogFilename: z.string().optional(),
+          }),
+        );
+        const schema = z.object({
           location: locationInput,
           catalogFilename: z.string().optional(),
-        }),
-      );
-      const schema = z.object({
-        location: locationInput,
-        catalogFilename: z.string().optional(),
-      });
-      const credentials = await httpAuth.credentials(req);
-      const parsedBody = schema.parse(body);
-      try {
-        const output = await locationAnalyzer.analyzeLocation(
-          parsedBody,
-          credentials,
-        );
-        res.status(200).json(output);
-      } catch (err) {
-        if (
-          // Catch errors from parse-url library.
-          err.name === 'Error' &&
-          'subject_url' in err
-        ) {
-          throw new InputError('The given location.target is not a URL');
+        });
+        const credentials = await httpAuth.credentials(req);
+        const parsedBody = schema.parse(body);
+        try {
+          const output = await locationAnalyzer.analyzeLocation(
+            parsedBody,
+            credentials,
+          );
+
+          await auditorEvent?.success({
+            meta: {
+              output: output,
+            },
+          });
+
+          res.status(200).json(output);
+        } catch (err) {
+          if (
+            // Catch errors from parse-url library.
+            err.name === 'Error' &&
+            'subject_url' in err
+          ) {
+            throw new InputError('The given location.target is not a URL');
+          }
+          throw err;
         }
+      } catch (err) {
+        await auditorEvent?.fail({
+          error: err,
+        });
         throw err;
       }
     });
@@ -393,55 +748,82 @@ export async function createRouter(
 
   if (orchestrator) {
     router.post('/validate-entity', async (req, res) => {
-      const bodySchema = z.object({
-        entity: z.unknown(),
-        location: z.string(),
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'entity-validate',
+        request: req,
       });
 
-      let body: z.infer<typeof bodySchema>;
-      let entity: Entity;
-      let location: { type: string; target: string };
       try {
-        body = await validateRequestBody(req, bodySchema);
-        entity = validateEntityEnvelope(body.entity);
-        location = parseLocationRef(body.location);
-        if (location.type !== 'url')
-          throw new TypeError(
-            `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
-          );
-      } catch (err) {
-        return res.status(400).json({
-          errors: [serializeError(err)],
+        const bodySchema = z.object({
+          entity: z.unknown(),
+          location: z.string(),
         });
-      }
 
-      const credentials = await httpAuth.credentials(req);
-      const authorizedValidationService = new AuthorizedValidationService(
-        orchestrator,
-        permissionsService,
-      );
-      const processingResult = await authorizedValidationService.process(
-        {
-          entity: {
-            ...entity,
-            metadata: {
-              ...entity.metadata,
-              annotations: {
-                [ANNOTATION_LOCATION]: body.location,
-                [ANNOTATION_ORIGIN_LOCATION]: body.location,
-                ...entity.metadata.annotations,
+        let body: z.infer<typeof bodySchema>;
+        let entity: Entity;
+        let location: { type: string; target: string };
+        try {
+          body = await validateRequestBody(req, bodySchema);
+          entity = validateEntityEnvelope(body.entity);
+          location = parseLocationRef(body.location);
+          if (location.type !== 'url')
+            throw new TypeError(
+              `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
+            );
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+
+          return res.status(400).json({
+            errors: [serializeError(err)],
+          });
+        }
+
+        const credentials = await httpAuth.credentials(req);
+        const authorizedValidationService = new AuthorizedValidationService(
+          orchestrator,
+          permissionsService,
+        );
+        const processingResult = await authorizedValidationService.process(
+          {
+            entity: {
+              ...entity,
+              metadata: {
+                ...entity.metadata,
+                annotations: {
+                  [ANNOTATION_LOCATION]: body.location,
+                  [ANNOTATION_ORIGIN_LOCATION]: body.location,
+                  ...entity.metadata.annotations,
+                },
               },
             },
           },
-        },
-        credentials,
-      );
+          credentials,
+        );
 
-      if (!processingResult.ok)
-        res.status(400).json({
-          errors: processingResult.errors.map(e => serializeError(e)),
+        if (!processingResult.ok) {
+          const errors = processingResult.errors.map(e => serializeError(e));
+
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(errors, 'Could not validate entity'),
+          });
+
+          res.status(400).json({
+            errors,
+          });
+        }
+
+        await auditorEvent?.success();
+
+        return res.status(200).end();
+      } catch (err) {
+        await auditorEvent?.fail({
+          error: err,
         });
-      return res.status(200).end();
+        throw err;
+      }
     });
   }
 

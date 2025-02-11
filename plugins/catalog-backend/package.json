@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "1.30.0",
+  "version": "1.31.0-next.2",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin",
@@ -103,6 +103,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/glob": "^8.0.0",
