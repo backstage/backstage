@@ -174,5 +174,8 @@ export const parseSchemas = (action: TemplateActionOptions<any, any, any>) => {
     };
   }
 
-  throw new Error('Invalid schema provided');
+  return {
+    inputSchema: action.schema.input,
+    outputSchema: action.schema.output,
+  };
 };
