@@ -345,6 +345,7 @@ export const createPublishGithubPullRequestAction: (
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
     forceEmptyGitAuthor?: boolean | undefined;
+    createWhenEmpty?: boolean | undefined;
   },
   JsonObject
 >;
