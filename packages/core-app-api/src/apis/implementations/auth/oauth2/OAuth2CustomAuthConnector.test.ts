@@ -70,10 +70,9 @@ describe('OAuth2CustomAuthConnector', () => {
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(
+            scopes: OAuth2.normalizeScopes(res.providerInfo.scope, {
               scopeTransform,
-              res.providerInfo.scope,
-            ),
+            }),
             expiresAt: res.providerInfo.expiresInSeconds
               ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
               : undefined,
