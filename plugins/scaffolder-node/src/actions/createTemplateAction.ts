@@ -38,6 +38,7 @@ export type TemplateActionOptions<
     | Schema
     | z.ZodType
     | { [key in string]: (zImpl: typeof z) => z.ZodType } = Schema,
+  TSchemaType extends 'v1' | 'v2' = 'v1' | 'v2',
 > = {
   id: string;
   description?: string;
@@ -48,7 +49,7 @@ export type TemplateActionOptions<
     output?: TOutputSchema;
   };
   handler: (
-    ctx: ActionContext<TActionInput, TActionOutput, TInputSchema>,
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
   ) => Promise<void>;
 };
 
@@ -63,6 +64,46 @@ type FlattenOptionalProperties<T extends { [key in string]: unknown }> = Expand<
   }
 >;
 
+/**
+ * @public
+ * @deprecated migrate to using the new built in zod schema definitions for schemas
+ */
+export function createTemplateAction<
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends Schema = Schema,
+  TOutputSchema extends Schema = Schema,
+  TActionInput extends JsonObject = TInputParams,
+  TActionOutput extends JsonObject = TOutputParams,
+>(
+  action: TemplateActionOptions<
+    TActionInput,
+    TActionOutput,
+    TInputSchema,
+    TOutputSchema,
+    'v1'
+  >,
+): TemplateAction<TActionInput, TActionOutput, 'v1'>;
+/**
+ * @public
+ * @deprecated migrate to using the new built in zod schema definitions for schemas
+ */
+export function createTemplateAction<
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends z.ZodType = z.ZodType,
+  TOutputSchema extends z.ZodType = z.ZodType,
+  TActionInput extends JsonObject = z.infer<TInputSchema>,
+  TActionOutput extends JsonObject = z.infer<TOutputSchema>,
+>(
+  action: TemplateActionOptions<
+    TActionInput,
+    TActionOutput,
+    TInputSchema,
+    TOutputSchema,
+    'v1'
+  >,
+): TemplateAction<TActionInput, TActionOutput, 'v1'>;
 /**
  * This function is used to create new template actions to get type safety.
  * Will convert zod schemas to json schemas for use throughout the system.
@@ -80,7 +121,8 @@ export function createTemplateAction<
       [key in keyof TOutputSchema]: z.infer<ReturnType<TOutputSchema[key]>>;
     },
     TInputSchema,
-    TOutputSchema
+    TOutputSchema,
+    'v2'
   >,
 ): TemplateAction<
   FlattenOptionalProperties<{
@@ -89,46 +131,8 @@ export function createTemplateAction<
   FlattenOptionalProperties<{
     [key in keyof TOutputSchema]: z.output<ReturnType<TOutputSchema[key]>>;
   }>,
-  TInputSchema
+  'v2'
 >;
-/**
- * @public
- * @deprecated migrate to using the new built in zod schema definitions for schemas
- */
-export function createTemplateAction<
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends Schema = Schema,
-  TOutputSchema extends Schema = Schema,
-  TActionInput extends JsonObject = TInputParams,
-  TActionOutput extends JsonObject = TOutputParams,
->(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
-    TInputSchema,
-    TOutputSchema
-  >,
-): TemplateAction<TActionInput, TActionOutput, TInputSchema>;
-/**
- * @public
- * @deprecated migrate to using the new built in zod schema definitions for schemas
- */
-export function createTemplateAction<
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends z.ZodType = z.ZodType,
-  TOutputSchema extends z.ZodType = z.ZodType,
-  TActionInput extends JsonObject = z.infer<TInputSchema>,
-  TActionOutput extends JsonObject = z.infer<TOutputSchema>,
->(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
-    TInputSchema,
-    TOutputSchema
-  >,
-): TemplateAction<TActionInput, TActionOutput, TInputSchema>;
 export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
@@ -169,7 +173,13 @@ export function createTemplateAction<
     TInputSchema,
     TOutputSchema
   >,
-): TemplateAction<TActionInput, TActionOutput, TInputSchema, TOutputSchema> {
+): TemplateAction<
+  TActionInput,
+  TActionOutput,
+  TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType }
+    ? 'v2'
+    : 'v1'
+> {
   const { inputSchema, outputSchema } = parseSchemas(action);
 
   return {
