@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-github': patch
+'@backstage/plugin-scaffolder-backend-module-github': minor
 ---
 
-Adds `createWhenEmpty` option to `publish:github:pull-request` action.
+**BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.

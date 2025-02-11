@@ -261,48 +261,24 @@ export const createPublishGithubPullRequestAction = (
         },
       },
       output: {
-        oneOf: [
-          {
-            required: ['remoteUrl'],
-            type: 'object',
-            properties: {
-              targetBranchName: {
-                title: 'Target branch name of the merge request',
-                type: 'string',
-              },
-              remoteUrl: {
-                type: 'string',
-                title: 'Pull Request URL',
-                description: 'Link to the pull request in Github',
-              },
-              pullRequestNumber: {
-                type: 'number',
-                title: 'Pull Request Number',
-                description: 'The pull request number',
-              },
-            },
+        required: [],
+        type: 'object',
+        properties: {
+          targetBranchName: {
+            title: 'Target branch name of the merge request',
+            type: 'string',
           },
-          {
-            required: [],
-            type: 'object',
-            properties: {
-              targetBranchName: {
-                title: 'Target branch name of the merge request',
-                type: 'string',
-              },
-              remoteUrl: {
-                type: 'string',
-                title: 'Pull Request URL',
-                description: 'Link to the pull request in Github',
-              },
-              pullRequestNumber: {
-                type: 'number',
-                title: 'Pull Request Number',
-                description: 'The pull request number',
-              },
-            },
+          remoteUrl: {
+            type: 'string',
+            title: 'Pull Request URL',
+            description: 'Link to the pull request in Github',
           },
-        ],
+          pullRequestNumber: {
+            type: 'number',
+            title: 'Pull Request Number',
+            description: 'The pull request number',
+          },
+        },
       },
     },
     async handler(ctx) {
