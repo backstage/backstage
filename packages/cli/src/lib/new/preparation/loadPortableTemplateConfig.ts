@@ -86,11 +86,11 @@ export async function loadPortableTemplateConfig(
 
   const basePath = dirname(pkgPath);
   const templatePointers = await Promise.all(
-    (config?.templates ?? defaultTemplates).map(pointer => {
+    (config?.templates ?? defaultTemplates).map(async pointer => {
       try {
         const templatePath = resolveLocalTemplatePath(pointer, basePath);
 
-        return peekLocalTemplateDefinition(templatePath);
+        return await peekLocalTemplateDefinition(templatePath);
       } catch (error) {
         throw new ForwardedError(
           `Failed to load template definition '${pointer}'`,

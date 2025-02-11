@@ -39,7 +39,7 @@ describe('writeTemplateContents', () => {
   it('should write an empty template', async () => {
     const { targetDir } = await writeTemplateContents(
       {
-        id: 'test',
+        name: 'test',
         files: [],
         role: 'frontend-plugin',
         parameters: {},
@@ -60,7 +60,7 @@ describe('writeTemplateContents', () => {
   it('should write template with various files', async () => {
     await writeTemplateContents(
       {
-        id: 'test',
+        name: 'test',
         files: [
           {
             content: 'test',
