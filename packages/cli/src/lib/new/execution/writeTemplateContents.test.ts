@@ -42,8 +42,7 @@ describe('writeTemplateContents', () => {
         name: 'test',
         files: [],
         role: 'frontend-plugin',
-        parameters: {},
-        templateValues: {},
+        values: {},
       },
       {
         ...baseConfig,
@@ -77,8 +76,7 @@ describe('writeTemplateContents', () => {
           },
         ],
         role: 'frontend-plugin',
-        parameters: {},
-        templateValues: {},
+        values: {},
       },
       {
         ...baseConfig,

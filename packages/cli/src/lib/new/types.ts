@@ -69,8 +69,7 @@ export type PortableTemplate = {
   name: string;
   role: PortableTemplateRole;
   files: PortableTemplateFile[];
-  parameters: Record<string, string>;
-  templateValues: Record<string, string>;
+  values: Record<string, string>;
 };
 
 export type PortableTemplateParams = {

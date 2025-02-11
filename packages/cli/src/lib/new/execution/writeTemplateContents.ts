@@ -43,7 +43,7 @@ export async function writeTemplateContents(
         ...roleValues,
         packageName: input.packageName,
       },
-      templatedValues: template.templateValues,
+      templatedValues: template.values,
     });
 
     if (!isMonoRepo) {
