@@ -29,6 +29,7 @@ type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
   template: PortableTemplate;
   input: PortableTemplateInput;
+  skipInstall?: boolean;
 };
 
 export async function executePortableTemplate(
@@ -48,14 +49,16 @@ export async function executePortableTemplate(
       await addCodeownersEntry(targetDir, input.owner);
     }
 
-    await Task.forCommand('yarn install', {
-      cwd: targetDir,
-      optional: true,
-    });
-    await Task.forCommand('yarn lint --fix', {
-      cwd: targetDir,
-      optional: true,
-    });
+    if (!options.skipInstall) {
+      await Task.forCommand('yarn install', {
+        cwd: targetDir,
+        optional: true,
+      });
+      await Task.forCommand('yarn lint --fix', {
+        cwd: targetDir,
+        optional: true,
+      });
+    }
 
     Task.log();
     Task.log(`🎉  Successfully created ${template.name}`);

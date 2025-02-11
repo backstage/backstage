@@ -19,6 +19,7 @@ import { createNewPackage } from '../../lib/new/createNewPackage';
 type ArgOptions = {
   option: string[];
   select?: string;
+  skipInstall: boolean;
   private?: boolean;
   npmRegistry?: string;
   scope?: string;
@@ -30,6 +31,7 @@ export default async (opts: ArgOptions) => {
   const {
     option: rawArgOptions,
     select: preselectedTemplateId,
+    skipInstall,
     scope,
     private: isPrivate,
     ...otherGlobals
@@ -67,6 +69,7 @@ export default async (opts: ArgOptions) => {
       packageNamePrefix: packagePrefix,
       packageNamePluginInfix: pluginInfix,
     },
+    skipInstall,
   });
 };
 
