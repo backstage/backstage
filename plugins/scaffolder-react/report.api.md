@@ -57,11 +57,8 @@ export type Action = {
   examples?: ActionExample[];
 };
 
-// @public
-export type ActionExample = {
-  description: string;
-  example: string;
-};
+// @public @deprecated
+export type ActionExample = ScaffolderUsageExample;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -171,6 +168,15 @@ export type LayoutTemplate<T = any> = NonNullable<
 export type ListActionsResponse = Array<Action>;
 
 // @public
+export type ListTemplateExtensionsResponse = {
+  filters: Record<string, TemplateFilter>;
+  globals: {
+    functions: Record<string, TemplateGlobalFunction>;
+    values: Record<string, TemplateGlobalValue>;
+  };
+};
+
+// @public
 export type LogEvent = {
   type: 'log' | 'completion' | 'cancelled' | 'recovered';
   body: {
@@ -243,6 +249,7 @@ export interface ScaffolderApi {
     tasks: ScaffolderTask[];
     totalTasks?: number;
   }>;
+  listTemplateExtensions?(): Promise<ListTemplateExtensionsResponse>;
   retry?(taskId: string): Promise<void>;
   scaffold(
     options: ScaffolderScaffoldOptions,
@@ -495,6 +502,13 @@ export type ScaffolderTaskStatus =
   | 'skipped';
 
 // @public
+export type ScaffolderUsageExample = {
+  description?: string;
+  example: string;
+  notes?: string;
+};
+
+// @public
 export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   secrets: Record<string, string>;
@@ -523,6 +537,33 @@ export type TaskStream = {
     [stepId in string]: ScaffolderStep;
   };
   output?: ScaffolderTaskOutput;
+};
+
+// @public
+export type TemplateFilter = {
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+// @public
+export type TemplateGlobalFunction = {
+  description?: string;
+  schema?: {
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+// @public
+export type TemplateGlobalValue = {
+  description?: string;
+  value: JsonValue;
 };
 
 // @public (undocumented)

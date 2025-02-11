@@ -190,7 +190,8 @@ export class SecureTemplater {
         if (!Object.hasOwn(templateFilters, filterName)) {
           return '';
         }
-        const rz = templateFilters[filterName](...args);
+        const [input, ...rest] = args;
+        const rz = templateFilters[filterName](input, ...rest);
         return rz === undefined ? '' : JSON.stringify(rz);
       },
     );

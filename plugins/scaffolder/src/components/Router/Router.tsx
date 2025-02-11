@@ -41,6 +41,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
   templateFormRouteRef,
+  templateExtensionsRouteRef,
 } from '../../routes';
 
 import { ActionsPage } from '../../components/ActionsPage';
@@ -64,6 +65,7 @@ import {
   templateManagementPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { useApp } from '@backstage/core-plugin-api';
+import { TemplateExtensionsPage } from '../TemplateExtensionsPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -238,6 +240,10 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
             </SecretsContextProvider>
           </RequirePermission>
         }
+      />
+      <Route
+        path={templateExtensionsRouteRef.path}
+        element={<TemplateExtensionsPage />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>
