@@ -49,32 +49,6 @@ describe('loadTemplate', () => {
     });
   });
 
-  it('should load a valid template with files in a separate dir', async () => {
-    mockDir.setContent({
-      'path/to/template.yaml': `
-          name: template1
-          role: frontend-plugin
-          files: content
-          parameters:
-            foo: bar
-        `,
-      'path/to/content/hello.txt': 'hello world',
-    });
-
-    await expect(
-      loadPortableTemplate({
-        name: 'template1',
-        target: mockDir.resolve('path/to/template.yaml'),
-      }),
-    ).resolves.toEqual({
-      name: 'template1',
-      role: 'frontend-plugin',
-      files: [{ path: 'hello.txt', content: 'hello world' }],
-      parameters: { foo: 'bar' },
-      templateValues: {},
-    });
-  });
-
   it('should throw an error if template file does not exist', async () => {
     mockDir.setContent({});
 
@@ -117,7 +91,6 @@ describe('loadTemplate', () => {
       'path/to/template1.yaml': `
         name: x
         role: invalid-role
-        files: template1
       `,
     });
 
@@ -130,27 +103,6 @@ describe('loadTemplate', () => {
       `Invalid template definition at '${mockDir.resolve(
         'path/to/template1.yaml',
       )}'; caused by Validation error: Invalid enum value`,
-    );
-  });
-
-  it('should throw an error if template directory does not exist', async () => {
-    mockDir.setContent({
-      'path/to/template1.yaml': `
-        name: x
-        role: frontend-plugin
-        files: template1
-      `,
-    });
-
-    await expect(
-      loadPortableTemplate({
-        name: 'template1',
-        target: mockDir.resolve('path/to/template1.yaml'),
-      }),
-    ).rejects.toThrow(
-      `Failed to load template contents from '${mockDir.resolve(
-        'path/to/template1',
-      )}'`,
     );
   });
 });

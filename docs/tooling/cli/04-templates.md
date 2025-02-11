@@ -106,7 +106,6 @@ Your first step in creating your own CLI template is composing your yaml file:
 name: custom-plugin
 role: frontend-plugin
 description: Description of my CLI template # optional
-files: ./template # optional
 templateValues: # optional
   pluginVar: '{{ camelCase pluginId }}Plugin'
 ```
@@ -116,7 +115,6 @@ The following properties are supported:
 - `name` **(required)** - The name of your template, used by the user to select it.
 - `role` **(required)** - The role of the template, similar to package role. See [Template Roles](#template-roles) for more details.
 - `description` - A description of the type of package that this template produces.
-- `files` - A directory or list of relative file paths pointing to the contents of your template. Defaults to the current directory.
 - `parameters` - A map of pre-filled parameters that will be used instead of prompting the user for input.
 - `templateValues` - A map of additional values that will be present during templating. The values are themselves templated and can reference other values.
 
