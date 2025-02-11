@@ -46,11 +46,23 @@ export async function writeTemplateContents(
       templatedValues: template.templateValues,
     });
 
-    for (const file of template.files) {
-      if (isMonoRepo && file.path === 'tsconfig.json') {
-        continue;
-      }
+    if (!isMonoRepo) {
+      await fs.writeJson(
+        resolvePath(targetDir, 'tsconfig.json'),
+        {
+          extends: '@backstage/cli/config/tsconfig.json',
+          include: ['src', 'dev', 'migrations'],
+          exclude: ['node_modules'],
+          compilerOptions: {
+            outDir: 'dist-types',
+            rootDir: '.',
+          },
+        },
+        { spaces: 2 },
+      );
+    }
 
+    for (const file of template.files) {
       const destPath = resolvePath(targetDir, file.path);
       await fs.ensureDir(dirname(destPath));
 
