@@ -1,7 +1,6 @@
 name: scaffolder-backend-module
 role: backend-plugin-module
 description: A module exporting custom actions for @backstage/plugin-scaffolder-backend
-parameters:
+values:
   pluginId: scaffolder
-templateValues:
   moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
