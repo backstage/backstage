@@ -39,7 +39,11 @@ export async function executePortableTemplate(
 
   let modified = false;
   try {
-    const { targetDir } = await writeTemplateContents(template, input);
+    const { targetDir } = await Task.forItem(
+      'templating',
+      input.packagePath,
+      () => writeTemplateContents(template, input),
+    );
 
     modified = true;
 
