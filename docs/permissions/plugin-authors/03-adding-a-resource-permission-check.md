@@ -141,7 +141,7 @@ export const todoListPermissionResourceRef = createPermissionResourceRef<
 export const isOwner = createPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
-  resourceType: todoListPermissionResourceRef,
+  resourceRef: todoListPermissionResourceRef,
   paramsSchema: z.object({
     userId: z.string().describe('User ID to match on the resource'),
   }),
