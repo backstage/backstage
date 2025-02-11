@@ -27,7 +27,7 @@
 }
 
 .canon-Input::placeholder {
-  color: var(--canon-fg-text-secondary);
+  color: var(--canon-fg-secondary);
 }
 
 .canon-Input:hover {
