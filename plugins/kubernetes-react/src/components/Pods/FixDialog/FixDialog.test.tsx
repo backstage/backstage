@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { Fragment } from 'react';
 
 import { FixDialog } from './FixDialog';
 import { Pod } from 'kubernetes-models/v1/Pod';
@@ -21,13 +21,13 @@ import { renderInTestApp } from '@backstage/test-utils';
 
 jest.mock('../Events', () => ({
   Events: () => {
-    return <React.Fragment />;
+    return <Fragment />;
   },
 }));
 
 jest.mock('../PodLogs', () => ({
   PodLogs: () => {
-    return <React.Fragment />;
+    return <Fragment />;
   },
 }));
 

@@ -20,7 +20,6 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
 import { UserProfileCard } from './UserProfileCard';
 import { screen } from '@testing-library/react';
 

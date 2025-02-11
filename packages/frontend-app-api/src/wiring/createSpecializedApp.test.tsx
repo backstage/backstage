@@ -30,7 +30,7 @@ import {
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis } from '@backstage/test-utils';
-import React from 'react';
+import { Fragment } from 'react';
 import {
   configApiRef,
   createApiFactory,
@@ -290,9 +290,9 @@ describe('createSpecializedApp', () => {
                 <ApiProvider apis={apis}>
                   <MemoryRouter>
                     {inputs.children.map(i => (
-                      <React.Fragment key={i.node.spec.id}>
+                      <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
-                      </React.Fragment>
+                      </Fragment>
                     ))}
                   </MemoryRouter>
                 </ApiProvider>,

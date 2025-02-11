@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { act } from 'react';
+import { act } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { fireEvent, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';

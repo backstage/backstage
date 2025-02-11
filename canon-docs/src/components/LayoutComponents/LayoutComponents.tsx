@@ -1,4 +1,3 @@
-import React from 'react';
 import { BoxSvg } from './svgs/box';
 import { FlexSvg } from './svgs/flex';
 import { GridSvg } from './svgs/grid';

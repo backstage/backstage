@@ -19,7 +19,6 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import {
   apiDocsConfigRef,
   apiDocsPlugin,

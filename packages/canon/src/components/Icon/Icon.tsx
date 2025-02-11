@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ComponentType } from 'react';
 import { useCanon } from '../../contexts/canon';
 import type { IconProps } from './types';
 import clsx from 'clsx';
@@ -24,7 +24,7 @@ export const Icon = (props: IconProps) => {
   const { name, size = 16, className, style, ...restProps } = props;
   const { icons } = useCanon();
 
-  const CanonIcon = icons[name] as React.ComponentType<Omit<IconProps, 'name'>>;
+  const CanonIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
 
   if (!CanonIcon) {
     console.error(`Icon "${name}" not found or is not a valid component.`);

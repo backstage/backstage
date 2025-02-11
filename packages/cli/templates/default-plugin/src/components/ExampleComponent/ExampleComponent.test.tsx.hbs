@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExampleComponent } from './ExampleComponent';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';

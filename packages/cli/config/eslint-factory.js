@@ -243,8 +243,26 @@ function createConfigForRole(dir, role, extraConfig = {}) {
           '@mui/*/*/*',
           ...(extraConfig.restrictedImportPatterns ?? []),
         ],
+        rules: {
+          'react/react-in-jsx-scope': 'off',
+          'no-restricted-syntax': [
+            'error',
+            {
+              message: 'Default React import not allowed.',
+              selector:
+                "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
+            },
+            {
+              message:
+                'Default React import not allowed. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`.',
+              selector:
+                "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportNamespaceSpecifier)",
+            },
+          ],
+          ...extraConfig.rules,
+        },
         tsRules: {
-          'react/prop-types': 0,
+          'react/prop-types': 'off',
           ...extraConfig.tsRules,
         },
       });

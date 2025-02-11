@@ -21,7 +21,7 @@ import {
   SearchContextProvider,
   useSearch,
 } from '@backstage/plugin-search-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 

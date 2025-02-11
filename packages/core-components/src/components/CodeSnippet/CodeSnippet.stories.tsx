@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { CodeSnippet } from './CodeSnippet';
 import { InfoCard } from '../../layout/InfoCard';
 

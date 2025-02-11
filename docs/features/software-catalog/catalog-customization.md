@@ -442,7 +442,6 @@ import {
   EntityTypePicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 
 export const CustomCatalogPage = () => {
   const orgName =

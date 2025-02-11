@@ -18,7 +18,6 @@ import type { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common'
 import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
 
 /**
  * The Props for the {@link TemplateCardTags} component

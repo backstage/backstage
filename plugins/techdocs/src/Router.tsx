@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { ReactElement, PropsWithChildren } from 'react';
 import { Route, Routes, useRoutes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
@@ -58,7 +58,7 @@ export const Router = () => {
 
 export const EmbeddedDocsRouter = (
   props: PropsWithChildren<{
-    emptyState?: React.ReactElement;
+    emptyState?: ReactElement;
     withSearch?: boolean;
   }>,
 ) => {

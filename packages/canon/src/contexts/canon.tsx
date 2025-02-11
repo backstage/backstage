@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext } from 'react';
+import { ComponentType, createContext, ReactNode, useContext } from 'react';
 import { icons } from '../components/Icon/icons';
 import { IconMap, IconNames } from '../components/Icon/types';
 
@@ -26,7 +26,7 @@ export interface CanonContextProps {
 /** @public */
 export interface CanonProviderProps {
   children?: ReactNode;
-  overrides?: Partial<Record<IconNames, React.ComponentType>>;
+  overrides?: Partial<Record<IconNames, ComponentType>>;
 }
 
 const CanonContext = createContext<CanonContextProps>({

@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { compact, isEqual } from 'lodash';
 import qs from 'qs';
-import React, {
+import {
   createContext,
   PropsWithChildren,
   useCallback,

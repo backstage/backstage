@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement } from 'react';
+import { MouseEvent, useState, useRef, Fragment, ReactElement } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -34,7 +34,7 @@ export type HeaderActionMenuItem = {
   secondaryLabel?: ListItemTextProps['secondary'];
   icon?: ReactElement;
   disabled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
 };
 
 const ActionItem = ({
@@ -80,8 +80,8 @@ export function HeaderActionMenu(props: HeaderActionMenuProps) {
     },
   } = useTheme();
   const { actionItems } = props;
-  const [open, setOpen] = React.useState(false);
-  const anchorElRef = React.useRef(null);
+  const [open, setOpen] = useState(false);
+  const anchorElRef = useRef(null);
 
   return (
     <Fragment>

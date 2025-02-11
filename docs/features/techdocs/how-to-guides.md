@@ -134,6 +134,7 @@ You can easily customize the TechDocs home page using TechDocs panel layout
 Modify your `App.tsx` as follows:
 
 ```tsx
+import { Fragment, PropsWithChildren } from 'react';
 import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 //...
 
@@ -174,7 +175,7 @@ const techDocsTabsConfig = [
         filterPredicate: filterEntity,
         panelType: 'TechDocsIndexPage',
         title: 'All',
-        panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+        panelProps: { PageWrapper: Fragment, CustomHeader: Fragment, options: options },
       },
     ],
   },
@@ -183,7 +184,7 @@ const docsFilter = {
   kind: ['Location', 'Resource', 'Component'],
   'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
 }
-const customPageWrapper = ({ children }: React.PropsWithChildren<{}>) =>
+const customPageWrapper = ({ children }: PropsWithChildren<{}>) =>
   (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
 const AppRoutes = () => {
   <FlatRoutes>
@@ -211,7 +212,7 @@ maintain such a component in a new directory at
 For example, you can define the following Custom home page component:
 
 ```tsx
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { Content } from '@backstage/core-components';
 import {
@@ -231,7 +232,7 @@ import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
 
 export type CustomTechDocsHomeProps = {
   groups?: Array<{
-    title: React.ReactNode;
+    title: ReactNode;
     filterPredicate: ((entity: Entity) => boolean) | string;
   }>;
 };

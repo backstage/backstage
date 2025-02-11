@@ -19,7 +19,7 @@ import LinearProgress, {
   LinearProgressProps,
 } from '@material-ui/core/LinearProgress';
 import { useTheme } from '@material-ui/core/styles';
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 
 export function Progress(props: PropsWithChildren<LinearProgressProps>) {
   const theme = useTheme();

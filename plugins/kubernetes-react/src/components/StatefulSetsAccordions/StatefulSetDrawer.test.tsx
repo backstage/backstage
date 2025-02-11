@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import * as statefulsets from '../../__fixtures__/2-statefulsets.json';
 import {
   renderInTestApp,

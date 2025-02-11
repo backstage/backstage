@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useAnalytics,
+  useApi,
+  useApp,
+} from '@backstage/core-plugin-api';
 // eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
@@ -22,7 +27,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 import { trimEnd } from 'lodash';
-import React, { ElementType } from 'react';
+import {
+  ReactNode,
+  ReactElement,
+  MouseEvent as ReactMouseEvent,
+  ElementType,
+  forwardRef,
+} from 'react';
 import {
   createRoutesFromChildren,
   Link as RouterLink,
@@ -30,7 +41,6 @@ import {
   Route,
 } from 'react-router-dom';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { useApp } from '@backstage/core-plugin-api';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -149,7 +159,7 @@ export const useResolvedPath = (uri: LinkProps['to']) => {
 /**
  * Given a react node, try to retrieve its text content.
  */
-const getNodeText = (node: React.ReactNode): string => {
+const getNodeText = (node: ReactNode): string => {
   // If the node is an array of children, recurse and join.
   if (node instanceof Array) {
     return node.map(getNodeText).join(' ').trim();
@@ -157,7 +167,7 @@ const getNodeText = (node: React.ReactNode): string => {
 
   // If the node is a react element, recurse on its children.
   if (typeof node === 'object' && node) {
-    return getNodeText((node as React.ReactElement)?.props?.children);
+    return getNodeText((node as ReactElement)?.props?.children);
   }
 
   // Base case: the node is just text. Return it.
@@ -174,7 +184,7 @@ const getNodeText = (node: React.ReactNode): string => {
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
  */
-export const Link = React.forwardRef<any, LinkProps>(
+export const Link = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
@@ -194,7 +204,7 @@ export const Link = React.forwardRef<any, LinkProps>(
       );
     }
 
-    const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
+    const handleClick = (event: ReactMouseEvent<any, MouseEvent>) => {
       onClick?.(event);
       if (!noTrack) {
         analytics.captureEvent('click', linkText, { attributes: { to } });

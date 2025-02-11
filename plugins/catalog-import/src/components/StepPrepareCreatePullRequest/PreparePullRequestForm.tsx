@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import {
   FormProvider,
   SubmitHandler,
@@ -40,7 +40,7 @@ export type PreparePullRequestFormProps<
     > & {
       values: TFieldValues;
     },
-  ) => React.ReactNode;
+  ) => ReactNode;
 };
 
 /**

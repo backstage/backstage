@@ -15,7 +15,6 @@
  */
 
 import Star from '@material-ui/icons/Star';
-import React from 'react';
 import { ProviderSettingsItem } from './ProviderSettingsItem';
 import {
   githubAuthApiRef,

@@ -20,7 +20,7 @@ import Step from '@material-ui/core/Step';
 import StepContent from '@material-ui/core/StepContent';
 import Stepper from '@material-ui/core/Stepper';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { catalogImportApiRef } from '../../api';
 import { ImportFlows, ImportState, useImportState } from '../useImportState';
 import {

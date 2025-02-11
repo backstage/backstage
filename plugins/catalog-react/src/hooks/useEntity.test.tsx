@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 import {
   useEntity,
@@ -38,7 +38,7 @@ describe('useEntity', () => {
     withLogCollector(() => {
       expect(() =>
         renderHook(() => useEntity(), {
-          wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          wrapper: ({ children }: PropsWithChildren<{}>) => (
             <EntityProvider children={children} />
           ),
         }),
@@ -48,7 +48,7 @@ describe('useEntity', () => {
 
   it('should provide an entity', async () => {
     const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <EntityProvider entity={entity} children={children} />
       ),
     });
@@ -60,7 +60,7 @@ describe('useEntity', () => {
     const analyticsSpy = mockApis.analytics();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <ApiProvider apis={apis}>
           <EntityProvider entity={entity} children={children} />
         </ApiProvider>
@@ -82,7 +82,7 @@ describe('useEntity', () => {
 describe('useAsyncEntity', () => {
   it('should provide no entity', async () => {
     const { result } = renderHook(() => useAsyncEntity(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <AsyncEntityProvider loading={false} children={children} />
       ),
     });
@@ -96,7 +96,7 @@ describe('useAsyncEntity', () => {
   it('should provide an entity', async () => {
     const refresh = () => {};
     const { result } = renderHook(() => useAsyncEntity(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <AsyncEntityProvider
           loading={false}
           entity={entity}
@@ -134,7 +134,7 @@ describe('useAsyncEntity', () => {
     const analyticsSpy = mockApis.analytics.mock();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <ApiProvider apis={apis}>
           <AsyncEntityProvider
             loading={false}

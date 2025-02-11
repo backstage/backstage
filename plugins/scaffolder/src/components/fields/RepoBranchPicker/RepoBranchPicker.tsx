@@ -19,7 +19,7 @@ import {
   scmIntegrationsApiRef,
   scmAuthApiRef,
 } from '@backstage/integration-react';
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';

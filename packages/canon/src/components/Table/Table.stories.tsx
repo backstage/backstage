@@ -59,7 +59,7 @@ const invoices = [
   },
 ];
 
-import React from 'react';
+import { ComponentType } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   Table,
@@ -75,12 +75,12 @@ const meta = {
   title: 'Components/Table',
   component: Table,
   subcomponents: {
-    TableBody: TableBody as React.ComponentType<unknown>,
-    TableCell: TableCell as React.ComponentType<unknown>,
-    TableFooter: TableFooter as React.ComponentType<unknown>,
-    TableHead: TableHead as React.ComponentType<unknown>,
-    TableHeader: TableHeader as React.ComponentType<unknown>,
-    TableRow: TableRow as React.ComponentType<unknown>,
+    TableBody: TableBody as ComponentType<unknown>,
+    TableCell: TableCell as ComponentType<unknown>,
+    TableFooter: TableFooter as ComponentType<unknown>,
+    TableHead: TableHead as ComponentType<unknown>,
+    TableHeader: TableHeader as ComponentType<unknown>,
+    TableRow: TableRow as ComponentType<unknown>,
   },
 } satisfies Meta<typeof Table>;
 

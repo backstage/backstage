@@ -26,7 +26,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import DefaultSearchIcon from '@material-ui/icons/Search';
-import React, {
+import {
+  ReactNode,
   ChangeEvent,
   forwardRef,
   KeyboardEvent,
@@ -49,7 +50,7 @@ export type SearchBarBaseProps = Omit<TextFieldProps, 'onChange'> & {
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
-  endAdornment?: React.ReactNode;
+  endAdornment?: ReactNode;
 };
 
 /**

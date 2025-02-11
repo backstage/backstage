@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   Action,
@@ -221,7 +221,7 @@ export const ActionPageContent = () => {
       const types = getTypes(props);
 
       return (
-        <React.Fragment key={id}>
+        <Fragment key={id}>
           <TableRow key={id}>
             <TableCell>
               <div className={codeClassname}>{key}</div>
@@ -275,7 +275,7 @@ export const ActionPageContent = () => {
               </Collapse>
             </TableCell>
           </TableRow>
-        </React.Fragment>
+        </Fragment>
       );
     });
   };

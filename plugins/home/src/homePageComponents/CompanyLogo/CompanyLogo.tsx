@@ -15,10 +15,10 @@
  */
 import Typography from '@material-ui/core/Typography';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import React from 'react';
+import { ReactNode } from 'react';
 
 type CompanyLogoProps = {
-  logo?: React.ReactNode;
+  logo?: ReactNode;
   className?: string;
 };
 

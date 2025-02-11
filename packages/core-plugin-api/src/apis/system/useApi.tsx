@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
@@ -61,7 +61,7 @@ export function useApi<T>(apiRef: ApiRef<T>): T {
  */
 export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
   return function withApisWrapper<TProps extends T>(
-    WrappedComponent: React.ComponentType<TProps>,
+    WrappedComponent: ComponentType<TProps>,
   ) {
     const Hoc = (props: PropsWithChildren<Omit<TProps, keyof T>>) => {
       const apiHolder = useApiHolder();

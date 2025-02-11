@@ -16,8 +16,6 @@
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
-import React from 'react';
-
 import { LightBox } from '../plugin';
 
 describe('LightBox', () => {
