@@ -16,14 +16,33 @@
 
 import React from 'react';
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
+import { createRouteRef, useRouteRef } from '@backstage/frontend-plugin-api';
 
 describe('EntityContextMenuItemBlueprint', () => {
-  it('should return an extension with sane defaults', () => {
+  const routeRef = createRouteRef();
+  const data = [
+    {
+      loader: async () => <li>Test!</li>,
+    },
+    {
+      title: 'Test',
+      href: '/somewhere',
+      icon: <span>Test</span>,
+    },
+    {
+      title: 'Test',
+      useHref() {
+        const r = useRouteRef(routeRef) ?? (() => '/somewhere');
+        return r();
+      },
+      icon: <span>Test</span>,
+    },
+  ];
+
+  it.each(data)('should return an extension with sane defaults', params => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
-      params: {
-        loader: async () => <li>Test!</li>,
-      },
+      params,
     });
 
     expect(extension).toMatchInlineSnapshot(`
