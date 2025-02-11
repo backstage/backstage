@@ -26,7 +26,9 @@ class FailureStrategy extends Strategy {
 describe('PassportOAuthAuthenticatorHelper', () => {
   describe('start', () => {
     it('should gracefully handle errors if unable to start', async () => {
-      const helper = PassportOAuthAuthenticatorHelper.from(new FailureStrategy());
+      const helper = PassportOAuthAuthenticatorHelper.from(
+        new FailureStrategy(),
+      );
       await expect(helper.start({} as any, {})).rejects.toThrow(
         'Authentication failed, failure',
       );
@@ -35,7 +37,9 @@ describe('PassportOAuthAuthenticatorHelper', () => {
 
   describe('authenticate', () => {
     it('should gracefully handle errors if unable to authenticate', async () => {
-      const helper = PassportOAuthAuthenticatorHelper.from(new FailureStrategy());
+      const helper = PassportOAuthAuthenticatorHelper.from(
+        new FailureStrategy(),
+      );
       await expect(helper.authenticate({} as any, {})).rejects.toThrow(
         'Authentication failed, failure',
       );
