@@ -3,5 +3,4 @@
 '@backstage/plugin-scaffolder-node': minor
 ---
 
-New api functions createTemplateFilter, createTemplateGlobalFunction, createTemplateGlobalValue;
-Core support for template extension documentation
+Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
