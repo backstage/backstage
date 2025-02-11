@@ -1,0 +1,3 @@
+name: web-library
+role: web-library
+description: A library package, exporting shared functionality for web environments
