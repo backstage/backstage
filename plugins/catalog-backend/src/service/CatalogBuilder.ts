@@ -114,7 +114,6 @@ import { createRouter } from './createRouter';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
-import { basicEntityFilter } from './request';
 import { entitiesResponseToObjects } from './response';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
 
