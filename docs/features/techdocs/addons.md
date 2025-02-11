@@ -47,8 +47,8 @@ representative of physical spaces in the TechDocs UI:
 
 The installation and configuration of Addons happens within a Backstage app's
 frontend. Addons are imported from plugins and added underneath a registry
-component called `<TechDocsAddons>`. This registry can be configured for both
-the TechDocs Reader page as well as the Entity docs page.
+blueprint called `TechDocsAddonsBlueprint`. This registry is configured for
+both the TechDocs Reader page as well as the Entity docs page.
 
 Addons are rendered in the order in which they are registered.
 
@@ -56,62 +56,44 @@ Addons are rendered in the order in which they are registered.
 
 To start using Addons you need to add the `@backstage/plugin-techdocs-module-addons-contrib` package to your app. You can do that by running this command from the root of your project: `yarn --cwd packages/app add @backstage/plugin-techdocs-module-addons-contrib`
 
-Addons can be installed and configured in much the same way as extensions for
-other Backstage plugins: by adding them underneath an extension registry
-component (`<TechDocsAddons>`) under the route representing the TechDocs Reader
-page in your `App.tsx`:
+Addons can then be installed and configured by adding them via the extension blueprint `TechDocsAddonsBlueprint` in your `App.tsx`:
 
 ```tsx
 // packages/app/src/App.tsx
 
-import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { createApp } from '@backstage/frontend-defaults';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { TechDocsAddonsBlueprint } from '@backstage/plugin-techdocs-react';
+import {
+  ReportIssue,
+  TextSize,
+} from '@backstage/plugin-techdocs-module-addons-contrib';
 
 // ...
 
-<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
-  <TechDocsAddons>
-    <ReportIssue />
-    {/* Other addons can be added here. */}
-  </TechDocsAddons>
-</Route>;
-```
+const techDocsAddons = TechDocsAddonsBlueprint.make({
+  params: {
+    addons: [
+      <ReportIssue />,
+      <TextSize />,
+      // Other addons can be added here
+    ],
+  },
+});
 
-If you are using a custom [TechDocs reader page](./how-to-guides.md#how-to-customize-the-techdocs-reader-page) your setup will be very similar, here's an example:
+const techDocsPlugin = createFrontendModule({
+  pluginId: 'techdocs',
+  extensions: [techDocsAddons],
+});
 
-```ts
-<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
-  <TechDocsAddons>
-    <ReportIssue />
-    {/* Other addons can be added here. */}
-  </TechDocsAddons>
-  {techDocsPage} // This is your custom TechDocs reader page
-</Route>
-```
+const app = createApp({
+  features: [
+    // ...
+    techDocsPlugin,
+  ],
+});
 
-The process for configuring Addons on the documentation tab on the entity page
-is very similar; instead of adding the `<TechDocsAddons>` registry under a
-`<Route>`, you'd add it as a child of `<EntityTechdocsContent />`:
-
-```tsx
-// packages/app/src/components/catalog/EntityPage.tsx
-
-import { EntityLayout } from '@backstage/plugin-catalog';
-import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-
-// ...
-
-<EntityLayout.Route path="/docs" title="Docs">
-  <EntityTechdocsContent>
-    <TechDocsAddons>
-      <ReportIssue />
-      {/* Other addons can be added here. */}
-    </TechDocsAddons>
-  </EntityTechdocsContent>
-</EntityLayout.Route>;
+export default app.createRoot();
 ```
 
 Note that on the entity page, because the Catalog plugin is responsible for the

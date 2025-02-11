@@ -40,6 +40,7 @@ import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 import {
   TechDocsAddons,
+  techDocsAddonsDataRef,
   techdocsApiRef,
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
@@ -143,7 +144,7 @@ const techDocsPage = PageBlueprint.make({
 const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   name: 'reader',
   inputs: {
-    addons: createExtensionInput([coreExtensionData.reactElement], {
+    addons: createExtensionInput([techDocsAddonsDataRef], {
       singleton: true,
       optional: true,
     }),
@@ -158,21 +159,13 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
             <TechDocsReaderRouter>
               <TechDocsReaderLayout />
               <TechDocsAddons>
-                {inputs.addons?.get(coreExtensionData.reactElement)}
+                {inputs.addons?.get(techDocsAddonsDataRef.optional())}
               </TechDocsAddons>
             </TechDocsReaderRouter>,
           );
         }),
     });
   },
-});
-
-const techDocsReaderAddonsExtension = createExtension({
-  kind: 'addons',
-  name: 'reader',
-  attachTo: { id: 'page:techdocs/reader', input: 'addons' },
-  output: [coreExtensionData.reactElement.optional()],
-  factory: () => [],
 });
 
 /**
@@ -182,7 +175,7 @@ const techDocsReaderAddonsExtension = createExtension({
  */
 const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   inputs: {
-    addons: createExtensionInput([coreExtensionData.reactElement], {
+    addons: createExtensionInput([techDocsAddonsDataRef], {
       singleton: true,
       optional: true,
     }),
@@ -209,7 +202,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
                 )}
               >
                 <TechDocsAddons>
-                  {context.inputs.addons?.get(coreExtensionData.reactElement)}
+                  {context.inputs.addons?.get(techDocsAddonsDataRef.optional())}
                 </TechDocsAddons>
               </EmbeddedDocsRouter>,
             ),
@@ -218,14 +211,6 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
       context,
     );
   },
-});
-
-const techDocsEntityContentAddonsExtension = createExtension({
-  kind: 'addons',
-  name: 'entity-content',
-  attachTo: { id: 'entity-content:techdocs', input: 'addons' },
-  output: [coreExtensionData.reactElement.optional()],
-  factory: () => [],
 });
 
 const techDocsEntityContentEmptyState = createExtension({
@@ -257,8 +242,6 @@ export default createFrontendPlugin({
     techDocsEntityContent,
     techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
-    techDocsReaderAddonsExtension,
-    techDocsEntityContentAddonsExtension,
   ],
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,

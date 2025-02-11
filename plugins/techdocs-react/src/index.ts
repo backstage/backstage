@@ -53,3 +53,4 @@ export {
   useShadowRootSelection,
 } from './hooks';
 export { toLowercaseEntityRefMaybe } from './helpers';
+export * from './blueprints';

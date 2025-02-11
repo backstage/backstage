@@ -1,5 +1,6 @@
 ---
 '@backstage/plugin-techdocs': patch
+'@backstage/plugin-techdocs-react': patch
 ---
 
-Added `addons:techdocs/reader` and `addons:techdocs/entity-content` extensions to allow adding of techdocs addons.
+Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
