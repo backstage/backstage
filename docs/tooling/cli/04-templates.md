@@ -71,7 +71,7 @@ Custom templates can be installed from local directories. To install a template 
 }
 ```
 
-Each entry in the `templates` array should be relative path that points to a directory containing a `template.yaml` file. If the path starts with `./` it will be use as is, otherwise it will be resolved as a module within `node_modules`.
+Each entry in the `templates` array should be relative path that points to a directory containing a `portable-template.yaml` file. If the path starts with `./` it will be use as is, otherwise it will be resolved as a module within `node_modules`.
 
 When defining the `templates` array it will override the default set of templates. If you want to keep using and of the build-in templates in the Backstage CLI you can reference them directly within the CLI package. This following is the full list of built-in templates:
 
@@ -100,11 +100,11 @@ When defining the `templates` array it will override the default set of template
 
 ## Creating your own CLI templates
 
-Each template lives in its own directory and must have a `template.yaml` file that describes the template. The template directory can also contain any files that should be templated or copied to the generated package.
+Each template lives in its own directory and must have a `portable-template.yaml` file that describes the template. The template directory can also contain any files that should be templated or copied to the generated package.
 
-Start by creating `template.yaml` in a new directory somewhere in your project, in this example we're using `./templates/custom-plugin/template.yaml`:
+Start by creating `portable-template.yaml` in a new directory somewhere in your project, in this example we're using `./templates/custom-plugin/portable-template.yaml`:
 
-```yaml title="in templates/custom-plugin/template.yaml"
+```yaml title="in templates/custom-plugin/portable-template.yaml"
 name: custom-plugin
 role: frontend-plugin
 description: Description of my CLI template # optional
@@ -119,7 +119,7 @@ The following properties are supported:
 - `description` - A description of the type of package that this template produces.
 - `values` - A map of additional values that will be present during templating. The values are themselves templated and can reference other values. If the key matches any of the user prompts, such as `pluginId`, the value will be used directly instead of prompting the user.
 
-Next, add any other files you want to be part of the template to the same directory. All files will be copied as is, except any files with a `.hbs` extension. They will be treated as [Handlebars](https://handlebarsjs.com/) templates and will be rendered with the values from the `template.yaml` file as well as additional prompts such as `pluginId`. For example, you could create a `src/index.ts` file with the following content:
+Next, add any other files you want to be part of the template to the same directory. All files will be copied as is, except any files with a `.hbs` extension. They will be treated as [Handlebars](https://handlebarsjs.com/) templates and will be rendered with the values from the `portable-template.yaml` file as well as additional prompts such as `pluginId`. For example, you could create a `src/index.ts` file with the following content:
 
 ```typescript title="in templates/custom-plugin/src/index.ts.hbs"
 export function getPluginId() {
