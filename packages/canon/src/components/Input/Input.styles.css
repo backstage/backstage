@@ -35,9 +35,9 @@
 }
 
 .canon-Input:focus-visible {
-  outline-color: var(--canon-border-focus);
+  outline-color: var(--canon-border-pressed);
   outline-width: 0px;
-  border-color: var(--canon-border-focus);
+  border-color: var(--canon-border-pressed);
 }
 
 .canon-Input[data-invalid] {
