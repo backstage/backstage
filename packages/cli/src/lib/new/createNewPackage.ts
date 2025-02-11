@@ -27,6 +27,7 @@ export type CreateNewPackageOptions = {
   preselectedTemplateId?: string;
   configOverrides: Partial<PortableTemplateConfig>;
   prefilledParams: PortableTemplateParams;
+  skipInstall?: boolean;
 };
 
 export async function createNewPackage(options: CreateNewPackageOptions) {
@@ -50,5 +51,6 @@ export async function createNewPackage(options: CreateNewPackageOptions) {
     config,
     template,
     input,
+    skipInstall: options.skipInstall,
   });
 }
