@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname } from 'node:path';
+import { resolve as resolvePath, dirname, isAbsolute } from 'node:path';
 import { paths } from '../../paths';
 import { defaultTemplates } from '../defaultTemplates';
 import {
@@ -126,6 +126,10 @@ export async function loadPortableTemplateConfig(
 }
 
 function resolveLocalTemplatePath(pointer: string, basePath: string): string {
+  if (isAbsolute(pointer)) {
+    throw new Error(`Template target may not be an absolute path`);
+  }
+
   if (pointer.startsWith('.')) {
     return resolvePath(basePath, pointer, TEMPLATE_FILE_NAME);
   }
