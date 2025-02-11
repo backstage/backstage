@@ -243,6 +243,28 @@ describe('loadPortableTemplateConfig', () => {
     );
   });
 
+  it('should throw an error if template point is absolute', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        backstage: {
+          cli: {
+            new: {
+              templates: ['/invalid'],
+            },
+          },
+        },
+      }),
+    });
+
+    await expect(
+      loadPortableTemplateConfig({
+        packagePath: mockDir.resolve('package.json'),
+      }),
+    ).rejects.toThrow(
+      "Failed to load template definition '/invalid'; caused by Error: Template target may not be an absolute path",
+    );
+  });
+
   it('should handle missing backstage.new configuration', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({}),
