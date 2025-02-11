@@ -47,7 +47,7 @@ That's it! But now, we need the Kubernetes Backend plugin for the frontend to wo
 
 ## Adding Kubernetes Backend plugin
 
-First we need to add the backend package:
+First, we need to add the backend package:
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-kubernetes-backend
