@@ -191,12 +191,12 @@ export class GithubOrgEntityProvider implements EntityProvider {
       SingleInstanceGithubCredentialsProvider.create(this.options.gitHubConfig);
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `GithubOrgEntityProvider:${this.options.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
     await this.options.events?.subscribe({
