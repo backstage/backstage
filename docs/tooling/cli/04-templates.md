@@ -71,7 +71,7 @@ Custom templates can be installed from local directories. To install a template 
 }
 ```
 
-Each entry in the `templates` array should be a relative path that points to a directory containing a `portable-template.yaml` file. If the path starts with `./` it will be use as is, otherwise it will be resolved as a module within `node_modules`.
+Each entry in the `templates` array should be a relative path that points to a directory containing a `portable-template.yaml` file. If the path starts with `./` it will be used as is, otherwise it will be resolved as a module within `node_modules`.
 
 When defining the `templates` array it will override the default set of templates. If you want to keep using one of the build-in templates in the Backstage CLI you can reference them directly within the CLI package. This following is the full list of built-in templates:
 
@@ -127,7 +127,7 @@ export function getPluginId() {
 }
 ```
 
-If you'd like to see more examples, you can find all the default templates and its yaml files [here](https://github.com/backstage/backstage/tree/master/packages/cli/templates).
+If you'd like to see more examples, you can find all the default templates and their yaml files [here](https://github.com/backstage/backstage/tree/master/packages/cli/templates).
 
 Once your template is ready, [add it to your config](#installing-custom-templates), and you should now be able to select it when running `yarn new`.
 
