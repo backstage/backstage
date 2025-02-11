@@ -566,8 +566,10 @@ export class OAuth2
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
   // (undocumented)
   static normalizeScopes(
-    scopeTransform: (scopes: string[]) => string[],
     scopes?: string | string[],
+    options?: {
+      scopeTransform: (scopes: string[]) => string[];
+    },
   ): Set<string>;
   // (undocumented)
   sessionState$(): Observable<SessionState>;

@@ -85,10 +85,9 @@ export default class OAuth2
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(
+            scopes: OAuth2.normalizeScopes(res.providerInfo.scope, {
               scopeTransform,
-              res.providerInfo.scope,
-            ),
+            }),
             expiresAt: res.providerInfo.expiresInSeconds
               ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
               : undefined,
@@ -169,7 +168,9 @@ export default class OAuth2
     scope?: string | string[],
     options?: AuthRequestOptions,
   ) {
-    const normalizedScopes = OAuth2.normalizeScopes(this.scopeTransform, scope);
+    const normalizedScopes = OAuth2.normalizeScopes(scope, {
+      scopeTransform: this.scopeTransform,
+    });
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
@@ -201,8 +202,8 @@ export default class OAuth2
    * @public
    */
   public static normalizeScopes(
-    scopeTransform: (scopes: string[]) => string[],
     scopes?: string | string[],
+    options?: { scopeTransform: (scopes: string[]) => string[] },
   ): Set<string> {
     if (!scopes) {
       return new Set();
@@ -212,6 +213,10 @@ export default class OAuth2
       ? scopes
       : scopes.split(/[\s|,]/).filter(Boolean);
 
-    return new Set(scopeTransform(scopeList));
+    const transformedScopes = options
+      ? options.scopeTransform(scopeList)
+      : scopeList;
+
+    return new Set(transformedScopes);
   }
 }
