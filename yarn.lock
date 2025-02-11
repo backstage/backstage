@@ -7753,7 +7753,6 @@ __metadata:
     esbuild: ^0.24.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    fast-glob: ^3.3.3
     fs-extra: ^11.2.0
     globby: ^11.0.0
     isbinaryfile: ^5.0.0

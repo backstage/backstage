@@ -18,7 +18,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
-import fg from 'fast-glob';
+import globby from 'globby';
 import { examples } from './delete.examples';
 
 /**
@@ -54,7 +54,7 @@ export const createFilesystemDeleteAction = () => {
 
       for (const file of ctx.input.files) {
         const safeFilepath = resolveSafeChildPath(ctx.workspacePath, file);
-        const resolvedPaths = await fg(safeFilepath, {
+        const resolvedPaths = await globby(safeFilepath, {
           cwd: ctx.workspacePath,
           absolute: true,
         });
