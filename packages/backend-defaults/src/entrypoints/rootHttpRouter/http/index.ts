@@ -16,7 +16,7 @@
 
 export { readHttpServerOptions } from './config';
 export { createHttpServer } from './createHttpServer';
-export { MiddlewareFactory } from './MiddlewareFactory';
+export { MiddlewareFactory, getLogMeta } from './MiddlewareFactory';
 export type {
   MiddlewareFactoryErrorOptions,
   MiddlewareFactoryOptions,

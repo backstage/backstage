@@ -55,7 +55,13 @@ type LogMeta = {
   referrer?: string;
 };
 
-function getLogMeta(req: Request, res: Response): LogMeta {
+/**
+ * Returns a log metadata object for a given request and response.
+ *
+ * @public
+ */
+
+export function getLogMeta(req: Request, res: Response): LogMeta {
   const referrer = req.headers.referer ?? req.headers.referrer;
   const userAgent = req.headers['user-agent'];
   const contentLength = Number(res.getHeader('content-length'));
