@@ -14,90 +14,101 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { lazy as reactLazy } from 'react';
 import {
   coreExtensionData,
   createExtensionInput,
+  ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import {
   EntityCardBlueprint,
   EntityContentBlueprint,
-  OverviewEntityContentLauyoutBlueprint,
+  EntityCardLayoutBlueprint,
+  EntityCardLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
 import { buildFilterFn } from './filter/FilterWrapper';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-const catalogOverviewEntityContent = EntityContentBlueprint.makeWithOverrides({
-  name: 'overview',
-  inputs: {
-    layouts: createExtensionInput([
-      OverviewEntityContentLauyoutBlueprint.dataRefs.areas,
-      OverviewEntityContentLauyoutBlueprint.dataRefs.defaultArea,
-      OverviewEntityContentLauyoutBlueprint.dataRefs.filterFunction.optional(),
-      OverviewEntityContentLauyoutBlueprint.dataRefs.filterExpression.optional(),
-      OverviewEntityContentLauyoutBlueprint.dataRefs.component,
-    ]),
-    cards: createExtensionInput([
-      coreExtensionData.reactElement,
-      EntityContentBlueprint.dataRefs.filterFunction.optional(),
-      EntityContentBlueprint.dataRefs.filterExpression.optional(),
-      EntityCardBlueprint.dataRefs.area.optional(),
-    ]),
-  },
-  factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      defaultPath: '/',
-      defaultTitle: 'Overview',
-      loader: async () => {
-        const defaultLayout = await import('./EntityOverviewPage').then(
-          m => m.EntityOverviewPage,
-        );
-
-        const Component = () => {
-          const { entity } = useEntity();
-
-          // Use the first layout that matches the entity filter
-          const layout = inputs.layouts.find(l => {
-            const filterFunction = l.get(
-              OverviewEntityContentLauyoutBlueprint.dataRefs.filterFunction,
-            );
-            const filterExpression = l.get(
-              OverviewEntityContentLauyoutBlueprint.dataRefs.filterExpression,
-            );
-
-            return buildFilterFn(filterFunction, filterExpression)(entity);
-          });
-
-          const Layout =
-            layout?.get(
-              OverviewEntityContentLauyoutBlueprint.dataRefs.component,
-            ) ?? defaultLayout;
-
-          return (
-            <Layout
-              buildFilterFn={buildFilterFn}
-              cards={inputs.cards.map(card => ({
-                element: card.get(coreExtensionData.reactElement),
-                filterFunction: card.get(
-                  EntityContentBlueprint.dataRefs.filterFunction,
-                ),
-                filterExpression: card.get(
-                  EntityContentBlueprint.dataRefs.filterExpression,
-                ),
-                area:
-                  card.get(EntityCardBlueprint.dataRefs.area) ??
-                  layout?.get(
-                    OverviewEntityContentLauyoutBlueprint.dataRefs.defaultArea,
-                  ),
-              }))}
-            />
+export const catalogOverviewEntityContent =
+  EntityContentBlueprint.makeWithOverrides({
+    name: 'overview',
+    inputs: {
+      layouts: createExtensionInput([
+        EntityCardLayoutBlueprint.dataRefs.filterFunction.optional(),
+        EntityCardLayoutBlueprint.dataRefs.filterExpression.optional(),
+        EntityCardLayoutBlueprint.dataRefs.component,
+      ]),
+      cards: createExtensionInput([
+        coreExtensionData.reactElement,
+        EntityContentBlueprint.dataRefs.filterFunction.optional(),
+        EntityContentBlueprint.dataRefs.filterExpression.optional(),
+        EntityCardBlueprint.dataRefs.area.optional(),
+      ]),
+    },
+    factory: (originalFactory, { node, inputs }) => {
+      return originalFactory({
+        defaultPath: '/',
+        defaultTitle: 'Overview',
+        loader: async () => {
+          const LazyDefaultLayoutComponent = reactLazy(() =>
+            import('./EntityOverviewPage').then(m => ({
+              default: m.EntityOverviewPage,
+            })),
           );
-        };
 
-        return <Component />;
-      },
-    });
-  },
-});
+          const DefaultLayoutComponent = (props: EntityCardLayoutProps) => {
+            return (
+              <ExtensionBoundary node={node}>
+                <LazyDefaultLayoutComponent {...props} />
+              </ExtensionBoundary>
+            );
+          };
+
+          const layouts = [
+            ...inputs.layouts.map(layout => ({
+              filter: buildFilterFn(
+                layout.get(EntityCardLayoutBlueprint.dataRefs.filterFunction),
+                layout.get(EntityCardLayoutBlueprint.dataRefs.filterExpression),
+              ),
+              Component: layout.get(
+                EntityCardLayoutBlueprint.dataRefs.component,
+              ),
+            })),
+            {
+              filter: buildFilterFn(),
+              Component: DefaultLayoutComponent,
+            },
+          ];
+
+          const cards = inputs.cards.map(card => ({
+            element: card.get(coreExtensionData.reactElement),
+            area: card.get(EntityCardBlueprint.dataRefs.area),
+            filter: buildFilterFn(
+              card.get(EntityContentBlueprint.dataRefs.filterFunction),
+              card.get(EntityContentBlueprint.dataRefs.filterExpression),
+            ),
+          }));
+
+          const Component = () => {
+            const { entity } = useEntity();
+
+            // Use the first layout that matches the entity filter
+            const layout = layouts.find(l => l.filter(entity));
+            if (!layout) {
+              throw new Error('No layout found for entity'); // Shouldn't be able to happen
+            }
+
+            return (
+              <layout.Component
+                cards={cards.filter(card => card.filter(entity))}
+              />
+            );
+          };
+
+          return <Component />;
+        },
+      });
+    },
+  });
 
 export default [catalogOverviewEntityContent];

@@ -108,11 +108,11 @@ const _default: FrontendPlugin<
       name: 'has-apis';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -135,7 +135,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -145,7 +145,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:api-docs/definition': ExtensionDefinition<{
@@ -153,11 +153,11 @@ const _default: FrontendPlugin<
       name: 'definition';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -180,7 +180,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -190,7 +190,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
@@ -198,11 +198,11 @@ const _default: FrontendPlugin<
       name: 'consumed-apis';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -225,7 +225,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -235,7 +235,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:api-docs/provided-apis': ExtensionDefinition<{
@@ -243,11 +243,11 @@ const _default: FrontendPlugin<
       name: 'provided-apis';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -270,7 +270,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -280,7 +280,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:api-docs/consuming-components': ExtensionDefinition<{
@@ -288,11 +288,11 @@ const _default: FrontendPlugin<
       name: 'consuming-components';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -315,7 +315,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -325,7 +325,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:api-docs/providing-components': ExtensionDefinition<{
@@ -333,11 +333,11 @@ const _default: FrontendPlugin<
       name: 'providing-components';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -360,7 +360,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -370,7 +370,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-content:api-docs/definition': ExtensionDefinition<{

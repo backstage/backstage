@@ -100,6 +100,9 @@ export function convertLegacyEntityContentExtension(
 ): ExtensionDefinition;
 
 // @alpha
+export const defaultEntityCardAreas: readonly ['peek', 'info', 'full'];
+
+// @alpha
 export const defaultEntityContentGroups: {
   documentation: string;
   development: string;
@@ -114,7 +117,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
-    defaultArea?: 'main' | 'info' | 'glance' | undefined;
+    defaultArea?: 'full' | 'info' | 'peek' | undefined;
   };
   output:
     | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -133,7 +136,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
-        string,
+        'full' | 'info' | 'peek',
         'catalog.entity-card-area',
         {
           optional: true;
@@ -142,7 +145,65 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: string | undefined;
+    area: 'full' | 'info' | 'peek' | undefined;
+  };
+  configInput: {
+    filter?: string | undefined;
+    area?: 'full' | 'info' | 'peek' | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+    area: ConfigurableExtensionDataRef<
+      'full' | 'info' | 'peek',
+      'catalog.entity-card-area',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityCardLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-card-layout';
+  name: undefined;
+  params: {
+    defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
+    loader: () => Promise<
+      (props: EntityCardLayoutProps) => React_2.JSX.Element
+    >;
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        (props: EntityCardLayoutProps) => React_2.JSX.Element,
+        'catalog.entity-card-layout.component',
+        {}
+      >;
+  inputs: {};
+  config: {
     area: string | undefined;
+    filter: string | undefined;
   };
   configInput: {
     filter?: string | undefined;
@@ -159,9 +220,22 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
-    area: ConfigurableExtensionDataRef<string, 'catalog.entity-card-area', {}>;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityCardLayoutProps) => React_2.JSX.Element,
+      'catalog.entity-card-layout.component',
+      {}
+    >;
   };
 }>;
+
+// @alpha (undocumented)
+export interface EntityCardLayoutProps {
+  // (undocumented)
+  cards: Array<{
+    area?: (typeof defaultEntityCardAreas)[number];
+    element: React_2.JSX.Element;
+  }>;
+}
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
@@ -251,98 +325,6 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
-
-// @alpha (undocumented)
-export const OverviewEntityContentLauyoutBlueprint: ExtensionBlueprint<{
-  kind: 'catalog-overview-entity-content-layout';
-  name: undefined;
-  params: {
-    areas: Array<string>;
-    defaultArea: string;
-    defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
-    loader: () => Promise<
-      (props: OverviewEntityContentLayoutProps) => React_2.JSX.Element
-    >;
-  };
-  output:
-    | ConfigurableExtensionDataRef<string, 'catalog.entity-card-area', {}>
-    | ConfigurableExtensionDataRef<
-        string[],
-        'catalog.overview-entity-content.layout.areas',
-        {}
-      >
-    | ConfigurableExtensionDataRef<
-        (props: OverviewEntityContentLayoutProps) => React_2.JSX.Element,
-        'catalog.overview-entity-content.layout.page-component',
-        {}
-      >
-    | ConfigurableExtensionDataRef<
-        (entity: Entity) => boolean,
-        'catalog.overview-entity-content.layout.filter-function',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        string,
-        'catalog.overview-entity-content.layout.filter-expression',
-        {
-          optional: true;
-        }
-      >;
-  inputs: {};
-  config: {
-    area: string | undefined;
-    filter: string | undefined;
-  };
-  configInput: {
-    filter?: string | undefined;
-    area?: string | undefined;
-  };
-  dataRefs: {
-    areas: ConfigurableExtensionDataRef<
-      string[],
-      'catalog.overview-entity-content.layout.areas',
-      {}
-    >;
-    defaultArea: ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-card-area',
-      {}
-    >;
-    filterFunction: ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.overview-entity-content.layout.filter-function',
-      {}
-    >;
-    filterExpression: ConfigurableExtensionDataRef<
-      string,
-      'catalog.overview-entity-content.layout.filter-expression',
-      {}
-    >;
-    component: ConfigurableExtensionDataRef<
-      (props: OverviewEntityContentLayoutProps) => React_2.JSX.Element,
-      'catalog.overview-entity-content.layout.page-component',
-      {}
-    >;
-  };
-}>;
-
-// @alpha (undocumented)
-export interface OverviewEntityContentLayoutProps {
-  // (undocumented)
-  buildFilterFn: (
-    filterFunction?: (entity: Entity) => boolean,
-    filterExpression?: string,
-  ) => (entity: Entity) => boolean;
-  // (undocumented)
-  cards: Array<{
-    area?: string;
-    element: React_2.JSX.Element;
-    filterFunction?: (entity: Entity) => boolean;
-    filterExpression?: string;
-  }>;
-}
 
 // @alpha
 export function useEntityPermission(

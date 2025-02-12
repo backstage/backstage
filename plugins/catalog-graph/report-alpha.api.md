@@ -43,7 +43,7 @@ const _default: FrontendPlugin<
         height: number | undefined;
       } & {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         height?: number | undefined;
@@ -59,7 +59,7 @@ const _default: FrontendPlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -82,7 +82,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -102,7 +102,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'page:catalog-graph': ExtensionDefinition<{

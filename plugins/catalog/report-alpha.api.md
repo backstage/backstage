@@ -10,6 +10,7 @@ import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityCardLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -17,7 +18,6 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { OverviewEntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -218,11 +218,11 @@ const _default: FrontendPlugin<
       name: 'about';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -241,7 +241,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -251,7 +251,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/links': ExtensionDefinition<{
@@ -259,11 +259,11 @@ const _default: FrontendPlugin<
       name: 'links';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -282,7 +282,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -292,7 +292,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/labels': ExtensionDefinition<{
@@ -300,11 +300,11 @@ const _default: FrontendPlugin<
       name: 'labels';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -323,7 +323,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -333,7 +333,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/depends-on-components': ExtensionDefinition<{
@@ -341,11 +341,11 @@ const _default: FrontendPlugin<
       name: 'depends-on-components';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -364,7 +364,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -374,7 +374,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/depends-on-resources': ExtensionDefinition<{
@@ -382,11 +382,11 @@ const _default: FrontendPlugin<
       name: 'depends-on-resources';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -405,7 +405,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -415,7 +415,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/has-components': ExtensionDefinition<{
@@ -423,11 +423,11 @@ const _default: FrontendPlugin<
       name: 'has-components';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -446,7 +446,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -456,7 +456,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/has-resources': ExtensionDefinition<{
@@ -464,11 +464,11 @@ const _default: FrontendPlugin<
       name: 'has-resources';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -487,7 +487,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -497,7 +497,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/has-subcomponents': ExtensionDefinition<{
@@ -505,11 +505,11 @@ const _default: FrontendPlugin<
       name: 'has-subcomponents';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -528,7 +528,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -538,7 +538,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/has-subdomains': ExtensionDefinition<{
@@ -546,11 +546,11 @@ const _default: FrontendPlugin<
       name: 'has-subdomains';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -569,7 +569,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -579,7 +579,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:catalog/has-systems': ExtensionDefinition<{
@@ -587,11 +587,11 @@ const _default: FrontendPlugin<
       name: 'has-systems';
       config: {
         filter: string | undefined;
-        area: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
-        area?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -610,7 +610,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string,
+            'full' | 'info' | 'peek',
             'catalog.entity-card-area',
             {
               optional: true;
@@ -620,7 +620,7 @@ const _default: FrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
-        defaultArea?: 'main' | 'info' | 'glance' | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-content:catalog/overview': ExtensionDefinition<{
@@ -674,30 +674,24 @@ const _default: FrontendPlugin<
           >;
       inputs: {
         layouts: ExtensionInput<
-          | ConfigurableExtensionDataRef<string, 'catalog.entity-card-area', {}>
-          | ConfigurableExtensionDataRef<
-              string[],
-              'catalog.overview-entity-content.layout.areas',
-              {}
-            >
-          | ConfigurableExtensionDataRef<
-              (props: OverviewEntityContentLayoutProps) => JSX_2.Element,
-              'catalog.overview-entity-content.layout.page-component',
-              {}
-            >
           | ConfigurableExtensionDataRef<
               (entity: Entity) => boolean,
-              'catalog.overview-entity-content.layout.filter-function',
+              'catalog.entity-filter-function',
               {
                 optional: true;
               }
             >
           | ConfigurableExtensionDataRef<
               string,
-              'catalog.overview-entity-content.layout.filter-expression',
+              'catalog.entity-filter-expression',
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              (props: EntityCardLayoutProps) => JSX_2.Element,
+              'catalog.entity-card-layout.component',
+              {}
             >,
           {
             singleton: false;
@@ -721,7 +715,7 @@ const _default: FrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              string,
+              'full' | 'info' | 'peek',
               'catalog.entity-card-area',
               {
                 optional: true;

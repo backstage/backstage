@@ -71,7 +71,7 @@ app:
     # - entity-content:azure-devops/pull-requests
     # - entity-content:azure-devops/git-tags
 
-    - catalog-overview-entity-content-layout:app/sticky:
+    - entity-card-layout:app/sticky:
         config:
           # this layout will apply to entities of kind component
           filter: 'kind:component'

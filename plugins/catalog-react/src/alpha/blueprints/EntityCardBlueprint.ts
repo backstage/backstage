@@ -23,7 +23,7 @@ import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
   entityCardAreaDataRef,
-  defaultEntityCardArea,
+  defaultEntityCardAreas,
 } from './extensionData';
 
 /**
@@ -47,7 +47,7 @@ export const EntityCardBlueprint = createExtensionBlueprint({
   config: {
     schema: {
       filter: z => z.string().optional(),
-      area: z => z.string().optional(),
+      area: z => z.enum(defaultEntityCardAreas).optional(),
     },
   },
   *factory(
@@ -60,7 +60,7 @@ export const EntityCardBlueprint = createExtensionBlueprint({
       filter?:
         | typeof entityFilterFunctionDataRef.T
         | typeof entityFilterExpressionDataRef.T;
-      defaultArea?: (typeof defaultEntityCardArea)[number];
+      defaultArea?: (typeof defaultEntityCardAreas)[number];
     },
     { node, config },
   ) {
@@ -77,6 +77,11 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     const area = config.area ?? defaultArea;
     if (area) {
       yield entityCardAreaDataRef(area);
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: Not providing defaultArea for entity cards is deprecated. Missing from '${node.spec.id}'`,
+      );
     }
   },
 });

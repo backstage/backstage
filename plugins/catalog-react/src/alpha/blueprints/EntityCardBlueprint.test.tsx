@@ -52,6 +52,11 @@ describe('EntityCardBlueprint', () => {
             "additionalProperties": false,
             "properties": {
               "area": {
+                "enum": [
+                  "peek",
+                  "info",
+                  "full",
+                ],
                 "type": "string",
               },
               "filter": {
