@@ -17,68 +17,93 @@ import { Router } from 'express';
 import router from 'express-promise-router';
 import { TechDocsCache } from './TechDocsCache';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { Socket } from 'node:net';
 
 type CacheMiddlewareOptions = {
   cache: TechDocsCache;
   logger: LoggerService;
 };
 
+type CacheData = {
+  chunks: Buffer[];
+  writeToCache: boolean;
+};
+
 type ErrorCallback = (err?: Error) => void;
 
 export const createCacheMiddleware = ({
   cache,
+  logger,
 }: CacheMiddlewareOptions): Router => {
   const cacheMiddleware = router();
 
   // Middleware that, through socket monkey patching, captures responses as
   // they're sent over /static/docs/* and caches them. Subsequent requests are
   // loaded from cache. Cache key is the object's path (after `/static/docs/`).
+
+  const socketDataMap = new WeakMap<Socket, Map<string, CacheData>>();
+
   cacheMiddleware.use(async (req, res, next) => {
     const socket = res.socket;
+
+    // Make concrete references to these things.
     const isCacheable = req.path.startsWith('/static/docs/');
     const isGetRequest = req.method === 'GET';
 
     // Continue early if this is non-cacheable, or there's no socket.
-    if (!isCacheable || !socket) {
+    if (!isCacheable || !isGetRequest || !socket) {
       next();
       return;
     }
 
-    // Make concrete references to these things.
     const reqPath = decodeURI(req.path.match(/\/static\/docs\/(.*)$/)![1]);
     const realEnd = socket.end.bind(socket);
     const realWrite = socket.write.bind(socket);
-    let writeToCache = true;
-    const chunks: Buffer[] = [];
 
-    // Monkey-patch the response's socket to keep track of chunks as they are
-    // written over the wire.
-    socket.write = (
-      data: string | Uint8Array,
-      encoding?: BufferEncoding | ErrorCallback,
-      callback?: ErrorCallback,
-    ) => {
-      chunks.push(Buffer.from(data));
-      if (typeof encoding === 'function') {
-        return realWrite(data, encoding);
-      }
-      return realWrite(data, encoding, callback);
-    };
+    let requestPathDataMap = socketDataMap.get(socket);
+    if (!requestPathDataMap) {
+      requestPathDataMap = new Map();
+      socketDataMap.set(socket, requestPathDataMap);
 
-    // When a socket is closed, if there were no errors and the data written
-    // over the socket should be cached, cache it!
-    socket.on('close', async hadError => {
-      const content = Buffer.concat(chunks);
-      const head = content.toString('utf8', 0, 12);
-      if (
-        isGetRequest &&
-        writeToCache &&
-        !hadError &&
-        head.match(/HTTP\/\d\.\d 200/)
-      ) {
-        await cache.set(reqPath, content);
-      }
-    });
+      socket.on('close', async hadError => {
+        if (!requestPathDataMap) return;
+        logger.debug(`Closed socket for ${requestPathDataMap.size} paths`);
+        for (const [path, { chunks, writeToCache }] of requestPathDataMap) {
+          const content = Buffer.concat(chunks);
+          const is200Resp = content
+            .toString('utf8', 0, 12)
+            .match(/HTTP\/\d\.\d 200/);
+          if (!hadError && is200Resp && writeToCache) {
+            await cache.set(path, content);
+          }
+        }
+
+        socketDataMap.delete(socket);
+      });
+
+      socket.write = (
+        chunk: string | Uint8Array,
+        encoding?: BufferEncoding | ErrorCallback,
+        callback?: ErrorCallback,
+      ) => {
+        const data = requestPathDataMap?.get(reqPath);
+        if (data) data.chunks.push(Buffer.from(chunk));
+
+        if (typeof encoding === 'function') {
+          return realWrite(chunk, encoding);
+        }
+        return realWrite(chunk, encoding, callback);
+      };
+    }
+
+    const data: CacheData = { chunks: [], writeToCache: true };
+    if (requestPathDataMap.has(reqPath)) {
+      // If we've already seen this request, remove it from the map. This is
+      // to ensure that we don't duplicate the data in the map if multiple
+      // requests are made for the same path.
+      requestPathDataMap.delete(reqPath);
+    }
+    requestPathDataMap.set(reqPath, data);
 
     // Attempt to retrieve data from the cache.
     const cached = await cache.get(reqPath);
@@ -87,7 +112,8 @@ export const createCacheMiddleware = ({
     // cache the data, and prevent going back to canonical storage by never
     // calling next().
     if (cached) {
-      writeToCache = false;
+      logger.debug(`Cache hit for ${reqPath}`);
+      data.writeToCache = false;
       realEnd(cached);
       return;
     }
