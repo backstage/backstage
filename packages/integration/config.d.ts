@@ -64,6 +64,7 @@ export interface Config {
       }[];
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;
@@ -100,6 +101,7 @@ export interface Config {
       appPassword?: string;
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;
@@ -118,6 +120,7 @@ export interface Config {
       appPassword: string;
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;
@@ -151,6 +154,7 @@ export interface Config {
       apiBaseUrl?: string;
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;
@@ -190,6 +194,7 @@ export interface Config {
       password?: string;
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;
@@ -253,10 +258,6 @@ export interface Config {
          */
         allowedInstallationOwners?: string[];
       }>;
-      /**
-       * PGP signing key for signing commits.
-       */
-      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for GitLab */
@@ -295,6 +296,7 @@ export interface Config {
       baseUrl?: string;
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;
@@ -379,6 +381,7 @@ export interface Config {
       password?: string;
       /**
        * PGP signing key for signing commits.
+       * @visibility secret
        */
       commitSigningKey?: string;
     }>;

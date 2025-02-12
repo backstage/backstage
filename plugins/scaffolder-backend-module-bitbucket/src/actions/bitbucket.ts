@@ -388,8 +388,8 @@ export function createPublishBitbucketAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
       const signingKey =
-        integrationConfig.config.signingKey ??
-        config.getOptionalString('scaffolder.defaultSigningKey');
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
       if (signCommit && !signingKey) {
         throw new Error(
           'Signing commits is enabled but no signing key is provided in the configuration',

@@ -269,7 +269,7 @@ export type BitbucketIntegrationConfig = {
   token?: string;
   username?: string;
   appPassword?: string;
-  signingKey?: string;
+  commitSigningKey?: string;
 };
 
 // @public
