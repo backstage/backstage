@@ -18,7 +18,7 @@ import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { InputError } from '@backstage/errors';
+import { InputError, NotImplementedError } from '@backstage/errors';
 import {
   AuthorizeResult,
   DefinitivePolicyDecision,
@@ -32,13 +32,12 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionRule, PermissionRuleset } from '../types';
 import {
-  NoInfer,
   createGetRule,
   isAndCriteria,
   isNotCriteria,
   isOrCriteria,
+  NoInfer,
 } from './util';
-import { NotImplementedError } from '@backstage/errors';
 import { PermissionResourceRef } from './createPermissionResourceRef';
 
 const permissionCriteriaSchema: z.ZodSchema<
@@ -219,51 +218,31 @@ export type CreatePermissionIntegrationRouterResourceOptions<
 };
 
 /**
+ * Resource tuple containing type and the resource
+ *
+ * @public
+ */
+export type ResourceTuple<TResourceType extends string, TResource> = [
+  TResourceType,
+  TResource,
+];
+
+/**
  * Options for creating a permission integration router exposing
  * permissions and rules from multiple resource types.
  *
  * @public
  */
 export type PermissionIntegrationRouterOptions<
-  TResourceType1 extends string = string,
-  TResource1 = any,
-  TResourceType2 extends string = string,
-  TResource2 = any,
-  TResourceType3 extends string = string,
-  TResource3 = any,
+  ResourcesArr extends ResourceTuple<string, any>[],
 > = {
   resources: Readonly<
-    | [
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType1,
-          TResource1
-        >,
-      ]
-    | [
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType1,
-          TResource1
-        >,
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType2,
-          TResource2
-        >,
-      ]
-    | [
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType1,
-          TResource1
-        >,
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType2,
-          TResource2
-        >,
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType3,
-          TResource3
-        >,
-      ]
-  >;
+    ResourcesArr extends Array<infer A>
+      ? A extends ResourceTuple<string, any>
+        ? CreatePermissionIntegrationRouterResourceOptions<A[0], A[1]>
+        : never
+      : never
+  >[];
 };
 
 class PermissionIntegrationMetadataStore {
@@ -412,27 +391,12 @@ class PermissionIntegrationMetadataStore {
  * @public
  */
 export function createPermissionIntegrationRouter<
-  TResourceType1 extends string,
-  TResource1,
-  TResourceType2 extends string,
-  TResource2,
-  TResourceType3 extends string,
-  TResource3,
+  ResourcesArr extends ResourceTuple<string, any>[],
 >(
   options?:
     | { permissions: Array<Permission> }
-    | CreatePermissionIntegrationRouterResourceOptions<
-        TResourceType1,
-        TResource1
-      >
-    | PermissionIntegrationRouterOptions<
-        TResourceType1,
-        TResource1,
-        TResourceType2,
-        TResource2,
-        TResourceType3,
-        TResource3
-      >,
+    | CreatePermissionIntegrationRouterResourceOptions<string, any>
+    | PermissionIntegrationRouterOptions<ResourcesArr>,
 ): express.Router & {
   addPermissions(permissions: Permission[]): void;
   addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]): void;
