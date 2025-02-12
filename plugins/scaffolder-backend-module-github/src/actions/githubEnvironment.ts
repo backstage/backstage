@@ -20,7 +20,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
@@ -175,17 +175,19 @@ export function createGithubEnvironmentAction(options: {
       // Add a 2-second delay before initiating the steps in this action.
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
 
       const client = new Octokit(octokitOptions);
       const repository = await client.rest.repos.get({

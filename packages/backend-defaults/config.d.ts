@@ -429,6 +429,10 @@ export interface Config {
              * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
              */
             instance: string;
+            /**
+             * The ip address type to use for the connection. Defaults to 'PUBLIC'
+             */
+            ipAddressType?: 'PUBLIC' | 'PRIVATE' | 'PSC';
           }
         | {
             /**

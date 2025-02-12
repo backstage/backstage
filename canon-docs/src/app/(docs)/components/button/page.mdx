@@ -11,6 +11,7 @@ import {
   ButtonResponsive,
 } from '@/snippets/button';
 import { buttonVariants } from '@/snippets/_snippets';
+import { buttonPropDefs } from '../../../../../../packages/canon/src/components/Button/Button.props';
 
 # Button
 
@@ -58,34 +59,7 @@ A button component that can be used to trigger actions.
 
 ## API reference
 
-<PropsTable
-  data={{
-    size: {
-      type: ['small', 'medium'],
-      responsive: true,
-    },
-    variant: {
-      type: ['primary', 'secondary', 'tertiary'],
-      responsive: true,
-    },
-    disabled: {
-      type: 'boolean',
-      responsive: false,
-    },
-    children: {
-      type: 'ReactNode',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={buttonPropDefs} />
 
 ## Examples
 

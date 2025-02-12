@@ -257,6 +257,10 @@ export function registerCommands(program: Command) {
       (opt, arr: string[]) => [...arr, opt],
       [],
     )
+    .option(
+      '--skip-install',
+      `Skips running 'yarn install' and 'yarn lint --fix'`,
+    )
     .option('--scope <scope>', 'The scope to use for new packages')
     .option(
       '--npm-registry <URL>',

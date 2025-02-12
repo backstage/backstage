@@ -1,5 +1,84 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.30.0-next.3
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+- 3d6ef79: Support file globbing in fs:delete
+
+### Patch Changes
+
+- 1e935f0: Added conditional rendering of `oneOf` output schemas on the Installed Actions page for scaffolder actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.0-next.2
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-defaults@0.8.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.3
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.30.0-next.2
+
+### Minor Changes
+
+- 91f3313: Added experimental flag for scaffolder to wait for running tasks to complete on shutdown
+
+  Enabling the `EXPERIMENTAL_gracefulShutdown` flag in the scaffolder config will make the
+  scaffolder block the shutdown process until all running tasks have completed. This is useful
+  when there is a need to ensure that all tasks have completed before the scaffolder is shut down.
+
+  Please note, that the `TaskWorker` `stop` method is now asynchronous and awaited for the
+  tasks to complete when the experimental flag is enabled.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/backend-defaults@0.8.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.2
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.6-next.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
 ## 1.30.0-next.1
 
 ### Patch Changes

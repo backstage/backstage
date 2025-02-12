@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-oidc-provider",
-  "version": "0.3.5-next.1",
+  "version": "0.4.0-next.3",
   "description": "The oidc-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -46,6 +46,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/types": "workspace:^",
     "cookie-parser": "^1.4.6",
     "express-promise-router": "^4.1.1",
     "express-session": "^1.17.3",

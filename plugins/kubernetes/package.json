@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes",
-  "version": "0.12.4-next.1",
+  "version": "0.12.4-next.3",
   "description": "A Backstage plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "frontend-plugin",
@@ -66,6 +66,7 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/plugin-kubernetes-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
     "@kubernetes-models/apimachinery": "^2.0.0",
     "@kubernetes-models/base": "^5.0.0",
     "@kubernetes/client-node": "1.0.0-rc7",

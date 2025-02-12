@@ -420,4 +420,59 @@ describe.skip('GerritUrlReader', () => {
       expect(response.etag).toBe(sha);
     });
   });
+
+  describe('search', () => {
+    const responseBuffer = Buffer.from('Apache License');
+
+    it('should return a single file when given an exact URL', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/web%2Fproject/branches/master/files/LICENSE/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(responseBuffer.toString('base64')),
+            );
+          },
+        ),
+      );
+
+      const data = await gerritProcessor.search(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'Apache License',
+      );
+    });
+
+    it('should return empty list of files for not found files.', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/web%2Fproject/branches/master/files/LICENSE/content',
+          (_, res, ctx) => {
+            return res(ctx.status(404, 'File not found.'));
+          },
+        ),
+      );
+
+      const data = await gerritProcessor.search(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(0);
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        gerritProcessor.search(
+          'https://gerrit.com/web/project/+/refs/heads/master/*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
+  });
 });

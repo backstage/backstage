@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-aws-alb-provider",
-  "version": "0.3.3-next.1",
+  "version": "0.4.0-next.3",
   "description": "The aws-alb provider module for the Backstage auth backend.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,6 +48,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/types": "workspace:^",
     "express": "^4.18.2",
     "msw": "^2.0.8"
   }

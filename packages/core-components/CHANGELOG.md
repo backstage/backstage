@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.16.4-next.1
+
+### Patch Changes
+
+- 47c27c2: Upgrade `dagre` to `@dagrejs/dagre`
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+
 ## 0.16.4-next.0
 
 ### Patch Changes

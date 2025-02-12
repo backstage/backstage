@@ -6,18 +6,30 @@
   .sidebar {
     display: block;
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 16px;
+    left: 16px;
+    border-radius: 8px;
     width: 300px;
-    height: 100vh;
-    color: var(--canon-fg-text-primary);
-    background-color: var(--canon-bg-elevated);
-    border-right: 1px solid var(--canon-border);
-    padding-left: 20px;
-    padding-right: 20px;
+    height: calc(100vh - 32px);
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.025);
+    color: var(--primary);
+    background-color: var(--panel);
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
     overflow: hidden;
   }
+}
+
+.root {
+  height: 100%;
+}
+
+.viewport {
+  overflow: scroll;
+  height: 100%;
+}
+
+.content {
+  padding: 0 20px 20px;
 }
 
 .logoContainer {
@@ -26,7 +38,7 @@
 }
 
 .logo path {
-  fill: var(--canon-fg-text-primary);
+  fill: var(--primary);
 }
 
 .menu {
@@ -43,10 +55,11 @@
 }
 
 .sectionTitle {
-  font-family: var(--docs-font);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);
   padding: 12px 0;
+  color: var(--primary);
+  margin-top: 24px;
 }
 
 .line {
@@ -63,23 +76,57 @@
   transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: var(--canon-bg);
+    background-color: var(--bg);
   }
 }
 
 .line.active {
-  background-color: var(--canon-bg);
+  background-color: var(--bg);
+}
+
+.line.active .lineTitle {
+  color: var(--primary);
 }
 
 .lineTitle {
-  font-family: var(--docs-font);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-text-primary);
+  color: var(--secondary);
 }
 
 .lineStatus {
-  font-family: var(--docs-font);
   font-size: var(--canon-font-size-3);
-  color: var(--canon-fg-text-secondary);
+  color: var(--secondary);
+}
+
+.scrollbar {
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  width: 0.25rem;
+  border-radius: 0.375rem;
+  margin: 0.5rem;
+  opacity: 0;
+  transition: opacity 150ms 300ms;
+  right: -20px;
+
+  &[data-hovering],
+  &[data-scrolling] {
+    opacity: 1;
+    transition-duration: 75ms;
+    transition-delay: 0ms;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 1.25rem;
+    height: 100%;
+  }
+}
+
+.thumb {
+  width: 100%;
+  border-radius: inherit;
+  background-color: rgba(0, 0, 0, 0.2);
 }

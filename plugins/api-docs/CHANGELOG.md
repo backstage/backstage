@@ -1,5 +1,35 @@
 # @backstage/plugin-api-docs
 
+## 0.12.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.27.0-next.3
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.12.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/plugin-catalog@1.27.0-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
 ## 0.12.4-next.1
 
 ### Patch Changes

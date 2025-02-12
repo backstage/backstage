@@ -28,7 +28,7 @@ import {
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
   LoggerService,
@@ -49,14 +49,12 @@ export const defaultClientFactory: CreateGithubPullRequestActionOptions['clientF
     host = 'github.com',
     token: providedToken,
   }) => {
-    const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
-      encodeURIComponent,
-    );
-
     const octokitOptions = await getOctokitOptions({
       integrations,
       credentialsProvider: githubCredentialsProvider,
-      repoUrl: `${encodedHost}?owner=${encodedOwner}&repo=${encodedRepo}`,
+      host,
+      owner,
+      repo,
       token: providedToken,
     });
 
@@ -147,6 +145,7 @@ export const createPublishGithubPullRequestAction = (
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     forceEmptyGitAuthor?: boolean;
+    createWhenEmpty?: boolean;
   }>({
     id: 'publish:github:pull-request',
     examples,
@@ -253,10 +252,16 @@ export const createPublishGithubPullRequestAction = (
             description:
               'Forces the author to be empty. This is useful when using a Github App, it permit the commit to be verified on Github',
           },
+          createWhenEmpty: {
+            type: 'boolean',
+            title: 'Create When Empty',
+            description:
+              'Set whether to create pull request when there are no changes to commit. The default value is true. If set to false, remoteUrl is no longer a required output.',
+          },
         },
       },
       output: {
-        required: ['remoteUrl'],
+        required: [],
         type: 'object',
         properties: {
           targetBranchName: {
@@ -295,6 +300,7 @@ export const createPublishGithubPullRequestAction = (
         gitAuthorEmail,
         gitAuthorName,
         forceEmptyGitAuthor,
+        createWhenEmpty,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -381,6 +387,7 @@ export const createPublishGithubPullRequestAction = (
           draft,
           update,
           forceFork,
+          createWhenEmpty,
         };
 
         const gitAuthorInfo = {
@@ -418,6 +425,11 @@ export const createPublishGithubPullRequestAction = (
           createOptions.base = targetBranchName;
         }
         const response = await client.createPullRequest(createOptions);
+
+        if (createWhenEmpty === false && !response) {
+          ctx.logger.info('No changes to commit, pull request was not created');
+          return;
+        }
 
         if (!response) {
           throw new GithubResponseError('null response from Github');

@@ -21,7 +21,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DependencyGraphTypes as Types } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
-import dagre from 'dagre';
+import dagre from '@dagrejs/dagre';
 
 /* Based on: https://github.com/dagrejs/dagre/wiki#configuring-the-layout  */
 export type EdgeProperties = {

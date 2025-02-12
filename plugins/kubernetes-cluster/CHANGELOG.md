@@ -1,5 +1,34 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.22-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-kubernetes-common@0.9.3-next.1
+  - @backstage/plugin-kubernetes-react@0.5.4-next.2
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.0.22-next.2
+
+### Patch Changes
+
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-kubernetes-common@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-kubernetes-react@0.5.4-next.2
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
 ## 0.0.22-next.1
 
 ### Patch Changes

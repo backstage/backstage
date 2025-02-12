@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.16-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+
+## 0.4.16-next.2
+
+### Patch Changes
+
+- 719e48d: Fixed an issue causing the `CatalogGraphCard` to redraw its content whenever the parent component re-renders, resulting in flickering.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/types@1.2.1
+
 ## 0.4.16-next.1
 
 ### Patch Changes

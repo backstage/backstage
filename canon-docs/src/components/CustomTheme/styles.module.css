@@ -4,9 +4,9 @@
   right: 16px;
   width: 240px;
   height: 47px;
-  background-color: var(--canon-bg-elevated);
+  background-color: var(--panel);
   border-radius: 0.375rem;
-  border: 1px solid var(--canon-border);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -31,8 +31,8 @@
 .header {
   height: 46px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--canon-border);
-  background-color: var(--canon-bg-elevated);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--panel);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -65,8 +65,8 @@
   height: 28px;
   padding: 0 8px;
   color: #fff;
-  background-color: var(--canon-bg);
-  color: var(--canon-fg-text-primary);
+  background-color: var(--bg);
+  color: var(--primary);
   transition: background-color 0.2s ease-in-out;
   border-radius: 0.25rem;
   cursor: pointer;

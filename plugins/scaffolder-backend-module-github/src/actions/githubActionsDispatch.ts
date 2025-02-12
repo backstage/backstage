@@ -24,7 +24,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubActionsDispatch.examples';
 
 /**
@@ -96,7 +96,7 @@ export function createGithubActionsDispatchAction(options: {
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -105,7 +105,9 @@ export function createGithubActionsDispatchAction(options: {
       const client = new Octokit(
         await getOctokitOptions({
           integrations,
-          repoUrl,
+          host,
+          owner,
+          repo,
           credentialsProvider: githubCredentialsProvider,
           token: providedToken,
         }),
