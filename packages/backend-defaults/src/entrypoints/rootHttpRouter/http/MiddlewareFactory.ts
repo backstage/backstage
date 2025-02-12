@@ -44,7 +44,13 @@ import {
 import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
 
-type LogMeta = {
+/**
+ * Type used to represent the metadata of a log entry.
+ *
+ * @public
+ */
+
+export type LogMeta = {
   date: string;
   method: string;
   url: string;
