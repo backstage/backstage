@@ -164,7 +164,14 @@ describe('createRouter', () => {
           .set('accept', 'text/event-stream')
           .send();
 
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(200);
+        expect(response.get('content-type')).toBe('text/event-stream');
+        expect(response.text).toEqual(
+          `event: error
+data: "Entity not found"
+
+`,
+        );
       });
 
       it('should return not found if entity has no uid', async () => {
@@ -179,7 +186,14 @@ describe('createRouter', () => {
           .set('accept', 'text/event-stream')
           .send();
 
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(200);
+        expect(response.get('content-type')).toBe('text/event-stream');
+        expect(response.text).toEqual(
+          `event: error
+data: "Entity metadata UID missing"
+
+`,
+        );
       });
 
       it('should not check for an update when shouldBuild returns false', async () => {

@@ -246,7 +246,11 @@ export async function createRouter(
 
     const entity = await entityLoader.load({ kind, namespace, name }, token);
     if (!entity?.metadata?.uid) {
-      responseHandler.error(new NotFoundError('Entity metadata UID missing'));
+      responseHandler.error(
+        new NotFoundError(
+          entity ? 'Entity metadata UID missing' : 'Entity not found',
+        ),
+      );
       return;
     }
 
