@@ -243,10 +243,6 @@ const config: Config = {
             to: '/docs/tooling/cli/overview/',
           },
           {
-            from: '/docs/local-dev/cli-templates/',
-            to: '/docs/tooling/cli/templates/',
-          },
-          {
             from: '/docs/local-dev/linking-local-packages/',
             to: '/docs/tooling/local-dev/linking-local-packages',
           },
