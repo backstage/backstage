@@ -4,4 +4,4 @@
 '@backstage/plugin-auth-backend-module-okta-provider': patch
 ---
 
-update readme plugin oauth2, oidc, and okta to refer to github.com
+Fixed repository url in `README.md`
