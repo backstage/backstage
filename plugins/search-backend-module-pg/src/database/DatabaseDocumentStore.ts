@@ -34,8 +34,11 @@ const migrationsDir = resolvePackagePath(
 
 /** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
+  private textSearchConfigName: string = 'english';
+
   static async create(
     database: DatabaseService,
+    textSearchConfigName?: string,
   ): Promise<DatabaseDocumentStore> {
     const knex = await database.getClient();
     try {
@@ -62,7 +65,70 @@ export class DatabaseDocumentStore implements DatabaseStore {
       });
     }
 
-    return new DatabaseDocumentStore(knex);
+    const instance = new DatabaseDocumentStore(knex);
+
+    // Check and set text search configuration
+    if (textSearchConfigName) {
+      // Verify if the configuration exists
+      const configExists = await knex.raw(
+        `SELECT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = ?)`,
+        [textSearchConfigName],
+      );
+
+      if (configExists.rows[0].exists) {
+        instance.textSearchConfigName = textSearchConfigName;
+
+        // Check current column configuration
+        const documentsTableName = 'documents';
+        const bodyColumnName = 'body';
+        const currentConfig = await knex.raw(`
+          SELECT pg_get_expr(d.adbin, d.adrelid) as column_default
+          FROM pg_catalog.pg_attribute a
+          LEFT JOIN pg_catalog.pg_attrdef d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum)
+          WHERE a.attrelid = '${documentsTableName}'::regclass
+          AND a.attname = '${bodyColumnName}'
+          AND NOT a.attisdropped;
+        `);
+
+        // Extract current config name from the expression
+        const currentConfigMatch =
+          currentConfig.rows[0]?.column_default?.match(/to_tsvector\('(\w+)'/);
+        const currentConfigName = currentConfigMatch?.[1];
+
+        if (currentConfigName !== textSearchConfigName) {
+          // Update the generated column with new text search configuration
+          await knex.transaction(async trx => {
+            // Drop the generated column
+            await trx.schema.alterTable('documents', table => {
+              table.dropColumn('body');
+            });
+
+            // Recreate the column with new configuration
+            await trx.schema.alterTable('documents', table => {
+              table.specificType(
+                'body',
+                'tsvector NOT NULL GENERATED ALWAYS AS (' +
+                  `setweight(to_tsvector('${textSearchConfigName}', document->>'title'), 'A') || ` +
+                  `setweight(to_tsvector('${textSearchConfigName}', document->>'text'), 'B') || ` +
+                  `setweight(to_tsvector('${textSearchConfigName}', document - 'location' - 'title' - 'text'), 'C')` +
+                  ') STORED',
+              );
+            });
+
+            // Create new index
+            await trx.schema.alterTable('documents', table => {
+              table.index('body', 'documents_body_idx', 'gin');
+            });
+          });
+        }
+      } else {
+        // If the text search configuration does not exist, throw an error
+        throw new Error(
+          `The text search configuration ${textSearchConfigName} does not exist`,
+        );
+      }
+    }
+    return instance;
   }
 
   static async supported(knex: Knex): Promise<boolean> {
@@ -157,7 +223,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
       normalization = 0,
       options,
     } = searchQuery;
-    // TODO(awanlin): We should make the language a parameter so that we can support more then just english
     // Builds a query like:
     // SELECT ts_rank_cd(body, query, 0) AS rank, type, document,
     // ts_headline('english', document, query) AS highlight
@@ -169,7 +234,12 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
     if (pgTerm) {
       query
-        .from(tx.raw("documents, to_tsquery('english', ?) query", pgTerm))
+        .from(
+          tx.raw(`documents, to_tsquery(?, ?) query`, [
+            this.textSearchConfigName,
+            pgTerm,
+          ]),
+        )
         .whereRaw('query @@ body');
     } else {
       query.from('documents');
@@ -202,16 +272,16 @@ export class DatabaseDocumentStore implements DatabaseStore {
     if (pgTerm && options.useHighlight) {
       const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;
       query
-        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
+        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
         .select(
           tx.raw(
-            `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
+            `ts_headline(\'${this.textSearchConfigName}\', document, query, '${headlineOptions}') as "highlight"`,
           ),
         )
         .orderBy('rank', 'desc');
     } else if (pgTerm && !options.useHighlight) {
       query
-        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
+        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
         .orderBy('rank', 'desc');
     } else {
       query.select(tx.raw('1 as rank'));

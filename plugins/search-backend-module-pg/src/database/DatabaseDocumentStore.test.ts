@@ -37,6 +37,11 @@ const highlightOptions: PgSearchHighlightOptions = {
 
 jest.setTimeout(60_000);
 
+interface TestDatabaseInitParm {
+  databaseId: TestDatabaseId;
+  textSearchConfigName: string | undefined;
+}
+
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
     const databases = TestDatabases.create({
@@ -70,10 +75,13 @@ describe('DatabaseDocumentStore', () => {
       ids: ['POSTGRES_13'],
     });
 
-    async function createStore(databaseId: TestDatabaseId) {
-      const knex = await databases.init(databaseId);
+    async function createStore(parm: TestDatabaseInitParm) {
+      const knex = await databases.init(parm.databaseId);
       const databaseManager = mockServices.database({ knex });
-      const store = await DatabaseDocumentStore.create(databaseManager);
+      const store = await DatabaseDocumentStore.create(
+        databaseManager,
+        parm.textSearchConfigName,
+      );
 
       return { store, knex };
     }
@@ -94,7 +102,22 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    // prepare parm for init DatabaseDocumentStore
+    // Assume the simple and english SearchConfigs exist by default.
+    const textSearchConfigNameList = [`simple`, `english`, undefined];
+    const supportedDatabaseIdList: TestDatabaseId[] = databases
+      .eachSupportedId()
+      .map(databaseId => databaseId[0]);
+
+    const databaseInitParmList: TestDatabaseInitParm[] =
+      supportedDatabaseIdList.flatMap(databaseId =>
+        textSearchConfigNameList.map(textSearchConfigName => ({
+          databaseId: databaseId,
+          textSearchConfigName: textSearchConfigName,
+        })),
+      );
+
+    it.each(databaseInitParmList)(
       'should insert documents, %p',
       async databaseId => {
         const { store, knex } = await createStore(databaseId);
@@ -122,7 +145,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'should insert documents in batches, %p',
       async databaseId => {
         const { store, knex } = await createStore(databaseId);
@@ -162,7 +185,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'should clear index for type, %p',
       async databaseId => {
         const { store, knex } = await createStore(databaseId);
@@ -208,7 +231,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'should return requested range, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -259,62 +282,59 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
-      'query by term, %p',
-      async databaseId => {
-        const { store } = await createStore(databaseId);
+    it.each(databaseInitParmList)('query by term, %p', async databaseId => {
+      const { store } = await createStore(databaseId);
 
-        await store.transaction(async tx => {
-          await store.prepareInsert(tx);
-          await store.insertDocuments(tx, 'test', [
-            {
-              title: 'Lorem Ipsum',
-              text: 'Hello World',
-              location: 'LOCATION-1',
-            },
-            {
-              title: 'Hello World',
-              text: 'Around the world',
-              location: 'LOCATION-1',
-            },
-          ]);
-          await store.completeInsert(tx, 'test');
-        });
-
-        const rows = await store.transaction(tx =>
-          store.query(tx, {
-            pgTerm: 'Hello & World',
-            offset: 0,
-            limit: 25,
-            normalization: 0,
-            options: highlightOptions,
-          }),
-        );
-
-        expect(rows).toEqual([
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'test', [
           {
-            document: {
-              location: 'LOCATION-1',
-              text: 'Around the world',
-              title: 'Hello World',
-            },
-            rank: expect.any(Number),
-            type: 'test',
+            title: 'Lorem Ipsum',
+            text: 'Hello World',
+            location: 'LOCATION-1',
           },
           {
-            document: {
-              location: 'LOCATION-1',
-              text: 'Hello World',
-              title: 'Lorem Ipsum',
-            },
-            rank: expect.any(Number),
-            type: 'test',
+            title: 'Hello World',
+            text: 'Around the world',
+            location: 'LOCATION-1',
           },
         ]);
-      },
-    );
+        await store.completeInsert(tx, 'test');
+      });
 
-    it.each(databases.eachSupportedId())(
+      const rows = await store.transaction(tx =>
+        store.query(tx, {
+          pgTerm: 'Hello & World',
+          offset: 0,
+          limit: 25,
+          normalization: 0,
+          options: highlightOptions,
+        }),
+      );
+
+      expect(rows).toEqual([
+        {
+          document: {
+            location: 'LOCATION-1',
+            text: 'Around the world',
+            title: 'Hello World',
+          },
+          rank: expect.any(Number),
+          type: 'test',
+        },
+        {
+          document: {
+            location: 'LOCATION-1',
+            text: 'Hello World',
+            title: 'Lorem Ipsum',
+          },
+          rank: expect.any(Number),
+          type: 'test',
+        },
+      ]);
+    });
+
+    it.each(databaseInitParmList)(
       'query by term for specific type, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -348,7 +368,6 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
-            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -367,7 +386,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'query by term and filter by field, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -402,7 +421,6 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
-            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -422,7 +440,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'query by term and filter by field (any of), %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -469,7 +487,6 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
-            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -519,7 +536,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'query by term and filter by fields, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -551,7 +568,6 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
-            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -572,7 +588,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'query without term and filter by field, %p',
       async databaseId => {
         const { store } = await createStore(databaseId);
@@ -601,7 +617,6 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
-            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -631,7 +646,7 @@ describe('DatabaseDocumentStore', () => {
       },
     );
 
-    it.each(databases.eachSupportedId())(
+    it.each(databaseInitParmList)(
       'should remove deleted documents and add new ones, %p',
       async databaseId => {
         const { store, knex } = await createStore(databaseId);
