@@ -242,13 +242,13 @@ export async function createRouter(
       targetPluginId: 'catalog',
     });
 
-    const entity = await entityLoader.load({ kind, namespace, name }, token);
-
-    if (!entity?.metadata?.uid) {
-      throw new NotFoundError('Entity metadata UID missing');
-    }
-
     const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
+
+    const entity = await entityLoader.load({ kind, namespace, name }, token);
+    if (!entity?.metadata?.uid) {
+      responseHandler.error(new NotFoundError('Entity metadata UID missing'));
+      return;
+    }
 
     // By default, techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to
     // 'local'. If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
