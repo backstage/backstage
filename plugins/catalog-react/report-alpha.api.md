@@ -11,11 +11,26 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha (undocumented)
+export type BaseEntityHeaderProps = {
+  UNSTABLE_extraContextMenuItems?: {
+    title: string;
+    Icon: IconComponent;
+    onClick: () => void;
+  }[];
+  UNSTABLE_contextMenuOptions?: {
+    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
+  };
+  parentEntityRelations?: string[];
+};
 
 // @alpha (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
@@ -318,6 +333,92 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     group: ConfigurableExtensionDataRef<
       string | false,
       'catalog.entity-content-group',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityHeaderActionBlueprint: ExtensionBlueprint<{
+  kind: 'entity-header-action';
+  name: undefined;
+  params: {
+    tooltip: string;
+    getContext: () => object;
+    onClick: (options: object) => void;
+    render?:
+      | ((options: { element: JSX.Element; context: object }) => JSX.Element)
+      | undefined;
+    icon: IconComponent_2;
+  };
+  output: ConfigurableExtensionDataRef<
+    React_2.JSX.Element,
+    'core.reactElement',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    element: ConfigurableExtensionDataRef<
+      React_2.JSX.Element,
+      'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityHeaderBlueprint: ExtensionBlueprint<{
+  kind: 'entity-header';
+  name: undefined;
+  params: {
+    defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
+    loader: () => Promise<
+      <P extends BaseEntityHeaderProps>(props: P) => JSX.Element
+    >;
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        <P_1 extends BaseEntityHeaderProps>(props: P_1) => JSX.Element,
+        'catalog.entity-header.component',
+        {}
+      >;
+  inputs: {};
+  config: {
+    filter: string | undefined;
+  };
+  configInput: {
+    filter?: string | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      <P_1 extends BaseEntityHeaderProps>(props: P_1) => JSX.Element,
+      'catalog.entity-header.component',
       {}
     >;
   };

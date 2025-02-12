@@ -8,6 +8,7 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { BaseEntityHeaderProps } from '@backstage/plugin-catalog-react/alpha';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardLayoutProps } from '@backstage/plugin-catalog-react/alpha';
@@ -743,6 +744,51 @@ const _default: FrontendPlugin<
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
     }>;
+    'entity-header:catalog': ExtensionDefinition<{
+      config: {
+        filter: string | undefined;
+      };
+      configInput: {
+        filter?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            <P extends BaseEntityHeaderProps>(props: P) => JSX.Element,
+            'catalog.entity-header.component',
+            {}
+          >;
+      inputs: {
+        actions: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'entity-header';
+      name: undefined;
+      params: {
+        defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
+        loader: () => Promise<
+          <P_1 extends BaseEntityHeaderProps>(props: P_1) => JSX.Element
+        >;
+      };
+    }>;
     'catalog-filter:catalog/tag': ExtensionDefinition<{
       kind: 'catalog-filter';
       name: 'tag';
@@ -955,6 +1001,31 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
+        headers: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              <P extends BaseEntityHeaderProps>(props: P) => JSX.Element,
+              'catalog.entity-header.component',
+              {}
+            >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
         contents: ExtensionInput<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
@@ -1024,6 +1095,30 @@ const _default: FrontendPlugin<
       >;
       inputs: {};
       params: SearchResultListItemBlueprintParams;
+    }>;
+    'entity-header-action:catalog/copy-to-clipboard': ExtensionDefinition<{
+      kind: 'entity-header-action';
+      name: 'copy-to-clipboard';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        tooltip: string;
+        getContext: () => object;
+        onClick: (options: object) => void;
+        render?:
+          | ((options: {
+              element: JSX.Element;
+              context: object;
+            }) => JSX.Element)
+          | undefined;
+        icon: IconComponent;
+      };
     }>;
   }
 >;
