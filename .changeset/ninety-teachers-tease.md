@@ -1,42 +1,24 @@
-/*
- * Copyright 2025 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+---
+'@backstage/plugin-catalog-react': minor
+---
 
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import { createFrontendModule } from '@backstage/frontend-plugin-api';
+Introduces a new `EntityCardLayoutBlueprint` that creates custom entity content layouts.
+
+The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
+
+- element: `JSx.Element`;
+- area: `"peek" | "info" | "full" | undefined`;
+
+### Usage example
+
+Creating a custom overview tab layout:
+
+```tsx
 import {
-  EntityCardLayoutBlueprint,
   EntityCardLayoutProps,
+  EntityCardLayoutBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-  [theme.breakpoints.up('sm')]: {
-    infoArea: {
-      order: 1,
-    },
-    card: {
-      alignSelf: 'stretch',
-      '& > *': {
-        height: '100%',
-        minHeight: 400,
-      },
-    },
-  },
-}));
+// ...
 
 function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
   const { cards } = props;
@@ -47,11 +29,6 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
         className={classes.infoArea}
         xs={12}
         md={4}
-        style={{
-          position: 'sticky',
-          top: -16,
-          alignSelf: 'flex-start',
-        }}
         item
       >
         <Grid container spacing={3}>
@@ -86,14 +63,37 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
   );
 }
 
-export const customEntityContentOverviewLayoutModule = createFrontendModule({
+export const customEntityContentOverviewStickyLayoutModule = createFrontendModule({
   pluginId: 'app',
   extensions: [
     EntityCardLayoutBlueprint.make({
       name: 'sticky',
       params: {
+        // (optional) defaults the `() => false` filter function
+        defaultFilter: 'kind:template'
         loader: async () => StickyEntityContentOverviewLayout,
       },
     }),
   ],
-});
+```
+
+Disabling the custom layout:
+
+```yaml
+# app-config.yaml
+app:
+  extensions:
+    - entity-card-layout:app/sticky: false
+```
+
+Overriding the custom layout filter:
+
+```yaml
+# app-config.yaml
+app:
+  extensions:
+    - entity-card-layout:app/sticky:
+        config:
+          # This layout will be used only with component entities
+          filter: 'kind:component'
+```
