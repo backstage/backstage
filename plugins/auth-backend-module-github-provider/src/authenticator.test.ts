@@ -42,7 +42,7 @@ describe('githubAuthenticator', () => {
         accessToken: 'my-token',
         scope: 'user:read',
         tokenType: 'bearer',
-        refreshToken: 'access-token.my-token',
+        refreshToken: 'access-token-v2.my-token',
       },
     });
   });
@@ -105,9 +105,10 @@ describe('githubAuthenticator', () => {
     await expect(
       githubAuthenticator.refresh(
         {
-          refreshToken: 'access-token.my-token',
+          refreshToken: 'access-token-v2.my-token',
           req: {} as any,
           scope: 'user:read',
+          scopeAlreadyGranted: true,
         },
         {
           fetchProfile: async _input => ({ id: 'id' } as PassportProfile),
@@ -119,9 +120,26 @@ describe('githubAuthenticator', () => {
         accessToken: 'my-token',
         scope: 'user:read',
         tokenType: 'bearer',
-        refreshToken: 'access-token.my-token',
+        refreshToken: 'access-token-v2.my-token',
       },
     });
+  });
+
+  it('should fail refresh if scope has not already been granted', async () => {
+    await expect(
+      githubAuthenticator.refresh(
+        {
+          refreshToken: 'access-token-v2.my-token',
+          req: {} as any,
+          scope: 'user:read',
+        },
+        {
+          fetchProfile: async _input => ({ id: 'id' } as PassportProfile),
+        } as PassportOAuthAuthenticatorHelper,
+      ),
+    ).rejects.toThrow(
+      'Refresh failed, session has not been granted the requested scope',
+    );
   });
 
   it('should refresh with refresh token', async () => {
