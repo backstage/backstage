@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { examples } from './githubAutolinks.examples';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 
 /**
  * Create an autolink reference for a repository
@@ -89,7 +89,7 @@ export function createGithubAutolinksAction(options: {
 
       ctx.logger.info(`Creating autolink reference for repo ${repoUrl}`);
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -98,7 +98,9 @@ export function createGithubAutolinksAction(options: {
       const client = new Octokit(
         await getOctokitOptions({
           integrations,
-          repoUrl,
+          host,
+          owner,
+          repo,
           credentialsProvider: githubCredentialsProvider,
           token,
         }),

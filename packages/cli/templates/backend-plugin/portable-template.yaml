@@ -1,0 +1,5 @@
+name: backend-plugin
+role: backend-plugin
+description: A new backend plugin
+values:
+  pluginVar: '{{ camelCase pluginId }}Plugin'

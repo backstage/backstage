@@ -186,6 +186,10 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'gitea' && (
@@ -244,8 +248,7 @@ export const RepoUrlPicker = (
         onChange={repo =>
           setState(prevState => ({
             ...prevState,
-            repoName: repo.name,
-            id: repo.id || '',
+            repoName: repo.id || repo.name,
           }))
         }
         rawErrors={rawErrors}

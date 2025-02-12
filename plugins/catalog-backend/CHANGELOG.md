@@ -1,5 +1,58 @@
 # @backstage/plugin-catalog-backend
 
+## 1.31.0-next.3
+
+### Minor Changes
+
+- 5aebc13: The `UrlReaderProccessor` accepts a new config flag `catalog.useUrlReadersSearch` to always call the `search` method of `UrlReaders`.
+
+  This flag currently defaults to `false`, but adopters are encouraged to enable it as this behavior will be the default in a future release.
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+### Patch Changes
+
+- ef73f97: Updated permission integration to use new permission resource ref.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.3
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/backend-openapi-utils@0.5.0-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.2
+  - @backstage/backend-openapi-utils@0.5.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.1
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.31.0-next.1
 
 ### Minor Changes

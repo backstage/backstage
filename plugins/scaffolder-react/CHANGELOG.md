@@ -1,5 +1,43 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.5-next.2
+
+### Patch Changes
+
+- 656f67b: Reverted the validation in dependencies in scaffolder
+- 2003fc2: Hide text output button if only one is present
+- a35118f: build(deps): bump `immer` from 8.0.4 to 9.0.6
+- 1283f06: Added missing `ajv` and `immer` dependencies to `@backstage/plugin-scaffolder-react`
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.14.4-next.1
 
 ### Patch Changes

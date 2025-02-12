@@ -29,14 +29,14 @@ const paddingPropDefs = (spacingValues: string[]) =>
     px: {
       type: 'enum | string',
       className: 'cu-px',
-      customProperties: ['--pl', '--pr'],
+      customProperties: ['--px'],
       values: spacingValues,
       responsive: true,
     },
     py: {
       type: 'enum | string',
       className: 'cu-py',
-      customProperties: ['--pt', '--pb'],
+      customProperties: ['--py'],
       values: spacingValues,
       responsive: true,
     },

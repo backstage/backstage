@@ -527,4 +527,58 @@ describe('AwsS3UrlReader', () => {
       expect(body.toString().trim()).toBe('site_name: Test');
     });
   });
+
+  describe('search', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      s3Client.reset();
+
+      s3Client.on(GetObjectCommand).resolves({
+        Body: sdkStreamMixin(
+          fs.createReadStream(
+            path.resolve(
+              __dirname,
+              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+            ),
+          ),
+        ),
+        ETag: '123abc',
+        LastModified: new Date('2020-01-01T00:00:00Z'),
+      });
+    });
+
+    it('should return a file when given an exact valid url', async () => {
+      const data = await reader.search(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+
+      expect(data.etag).toBe('123abc');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'site_name: Test\n',
+      );
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        reader.search(
+          'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
+  });
 });

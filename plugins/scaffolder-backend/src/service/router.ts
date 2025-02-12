@@ -81,6 +81,8 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
@@ -173,8 +175,12 @@ export interface RouterOptions {
    */
   concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?:
+    | Record<string, TemplateFilter>
+    | CreatedTemplateFilter[];
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal>
+    | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
@@ -363,9 +369,31 @@ export async function createRouter(
   }
 
   const actionRegistry = new TemplateActionRegistry();
+  const templateExtensions = {
+    additionalTemplateFilters: Array.isArray(additionalTemplateFilters)
+      ? Object.fromEntries(
+          additionalTemplateFilters.map(f => [
+            f.id,
+            f.filter as TemplateFilter,
+          ]),
+        )
+      : additionalTemplateFilters,
+    additionalTemplateGlobals: Array.isArray(additionalTemplateGlobals)
+      ? Object.fromEntries(
+          additionalTemplateGlobals.map(g => [
+            g.id,
+            ('value' in g ? g.value : g.fn) as TemplateGlobal,
+          ]),
+        )
+      : additionalTemplateGlobals,
+  };
 
   const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
+    const gracefulShutdown = config.getOptionalBoolean(
+      'scaffolder.EXPERIMENTAL_gracefulShutdown',
+    );
+
     for (let i = 0; i < (taskWorkers || 1); i++) {
       const worker = await TaskWorker.create({
         taskBroker,
@@ -374,10 +402,10 @@ export async function createRouter(
         logger,
         auditor,
         workingDirectory,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         concurrentTasksLimit,
         permissions,
+        gracefulShutdown,
+        ...templateExtensions,
       });
       workers.push(worker);
     }
@@ -390,17 +418,16 @@ export async function createRouter(
         catalogClient,
         reader,
         config,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         auth,
+        ...templateExtensions,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
-  const shutdownWorkers = () => {
-    workers.forEach(worker => worker.stop());
+  const shutdownWorkers = async () => {
+    await Promise.allSettled(workers.map(worker => worker.stop()));
   };
 
   if (options.lifecycle) {
@@ -416,9 +443,8 @@ export async function createRouter(
     logger,
     auditor,
     workingDirectory,
-    additionalTemplateFilters,
-    additionalTemplateGlobals,
     permissions,
+    ...templateExtensions,
   });
 
   const templateRules: TemplatePermissionRuleInput[] = Object.values(

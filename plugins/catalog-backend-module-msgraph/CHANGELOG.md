@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.6.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+
 ## 0.6.7-next.1
 
 ### Patch Changes

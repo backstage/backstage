@@ -17,7 +17,10 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  scaffolderActionsExtensionPoint,
+  scaffolderAutocompleteExtensionPoint,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGithubActionsDispatchAction,
   createGithubAutolinksAction,
@@ -37,6 +40,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { CatalogClient } from '@backstage/catalog-client';
+import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 
 /**
  * @public
@@ -52,8 +56,9 @@ export const githubModule = createBackendModule({
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
+        autocomplete: scaffolderAutocompleteExtensionPoint,
       },
-      async init({ scaffolder, config, discovery, auth }) {
+      async init({ scaffolder, config, discovery, auth, autocomplete }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
@@ -109,6 +114,11 @@ export const githubModule = createBackendModule({
             integrations,
           }),
         );
+
+        autocomplete.addAutocompleteProvider({
+          id: 'github',
+          handler: createHandleAutocompleteRequest({ integrations }),
+        });
       },
     });
   },

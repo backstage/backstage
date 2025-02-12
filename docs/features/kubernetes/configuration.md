@@ -80,11 +80,13 @@ The default value is `false`.
 
 #### Internationalization
 
-To customize or translate the **Delete Pod** text, use the following approach:
+To customize or translate text in some of the components, use the following approach:
 
 ```js
 import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
 import { kubernetesReactTranslationRef } from '@backstage/plugin-kubernetes-react/alpha';
+import { kubernetesTranslationRef } from '@backstage/plugin-kubernetes/alpha';
+import { kubernetesClusterTranslationRef } from '@backstage/plugin-kubernetes-cluster/alpha';
 
 const app = createApp({
   __experimentalTranslations: {
@@ -94,7 +96,21 @@ const app = createApp({
         messages: {
           "podDrawer.buttons.delete": 'Restart Pod'
         }
-      })
+      }),
+      createTranslationMessages({
+        ref: kubernetesTranslationRef,
+        messages: {
+          'kubernetesContentPage.permissionAlert.title': 'Insufficient permissions',
+          'kubernetesContentPage.permissionAlert.message': 'You do not have permissions to view Kubernetes objects.',
+        },
+      }),
+      createTranslationMessages({
+        ref: kubernetesClusterTranslationRef,
+        messages: {
+          'kubernetesClusterContentPage.permissionAlert.title': 'Insufficient permissions',
+          'kubernetesClusterContentPage.permissionAlert.message': 'You do not have permissions to view Kubernetes objects.',
+        },
+      }),
     ]
   },
   ...

@@ -1,5 +1,59 @@
 # @backstage/cli
 
+## 0.30.0-next.3
+
+### Minor Changes
+
+- b30e788: The `new` command is now powered by a new template system that allows you to define your own templates in a declarative way, as well as import existing templates from external sources. See the [CLI templates documentation](https://backstage.io/docs/tooling/cli/templates) for more information.
+
+  The following flags for the `new` command have been deprecated and will be removed in a future release:
+
+  - `--license=<license>`: Configure the global `license` instead.
+  - `--no-private`: Configure the global `private` instead.
+  - `--baseVersion=<version>`: Configure the global `version` instead.
+  - `--npmRegistry=<url>`: Configure the global `publishRegistry` instead.
+  - `--scope=<scope>`: Configure the global `namePrefix` and/or `namePluginInfix` instead.
+
+  As part of this change the template IDs and their options have changed. The following backwards compatibility mappings for the `--select` and `--option` flags are enabled when using the default set of templates, but they will also be removed in the future:
+
+  - `--select=plugin` is mapped to `--select=frontend-plugin` instead.
+  - `--option=id=<id>` is mapped to `--option=pluginId=<id>` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.30.0-next.2
+
+### Patch Changes
+
+- f17ef61: The `versions:bump` command will now reject `*` as a pattern.
+- 86c72c1: The packing process when running `build-workspace` with the `--alwaysYarnPack` flag now respects the `BACKSTAGE_CLI_BUILD_PARALLEL` environment variable, defaulting parallel work limits based on CPU availability.
+- 2167afc: Treat static file assets as always being free from side effects in package builds.
+- f54eed0: Fixed an issue where default feature type information wasn't being added to package.json/exports before publishing if exports didn't exist beforehand
+- 9638f6d: Only allow pass through of `.mjs` in Jest transform if static ESM is supported.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.30.0-next.1
 
 ### Patch Changes

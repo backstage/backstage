@@ -24,7 +24,9 @@ import yaml from 'yaml';
 
 const mockGitlabClient = {
   Migrations: {
-    create: jest.fn(),
+    create: jest.fn(() => ({
+      id: 0,
+    })),
   },
 };
 
