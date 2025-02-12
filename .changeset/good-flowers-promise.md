@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-backend': patch
 ---
 
-Modified response when catalog entity isn't found to resolve issue where `/sync` endpoint was continuously called
+Fixed issue `syncEntityDocs` that would cause the `/sync` endpoint to be continuously called if the request fails
