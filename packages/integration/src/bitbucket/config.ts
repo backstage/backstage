@@ -66,7 +66,7 @@ export type BitbucketIntegrationConfig = {
   /**
    * Signing key for commits
    */
-  signingKey?: string;
+  commitSigningKey?: string;
 };
 
 /**
@@ -105,7 +105,7 @@ export function readBitbucketIntegrationConfig(
     token,
     username,
     appPassword,
-    signingKey: config.getOptionalString('signingKey'),
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }
 

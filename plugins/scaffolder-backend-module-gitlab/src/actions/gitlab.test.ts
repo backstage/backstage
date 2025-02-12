@@ -75,7 +75,7 @@ describe('publish:gitlab', () => {
           host: 'gitlab.com',
           token: 'tokenlols',
           apiBaseUrl: 'https://api.gitlab.com',
-          signingKey: 'test-signing-key',
+          commitSigningKey: 'test-signing-key',
         },
         {
           host: 'hosted.gitlab.com',

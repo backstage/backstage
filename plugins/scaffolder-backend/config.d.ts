@@ -29,6 +29,7 @@ export interface Config {
 
     /**
      * Default PGP signing key for signing commits.
+     * @visibility secret
      */
     defaultCommitSigningKey?: string;
     /**
