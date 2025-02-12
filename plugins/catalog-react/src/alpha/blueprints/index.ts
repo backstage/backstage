@@ -15,3 +15,4 @@
  */
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';
+export { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
