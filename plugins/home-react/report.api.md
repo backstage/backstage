@@ -17,6 +17,7 @@ export type CardConfig = {
 // @public (undocumented)
 export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
+  noDivider?: boolean;
 } & T;
 
 // @public (undocumented)
@@ -55,6 +56,7 @@ export type ComponentRenderer = {
 // @public
 export function createCardExtension<T>(options: {
   title?: string;
+  noDivider?: boolean;
   components: () => Promise<ComponentParts>;
   name?: string;
   description?: string;

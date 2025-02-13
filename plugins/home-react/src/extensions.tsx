@@ -47,7 +47,10 @@ export type RendererProps = { title?: string } & ComponentParts;
 /**
  * @public
  */
-export type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
+export type CardExtensionProps<T> = ComponentRenderer & {
+  title?: string;
+  noDivider?: boolean;
+} & T;
 
 /**
  * @public
@@ -80,13 +83,15 @@ export type CardConfig = {
  */
 export function createCardExtension<T>(options: {
   title?: string;
+  noDivider?: boolean;
   components: () => Promise<ComponentParts>;
   name?: string;
   description?: string;
   layout?: CardLayout;
   settings?: CardSettings;
 }) {
-  const { title, components, name, description, layout, settings } = options;
+  const { title, noDivider, components, name, description, layout, settings } =
+    options;
   // If widget settings schema is defined, we don't want to show the Settings icon or dialog
   const isCustomizable = settings?.schema !== undefined;
 
@@ -102,6 +107,7 @@ export function createCardExtension<T>(options: {
                 {...props}
                 {...componentParts}
                 title={props.title || title}
+                noDivider={props.noDivider || noDivider}
                 isCustomizable={isCustomizable}
               />
             );
@@ -126,6 +132,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
     ContextProvider,
     isCustomizable,
     title,
+    noDivider,
     ...childProps
   } = props;
   const app = useApp();
@@ -151,6 +158,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
 
   const cardProps = {
     ...(title && { title }),
+    ...(noDivider && { divider: !noDivider }),
     ...(Settings && !isCustomizable
       ? {
           action: (
