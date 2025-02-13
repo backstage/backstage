@@ -224,7 +224,7 @@ export const formFieldsApi: ExtensionDefinition<{
   };
 }>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
 
 // @alpha (undocumented)
@@ -301,7 +301,7 @@ export type ScaffolderFormDecoratorContext<
   ) => void;
 };
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export interface ScaffolderFormFieldsApi {
   // (undocumented)
   getFormFields(): Promise<FormFieldExtensionData[]>;
