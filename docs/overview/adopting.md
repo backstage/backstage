@@ -13,7 +13,7 @@ back whatever learnings you gather while adopting Backstage inside your company.
 
 ## Organizational setup
 
-The true value of Backstage is unlocked when it becomes _THE_ developer portal
+The true value of Backstage is unlocked when it becomes the developer portal
 at your company. As such it is important to recognize that you will need a
 central team that owns your Backstage deployment and treats it like a product.
 
