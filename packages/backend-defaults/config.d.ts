@@ -51,6 +51,14 @@ export interface Config {
       serverShutdownDelay?: string | HumanDuration;
     };
 
+    /**
+     * Determines if the backend should trust the X-Forwarded-For header or not.
+     * If set to true, unlimited amount of proxies will be trusted. If set to a
+     * number, that amount of proxies will be trusted. If set to false, no proxies
+     * are trusted. Required to make the rate limiting work behind proxy.
+     */
+    trustProxy?: boolean | number;
+
     /** Address that the backend should listen to. */
     listen?:
       | string
@@ -608,6 +616,68 @@ export interface Config {
        */
       headers?: { [name: string]: string };
     };
+
+    /**
+     * Rate limiting options. Defining this as `true` will enable rate limiting with default values.
+     */
+    rateLimit?:
+      | true
+      | {
+          store?:
+            | {
+                client: 'redis';
+                connection: string;
+              }
+            | {
+                client: 'postgres';
+                connection:
+                  | string
+                  | {
+                      /**
+                       * @visibility secret
+                       */
+                      password?: string;
+                      /**
+                       * Other connection settings
+                       * @see https://node-postgres.com/apis/client
+                       */
+                      [key: string]: unknown;
+                    };
+              }
+            | {
+                client: 'memory';
+              };
+          /**
+           * Time frame in milliseconds or as human duration for which requests are checked/remembered.
+           * Defaults to one minute.
+           */
+          window?: string | HumanDuration;
+          /**
+           * The maximum number of connections to allow during the `window` before rate limiting the client.
+           * Defaults to 5.
+           */
+          incomingRequestLimit?: number;
+          /**
+           * Whether to pass requests in case of store failure.
+           * Defaults to false.
+           */
+          passOnStoreError?: boolean;
+          /**
+           * List of allowed IP addresses that are not rate limited.
+           * Defaults to [127.0.0.1, 0:0:0:0:0:0:0:1, ::1].
+           */
+          ipAllowList?: string[];
+          /**
+           * Skip rate limiting for requests that have been successful.
+           * Defaults to false.
+           */
+          skipSuccessfulRequests?: boolean;
+          /**
+           * Skip rate limiting for requests that have failed.
+           * Defaults to false.
+           */
+          skipFailedRequests?: boolean;
+        };
 
     /**
      * Configuration related to URL reading, used for example for reading catalog info
