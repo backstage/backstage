@@ -96,14 +96,13 @@ export const createCacheMiddleware = ({
       };
     }
 
-    const data: CacheData = { chunks: [], writeToCache: true };
     if (requestPathDataMap.has(reqPath)) {
       // If we've already seen this request, remove it from the map. This is
       // to ensure that we don't duplicate the data in the map if multiple
       // requests are made for the same path.
       requestPathDataMap.delete(reqPath);
     }
-    requestPathDataMap.set(reqPath, data);
+    requestPathDataMap.set(reqPath, { chunks: [], writeToCache: true });
 
     // Attempt to retrieve data from the cache.
     const cached = await cache.get(reqPath);
@@ -113,7 +112,7 @@ export const createCacheMiddleware = ({
     // calling next().
     if (cached) {
       logger.debug(`Cache hit for ${reqPath}`);
-      data.writeToCache = false;
+      requestPathDataMap.get(reqPath)!.writeToCache = false;
       realEnd(cached);
       return;
     }
