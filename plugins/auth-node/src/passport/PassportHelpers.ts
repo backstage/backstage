@@ -105,8 +105,11 @@ export class PassportHelpers {
      */
     status?: number;
   }> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const strategy = Object.create(providerStrategy);
+      strategy.error = (error: Error) => {
+        reject(new Error(`Authentication failed, ${error.message ?? ''}`));
+      };
       strategy.redirect = (url: string, status?: number) => {
         resolve({ url, status: status ?? undefined });
       };
