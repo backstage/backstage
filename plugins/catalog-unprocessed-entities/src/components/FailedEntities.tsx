@@ -93,13 +93,17 @@ const RenderErrorContext = ({
  * easily understand the times.
  */
 const convertTimeToLocalTimezone = (strDateTime: string | Date) => {
-  const dateTime = DateTime.fromFormat(
+  let dateTime = DateTime.fromFormat(
     strDateTime.toLocaleString(),
     'yyyy-MM-dd hh:mm:ss',
     {
       zone: 'UTC',
     },
   );
+
+  if (!dateTime.isValid) {
+    dateTime = DateTime.fromISO(strDateTime.toLocaleString());
+  }
 
   const dateTimeLocalTz = dateTime.setZone(DateTime.local().zoneName);
 
