@@ -95,7 +95,7 @@
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "esbuild-loader": "^4.0.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^9.0.0",
