@@ -17,7 +17,7 @@
 import { relative as relativePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import webpack from 'webpack';
-import { paths } from '../paths';
+import { paths } from '../../../../lib/paths';
 
 /**
  * This returns of collection of plugins that links a separate workspace into

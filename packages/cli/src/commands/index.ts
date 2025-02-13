@@ -14,36 +14,24 @@
  * limitations under the License.
  */
 
-import { Command, Option } from 'commander';
+import { Command } from 'commander';
 import { lazy } from '../lib/lazy';
 import {
   configOption,
   registerCommands as registerConfigCommands,
 } from '../modules/config';
+import {
+  registerPackageCommands as registerPackageBuildCommands,
+  registerRepoCommands as registerRepoBuildCommands,
+  registerCommands as registerBuildCommands,
+} from '../modules/build';
 
 export function registerRepoCommand(program: Command) {
   const command = program
     .command('repo [command]')
     .description('Command that run across an entire Backstage project');
 
-  command
-    .command('build')
-    .description(
-      'Build packages in the project, excluding bundled app and backend packages.',
-    )
-    .option(
-      '--all',
-      'Build all packages, including bundled app and backend packages.',
-    )
-    .option(
-      '--since <ref>',
-      'Only build packages and their dev dependents that changed since the specified ref',
-    )
-    .option(
-      '--minify',
-      'Minify the generated code. Does not apply to app package (app is minified by default).',
-    )
-    .action(lazy(() => import('./repo/build'), 'command'));
+  registerRepoBuildCommands(command);
 
   command
     .command('lint')
@@ -139,29 +127,7 @@ export function registerScriptCommand(program: Command) {
     .option('--link <path>', 'Link an external workspace for module resolution')
     .action(lazy(() => import('./start'), 'command'));
 
-  command
-    .command('build')
-    .description('Build a package for production deployment or publishing')
-    .option('--role <name>', 'Run the command with an explicit package role')
-    .option(
-      '--minify',
-      'Minify the generated code. Does not apply to app package (app is minified by default).',
-    )
-    .option(
-      '--skip-build-dependencies',
-      'Skip the automatic building of local dependencies. Applies to backend packages only.',
-    )
-    .option(
-      '--stats',
-      'If bundle stats are available, write them to the output directory. Applies to app packages only.',
-    )
-    .option(
-      '--config <path>',
-      'Config files to load instead of app-config.yaml. Applies to app packages only.',
-      (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
-      Array<string>(),
-    )
-    .action(lazy(() => import('./build'), 'command'));
+  registerPackageBuildCommands(command);
 
   command
     .command('lint [directories...]')
@@ -281,6 +247,7 @@ export function registerCommands(program: Command) {
   registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
+  registerBuildCommands(program);
 
   program
     .command('versions:bump')
@@ -312,23 +279,6 @@ export function registerCommands(program: Command) {
       'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
     )
     .action(lazy(() => import('./versions/migrate'), 'default'));
-
-  program
-    .command('build-workspace <workspace-dir> [packages...]')
-    .addOption(
-      new Option(
-        '--alwaysYarnPack',
-        'Alias for --alwaysPack for backwards compatibility.',
-      )
-        .implies({ alwaysPack: true })
-        .hideHelp(true),
-    )
-    .option(
-      '--alwaysPack',
-      'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
-    )
-    .description('Builds a temporary dist workspace from the provided packages')
-    .action(lazy(() => import('./buildWorkspace'), 'default'));
 
   program
     .command('create-github-app <github-org>')

@@ -20,9 +20,9 @@ Commands:
   repo [command]
   package [command]
   migrate [command]
+  build-workspace [options] <workspace-dir> [packages...]
   versions:bump [options]
   versions:migrate [options]
-  build-workspace [options] <workspace-dir> [packages...]
   create-github-app <github-org>
   info
   help [command]

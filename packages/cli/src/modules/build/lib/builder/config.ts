@@ -38,10 +38,10 @@ import {
 
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
-import { paths } from '../paths';
+import { paths } from '../../../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { svgrTemplate } from '../svgrTemplate';
-import { readEntryPoints } from '../entryPoints';
+import { svgrTemplate } from '../../../../lib/svgrTemplate';
+import { readEntryPoints } from '../../../../lib/entryPoints';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
