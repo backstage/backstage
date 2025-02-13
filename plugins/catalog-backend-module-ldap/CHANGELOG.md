@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.11.2-next.4
+
+### Patch Changes
+
+- eb80a1a: Minor doc string update
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.0-next.4
+
 ## 0.11.2-next.3
 
 ### Patch Changes
