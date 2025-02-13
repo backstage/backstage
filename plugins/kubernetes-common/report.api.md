@@ -318,6 +318,13 @@ export interface JobsFetchResponse {
 }
 
 // @public
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+
+// @public
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
+
+// @public
 export const kubernetesClustersReadPermission: BasicPermission;
 
 // @public (undocumented)
