@@ -74,6 +74,7 @@ describe('publish:gitlab', () => {
           host: 'gitlab.com',
           token: 'tokenlols',
           apiBaseUrl: 'https://api.gitlab.com',
+          signingKey: 'test-signing-key',
         },
         {
           host: 'hosted.gitlab.com',
@@ -417,6 +418,31 @@ describe('publish:gitlab', () => {
       logger: mockContext.logger,
       commitMessage: 'initial commit',
       gitAuthorInfo: {},
+    });
+  });
+
+  it('should call initRepoAndPush with the signing key', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { ...mockContext.input, signCommit: true },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      defaultBranch: 'master',
+      remoteUrl: 'http://mockurl.git',
+      auth: { username: 'oauth2', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {},
+      signingKey: 'test-signing-key',
     });
   });
 

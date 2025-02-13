@@ -62,6 +62,11 @@ export type BitbucketIntegrationConfig = {
    * See https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
    */
   appPassword?: string;
+
+  /**
+   * Signing key for commits
+   */
+  signingKey?: string;
 };
 
 /**
@@ -100,6 +105,7 @@ export function readBitbucketIntegrationConfig(
     token,
     username,
     appPassword,
+    signingKey: config.getOptionalString('signingKey'),
   };
 }
 

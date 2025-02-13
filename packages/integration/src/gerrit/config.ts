@@ -60,6 +60,11 @@ export type GerritIntegrationConfig = {
    * The password or http token to use for authentication.
    */
   password?: string;
+
+  /**
+   * The signing key to use for signing commits.
+   */
+  signingKey?: string;
 };
 
 /**
@@ -119,6 +124,7 @@ export function readGerritIntegrationConfig(
     gitilesBaseUrl,
     username,
     password,
+    signingKey: config.getOptionalString('signingKey'),
   };
 }
 

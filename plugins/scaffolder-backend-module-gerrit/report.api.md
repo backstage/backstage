@@ -22,6 +22,7 @@ export function createPublishGerritAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
+    signCommit?: boolean | undefined;
   },
   JsonObject
 >;
@@ -38,6 +39,7 @@ export function createPublishGerritReviewAction(options: {
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
   JsonObject
 >;
