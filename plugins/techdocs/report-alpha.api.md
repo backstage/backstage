@@ -151,8 +151,6 @@ const _default: FrontendPlugin<
       params: SearchResultListItemBlueprintParams;
     }>;
     'page:techdocs/reader': ExtensionDefinition<{
-      kind: 'page';
-      name: 'reader';
       config: {
         path: string | undefined;
       };
@@ -173,7 +171,17 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX.Element[], 'techdocs.addons', {}>,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
+      };
+      kind: 'page';
+      name: 'reader';
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
@@ -225,6 +233,13 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX.Element[], 'techdocs.addons', {}>,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
         emptyState: ExtensionInput<
           ConfigurableExtensionDataRef<
             React_2.JSX.Element,
