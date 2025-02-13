@@ -140,7 +140,7 @@ const useSearchContextValue = (
     });
     if (term) {
       analytics.captureEvent('search', term, {
-        value: result.value?.numberOfResults ?? undefined,
+        value: resultSet.numberOfResults,
       });
     }
     return resultSet;
