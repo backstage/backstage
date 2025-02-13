@@ -207,8 +207,11 @@ Extensions for search results let you customize components used to render search
 
 ### 1. Providing an extension in your plugin package
 
-> Note: You must use the `plugin.provide()` function to make a search item renderer available. Unlike rendering a list in a standard MUI Table or similar, you cannot simply provide
-> a rendering function to the `<SearchResult />` component.
+:::note Note
+
+You must use the `plugin.provide()` function to make a search item renderer available. Unlike rendering a list in a standard MUI Table or similar, you cannot simply provide a rendering function to the `<SearchResult />` component.
+
+:::
 
 Using the example below, you can provide an extension to be used as a search result item:
 
