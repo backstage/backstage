@@ -53,7 +53,6 @@ Scope: The Backstage home page and information architecture
 | Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal) | emmaindal#7503    |
 | Djamaile Rahamat         | Spotify      | Infinite Buck$ | [djamaile](http://github.com/djamaile)   | dyoqi             |
 | Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)     | raghunandanb#1114 |
-| Bailey Brooks            | Spotify      | Infinite Buck$ | [bailey](http://github.com/bailey)       | \_bailey4         |
 
 ### Search
 
