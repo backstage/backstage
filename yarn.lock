@@ -6728,6 +6728,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     cross-fetch: ^4.0.0
+    express: ^4.17.1
     msw: ^1.0.0
     uri-template: ^2.0.0
   languageName: unknown
