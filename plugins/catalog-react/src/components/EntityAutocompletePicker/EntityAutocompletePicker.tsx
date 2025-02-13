@@ -52,6 +52,7 @@ export type EntityAutocompletePickerProps<
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
+  hidden?: boolean;
 };
 
 /** @public */
@@ -82,6 +83,7 @@ export function EntityAutocompletePicker<
     InputProps,
     initialSelectedOptions = [],
     filtersForAvailableValues = ['kind'],
+    hidden,
   } = props;
   const classes = useStyles();
 
@@ -146,7 +148,7 @@ export function EntityAutocompletePicker<
     return null;
   }
 
-  return (
+  return hidden ? null : (
     <Box className={classes.root} pb={1} pt={1}>
       <CatalogAutocomplete<string, true>
         multiple
