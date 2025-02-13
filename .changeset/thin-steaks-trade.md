@@ -4,7 +4,7 @@
 
 Update the default entity page extension component to support grouping multiple entity content items in the same tab.
 
-Disable a default group via configuration:
+Disable all default groups:
 
 ```diff
 # app-config.yaml
@@ -13,11 +13,10 @@ app:
     # Pages
 +   - page:catalog/entity:
 +       config:
-+         groups:
-+           deployment: false
++         groups: []
 ```
 
-Change a default group title via configuration:
+Create a custom list of :
 
 ```diff
 # app-config.yaml
@@ -27,19 +26,7 @@ app:
 +   - page:catalog/entity:
 +       config:
 +         groups:
-+           deployment: Infrastructure # this is overriding the default group title
-```
-
-Create a custom entity content group via configuration:
-
-```diff
-# app-config.yaml
-app:
-  extensions:
-    # Pages
-+   - page:catalog/entity:
-+       config:
-+         groups:
-+           # <id>: <Title>
-+           custom: Custom
++           # This array of groups completely replaces the default groups
++           - custom:
++               title: 'Custom'
 ```

@@ -802,12 +802,28 @@ const _default: FrontendPlugin<
     }>;
     'page:catalog/entity': ExtensionDefinition<{
       config: {
-        groups: Record<string, string | false> | undefined;
+        groups:
+          | Record<
+              string,
+              | false
+              | {
+                  title: string;
+                }
+            >[]
+          | undefined;
       } & {
         path: string | undefined;
       };
       configInput: {
-        groups?: Record<string, string | false> | undefined;
+        groups?:
+          | Record<
+              string,
+              | false
+              | {
+                  title: string;
+                }
+            >[]
+          | undefined;
       } & {
         path?: string | undefined;
       };
