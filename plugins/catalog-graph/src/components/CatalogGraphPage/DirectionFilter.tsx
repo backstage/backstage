@@ -17,13 +17,8 @@ import { Select, SelectedItems } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
 import React, { useCallback } from 'react';
 import { Direction } from '../EntityRelationsGraph';
-
-const DIRECTION_DISPLAY_NAMES = {
-  [Direction.LEFT_RIGHT]: 'Left to right',
-  [Direction.RIGHT_LEFT]: 'Right to left',
-  [Direction.TOP_BOTTOM]: 'Top to bottom',
-  [Direction.BOTTOM_TOP]: 'Bottom to top',
-};
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 export type Props = {
   value: Direction;
@@ -35,11 +30,19 @@ export const DirectionFilter = ({ value, onChange }: Props) => {
     (v: SelectedItems) => onChange(v as Direction),
     [onChange],
   );
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
+
+  const DIRECTION_DISPLAY_NAMES = {
+    [Direction.LEFT_RIGHT]: t('directionFilter.displayName.leftToRight'),
+    [Direction.RIGHT_LEFT]: t('directionFilter.displayName.rightToLeft'),
+    [Direction.TOP_BOTTOM]: t('directionFilter.displayName.topToBottom'),
+    [Direction.BOTTOM_TOP]: t('directionFilter.displayName.bottomToTop'),
+  };
 
   return (
     <Box pb={1} pt={1}>
       <Select
-        label="Direction"
+        label={t('directionFilter.selectLabel')}
         selected={value}
         items={Object.values(Direction).map(v => ({
           label: DIRECTION_DISPLAY_NAMES[v],
