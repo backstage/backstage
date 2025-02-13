@@ -198,9 +198,11 @@ describe('Index page', () => {
       Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       {
         config: {
-          groups: {
-            documentation: 'Docs',
-          },
+          groups: [
+            {
+              documentation: { title: 'Docs' },
+            },
+          ],
         },
       },
     )
@@ -257,9 +259,11 @@ describe('Index page', () => {
       Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       {
         config: {
-          groups: {
-            documentation: false,
-          },
+          groups: [
+            {
+              documentation: false,
+            },
+          ],
         },
       },
     )
@@ -360,9 +364,11 @@ describe('Index page', () => {
       Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       {
         config: {
-          groups: {
-            docs: 'Docs',
-          },
+          groups: [
+            {
+              docs: { title: 'Docs' },
+            },
+          ],
         },
       },
     )

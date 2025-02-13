@@ -71,7 +71,14 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   config: {
     schema: {
       groups: z =>
-        z.record(z.string(), z.string().or(z.literal(false))).optional(),
+        z
+          .array(
+            z.record(
+              z.string(),
+              z.literal(false).or(z.object({ title: z.string() })),
+            ),
+          )
+          .optional(),
     },
   },
   factory(originalFactory, { config, inputs }) {
@@ -82,10 +89,17 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const { EntityLayout } = await import('./components/EntityLayout');
 
         // config groups override default groups
-        const groups: Record<string, string> = {
-          ...defaultEntityContentGroups,
-          ...config.groups,
-        };
+        const groups: Record<string, string> = config.groups?.length
+          ? config.groups.reduce<Record<string, string>>((rest, group) => {
+              const [groupId, groupValue] = Object.entries(group)[0];
+              return groupValue
+                ? {
+                    ...rest,
+                    [groupId]: groupValue.title,
+                  }
+                : rest;
+            }, {})
+          : defaultEntityContentGroups;
 
         // the groups order is determined by the order of the contents
         // a group will appear in the order of the first item that belongs to it

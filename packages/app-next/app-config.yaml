@@ -17,12 +17,13 @@ app:
         config:
           groups:
             # example disabling a default group
-            development: false
+            - development: false
             # example overriding a default group title
-            documentation: Docs
+            - documentation:
+                title: Docs
             # example adding a new group
-            # Format <GROUP_ID>: <GROUP_TITLE>
-            custom: Custom
+            - custom:
+                title: Custom
 
     # Entity page cards
     - entity-card:catalog/about
