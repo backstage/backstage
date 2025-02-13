@@ -147,30 +147,33 @@ export const parseSchemas = (action: TemplateActionOptions<any, any, any>) => {
     return { inputSchema: undefined, outputSchema: undefined };
   }
 
-  if (isZodSchema(action.schema.input) && isZodSchema(action.schema.output)) {
+  if (isZodSchema(action.schema.input)) {
     return {
       inputSchema: zodToJsonSchema(action.schema.input),
-      outputSchema: zodToJsonSchema(action.schema.output),
+      outputSchema: isZodSchema(action.schema.output)
+        ? zodToJsonSchema(action.schema.output)
+        : undefined,
     };
   }
 
-  if (
-    isNativeZodSchema(action.schema.input) &&
-    isNativeZodSchema(action.schema.output)
-  ) {
+  if (isNativeZodSchema(action.schema.input)) {
     const input = z.object(
       Object.fromEntries(
         Object.entries(action.schema.input).map(([k, v]) => [k, v(z)]),
       ),
     );
-    const output = z.object(
-      Object.fromEntries(
-        Object.entries(action.schema.output).map(([k, v]) => [k, v(z)]),
-      ),
-    );
+
     return {
       inputSchema: zodToJsonSchema(input),
-      outputSchema: zodToJsonSchema(output),
+      outputSchema: isNativeZodSchema(action.schema.output)
+        ? zodToJsonSchema(
+            z.object(
+              Object.fromEntries(
+                Object.entries(action.schema.output).map(([k, v]) => [k, v(z)]),
+              ),
+            ),
+          )
+        : undefined,
     };
   }
 
