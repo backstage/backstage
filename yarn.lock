@@ -6468,6 +6468,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/pluralize": ^0.0.33
     "@types/react": ^18.0.0
+    classnames: ^2.3.1
     dataloader: ^2.0.0
     expiry-map: ^2.0.0
     history: ^5.0.0
@@ -6475,6 +6476,7 @@ __metadata:
     pluralize: ^8.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
+    react-helmet: 6.1.0
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
     swr: ^2.2.5

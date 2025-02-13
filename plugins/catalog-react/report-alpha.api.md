@@ -99,6 +99,14 @@ export function convertLegacyEntityContentExtension(
 ): ExtensionDefinition;
 
 // @alpha
+export const defaultEntityContentGroups: {
+  documentation: string;
+  development: string;
+  deployment: string;
+  observability: string;
+};
+
+// @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
   name: undefined;
@@ -151,6 +159,12 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     loader: () => Promise<JSX.Element>;
     defaultPath: string;
     defaultTitle: string;
+    defaultGroup?:
+      | 'documentation'
+      | 'development'
+      | 'deployment'
+      | 'observability'
+      | undefined;
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
     filter?: string | ((entity: Entity) => boolean) | undefined;
   };
@@ -178,17 +192,26 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ConfigurableExtensionDataRef<
+        string | false,
+        'catalog.entity-content-group',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
     path: string | undefined;
     title: string | undefined;
     filter: string | undefined;
+    group: string | false | undefined;
   };
   configInput: {
     filter?: string | undefined;
     title?: string | undefined;
     path?: string | undefined;
+    group?: string | false | undefined;
   };
   dataRefs: {
     title: ConfigurableExtensionDataRef<
@@ -204,6 +227,11 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     filterExpression: ConfigurableExtensionDataRef<
       string,
       'catalog.entity-filter-expression',
+      {}
+    >;
+    group: ConfigurableExtensionDataRef<
+      string | false,
+      'catalog.entity-content-group',
       {}
     >;
   };

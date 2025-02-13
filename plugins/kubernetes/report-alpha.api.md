@@ -70,11 +70,13 @@ const _default: FrontendPlugin<
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
+        group: string | false | undefined;
       };
       configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -104,12 +106,25 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            string | false,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
+        defaultGroup?:
+          | 'documentation'
+          | 'development'
+          | 'deployment'
+          | 'observability'
+          | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
