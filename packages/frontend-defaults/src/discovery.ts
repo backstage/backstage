@@ -16,6 +16,9 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import { FrontendFeature } from '@backstage/frontend-app-api';
+import appPlugin from '@backstage/plugin-app';
+import { CreateAppFeatureLoader } from './createApp';
+import { stringifyError } from '@backstage/errors';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
@@ -93,4 +96,34 @@ function isBackstageFeature(obj: unknown): obj is FrontendFeature {
     );
   }
   return false;
+}
+
+/**
+ * @public
+ */
+export async function resolveFeatures(
+  config: Config,
+  providedFeatures: (FrontendFeature | CreateAppFeatureLoader)[] | undefined,
+) {
+  const discoveredFeatures = getAvailableFeatures(config);
+  const features: FrontendFeature[] = [appPlugin, ...discoveredFeatures];
+
+  for (const entry of providedFeatures ?? []) {
+    if ('load' in entry) {
+      try {
+        const result = await entry.load({ config });
+        features.push(...result.features);
+      } catch (e) {
+        throw new Error(
+          `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
+            e,
+          )}`,
+        );
+      }
+    } else {
+      features.push(entry);
+    }
+  }
+
+  return features;
 }

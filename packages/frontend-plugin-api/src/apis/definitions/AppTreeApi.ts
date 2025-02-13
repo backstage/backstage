@@ -60,6 +60,7 @@ export interface AppNodeEdges {
  * node and not disabled
  */
 export interface AppNodeInstance {
+  extensionData: Map<string, unknown>;
   /** Returns a sequence of all extension data refs that were output by this instance */
   getDataRefs(): Iterable<ExtensionDataRef<unknown>>;
   /** Get the output data for a single extension data ref */

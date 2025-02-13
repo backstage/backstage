@@ -19,6 +19,8 @@ import {
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
+  ExtensionDataValue,
+  ExtensionDefinition,
   ExtensionInput,
   ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
@@ -245,6 +247,9 @@ export function createAppNodeInstance(options: {
   node: AppNode;
   apis: ApiHolder;
   attachments: ReadonlyMap<string, AppNode[]>;
+  extensionFactoryMiddleware?: Parameters<
+    ExtensionDefinition['override']
+  >[0]['factory'];
 }): AppNodeInstance {
   const { node, apis, attachments } = options;
   const { id, extension, config } = node.spec;
@@ -268,12 +273,20 @@ export function createAppNodeInstance(options: {
     }
 
     if (internalExtension.version === 'v1') {
-      const namedOutputs = internalExtension.factory({
+      const context = {
         node,
         apis,
         config: parsedConfig,
         inputs: resolveV1Inputs(internalExtension.inputs, attachments),
-      });
+      };
+
+      const namedOutputs = options.extensionFactoryMiddleware
+        ? options.extensionFactoryMiddleware(
+            // @ts-ignore
+            () => internalExtension.factory(context),
+            context,
+          )
+        : internalExtension.factory(context);
 
       for (const [name, output] of Object.entries(namedOutputs)) {
         const ref = internalExtension.output[name];
@@ -289,12 +302,24 @@ export function createAppNodeInstance(options: {
         extensionDataRefs.add(ref);
       }
     } else if (internalExtension.version === 'v2') {
-      const outputDataValues = internalExtension.factory({
+      const context = {
         node,
         apis,
         config: parsedConfig,
         inputs: resolveV2Inputs(internalExtension.inputs, attachments),
-      });
+      };
+      const outputDataValues = options.extensionFactoryMiddleware
+        ? createExtensionDataContainer(
+            options.extensionFactoryMiddleware(
+              () =>
+                createExtensionDataContainer(
+                  internalExtension.factory(context),
+                ),
+              // @ts-ignore
+              context,
+            ),
+          )
+        : internalExtension.factory(context);
 
       const outputDataMap = new Map<string, unknown>();
       for (const value of outputDataValues) {
@@ -340,6 +365,7 @@ export function createAppNodeInstance(options: {
   }
 
   return {
+    extensionData,
     getDataRefs() {
       return extensionDataRefs.values();
     },
@@ -356,6 +382,9 @@ export function createAppNodeInstance(options: {
 export function instantiateAppNodeTree(
   rootNode: AppNode,
   apis: ApiHolder,
+  extensionFactoryMiddleware?: Parameters<
+    ExtensionDefinition['override']
+  >[0]['factory'],
 ): void {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
@@ -384,10 +413,56 @@ export function instantiateAppNodeTree(
       node,
       apis,
       attachments: instantiatedAttachments,
+      extensionFactoryMiddleware,
     });
 
     return node.instance;
   }
 
   createInstance(rootNode);
+}
+
+/** @internal */
+export function createExtensionDataContainer<UData extends AnyExtensionDataRef>(
+  values: Iterable<
+    UData extends ExtensionDataRef<infer IData, infer IId>
+      ? ExtensionDataValue<IData, IId>
+      : never
+  >,
+  declaredRefs?: ExtensionDataRef<any, any, any>[],
+): ExtensionDataContainer<UData> {
+  const container = new Map<string, ExtensionDataValue<any, any>>();
+  const verifyRefs =
+    declaredRefs && new Map(declaredRefs.map(ref => [ref.id, ref]));
+
+  for (const output of values) {
+    if (verifyRefs) {
+      if (!verifyRefs.delete(output.id)) {
+        throw new Error(
+          `extension data '${output.id}' was provided but not declared`,
+        );
+      }
+    }
+    container.set(output.id, output);
+  }
+
+  const remainingRefs =
+    verifyRefs &&
+    Array.from(verifyRefs.values()).filter(ref => !ref.config.optional);
+  if (remainingRefs && remainingRefs.length > 0) {
+    throw new Error(
+      `missing required extension data value(s) '${remainingRefs
+        .map(ref => ref.id)
+        .join(', ')}'`,
+    );
+  }
+
+  return {
+    get(ref) {
+      return container.get(ref.id)?.value;
+    },
+    [Symbol.iterator]() {
+      return container.values();
+    },
+  } as ExtensionDataContainer<UData>;
 }

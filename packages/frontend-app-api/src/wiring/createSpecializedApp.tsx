@@ -32,6 +32,7 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
+  ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -195,10 +196,14 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
  * @public
  */
 export function createSpecializedApp(options?: {
+  apis?: ApiHolder;
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-}): { createRoot(): JSX.Element } {
+  extensionFactoryMiddleware?: Parameters<
+    ExtensionDefinition['override']
+  >[0]['factory'];
+}): { createRoot(): JSX.Element; apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
 
@@ -227,17 +232,20 @@ export function createSpecializedApp(options?: {
   );
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder = createApiHolder({
-    factories,
-    staticFactories: [
-      createApiFactory(appTreeApiRef, appTreeApi),
-      createApiFactory(configApiRef, config),
-      createApiFactory(routeResolutionApiRef, routeResolutionApi),
-      createApiFactory(identityApiRef, appIdentityProxy),
-    ],
-  });
+  const apiHolder =
+    options?.apis ??
+    createApiHolder({
+      factories,
+      staticFactories: [
+        createApiFactory(appTreeApiRef, appTreeApi),
+        createApiFactory(configApiRef, config),
+        createApiFactory(routeResolutionApiRef, routeResolutionApi),
+        createApiFactory(identityApiRef, appIdentityProxy),
+      ],
+    });
 
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
+
   if (featureFlagApi) {
     for (const feature of features) {
       if (OpaqueFrontendPlugin.isType(feature)) {
@@ -260,7 +268,11 @@ export function createSpecializedApp(options?: {
   }
 
   // Now instantiate the entire tree, which will skip anything that's already been instantiated
-  instantiateAppNodeTree(tree.root, apiHolder);
+  instantiateAppNodeTree(
+    tree.root,
+    apiHolder,
+    options?.extensionFactoryMiddleware,
+  );
 
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
 
@@ -272,6 +284,8 @@ export function createSpecializedApp(options?: {
   const AppComponent = () => rootEl;
 
   return {
+    apis: apiHolder,
+    tree,
     createRoot() {
       return <AppComponent />;
     },
