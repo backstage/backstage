@@ -23,10 +23,9 @@ import express from 'express';
 import request, { Response } from 'supertest';
 import { z } from 'zod';
 import {
+  createConditionAuthorizer,
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,
-  createConditionAuthorizer,
-  PermissionIntegrationRouterOptions,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
@@ -39,6 +38,16 @@ const testPermission: Permission = createPermission({
 
 const testPermission2: Permission = createPermission({
   name: 'test.permission2',
+  attributes: {},
+});
+
+const testPermission3: Permission = createPermission({
+  name: 'test.permission3',
+  attributes: {},
+});
+
+const testPermission4: Permission = createPermission({
+  name: 'test.permission4',
   attributes: {},
 });
 
@@ -80,6 +89,22 @@ const testRule3 = createPermissionRule({
   toQuery: () => ({}),
 });
 
+const testRule4 = createPermissionRule({
+  name: 'test-rule-4',
+  description: 'Test rule 4',
+  resourceType: 'test-resource-3',
+  apply: () => true,
+  toQuery: () => ({}),
+});
+
+const testRule5 = createPermissionRule({
+  name: 'test-rule-5',
+  description: 'Test rule 5',
+  resourceType: 'test-resource-4',
+  apply: () => false,
+  toQuery: () => ({}),
+});
+
 const defaultMockedGetResources1: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
@@ -94,7 +119,7 @@ const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptio
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
-const mockedOptionResources: PermissionIntegrationRouterOptions = {
+const mockedOptionResources = {
   resources: [
     {
       resourceType: 'test-resource',
@@ -107,6 +132,16 @@ const mockedOptionResources: PermissionIntegrationRouterOptions = {
       permissions: [testPermission2],
       getResources: defaultMockedGetResources2,
       rules: [testRule3],
+    },
+    {
+      resourceType: 'test-resource-3',
+      permissions: [testPermission3],
+      rules: [testRule4],
+    },
+    {
+      resourceType: 'test-resource-4',
+      permissions: [testPermission4],
+      rules: [testRule5],
     },
   ],
 };
@@ -855,7 +890,12 @@ describe('createPermissionIntegrationRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        permissions: [testPermission, testPermission2],
+        permissions: [
+          testPermission,
+          testPermission2,
+          testPermission3,
+          testPermission4,
+        ],
         rules: [
           {
             name: testRule1.name,
@@ -892,6 +932,28 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule3.name,
             description: testRule3.description,
             resourceType: testRule3.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {},
+              type: 'object',
+            },
+          },
+          {
+            name: testRule4.name,
+            description: testRule4.description,
+            resourceType: testRule4.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {},
+              type: 'object',
+            },
+          },
+          {
+            name: testRule5.name,
+            description: testRule5.description,
+            resourceType: testRule5.resourceType,
             paramsSchema: {
               $schema: 'http://json-schema.org/draft-07/schema#',
               additionalProperties: false,

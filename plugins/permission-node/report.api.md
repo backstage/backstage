@@ -141,29 +141,14 @@ export function createConditionTransformer<
 
 // @public
 export function createPermissionIntegrationRouter<
-  TResourceType1 extends string,
-  TResource1,
-  TResourceType2 extends string,
-  TResource2,
-  TResourceType3 extends string,
-  TResource3,
+  ResourcesArr extends ResourceTuple<string, any>[],
 >(
   options?:
     | {
         permissions: Array<Permission>;
       }
-    | CreatePermissionIntegrationRouterResourceOptions<
-        TResourceType1,
-        TResource1
-      >
-    | PermissionIntegrationRouterOptions<
-        TResourceType1,
-        TResource1,
-        TResourceType2,
-        TResource2,
-        TResourceType3,
-        TResource3
-      >,
+    | CreatePermissionIntegrationRouterResourceOptions<string, any>
+    | PermissionIntegrationRouterOptions<ResourcesArr>,
 ): express.Router & {
   addPermissions(permissions: Permission[]): void;
   addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]): void;
@@ -274,45 +259,15 @@ export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
 // @public
 export type PermissionIntegrationRouterOptions<
-  TResourceType1 extends string = string,
-  TResource1 = any,
-  TResourceType2 extends string = string,
-  TResource2 = any,
-  TResourceType3 extends string = string,
-  TResource3 = any,
+  ResourcesArr extends ResourceTuple<string, any>[],
 > = {
   resources: Readonly<
-    | [
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType1,
-          TResource1
-        >,
-      ]
-    | [
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType1,
-          TResource1
-        >,
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType2,
-          TResource2
-        >,
-      ]
-    | [
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType1,
-          TResource1
-        >,
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType2,
-          TResource2
-        >,
-        CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType3,
-          TResource3
-        >,
-      ]
-  >;
+    ResourcesArr extends Array<infer A>
+      ? A extends ResourceTuple<string, any>
+        ? CreatePermissionIntegrationRouterResourceOptions<A[0], A[1]>
+        : never
+      : never
+  >[];
 };
 
 // @public
@@ -372,6 +327,12 @@ export type PolicyQueryUser = {
   credentials: BackstageCredentials;
   info: BackstageUserInfo;
 };
+
+// @public
+export type ResourceTuple<TResourceType extends string, TResource> = [
+  TResourceType,
+  TResource,
+];
 
 // @public
 export class ServerPermissionClient implements PermissionsService {
