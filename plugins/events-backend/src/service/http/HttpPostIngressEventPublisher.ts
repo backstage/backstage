@@ -21,9 +21,10 @@ import {
   EventsService,
   HttpPostIngressOptions,
   RequestValidator,
+  HttpDefaultBodyParser,
 } from '@backstage/plugin-events-node';
 import contentType from 'content-type';
-import express from 'express';
+import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { RequestValidationContextImpl } from './validation';
 
@@ -44,6 +45,39 @@ class UnsupportedMediaTypeError extends CustomErrorBase {
     super(`Unsupported media type: ${mediaType ?? 'unknown'}`);
   }
 }
+
+const defaultHttpDefaultBodyParser: HttpDefaultBodyParser = async (
+  request: Request,
+  topic: string,
+) => {
+  const requestBody = request.body;
+  if (!Buffer.isBuffer(requestBody)) {
+    throw new Error(
+      `Failed to retrieve raw body from incoming event for topic ${topic}; not a buffer: ${typeof requestBody}`,
+    );
+  }
+
+  const bodyBuffer: Buffer = requestBody;
+  const parsedContentType = contentType.parse(request);
+  if (
+    !parsedContentType.type ||
+    parsedContentType.type !== 'application/json'
+  ) {
+    throw new UnsupportedMediaTypeError(parsedContentType.type);
+  }
+
+  const encoding = parsedContentType.parameters.charset ?? 'utf-8';
+  if (!Buffer.isEncoding(encoding)) {
+    throw new UnsupportedCharsetError(encoding);
+  }
+
+  const bodyString = bodyBuffer.toString(encoding);
+  const bodyParsed =
+    parsedContentType.type === 'application/json'
+      ? JSON.parse(bodyString)
+      : bodyString;
+  return { bodyParsed, bodyBuffer, encoding };
+};
 
 /**
  * Publishes events received from their origin (e.g., webhook events from an SCM system)
@@ -93,7 +127,12 @@ export class HttpPostIngressEventPublisher {
     router.use(express.raw({ type: '*/*' }));
 
     Object.keys(ingresses).forEach(topic =>
-      this.addRouteForTopic(router, topic, ingresses[topic].validator),
+      this.addRouteForTopic(
+        router,
+        topic,
+        ingresses[topic].validator,
+        ingresses[topic].parser,
+      ),
     );
 
     return router;
@@ -103,37 +142,17 @@ export class HttpPostIngressEventPublisher {
     router: express.Router,
     topic: string,
     validator?: RequestValidator,
+    parser?: HttpDefaultBodyParser,
   ): void {
     const path = `/${topic}`;
     const logger = this.logger;
 
     router.post(path, async (request, response) => {
-      const requestBody = request.body;
-      if (!Buffer.isBuffer(requestBody)) {
-        throw new Error(
-          `Failed to retrieve raw body from incoming event for topic ${topic}; not a buffer: ${typeof requestBody}`,
-        );
-      }
-
-      const bodyBuffer: Buffer = requestBody;
-      const parsedContentType = contentType.parse(request);
-      if (
-        !parsedContentType.type ||
-        parsedContentType.type !== 'application/json'
-      ) {
-        throw new UnsupportedMediaTypeError(parsedContentType.type);
-      }
-
-      const encoding = parsedContentType.parameters.charset ?? 'utf-8';
-      if (!Buffer.isEncoding(encoding)) {
-        throw new UnsupportedCharsetError(encoding);
-      }
-
-      const bodyString = bodyBuffer.toString(encoding);
-      const bodyParsed =
-        parsedContentType.type === 'application/json'
-          ? JSON.parse(bodyString)
-          : bodyString;
+      const bodyParser = parser ?? defaultHttpDefaultBodyParser;
+      const { bodyParsed, bodyBuffer, encoding } = await bodyParser(
+        request,
+        topic,
+      );
 
       if (validator) {
         const requestDetails = {
