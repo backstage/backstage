@@ -23,5 +23,31 @@ export interface Config {
           include?: string[];
           exclude?: string[];
         };
+
+    startup?: {
+      default?: {
+        /**
+         * The default value for `onPluginBootFailure` if not specified for a particular plugin.
+         * This defaults to 'abort', which means `onPluginBootFailure: continue` must be specified
+         * for backend startup to continue on plugin boot failure. This can also be set to
+         * 'continue', which flips the logic for individual plugins so that they must be set to
+         * `onPluginBootFailure: abort` to be required.
+         */
+        onPluginBootFailure?: 'continue' | 'abort';
+      };
+      plugins?: {
+        [pluginId: string]: {
+          /**
+           * Used to control backend startup behavior when this plugin fails to boot up. Setting
+           * this to `continue` allows the backend to continue starting up, even if this plugin
+           * fails. This can enable leaving a crashing plugin installed, but still permit backend
+           * startup, which may help troubleshoot data-dependent issues. Plugin failures for plugins
+           * set to `abort` are fatal (this is the default unless overridden by the `default`
+           * setting).
+           */
+          onPluginBootFailure?: 'continue' | 'abort';
+        };
+      };
+    };
   };
 }

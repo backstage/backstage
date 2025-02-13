@@ -326,6 +326,7 @@ export interface OAuthAuthenticatorRefreshInput {
   req: Request_2;
   // (undocumented)
   scope: string;
+  scopeAlreadyGranted?: boolean;
 }
 
 // @public (undocumented)

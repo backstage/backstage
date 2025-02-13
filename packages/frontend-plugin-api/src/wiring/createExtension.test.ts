@@ -202,6 +202,20 @@ describe('createExtension', () => {
     });
   });
 
+  it('should create an extension with multiple attachment points', () => {
+    const extension = createExtension({
+      attachTo: [
+        { id: 'root', input: 'default' },
+        { id: 'other', input: 'default' },
+      ],
+      output: [stringDataRef, numberDataRef.optional()],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=root@default+other@default}',
+    );
+  });
+
   it('should create an extension with input', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },
