@@ -21,3 +21,4 @@ export type {
   SearchFilterWrapperProps,
 } from './SearchFilter';
 export type { SearchAutocompleteFilterProps } from './SearchFilter.Autocomplete';
+export type { FilterValueWithLabel, FilterValue } from './types';
