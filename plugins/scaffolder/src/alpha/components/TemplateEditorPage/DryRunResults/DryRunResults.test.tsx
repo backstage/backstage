@@ -21,6 +21,7 @@ import React, { useEffect } from 'react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResults } from './DryRunResults';
+import { formDecoratorsApiRef } from '../../../api';
 
 function DryRunRemote({
   execute,
@@ -50,19 +51,30 @@ function DryRunRemote({
   return null;
 }
 
-const mockScaffolderApi = {
-  dryRun: async () => ({
-    directoryContents: [],
-    log: [],
-    output: {},
-    steps: [],
-  }),
-};
+const mockApis = [
+  [
+    scaffolderApiRef,
+    {
+      dryRun: async () => ({
+        directoryContents: [],
+        log: [],
+        output: {},
+        steps: [],
+      }),
+    },
+  ],
+  [
+    formDecoratorsApiRef,
+    {
+      getFormDecorators: async () => [],
+    },
+  ],
+] as const;
 
 describe('DryRunResults', () => {
   it('renders without exploding', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+      <TestApiProvider apis={mockApis}>
         <DryRunProvider>
           <DryRunResults />
         </DryRunProvider>
@@ -73,7 +85,7 @@ describe('DryRunResults', () => {
 
   it('expands when dry-run result is added and toggles on click, and disappears when results are gone', async () => {
     const { rerender } = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+      <TestApiProvider apis={mockApis}>
         <DryRunProvider>
           <DryRunRemote />
           <DryRunResults />
@@ -85,7 +97,7 @@ describe('DryRunResults', () => {
 
     await act(async () => {
       rerender(
-        <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <TestApiProvider apis={mockApis}>
           <DryRunProvider>
             <DryRunRemote execute />
             <DryRunResults />
@@ -104,7 +116,7 @@ describe('DryRunResults', () => {
 
     await act(async () => {
       rerender(
-        <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <TestApiProvider apis={mockApis}>
           <DryRunProvider>
             <DryRunRemote remove />
             <DryRunResults />

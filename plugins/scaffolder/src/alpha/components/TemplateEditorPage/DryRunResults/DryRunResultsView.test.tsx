@@ -22,6 +22,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResultsView } from './DryRunResultsView';
+import { formDecoratorsApiRef } from '../../../api';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
 jest.mock('react-virtualized-auto-sizer', () => ({
@@ -68,6 +69,12 @@ describe('DryRunResultsView', () => {
                 },
                 steps: [{ id: 'foo', action: 'foo', name: 'Foo' }],
               }),
+            },
+          ],
+          [
+            formDecoratorsApiRef,
+            {
+              getFormDecorators: async () => [],
             },
           ],
         ]}
