@@ -46,7 +46,6 @@ export const createCacheMiddleware = ({
   cacheMiddleware.use(async (req, res, next) => {
     const socket = res.socket;
 
-    // Make concrete references to these things.
     const isCacheable = req.path.startsWith('/static/docs/');
     const isGetRequest = req.method === 'GET';
 
@@ -56,6 +55,7 @@ export const createCacheMiddleware = ({
       return;
     }
 
+    // Make concrete references to these things.
     const reqPath = decodeURI(req.path.match(/\/static\/docs\/(.*)$/)![1]);
     const realEnd = socket.end.bind(socket);
     const realWrite = socket.write.bind(socket);

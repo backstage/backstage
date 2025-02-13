@@ -56,7 +56,7 @@ describe('createCacheMiddleware', () => {
       invalidate: jest.fn().mockResolvedValue(undefined),
       invalidateMultiple: jest.fn().mockResolvedValue(undefined),
     } as unknown as jest.Mocked<TechDocsCache>;
-    const router = createCacheMiddleware({
+    const router = await createCacheMiddleware({
       logger: mockServices.logger.mock(),
       cache,
     });
