@@ -18,7 +18,7 @@ import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { InputError } from '@backstage/errors';
+import { InputError, NotImplementedError } from '@backstage/errors';
 import {
   AuthorizeResult,
   DefinitivePolicyDecision,
@@ -32,13 +32,12 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionRule, PermissionRuleset } from '../types';
 import {
-  NoInfer,
   createGetRule,
   isAndCriteria,
   isNotCriteria,
   isOrCriteria,
+  NoInfer,
 } from './util';
-import { NotImplementedError } from '@backstage/errors';
 import { PermissionResourceRef } from './createPermissionResourceRef';
 
 const permissionCriteriaSchema: z.ZodSchema<
@@ -467,7 +466,10 @@ export function createPermissionIntegrationRouter<
 
   const router = Router();
 
-  router.use('/.well-known/backstage/permissions/', express.json());
+  router.use(
+    '/.well-known/backstage/permissions/',
+    express.json({ limit: '5mb' }),
+  );
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
     res.json(store.getSerializedMetadata());
