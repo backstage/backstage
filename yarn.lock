@@ -180,14 +180,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:9.0.6":
-  version: 9.0.6
-  resolution: "@apidevtools/json-schema-ref-parser@npm:9.0.6"
+"@apidevtools/json-schema-ref-parser@npm:11.7.2":
+  version: 11.7.2
+  resolution: "@apidevtools/json-schema-ref-parser@npm:11.7.2"
   dependencies:
     "@jsdevtools/ono": ^7.1.3
-    call-me-maybe: ^1.0.1
-    js-yaml: ^3.13.1
-  checksum: c7ff53623ab8a9dd221772a5757fa0b9e5167a5ac3a71c23596634bae6efc85d8efcdebbe17f73ee5c027ea5afc48c705e8a720f02c4909f9a357d8027040b7b
+    "@types/json-schema": ^7.0.15
+    js-yaml: ^4.1.0
+  checksum: 44096e5cd5a03b17ee5eb0a3b9e9a4db85d87da8ae2abda264eae615f2a43e3e6ba5ca208e1161d4d946755b121c10a9550e88792a725951f2c4cff6df0d8a19
   languageName: node
   linkType: hard
 
@@ -229,19 +229,19 @@ __metadata:
   linkType: hard
 
 "@apidevtools/swagger-parser@npm:^10.1.0":
-  version: 10.1.0
-  resolution: "@apidevtools/swagger-parser@npm:10.1.0"
+  version: 10.1.1
+  resolution: "@apidevtools/swagger-parser@npm:10.1.1"
   dependencies:
-    "@apidevtools/json-schema-ref-parser": 9.0.6
+    "@apidevtools/json-schema-ref-parser": 11.7.2
     "@apidevtools/openapi-schemas": ^2.1.0
     "@apidevtools/swagger-methods": ^3.0.2
     "@jsdevtools/ono": ^7.1.3
-    ajv: ^8.6.3
+    ajv: ^8.17.1
     ajv-draft-04: ^1.0.0
-    call-me-maybe: ^1.0.1
+    call-me-maybe: ^1.0.2
   peerDependencies:
     openapi-types: ">=7"
-  checksum: c7c923755bd025ee2cae97e1cfd525538523ba74c341a0ac814c023ffe5e63fc2d997539a8ccf9a0fcec41a2d6337d40cc5735acb991ddcbb415853a241908d1
+  checksum: af6db1d5f8cbd11280ad560cccbdaee78c65000fa543ee1db902441f684a028adbe3e60df591dd4369663f1f6007c5ef9dd910f6c18fa69eb5e11fd99bc3f1f0
   languageName: node
   linkType: hard
 
@@ -24652,10 +24652,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"call-me-maybe@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "call-me-maybe@npm:1.0.1"
-  checksum: d19e9d6ac2c6a83fb1215718b64c5e233f688ebebb603bdfe4af59cde952df1f2b648530fab555bf290ea910d69d7d9665ebc916e871e0e194f47c2e48e4886b
+"call-me-maybe@npm:^1.0.1, call-me-maybe@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "call-me-maybe@npm:1.0.2"
+  checksum: 42ff2d0bed5b207e3f0122589162eaaa47ba618f79ad2382fe0ba14d9e49fbf901099a6227440acc5946f86a4953e8aa2d242b330b0a5de4d090bb18f8935cae
   languageName: node
   linkType: hard
 
