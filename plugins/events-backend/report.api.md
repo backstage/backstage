@@ -11,6 +11,7 @@ import { EventPublisher } from '@backstage/plugin-events-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import express from 'express';
+import { HttpBodyParser } from '@backstage/plugin-events-node';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -57,6 +58,9 @@ export class HttpPostIngressEventPublisher {
     events: EventsService;
     ingresses?: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+    };
+    bodyParsers?: {
+      [contentType: string]: HttpBodyParser;
     };
     logger: LoggerService;
   }): HttpPostIngressEventPublisher;
