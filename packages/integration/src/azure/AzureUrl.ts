@@ -22,7 +22,7 @@ export class AzureUrl {
    *
    * Throws an error if the URL is not a valid azure repo URL.
    */
-  static fromRepoUrl(repoUrl: string): AzureUrl {
+  static fromRepoUrl(repoUrl: string, apiVersion: string): AzureUrl {
     const url = new URL(repoUrl);
 
     let owner;
@@ -59,7 +59,15 @@ export class AzureUrl {
       ref = version.slice(2);
     }
 
-    return new AzureUrl(url.origin, owner, project, repo, path, ref);
+    return new AzureUrl(
+      url.origin,
+      owner,
+      project,
+      repo,
+      path,
+      ref,
+      apiVersion,
+    );
   }
 
   #origin: string;
@@ -68,6 +76,7 @@ export class AzureUrl {
   #repo: string;
   #path?: string;
   #ref?: string;
+  #apiVersion: string;
 
   private constructor(
     origin: string,
@@ -76,6 +85,7 @@ export class AzureUrl {
     repo: string,
     path?: string,
     ref?: string,
+    apiVersion: string = '6.0', // Default to '6.0' if not provided
   ) {
     this.#origin = origin;
     this.#owner = owner;
@@ -83,6 +93,7 @@ export class AzureUrl {
     this.#repo = repo;
     this.#path = path;
     this.#ref = ref;
+    this.#apiVersion = apiVersion; // Set the apiVersion
   }
 
   #baseUrl = (...parts: string[]): URL => {
@@ -135,7 +146,7 @@ export class AzureUrl {
       this.#repo,
       'items',
     );
-    url.searchParams.set('api-version', '6.0');
+    url.searchParams.set('api-version', this.#apiVersion);
     url.searchParams.set('path', this.#path);
 
     if (this.#ref) {
@@ -162,7 +173,7 @@ export class AzureUrl {
     );
     url.searchParams.set('recursionLevel', 'full');
     url.searchParams.set('download', 'true');
-    url.searchParams.set('api-version', '6.0');
+    url.searchParams.set('api-version', this.#apiVersion);
 
     if (this.#path) {
       url.searchParams.set('scopePath', this.#path);

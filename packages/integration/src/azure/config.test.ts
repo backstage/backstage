@@ -33,6 +33,7 @@ type AzureIntegrationConfigLike = Partial<
 describe('readAzureIntegrationConfig', () => {
   const valid: any = {
     host: 'dev.azure.com',
+    apiVersion: '6.0',
   };
 
   function buildConfig(data: AzureIntegrationConfigLike): Config {
@@ -78,6 +79,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'PersonalAccessToken',
@@ -102,6 +104,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'a.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'PersonalAccessToken',
@@ -115,6 +118,7 @@ describe('readAzureIntegrationConfig', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             organizations: ['org1', 'org2'],
@@ -128,6 +132,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'ClientSecret',
@@ -144,6 +149,7 @@ describe('readAzureIntegrationConfig', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             clientId: 'id',
@@ -156,6 +162,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'ClientSecret',
@@ -171,6 +178,7 @@ describe('readAzureIntegrationConfig', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             organizations: ['org1', 'org2'],
@@ -182,6 +190,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'ManagedIdentity',
@@ -196,6 +205,7 @@ describe('readAzureIntegrationConfig', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             clientId: 'id',
@@ -206,6 +216,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'ManagedIdentity',
@@ -217,19 +228,21 @@ describe('readAzureIntegrationConfig', () => {
 
   it('inserts the defaults if missing', () => {
     const output = readAzureIntegrationConfig(buildConfig({}));
-    expect(output).toEqual({ host: 'dev.azure.com' });
+    expect(output).toEqual({ host: 'dev.azure.com', apiVersion: '6.0' });
   });
 
   it('maps deprecated token to credentials', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         token: 't',
       }),
     );
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'PersonalAccessToken',
@@ -243,6 +256,7 @@ describe('readAzureIntegrationConfig', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credential: {
           clientId: 'id',
           clientSecret: 'secret',
@@ -253,6 +267,7 @@ describe('readAzureIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'dev.azure.com',
+      apiVersion: '6.0',
       credentials: [
         {
           kind: 'ClientSecret',
@@ -514,6 +529,7 @@ describe('readAzureIntegrationConfig', () => {
       ),
     ).toEqual({
       host: 'a.com',
+      apiVersion: '6.0',
     });
   });
 });
@@ -528,6 +544,7 @@ describe('readAzureIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'dev.azure.com',
+          apiVersion: '6.0',
           credentials: [
             {
               organizations: ['org1'],
@@ -541,6 +558,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             kind: 'PersonalAccessToken',
@@ -557,6 +575,7 @@ describe('readAzureIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'dev.azure.com',
+          apiVersion: '6.0',
           credentials: [
             {
               personalAccessToken: 't',
@@ -569,6 +588,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             kind: 'PersonalAccessToken',
@@ -584,6 +604,7 @@ describe('readAzureIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'dev.azure.com',
+          apiVersion: '6.0',
           credentials: [
             {
               organizations: ['org1', 'org2'],
@@ -599,6 +620,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             kind: 'ClientSecret',
@@ -617,6 +639,7 @@ describe('readAzureIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'dev.azure.com',
+          apiVersion: '6.0',
           credentials: [
             {
               clientId: 'id',
@@ -631,6 +654,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             kind: 'ClientSecret',
@@ -648,6 +672,7 @@ describe('readAzureIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'dev.azure.com',
+          apiVersion: '6.0',
           credentials: [
             {
               organizations: ['org1', 'org2'],
@@ -661,6 +686,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             kind: 'ManagedIdentity',
@@ -677,6 +703,7 @@ describe('readAzureIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'dev.azure.com',
+          apiVersion: '6.0',
           credentials: [
             {
               clientId: 'id',
@@ -689,6 +716,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
         credentials: [
           {
             kind: 'ManagedIdentity',
@@ -704,6 +732,7 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'dev.azure.com',
+        apiVersion: '6.0',
       },
     ]);
   });
