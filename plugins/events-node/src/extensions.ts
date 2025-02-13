@@ -19,6 +19,7 @@ import {
   EventBroker,
   EventPublisher,
   EventSubscriber,
+  HttpBodyParserOptions,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 
@@ -46,6 +47,8 @@ export interface EventsExtensionPoint {
   ): void;
 
   addHttpPostIngress(options: HttpPostIngressOptions): void;
+
+  addHttpPostBodyParser(options: HttpBodyParserOptions): void;
 }
 
 /**

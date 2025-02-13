@@ -22,6 +22,7 @@ import request from 'supertest';
 import { HttpPostIngressEventPublisher } from './HttpPostIngressEventPublisher';
 import { mockServices } from '@backstage/backend-test-utils';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { HttpBodyParser } from '@backstage/plugin-events-node';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -207,7 +208,8 @@ describe('HttpPostIngressEventPublisher', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         error: {
-          message: 'Unsupported media type: text/plain',
+          message:
+            'Unsupported media type: text/plain. You need to provide a custom body parser for this media type using events extension.',
           name: 'UnsupportedMediaTypeError',
           statusCode: 415,
         },
@@ -215,6 +217,89 @@ describe('HttpPostIngressEventPublisher', () => {
         response: { statusCode: 415 },
       }),
     );
+  });
+
+  it('with a text/plain body parser implementation', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const bodyParser: HttpBodyParser = async (req, _topic) => {
+      return {
+        bodyParsed: req.body.toString('utf-8'),
+        bodyBuffer: req.body,
+        encoding: 'utf-8',
+      };
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      bodyParsers: {
+        'text/plain': bodyParser,
+      },
+      logger,
+    });
+    publisher.bind(router);
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Textual information');
+    expect(response.status).toBe(202);
+  });
+
+  it('with a custom application/json body parser implementation', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+    const customParse = jest.fn();
+
+    const bodyParser: HttpBodyParser = async (req, _topic) => {
+      customParse();
+      return {
+        bodyParsed: JSON.parse(req.body.toString('utf-8')),
+        bodyBuffer: req.body,
+        encoding: 'utf-8',
+      };
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      bodyParsers: {
+        'application/json': bodyParser,
+      },
+      logger,
+    });
+    publisher.bind(router);
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json')
+      .timeout(1000)
+      .send(JSON.stringify({ testA: 'data' }));
+    expect(response.status).toBe(202);
+    expect(customParse).toHaveBeenCalled();
   });
 
   it('with validator', async () => {
