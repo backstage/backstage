@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.14-next.2
+
+### Patch Changes
+
+- e09d3e8: Added alpha support for the New Frontend System
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+
 ## 0.2.14-next.1
 
 ### Patch Changes

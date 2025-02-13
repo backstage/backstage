@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.4.5-next.4
+
+### Patch Changes
+
+- eb80a1a: Minor doc string update
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.0-next.4
+  - @backstage/backend-plugin-api@1.2.0-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.16.0-next.4
+
 ## 0.4.5-next.3
 
 ### Patch Changes
