@@ -209,6 +209,29 @@ export function buildGerritGitilesUrl(
 }
 
 /**
+ * Build a Gerrit Gitiles url that targets a specific path.
+ *
+ * @param config - A Gerrit provider config.
+ * @param project - The name of the git project
+ * @param branch - The branch we will target.
+ * @param filePath - The absolute file path.
+ * @public
+ */
+export function buildGerritEditUrl(
+  config: GerritIntegrationConfig,
+  project: string,
+  branch: string,
+  filePath: string,
+): string {
+  return `${
+    config.baseUrl
+  }/admin/repos/edit/repo/${project}/branch/refs/heads/${branch}/file/${trimStart(
+    filePath,
+    '/',
+  )}`;
+}
+
+/**
  * Build a Gerrit Gitiles archive url that targets a specific branch and path
  *
  * @param config - A Gerrit provider config.

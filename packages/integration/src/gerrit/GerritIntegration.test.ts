@@ -47,6 +47,7 @@ describe('GerritIntegration', () => {
   it('returns the basics', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
     } as any);
     expect(integration.type).toBe('gerrit');
     expect(integration.title).toBe('gerrit-review.example.com');
@@ -70,6 +71,7 @@ describe('GerritIntegration', () => {
     it('handles line numbers', () => {
       const integration = new GerritIntegration({
         host: 'gerrit-review.example.com',
+        gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
       } as any);
 
       expect(
@@ -85,6 +87,7 @@ describe('GerritIntegration', () => {
   describe('resolves with a relative url', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
     } as any);
     it('works for valid urls pointing to a branch', () => {
       expect(
@@ -144,8 +147,27 @@ describe('GerritIntegration', () => {
     // url as is.
     expect(
       integration.resolveEditUrl(
-        'https://gerrit-review.example.com/catalog-info.yaml',
+        'https://gerrit-review.example.com/gitiles/backstage/backstage/+/refs/heads/master/catalog-info.yaml',
       ),
-    ).toBe('https://gerrit-review.example.com/catalog-info.yaml');
+    ).toBe(
+      'https://gerrit-review.example.com/gitiles/backstage/backstage/+/refs/heads/master/catalog-info.yaml',
+    );
+  });
+
+  it('resolve edit URL with editUrl', () => {
+    const integration = new GerritIntegration({
+      host: 'gerrit-review.example.com',
+      baseUrl: 'https://gerrit-review.example.com',
+      enableEditUrl: true,
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+    } as any);
+
+    expect(
+      integration.resolveEditUrl(
+        'https://gerrit-review.example.com/gitiles/backstage/backstage/+/refs/heads/master/catalog-info.yaml',
+      ),
+    ).toBe(
+      'https://gerrit-review.example.com/admin/repos/edit/repo/backstage/backstage/branch/refs/heads/master/file/catalog-info.yaml',
+    );
   });
 });
