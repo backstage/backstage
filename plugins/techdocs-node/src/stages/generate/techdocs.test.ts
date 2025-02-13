@@ -47,12 +47,14 @@ describe('readGeneratorConfig', () => {
       techdocs: {
         generator: {
           runIn: 'local',
+          timeout: { minutes: 5 },
         },
       },
     });
 
     expect(readGeneratorConfig(config, logger)).toEqual({
       runIn: 'local',
+      timeout: 5 * 60 * 1000,
     });
   });
 
