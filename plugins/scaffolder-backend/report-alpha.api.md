@@ -9,10 +9,29 @@ import { Conditions } from '@backstage/plugin-permission-node';
 import { JsonObject } from '@backstage/types';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+
+// @alpha @deprecated (undocumented)
+export const createActionPermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    ScaffolderActionPermissionResource,
+    {},
+    'scaffolder-action',
+    TParams
+  >,
+) => PermissionRule<
+  ScaffolderActionPermissionResource,
+  {},
+  'scaffolder-action',
+  TParams
+>;
 
 // @alpha (undocumented)
 export const createScaffolderActionConditionalDecision: (
@@ -26,6 +45,23 @@ export const createScaffolderTemplateConditionalDecision: (
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
 ) => ConditionalPolicyDecision;
 
+// @alpha @deprecated (undocumented)
+export const createTemplatePermissionRule: <
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: PermissionRule<
+    ScaffolderTemplatePermissionResource,
+    {},
+    'scaffolder-template',
+    TParams
+  >,
+) => PermissionRule<
+  ScaffolderTemplatePermissionResource,
+  {},
+  'scaffolder-template',
+  TParams
+>;
+
 // @alpha (undocumented)
 const _feature: BackendFeature;
 export default _feature;
@@ -33,10 +69,7 @@ export default _feature;
 // @alpha
 export const scaffolderActionConditions: Conditions<{
   hasActionId: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    ScaffolderActionPermissionResource,
     {},
     'scaffolder-action',
     {
@@ -44,10 +77,7 @@ export const scaffolderActionConditions: Conditions<{
     }
   >;
   hasBooleanProperty: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    ScaffolderActionPermissionResource,
     {},
     'scaffolder-action',
     {
@@ -56,10 +86,7 @@ export const scaffolderActionConditions: Conditions<{
     }
   >;
   hasNumberProperty: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    ScaffolderActionPermissionResource,
     {},
     'scaffolder-action',
     {
@@ -68,10 +95,7 @@ export const scaffolderActionConditions: Conditions<{
     }
   >;
   hasStringProperty: PermissionRule<
-    {
-      action: string;
-      input: JsonObject | undefined;
-    },
+    ScaffolderActionPermissionResource,
     {},
     'scaffolder-action',
     {
@@ -81,10 +105,65 @@ export const scaffolderActionConditions: Conditions<{
   >;
 }>;
 
+// @alpha (undocumented)
+export type ScaffolderActionPermissionResource =
+  | {
+      action: string;
+      input: JsonObject | undefined;
+    }
+  | ScaffolderTemplatePermissionResource;
+
+// @alpha (undocumented)
+export const scaffolderActionPermissionResourceRef: PermissionResourceRef<
+  ScaffolderActionPermissionResource,
+  {},
+  'scaffolder-action',
+  'scaffolder'
+>;
+
+// @alpha (undocumented)
+export const scaffolderActionRules: {
+  hasActionId: PermissionRule<
+    ScaffolderActionPermissionResource,
+    {},
+    'scaffolder-action',
+    {
+      actionId: string;
+    }
+  >;
+  hasBooleanProperty: PermissionRule<
+    ScaffolderActionPermissionResource,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
+  hasNumberProperty: PermissionRule<
+    ScaffolderActionPermissionResource,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: number | undefined;
+    }
+  >;
+  hasStringProperty: PermissionRule<
+    ScaffolderActionPermissionResource,
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: string | undefined;
+    }
+  >;
+};
+
 // @alpha
 export const scaffolderTemplateConditions: Conditions<{
   hasTag: PermissionRule<
-    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+    ScaffolderTemplatePermissionResource,
     {},
     'scaffolder-template',
     {
@@ -92,6 +171,31 @@ export const scaffolderTemplateConditions: Conditions<{
     }
   >;
 }>;
+
+// @alpha (undocumented)
+export type ScaffolderTemplatePermissionResource =
+  | TemplateEntityStepV1beta3
+  | TemplateParametersV1beta3;
+
+// @alpha (undocumented)
+export const scaffolderTemplatePermissionResourceRef: PermissionResourceRef<
+  ScaffolderTemplatePermissionResource,
+  {},
+  'scaffolder-template',
+  'scaffolder'
+>;
+
+// @alpha (undocumented)
+export const scaffolderTemplateRules: {
+  hasTag: PermissionRule<
+    ScaffolderTemplatePermissionResource,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

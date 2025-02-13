@@ -26,6 +26,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LifecycleService,
+  PermissionsRegistryService,
   PermissionsService,
   resolveSafeChildPath,
   SchedulerService,
@@ -47,7 +48,10 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  PermissionRuleParams,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
@@ -111,11 +115,18 @@ import {
   parseNumberParam,
   parseStringsParam,
 } from './helpers';
-import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import {
+  ScaffolderActionPermissionResource,
+  scaffolderActionPermissionResourceRef,
+  scaffolderActionRules,
+  ScaffolderTemplatePermissionResource,
+  scaffolderTemplatePermissionResourceRef,
+  scaffolderTemplateRules,
+} from './rules';
 
 /**
- *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export type TemplatePermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
@@ -125,6 +136,7 @@ export type TemplatePermissionRuleInput<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TParams
 >;
+
 function isTemplatePermissionRuleInput(
   permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
 ): permissionRule is TemplatePermissionRuleInput {
@@ -132,8 +144,8 @@ function isTemplatePermissionRuleInput(
 }
 
 /**
- *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export type ActionPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
@@ -143,6 +155,7 @@ export type ActionPermissionRuleInput<
   typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
   TParams
 >;
+
 function isActionPermissionRuleInput(
   permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
 ): permissionRule is ActionPermissionRuleInput {
@@ -183,6 +196,9 @@ export interface RouterOptions {
     | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
+  /**
+   * @deprecated Please migrate to the new backend system and use the PermissionsRegistryService for adding custom rules
+   */
   permissionRules?: Array<
     TemplatePermissionRuleInput | ActionPermissionRuleInput
   >;
@@ -193,6 +209,7 @@ export interface RouterOptions {
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
+  permissionsRegistry?: PermissionsRegistryService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -305,7 +322,14 @@ export async function createRouter(
     autocompleteHandlers = {},
     events: eventsService,
     auditor,
+    permissionsRegistry,
   } = options;
+
+  if (permissionsRegistry && permissionRules) {
+    throw new Error(
+      'Both the permissions registry and custom permission rules were passed. Custom permissions must be registered with the PermissionsRegistry.',
+    );
+  }
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
     ...options,
@@ -447,39 +471,63 @@ export async function createRouter(
     ...templateExtensions,
   });
 
-  const templateRules: TemplatePermissionRuleInput[] = Object.values(
-    scaffolderTemplateRules,
-  );
-  const actionRules: ActionPermissionRuleInput[] = Object.values(
-    scaffolderActionRules,
-  );
+  type Authorizer<TResource> = (
+    decision: PolicyDecision,
+    resource?: TResource,
+  ) => boolean;
 
-  if (permissionRules) {
-    templateRules.push(
-      ...permissionRules.filter(isTemplatePermissionRuleInput),
+  let isParamAuthorized: Authorizer<ScaffolderTemplatePermissionResource>;
+  let isStepAuthorized: Authorizer<ScaffolderActionPermissionResource>;
+
+  if (permissionsRegistry) {
+    isParamAuthorized = createConditionAuthorizer(
+      permissionsRegistry.getPermissionRuleset(
+        scaffolderTemplatePermissionResourceRef,
+      ),
     );
-    actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
+    isStepAuthorized = createConditionAuthorizer(
+      permissionsRegistry.getPermissionRuleset(
+        scaffolderActionPermissionResourceRef,
+      ),
+    );
+  } else {
+    // Configure legacy permissions router and authorizers
+
+    const templateRules = Object.values(
+      scaffolderTemplateRules,
+    ) as TemplatePermissionRuleInput[];
+    const actionRules = Object.values(
+      scaffolderActionRules,
+    ) as ActionPermissionRuleInput[];
+
+    if (permissionRules) {
+      templateRules.push(
+        ...permissionRules.filter(isTemplatePermissionRuleInput),
+      );
+      actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
+    }
+
+    isParamAuthorized = createConditionAuthorizer(templateRules);
+    isStepAuthorized = createConditionAuthorizer(actionRules);
+
+    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+      resources: [
+        {
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+          permissions: scaffolderTemplatePermissions,
+          rules: templateRules,
+        },
+        {
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          permissions: scaffolderActionPermissions,
+          rules: actionRules,
+        },
+      ],
+      permissions: scaffolderPermissions,
+    });
+
+    router.use(permissionIntegrationRouter);
   }
-
-  const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
-
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    resources: [
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-        permissions: scaffolderTemplatePermissions,
-        rules: templateRules,
-      },
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-        permissions: scaffolderActionPermissions,
-        rules: actionRules,
-      },
-    ],
-    permissions: scaffolderPermissions,
-  });
-
-  router.use(permissionIntegrationRouter);
 
   router
     .get(
@@ -1158,19 +1206,22 @@ export async function createRouter(
     // Authorize parameters
     if (Array.isArray(template.spec.parameters)) {
       template.spec.parameters = template.spec.parameters.filter(step =>
-        isAuthorized(parameterDecision, step),
+        isParamAuthorized(parameterDecision, step),
       );
     } else if (
       template.spec.parameters &&
-      !isAuthorized(parameterDecision, template.spec.parameters)
+      !isParamAuthorized(parameterDecision, template.spec.parameters)
     ) {
       template.spec.parameters = undefined;
     }
 
     // Authorize steps
-    template.spec.steps = template.spec.steps.filter(step =>
-      isAuthorized(stepDecision, step),
-    );
+    template.spec.steps = template.spec.steps.filter(step => {
+      return (
+        isStepAuthorized(stepDecision, step) &&
+        isParamAuthorized(stepDecision, step) // Check step parameters as well
+      );
+    });
 
     return template;
   }
