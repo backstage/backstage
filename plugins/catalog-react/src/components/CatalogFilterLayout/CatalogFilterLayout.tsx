@@ -23,6 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Theme, useTheme } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import useDebounce from 'react-use/esm/useDebounce';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -39,11 +40,22 @@ export const Filters = (props: {
       theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
     { noSsr: true },
   );
+  const [
+    debouncedIsScreenSmallerThanBreakpoint,
+    setDebouncedIsScreenSmallerThanBreakpoint,
+  ] = useState(isScreenSmallerThanBreakpoint);
+
+  useDebounce(
+    () =>
+      setDebouncedIsScreenSmallerThanBreakpoint(isScreenSmallerThanBreakpoint),
+    200,
+    [isScreenSmallerThanBreakpoint],
+  );
   const theme = useTheme();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
-  return isScreenSmallerThanBreakpoint ? (
+  return debouncedIsScreenSmallerThanBreakpoint ? (
     <>
       <Button
         style={{ marginTop: theme.spacing(1), marginLeft: theme.spacing(1) }}
