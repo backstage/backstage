@@ -30,11 +30,13 @@ import {
 } from '@backstage/plugin-catalog-react';
 import {
   EntityContentBlueprint,
+  EntityHeaderBlueprint,
   defaultEntityContentGroups,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import { DefaultEntityLayoutHeader } from './components/EntityLayout/DefaultEntityLayoutHeader';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -58,6 +60,11 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
 export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   name: 'entity',
   inputs: {
+    headers: createExtensionInput([
+      EntityHeaderBlueprint.dataRefs.filterFunction,
+      EntityHeaderBlueprint.dataRefs.filterExpression,
+      EntityHeaderBlueprint.dataRefs.component,
+    ]),
     contents: createExtensionInput([
       coreExtensionData.reactElement,
       coreExtensionData.routePath,
@@ -79,6 +86,14 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       defaultPath: '/catalog/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(entityRouteRef),
       loader: async () => {
+        const headers = inputs.headers.map(header => ({
+          filter: buildFilterFn(
+            header.get(EntityHeaderBlueprint.dataRefs.filterFunction),
+            header.get(EntityHeaderBlueprint.dataRefs.filterExpression),
+          ),
+          Component: header.get(EntityHeaderBlueprint.dataRefs.component),
+        }));
+
         const { EntityLayout } = await import('./components/EntityLayout');
 
         // config groups override default groups
@@ -109,9 +124,12 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         }, {});
 
         const Component = () => {
+          const { entity, ...rest } = useEntityFromUrl();
+          const header = headers.find(({ filter }) => entity && filter(entity));
+
           return (
-            <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout>
+            <AsyncEntityProvider {...rest} entity={entity}>
+              <EntityLayout HeaderComponent={header?.Component}>
                 {Object.entries(tabs).flatMap(([group, items]) =>
                   items.map(output => (
                     <EntityLayout.Route

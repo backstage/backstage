@@ -20,6 +20,10 @@ export {
   type EntityCardLayoutProps,
 } from './EntityCardLauyoutBlueprint';
 export {
+  EntityHeaderBlueprint,
+  type BaseEntityHeaderProps,
+} from './EntityHeaderBlueprint';
+export {
   defaultEntityContentGroups,
   defaultEntityCardAreas,
 } from './extensionData';
