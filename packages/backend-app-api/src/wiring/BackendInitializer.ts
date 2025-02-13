@@ -330,7 +330,7 @@ export class BackendInitializer {
     // All plugins are initialized in parallel
     const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
-        const isPluginOptional = this.#getPluginOptionalityPredicate(
+        const isBootFailurePermitted = this.#getPluginBootFailurePredicate(
           pluginId,
           rootConfig,
         );
@@ -403,8 +403,8 @@ export class BackendInitializer {
           await lifecycleService.startup();
         } catch (error: unknown) {
           assertError(error);
-          if (isPluginOptional) {
-            initLogger.onOptionalPluginFailed(pluginId, error);
+          if (isBootFailurePermitted) {
+            initLogger.onPermittedPluginFailure(pluginId, error);
           } else {
             initLogger.onPluginFailed(pluginId, error);
             throw error;
@@ -636,15 +636,18 @@ export class BackendInitializer {
     }
   }
 
-  #getPluginOptionalityPredicate(pluginId: string, config?: Config): boolean {
-    const defaultStartupOptionalValue =
-      config?.getOptionalBoolean('backend.startup.default.optional') ?? false;
+  #getPluginBootFailurePredicate(pluginId: string, config?: Config): boolean {
+    const defaultStartupBootFailureValue =
+      config?.getOptionalString(
+        'backend.startup.default.onPluginBootFailure',
+      ) ?? 'abort';
 
-    return (
-      config?.getOptionalBoolean(
-        `backend.startup.plugins.${pluginId}.optional`,
-      ) ?? defaultStartupOptionalValue
-    );
+    const pluginStartupBootFailureValue =
+      config?.getOptionalString(
+        `backend.startup.plugins.${pluginId}.onPluginBootFailure`,
+      ) ?? defaultStartupBootFailureValue;
+
+    return pluginStartupBootFailureValue === 'continue';
   }
 }
 

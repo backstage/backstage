@@ -10,22 +10,22 @@ backend:
   startup:
     plugins:
       plugin-x:
-        optional: true
+        onPluginBootFailure: continue
 ```
 
-This configuration permits `plugin-x` to fail on startup. Omitting the `startup`
-configuration matches the previous behavior, wherein any individual plugin
-failure is fatal to backend startup.
+This configuration permits `plugin-x` to fail on startup. Omitting the
+`onPluginBootFailure` configuration matches the previous behavior, wherein any
+individual plugin failure aborts backend startup.
 
-The default can also be changed, so that all plugins are considered optional
+The default can also be changed, so that continuing on failure is the default
 unless otherwise specified:
 
 ```yaml
 backend:
   startup:
     default:
-      optional: true
+      onPluginBootFailure: continue
     plugins:
       catalog:
-        optional: false
+        onPluginBootFailure: abort
 ```

@@ -28,7 +28,7 @@ export function createInitializationLogger(
 ): {
   onPluginStarted(pluginId: string): void;
   onPluginFailed(pluginId: string, error: Error): void;
-  onOptionalPluginFailed(pluginId: string, error: Error): void;
+  onPermittedPluginFailure(pluginId: string, error: Error): void;
   onAllStarted(): void;
 } {
   const logger = rootLogger?.child({ type: 'initialization' });
@@ -80,10 +80,10 @@ export function createInitializationLogger(
         error,
       );
     },
-    onOptionalPluginFailed(pluginId: string, error: Error) {
+    onPermittedPluginFailure(pluginId: string, error: Error) {
       starting.delete(pluginId);
       logger?.error(
-        `Plugin '${pluginId}' threw an error during startup, but the plugin is marked optional in config so startup will continue.`,
+        `Plugin '${pluginId}' threw an error during startup, but boot failure is permitted for this plugin so startup will continue.`,
         error,
       );
     },

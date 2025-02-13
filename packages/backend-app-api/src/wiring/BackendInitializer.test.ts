@@ -560,13 +560,15 @@ describe('BackendInitializer', () => {
     );
   });
 
-  it('should permit startup errors for plugins marked as optional', async () => {
+  it('should permit startup errors for plugins with onPluginBootFailure: continue', async () => {
     const init = new BackendInitializer([
       mockServices.rootLifecycle.factory(),
       mockServices.rootLogger.factory(),
       mockServices.rootConfig.factory({
         data: {
-          backend: { startup: { plugins: { test: { optional: true } } } },
+          backend: {
+            startup: { plugins: { test: { onPluginBootFailure: 'continue' } } },
+          },
         },
       }),
     ]);
@@ -586,12 +588,16 @@ describe('BackendInitializer', () => {
     await expect(init.start()).resolves.not.toThrow();
   });
 
-  it('should permit startup errors if the default is set', async () => {
+  it('should permit startup errors if the default onPluginBootFailure is continue', async () => {
     const init = new BackendInitializer([
       mockServices.rootLifecycle.factory(),
       mockServices.rootLogger.factory(),
       mockServices.rootConfig.factory({
-        data: { backend: { startup: { default: { optional: true } } } },
+        data: {
+          backend: {
+            startup: { default: { onPluginBootFailure: 'continue' } },
+          },
+        },
       }),
     ]);
     init.add(
@@ -610,7 +616,7 @@ describe('BackendInitializer', () => {
     await expect(init.start()).resolves.not.toThrow();
   });
 
-  it('should forward errors for plugins explicitly marked as not optional when the default is true', async () => {
+  it('should forward errors for plugins explicitly marked to abort when the default is continue', async () => {
     const init = new BackendInitializer([
       mockServices.rootLifecycle.factory(),
       mockServices.rootLogger.factory(),
@@ -618,8 +624,8 @@ describe('BackendInitializer', () => {
         data: {
           backend: {
             startup: {
-              default: { optional: true },
-              plugins: { test: { optional: false } },
+              default: { onPluginBootFailure: 'continue' },
+              plugins: { test: { onPluginBootFailure: 'abort' } },
             },
           },
         },
