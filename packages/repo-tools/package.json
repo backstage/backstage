@@ -81,6 +81,7 @@
     "portfinder": "^1.0.32",
     "tar": "^6.1.12",
     "ts-morph": "^24.0.0",
+    "typedoc": "^0.27.6",
     "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {
