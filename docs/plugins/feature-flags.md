@@ -19,7 +19,12 @@ import { createPlugin } from '@backstage/core-plugin-api';
 
 export const examplePlugin = createPlugin({
   // ...
-  featureFlags: [{ name: 'show-example-feature' }],
+  featureFlags: [
+    {
+      name: 'show-example-feature',
+      description: 'Enables example feature',
+    },
+  ],
   // ...
 });
 ```
