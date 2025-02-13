@@ -1,0 +1,56 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "private": true,
+  "bundled": true,
+  "backstage": {
+    "role": "frontend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint"
+  },
+  "dependencies": {
+    "@backstage/cli": "^{{version '@backstage/cli'}}",
+    "@backstage/frontend-defaults": "^{{version '@backstage/frontend-defaults'}}",
+    "@backstage/plugin-app-visualizer": "^{{version '@backstage/plugin-app-visualizer'}}",
+    "@backstage/plugin-catalog": "^{{version '@backstage/plugin-catalog'}}",
+    "@backstage/plugin-home": "^{{version '@backstage/plugin-home'}}",
+    "@backstage/plugin-kubernetes": "^{{version '@backstage/plugin-kubernetes'}}",
+    "@backstage/plugin-scaffolder": "^{{version '@backstage/plugin-scaffolder'}}",
+    "@backstage/plugin-search": "^{{version '@backstage/plugin-search'}}",
+    "@backstage/plugin-user-settings": "^{{version '@backstage/plugin-user-settings'}}",
+    "@backstage/theme": "^{{version '@backstage/theme'}}",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "devDependencies": {
+    "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
+    "@playwright/test": "^1.32.3",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "*",
+    "@types/react-dom": "*"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist"
+  ]
+}
