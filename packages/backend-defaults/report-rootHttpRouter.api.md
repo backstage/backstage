@@ -15,8 +15,10 @@ import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { Request as Request_2 } from 'express';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
+import { Response as Response_2 } from 'express';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -65,6 +67,9 @@ export interface ExtendedHttpServer extends http.Server {
 }
 
 // @public
+export function getLogMeta(req: Request_2, res: Response_2): LogMeta;
+
+// @public
 export type HttpServerCertificateOptions =
   | {
       type: 'pem';
@@ -85,6 +90,18 @@ export type HttpServerOptions = {
   https?: {
     certificate: HttpServerCertificateOptions;
   };
+};
+
+// @public
+export type LogMeta = {
+  date: string;
+  method: string;
+  url: string;
+  status: number;
+  httpVersion: string;
+  userAgent?: string;
+  contentLength?: number;
+  referrer?: string;
 };
 
 // @public
