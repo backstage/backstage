@@ -25,6 +25,8 @@ import {
 } from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+import { CatalogClient } from '@backstage/catalog-client';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -34,7 +36,11 @@ export default async function createPlugin(
     config: env.config,
     database: env.database,
     discovery: env.discovery,
-    tokenManager: env.tokenManager,
+    auth: createLegacyAuthAdapters({
+      discovery: env.discovery,
+      tokenManager: env.tokenManager,
+    }),
+    catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
     providerFactories: {
       ...defaultAuthProviderFactories,
 

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import {
   DatabaseService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
@@ -36,21 +34,6 @@ export class AuthDatabase {
   #promise: Promise<Knex> | undefined;
 
   static create(database: DatabaseService): AuthDatabase {
-    return new AuthDatabase(database);
-  }
-
-  /** @internal */
-  static forTesting(): AuthDatabase {
-    const config = new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-          useNullAsDefault: true,
-        },
-      },
-    });
-    const database = DatabaseManager.fromConfig(config).forPlugin('auth');
     return new AuthDatabase(database);
   }
 

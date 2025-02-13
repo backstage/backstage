@@ -21,16 +21,11 @@ import {
   AuthService,
   DatabaseService,
   DiscoveryService,
-  HttpAuthService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { defaultAuthProviderFactories } from '../providers';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -58,13 +53,11 @@ export interface RouterOptions {
   database: DatabaseService;
   config: RootConfigService;
   discovery: DiscoveryService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
   disableDefaultProviderFactories?: boolean;
-  catalogApi?: CatalogApi;
+  catalogApi: CatalogApi;
   ownershipResolver?: AuthOwnershipResolver;
 }
 
@@ -82,9 +75,8 @@ export async function createRouter(
     database,
     tokenFactoryAlgorithm,
     providerFactories = {},
+    auth,
   } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const router = Router();
 
@@ -165,7 +157,6 @@ export async function createRouter(
     tokenIssuer,
     ...options,
     auth,
-    httpAuth,
   });
 
   bindOidcRouter(router, {
