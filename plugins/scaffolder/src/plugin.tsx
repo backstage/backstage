@@ -14,35 +14,6 @@
  * limitations under the License.
  */
 
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import {
-  createScaffolderFieldExtension,
-  scaffolderApiRef,
-} from '@backstage/plugin-scaffolder-react';
-import { ScaffolderClient } from './api';
-import {
-  EntityPicker,
-  EntityPickerSchema,
-} from './components/fields/EntityPicker/EntityPicker';
-import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
-import {
-  EntityNamePicker,
-  EntityNamePickerSchema,
-} from './components/fields/EntityNamePicker/EntityNamePicker';
-import {
-  OwnerPicker,
-  OwnerPickerSchema,
-} from './components/fields/OwnerPicker/OwnerPicker';
-import {
-  MultiEntityPicker,
-  MultiEntityPickerSchema,
-  validateMultiEntityPickerValidation,
-} from './components/fields/MultiEntityPicker/MultiEntityPicker';
-import { repoPickerValidation } from './components/fields/RepoUrlPicker';
-import {
-  RepoUrlPicker,
-  RepoUrlPickerSchema,
-} from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import {
   createApiFactory,
   createPlugin,
@@ -51,36 +22,68 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
-  OwnedEntityPicker,
-  OwnedEntityPickerSchema,
-} from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
+  createScaffolderFieldExtension,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
+import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
+import { DefaultScaffolderFormDecoratorsApi } from './alpha/api/FormDecoratorsApi';
+import { formDecoratorsApiRef } from './alpha/api/ref';
+import { ScaffolderClient } from './api';
+import { ActionsPage, ListTasksPage } from './components';
+import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
+import {
+  EntityNamePicker,
+  EntityNamePickerSchema,
+} from './components/fields/EntityNamePicker/EntityNamePicker';
+import {
+  EntityPicker,
+  EntityPickerSchema,
+} from './components/fields/EntityPicker/EntityPicker';
 import {
   EntityTagsPicker,
   EntityTagsPickerSchema,
 } from './components/fields/EntityTagsPicker/EntityTagsPicker';
 import {
-  registerComponentRouteRef,
-  rootRouteRef,
-  viewTechDocRouteRef,
-  selectedTemplateRouteRef,
-  scaffolderTaskRouteRef,
-  scaffolderListTaskRouteRef,
-  actionsRouteRef,
-  editRouteRef,
-  editorRouteRef,
-  customFieldsRouteRef,
-  templateFormRouteRef,
-} from './routes';
+  MultiEntityPicker,
+  MultiEntityPickerSchema,
+  validateMultiEntityPickerValidation,
+} from './components/fields/MultiEntityPicker/MultiEntityPicker';
 import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
 } from './components/fields/MyGroupsPicker/MyGroupsPicker';
+import {
+  OwnedEntityPicker,
+  OwnedEntityPickerSchema,
+} from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import {
+  OwnerPicker,
+  OwnerPickerSchema,
+} from './components/fields/OwnerPicker/OwnerPicker';
 import { RepoBranchPicker } from './components/fields/RepoBranchPicker/RepoBranchPicker';
 import { RepoBranchPickerSchema } from './components/fields/RepoBranchPicker/schema';
-import { formDecoratorsApiRef } from './alpha/api/ref';
-import { DefaultScaffolderFormDecoratorsApi } from './alpha/api/FormDecoratorsApi';
-import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
+import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import {
+  RepoUrlPicker,
+  RepoUrlPickerSchema,
+} from './components/fields/RepoUrlPicker/RepoUrlPicker';
+import {
+  actionsRouteRef,
+  customFieldsRouteRef,
+  editRouteRef,
+  editorRouteRef,
+  registerComponentRouteRef,
+  rootRouteRef,
+  scaffolderListTaskRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+  templateFormRouteRef,
+  viewTechDocRouteRef,
+} from './routes';
+
+export { ActionsPage, ListTasksPage };
 
 /**
  * The main plugin export for the scaffolder.
