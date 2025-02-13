@@ -12,6 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -99,6 +100,9 @@ export function convertLegacyEntityContentExtension(
 ): ExtensionDefinition;
 
 // @alpha
+export const defaultEntityCardAreas: readonly ['peek', 'info', 'full'];
+
+// @alpha
 export const defaultEntityContentGroups: {
   documentation: string;
   development: string;
@@ -113,6 +117,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
+    defaultArea?: 'full' | 'info' | 'peek' | undefined;
   };
   output:
     | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -129,13 +134,22 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ConfigurableExtensionDataRef<
+        'full' | 'info' | 'peek',
+        'catalog.entity-card-area',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
     filter: string | undefined;
+    area: 'full' | 'info' | 'peek' | undefined;
   };
   configInput: {
     filter?: string | undefined;
+    area?: 'full' | 'info' | 'peek' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -148,8 +162,80 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
+    area: ConfigurableExtensionDataRef<
+      'full' | 'info' | 'peek',
+      'catalog.entity-card-area',
+      {}
+    >;
   };
 }>;
+
+// @alpha (undocumented)
+export const EntityCardLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-card-layout';
+  name: undefined;
+  params: {
+    defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
+    loader: () => Promise<
+      (props: EntityCardLayoutProps) => React_2.JSX.Element
+    >;
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        (props: EntityCardLayoutProps) => React_2.JSX.Element,
+        'catalog.entity-card-layout.component',
+        {}
+      >;
+  inputs: {};
+  config: {
+    area: string | undefined;
+    filter: string | undefined;
+  };
+  configInput: {
+    filter?: string | undefined;
+    area?: string | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityCardLayoutProps) => React_2.JSX.Element,
+      'catalog.entity-card-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface EntityCardLayoutProps {
+  // (undocumented)
+  cards: Array<{
+    area?: (typeof defaultEntityCardAreas)[number];
+    element: React_2.JSX.Element;
+  }>;
+}
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{

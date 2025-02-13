@@ -22,9 +22,11 @@ const _default: FrontendPlugin<
       name: 'group-profile';
       config: {
         filter: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -45,11 +47,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            'full' | 'info' | 'peek',
+            'catalog.entity-card-area',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:org/members-list': ExtensionDefinition<{
@@ -57,9 +67,11 @@ const _default: FrontendPlugin<
       name: 'members-list';
       config: {
         filter: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -80,11 +92,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            'full' | 'info' | 'peek',
+            'catalog.entity-card-area',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:org/ownership': ExtensionDefinition<{
@@ -92,9 +112,11 @@ const _default: FrontendPlugin<
       name: 'ownership';
       config: {
         filter: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -115,11 +137,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            'full' | 'info' | 'peek',
+            'catalog.entity-card-area',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
     'entity-card:org/user-profile': ExtensionDefinition<{
@@ -127,9 +157,11 @@ const _default: FrontendPlugin<
       name: 'user-profile';
       config: {
         filter: string | undefined;
+        area: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        area?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -150,11 +182,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            'full' | 'info' | 'peek',
+            'catalog.entity-card-area',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        defaultArea?: 'full' | 'info' | 'peek' | undefined;
       };
     }>;
   }
