@@ -34,7 +34,7 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
   Commits: {
-    create: jest.fn(),
+    create: jest.fn(() => ({ id: 'mockId' })),
   },
   MergeRequests: {
     create: jest.fn(async (_: any) => {
