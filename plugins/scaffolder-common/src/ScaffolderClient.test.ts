@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
+import {
+  MockFetchApi,
+  mockApis,
+  registerMswTestHooks,
+} from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ScaffolderClient } from './api';
+import { ScaffolderClient } from './ScaffolderClient';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 jest.mock('@microsoft/fetch-event-source');
@@ -31,6 +34,17 @@ const server = setupServer();
 
 describe('api', () => {
   registerMswTestHooks(server);
+  const githubIntegrationConfig = mockApis.config({
+    data: {
+      integrations: {
+        github: [
+          {
+            host: 'hello.com',
+          },
+        ],
+      },
+    },
+  });
   const mockBaseUrl = 'http://backstage/api';
 
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
@@ -43,15 +57,7 @@ describe('api', () => {
   };
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        github: [
-          {
-            host: 'hello.com',
-          },
-        ],
-      },
-    }),
+    githubIntegrationConfig,
   );
 
   let apiClient: ScaffolderClient;

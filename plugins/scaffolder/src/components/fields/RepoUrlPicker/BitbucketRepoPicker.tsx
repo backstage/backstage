@@ -84,6 +84,7 @@ export const BitbucketRepoPicker = (
 
     scaffolderApi
       .autocomplete({
+        context: {},
         token: accessToken,
         resource: 'workspaces',
         provider: 'bitbucket-cloud',
