@@ -43,6 +43,16 @@ export interface Config {
          */
         fragmentDelimiter?: string;
       };
+      queryOptions?: {
+        /**
+         * Number to define the fuzziness of the search. Defaults to AUTO.
+         */
+        fuzziness?: number;
+        /**
+         * Minimum number of characters that must match exactly at the beginning of the qeury. Defaults to 0.
+         */
+        prefixLength?: number;
+      };
 
       /** Elasticsearch specific index template bodies */
       indexTemplates?: Array<{
