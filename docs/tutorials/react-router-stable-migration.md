@@ -181,13 +181,9 @@ It's crucial that you update to `RequirePermission` at the same time as you upda
 When migrating over to React Router v6 stable, you might also see browser console warnings for the `Navigate` component. This will need to be wrapped up in a `Route` component with the `Navigate` component in the `element` prop.
 
 ```tsx
-{
-  /* highlight-remove-next-line */
-}
+{/* prettier-ignore */ /* highlight-remove-next-line */}
 <Navigate key="/" to="catalog" />;
-{
-  /* highlight-add-next-line */
-}
+{/* prettier-ignore */ /* highlight-add-next-line */}
 <Route path="/" element={<Navigate to="catalog" />} />;
 ```
 

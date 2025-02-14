@@ -1,14 +1,14 @@
 .tabs {
   border-radius: 0.375rem;
   width: 100%;
-  background-color: var(--canon-bg);
+  background-color: var(--bg);
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .tabsTheme {
   width: 100px;
   border-radius: 0.375rem;
-  background-color: var(--canon-bg);
+  background-color: var(--bg);
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
@@ -29,23 +29,23 @@
   outline: 0;
   background: none;
   appearance: none;
-  color: var(--canon-fg-text-secondary);
+  color: var(--secondary);
   user-select: none;
   height: 2rem;
   flex: 1;
   cursor: pointer;
 
   &[data-selected] {
-    color: var(--canon-fg-text-primary);
+    color: var(--primary);
 
     & p {
-      color: var(--canon-fg-text-primary);
+      color: var(--primary);
     }
   }
 
   @media (hover: hover) {
     &:hover {
-      color: var(--canon-fg-text-primary);
+      color: var(--primary);
     }
   }
 
@@ -57,14 +57,14 @@
       position: absolute;
       inset: 0.25rem 0;
       border-radius: 0.25rem;
-      outline: 2px solid var(--canon-bg-elevated);
+      outline: 2px solid var(--panel);
       outline-offset: -1px;
     }
   }
 }
 
 .tab p {
-  color: var(--canon-fg-text-secondary) !important;
+  color: var(--secondary) !important;
 }
 
 .indicator {
@@ -76,7 +76,7 @@
   width: var(--active-tab-width);
   height: 1.5rem;
   border-radius: 0.25rem;
-  background-color: var(--canon-bg-elevated);
+  background-color: var(--panel);
   transition-property: translate, width, background-color;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;

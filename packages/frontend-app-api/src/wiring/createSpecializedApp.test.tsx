@@ -350,4 +350,84 @@ describe('createSpecializedApp', () => {
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
   });
+
+  it('should support multiple attachment points', async () => {
+    let appTreeApi: AppTreeApi | undefined = undefined;
+
+    createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            createExtension({
+              name: 'root',
+              attachTo: { id: 'root', input: 'app' },
+              inputs: {
+                children: createExtensionInput([
+                  coreExtensionData.reactElement,
+                ]),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: ({ apis }) => {
+                appTreeApi = apis.get(appTreeApiRef);
+                return [coreExtensionData.reactElement(<div />)];
+              },
+            }),
+            createExtension({
+              name: 'a',
+              attachTo: { id: 'test/root', input: 'children' },
+              inputs: {
+                children: createExtensionInput([
+                  coreExtensionData.reactElement,
+                ]),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<div />)],
+            }),
+            createExtension({
+              name: 'b',
+              attachTo: { id: 'test/root', input: 'children' },
+              inputs: {
+                children: createExtensionInput([
+                  coreExtensionData.reactElement,
+                ]),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<div />)],
+            }),
+            createExtension({
+              name: 'cloned',
+              attachTo: [
+                { id: 'test/a', input: 'children' },
+                { id: 'test/b', input: 'children' },
+              ],
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<div />)],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    expect(String(appTreeApi!.getTree().tree.root)).toMatchInlineSnapshot(`
+      "<root out=[core.reactElement]>
+        app [
+          <test/root out=[core.reactElement]>
+            children [
+              <test/a out=[core.reactElement]>
+                children [
+                  <test/cloned out=[core.reactElement] />
+                ]
+              </test/a>
+              <test/b out=[core.reactElement]>
+                children [
+                  <test/cloned out=[core.reactElement] />
+                ]
+              </test/b>
+            ]
+          </test/root>
+        ]
+      </root>"
+    `);
+  });
 });

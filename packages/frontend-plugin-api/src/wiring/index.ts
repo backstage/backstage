@@ -19,6 +19,7 @@ export {
   createExtension,
   type ExtensionDefinition,
   type ExtensionDefinitionParameters,
+  type ExtensionAttachToSpec,
   type CreateExtensionOptions,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,

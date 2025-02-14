@@ -22,7 +22,7 @@ import {
   PassportProfile,
 } from '@backstage/plugin-auth-node';
 
-const ACCESS_TOKEN_PREFIX = 'access-token.';
+const ACCESS_TOKEN_PREFIX = 'access-token-v2.';
 
 /** @public */
 export const githubAuthenticator = createOAuthAuthenticator({
@@ -98,6 +98,11 @@ export const githubAuthenticator = createOAuthAuthenticator({
     // refresh token cookie. We use that token to fetch the user profile and
     // refresh the Backstage session when needed.
     if (input.refreshToken?.startsWith(ACCESS_TOKEN_PREFIX)) {
+      if (!input.scopeAlreadyGranted) {
+        throw new Error(
+          'Refresh failed, session has not been granted the requested scope',
+        );
+      }
       const accessToken = input.refreshToken.slice(ACCESS_TOKEN_PREFIX.length);
 
       const fullProfile = await helper

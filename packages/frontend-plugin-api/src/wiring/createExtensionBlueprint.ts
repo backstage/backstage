@@ -17,6 +17,7 @@
 import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import {
+  ExtensionAttachToSpec,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
@@ -57,7 +58,7 @@ export type CreateExtensionBlueprintOptions<
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
   kind: TKind;
-  attachTo: { id: string; input: string };
+  attachTo: ExtensionAttachToSpec;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -107,7 +108,7 @@ export interface ExtensionBlueprint<
 
   make<TNewName extends string | undefined>(args: {
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     params: T['params'];
   }): ExtensionDefinition<{
@@ -141,7 +142,7 @@ export interface ExtensionBlueprint<
     },
   >(args: {
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &

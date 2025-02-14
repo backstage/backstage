@@ -4,7 +4,6 @@ import { Box, Container } from '../../../packages/canon';
 
 const DecorativeBox = () => (
   <Box
-    borderRadius="xs"
     style={{
       height: '64px',
       background: '#eaf2fd',

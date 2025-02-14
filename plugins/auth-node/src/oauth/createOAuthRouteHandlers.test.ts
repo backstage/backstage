@@ -720,6 +720,7 @@ describe('createOAuthRouteHandlers', () => {
           req: expect.anything(),
           refreshToken: 'refresh-token',
           scope: 'persisted-scope',
+          scopeAlreadyGranted: true,
         },
         { ctx: 'authenticator' },
       );

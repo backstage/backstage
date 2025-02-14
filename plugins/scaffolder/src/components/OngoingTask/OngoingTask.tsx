@@ -21,8 +21,8 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  ScaffolderTaskOutput,
   scaffolderApiRef,
+  ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
@@ -38,11 +38,13 @@ import { useAsync } from '@react-hookz/web';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
   taskCancelPermission,
-  taskReadPermission,
   taskCreatePermission,
+  taskReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+import { default as reactUseAsync } from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -79,6 +81,7 @@ export const OngoingTask = (props: {
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
   const steps = useMemo(
@@ -122,6 +125,14 @@ export const OngoingTask = (props: {
       setButtonBarVisibleState(false);
     }
   }, [taskStream.error, taskStream.completed]);
+
+  const { value: presentation } = reactUseAsync(async () => {
+    const templateEntityRef = taskStream.task?.spec.templateInfo?.entityRef;
+    if (!templateEntityRef) {
+      return undefined;
+    }
+    return entityPresentationApi.forEntity(templateEntityRef).promise;
+  }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const activeStep = useMemo(() => {
     for (let i = steps.length - 1; i >= 0; i--) {
@@ -184,22 +195,22 @@ export const OngoingTask = (props: {
 
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
-  const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name || '';
-
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
   return (
     <Page themeId="website">
       <Header
         pageTitleOverride={
-          templateName
-            ? t('ongoingTask.pageTitle.hasTemplateName', { templateName })
+          presentation
+            ? t('ongoingTask.pageTitle.hasTemplateName', {
+                templateName: presentation.primaryTitle,
+              })
             : t('ongoingTask.pageTitle.noTemplateName')
         }
         title={
           <div>
-            {t('ongoingTask.title')} <code>{templateName}</code>
+            {t('ongoingTask.title')}{' '}
+            <code>{presentation ? presentation.primaryTitle : ''}</code>
           </div>
         }
         subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}

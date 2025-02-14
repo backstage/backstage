@@ -1,5 +1,28 @@
 # @backstage/backend-defaults
 
+## 0.8.0-next.3
+
+### Patch Changes
+
+- 3740229: In the different `UrlReadersService`, the `search` method have been updated to use the `readUrl` if the given URL doesn't contain a pattern.
+  For `UrlReaders` that didn't implement the `search` method, `readUrl` is now called internally and throws if the given URL doesn't contain a pattern.
+- 72cddf2: Updated `PermissionsRegistryService` to use `PermissionResourceRef`s and added the `getPermissionRuleset` method.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/backend-app-api@1.2.0-next.3
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+
 ## 0.8.0-next.2
 
 ### Patch Changes

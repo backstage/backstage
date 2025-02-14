@@ -1,10 +1,8 @@
 'use client';
 
 import { components } from '@/utils/data';
-import { Box } from '../../../../packages/canon/src/components/Box';
-import { Checkbox } from '../../../../packages/canon/src/components/Checkbox';
-import { Text } from '../../../../packages/canon/src/components/Text';
-import { motion } from 'framer-motion';
+import { Checkbox } from '../../../../packages/canon';
+import { motion } from 'motion/react';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
 import { screenSizes } from '@/utils/data';
@@ -54,28 +52,20 @@ export const Playground = () => {
       transition={{ duration: 0.2 }}
       style={{ position: 'absolute' }}
     >
-      <Box marginTop="lg" marginBottom="2xs">
-        <Text variant="body" weight="bold">
-          Components
-        </Text>
-      </Box>
+      <div className={styles.sectionTitle}>Components</div>
       {components.map(({ slug, title }) => (
         <div className={styles.line} key={slug}>
-          <Text variant="body">{title}</Text>
+          <div className={styles.lineTitle}>{title}</div>
           <Checkbox
             checked={selectedComponents.includes(slug)}
             onChange={() => handleComponentCheckboxChange(slug)}
           />
         </div>
       ))}
-      <Box marginTop="lg" marginBottom="2xs">
-        <Text variant="body" weight="bold">
-          Screen sizes
-        </Text>
-      </Box>
+      <div className={styles.sectionTitle}> Screen sizes</div>
       {screenSizes.map(({ slug, title }) => (
         <div className={styles.line} key={slug}>
-          <Text variant="body">{title}</Text>
+          <div className={styles.lineTitle}>{title}</div>
           <Checkbox
             checked={selectedScreenSizes.includes(slug)}
             onChange={() => handleCheckboxChange(slug)}

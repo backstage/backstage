@@ -340,10 +340,15 @@ export const ActionPageContent = () => {
           return undefined;
         }
 
-        const oneOf = renderTables(
+        const oneOfInput = renderTables(
           'oneOf',
           `${action.id}.input`,
           action.schema?.input?.oneOf,
+        );
+        const oneOfOutput = renderTables(
+          'oneOf',
+          `${action.id}.output`,
+          action.schema?.output?.oneOf,
         );
         return (
           <Box pb={3} key={action.id}>
@@ -374,7 +379,7 @@ export const ActionPageContent = () => {
                 {renderTable(
                   formatRows(`${action.id}.input`, action?.schema?.input),
                 )}
-                {oneOf}
+                {oneOfInput}
               </Box>
             )}
             {action.schema?.output && (
@@ -385,6 +390,7 @@ export const ActionPageContent = () => {
                 {renderTable(
                   formatRows(`${action.id}.output`, action?.schema?.output),
                 )}
+                {oneOfOutput}
               </Box>
             )}
             {action.examples && (

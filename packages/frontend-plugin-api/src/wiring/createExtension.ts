@@ -113,6 +113,11 @@ export type VerifyExtensionFactoryOutput<
   : never;
 
 /** @public */
+export type ExtensionAttachToSpec =
+  | { id: string; input: string }
+  | Array<{ id: string; input: string }>;
+
+/** @public */
 export type CreateExtensionOptions<
   TKind extends string | undefined,
   TName extends string | undefined,
@@ -128,7 +133,7 @@ export type CreateExtensionOptions<
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: { id: string; input: string };
+  attachTo: ExtensionAttachToSpec;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -183,7 +188,7 @@ export type ExtensionDefinition<
   >(
     args: Expand<
       {
-        attachTo?: { id: string; input: string };
+        attachTo?: ExtensionAttachToSpec;
         disabled?: boolean;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -338,7 +343,12 @@ export function createExtension<
       if (options.name) {
         parts.push(`name=${options.name}`);
       }
-      parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
+      parts.push(
+        `attachTo=${[options.attachTo]
+          .flat()
+          .map(a => `${a.id}@${a.input}`)
+          .join('+')}`,
+      );
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
     override(overrideOptions) {

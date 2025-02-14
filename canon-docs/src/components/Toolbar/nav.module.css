@@ -12,7 +12,7 @@
 .tabsTheme {
   width: 142px;
   border-radius: 0.375rem;
-  background-color: var(--canon-bg);
+  background-color: var(--bg);
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
@@ -26,22 +26,21 @@
 .tab {
   all: unset;
   height: 60px;
-  font-family: var(--docs-font);
-  color: var(--canon-fg-text-secondary);
+  color: var(--secondary);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);
   cursor: pointer;
   transition: color 0.2s ease-in-out;
 
   &:hover {
-    color: var(--canon-fg-text-primary);
+    color: var(--primary);
   }
 
   &[data-selected] {
-    color: var(--canon-fg-text-primary);
+    color: var(--primary);
 
     & p {
-      color: var(--canon-fg-text-primary);
+      color: var(--primary);
     }
   }
 
@@ -53,14 +52,14 @@
       position: absolute;
       inset: 0.25rem 0;
       border-radius: 0.25rem;
-      outline: 2px solid var(--canon-bg-elevated);
+      outline: 2px solid var(--panel);
       outline-offset: -1px;
     }
   }
 }
 
 .tab p {
-  color: var(--canon-fg-text-secondary) !important;
+  color: var(--secondary) !important;
 }
 
 .indicator {
@@ -72,7 +71,7 @@
   width: var(--active-tab-width);
   height: 1px;
   border-radius: 0.25rem;
-  background-color: var(--canon-fg-text-primary);
+  background-color: var(--primary);
   transition-property: translate, width, background-color;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;

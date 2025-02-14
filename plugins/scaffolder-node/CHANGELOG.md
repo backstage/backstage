@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.7.0-next.2
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 0.7.0-next.1
 
 ### Patch Changes

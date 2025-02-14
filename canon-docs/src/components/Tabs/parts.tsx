@@ -33,9 +33,7 @@ export const Tab = (props: React.ComponentProps<typeof TabsPrimitive.Tab>) => (
             weight="bold"
             {...rest}
             style={{
-              color: state.selected
-                ? 'var(--canon-fg-text-primary)'
-                : 'var(--canon-fg-text-secondary)',
+              color: state.selected ? 'var(--primary)' : 'var(--secondary)',
             }}
           >
             {children}

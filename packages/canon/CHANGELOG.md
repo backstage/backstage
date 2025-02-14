@@ -1,5 +1,15 @@
 # @backstage/canon
 
+## 0.1.0-next.2
+
+### Minor Changes
+
+- 8309bdb: Updated core CSS tokens and fixing the Button component accordingly.
+
+### Patch Changes
+
+- f44e5cf: Fix spacing props not being applied for custom values.
+
 ## 0.1.0-next.1
 
 ### Minor Changes

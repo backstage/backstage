@@ -11,9 +11,6 @@ export const ButtonPreview = () => {
       <Button iconStart="cloud" variant="secondary">
         Button
       </Button>
-      <Button iconStart="cloud" variant="tertiary">
-        Button
-      </Button>
     </Flex>
   );
 };

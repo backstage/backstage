@@ -24,36 +24,35 @@ export function extractProps(
   },
   propDefs: { [key: string]: any },
 ) {
-  let className: string = props.className || '';
-  let style: React.CSSProperties = props.style || {};
+  let className: string[] = (props.className || '').split(' ');
+  let style: React.CSSProperties = { ...props.style };
+  const hasProp = (key: string) => props.hasOwnProperty(key);
 
   for (const key in propDefs) {
     // Check if the prop is present or has a default value
-    if (
-      !props.hasOwnProperty(key) &&
-      !propDefs[key].hasOwnProperty('default')
-    ) {
+    if (!hasProp(key) && !propDefs[key].hasOwnProperty('default')) {
       continue; // Skip processing if neither is present
     }
 
-    const value = props.hasOwnProperty(key)
-      ? props[key]
-      : propDefs[key].default;
+    const value = hasProp(key) ? props[key] : propDefs[key].default;
     const propDefsValues = propDefs[key].values;
     const propDefsCustomProperties = propDefs[key].customProperties;
     const propDefsClassName = propDefs[key].className;
     const isResponsive = propDefs[key].responsive;
 
-    const handleValue = (val: any, prefix: string = '') => {
+    const handleValue = (val: string, prefix: string = '') => {
+      // Skip adding class name if the key is "as"
+      if (key === 'as') return;
+
       if (propDefsValues.includes(val)) {
-        className += ` ${prefix}${propDefsClassName}-${val}`;
+        className.push(`${prefix}${propDefsClassName}-${val}`);
       } else {
         const customPropertyKey =
           isResponsive && prefix
             ? `${propDefsCustomProperties}-${prefix.slice(0, -1)}`
             : propDefsCustomProperties;
         (style as any)[customPropertyKey] = val;
-        className += ` ${prefix}${propDefsClassName}`;
+        className.push(`${prefix}${propDefsClassName}`);
       }
     };
 
@@ -76,5 +75,9 @@ export function extractProps(
     return acc;
   }, {} as { [key: string]: any });
 
-  return { ...cleanedProps, className, style };
+  const newClassNames = className
+    .filter(name => name && name.trim() !== '')
+    .join(' ');
+
+  return { ...cleanedProps, className: newClassNames, style };
 }

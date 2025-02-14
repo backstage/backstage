@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '.github/workflows/sync_version-packages.yml'
 
 concurrency:
   group: sync-version-packages

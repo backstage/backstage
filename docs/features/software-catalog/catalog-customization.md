@@ -17,7 +17,7 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 
 ## Initially Selected Filter
 
-By default the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
+By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route
@@ -30,7 +30,7 @@ Possible options are: owned, starred, or all
 
 ## Initially Selected Kind
 
-By default the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+By default, the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
@@ -70,9 +70,7 @@ The columns you see in the `CatalogIndexPage` were selected to be a good startin
 Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
 
 ```tsx title="packages/app/src/App.tsx"
-{
-  /* highlight-add-start */
-}
+{/* prettier-ignore */ /* highlight-add-start */}
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
     return [
@@ -84,9 +82,7 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 
   return CatalogTable.defaultColumnsFunc(entityListContext);
 };
-{
-  /* highlight-add-end */
-}
+{/* prettier-ignore */ /* highlight-add-end */}
 ```
 
 Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
@@ -107,7 +103,6 @@ const createUserEmailColumn = (): TableColumn<CatalogTableRow> => ({
 
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
-    return [
     return [
       // Render existing columns
       ...CatalogTable.defaultColumnsFunc(entityListContext),
@@ -391,13 +386,9 @@ export const EntitySecurityTierPicker = () => {
 Now we can add the component to `CatalogIndexPage`:
 
 ```tsx title="packages/app/src/App.tsx"
-{
-  /* highlight-add-start */
-}
+{/* prettier-ignore */ /* highlight-add-start */}
 import { DefaultFilters } from '@backstage/plugin-catalog-react';
-{
-  /* highlight-add-end */
-}
+{/* prettier-ignore */ /* highlight-add-end */}
 
 const routes = (
   <FlatRoutes>

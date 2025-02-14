@@ -1,16 +1,16 @@
 .container {
   display: flex;
-  background-color: var(--canon-bg-elevated);
+  background-color: var(--panel);
   padding: var(--canon-space-6);
   border-radius: var(--canon-radius-2);
-  border: 1px solid var(--canon-border);
+  border: 1px solid var(--border);
   margin-bottom: var(--canon-space-6);
   gap: var(--canon-space-6);
   transition: background-color 0.2s ease-in-out;
 }
 
 .icon path {
-  fill: var(--canon-fg-text-primary);
+  fill: var(--canon-fg-primary);
 }
 
 .content {
@@ -29,14 +29,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: var(--canon-bg);
-  border: 1px solid var(--canon-border);
+  background-color: var(--bg);
+  border: 1px solid var(--border);
   border-radius: var(--canon-radius-2);
   padding: 0 var(--canon-space-3);
   height: 28px;
   border-radius: 100px;
   margin-top: var(--canon-space-3);
   font-size: var(--canon-font-size-3);
-  color: var(--canon-fg-text-primary);
+  color: var(--primary);
   gap: var(--canon-space-2);
 }

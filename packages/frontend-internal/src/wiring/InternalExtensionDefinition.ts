@@ -18,6 +18,7 @@ import {
   AnyExtensionDataRef,
   ApiHolder,
   AppNode,
+  ExtensionAttachToSpec,
   ExtensionDataValue,
   ExtensionDefinition,
   ExtensionDefinitionParameters,
@@ -35,7 +36,7 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly kind?: string;
         readonly namespace?: string;
         readonly name?: string;
-        readonly attachTo: { id: string; input: string };
+        readonly attachTo: ExtensionAttachToSpec;
         readonly disabled: boolean;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {
@@ -66,7 +67,7 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly kind?: string;
         readonly namespace?: string;
         readonly name?: string;
-        readonly attachTo: { id: string; input: string };
+        readonly attachTo: ExtensionAttachToSpec;
         readonly disabled: boolean;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {

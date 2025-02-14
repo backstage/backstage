@@ -9,11 +9,6 @@ const source1 = path.join(__dirname, `${source}/core.css`);
 const destination1 = path.join(__dirname, `${destination}/core.css`);
 const source2 = path.join(__dirname, `${source}/components.css`);
 const destination2 = path.join(__dirname, `${destination}/components.css`);
-const source3 = path.join(
-  __dirname,
-  `../../packages/canon/.storybook/themes/backstage.css`,
-);
-const destination3 = path.join(__dirname, `${destination}/backstage.css`);
 
 // Function to bundle and copy the CSS file
 const bundleAndCopyFile = async (source, destination) => {
@@ -34,7 +29,6 @@ const bundleAndCopyFile = async (source, destination) => {
 Promise.all([
   bundleAndCopyFile(source1, destination1),
   bundleAndCopyFile(source2, destination2),
-  bundleAndCopyFile(source3, destination3),
 ])
   .then(() => {
     // Add an empty line after all operations are complete - It looks better in the terminal :)

@@ -19,10 +19,10 @@
   height: 80px;
   border: 1px solid #d3d3d3;
   border-radius: 0.5rem;
-  background-color: var(--canon-bg);
+  background-color: var(--bg);
   transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: var(--canon-bg-elevated);
+    background-color: var(--panel);
   }
 }

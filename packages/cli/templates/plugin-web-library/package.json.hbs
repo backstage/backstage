@@ -1,0 +1,41 @@
+{
+  "name": "{{packageName}}",
+  "description": "Web library for the {{pluginId}} plugin",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "{{versionQuery '@backstage/core-plugin-api'}}",
+    "@material-ui/core": "{{versionQuery '@material-ui/core' '4.12.2'}}"
+  },
+  "peerDependencies": {
+    "react": "{{versionQuery 'react' '^16.13.1 || ^17.0.0 || ^18.0.0'}}"
+  },
+  "devDependencies": {
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "@backstage/test-utils": "{{versionQuery '@backstage/test-utils'}}",
+    "@testing-library/jest-dom": "{{versionQuery '@testing-library/jest-dom' '6.0.0'}}",
+    "@testing-library/react": "{{versionQuery '@testing-library/react' '14.0.0'}}",
+    "react": "{{versionQuery 'react' '^16.13.1 || ^17.0.0 || ^18.0.0'}}"
+  },
+  "files": [
+    "dist"
+  ]
+}

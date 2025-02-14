@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-notifications-node@0.2.12-next.2
+  - @backstage/plugin-notifications-common@0.0.8
+
 ## 0.1.7-next.1
 
 ### Patch Changes

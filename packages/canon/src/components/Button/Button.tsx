@@ -42,7 +42,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
-        {...rest}
         ref={ref}
         disabled={disabled}
         className={clsx(
@@ -52,19 +51,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           className,
         )}
         style={style}
+        {...rest}
       >
-        <span
-          className={[
-            'canon-Button--content',
-            iconStart && iconEnd ? 'canon-Button--icon-start-end' : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {iconStart && <Icon name={iconStart} />}
-          {children}
-        </span>
-        {iconEnd && <Icon name={iconEnd} />}
+        {iconStart && <Icon name={iconStart} className="canon-Button--icon" />}
+        {children}
+        {iconEnd && <Icon name={iconEnd} className="canon-Button--icon" />}
       </button>
     );
   },

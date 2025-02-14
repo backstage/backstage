@@ -91,7 +91,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   });
 
   const { manifest } = useTemplateParameterSchema(templateRef);
-  const decorators = useFormDecorators({ manifest });
+  const decorators = useFormDecorators();
 
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
@@ -108,6 +108,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     const { formState: values, secrets } = await decorators.run({
       formState: initialValues,
       secrets: contextSecrets,
+      manifest,
     });
 
     const { taskId } = await scaffolderApi.scaffold({

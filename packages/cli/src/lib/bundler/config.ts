@@ -417,7 +417,7 @@ export async function createConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
       fallback: {
-        ...pickBy(require('node-libs-browser')),
+        ...pickBy(require('node-stdlib-browser')),
         module: false,
         dgram: false,
         dns: false,
