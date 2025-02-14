@@ -16,7 +16,7 @@
 import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 type FacetsCursor = {
@@ -41,19 +41,37 @@ type FacetsInitialRequest = {
  * hook, which is also used by EntityOwnerPicker.
  * In this mode, the EntityOwnerPicker won't show detailed information of the owners.
  */
-export function useFacetsEntities({ enabled }: { enabled: boolean }) {
+export function useFacetsEntities({
+  enabled,
+  selectedEntityKind,
+}: {
+  enabled: boolean;
+  selectedEntityKind?: string;
+}) {
   const catalogApi = useApi(catalogApiRef);
-
-  const [facetsPromise] = useState(async () => {
+  const facetsPromise = useMemo<Promise<Entity[]>>(() => {
     if (!enabled) {
-      return [];
+      return Promise.resolve([]);
     }
-    const facet = 'relations.ownedBy';
 
-    return catalogApi
-      .getEntityFacets({ facets: [facet] })
-      .then(response =>
-        response.facets[facet]
+    return (async (): Promise<Entity[]> => {
+      try {
+        if (selectedEntityKind) {
+          const facetResponseFiltered = await catalogApi.getEntityFacets({
+            facets: ['relations.ownedBy'],
+            filter: { kind: [selectedEntityKind] },
+          });
+
+          if (facetResponseFiltered.facets['relations.ownedBy'].length === 0) {
+            return [];
+          }
+        }
+
+        const facetResponse = await catalogApi.getEntityFacets({
+          facets: ['relations.ownedBy'],
+        });
+
+        return facetResponse.facets['relations.ownedBy']
           .map(e => e.value)
           .map(ref => {
             const { kind, name, namespace } = parseEntityRef(ref);
@@ -71,10 +89,12 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
                 'en-US',
               ) ||
               a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
-          ),
-      )
-      .catch(() => []);
-  });
+          );
+      } catch (error) {
+        return [];
+      }
+    })();
+  }, [enabled, selectedEntityKind, catalogApi]);
 
   return useAsyncFn<
     (
