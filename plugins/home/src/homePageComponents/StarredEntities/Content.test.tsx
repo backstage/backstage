@@ -50,7 +50,24 @@ describe('StarredEntitiesContent', () => {
     mockedApi.toggleStarred('component:default/mock-starred-entity-2');
     mockedApi.toggleStarred('component:default/mock-starred-entity-3');
 
-    const mockCatalogApi = catalogApiMock({ entities });
+    const mockCatalogApi = catalogApiMock.mock({
+      getEntitiesByRefs: jest.fn().mockImplementation(async ({ fields }) => {
+        const expectedFields = [
+          'kind',
+          'metadata.namespace',
+          'metadata.name',
+          'spec.type',
+          'metadata.title',
+          'spec.profile.displayName',
+        ];
+        expectedFields.forEach(field => {
+          expect(fields).toContain(field);
+        });
+        return {
+          items: entities,
+        };
+      }),
+    });
 
     const { getByText, queryByText } = await renderInTestApp(
       <TestApiProvider
