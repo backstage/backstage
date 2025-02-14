@@ -208,7 +208,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
                 targetPluginId: 'techdocs',
               });
 
-            const searchIndexResponse = await fetch(
+            const searchIndex = await fetch(
               DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
                 techDocsBaseUrl,
                 entityInfo,
@@ -218,19 +218,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
                   Authorization: `Bearer ${techdocsToken}`,
                 },
               },
-            );
-
-            // todo(@backstage/techdocs-core): remove Promise.race() when node-fetch is 3.x+
-            // workaround for fetch().json() hanging in node-fetch@2.x.x, fixed in 3.x.x
-            // https://github.com/node-fetch/node-fetch/issues/665
-            const searchIndex = await Promise.race([
-              searchIndexResponse.json(),
-              new Promise((_resolve, reject) => {
-                setTimeout(() => {
-                  reject('Could not parse JSON in 5 seconds.');
-                }, 5000);
-              }),
-            ]);
+            ).then(res => res.json());
 
             return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
               ...defaultTechDocsCollatorEntityTransformer(entity),
