@@ -7,8 +7,6 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 
-// Warning: (ae-forgotten-export) The symbol "TechDocsAddonOptions" needs to be exported by the entry point alpha.d.ts
-//
 // @alpha (undocumented)
 export const attachTechDocsAddonComponentData: <P>(
   techDocsAddon: ComponentType<P>,
@@ -43,6 +41,23 @@ export const techDocsAddonDataRef: ConfigurableExtensionDataRef<
   'techdocs.addon',
   {}
 >;
+
+// @public
+export const TechDocsAddonLocations: Readonly<{
+  readonly Header: 'Header';
+  readonly Subheader: 'Subheader';
+  readonly Settings: 'Settings';
+  readonly PrimarySidebar: 'PrimarySidebar';
+  readonly SecondarySidebar: 'SecondarySidebar';
+  readonly Content: 'Content';
+}>;
+
+// @public
+export type TechDocsAddonOptions<TAddonProps = {}> = {
+  name: string;
+  location: keyof typeof TechDocsAddonLocations;
+  component: ComponentType<TAddonProps>;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -38,10 +38,7 @@ import {
 } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
-import {
-  TechDocsAddonBlueprint,
-  techDocsAddonDataRef,
-} from '@backstage/plugin-techdocs-react/alpha';
+import { TechDocsAddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsClient, TechDocsStorageClient } from './client';
 import {
   rootCatalogDocsRouteRef,
@@ -148,7 +145,7 @@ const techDocsPage = PageBlueprint.make({
 const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   name: 'reader',
   inputs: {
-    addons: createExtensionInput([techDocsAddonDataRef]),
+    addons: createExtensionInput([TechDocsAddonBlueprint.dataRefs.addon]),
   },
   factory(originalFactory, { inputs }) {
     const addons = inputs.addons.map(output => {
@@ -181,7 +178,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
  */
 const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   inputs: {
-    addons: createExtensionInput([techDocsAddonDataRef]),
+    addons: createExtensionInput([TechDocsAddonBlueprint.dataRefs.addon]),
     emptyState: createExtensionInput(
       [coreExtensionData.reactElement.optional()],
       {

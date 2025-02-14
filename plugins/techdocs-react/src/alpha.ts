@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createExtensionBlueprint,
-  createExtensionDataRef,
-} from '@backstage/frontend-plugin-api';
 import { TechDocsAddonOptions } from './types';
 import { attachComponentData } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { getDataKeyByName, TECHDOCS_ADDONS_KEY } from './addons';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
+
+/** @alpha */
+export type { TechDocsAddonOptions, TechDocsAddonLocations } from './types';
 
 /** @alpha */
 export const techDocsAddonDataRef =
@@ -46,7 +49,7 @@ export const TechDocsAddonBlueprint = createExtensionBlueprint({
 });
 
 /** @alpha */
-export const attachTechDocsAddonComponentData = <P,>(
+export const attachTechDocsAddonComponentData = <P>(
   techDocsAddon: ComponentType<P>,
   data: TechDocsAddonOptions,
 ) => {
