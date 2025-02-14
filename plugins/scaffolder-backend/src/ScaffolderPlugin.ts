@@ -52,6 +52,17 @@ import {
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
+import {
+  scaffolderActionPermissions,
+  scaffolderPermissions,
+  scaffolderTemplatePermissions,
+} from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  scaffolderActionPermissionResourceRef,
+  scaffolderActionRules,
+  scaffolderTemplatePermissionResourceRef,
+  scaffolderTemplateRules,
+} from './service/rules';
 
 /**
  * Scaffolder plugin
@@ -135,6 +146,7 @@ export const scaffolderPlugin = createBackendPlugin({
         auditor: coreServices.auditor,
         catalogClient: catalogServiceRef,
         events: eventsServiceRef,
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       async init({
         logger,
@@ -150,6 +162,7 @@ export const scaffolderPlugin = createBackendPlugin({
         permissions,
         events,
         auditor,
+        permissionsRegistry,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -215,8 +228,23 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalWorkspaceProviders,
           events,
           auditor,
+          permissionsRegistry,
         });
         httpRouter.use(router);
+
+        permissionsRegistry.addPermissions(scaffolderPermissions);
+
+        permissionsRegistry.addResourceType({
+          resourceRef: scaffolderTemplatePermissionResourceRef,
+          permissions: scaffolderTemplatePermissions,
+          rules: Object.values(scaffolderTemplateRules),
+        });
+
+        permissionsRegistry.addResourceType({
+          resourceRef: scaffolderActionPermissionResourceRef,
+          permissions: scaffolderActionPermissions,
+          rules: Object.values(scaffolderActionRules),
+        });
       },
     });
   },
