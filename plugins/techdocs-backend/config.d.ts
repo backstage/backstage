@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
@@ -44,6 +46,11 @@ export interface Config {
        * Pull the latest docker image
        */
       pullImage?: boolean;
+
+      /**
+       * Generator timeout
+       */
+      timeout?: HumanDuration | string;
 
       /**
        * Override behavior specific to mkdocs.
