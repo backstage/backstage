@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.19-next.4
+
+### Patch Changes
+
+- 7ec0a5a: Changing the default behaviour of the checkpoint in createMockActionContext. It will reduce the code boilerplate in the tests where checkpoint is used.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.0-next.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.3
+
 ## 0.1.19-next.3
 
 ### Patch Changes
