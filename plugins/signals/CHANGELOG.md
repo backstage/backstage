@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.16-next.2
+
+### Patch Changes
+
+- 005d241: Added support for the new frontend system via `/alpha` export.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10-next.0
+
 ## 0.0.16-next.1
 
 ### Patch Changes
