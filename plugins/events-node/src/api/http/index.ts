@@ -16,3 +16,4 @@
 
 export type { HttpPostIngressOptions } from './HttpPostIngressOptions';
 export * from './validation';
+export * from './body-parser';
