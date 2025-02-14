@@ -15,10 +15,13 @@
  */
 
 import { UserIcon } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles<Theme>(theme => ({
   footer: {
@@ -50,6 +53,7 @@ export const TemplateCardActions = ({
   handleChoose,
   ownedByRelations,
 }: TemplateCardActionsProps) => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const styles = useStyles();
 
   return (
@@ -78,7 +82,7 @@ export const TemplateCardActions = ({
           data-testid="template-card-actions--create"
           onClick={handleChoose}
         >
-          Choose
+          {t('templateCard.chooseButtonText')}
         </Button>
       ) : null}
     </div>
