@@ -295,6 +295,26 @@ export const validateMkdocsYaml = async (
 };
 
 /**
+ * @returns the 'use_directory_urls' option from the mkdocs.yml or true if it doesn't exist (default value)
+ */
+export const getMkdocsUseDirectoryUrls = async (
+  mkdocsYmlFileString: string,
+): Promise<boolean> => {
+  const mkdocsYml = yaml.load(mkdocsYmlFileString, {
+    schema: MKDOCS_SCHEMA,
+  });
+
+  if (mkdocsYml === null || typeof mkdocsYml !== 'object') {
+    return true;
+  }
+
+  const parsedMkdocsYml: Record<string, any> = mkdocsYml;
+  return parsedMkdocsYml.use_directory_urls !== undefined
+    ? parsedMkdocsYml.use_directory_urls
+    : true;
+};
+
+/**
  * Update docs/index.md file before TechDocs generator uses it to generate docs site,
  * falling back to docs/README.md or README.md in case a default docs/index.md
  * is not provided.
