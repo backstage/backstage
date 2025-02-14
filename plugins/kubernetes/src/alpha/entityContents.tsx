@@ -23,6 +23,7 @@ export const entityKubernetesContent = EntityContentBlueprint.make({
   params: {
     defaultPath: '/kubernetes',
     defaultTitle: 'Kubernetes',
+    defaultGroup: 'deployment',
     filter: 'kind:component,resource',
     loader: () =>
       import('./KubernetesContentPage').then(m =>
