@@ -17,6 +17,7 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
+import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -173,10 +174,14 @@ const _default: FrontendPlugin<
           >;
       inputs: {
         addons: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX.Element[], 'techdocs.addons', {}>,
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
           {
-            singleton: true;
-            optional: true;
+            singleton: false;
+            optional: false;
           }
         >;
       };
@@ -243,10 +248,14 @@ const _default: FrontendPlugin<
           >;
       inputs: {
         addons: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX.Element[], 'techdocs.addons', {}>,
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
           {
-            singleton: true;
-            optional: true;
+            singleton: false;
+            optional: false;
           }
         >;
         emptyState: ExtensionInput<

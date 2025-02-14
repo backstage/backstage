@@ -16,38 +16,40 @@
 import {
   createExtensionBlueprint,
   createExtensionDataRef,
-  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
+import { TechDocsAddonOptions } from './types';
+import { attachComponentData } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
+import { getDataKeyByName, TECHDOCS_ADDONS_KEY } from './addons';
 
-/** @public */
-export const techDocsAddonsDataRef = createExtensionDataRef<
-  JSX.Element[]
->().with({
-  id: 'techdocs.addons',
-});
+/** @alpha */
+export const techDocsAddonDataRef =
+  createExtensionDataRef<TechDocsAddonOptions>().with({
+    id: 'techdocs.addon',
+  });
 
 /**
  * Creates an extension to add addons to the TechDocs standalone reader and entity pages.
- * @public
+ * @alpha
  */
-export const TechDocsAddonsBlueprint = createExtensionBlueprint({
-  kind: 'addons',
-  name: 'techdocs',
+export const TechDocsAddonBlueprint = createExtensionBlueprint({
+  kind: 'addon',
   attachTo: [
     { id: 'page:techdocs/reader', input: 'addons' },
     { id: 'entity-content:techdocs', input: 'addons' },
   ],
-  inputs: {
-    addons: createExtensionInput([techDocsAddonsDataRef], {
-      singleton: true,
-      optional: true,
-    }),
-  },
-  output: [techDocsAddonsDataRef],
-  factory: (params: { addons: JSX.Element[] }) => [
-    techDocsAddonsDataRef(params.addons),
-  ],
+  output: [techDocsAddonDataRef],
+  factory: (params: TechDocsAddonOptions) => [techDocsAddonDataRef(params)],
   dataRefs: {
-    addons: techDocsAddonsDataRef,
+    addon: techDocsAddonDataRef,
   },
 });
+
+/** @alpha */
+export const attachTechDocsAddonComponentData = <P,>(
+  techDocsAddon: ComponentType<P>,
+  data: TechDocsAddonOptions,
+) => {
+  attachComponentData(techDocsAddon, TECHDOCS_ADDONS_KEY, data);
+  attachComponentData(techDocsAddon, getDataKeyByName(data.name), true);
+};
