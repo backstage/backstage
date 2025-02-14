@@ -22,6 +22,7 @@ export {
   getOrganizationUsers,
   type GithubUser,
   type GithubTeam,
+  type QueryOptions,
 } from './github';
 export {
   type UserTransformer,

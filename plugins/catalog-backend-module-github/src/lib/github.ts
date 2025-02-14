@@ -54,6 +54,19 @@ export type UserResponse = {
   organizations?: Connection<GithubOrg>;
 };
 
+/**
+ * Query Options
+ *
+ * @public
+ *
+ * pageSize - The number of items to fetch per page
+ * requestDelayMs - The delay between requests in milliseconds
+ */
+export type QueryOptions = {
+  pageSize?: number;
+  requestDelayMs?: number;
+};
+
 export type PageInfo = {
   hasNextPage: boolean;
   endCursor?: string;
@@ -136,17 +149,19 @@ export type Connection<T> = {
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param options - Configurable query options
  */
 export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
   tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
+  options?: QueryOptions,
 ): Promise<{ users: Entity[] }> {
   const query = `
-    query users($org: String!, $email: Boolean!, $cursor: String) {
+    query users($org: String!, $email: Boolean!, $pageSize: Int!, $cursor: String) {
       organization(login: $org) {
-        membersWithRole(first: 100, after: $cursor) {
+        membersWithRole(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             avatarUrl,
@@ -172,7 +187,9 @@ export async function getOrganizationUsers(
     {
       org,
       email: tokenType === 'token',
+      pageSize: options?.pageSize ?? 100,
     },
+    options?.requestDelayMs,
   );
 
   return { users };
@@ -185,18 +202,20 @@ export async function getOrganizationUsers(
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param options - Configurable query options
  */
 export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  options?: QueryOptions,
 ): Promise<{
   teams: Entity[];
 }> {
   const query = `
-    query teams($org: String!, $cursor: String) {
+    query teams($org: String!, $pageSize: Int!, $cursor: String) {
       organization(login: $org) {
-        teams(first: 50, after: $cursor) {
+        teams(first: $pageSize, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             slug
@@ -249,14 +268,17 @@ export async function getOrganizationTeams(
 
     return await teamTransformer(team, ctx);
   };
-
   const teams = await queryWithPaging(
     client,
     query,
     org,
     r => r.organization?.teams,
     materialisedTeams,
-    { org },
+    {
+      org,
+      pageSize: options?.pageSize ?? 50,
+    },
+    options?.requestDelayMs,
   );
 
   return { teams };
@@ -622,6 +644,7 @@ export async function getTeamMembers(
  * @param transformer - A function that, given one of the nodes in the Connection,
  *               returns the model mapped form of it
  * @param variables - The variable values that the query needs, minus the cursor
+ * @param requestDelayMs - The delay between requests in milliseconds (default 1000)
  */
 export async function queryWithPaging<
   GraphqlType,
@@ -638,6 +661,7 @@ export async function queryWithPaging<
     ctx: TransformerContext,
   ) => Promise<OutputType | undefined>,
   variables: Variables,
+  requestDelayMs?: number,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -669,7 +693,7 @@ export async function queryWithPaging<
     if (!conn.pageInfo.hasNextPage) {
       break;
     } else {
-      await sleep(1000);
+      await sleep(requestDelayMs ?? 1000);
       cursor = conn.pageInfo.endCursor;
     }
   }
