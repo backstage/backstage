@@ -185,6 +185,10 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               classes.item,
               isActive ? classes.selected : undefined,
             )}
+            style={{
+              textTransform: 'none',
+              justifyContent: 'flex-start',
+            }}
           >
             {Icon && <Icon fontSize="small" />}
             <Typography
