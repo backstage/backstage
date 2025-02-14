@@ -163,7 +163,7 @@ export interface RouterOptions {
   database: DatabaseService;
   catalogClient: CatalogApi;
   scheduler?: SchedulerService;
-  actions?: TemplateAction<any, any>[];
+  actions?: TemplateAction<any, any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
    * @defaultValue 1

@@ -32,7 +32,8 @@ export function createGithubActionsDispatchAction(options: {
       | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -47,7 +48,8 @@ export function createGithubAutolinksAction(options: {
     isAlphanumeric?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -83,7 +85,8 @@ export function createGithubBranchProtectionAction(options: {
     requiredLinearHistory?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -98,7 +101,8 @@ export function createGithubDeployKeyAction(options: {
     privateKeySecretName?: string | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -133,7 +137,8 @@ export function createGithubEnvironmentAction(options: {
     preventSelfReview?: boolean | undefined;
     reviewers?: string[] | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -147,7 +152,8 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -162,7 +168,8 @@ export function createGithubPagesEnableAction(options: {
     sourcePath?: '/' | '/docs' | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -281,7 +288,8 @@ export function createGithubRepoCreateAction(options: {
       | undefined;
     subscribe?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -325,7 +333,8 @@ export function createGithubRepoPushAction(options: {
     requiredLinearHistory?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -344,7 +353,8 @@ export function createGithubWebhookAction(options: {
     insecureSsl?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -444,7 +454,8 @@ export function createPublishGithubAction(options: {
       | undefined;
     subscribe?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -471,7 +482,8 @@ export const createPublishGithubPullRequestAction: (
     forceEmptyGitAuthor?: boolean | undefined;
     createWhenEmpty?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
