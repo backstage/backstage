@@ -24,6 +24,8 @@ import {
 
 jest.mock('@google-cloud/cloud-sql-connector');
 
+jest.mock('@azure/identity');
+
 describe('postgres', () => {
   const createMockConnection = () => ({
     host: 'acme',
@@ -136,6 +138,114 @@ describe('postgres', () => {
         },
         useNullAsDefault: true,
       });
+    });
+
+    it('uses the correct config when using azure', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'user@contoso.com',
+            port: 5423,
+            database: 'other_db',
+          },
+        }),
+      );
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+      expect(connectionResult).toMatchObject({
+        user: 'user@contoso.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('allowedClockSkewMs');
+      expect(connectionResult).not.toHaveProperty('type');
+    });
+
+    it('instructs knex to get a new connection object when the old azure token expires', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      let configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            tokenCredential: {
+              tokenRenewalOffsetTime: '1 minute',
+            },
+            user: 'user@contoso.com',
+            database: 'other_db',
+            port: 5423,
+          },
+        }),
+      );
+      let connectionResult = await configResult.connection();
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 90_000 });
+      let expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 60_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      // Check the default tokenRenewalOffsetTime of 5 minutes
+      configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'user@contoso.com',
+            database: 'other_db',
+            port: 5423,
+          },
+        }),
+      );
+      connectionResult = await configResult.connection();
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 450_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 300_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
     });
 
     it('uses the correct config when using cloudsql', async () => {
