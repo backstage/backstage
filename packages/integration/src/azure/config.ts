@@ -35,7 +35,6 @@ export type AzureIntegrationConfig = {
 
   /**
    * The supported apiVersion of the azure api
-   *
    * "6.0" is  default version.
    */
   apiVersion: string;
