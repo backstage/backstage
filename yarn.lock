@@ -8748,6 +8748,7 @@ __metadata:
     portfinder: ^1.0.32
     tar: ^6.1.12
     ts-morph: ^24.0.0
+    typedoc: ^0.27.6
     yaml-diff-patch: ^2.0.0
   peerDependencies:
     "@microsoft/api-extractor-model": "*"
@@ -8755,9 +8756,12 @@ __metadata:
     "@microsoft/tsdoc-config": "*"
     "@useoptic/optic": ^1.0.0
     prettier: ^2.8.1
+    typedoc: ^0.27.0
     typescript: "> 3.0.0"
   peerDependenciesMeta:
     prettier:
+      optional: true
+    typedoc:
       optional: true
   bin:
     backstage-repo-tools: bin/backstage-repo-tools
@@ -10156,6 +10160,17 @@ __metadata:
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
   checksum: 4059f790e2d07bf3c3ff3e0fec0daa8144fe35c1f6e0111c9921bd32106adaa97a4ab096ad7dab1e28ee6a9060083c4d1a4ada42a7f5f3f7a96b8812e2b757c1
+  languageName: node
+  linkType: hard
+
+"@gerrit0/mini-shiki@npm:^1.24.0":
+  version: 1.27.2
+  resolution: "@gerrit0/mini-shiki@npm:1.27.2"
+  dependencies:
+    "@shikijs/engine-oniguruma": ^1.27.2
+    "@shikijs/types": ^1.27.2
+    "@shikijs/vscode-textmate": ^10.0.1
+  checksum: aa4a0def0c7c73f2ef49b53f4dab5bf95f8f3b3d2c895baf384d338856a082a6a0487bc87c28d550b7f52ed71cbe98dae7754a5397be52df49a18e75cdd7d087
   languageName: node
   linkType: hard
 
@@ -16591,6 +16606,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shikijs/engine-oniguruma@npm:^1.27.2":
+  version: 1.29.2
+  resolution: "@shikijs/engine-oniguruma@npm:1.29.2"
+  dependencies:
+    "@shikijs/types": 1.29.2
+    "@shikijs/vscode-textmate": ^10.0.1
+  checksum: 8713ada50e8875d22d928bd605d509a2c7d5e8c2c8a67b215b169f999457123082a02000182b37b9621903577dae5ac8067c614037fbf0aeb5b6dc2c195e58a2
+  languageName: node
+  linkType: hard
+
+"@shikijs/types@npm:1.29.2, @shikijs/types@npm:^1.27.2":
+  version: 1.29.2
+  resolution: "@shikijs/types@npm:1.29.2"
+  dependencies:
+    "@shikijs/vscode-textmate": ^10.0.1
+    "@types/hast": ^3.0.4
+  checksum: 3aeb2933b5ceda8afe6e4be624847de5fab392085ddf77fb785cf33014120d1afd6825e666d58895e4c489981196abc161c8a4d2e41f7da33d8f5e83b58cc606
+  languageName: node
+  linkType: hard
+
+"@shikijs/vscode-textmate@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "@shikijs/vscode-textmate@npm:10.0.1"
+  checksum: c5a8490417b9439b055844c6c09c3435fc435b1fc3923eb28f05ee346fd68e69df2d93cdaab319a51193970558ff1bf49c5ab047c9ed4fd86c3f9d062457a565
+  languageName: node
+  linkType: hard
+
 "@short.io/opensearch-mock@npm:^0.4.0":
   version: 0.4.0
   resolution: "@short.io/opensearch-mock@npm:0.4.0"
@@ -19803,6 +19845,15 @@ __metadata:
   dependencies:
     "@types/unist": "*"
   checksum: fff47998f4c11e21a7454b58673f70478740ecdafd95aaf50b70a3daa7da9cdc57315545bf9c039613732c40b7b0e9e49d11d03fe9a4304721cdc3b29a88141e
+  languageName: node
+  linkType: hard
+
+"@types/hast@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "@types/hast@npm:3.0.4"
+  dependencies:
+    "@types/unist": "*"
+  checksum: 7a973e8d16fcdf3936090fa2280f408fb2b6a4f13b42edeb5fbd614efe042b82eac68e298e556d50f6b4ad585a3a93c353e9c826feccdc77af59de8dd400d044
   languageName: node
   linkType: hard
 
@@ -42842,6 +42893,7 @@ __metadata:
     shx: ^0.3.2
     sloc: ^0.3.1
     sort-package-json: ^2.8.0
+    typedoc: ^0.27.6
     typescript: ~5.2.0
   languageName: unknown
   linkType: soft
@@ -46054,6 +46106,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typedoc@npm:^0.27.6":
+  version: 0.27.6
+  resolution: "typedoc@npm:0.27.6"
+  dependencies:
+    "@gerrit0/mini-shiki": ^1.24.0
+    lunr: ^2.3.9
+    markdown-it: ^14.1.0
+    minimatch: ^9.0.5
+    yaml: ^2.6.1
+  peerDependencies:
+    typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x
+  bin:
+    typedoc: bin/typedoc
+  checksum: 1a8ac5dd636406fa0bcd4a1e9801d72896256c531c09a56207f991b62b7d4ceb336050a8933a3aba0239da6df5da3436e51c86776043501b6e9483aa0b31e69f
+  languageName: node
+  linkType: hard
+
 "types-ramda@npm:^0.30.0":
   version: 0.30.0
   resolution: "types-ramda@npm:0.30.0"
@@ -47982,7 +48051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3, yaml@npm:^2.3.4, yaml@npm:^2.7.0":
+"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3, yaml@npm:^2.3.4, yaml@npm:^2.6.1, yaml@npm:^2.7.0":
   version: 2.7.0
   resolution: "yaml@npm:2.7.0"
   bin:
