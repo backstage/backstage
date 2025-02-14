@@ -15,13 +15,13 @@ Please leave feedback on these features in the [Backstage Discord](https://disco
 
 Do you have long-running tasks, and can they recover and proceed after Backstage redeploy?
 
-Then you definitely will benefit from enabling the experimental scaffolder task recovery feature.
+Then you will definitely benefit from enabling the experimental recovery feature for scaffolder tasks.
 
-Whenever you do redeploy, on startup there will be a check of all tasks in "processing" state that you identified in your template as they are capable of starting over.
+Whenever you do redeploy, on startup there will be a check of all tasks in "processing" state that you identified in your template as being capable of starting over.
 
-More details about the motivation and the goal of this feature you can read in [BEP "Scaffolder Retries and Idempotency"](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
+More details about the motivation and the goals of this feature can be found in [the "Scaffolder Retries and Idempotency" BEP](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
 
-This is an example of how you can do it:
+This is an example of how you can enable this in your Template entity declaration:
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -64,7 +64,7 @@ By default, the serialized workspace will be stored in your database.
 
 If you work with large files, it might not be the best option for you.
 
-At this moment we support the integration with the GCP bucket; to switch the serialization to this provider, you can with:
+At the moment we also support integration with Google GCS; to switch the serialization to this provider, you can do so with:
 
 ```yaml
 scaffolder:
