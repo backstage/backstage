@@ -87,7 +87,6 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
-import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'url';
@@ -103,12 +102,12 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
+import { createOpenApiRouter } from '../schema/openapi';
 import { checkPermission } from '../util/checkPermissions';
 import {
   findTemplate,
   getEntityBaseUrl,
   getWorkingDirectory,
-  parseNumberParam,
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
@@ -282,7 +281,7 @@ const readDuration = (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = Router();
+  const router = await createOpenApiRouter();
   // Be generous in upload size to support a wide range of templates in dry-run mode.
   router.use(express.json({ limit: '10MB' }));
 
@@ -523,8 +522,10 @@ export async function createRouter(
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
             steps: parameters.map(schema => ({
-              title: schema.title ?? 'Please enter the following information',
-              description: schema.description,
+              title:
+                (schema.title as string) ??
+                'Please enter the following information',
+              description: schema.description as string,
               schema,
             })),
             EXPERIMENTAL_formDecorators:
@@ -717,8 +718,7 @@ export async function createRouter(
           };
         });
 
-        const limit = parseNumberParam(req.query.limit, 'limit');
-        const offset = parseNumberParam(req.query.offset, 'offset');
+        const { limit, offset } = req.query;
 
         const tasks = await taskBroker.list({
           filters: {
@@ -727,8 +727,8 @@ export async function createRouter(
           },
           order,
           pagination: {
-            limit: limit ? limit[0] : undefined,
-            offset: offset ? offset[0] : undefined,
+            limit,
+            offset,
           },
         });
 
@@ -837,8 +837,10 @@ export async function createRouter(
         await auditorEvent?.fail({ error: err });
         throw err;
       }
-    })
-    .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
+    });
+  (router as express.Router).get(
+    '/v2/tasks/:taskId/eventstream',
+    async (req, res) => {
       const { taskId } = req.params;
 
       const auditorEvent = await auditor?.createEvent({
@@ -909,7 +911,9 @@ export async function createRouter(
         await auditorEvent?.fail({ error: err });
         throw err;
       }
-    })
+    },
+  );
+  router
     .get('/v2/tasks/:taskId/events', async (req, res) => {
       const { taskId } = req.params;
 
