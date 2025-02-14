@@ -32,8 +32,10 @@ import pages from './pages';
 import filters from './filters';
 import navItems from './navItems';
 import entityCards from './entityCards';
+import entityHeaders from './entityHeaders';
 import entityContents from './entityContents';
 import searchResultItems from './searchResultItems';
+import entityHeaderActions from './filter/entityHeaderActions';
 
 /** @alpha */
 export default createFrontendPlugin({
@@ -54,6 +56,8 @@ export default createFrontendPlugin({
     ...filters,
     ...navItems,
     ...entityCards,
+    ...entityHeaders,
+    ...entityHeaderActions,
     ...entityContents,
     ...searchResultItems,
   ],

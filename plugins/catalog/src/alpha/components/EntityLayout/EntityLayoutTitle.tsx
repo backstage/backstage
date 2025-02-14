@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import Box from '@material-ui/core/Box';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -25,10 +25,11 @@ import {
 type EntityLayoutTitleProps = {
   title: string;
   entity: Entity | undefined;
+  actions?: React.ReactNode[];
 };
 
 export function EntityLayoutTitle(props: EntityLayoutTitleProps) {
-  const { entity, title } = props;
+  const { entity, title, actions } = props;
   return (
     <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
       <Box
@@ -40,6 +41,9 @@ export function EntityLayoutTitle(props: EntityLayoutTitleProps) {
         {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
+      {actions?.map((action, index) => (
+        <Fragment key={index}>{action}</Fragment>
+      ))}
     </Box>
   );
 }
