@@ -48,7 +48,7 @@ const mockGitlabClient = {
     }),
   },
   Commits: {
-    create: jest.fn(),
+    create: jest.fn(() => ({ id: 'mockId' })),
   },
   MergeRequests: {
     create: jest.fn(async (repoId: string) => {
@@ -287,7 +287,10 @@ describe('createGitLabMergeRequest', () => {
           irrelevant: { 'bar.txt': 'Nothing to see here' },
         },
       });
-      const ctx = createMockActionContext({ input, workspacePath });
+      const ctx = createMockActionContext({
+        input,
+        workspacePath,
+      });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Projects.show).not.toHaveBeenCalled();
