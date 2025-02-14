@@ -61,6 +61,7 @@ interface ExtraContextMenuItem {
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  extraMenuItems?: JSX.Element[];
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }
@@ -69,6 +70,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
+    extraMenuItems,
     onUnregisterEntity,
     onInspectEntity,
   } = props;
@@ -145,6 +147,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       >
         <MenuList autoFocusItem={Boolean(anchorEl)}>
           {extraItems}
+          {extraMenuItems}
           <UnregisterEntity
             unregisterEntityOptions={UNSTABLE_contextMenuOptions}
             isUnregisterAllowed={isAllowed}
