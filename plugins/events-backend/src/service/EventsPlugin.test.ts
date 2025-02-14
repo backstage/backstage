@@ -141,7 +141,7 @@ describe('eventsPlugin', () => {
     }
 
     const databases = TestDatabases.create({
-      ids: ['SQLITE_3', 'MYSQL_8', 'POSTGRES_9', 'POSTGRES_13', 'POSTGRES_16'],
+      ids: ['SQLITE_3', 'MYSQL_8', 'POSTGRES_13', 'POSTGRES_17'],
     });
 
     async function mockKnexFactory(databaseId: TestDatabaseId) {
