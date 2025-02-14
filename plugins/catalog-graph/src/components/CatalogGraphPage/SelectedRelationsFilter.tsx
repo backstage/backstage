@@ -25,6 +25,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useMemo } from 'react';
 import { RelationPairs } from '../EntityRelationsGraph';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type SelectedRelationsFilterClassKey = 'formControl';
@@ -51,6 +53,7 @@ export const SelectedRelationsFilter = ({
 }: Props) => {
   const classes = useStyles();
   const relations = useMemo(() => relationPairs.flat(), [relationPairs]);
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   const handleChange = useCallback(
     (_: unknown, v: string[]) => {
@@ -65,7 +68,9 @@ export const SelectedRelationsFilter = ({
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Relations</Typography>
+      <Typography variant="button">
+        {t('selectedRelationsFilter.selectedLabel')}
+      </Typography>
       <Autocomplete
         className={classes.formControl}
         multiple

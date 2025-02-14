@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
@@ -22,6 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { catalogGraphTranslationRef } from '../../translation';
 
 export type Props = {
   value: number;
@@ -45,6 +47,7 @@ export const MaxDepthFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();
   const onChangeRef = useRef(onChange);
   const [currentValue, setCurrentValue] = useState(value);
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   // Keep a fresh reference to the latest callback
   useEffect(() => {
@@ -78,10 +81,12 @@ export const MaxDepthFilter = ({ value, onChange }: Props) => {
   return (
     <Box pb={1} pt={1}>
       <FormControl variant="outlined" className={classes.formControl}>
-        <Typography variant="button">Max Depth</Typography>
+        <Typography variant="button">
+          {t('maxDepthFilter.selectLabel')}
+        </Typography>
         <OutlinedInput
           type="number"
-          placeholder="∞ Infinite"
+          placeholder={t('maxDepthFilter.inputPlaceholder')}
           value={Number.isFinite(currentValue) ? String(currentValue) : ''}
           onChange={handleChange}
           endAdornment={

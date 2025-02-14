@@ -18,10 +18,22 @@ import { render, screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import React from 'react';
 import { MaxDepthFilter } from './MaxDepthFilter';
+import { mockApis, MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('<MaxDepthFilter/>', () => {
   test('should display current value', () => {
-    render(<MaxDepthFilter value={5} onChange={() => {}} />);
+    render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <MaxDepthFilter value={5} onChange={() => {}} />
+      </TestApiProvider>,
+    );
 
     expect(screen.getByLabelText('maxp')).toBeInTheDocument();
     expect(screen.getByLabelText('maxp')).toHaveValue(5);
@@ -29,7 +41,14 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should display infinite if non finite', () => {
     render(
-      <MaxDepthFilter value={Number.POSITIVE_INFINITY} onChange={() => {}} />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <MaxDepthFilter value={Number.POSITIVE_INFINITY} onChange={() => {}} />
+      </TestApiProvider>,
     );
 
     expect(screen.getByPlaceholderText(/Infinite/)).toBeInTheDocument();
@@ -38,7 +57,16 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should clear max depth', async () => {
     const onChange = jest.fn();
-    render(<MaxDepthFilter value={10} onChange={onChange} />);
+    render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <MaxDepthFilter value={10} onChange={onChange} />
+      </TestApiProvider>,
+    );
 
     expect(onChange).not.toHaveBeenCalled();
     await user.click(screen.getByLabelText('clear max depth'));
@@ -47,7 +75,16 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should set max depth to undefined if below one', async () => {
     const onChange = jest.fn();
-    render(<MaxDepthFilter value={1} onChange={onChange} />);
+    render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <MaxDepthFilter value={1} onChange={onChange} />
+      </TestApiProvider>,
+    );
 
     await user.clear(screen.getByLabelText('maxp'));
     await user.type(screen.getByLabelText('maxp'), '0');
@@ -58,12 +95,19 @@ describe('<MaxDepthFilter/>', () => {
   test('should select direction', async () => {
     let value = 5;
     render(
-      <MaxDepthFilter
-        value={value}
-        onChange={v => {
-          value = v;
-        }}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <MaxDepthFilter
+          value={value}
+          onChange={v => {
+            value = v;
+          }}
+        />
+      </TestApiProvider>,
     );
 
     expect(screen.getByLabelText('maxp')).toHaveValue(5);
