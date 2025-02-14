@@ -517,4 +517,5 @@ zoomable
 zsh
 scrollable
 severities
+apis
 intellij

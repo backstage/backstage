@@ -20,6 +20,7 @@ describe('AzureUrl', () => {
   it('should work with the short URL form', () => {
     const url = AzureUrl.fromRepoUrl(
       'https://dev.azure.com/my-org/_git/my-project',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('my-org');
@@ -45,6 +46,7 @@ describe('AzureUrl', () => {
   it('should work with the short URL form with a path', () => {
     const url = AzureUrl.fromRepoUrl(
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('my-org');
@@ -70,6 +72,7 @@ describe('AzureUrl', () => {
   it('should work with the short URL form with a path and ref', () => {
     const url = AzureUrl.fromRepoUrl(
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GBtest-branch',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('my-org');
@@ -95,6 +98,7 @@ describe('AzureUrl', () => {
   it('should work with the long URL', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/my-org/my-project/_git/my-repo',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('my-org');
@@ -120,6 +124,7 @@ describe('AzureUrl', () => {
   it('should work with the long URL form with a path and ref', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('my-org');
@@ -145,6 +150,7 @@ describe('AzureUrl', () => {
   it('should work with the old tfs long URL', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/tfs/projects/my-project/_git/my-repo',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('tfs/projects');
@@ -157,6 +163,7 @@ describe('AzureUrl', () => {
   it('should work with the old tfs long URL form with a path and ref', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/tfs/projects/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
+      '6.0',
     );
 
     expect(url.getOwner()).toBe('tfs/projects');
@@ -170,31 +177,37 @@ describe('AzureUrl', () => {
     expect(() =>
       AzureUrl.fromRepoUrl(
         'https://dev.azure.com/my-org/_git/my-project?version=GC6eead79870d998a3befd4bc7c72cc89e446f2970',
+        '6.0',
       ),
     ).toThrow('Azure URL version must point to a git branch');
   });
 
   it('should reject non-repo URLs', () => {
     expect(() =>
-      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/_git'),
+      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/_git', '6.0'),
     ).toThrow('Azure URL must point to a git repository');
     expect(() =>
-      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/_git/'),
+      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/_git/', '6.0'),
     ).toThrow('Azure URL must point to a git repository');
     expect(() =>
-      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/my-project/'),
+      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/my-project/', '6.0'),
     ).toThrow('Azure URL must point to a git repository');
     expect(() =>
-      AzureUrl.fromRepoUrl('https://dev.azure.com/my-org/my-project/_not-git'),
+      AzureUrl.fromRepoUrl(
+        'https://dev.azure.com/my-org/my-project/_not-git',
+        '6.0',
+      ),
     ).toThrow('Azure URL must point to a git repository');
     expect(() =>
       AzureUrl.fromRepoUrl(
         'https://dev.azure.com/my-org/my-project/_not-git/my-repo',
+        '6.0',
       ),
     ).toThrow('Azure URL must point to a git repository');
     expect(() =>
       AzureUrl.fromRepoUrl(
         'https://dev.azure.com/my-org/_workitems/recentlyupdated/',
+        '6.0',
       ),
     ).toThrow('Azure URL must point to a git repository');
   });
