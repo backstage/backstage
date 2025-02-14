@@ -14,14 +14,40 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { OptionValues } from 'commander';
+import { resolve as resolvePath } from 'node:path';
 import { PackageRole } from '@backstage/cli-node';
 import { findRoleFromCommand } from '../../lib/role';
 import { startBackend, startBackendPlugin } from './startBackend';
 import { startFrontend } from './startFrontend';
+import { ForwardedError } from '@backstage/errors';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
+
+  if (opts.link) {
+    const dir = resolvePath(opts.link);
+    if (!fs.pathExistsSync(dir)) {
+      throw new Error(
+        `Invalid workspace link, directory does not exist: ${dir}`,
+      );
+    }
+    const pkgJson = await fs
+      .readJson(resolvePath(dir, 'package.json'))
+      .catch(error => {
+        throw new ForwardedError(
+          'Failed to read package.json in linked workspace',
+          error,
+        );
+      });
+
+    if (!pkgJson.workspaces) {
+      throw new Error(
+        `Invalid workspace link, directory is not a workspace: ${dir}`,
+      );
+    }
+  }
 
   const options = {
     configPaths: opts.config as string[],

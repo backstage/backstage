@@ -1,0 +1,34 @@
+{
+  "name": "{{packageName}}",
+  "description": "The {{moduleId}} module for @backstage/plugin-scaffolder-backend",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "{{versionQuery '@backstage/backend-plugin-api'}}",
+    "@backstage/plugin-scaffolder-node": "{{versionQuery '@backstage/plugin-scaffolder-node'}}"
+  },
+  "devDependencies": {
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "@backstage/plugin-scaffolder-node-test-utils": "{{versionQuery '@backstage/plugin-scaffolder-node-test-utils'}}"
+  },
+  "files": [
+    "dist"
+  ]
+}
