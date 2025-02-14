@@ -71,7 +71,10 @@ async function generateDocJson(pkg: string) {
   );
 
   const exports = getExports(packageJson);
-  if (!exports.length || !exports.some(e => e.startsWith('src'))) {
+  if (
+    !exports.length ||
+    !exports.some(e => e.startsWith('src') || e.startsWith('./src'))
+  ) {
     return;
   }
 
@@ -110,6 +113,7 @@ async function generateDocJson(pkg: string) {
 }
 
 export default async function packageDocs(paths: string[] = [], opts: any) {
+  console.warn('!!! This is an experimental command !!!');
   const selectedPackageDirs = await resolvePackagePaths({
     paths,
     include: opts.include,

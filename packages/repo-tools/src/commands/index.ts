@@ -263,7 +263,8 @@ export function registerCommands(program: Command) {
     );
 
   program
-    .command('package-docs [paths...]')
+    .command('package-docs [paths...]', { hidden: true })
+    .description('EXPERIMENTAL: Generate package documentation')
     .action(lazy(() => import('./package-docs/command'), 'default'));
 
   registerPackageCommand(program);
