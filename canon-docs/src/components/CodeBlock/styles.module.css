@@ -1,6 +1,6 @@
 .codeBlock {
   border-radius: 4px;
-  border: 1px solid var(--canon-border);
+  border: 1px solid var(--border);
   position: relative;
   background: transparent;
   overflow-x: auto;
@@ -15,10 +15,10 @@
 }
 
 .title {
-  border-bottom: 1px solid var(--canon-border);
+  border-bottom: 1px solid var(--border);
   padding: 12px 20px;
   font-size: 0.875rem;
-  color: var(--canon-fg-text-secondary);
+  color: var(--secondary);
 }
 
 .code {

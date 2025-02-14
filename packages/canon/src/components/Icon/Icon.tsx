@@ -21,7 +21,7 @@ import clsx from 'clsx';
 
 /** @public */
 export const Icon = (props: IconProps) => {
-  const { name, size = 16, className, style, ...restProps } = props;
+  const { name, size, className, style, ...restProps } = props;
   const { icons } = useCanon();
 
   const CanonIcon = icons[name] as React.ComponentType<Omit<IconProps, 'name'>>;
@@ -34,7 +34,10 @@ export const Icon = (props: IconProps) => {
   return (
     <CanonIcon
       className={clsx('canon-Icon', className)}
-      style={{ width: size, height: size, ...style }}
+      style={{
+        ...(size ? { width: size, height: size } : {}),
+        ...style,
+      }}
       {...restProps}
     />
   );
