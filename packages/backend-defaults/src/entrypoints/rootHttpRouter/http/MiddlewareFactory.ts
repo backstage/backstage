@@ -15,15 +15,15 @@
  */
 
 import {
-  RootConfigService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import {
-  Request,
-  Response,
   ErrorRequestHandler,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
 } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -37,12 +37,16 @@ import {
   InputError,
   NotAllowedError,
   NotFoundError,
+  NotImplementedError,
   NotModifiedError,
-  ServiceUnavailableError,
   serializeError,
+  ServiceUnavailableError,
 } from '@backstage/errors';
-import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
+import { rateLimit } from 'express-rate-limit';
+import { readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
+import { RateLimitStoreFactory } from './RateLimitStoreFactory';
 
 type LogMeta = {
   date: string;
@@ -225,6 +229,85 @@ export class MiddlewareFactory {
    */
   cors(): RequestHandler {
     return cors(readCorsOptions(this.#config.getOptionalConfig('backend')));
+  }
+
+  /**
+   * Returns a middleware that implements rate limiting.
+   *
+   * @remarks
+   *
+   * Rate limiting is a common technique to prevent abuse of APIs. This middleware is
+   * configured using the config key `backend.rateLimit`.
+   *
+   * @returns An Express request handler
+   */
+  rateLimit(): RequestHandler {
+    const enabled = this.#config.has('backend.rateLimit');
+    if (!enabled) {
+      return (_req: Request, _res: Response, next: NextFunction) => {
+        next();
+      };
+    }
+
+    const useDefaults = this.#config.getOptional('backend.rateLimit') === true;
+    const rateLimitOptions = useDefaults
+      ? undefined
+      : this.#config.getOptionalConfig('backend.rateLimit');
+
+    let windowMs: number = 60000;
+    if (rateLimitOptions && rateLimitOptions.has('window')) {
+      const windowDuration = readDurationFromConfig(rateLimitOptions, {
+        key: 'window',
+      });
+      windowMs = durationToMilliseconds(windowDuration);
+    }
+
+    const ipAllowList = rateLimitOptions?.getOptionalStringArray(
+      'ipAllowList',
+    ) ?? ['127.0.0.1', '0:0:0:0:0:0:0:1', '::1'];
+
+    return rateLimit({
+      windowMs,
+      limit: rateLimitOptions?.getOptionalNumber('incomingRequestLimit'),
+      skipSuccessfulRequests: rateLimitOptions?.getOptionalBoolean(
+        'skipSuccessfulRequests',
+      ),
+      message: {
+        error: {
+          name: 'Error',
+          message: `Too many requests, please try again later`,
+        },
+        response: {
+          statusCode: 429,
+        },
+      },
+      statusCode: 429,
+      skipFailedRequests:
+        rateLimitOptions?.getOptionalBoolean('skipFailedRequests'),
+      passOnStoreError:
+        rateLimitOptions?.getOptionalBoolean('passOnStoreError'),
+      keyGenerator(req, _res): string {
+        if (!req.ip) {
+          return req.socket.remoteAddress!;
+        }
+        return req.ip;
+      },
+      skip: (req, _res) => {
+        return (
+          Boolean(req.ip && ipAllowList.includes(req.ip)) ||
+          Boolean(
+            req.socket.remoteAddress &&
+              ipAllowList.includes(req.socket.remoteAddress),
+          )
+        );
+      },
+      validate: {
+        trustProxy: false,
+      },
+      store: useDefaults
+        ? undefined
+        : RateLimitStoreFactory.create(this.#config),
+    });
   }
 
   /**
