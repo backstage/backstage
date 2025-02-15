@@ -68,9 +68,11 @@ export class AzureIntegration implements ScmIntegration {
     }
 
     try {
-      const azureUrl = AzureUrl.fromRepoUrl(base);
+      const azureUrl = AzureUrl.fromRepoUrl(
+        base,
+        this.integrationConfig.apiVersion ?? '6.0',
+      );
       const newUrl = new URL(base);
-
       // We lean on the URL path resolution logic to resolve the path param
       const mockBaseUrl = new URL(`https://a.com${azureUrl.getPath() ?? ''}`);
       const updatedPath = new URL(url, mockBaseUrl).pathname;

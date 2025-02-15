@@ -28,6 +28,11 @@ export interface Config {
        */
       host: string;
       /**
+       * The supported apiVersion of the azure api
+       * @visibility frontend
+       */
+      apiVersion: string;
+      /**
        * Token used to authenticate requests.
        * @visibility secret
        * @deprecated Use `credentials` instead.

@@ -44,39 +44,50 @@ describe('azure core', () => {
     it.each([
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+        apiVersion: '6.0',
         result:
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
       },
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        apiVersion: '6.0',
         result:
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml',
       },
       {
         url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        apiVersion: '6.0',
+
         result:
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml',
       },
       {
         url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+        apiVersion: '6.0',
         result:
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
       },
-    ])('should handle happy path %#', async ({ url, result }) => {
-      expect(getAzureFileFetchUrl(url)).toBe(result);
+    ])('should handle happy path %#', async ({ url, apiVersion, result }) => {
+      expect(getAzureFileFetchUrl(url, { apiVersion: apiVersion })).toBe(
+        result,
+      );
     });
 
     it.each([
       {
         url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         error: 'Azure URL must point to a git repository',
+        apiVersion: '6.0',
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
         error: 'Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+        apiVersion: '6.0',
       },
-    ])('should handle error path %#', ({ url, error }) => {
-      expect(() => getAzureFileFetchUrl(url)).toThrow(error);
+    ])('should handle error path %#', ({ url, apiVersion, error }) => {
+      expect(() =>
+        getAzureFileFetchUrl(url, { apiVersion: apiVersion }),
+      ).toThrow(error);
     });
   });
 
@@ -84,6 +95,7 @@ describe('azure core', () => {
     it('do not add scopePath if no path is specified', async () => {
       const result = getAzureDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository',
+        { apiVersion: '6.0' },
       );
 
       expect(new URL(result).searchParams.get('scopePath')).toBeNull();
@@ -92,6 +104,7 @@ describe('azure core', () => {
     it('add scopePath if a path is specified', async () => {
       const result = getAzureDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
+        { apiVersion: '6.0' },
       );
       expect(new URL(result).searchParams.get('scopePath')).toEqual('/docs');
     });
@@ -99,16 +112,18 @@ describe('azure core', () => {
     it.each([
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name',
+        apiVersion: '6.0',
         result:
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
       },
       {
         url: 'https://api.com/org-name/project-name/_git/repo-name',
+        apiVersion: '6.0',
         result:
           'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?recursionLevel=full&download=true&api-version=6.0',
       },
-    ])('should handle happy path %#', async ({ url, result }) => {
-      expect(getAzureDownloadUrl(url)).toBe(result);
+    ])('should handle happy path %#', async ({ url, apiVersion, result }) => {
+      expect(getAzureDownloadUrl(url, { apiVersion: apiVersion })).toBe(result);
     });
   });
 });

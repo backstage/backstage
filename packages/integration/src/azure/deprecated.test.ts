@@ -52,7 +52,9 @@ describe('azure core', () => {
 
   describe('getAzureRequestOptions', () => {
     it('should not add authorization header when not using token or credential', async () => {
-      expect(await getAzureRequestOptions({ host: '' })).toEqual(
+      expect(
+        await getAzureRequestOptions({ host: '', apiVersion: '' }),
+      ).toEqual(
         expect.objectContaining({
           headers: expect.not.objectContaining({
             Authorization: expect.anything(),
@@ -67,6 +69,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
+          apiVersion: '',
           credentials: [
             {
               kind: 'PersonalAccessToken',
@@ -87,6 +90,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
+          apiVersion: '',
           credentials: [
             {
               kind: 'ClientSecret',
@@ -109,6 +113,7 @@ describe('azure core', () => {
       expect(
         await getAzureRequestOptions({
           host: '',
+          apiVersion: '',
           credentials: [
             {
               kind: 'ManagedIdentity',
