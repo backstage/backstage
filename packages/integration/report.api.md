@@ -198,6 +198,7 @@ export class AzureIntegration implements ScmIntegration {
 // @public
 export type AzureIntegrationConfig = {
   host: string;
+  apiVersion: string;
   token?: string;
   credential?: AzureDevOpsCredential;
   credentials?: AzureDevOpsCredential[];
@@ -398,13 +399,28 @@ export type GerritIntegrationConfig = {
 };
 
 // @public
-export function getAzureCommitsUrl(url: string): string;
+export function getAzureCommitsUrl(
+  url: string,
+  options?: {
+    apiVersion?: string;
+  },
+): string;
 
 // @public
-export function getAzureDownloadUrl(url: string): string;
+export function getAzureDownloadUrl(
+  url: string,
+  options?: {
+    apiVersion?: string;
+  },
+): string;
 
 // @public
-export function getAzureFileFetchUrl(url: string): string;
+export function getAzureFileFetchUrl(
+  url: string,
+  options?: {
+    apiVersion?: string;
+  },
+): string;
 
 // @public @deprecated
 export function getAzureRequestOptions(
