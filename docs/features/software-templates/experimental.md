@@ -42,6 +42,9 @@ scaffolder:
 
 By default, the tasks that are in a processing state and have a heartbeat of more than 30 seconds will be automatically recovered.
 This implies that the task's status will shift to "Open," initiating its execution from the beginning. So you have to be sure that your tasks can run multiple times.
+
+![Task recovery visualization](./task-recovery-visualisation.png)
+
 You can look at how to incorporate [checkpoints](https://backstage.io/docs/features/software-templates/writing-custom-actions#using-checkpoints-in-custom-actions-experimental) into your custom actions to achieve that.
 
 In case 30 seconds of no heartbeat time is not appropriate for your case to restart the task, you can customize it for your needs with the configuration:
