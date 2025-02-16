@@ -30,18 +30,18 @@ export async function installNewPackage(input: PortableTemplateInput) {
     case 'plugin-common-library':
       return; // No installation action needed for library packages
     case 'frontend-plugin':
-      await addDependency(input, 'package/app/package.json');
+      await addDependency(input, 'packages/app/package.json');
       await tryAddFrontendLegacy(input);
       return;
     case 'frontend-plugin-module':
-      await addDependency(input, 'package/app/package.json');
+      await addDependency(input, 'packages/app/package.json');
       return;
     case 'backend-plugin':
-      await addDependency(input, 'package/backend/package.json');
+      await addDependency(input, 'packages/backend/package.json');
       await tryAddBackend(input);
       return;
     case 'backend-plugin-module':
-      await addDependency(input, 'package/backend/package.json');
+      await addDependency(input, 'packages/backend/package.json');
       await tryAddBackend(input);
       return;
     default:
