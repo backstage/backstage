@@ -40,6 +40,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
+      - name: prepare corepack
+        shell: bash
+        run: |
+          npm install -g corepack
+          corepack enable
+        
       - name: yarn install
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
