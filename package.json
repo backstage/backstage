@@ -147,7 +147,11 @@
     "typedoc": "^0.27.6",
     "typescript": "~5.2.0"
   },
-  "packageManager": "yarn@3.8.1",
+  "packageManager": "yarn@4.6.0",
+  "volta": {
+    "node": "22.14.0",
+    "yarn": "4.6.0"
+  },
   "engines": {
     "node": "20 || 22"
   }
