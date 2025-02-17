@@ -445,31 +445,41 @@ describe('SearchContext', () => {
         .mockResolvedValueOnce({
           results: [],
           numberOfResults: 3,
+        })
+        .mockResolvedValueOnce({
+          results: [],
+          numberOfResults: 1,
         });
 
+      // first api call with empty term
       const { result } = renderHook(() => useSearch(), {
         wrapper: Wrapper,
       });
 
       await waitFor(() => {
         expect(result.current).toEqual(expect.objectContaining(initialState));
+        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+          term: '',
+          types: ['*'],
+          filters: {},
+        });
+        expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
       });
 
-      const term = 'term';
-
+      // second api call with term 'eva'
       await act(async () => {
-        result.current.setTerm(term);
+        result.current.setTerm('eva');
       });
 
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith({
-          term: 'term',
+          term: 'eva',
           types: ['*'],
           filters: {},
         });
         expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
           action: 'search',
-          subject: 'term',
+          subject: 'eva',
           value: 3,
           context: {
             extension: 'App',
@@ -478,25 +488,28 @@ describe('SearchContext', () => {
           },
         });
       });
-    });
 
-    it('does not capture analytics events if term is empty', async () => {
-      searchApiMock.query.mockResolvedValue({
-        results: [],
-        numberOfResults: 10,
-      });
-
-      renderHook(() => useSearch(), {
-        wrapper: Wrapper,
+      // third api call with term 'eva.m'
+      await act(async () => {
+        result.current.setTerm('eva.m');
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenCalledWith({
-          term: '',
+        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+          term: 'eva.m',
           types: ['*'],
           filters: {},
         });
-        expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
+        expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+          action: 'search',
+          subject: 'eva.m',
+          value: 1,
+          context: {
+            extension: 'App',
+            pluginId: 'root',
+            routeRef: 'unknown',
+          },
+        });
       });
     });
 
