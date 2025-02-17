@@ -104,7 +104,8 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
-    "jsonpath-plus": ">=10.3.0"
+    "jsonpath-plus": ">=10.3.0",
+    "koa": ">=2.15.4"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
