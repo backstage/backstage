@@ -47,7 +47,7 @@ export interface Config {
         /**
          * Number to define the fuzziness of the search. Defaults to AUTO.
          */
-        fuzziness?: number;
+        fuzziness?: 'AUTO' | number;
         /**
          * Minimum number of characters that must match exactly at the beginning of the qeury. Defaults to 0.
          */

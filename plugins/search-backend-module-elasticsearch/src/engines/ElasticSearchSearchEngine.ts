@@ -155,8 +155,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       numFragments: 1,
       fragmentDelimiter: ' ... ',
       ...highlightOptions,
-      ...queryOptions,
     };
+    this.queryOptions = queryOptions;
   }
 
   static async fromConfig(options: ElasticSearchOptions) {
