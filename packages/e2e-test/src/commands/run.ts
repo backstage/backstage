@@ -199,9 +199,6 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     ...createAppDeps,
   ]);
 
-  print('Pinning yarn version in workspace');
-  await pinYarnVersion(workspaceDir);
-
   const yarnPatchesPath = paths.resolveOwnRoot('.yarn/patches');
   if (await fs.pathExists(yarnPatchesPath)) {
     print('Copying yarn patches');
@@ -214,39 +211,6 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   });
 
   return workspaceDir;
-}
-
-/**
- * Pin the yarn version in a directory to the one we're using in the Backstage repo
- */
-async function pinYarnVersion(dir: string) {
-  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
-  const yarnRcLines = yarnRc.split('\n');
-  const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarnPath:'));
-  if (!yarnPathLine) {
-    throw new Error(`Unable to find 'yarnPath' in ${yarnRc}`);
-  }
-  const match = yarnPathLine.match(/^yarnPath: (.*)$/);
-  if (!match) {
-    throw new Error(`Invalid 'yarnPath' in ${yarnRc}`);
-  }
-  const [, localYarnPath] = match;
-  const yarnPath = paths.resolveOwnRoot(localYarnPath);
-  const yarnPluginPath = paths.resolveOwnRoot(
-    localYarnPath,
-    '../../plugins/@yarnpkg/plugin-workspace-tools.cjs',
-  );
-
-  await fs.writeFile(
-    resolvePath(dir, '.yarnrc.yml'),
-    `yarnPath: ${yarnPath}
-nodeLinker: node-modules
-enableGlobalCache: true
-plugins:
-  - path: ${yarnPluginPath}
-    spec: '@yarnpkg/plugin-workspace-tools'
-`,
-  );
 }
 
 /**
@@ -300,8 +264,7 @@ async function createApp(
       }
     }
 
-    print('Pinning yarn version and registry in app');
-    await pinYarnVersion(appDir);
+    print('Pinning registry in app');
     await fs.writeFile(
       resolvePath(appDir, '.npmrc'),
       'registry=https://registry.npmjs.org/\n',
