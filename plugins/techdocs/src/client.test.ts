@@ -19,20 +19,11 @@ import { NotFoundError } from '@backstage/errors';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { mockApis, MockFetchApi } from '@backstage/test-utils';
 import { TechDocsStorageClient } from './client';
-import {
-  getMkdocsYml,
-  getMkdocsUseDirectoryUrls,
-} from '@backstage/plugin-techdocs-node';
 
 jest.mock('@microsoft/fetch-event-source');
 const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
   typeof fetchEventSource
 >;
-
-jest.mock('@backstage/plugin-techdocs-node', () => ({
-  getMkdocsYml: jest.fn(),
-  getMkdocsUseDirectoryUrls: jest.fn(),
-}));
 
 const mockEntity = {
   kind: 'Component',
@@ -216,90 +207,6 @@ describe('TechDocsStorageClient', () => {
 
       await expect(promise).rejects.toThrow(Error);
       await expect(promise).rejects.toThrow('Some other error');
-    });
-  });
-
-  describe('getEntityDocs', () => {
-    beforeEach(() => {
-      jest.resetAllMocks();
-    });
-
-    it('should append /index.html if useDirectoryUrls is true and no forward slash in path', async () => {
-      const mockFetch = jest.fn().mockResolvedValue({
-        status: 200,
-        text: async () => '<html>...</html>',
-      });
-
-      const myFetchApi = new MockFetchApi({
-        baseImplementation: mockFetch,
-      });
-
-      const storageApi = new TechDocsStorageClient({
-        configApi,
-        discoveryApi,
-        fetchApi: myFetchApi,
-      });
-
-      (getMkdocsYml as jest.Mock).mockResolvedValue({ content: '' });
-      (getMkdocsUseDirectoryUrls as jest.Mock).mockResolvedValue(true);
-
-      await storageApi.getEntityDocs(mockEntity, 'path/to/page');
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'http://backstage:9191/api/techdocs/static/docs/default/Component/test-component/path/to/page/index.html',
-      );
-    });
-
-    it('should append index.html if useDirectoryUrls is true with forward slash in path', async () => {
-      const mockFetch = jest.fn().mockResolvedValue({
-        status: 200,
-        text: async () => '<html>...</html>',
-      });
-
-      const myFetchApi = new MockFetchApi({
-        baseImplementation: mockFetch,
-      });
-
-      const storageApi = new TechDocsStorageClient({
-        configApi,
-        discoveryApi,
-        fetchApi: myFetchApi,
-      });
-
-      (getMkdocsYml as jest.Mock).mockResolvedValue({ content: 'content' });
-      (getMkdocsUseDirectoryUrls as jest.Mock).mockResolvedValue(true);
-
-      await storageApi.getEntityDocs(mockEntity, 'path/to/page');
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'http://backstage:9191/api/techdocs/static/docs/default/Component/test-component/path/to/page/index.html',
-      );
-    });
-
-    it('should append not append anything if useDirectoryUrls is false', async () => {
-      const mockFetch = jest.fn().mockResolvedValue({
-        status: 200,
-        text: async () => '<html>...</html>',
-      });
-
-      const myFetchApi = new MockFetchApi({
-        baseImplementation: mockFetch,
-      });
-
-      const storageApi = new TechDocsStorageClient({
-        configApi,
-        discoveryApi,
-        fetchApi: myFetchApi,
-      });
-
-      (getMkdocsYml as jest.Mock).mockResolvedValue({ content: 'content' });
-      (getMkdocsUseDirectoryUrls as jest.Mock).mockResolvedValue(false);
-
-      await storageApi.getEntityDocs(mockEntity, 'path/to/page/index.html');
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'http://backstage:9191/api/techdocs/static/docs/default/Component/test-component/path/to/page/index.html',
-      );
     });
   });
 });

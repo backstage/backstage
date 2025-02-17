@@ -30,10 +30,6 @@ import {
   TechDocsStorageApi,
 } from '@backstage/plugin-techdocs-react';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import {
-  getMkdocsYml,
-  getMkdocsUseDirectoryUrls,
-} from '@backstage/plugin-techdocs-node';
 
 /**
  * API to talk to `techdocs-backend`.
@@ -175,12 +171,12 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const storageUrl = await this.getStorageUrl();
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
 
-    const { content } = await getMkdocsYml('./');
-    const useDirectoryUrls = await getMkdocsUseDirectoryUrls(content);
-
     let updatedUrl = url;
-    if (useDirectoryUrls) {
-      updatedUrl = url.endsWith('/') ? `${url}index.html` : `${url}/index.html`;
+
+    if (url.endsWith('/')) {
+      updatedUrl += 'index.html';
+    } else if (!url.endsWith('.html')) {
+      updatedUrl += '/index.html';
     }
 
     const request = await this.fetchApi.fetch(updatedUrl);

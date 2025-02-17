@@ -26,7 +26,6 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import {
   createOrUpdateMetadata,
   getGeneratorKey,
-  getMkdocsUseDirectoryUrls,
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
   patchIndexPreBuild,
@@ -726,37 +725,6 @@ describe('helpers', () => {
       await expect(
         validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
       ).resolves.toBeUndefined();
-    });
-  });
-
-  describe('getMkdocsUseDirectoryUrls', () => {
-    it('should return true if use_directory_urls is not defined', async () => {
-      const mkdocsYmlContent = `
-        site_name: Test Site
-        docs_dir: docs
-      `;
-      const result = await getMkdocsUseDirectoryUrls(mkdocsYmlContent);
-      expect(result).toBe(true);
-    });
-
-    it('should return true if use_directory_urls is set to true', async () => {
-      const mkdocsYmlContent = `
-        site_name: Test Site
-        docs_dir: docs
-        use_directory_urls: true
-      `;
-      const result = await getMkdocsUseDirectoryUrls(mkdocsYmlContent);
-      expect(result).toBe(true);
-    });
-
-    it('should return false if use_directory_urls is set to false', async () => {
-      const mkdocsYmlContent = `
-        site_name: Test Site
-        docs_dir: docs
-        use_directory_urls: false
-      `;
-      const result = await getMkdocsUseDirectoryUrls(mkdocsYmlContent);
-      expect(result).toBe(false);
     });
   });
 });
