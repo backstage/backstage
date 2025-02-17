@@ -1,4 +1,5 @@
 ---
+'@backstage/plugin-auth-backend-module-oidc-provider': patch
 '@backstage/plugin-auth-node': patch
 ---
 
