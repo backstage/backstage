@@ -41,8 +41,10 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: install dependencies
-        run: yarn install --immutable
+      - name: yarn install
+        uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
+        with:
+          cache-prefix: microsite-${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: generate types
         run: yarn tsc
