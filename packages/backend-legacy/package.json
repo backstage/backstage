@@ -64,7 +64,7 @@
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@gitbeaker/node": "^35.1.0",
-    "@octokit/rest": "^19.0.3",
+    "@octokit/rest": "^20.1.1",
     "azure-devops-node-api": "^14.0.0",
     "better-sqlite3": "^11.0.0",
     "dockerode": "^4.0.0",

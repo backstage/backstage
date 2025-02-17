@@ -118,7 +118,7 @@
     "@backstage/e2e-test-utils": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
-    "@octokit/rest": "^19.0.3",
+    "@octokit/rest": "^20.1.1",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
     "@techdocs/cli": "workspace:*",

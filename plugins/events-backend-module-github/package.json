@@ -50,7 +50,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
-    "@octokit/webhooks-methods": "^3.0.0"
+    "@octokit/webhooks-methods": "^4.1.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
