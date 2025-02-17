@@ -22,12 +22,7 @@ import {
   Page,
   useSidebarPinState,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
-import {
-  CATALOG_FILTER_EXISTS,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-react';
 import { SearchType } from '@backstage/plugin-search';
 import {
   SearchBar,
@@ -43,6 +38,7 @@ import Grid from '@material-ui/core/Grid';
 import { Theme } from '@material-ui/core/styles/createTheme';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { useTechdocsEntities } from './use-techdocs-entities';
 
 const useStyles = makeStyles((theme: Theme) => ({
   filter: {
@@ -60,7 +56,7 @@ const SearchPage = () => {
   const classes = useStyles();
   const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
-  const catalogApi = useApi(catalogApiRef);
+  const techdocsEntities = useTechdocsEntities();
 
   return (
     <Page themeId="home">
@@ -95,23 +91,7 @@ const SearchPage = () => {
                     className={classes.filter}
                     label="Entity"
                     name="name"
-                    values={async () => {
-                      // Return a list of entities which are documented.
-                      const { items } = await catalogApi.getEntities({
-                        fields: ['metadata.name', 'metadata.title'],
-                        filter: {
-                          'metadata.annotations.backstage.io/techdocs-ref':
-                            CATALOG_FILTER_EXISTS,
-                        },
-                      });
-
-                      const names = items.map(entity => ({
-                        value: entity.metadata.name,
-                        label: entity.metadata.title ?? entity.metadata.name,
-                      }));
-                      names.sort((a, b) => a.label.localeCompare(b.label));
-                      return names;
-                    }}
+                    values={techdocsEntities}
                   />
                 )}
                 <SearchFilter.Select
