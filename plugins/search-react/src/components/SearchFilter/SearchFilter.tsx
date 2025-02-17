@@ -126,9 +126,9 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
-      {formLabel ? (
+      {!!formLabel && (
         <FormLabel className={classes.label}>{formLabel}</FormLabel>
-      ) : null}
+      )}
       {values.map(({ value, label }) => (
         <FormControlLabel
           key={value}

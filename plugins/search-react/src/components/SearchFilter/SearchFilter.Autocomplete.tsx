@@ -66,10 +66,10 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
-  const filterValue =
-    ensureFilterValueWithLabel(
-      filters[name] as string | string[] | undefined,
-    ) || (multiple ? [] : null);
+  const filterValueWithLabel = ensureFilterValueWithLabel(
+    filters[name] as string | string[] | undefined,
+  );
+  const filterValue = filterValueWithLabel || (multiple ? [] : null);
 
   // Set new filter values on input change.
   const handleChange = (
