@@ -199,6 +199,9 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     ...createAppDeps,
   ]);
 
+  print('Copy yarnrc.yaml in workspace');
+  await copyYarnRc(workspaceDir);
+
   const yarnPatchesPath = paths.resolveOwnRoot('.yarn/patches');
   if (await fs.pathExists(yarnPatchesPath)) {
     print('Copying yarn patches');
@@ -211,6 +214,14 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   });
 
   return workspaceDir;
+}
+
+/**
+ * Pin the yarn version in a directory to the one we're using in the Backstage repo
+ */
+async function copyYarnRc(dir: string) {
+  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
+  await fs.writeFile(resolvePath(dir, '.yarnrc.yml'), yarnRc);
 }
 
 /**
@@ -264,7 +275,8 @@ async function createApp(
       }
     }
 
-    print('Pinning registry in app');
+    print('Copy yarnrc and registry in app');
+    await copyYarnRc(appDir);
     await fs.writeFile(
       resolvePath(appDir, '.npmrc'),
       'registry=https://registry.npmjs.org/\n',
