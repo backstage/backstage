@@ -209,4 +209,78 @@ describe('TechDocsStorageClient', () => {
       await expect(promise).rejects.toThrow('Some other error');
     });
   });
+  describe('getEntityDocs', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('should append /index.html when no forward slash in path', async () => {
+      const mockFetch = jest.fn().mockResolvedValue({
+        status: 200,
+        text: async () => '<html>...</html>',
+      });
+
+      const myFetchApi = new MockFetchApi({
+        baseImplementation: mockFetch,
+      });
+
+      const storageApi = new TechDocsStorageClient({
+        configApi,
+        discoveryApi,
+        fetchApi: myFetchApi,
+      });
+
+      await storageApi.getEntityDocs(mockEntity, 'path/to/page');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://backstage:9191/api/techdocs/static/docs/default/Component/test-component/path/to/page/index.html',
+      );
+    });
+
+    it('should append index.html when forward slash in path', async () => {
+      const mockFetch = jest.fn().mockResolvedValue({
+        status: 200,
+        text: async () => '<html>...</html>',
+      });
+
+      const myFetchApi = new MockFetchApi({
+        baseImplementation: mockFetch,
+      });
+
+      const storageApi = new TechDocsStorageClient({
+        configApi,
+        discoveryApi,
+        fetchApi: myFetchApi,
+      });
+
+      await storageApi.getEntityDocs(mockEntity, 'path/to/page');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://backstage:9191/api/techdocs/static/docs/default/Component/test-component/path/to/page/index.html',
+      );
+    });
+
+    it('should append not append anything when it ends with .html', async () => {
+      const mockFetch = jest.fn().mockResolvedValue({
+        status: 200,
+        text: async () => '<html>...</html>',
+      });
+
+      const myFetchApi = new MockFetchApi({
+        baseImplementation: mockFetch,
+      });
+
+      const storageApi = new TechDocsStorageClient({
+        configApi,
+        discoveryApi,
+        fetchApi: myFetchApi,
+      });
+
+      await storageApi.getEntityDocs(mockEntity, 'path/to/page/index.html');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://backstage:9191/api/techdocs/static/docs/default/Component/test-component/path/to/page/index.html',
+      );
+    });
+  });
 });
