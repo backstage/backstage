@@ -225,6 +225,4 @@ describe('addBaseUrl', () => {
       });
     });
   });
-
-  it('preserves metadata about the original src', async () => {});
 });
