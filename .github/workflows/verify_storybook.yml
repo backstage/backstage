@@ -45,9 +45,12 @@ jobs:
         uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+          
       - name: storybook yarn install
-        run: yarn install --immutable
         working-directory: storybook
+        uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
+        with:
+          cache-prefix: storybook-${{ runner.os }}-v${{ matrix.node-version }}
 
         # Only for verification, the canon one is what we upload to Chromatic
       - run: yarn build-storybook
