@@ -103,7 +103,10 @@
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
+    "csstype@npm:^3.0.2": "3.0.9",
+    "csstype@npm:^3.1.2": "3.0.9",
+    "csstype@npm:^3.1.3": "3.0.9"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
