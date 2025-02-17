@@ -45,7 +45,7 @@ jobs:
         uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
-          
+
       - name: storybook yarn install
         working-directory: storybook
         uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
