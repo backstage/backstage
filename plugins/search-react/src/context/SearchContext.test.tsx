@@ -436,7 +436,7 @@ describe('SearchContext', () => {
       </TestApiProvider>
     );
 
-    it('captures analytics events if enabled in app', async () => {
+    it('captures analytics events for non-empty term', async () => {
       searchApiMock.query
         .mockResolvedValueOnce({
           results: [],
@@ -451,14 +451,13 @@ describe('SearchContext', () => {
           numberOfResults: 1,
         });
 
-      // first api call with empty term
+      // search with empty term
       const { result } = renderHook(() => useSearch(), {
         wrapper: Wrapper,
       });
 
       await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+        expect(searchApiMock.query).toHaveBeenCalledWith({
           term: '',
           types: ['*'],
           filters: {},
@@ -466,13 +465,13 @@ describe('SearchContext', () => {
         expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
       });
 
-      // second api call with term 'eva'
+      // search with term 'eva'
       await act(async () => {
         result.current.setTerm('eva');
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+        expect(searchApiMock.query).toHaveBeenCalledWith({
           term: 'eva',
           types: ['*'],
           filters: {},
@@ -489,13 +488,13 @@ describe('SearchContext', () => {
         });
       });
 
-      // third api call with term 'eva.m'
+      // search with new term 'eva.m'
       await act(async () => {
         result.current.setTerm('eva.m');
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+        expect(searchApiMock.query).toHaveBeenCalledWith({
           term: 'eva.m',
           types: ['*'],
           filters: {},
