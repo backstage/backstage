@@ -23,21 +23,6 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'api:search': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
-    }>;
     'nav-item:search': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -57,6 +42,21 @@ const _default: FrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
+      };
+    }>;
+    'api:search': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
       };
     }>;
     'page:search': ExtensionDefinition<{
