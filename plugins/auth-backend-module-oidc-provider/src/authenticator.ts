@@ -153,7 +153,8 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         .start(input, {
           ...options,
         })
-        .then(resolve);
+        .then(resolve)
+        .catch(reject);
     });
   },
 
