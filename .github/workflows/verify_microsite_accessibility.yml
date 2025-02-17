@@ -26,12 +26,16 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: top-level install
-        run: yarn install --immutable
+      - name: yarn install
+        uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: yarn install
-        run: yarn install --immutable
+        uses: backstage/actions/yarn-install@eb54e05c3c15cbffe5652e551416652f981e79b7 # https://github.com/backstage/actions/pull/163
         working-directory: microsite
+        with:
+          cache-prefix: microsite-${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: run Lighthouse CI
         run: |
