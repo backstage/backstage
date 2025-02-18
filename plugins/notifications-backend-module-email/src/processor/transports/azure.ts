@@ -72,7 +72,6 @@ export const createAzureTransport = async (config: Config) => {
         const response = await poller.pollUntilDone();
         callback(null, response);
       } catch (error) {
-        console.error(error);
         callback(error, null);
       }
     },
