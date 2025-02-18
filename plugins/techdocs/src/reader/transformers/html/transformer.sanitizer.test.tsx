@@ -99,4 +99,25 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
     expect(elements[1].hasAttribute('attribute3')).toEqual(false);
     expect(elements[1].hasAttribute('attribute4')).toEqual(false);
   });
+
+  it('should retain the dominant baseline attribute for svgs', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `
+      <body>
+        <?xml version="1.0" encoding="utf-8"?>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="141.253 134.456 199.764 63.239" width="199.764px" height="63.239px">
+          <rect x="141.253" y="134.456" width="199.764" height="63.239" fill="grey" transform="matrix(1, 0, 0, 1, 7.105427357601002e-15, 3.552713678800501e-15)"/>
+          <text dominant-baseline="text-before-edge" style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="223.404" y="148.64" transform="matrix(1, 0, 0, 1, 7.105427357601002e-15, 3.552713678800501e-15)">Hej</text>
+        </svg>
+      </body>
+    `;
+    const clearDom = await result.current(dirtyDom);
+
+    const elements = Array.from(clearDom.querySelectorAll<HTMLElement>('text'));
+
+    expect(elements).toHaveLength(1);
+    expect(elements[0].hasAttribute('dominant-baseline')).toBe(true);
+  });
 });
