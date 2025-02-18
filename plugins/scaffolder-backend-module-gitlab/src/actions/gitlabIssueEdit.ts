@@ -249,7 +249,7 @@ export const editGitlabIssueAction = (options: {
           },
         });
 
-        ctx.output('issueId', editedIssue.issueIid);
+        ctx.output('issueId', editedIssue.issueId);
         ctx.output('projectId', editedIssue.projectId);
         ctx.output('issueUrl', editedIssue.issueUrl);
         ctx.output('issueIid', editedIssue.issueIid);
