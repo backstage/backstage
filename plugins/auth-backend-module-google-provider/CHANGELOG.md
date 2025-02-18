@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-google-provider
 
+## 0.3.0
+
+### Minor Changes
+
+- 61f464e: Added `auth.providers.<providerId>.sessionDuration` config for auth providers to allow the lifespan of user sessions to be configured.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+
 ## 0.3.0-next.2
 
 ### Patch Changes

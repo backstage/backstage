@@ -1,5 +1,52 @@
 # @backstage/backend-app-api
 
+## 1.2.0
+
+### Minor Changes
+
+- 92a56f6: **BREAKING ALPHA**: Removed the deprecated `featureDiscoveryServiceFactory`. Existing usage can be replaced with `discoveryFeatureLoader` from `@backstage/backend-defaults`.
+
+### Patch Changes
+
+- ad9aba2: The log message written when plugins fail to initialize now includes the error that caused the plugin startup to fail.
+- 5622362: Added a configuration to permit backend plugin failures on startup:
+
+  ```yaml
+  backend:
+    ...
+    startup:
+      plugins:
+        plugin-x:
+          onPluginBootFailure: continue
+  ```
+
+  This configuration permits `plugin-x` to fail on startup. Omitting the
+  `onPluginBootFailure` configuration matches the previous behavior, wherein any
+  individual plugin failure aborts backend startup.
+
+  The default can also be changed, so that continuing on failure is the default
+  unless otherwise specified:
+
+  ```yaml
+  backend:
+    startup:
+      default:
+        onPluginBootFailure: continue
+      plugins:
+        catalog:
+          onPluginBootFailure: abort
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/config-loader@1.9.6
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.2.0-next.3
 
 ### Patch Changes
