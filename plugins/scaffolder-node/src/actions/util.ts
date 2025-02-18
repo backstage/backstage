@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import stableStringify from 'fast-json-stable-stringify';
-import { createHash } from 'crypto';
 import { InputError } from '@backstage/errors';
 import { isChildPath } from '@backstage/backend-plugin-api';
 import { join as joinPath, normalize as normalizePath } from 'path';
@@ -125,16 +123,4 @@ function checkRequiredParams(repoUrl: URL, ...params: string[]) {
       );
     }
   }
-}
-
-/**
- * @public
- *
- * Intended to be used in checkpoint function.
- * If the object has to be part of the checkpoint's key, this function will help you create a hash for it.
- */
-export function generateStableHash(entity: object) {
-  return createHash('sha1')
-    .update(stableStringify({ ...entity }))
-    .digest('hex');
 }

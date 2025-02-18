@@ -33,8 +33,4 @@ export {
   createBranch,
   cloneRepo,
 } from './gitHelpers';
-export {
-  parseRepoUrl,
-  getRepoSourceDirectory,
-  generateStableHash,
-} from './util';
+export { parseRepoUrl, getRepoSourceDirectory } from './util';
