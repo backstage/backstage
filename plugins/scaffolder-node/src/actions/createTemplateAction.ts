@@ -16,7 +16,7 @@
 
 import { ActionContext, TemplateAction } from './types';
 import { z } from 'zod';
-import { Schema } from 'jsonschema';
+import { JSONSchema7 } from 'json-schema';
 import { Expand, JsonObject } from '@backstage/types';
 import { parseSchemas } from './util';
 
@@ -31,13 +31,13 @@ export type TemplateActionOptions<
   TActionInput extends JsonObject = {},
   TActionOutput extends JsonObject = {},
   TInputSchema extends
-    | Schema
+    | JSONSchema7
     | z.ZodType
-    | { [key in string]: (zImpl: typeof z) => z.ZodType } = Schema,
+    | { [key in string]: (zImpl: typeof z) => z.ZodType } = JSONSchema7,
   TOutputSchema extends
-    | Schema
+    | JSONSchema7
     | z.ZodType
-    | { [key in string]: (zImpl: typeof z) => z.ZodType } = Schema,
+    | { [key in string]: (zImpl: typeof z) => z.ZodType } = JSONSchema7,
   TSchemaType extends 'v1' | 'v2' = 'v1' | 'v2',
 > = {
   id: string;
@@ -71,8 +71,8 @@ type FlattenOptionalProperties<T extends { [key in string]: unknown }> = Expand<
 export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends Schema = Schema,
-  TOutputSchema extends Schema = Schema,
+  TInputSchema extends JSONSchema7 = JSONSchema7,
+  TOutputSchema extends JSONSchema7 = JSONSchema7,
   TActionInput extends JsonObject = TInputParams,
   TActionOutput extends JsonObject = TOutputParams,
 >(
@@ -137,11 +137,11 @@ export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends
-    | Schema
+    | JSONSchema7
     | z.ZodType
     | { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
   TOutputSchema extends
-    | Schema
+    | JSONSchema7
     | z.ZodType
     | { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
   TActionInput extends JsonObject = TInputSchema extends z.ZodType<
@@ -180,14 +180,16 @@ export function createTemplateAction<
     ? 'v2'
     : 'v1'
 > {
-  const { inputSchema, outputSchema } = parseSchemas(action);
+  const { inputSchema, outputSchema } = parseSchemas(
+    action as TemplateActionOptions<any, any, any>,
+  );
 
   return {
     ...action,
     schema: {
       ...action.schema,
-      input: inputSchema as TInputSchema,
-      output: outputSchema as TOutputSchema,
+      input: inputSchema,
+      output: outputSchema,
     },
   };
 }
