@@ -20,7 +20,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
-import { Schema } from 'jsonschema';
+import { JSONSchema7 } from 'json-schema';
 import {
   BackstageCredentials,
   LoggerService,
@@ -175,8 +175,8 @@ export type TemplateAction<
   examples?: { description: string; example: string }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: Schema;
-    output?: Schema;
+    input?: JSONSchema7;
+    output?: JSONSchema7;
   };
   handler: (
     ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,

@@ -1,5 +1,7 @@
 ---
 '@backstage/plugin-scaffolder-node': minor
+'@backstage/plugin-scaffolder-backend': minor
+'@backstage/plugin-scaffolder-node-test-utils': minor
 ---
 
 **DEPRECATION**: We've deprecated the old way of defining actions using `createTemplateAction` with raw `JSONSchema` and type parameters, as well as using `zod` through an import. You can now use the new format to define `createTemplateActions` with `zod` provided by the framework. This change also removes support for `logStream` in the `context` as well as moving the `logger` to an instance of `LoggerService`.

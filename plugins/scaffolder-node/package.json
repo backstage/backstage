@@ -65,7 +65,7 @@
     "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
     "isomorphic-git": "^1.23.0",
-    "jsonschema": "^1.2.6",
+    "json-schema": "^0.4.0",
     "p-limit": "^3.1.0",
     "tar": "^6.1.12",
     "winston": "^3.2.1",
