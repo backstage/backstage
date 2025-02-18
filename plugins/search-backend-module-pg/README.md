@@ -33,6 +33,19 @@ search:
     normalization: 0 # Ranking functions use an integer bit mask to control document length impact on rank. The default value is 0
 ```
 
+The Normalization option controls several behaviors. It is a bit mask. [Ranking Search Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING) has more details.
+
+Example with bit mask specifying more behaviours:
+
+- 2 divides the rank by the document length
+- 4 divides the rank by the mean harmonic distance between extents
+
+```yaml
+search:
+  pg:
+    normalization: 2 | 4
+```
+
 **Note:** the highlight search term feature uses `ts_headline` which has been known to potentially impact performance. You only need this minimal config to disable it should you have issues:
 
 ```yaml
@@ -43,5 +56,3 @@ search:
 ```
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
-
-The Normalization option controls several behaviors. It is a bit mask. [Ranking Search Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING) has more details.
