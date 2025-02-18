@@ -15,7 +15,7 @@ Please leave feedback on these features in the [Backstage Discord](https://disco
 
 Running tasks, especially longer running ones can be at risk of being lost when the `scaffolder-backend` plugin is redeployed. These tasks will just be stuck in a `processing` state, with no real way to recover them.
 
-The experiemental Retries and Recovery is here to help mitigate this.
+The experimental Retries and Recovery is here to help mitigate this.
 
 Whenever you do redeploy, on startup there will be a check of all tasks in `processing` state that you identified in your template as being capable of starting over.
 
