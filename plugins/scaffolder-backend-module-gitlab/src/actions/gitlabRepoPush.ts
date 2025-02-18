@@ -153,7 +153,6 @@ export const createGitlabRepoPushAction = (options: {
 
       const branchExists = await ctx.checkpoint({
         key: `branch.exists.${repoID}.${branchName}`,
-        // eslint-disable-next-line no-loop-func
         fn: async () => {
           try {
             await api.Branches.show(repoID, branchName);
@@ -189,7 +188,6 @@ export const createGitlabRepoPushAction = (options: {
       try {
         const commitId = await ctx.checkpoint({
           key: `commit.create.${repoID}.${branchName}`,
-          // eslint-disable-next-line no-loop-func
           fn: async () => {
             const commit = await api.Commits.create(
               repoID,
