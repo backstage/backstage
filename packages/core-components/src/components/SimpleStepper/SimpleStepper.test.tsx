@@ -173,4 +173,32 @@ describe('Stepper', () => {
     fireEvent.click(getTextInSlide(rendered, 2)('Back') as Node);
     expect(rendered.getByText('step1')).toBeInTheDocument();
   });
+
+  it('Handles onBack action properly when activeStep is higher than 0', async () => {
+    const rendered = await renderInTestApp(
+      <Stepper activeStep={2}>
+        <Step title="Step 0" data-testid="step0">
+          <div>step0</div>
+        </Step>
+        <Step title="Step 1" data-testid="step1">
+          <div>step1</div>
+        </Step>
+        <Step title="Step 2" data-testid="step2">
+          <div>step2</div>
+        </Step>
+      </Stepper>,
+    );
+
+    fireEvent.click(getTextInSlide(rendered, 2)('Back') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Back') as Node);
+    expect(rendered.getByText('step0')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 0)('Next') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Next') as Node);
+    expect(rendered.getByText('step2')).toBeInTheDocument();
+  });
 });
