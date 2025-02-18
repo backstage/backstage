@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.0
+
+### Minor Changes
+
+- 8de3d2d: Allow configurable optional retries for publisher AWS S3 operations.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.13.0-next.2
 
 ### Patch Changes

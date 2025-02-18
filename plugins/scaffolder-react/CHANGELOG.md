@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.5
+
+### Patch Changes
+
+- 656f67b: Reverted the validation in dependencies in scaffolder
+- 2003fc2: Hide text output button if only one is present
+- a35118f: build(deps): bump `immer` from 8.0.4 to 9.0.6
+- 1283f06: Added missing `ajv` and `immer` dependencies to `@backstage/plugin-scaffolder-react`
+- 3edf7e7: Add schema output return type to the `makeFieldSchema` function return
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/version-bridge@1.0.11
+  - @backstage/theme@0.6.4
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.14.5-next.3
 
 ### Patch Changes

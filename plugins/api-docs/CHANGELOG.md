@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.12.4
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog@1.27.0
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-catalog-common@1.1.3
+
 ## 0.12.4-next.3
 
 ### Patch Changes

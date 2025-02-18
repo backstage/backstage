@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-node
 
+## 1.16.0
+
+### Minor Changes
+
+- b4183ad: Added new `catalogEntityPermissionResourceRef` export via the `/alpha` sub-path.
+- 9b9737c: Added the `locationKey` option to `processingResult.entity(...)`.
+
+### Patch Changes
+
+- 4a941e7: Deprecated the alpha `catalogPermissionExtensionPoint` and related types, since the same functionality is now available via the new `PermissionsRegistryService`.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.16.0-next.3
 
 ### Minor Changes

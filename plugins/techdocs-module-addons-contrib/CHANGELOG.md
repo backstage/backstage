@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.21
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-techdocs-react@1.2.14
+  - @backstage/integration@1.16.1
+
 ## 1.1.21-next.1
 
 ### Patch Changes

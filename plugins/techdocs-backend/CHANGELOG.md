@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.11.6
+
+### Patch Changes
+
+- b78e3fd: Fixed issue `syncEntityDocs` that would cause the `/sync` endpoint to be continuously called if the request fails
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/plugin-techdocs-node@1.13.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.6
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.11.6-next.3
 
 ### Patch Changes
