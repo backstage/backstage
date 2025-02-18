@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-notifications-backend-module-email': minor
+'@backstage/plugin-notifications-backend-module-email': patch
 ---
 
 Add transport for Azure Communication Service
