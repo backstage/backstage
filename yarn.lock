@@ -7501,6 +7501,7 @@ __metadata:
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/types": "workspace:^"
     concat-stream: ^2.0.0
+    fast-json-stable-stringify: ^2.1.0
     fs-extra: ^11.2.0
     globby: ^11.0.0
     isomorphic-git: ^1.23.0

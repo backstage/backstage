@@ -219,6 +219,9 @@ export function fetchFile(options: {
   token?: string;
 }): Promise<void>;
 
+// @public
+export function generateStableHash(entity: object): string;
+
 // @public (undocumented)
 export const getRepoSourceDirectory: (
   workspacePath: string,
