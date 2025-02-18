@@ -129,7 +129,7 @@ describe('ScmAuth', () => {
     await expect(
       bitbucketAuth.getCredentials({ url: 'http://example.com' }),
     ).resolves.toMatchObject({
-      token: 'account team pullrequest snippet issue',
+      token: 'account team pullrequest snippet issue project',
     });
     await expect(
       bitbucketAuth.getCredentials({
@@ -138,7 +138,7 @@ describe('ScmAuth', () => {
       }),
     ).resolves.toMatchObject({
       token:
-        'account team pullrequest snippet issue pullrequest:write snippet:write issue:write',
+        'account team pullrequest snippet issue project pullrequest:write snippet:write issue:write repository:admin',
     });
   });
 
@@ -195,7 +195,8 @@ describe('ScmAuth', () => {
         },
       }),
     ).resolves.toMatchObject({
-      token: 'account team pullrequest snippet issue snippet:write issue:write',
+      token:
+        'account team pullrequest snippet issue project snippet:write issue:write',
     });
   });
 
