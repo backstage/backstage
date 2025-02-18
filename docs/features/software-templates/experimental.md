@@ -42,7 +42,7 @@ scaffolder:
 
 By default, the tasks that are in a `processing` state and have not reported back with a heartbeat for longer than 30 seconds will be automatically recovered.
 
-This implies that the task's status will shift to `open` initiating and will be restarted from the beginning. This means that it's important that your actions that you have in the template run are idemopotent.
+This implies that the task's status will shift to `open` initiating and will be restarted from the beginning. This means that it's important that your actions that you have in the template run are idempotent.
 
 You can look at how to incorporate [checkpoints](https://backstage.io/docs/features/software-templates/writing-custom-actions#using-checkpoints-in-custom-actions-experimental) into your custom actions to achieve that.
 
