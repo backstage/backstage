@@ -239,11 +239,13 @@ export class ScmAuth implements ScmAuthApi {
       'pullrequest',
       'snippet',
       'issue',
+      'project',
     ];
     const repoWriteScopes = options?.scopeMapping?.repoWrite ?? [
       'pullrequest:write',
       'snippet:write',
       'issue:write',
+      'repository:admin',
     ];
     return new ScmAuth('bitbucket', bitbucketAuthApi, host, {
       default: defaultScopes,
