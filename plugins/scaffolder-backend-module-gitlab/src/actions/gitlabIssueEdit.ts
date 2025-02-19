@@ -16,10 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import {
-  createTemplateAction,
-  generateStableHash,
-} from '@backstage/plugin-scaffolder-node';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import commonGitlabConfig, {
   IssueStateEvent,
   IssueType,
@@ -227,9 +224,7 @@ export const editGitlabIssueAction = (options: {
         };
 
         const editedIssue = await ctx.checkpoint({
-          key: `issue.edit.${projectId}.${issueIid}.${generateStableHash(
-            editIssueOptions,
-          )}`,
+          key: `issue.edit.${projectId}.${issueIid}`,
           fn: async () => {
             const response = (await api.Issues.edit(
               projectId,
