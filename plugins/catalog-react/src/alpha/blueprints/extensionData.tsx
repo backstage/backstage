@@ -50,3 +50,16 @@ export const entityContentGroupDataRef = createExtensionDataRef<
 >().with({
   id: 'catalog.entity-content-group',
 });
+
+/**
+ * @alpha
+ * Default entity content groups.
+ */
+export const defaultEntityCardAreas = ['peek', 'info', 'full'] as const;
+
+/** @internal */
+export const entityCardAreaDataRef = createExtensionDataRef<
+  (typeof defaultEntityCardAreas)[number]
+>().with({
+  id: 'catalog.entity-card-area',
+});
