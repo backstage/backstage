@@ -5,5 +5,5 @@ authorUrl: https://github.com/anuragpachauri
 category: Infrastructure
 description: A plugin showing Azure resource based on tag in relation to an entity in the catalog.
 documentation: https://github.com/anuragpachauri/backstageMain/tree/main/plugins/azure-resource
-npmPackageName: '@anuragpachauri/azure-resource'
+npmPackageName: 'https://www.npmjs.com/package/@anuragpachauri/azure-resource'
 addedDate: '2025-02-04'
