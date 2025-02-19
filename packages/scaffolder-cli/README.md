@@ -1,4 +1,4 @@
-# @scaffolder/cli
+# @backstage/scaffolder/cli
 
 This package provides a CLI for generating projects locally.
 
@@ -7,7 +7,7 @@ This package provides a CLI for generating projects locally.
 Install the package via Yarn:
 
 ```sh
-yarn add @scaffolder/cli
+yarn add @backstage/scaffolder/cli
 ```
 
 ## Pre-requisites
