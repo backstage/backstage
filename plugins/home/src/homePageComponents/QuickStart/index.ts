@@ -15,5 +15,7 @@
  */
 
 export { Content } from './Content';
+export { ContentModal } from './ContentModal';
+export type { ContentModalProps } from './ContentModal';
 export type { QuickStartCardProps } from './Content';
 export type { QuickStartCardClassKey } from './styles';

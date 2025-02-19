@@ -77,6 +77,15 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX_2.Element;
 
+// @public
+export const ContentModal: (props: ContentModalProps) => React_2.JSX.Element;
+
+// @public
+export type ContentModalProps = {
+  modalContent: React_2.JSX.Element;
+  linkContent: string | React_2.JSX.Element;
+};
+
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
 
@@ -193,8 +202,8 @@ export const QuickStartCard: (
 
 // @public
 export type QuickStartCardProps = {
-  modalTitle?: string | JSX_3.Element;
-  docsLinkTitle?: string;
+  modalTitle?: string | React_2.JSX.Element;
+  docsLinkTitle?: string | React_2.JSX.Element;
   docsLink?: string;
   video?: JSX_3.Element;
   image: JSX_3.Element;

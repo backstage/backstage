@@ -21,3 +21,5 @@ export type { VisitedByTypeProps, VisitedByTypeKind } from './VisitedByType';
 export type { FeaturedDocsCardProps } from './FeaturedDocsCard';
 export type { StarredEntitiesProps } from './StarredEntities';
 export type { QuickStartCardProps } from './QuickStart';
+export type { ContentModalProps } from './QuickStart';
+export { ContentModal } from './QuickStart';
