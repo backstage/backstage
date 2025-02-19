@@ -20,6 +20,7 @@ import {
   createPgDatabaseClient,
   getPgConnectionConfig,
   parsePgConnectionString,
+  pgConnectionTransformers,
 } from './postgres';
 
 jest.mock('@google-cloud/cloud-sql-connector');
@@ -37,6 +38,8 @@ describe('postgres', () => {
 
   const createConfig = (connection: any): Config =>
     new ConfigReader({ client: 'pg', connection });
+
+  pgConnectionTransformers['unit-test'] = jest.fn(a => a);
 
   describe('buildPgDatabaseConfig', () => {
     it('builds a postgres config', async () => {
@@ -138,6 +141,34 @@ describe('postgres', () => {
       });
     });
 
+    it('calls the transformation function for connection.type', async () => {
+      const typeTransformerMock = pgConnectionTransformers[
+        'unit-test'
+      ] as jest.Mock;
+      expect(
+        await buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'unit-test',
+              user: 'ben@gke.com',
+              port: 5423,
+            },
+          }),
+          { connection: { database: 'other_db' } },
+        ),
+      ).toEqual({
+        client: 'pg',
+        connection: {
+          user: 'ben@gke.com',
+          port: 5423,
+          database: 'other_db',
+        },
+        useNullAsDefault: true,
+      });
+      expect(typeTransformerMock).toHaveBeenCalled();
+    });
+
     it('uses the correct config when using cloudsql', async () => {
       expect(
         await buildPgDatabaseConfig(
@@ -175,17 +206,18 @@ describe('postgres', () => {
         ),
       ).rejects.toThrow(/Missing instance connection name for Cloud SQL/);
 
-      await expect(
-        buildPgDatabaseConfig(
-          new ConfigReader({
-            client: 'not-pg',
-            connection: {
-              type: 'cloudsql',
-              instance: 'asd:asd:asd',
-            },
-          }),
-        ),
-      ).rejects.toThrow(/Cloud SQL only supports the pg client/);
+      // This will never happen because config with "client: 'not-pg'," will not be passed to the PGConnector
+      // await expect(
+      //   buildPgDatabaseConfig(
+      //     new ConfigReader({
+      //       client: 'not-pg',
+      //       connection: {
+      //         type: 'cloudsql',
+      //         instance: 'asd:asd:asd',
+      //       },
+      //     }),
+      //   ),
+      // ).rejects.toThrow(/Cloud SQL only supports the pg client/);
     });
 
     it('adds the settings from cloud-sql-connector', async () => {

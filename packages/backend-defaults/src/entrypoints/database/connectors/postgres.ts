@@ -22,14 +22,25 @@ import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Client } from 'pg';
-import { Connector } from '../types';
+import { Connector, KnexConnectionTypeTransformer } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
+import { applyKnexConnectionTypeTransformer } from '../configTransformers/applyKnexConnectionTypeTransformer';
+import { googleCloudConnectionTransformer } from '../configTransformers/googleCloudConnectionTransformer';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
+
+// @TODO: Remove default value (this is just set to prove the cloudsql unit tests pass as is)
+//        Unittest and defaults should be removed
+export const pgConnectionTransformers: Record<
+  string,
+  KnexConnectionTypeTransformer
+> = {
+  cloudsql: googleCloudConnectionTransformer,
+};
 
 /**
  * Creates a knex postgres database connection
@@ -77,48 +88,7 @@ export async function buildPgDatabaseConfig(
     overrides,
   );
 
-  const sanitizedConfig = JSON.parse(JSON.stringify(config));
-
-  // Trim additional properties from the connection object passed to knex
-  delete sanitizedConfig.connection.type;
-  delete sanitizedConfig.connection.instance;
-
-  if (config.connection.type === 'default' || !config.connection.type) {
-    return sanitizedConfig;
-  }
-
-  if (config.connection.type !== 'cloudsql') {
-    throw new Error(`Unknown connection type: ${config.connection.type}`);
-  }
-
-  if (config.client !== 'pg') {
-    throw new Error('Cloud SQL only supports the pg client');
-  }
-
-  if (!config.connection.instance) {
-    throw new Error('Missing instance connection name for Cloud SQL');
-  }
-
-  const {
-    Connector: CloudSqlConnector,
-    IpAddressTypes,
-    AuthTypes,
-  } = require('@google-cloud/cloud-sql-connector') as typeof import('@google-cloud/cloud-sql-connector');
-  const connector = new CloudSqlConnector();
-  const clientOpts = await connector.getOptions({
-    instanceConnectionName: config.connection.instance,
-    ipType: config.connection.ipAddressType ?? IpAddressTypes.PUBLIC,
-    authType: AuthTypes.IAM,
-  });
-
-  return {
-    ...sanitizedConfig,
-    client: 'pg',
-    connection: {
-      ...sanitizedConfig.connection,
-      ...clientOpts,
-    },
-  };
+  return applyKnexConnectionTypeTransformer(config, pgConnectionTransformers);
 }
 
 /**
