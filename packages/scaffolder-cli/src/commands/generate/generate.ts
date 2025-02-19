@@ -15,7 +15,7 @@
  */
 
 import path from 'path';
-import { readYamlFile, validateDirectoryAccess } from './fileUtils';
+import { readYamlFile } from './fileUtils';
 import {
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
@@ -59,7 +59,6 @@ async function getDryRunOptions(
   templatePath: string,
   options: { url: string; values: string },
 ): Promise<ScaffolderDryRunOptions> {
-  validateDirectoryAccess(templateDirectory);
   const templateJson: JsonValue = await readYamlFile(
     path.join(templateDirectory, templatePath),
   );
@@ -85,6 +84,6 @@ async function getDryRunOptions(
   return {
     template: templateJson,
     values: dryRunData, // Use dryRunData here
-    directoryContents: directoryContents,
+    directoryContents,
   };
 }
