@@ -46,7 +46,6 @@ test.describe('scaffolder-cli with example-backend', () => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(mockDryRunResponse()));
           } else {
-            // Send a response when the body doesn't match
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(
               JSON.stringify({
@@ -85,17 +84,17 @@ test.describe('scaffolder-cli with example-backend', () => {
     );
     verifyOutputDirectoryExists();
     verifyOutputDirectoryNotEmpty();
-    verifyRenderedFileCompiles();
+    verifyRenderedFileContents();
   });
 
   test('can generate with yaml file', async () => {
     await runGenerateCommandAndExpectOutput(
       entryPoint,
-      'cli-e2e-tests/test-template-dir/test-values.yaml',
+      'e2e-tests/test-template-dir/test-values.yaml',
     );
     verifyOutputDirectoryExists();
     verifyOutputDirectoryNotEmpty();
-    verifyRenderedFileCompiles();
+    verifyRenderedFileContents();
   });
 });
 
@@ -105,7 +104,7 @@ async function runGenerateCommandAndExpectOutput(
 ): Promise<void> {
   const proc: ChildProcessWithoutNullStreams = spawn(entryPoint, [
     'generate',
-    'cli-e2e-tests/test-template-dir',
+    'e2e-tests/test-template-dir',
     '--values',
     values,
   ]);
@@ -114,7 +113,12 @@ async function runGenerateCommandAndExpectOutput(
   for await (const chunk of proc.stdout) {
     output += chunk;
   }
+  let errors = '';
+  for await (const chunk of proc.stderr) {
+    errors += chunk;
+  }
 
+  expect(errors).toBe('');
   expect(output).toContain('Generated project in');
 }
 
@@ -128,10 +132,10 @@ function verifyOutputDirectoryNotEmpty(): void {
   expect(files.length).toBeGreaterThan(0);
 }
 
-function verifyRenderedFileCompiles(): void {
-  const compile: SpawnSyncReturns<Buffer> = spawnSync('javac', [fileToRender]);
-  if (compile.error) {
-    console.error(`stderr: ${compile.stderr.toString()}`);
-    throw compile.error;
-  }
+function verifyRenderedFileContents(): void {
+  const renderedFileContents = fs.readFileSync(fileToRender).toString();
+  expect(renderedFileContents).not.toContain('${{package.name}}');
+  expect(renderedFileContents).toContain('com.test');
+  expect(renderedFileContents).not.toContain('${{values.name}}');
+  expect(renderedFileContents).toContain('test-service');
 }

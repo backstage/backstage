@@ -1,5 +1,5 @@
 ---
-'@scaffolder/cli': minor
+'@backstage/scaffolder/cli': minor
 ---
 
 Add scaffolder-cli generate command

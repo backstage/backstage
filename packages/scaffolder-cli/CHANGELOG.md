@@ -1,1 +1,1 @@
-# @scaffolder/cli
+# @backstage/scaffolder/cli

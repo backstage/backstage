@@ -14,54 +14,16 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'fs/promises';
 import yaml from 'js-yaml';
-import { JsonValue, JsonObject } from '@backstage/types';
-
-// Function to recursively read a directory and return a list of filenames
-export const validateDirectoryAccess = (directory: string): void => {
-  // Check if the directory can be read
-  fs.access(directory, fs.constants.R_OK, err => {
-    if (err) {
-      console.error(`Cannot read directory: ${directory}`);
-      return;
-    }
-  });
-};
+import { JsonValue } from '@backstage/types';
 
 export async function readYamlFile(filePath: string): Promise<JsonValue> {
   try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const fileContent = await fs.readFile(filePath, 'utf8');
     return yaml.load(fileContent) as JsonValue;
   } catch (e) {
     console.error(`Error reading or parsing file: ${filePath}`, e);
     throw e;
   }
 }
-
-export async function readJsonFile(filePath: string): Promise<JsonObject> {
-  try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const jsonData = JSON.parse(fileContent) as JsonObject;
-    return jsonData;
-  } catch (e) {
-    console.error(`Error reading or parsing file: ${filePath}`, e);
-    throw e;
-  }
-}
-
-// Function to recursively read a directory and return a list of filenames
-const readDirectory = (directory: string): string[] => {
-  let files: string[] = [];
-  const entries = fs.readdirSync(directory, { withFileTypes: true });
-  for (const entry of entries) {
-    const fullPath = path.join(directory, entry.name);
-    if (entry.isDirectory()) {
-      files = files.concat(readDirectory(fullPath));
-    } else if (entry.isFile()) {
-      files.push(fullPath);
-    }
-  }
-  return files;
-};

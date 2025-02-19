@@ -33,7 +33,7 @@
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "start": "nodemon --",
-    "test": "backstage-cli package test"
+    "test:e2e": "playwright test --config cli-e2e-test.config.js"
   },
   "nodemonConfig": {
     "exec": "bin/scaffolder-cli",
@@ -45,28 +45,18 @@
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@scaffolder/cli": "workspace:^",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
-    "eslint": "^8.6.0",
-    "eslint-config-prettier": "^9.0.0",
     "fs-extra": "^11.2.0",
-    "js-yaml": "^4.1.0",
-    "node-fetch": "^2.7.0",
-    "semver": "^7.5.3",
-    "yaml": "^2.0.0",
-    "yml-loader": "^2.1.0"
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
     "@playwright/test": "^1.32.3",
     "@types/js-yaml": "^3.12.5",
     "@types/node": "^16.7.13",
     "chalk": "^4.0.0",
-    "find-process": "^1.4.5",
     "nodemon": "^2.0.15",
-    "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
   }
 }
