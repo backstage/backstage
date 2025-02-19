@@ -18,6 +18,7 @@ import { QuickStartCard } from '../../plugin';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import ContentImage from './static/backstageSystemModel.png';
 
 export default {
@@ -50,7 +51,12 @@ export const Customized = () => {
       <QuickStartCard
         title="Onboarding to the Catalog"
         modalTitle="Onboarding Quick Start"
-        docsLinkTitle="Learn more with getting started docs"
+        docsLinkTitle={
+          <>
+            <OpenInNewIcon fontSize="small" />
+            Learn more with getting started docs
+          </>
+        }
         docsLink="https://backstage.io/docs/getting-started"
         image={
           <img
