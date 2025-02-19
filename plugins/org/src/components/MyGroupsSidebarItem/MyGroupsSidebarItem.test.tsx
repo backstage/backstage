@@ -256,7 +256,7 @@ describe('MyGroupsSidebarItem Test', () => {
             'relations.hasMember': 'user:default/guest',
           },
         ],
-        fields: ['metadata', 'kind'],
+        fields: ['metadata', 'kind', 'spec.profile'],
       });
     });
   });
@@ -301,7 +301,7 @@ describe('MyGroupsSidebarItem Test', () => {
             'spec.type': 'team',
           },
         ],
-        fields: ['metadata', 'kind'],
+        fields: ['metadata', 'kind', 'spec.profile'],
       });
     });
   });
