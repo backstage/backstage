@@ -22,14 +22,14 @@ import {
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
-  defaultEntityCardAreas,
+  EntityCardType,
 } from './extensionData';
 import React from 'react';
 
 /** @alpha */
 export interface EntityContentLayoutProps {
   cards: Array<{
-    area?: (typeof defaultEntityCardAreas)[number];
+    type?: EntityCardType;
     element: React.JSX.Element;
   }>;
 }
@@ -56,7 +56,7 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
   },
   config: {
     schema: {
-      area: z => z.string().optional(),
+      type: z => z.string().optional(),
       filter: z => z.string().optional(),
     },
   },

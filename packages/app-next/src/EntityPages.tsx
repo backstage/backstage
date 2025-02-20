@@ -56,7 +56,7 @@ function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
       >
         <Grid container spacing={3}>
           {cards
-            .filter(card => card.area === 'info')
+            .filter(card => card.type === 'info')
             .map((card, index) => (
               <Grid key={index} xs={12} item>
                 {card.element}
@@ -67,14 +67,14 @@ function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
       <Grid xs={12} md={8} item>
         <Grid container spacing={3}>
           {cards
-            .filter(card => card.area === 'peek')
+            .filter(card => card.type === 'peek')
             .map((card, index) => (
               <Grid key={index} className={classes.card} xs={12} md={6} item>
                 {card.element}
               </Grid>
             ))}
           {cards
-            .filter(card => !card.area || card.area === 'full')
+            .filter(card => !card.type || card.type === 'full')
             .map((card, index) => (
               <Grid key={index} className={classes.card} xs={12} md={6} item>
                 {card.element}

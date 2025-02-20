@@ -113,7 +113,7 @@ describe('Overview content', () => {
   const infoCard = EntityCardBlueprint.make({
     name: 'info-card',
     params: {
-      defaultArea: 'info',
+      type: 'info',
       loader: async () => <div>Info card</div>,
     },
   });
@@ -136,14 +136,14 @@ describe('Overview content', () => {
               <h3>Custom layout</h3>
               <div id="info">
                 {cards
-                  .filter(card => card.area === 'info')
+                  .filter(card => card.type === 'info')
                   .map((card, index) => (
                     <Fragment key={index}>{card.element}</Fragment>
                   ))}
               </div>
               <div id="other">
                 {cards
-                  .filter(card => card.area !== 'info')
+                  .filter(card => card.type !== 'info')
                   .map((card, index) => (
                     <Fragment key={index}>{card.element}</Fragment>
                   ))}
