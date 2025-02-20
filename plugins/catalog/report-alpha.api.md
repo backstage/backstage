@@ -10,7 +10,7 @@ import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityCardLayoutProps } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -689,8 +689,8 @@ const _default: FrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
-              (props: EntityCardLayoutProps) => JSX_2.Element,
-              'catalog.entity-card-layout.component',
+              (props: EntityContentLayoutProps) => JSX_2.Element,
+              'catalog.entity-content-layout.component',
               {}
             >,
           {

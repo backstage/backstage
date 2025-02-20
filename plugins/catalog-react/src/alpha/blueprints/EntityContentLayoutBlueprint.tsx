@@ -27,7 +27,7 @@ import {
 import React from 'react';
 
 /** @alpha */
-export interface EntityCardLayoutProps {
+export interface EntityContentLayoutProps {
   cards: Array<{
     area?: (typeof defaultEntityCardAreas)[number];
     element: React.JSX.Element;
@@ -35,14 +35,14 @@ export interface EntityCardLayoutProps {
 }
 
 const entityCardLayoutComponentDataRef = createExtensionDataRef<
-  (props: EntityCardLayoutProps) => React.JSX.Element
+  (props: EntityContentLayoutProps) => React.JSX.Element
 >().with({
-  id: 'catalog.entity-card-layout.component',
+  id: 'catalog.entity-content-layout.component',
 });
 
 /** @alpha */
-export const EntityCardLayoutBlueprint = createExtensionBlueprint({
-  kind: 'entity-card-layout',
+export const EntityContentLayoutBlueprint = createExtensionBlueprint({
+  kind: 'entity-content-layout',
   attachTo: { id: 'entity-content:catalog/overview', input: 'layouts' },
   output: [
     entityFilterFunctionDataRef.optional(),
@@ -69,7 +69,7 @@ export const EntityCardLayoutBlueprint = createExtensionBlueprint({
         | typeof entityFilterFunctionDataRef.T
         | typeof entityFilterExpressionDataRef.T;
       loader: () => Promise<
-        (props: EntityCardLayoutProps) => React.JSX.Element
+        (props: EntityContentLayoutProps) => React.JSX.Element
       >;
     },
     { node, config },
