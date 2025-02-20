@@ -255,6 +255,7 @@ const _default: FrontendPlugin<
         defaultPath: string;
         defaultTitle: string;
         defaultGroup?:
+          | (string & {})
           | 'documentation'
           | 'development'
           | 'deployment'
