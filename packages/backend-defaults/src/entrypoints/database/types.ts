@@ -27,11 +27,6 @@ export interface Connector {
   ): Promise<Knex>;
 }
 
-export type KnexConnectionConfig =
-  | string
-  | Knex.StaticConnectionConfig
-  | Knex.ConnectionConfigProvider;
-
-export type KnexConnectionTypeTransformer = (
-  config: KnexConnectionConfig,
-) => Promise<KnexConnectionConfig> | KnexConnectionConfig;
+export type KnexConfigTransformer = (
+  config: Knex.Config,
+) => Promise<Knex.Config> | Knex.Config;

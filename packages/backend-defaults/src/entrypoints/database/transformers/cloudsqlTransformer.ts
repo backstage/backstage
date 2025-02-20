@@ -14,34 +14,43 @@
  * limitations under the License.
  */
 
-import { KnexConnectionConfig } from '../types';
+import { Knex } from 'knex';
 
-export async function googleCloudConnectionTransformer(
-  connection: KnexConnectionConfig,
-): Promise<KnexConnectionConfig> {
-  const config = {
-    client: 'pg',
-    connection: connection as any,
-  };
+interface CloudSqlConnection {
+  type: string;
+  instance: string;
+  ipAddressType: any;
+}
+
+export async function cloudsqlTransformer(
+  config: Knex.Config,
+): Promise<Knex.Config> {
   const sanitizedConfig = JSON.parse(JSON.stringify(config));
+  if (!config.connection) {
+    throw new Error(`cloudsql config.connection object can not be empty`);
+  } else if (
+    typeof config.connection === 'string' ||
+    typeof config.connection === 'function'
+  ) {
+    throw new Error(
+      `cloudsql config.connection must implement Knex.StaticConnectionConfig`,
+    );
+  }
+  const cloudSqlConnection: CloudSqlConnection = config.connection as any;
 
   // Trim additional properties from the connection object passed to knex
   delete sanitizedConfig.connection.type;
   delete sanitizedConfig.connection.instance;
 
-  if (config.connection.type === 'default' || !config.connection.type) {
-    return sanitizedConfig;
-  }
-
-  if (config.connection.type !== 'cloudsql') {
-    throw new Error(`Unknown connection type: ${config.connection.type}`);
+  if (cloudSqlConnection.type !== 'cloudsql') {
+    throw new Error(`Unknown connection type: ${cloudSqlConnection.type}`);
   }
 
   if (config.client !== 'pg') {
     throw new Error('Cloud SQL only supports the pg client');
   }
 
-  if (!config.connection.instance) {
+  if (!cloudSqlConnection.instance) {
     throw new Error('Missing instance connection name for Cloud SQL');
   }
 
@@ -52,13 +61,17 @@ export async function googleCloudConnectionTransformer(
   } = require('@google-cloud/cloud-sql-connector') as typeof import('@google-cloud/cloud-sql-connector');
   const connector = new CloudSqlConnector();
   const clientOpts = await connector.getOptions({
-    instanceConnectionName: config.connection.instance,
-    ipType: config.connection.ipAddressType ?? IpAddressTypes.PUBLIC,
+    instanceConnectionName: cloudSqlConnection.instance,
+    ipType: cloudSqlConnection.ipAddressType ?? IpAddressTypes.PUBLIC,
     authType: AuthTypes.IAM,
   });
 
   return {
-    ...sanitizedConfig.connection,
-    ...clientOpts,
+    ...sanitizedConfig,
+    client: 'pg',
+    connection: {
+      ...sanitizedConfig.connection,
+      ...clientOpts,
+    },
   };
 }

@@ -20,7 +20,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseManager } from './DatabaseManager';
-import { googleCloudConnectionTransformer } from './configTransformers/googleCloudConnectionTransformer';
 
 /**
  * Database access and management via `knex`.
@@ -42,13 +41,6 @@ export const databaseServiceFactory = createServiceFactory({
     rootLogger: coreServices.rootLogger,
   },
   async createRootContext({ config, rootLifecycle, rootLogger }) {
-    // this statement is redundant but serves an example
-    DatabaseManager.addConnectionTransformer(
-      'pg',
-      'cloudsql',
-      googleCloudConnectionTransformer,
-    );
-
     return config.getOptional('backend.database')
       ? DatabaseManager.fromConfig(config, { rootLifecycle, rootLogger })
       : DatabaseManager.fromConfig(

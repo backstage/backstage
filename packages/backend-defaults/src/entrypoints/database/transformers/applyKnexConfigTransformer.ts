@@ -15,13 +15,13 @@
  */
 
 import { Knex } from 'knex';
-import { KnexConnectionTypeTransformer } from '../types';
+import { KnexConfigTransformer } from '../types';
 
-export async function applyKnexConnectionTypeTransformer(
+export async function applyKnexConfigTransformer(
   config: Knex.Config,
-  transformers: Record<string, KnexConnectionTypeTransformer>,
+  transformers: Record<string, KnexConfigTransformer>,
 ): Promise<Knex.Config> {
-  const sanitizedConfig = JSON.parse(JSON.stringify(config));
+  let sanitizedConfig = JSON.parse(JSON.stringify(config));
 
   const connectionType = sanitizedConfig.connection
     ? (sanitizedConfig.connection as any).type
@@ -32,16 +32,19 @@ export async function applyKnexConnectionTypeTransformer(
     connectionType !== 'default'
   ) {
     if (!transformers[connectionType]) {
-      throw Error(`Unknown connection type: ${connectionType}`);
+      throw Error(`No transformer exists for type: ${connectionType}`);
     }
-
-    sanitizedConfig.connection = await transformers[connectionType](
-      sanitizedConfig.connection,
-    );
-
+    sanitizedConfig = await transformers[connectionType](sanitizedConfig);
+  }
+  if (
+    sanitizedConfig.connection &&
+    typeof sanitizedConfig.connection !== 'string' &&
+    typeof sanitizedConfig.connection !== 'function'
+  ) {
     // connection.type is not a Knex Configuration Property
     // It is only used to select potential configuration transformers
+    delete (sanitizedConfig.connection as any).type;
   }
-  delete (sanitizedConfig.connection as any).type;
+
   return sanitizedConfig;
 }

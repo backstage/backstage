@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { KnexConnectionTypeTransformer } from '../types';
-import { applyKnexConnectionTypeTransformer } from './applyKnexConnectionTypeTransformer';
+import { KnexConfigTransformer } from '../types';
+import { applyKnexConfigTransformer } from './applyKnexConfigTransformer';
 import { Knex } from 'knex';
 
 describe('createPgDatabaseClient with transformers', () => {
@@ -37,31 +37,30 @@ describe('createPgDatabaseClient with transformers', () => {
       type: 'default',
     },
   } as Knex.Config;
-  const transformers: Record<string, KnexConnectionTypeTransformer> = {
+  const transformers: Record<string, KnexConfigTransformer> = {
     'a-type': jest.fn().mockImplementation(a => a),
   };
   const typeTransformerMock = transformers['a-type'] as jest.Mock;
 
   it('calls connection type transformer if connection.type is set', async () => {
-    await applyKnexConnectionTypeTransformer(
-      configExistingTransformer,
-      transformers,
-    );
+    await applyKnexConfigTransformer(configExistingTransformer, transformers);
     expect(typeTransformerMock).toHaveBeenCalledTimes(1);
   });
   it('throws if connection.type has no transformer', async () => {
     await expect(
       async () =>
-        await applyKnexConnectionTypeTransformer(
+        await applyKnexConfigTransformer(
           configMissingTransformer,
           transformers,
         ),
-    ).rejects.toThrow(/Unknown connection type: no-transformer-for-this-type/);
+    ).rejects.toThrow(
+      /No transformer exists for type: no-transformer-for-this-type/,
+    );
   });
   it('does not throw when type is default', async () => {
     expect(
       async () =>
-        await applyKnexConnectionTypeTransformer(
+        await applyKnexConfigTransformer(
           configDefaultTransformer,
           transformers,
         ),

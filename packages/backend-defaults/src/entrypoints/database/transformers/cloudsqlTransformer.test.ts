@@ -15,16 +15,19 @@
  */
 
 import { Knex } from 'knex';
-import { googleCloudConnectionTransformer } from './googleCloudConnectionTransformer';
+import { cloudsqlTransformer } from './cloudsqlTransformer';
 
 jest.mock('@google-cloud/cloud-sql-connector');
 
-describe('googleCloudConnectionTransformer', () => {
+describe('cloudsqlTransformer', () => {
   it('should throw with incorrect config', async () => {
     await expect(
-      googleCloudConnectionTransformer({
-        type: 'cloudsql',
-      } as any as Knex.ConnectionConfig),
+      cloudsqlTransformer({
+        client: 'pg',
+        connection: {
+          type: 'cloudsql',
+        },
+      } as any as Knex.Config),
     ).rejects.toThrow(/Missing instance connection name for Cloud SQL/);
   });
 
@@ -37,18 +40,24 @@ describe('googleCloudConnectionTransformer', () => {
     Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
 
     expect(
-      await googleCloudConnectionTransformer({
-        type: 'cloudsql',
-        user: 'ben@gke.com',
-        instance: 'project:region:instance',
-        port: 5423,
-        database: 'other_db',
+      await cloudsqlTransformer({
+        client: 'pg',
+        connection: {
+          type: 'cloudsql',
+          database: 'other_db',
+          user: 'ben@gke.com',
+          instance: 'project:region:instance',
+          port: 5423,
+        },
       } as any),
     ).toEqual({
-      user: 'ben@gke.com',
-      port: 5423,
-      stream: mockStream,
-      database: 'other_db',
+      client: 'pg',
+      connection: {
+        user: 'ben@gke.com',
+        port: 5423,
+        stream: mockStream,
+        database: 'other_db',
+      },
     });
   });
 
@@ -60,11 +69,14 @@ describe('googleCloudConnectionTransformer', () => {
     const mockStream = (): any => {};
     Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
 
-    await googleCloudConnectionTransformer({
-      type: 'cloudsql',
-      user: 'ben@gke.com',
-      instance: 'project:region:instance',
-      port: 5423,
+    await cloudsqlTransformer({
+      client: 'pg',
+      connection: {
+        type: 'cloudsql',
+        user: 'ben@gke.com',
+        instance: 'project:region:instance',
+        port: 5423,
+      },
     } as any);
 
     expect(Connector.prototype.getOptions).toHaveBeenCalledWith({
@@ -82,12 +94,15 @@ describe('googleCloudConnectionTransformer', () => {
     const mockStream = (): any => {};
     Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
 
-    await googleCloudConnectionTransformer({
-      type: 'cloudsql',
-      user: 'ben@gke.com',
-      instance: 'project:region:instance',
-      ipAddressType: 'PRIVATE',
-      port: 5423,
+    await cloudsqlTransformer({
+      client: 'pg',
+      connection: {
+        type: 'cloudsql',
+        user: 'ben@gke.com',
+        instance: 'project:region:instance',
+        ipAddressType: 'PRIVATE',
+        port: 5423,
+      },
     } as any);
 
     expect(Connector.prototype.getOptions).toHaveBeenCalledWith({

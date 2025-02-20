@@ -22,24 +22,23 @@ import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Client } from 'pg';
-import { Connector, KnexConnectionTypeTransformer } from '../types';
+import { Connector, KnexConfigTransformer } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
-import { applyKnexConnectionTypeTransformer } from '../configTransformers/applyKnexConnectionTypeTransformer';
-import { googleCloudConnectionTransformer } from '../configTransformers/googleCloudConnectionTransformer';
+import { applyKnexConfigTransformer } from '../transformers/applyKnexConfigTransformer';
+import { cloudsqlTransformer } from '../transformers/cloudsqlTransformer';
+import { noopTransformer } from '../transformers/noopTransformer';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
 
 // @TODO: Remove default value (this is just set to prove the cloudsql unit tests pass as is)
 //        Unittest and defaults should be removed
-export const pgConnectionTransformers: Record<
-  string,
-  KnexConnectionTypeTransformer
-> = {
-  cloudsql: googleCloudConnectionTransformer,
+export const pgConnectionTransformers: Record<string, KnexConfigTransformer> = {
+  cloudsql: cloudsqlTransformer,
+  noop: noopTransformer,
 };
 
 /**
@@ -53,6 +52,7 @@ export async function createPgDatabaseClient(
   overrides?: Knex.Config,
 ) {
   const knexConfig = await buildPgDatabaseConfig(dbConfig, overrides);
+
   const database = knexFactory(knexConfig);
 
   const role = dbConfig.getOptionalString('role');
@@ -87,8 +87,7 @@ export async function buildPgDatabaseConfig(
     },
     overrides,
   );
-
-  return applyKnexConnectionTypeTransformer(config, pgConnectionTransformers);
+  return applyKnexConfigTransformer(config, pgConnectionTransformers);
 }
 
 /**

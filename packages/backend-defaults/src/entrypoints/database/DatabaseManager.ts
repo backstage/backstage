@@ -28,7 +28,7 @@ import { Knex } from 'knex';
 import { MysqlConnector } from './connectors/mysql';
 import { pgConnectionTransformers, PgConnector } from './connectors/postgres';
 import { Sqlite3Connector } from './connectors/sqlite3';
-import { Connector, KnexConnectionTypeTransformer } from './types';
+import { Connector, KnexConfigTransformer } from './types';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -262,10 +262,10 @@ export class DatabaseManager {
     );
   }
 
-  static addConnectionTransformer(
+  static addConfigTransformer(
     client: string,
     type: string,
-    transformer: KnexConnectionTypeTransformer,
+    transformer: KnexConfigTransformer,
   ) {
     switch (client) {
       case 'pg':

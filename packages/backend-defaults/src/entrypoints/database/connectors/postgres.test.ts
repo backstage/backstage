@@ -206,18 +206,17 @@ describe('postgres', () => {
         ),
       ).rejects.toThrow(/Missing instance connection name for Cloud SQL/);
 
-      // This will never happen because config with "client: 'not-pg'," will not be passed to the PGConnector
-      // await expect(
-      //   buildPgDatabaseConfig(
-      //     new ConfigReader({
-      //       client: 'not-pg',
-      //       connection: {
-      //         type: 'cloudsql',
-      //         instance: 'asd:asd:asd',
-      //       },
-      //     }),
-      //   ),
-      // ).rejects.toThrow(/Cloud SQL only supports the pg client/);
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'not-pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'asd:asd:asd',
+            },
+          }),
+        ),
+      ).rejects.toThrow(/Cloud SQL only supports the pg client/);
     });
 
     it('adds the settings from cloud-sql-connector', async () => {
@@ -320,7 +319,7 @@ describe('postgres', () => {
             },
           }),
         ),
-      ).rejects.toThrow('Unknown connection type: not-supported');
+      ).rejects.toThrow('No transformer exists for type: not-supported');
     });
 
     it('supports default as the default connection type', async () => {
