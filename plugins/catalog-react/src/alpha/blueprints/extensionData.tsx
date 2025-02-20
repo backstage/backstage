@@ -45,9 +45,7 @@ export const defaultEntityContentGroups = {
 };
 
 /** @internal */
-export const entityContentGroupDataRef = createExtensionDataRef<
-  false | string
->().with({
+export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
   id: 'catalog.entity-content-group',
 });
 

@@ -108,7 +108,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string | false,
+            string,
             'catalog.entity-content-group',
             {
               optional: true;

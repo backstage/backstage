@@ -280,7 +280,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
-        string | false,
+        string,
         'catalog.entity-content-group',
         {
           optional: true;
@@ -316,7 +316,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       {}
     >;
     group: ConfigurableExtensionDataRef<
-      string | false,
+      string,
       'catalog.entity-content-group',
       {}
     >;
