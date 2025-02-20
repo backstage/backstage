@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
@@ -15,6 +16,11 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class DatabaseManager {
+  static addConfigTransformer(
+    client: string,
+    type: string,
+    transformer: KnexConfigTransformer,
+  ): void;
   forPlugin(
     pluginId: string,
     deps: {
@@ -41,6 +47,11 @@ export const databaseServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
+
+// @public
+export type KnexConfigTransformer = (
+  config: Knex.Config,
+) => Promise<Knex.Config> | Knex.Config;
 
 // (No @packageDocumentation comment for this package)
 ```

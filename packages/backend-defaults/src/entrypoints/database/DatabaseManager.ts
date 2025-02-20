@@ -262,6 +262,14 @@ export class DatabaseManager {
     );
   }
 
+  /**
+   *
+   * Registers a callback to be used for a specific client/type combination
+   *
+   * @param client - the client this transformer should be added to
+   * @param type - the connection.type this transformer is to be triggered for
+   * @param transformer - the callback method performing the transformation
+   */
   static addConfigTransformer(
     client: string,
     type: string,
@@ -272,7 +280,9 @@ export class DatabaseManager {
         pgConnectionTransformers[type] = transformer;
         break;
       default:
-        throw Error(`${client} does not implement connectionTypeTransformers`);
+        throw Error(
+          `KnexConfigTransformer is not implemented for client: ${client}`,
+        );
     }
   }
 

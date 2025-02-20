@@ -27,6 +27,11 @@ export interface Connector {
   ): Promise<Knex>;
 }
 
+/**
+ * Transformer callback for Connector {@link DatabaseManager}.
+ *
+ * @public
+ */
 export type KnexConfigTransformer = (
   config: Knex.Config,
 ) => Promise<Knex.Config> | Knex.Config;
