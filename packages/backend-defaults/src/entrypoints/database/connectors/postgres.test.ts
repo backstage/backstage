@@ -20,6 +20,7 @@ import {
   createPgDatabaseClient,
   getPgConnectionConfig,
   parsePgConnectionString,
+  pgConnectionTransformers,
 } from './postgres';
 
 jest.mock('@google-cloud/cloud-sql-connector');
@@ -37,6 +38,8 @@ describe('postgres', () => {
 
   const createConfig = (connection: any): Config =>
     new ConfigReader({ client: 'pg', connection });
+
+  pgConnectionTransformers['unit-test'] = jest.fn(a => a);
 
   describe('buildPgDatabaseConfig', () => {
     it('builds a postgres config', async () => {
@@ -136,6 +139,34 @@ describe('postgres', () => {
         },
         useNullAsDefault: true,
       });
+    });
+
+    it('calls the transformation function for connection.type', async () => {
+      const typeTransformerMock = pgConnectionTransformers[
+        'unit-test'
+      ] as jest.Mock;
+      expect(
+        await buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'unit-test',
+              user: 'ben@gke.com',
+              port: 5423,
+            },
+          }),
+          { connection: { database: 'other_db' } },
+        ),
+      ).toEqual({
+        client: 'pg',
+        connection: {
+          user: 'ben@gke.com',
+          port: 5423,
+          database: 'other_db',
+        },
+        useNullAsDefault: true,
+      });
+      expect(typeTransformerMock).toHaveBeenCalled();
     });
 
     it('uses the correct config when using cloudsql', async () => {
@@ -288,7 +319,7 @@ describe('postgres', () => {
             },
           }),
         ),
-      ).rejects.toThrow('Unknown connection type: not-supported');
+      ).rejects.toThrow('No transformer exists for type: not-supported');
     });
 
     it('supports default as the default connection type', async () => {

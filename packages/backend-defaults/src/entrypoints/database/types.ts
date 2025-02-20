@@ -26,3 +26,7 @@ export interface Connector {
     },
   ): Promise<Knex>;
 }
+
+export type KnexConfigTransformer = (
+  config: Knex.Config,
+) => Promise<Knex.Config> | Knex.Config;

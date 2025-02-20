@@ -19,3 +19,4 @@ export {
   DatabaseManager,
   type DatabaseManagerOptions,
 } from './DatabaseManager';
+export { type KnexConfigTransformer } from './types';
