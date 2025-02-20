@@ -148,10 +148,18 @@ export class DatabaseDocumentStore implements DatabaseStore {
     tx: Knex.Transaction,
     searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
-    const { types, pgTerm, fields, offset, limit, options } = searchQuery;
+    const {
+      types,
+      pgTerm,
+      fields,
+      offset,
+      limit,
+      normalization = 0,
+      options,
+    } = searchQuery;
     // TODO(awanlin): We should make the language a parameter so that we can support more then just english
     // Builds a query like:
-    // SELECT ts_rank_cd(body, query) AS rank, type, document,
+    // SELECT ts_rank_cd(body, query, 0) AS rank, type, document,
     // ts_headline('english', document, query) AS highlight
     // FROM documents, to_tsquery('english', 'consent') query
     // WHERE query @@ body AND (document @> '{"kind": "API"}')
@@ -194,7 +202,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
     if (pgTerm && options.useHighlight) {
       const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;
       query
-        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
+        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
         .select(
           tx.raw(
             `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
@@ -203,7 +211,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
         .orderBy('rank', 'desc');
     } else if (pgTerm && !options.useHighlight) {
       query
-        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
+        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
         .orderBy('rank', 'desc');
     } else {
       query.select(tx.raw('1 as rank'));
