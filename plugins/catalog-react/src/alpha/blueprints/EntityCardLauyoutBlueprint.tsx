@@ -63,9 +63,9 @@ export const EntityCardLayoutBlueprint = createExtensionBlueprint({
   *factory(
     {
       loader,
-      defaultFilter,
+      filter,
     }: {
-      defaultFilter?:
+      filter?:
         | typeof entityFilterFunctionDataRef.T
         | typeof entityFilterExpressionDataRef.T;
       loader: () => Promise<
@@ -76,10 +76,10 @@ export const EntityCardLayoutBlueprint = createExtensionBlueprint({
   ) {
     if (config.filter) {
       yield entityFilterExpressionDataRef(config.filter);
-    } else if (typeof defaultFilter === 'string') {
-      yield entityFilterExpressionDataRef(defaultFilter);
-    } else if (typeof defaultFilter === 'function') {
-      yield entityFilterFunctionDataRef(defaultFilter);
+    } else if (typeof filter === 'string') {
+      yield entityFilterExpressionDataRef(filter);
+    } else if (typeof filter === 'function') {
+      yield entityFilterFunctionDataRef(filter);
     }
 
     const ExtensionComponent = reactLazy(() =>

@@ -175,7 +175,7 @@ export const EntityCardLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-card-layout';
   name: undefined;
   params: {
-    defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
+    filter?: string | ((entity: Entity) => boolean) | undefined;
     loader: () => Promise<
       (props: EntityCardLayoutProps) => React_2.JSX.Element
     >;
