@@ -1,11 +1,6 @@
 {
   "name": "root",
   "version": "1.36.0",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage"
-  },
   "backstage": {
     "cli": {
       "new": {
@@ -15,6 +10,11 @@
         }
       }
     }
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
   },
   "workspaces": {
     "packages": [
@@ -103,6 +103,9 @@
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "csstype@npm:^3.0.2": "3.0.9",
+    "csstype@npm:^3.1.2": "3.0.9",
+    "csstype@npm:^3.1.3": "3.0.9",
     "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
   },
   "dependencies": {
@@ -147,7 +150,7 @@
     "typedoc": "^0.27.6",
     "typescript": "~5.2.0"
   },
-  "packageManager": "yarn@3.8.1",
+  "packageManager": "yarn@4.6.0",
   "engines": {
     "node": "20 || 22"
   }
