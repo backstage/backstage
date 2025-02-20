@@ -2,7 +2,7 @@
 '@backstage/backend-defaults': patch
 ---
 
-Expose a static method on the DatabaseManager, that takes callback functions to alter Knex.Config based on configured connection type.
+Expose `DatabaseManager.addConfigTransformer` to register callback functions for altering Knex.Config on Knex.Client creation.
 
 Example:
 
