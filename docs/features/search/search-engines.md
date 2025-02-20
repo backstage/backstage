@@ -242,7 +242,7 @@ search:
 By default the default settings for the Elasticsearch queries is used. If you need to tweak the fuzziness of the query results you can do this with 2 parameters, `fuzziness` and `prefixLength`.
 
 Fuzziness allows you to define the maximum Levenshtein Distance, AUTO is the default and widely accepted standard.
-prefixLength allows you to control the minimum number of characters that must match exactly at the beginning of the query term. This defaults to 0
+`prefixLength` allows you to control the minimum number of characters that must match exactly at the beginning of the query term. This defaults to 0
 
 ```yaml
 search:
