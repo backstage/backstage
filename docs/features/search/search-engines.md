@@ -237,7 +237,7 @@ search:
     batchSize: 100
 ```
 
-### Elastisearch query config
+### Elasticsearch query config
 
 By default the default settings for the Elasticsearch queries is used. If you need to tweak the fuzziness of the query results you can do this with 2 parameters, fuzziness and prefixLength.
 
