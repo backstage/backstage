@@ -16,7 +16,14 @@
 
 import { Knex } from 'knex';
 
-export async function noopTransformer(
+/**
+ * This demo Transformer converts the Knex.StaticConnectionConfig to a Knex.ConnectionProvider
+ * the Knex.ConnectionProvider return the Knex.StaticConnectionConfig as a Knex.PgConnectionConfig with expirationChecker
+ * It logs the function calls to the console to demonstrate its workings
+ * @param config
+ * @returns
+ */
+export async function demoTransformer(
   config: Knex.Config,
 ): Promise<Knex.Config> {
   if (!config.connection) {
@@ -26,15 +33,7 @@ export async function noopTransformer(
     typeof config.connection === 'function'
   ) {
     throw new Error(
-      `pg-cluster config.connection must implement Knex.StaticConnectionConfig`,
-    );
-  }
-  if (
-    !(config.connection as any).type ||
-    (config.connection as any).type !== 'noop'
-  ) {
-    throw new Error(
-      `config.connection.type must be pg-cluster to be used with pgClusterTransformer`,
+      `noopTransformer: config.connection must implement Knex.StaticConnectionConfig`,
     );
   }
   const copy = (object: Object) => {
@@ -45,11 +44,11 @@ export async function noopTransformer(
   transformedConfig.connection = () => {
     const connection: Knex.PgConnectionConfig = copy(config.connection || {});
     console.log(
-      `configuration provider was called for ${connection.application_name}`,
+      `noopTransformer: configuration provider was called for ${connection.application_name}`,
     );
     connection.expirationChecker = () => {
       console.log(
-        `expiration checker was called for ${connection.application_name}`,
+        `noopTransformer: expiration checker was called for ${connection.application_name}`,
       );
       return false;
     };

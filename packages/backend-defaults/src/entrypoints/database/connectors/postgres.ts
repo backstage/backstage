@@ -29,7 +29,6 @@ import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
 import { applyKnexConfigTransformer } from '../transformers/applyKnexConfigTransformer';
 import { cloudsqlTransformer } from '../transformers/cloudsqlTransformer';
-import { noopTransformer } from '../transformers/noopTransformer';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -38,7 +37,6 @@ const ddlLimiter = limiterFactory(1);
 //        Unittest and defaults should be removed
 export const pgConnectionTransformers: Record<string, KnexConfigTransformer> = {
   cloudsql: cloudsqlTransformer,
-  noop: noopTransformer,
 };
 
 /**
