@@ -24,7 +24,7 @@ import {
   entityFilterFunctionDataRef,
   defaultEntityCardAreas,
 } from './extensionData';
-import React, { lazy as reactLazy, ComponentProps } from 'react';
+import React from 'react';
 
 /** @alpha */
 export interface EntityCardLayoutProps {
@@ -82,18 +82,8 @@ export const EntityCardLayoutBlueprint = createExtensionBlueprint({
       yield entityFilterFunctionDataRef(defaultFilter);
     }
 
-    const ExtensionComponent = reactLazy(() =>
-      loader().then(component => ({ default: component })),
-    );
-
     yield entityCardLayoutComponentDataRef(
-      (props: ComponentProps<typeof ExtensionComponent>) => {
-        return (
-          <ExtensionBoundary node={node}>
-            <ExtensionComponent {...props} />
-          </ExtensionBoundary>
-        );
-      },
+      ExtensionBoundary.lazyComponent(node, loader),
     );
   },
 });
