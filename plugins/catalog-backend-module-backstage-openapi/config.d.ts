@@ -33,7 +33,7 @@ export interface Config {
          * The format of the definition.
          * @defaultValue json
          */
-        definitionFormat: 'json' | 'yaml';
+        definitionFormat?: 'json' | 'yaml';
       };
     };
   };
