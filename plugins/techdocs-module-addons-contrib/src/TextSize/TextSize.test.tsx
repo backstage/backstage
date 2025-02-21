@@ -19,6 +19,7 @@ import React from 'react';
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import { TextSize } from '../plugin';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 jest.mock('@backstage/plugin-techdocs-react', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-react'),
@@ -27,6 +28,15 @@ jest.mock('@backstage/plugin-techdocs-react', () => ({
 
 describe('TextSize', () => {
   const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+
+  const entityPresentationApiMock = {
+    forEntity: jest.fn(),
+  };
+  entityPresentationApiMock.forEntity.mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  });
 
   beforeEach(() => {
     useShadowRootElementsMock.mockReturnValue([]);
@@ -37,6 +47,7 @@ describe('TextSize', () => {
       <TextSize />,
     ])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     expect(getByText('TEST_CONTENT')).toBeInTheDocument();
@@ -46,6 +57,7 @@ describe('TextSize', () => {
     const { getByTitle, getByText, getByRole, getByDisplayValue } =
       await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
         .withDom(<body>TEST_CONTENT</body>)
+        .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
         .renderWithEffects();
 
     const content = getByText('TEST_CONTENT');
@@ -103,6 +115,7 @@ describe('TextSize', () => {
       getByDisplayValue,
     } = await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     const content = getByText('TEST_CONTENT');
