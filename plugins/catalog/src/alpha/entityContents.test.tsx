@@ -25,7 +25,7 @@ import {
 import { catalogOverviewEntityContent } from './entityContents';
 import {
   EntityCardBlueprint,
-  EntityCardLayoutBlueprint,
+  EntityContentLayoutBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
@@ -125,7 +125,7 @@ describe('Overview content', () => {
     },
   });
 
-  const customLayout = EntityCardLayoutBlueprint.make({
+  const customLayout = EntityContentLayoutBlueprint.make({
     name: 'custom-layout',
     params: {
       loader:

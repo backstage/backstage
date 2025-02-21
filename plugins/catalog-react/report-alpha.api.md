@@ -170,73 +170,6 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
-export const EntityCardLayoutBlueprint: ExtensionBlueprint<{
-  kind: 'entity-card-layout';
-  name: undefined;
-  params: {
-    filter?: string | ((entity: Entity) => boolean) | undefined;
-    loader: () => Promise<
-      (props: EntityCardLayoutProps) => React_2.JSX.Element
-    >;
-  };
-  output:
-    | ConfigurableExtensionDataRef<
-        (entity: Entity) => boolean,
-        'catalog.entity-filter-function',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        string,
-        'catalog.entity-filter-expression',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        (props: EntityCardLayoutProps) => React_2.JSX.Element,
-        'catalog.entity-card-layout.component',
-        {}
-      >;
-  inputs: {};
-  config: {
-    area: string | undefined;
-    filter: string | undefined;
-  };
-  configInput: {
-    filter?: string | undefined;
-    area?: string | undefined;
-  };
-  dataRefs: {
-    filterFunction: ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.entity-filter-function',
-      {}
-    >;
-    filterExpression: ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
-      {}
-    >;
-    component: ConfigurableExtensionDataRef<
-      (props: EntityCardLayoutProps) => React_2.JSX.Element,
-      'catalog.entity-card-layout.component',
-      {}
-    >;
-  };
-}>;
-
-// @alpha (undocumented)
-export interface EntityCardLayoutProps {
-  // (undocumented)
-  cards: Array<{
-    area?: (typeof defaultEntityCardAreas)[number];
-    element: React_2.JSX.Element;
-  }>;
-}
-
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
@@ -323,6 +256,73 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @alpha (undocumented)
+export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-content-layout';
+  name: undefined;
+  params: {
+    filter?: string | ((entity: Entity) => boolean) | undefined;
+    loader: () => Promise<
+      (props: EntityContentLayoutProps) => React_2.JSX.Element
+    >;
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        (props: EntityContentLayoutProps) => React_2.JSX.Element,
+        'catalog.entity-content-layout.component',
+        {}
+      >;
+  inputs: {};
+  config: {
+    area: string | undefined;
+    filter: string | undefined;
+  };
+  configInput: {
+    filter?: string | undefined;
+    area?: string | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityContentLayoutProps) => React_2.JSX.Element,
+      'catalog.entity-content-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface EntityContentLayoutProps {
+  // (undocumented)
+  cards: Array<{
+    area?: (typeof defaultEntityCardAreas)[number];
+    element: React_2.JSX.Element;
+  }>;
+}
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

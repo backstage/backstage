@@ -18,8 +18,8 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
-  EntityCardLayoutBlueprint,
-  EntityCardLayoutProps,
+  EntityContentLayoutBlueprint,
+  EntityContentLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
+function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
   const classes = useStyles();
   return (
@@ -89,7 +89,7 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
 export const customEntityContentOverviewLayoutModule = createFrontendModule({
   pluginId: 'app',
   extensions: [
-    EntityCardLayoutBlueprint.make({
+    EntityContentLayoutBlueprint.make({
       name: 'sticky',
       params: {
         loader: async () => StickyEntityContentOverviewLayout,
