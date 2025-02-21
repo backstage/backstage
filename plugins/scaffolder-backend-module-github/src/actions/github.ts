@@ -27,9 +27,9 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
   initRepoPushAndProtect,
 } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
@@ -225,19 +225,21 @@ export function createPublishGithubAction(options: {
         requiredLinearHistory = false,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
         client,

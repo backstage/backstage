@@ -16,6 +16,7 @@
 
 import { ApiHolder, AppNode } from '../apis';
 import {
+  ExtensionAttachToSpec,
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
@@ -32,7 +33,7 @@ import { OpaqueExtensionDefinition } from '@internal/frontend';
 export interface Extension<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/Extension';
   readonly id: string;
-  readonly attachTo: { id: string; input: string };
+  readonly attachTo: ExtensionAttachToSpec;
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }

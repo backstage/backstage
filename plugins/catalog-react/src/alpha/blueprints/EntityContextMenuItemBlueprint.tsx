@@ -24,10 +24,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
+/** @alpha */
 export type FactoryLoaderParams = {
   loader: () => Promise<JSX.Element>;
 };
 
+/** @alpha */
 export type FactoryHrefParams =
   | {
       title: string;

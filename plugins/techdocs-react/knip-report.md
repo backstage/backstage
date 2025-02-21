@@ -1,8 +1,9 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused dependencies (2)
 
-| Name         | Location     | Severity |
-| :----------- | :----------- | :------- |
-| react-helmet | package.json | error    |
+| Name                       | Location     | Severity |
+| :------------------------- | :----------- | :------- |
+| @backstage/core-components | package.json | error    |
+| react-helmet               | package.json | error    |
 

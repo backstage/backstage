@@ -1,5 +1,40 @@
 # @backstage/frontend-plugin-api
 
+## 0.9.5
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.3
+
+### Patch Changes
+
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
 ## 0.9.5-next.1
 
 ### Patch Changes

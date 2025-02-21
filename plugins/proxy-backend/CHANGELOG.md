@@ -1,5 +1,35 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.1
+
+## 0.5.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-proxy-node@0.1.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 0.5.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.1-next.1
+
 ## 0.5.11-next.0
 
 ### Patch Changes

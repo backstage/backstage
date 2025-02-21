@@ -335,8 +335,10 @@ describe('createGitLabCommit', () => {
   describe('createCommitToBranchThatDoesNotExist', () => {
     it('should create a new branch', async () => {
       mockGitlabClient.Branches.show.mockRejectedValue({
-        response: {
-          statusCode: 404,
+        cause: {
+          response: {
+            status: 404,
+          },
         },
       });
       const input = {

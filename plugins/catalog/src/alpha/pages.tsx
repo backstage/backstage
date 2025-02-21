@@ -28,7 +28,10 @@ import {
   AsyncEntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityContentBlueprint,
+  defaultEntityContentGroups,
+} from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
@@ -62,17 +65,66 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.title,
       EntityContentBlueprint.dataRefs.filterFunction.optional(),
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
+      EntityContentBlueprint.dataRefs.group.optional(),
     ]),
     extraContextMenuItems: createExtensionInput([
       coreExtensionData.reactElement,
     ]),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      groups: z =>
+        z
+          .array(
+            z.record(
+              z.string(),
+              z.literal(false).or(z.object({ title: z.string() })),
+            ),
+          )
+          .optional(),
+    },
+  },
+  factory(originalFactory, { config, inputs }) {
     return originalFactory({
       defaultPath: '/catalog/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(entityRouteRef),
       loader: async () => {
-        const { EntityLayout } = await import('../components/EntityLayout');
+        const { EntityLayout } = await import('./components/EntityLayout');
+
+        // config groups override default groups
+        const groups: Record<string, string> = config.groups?.length
+          ? config.groups.reduce<Record<string, string>>((rest, group) => {
+              const [groupId, groupValue] = Object.entries(group)[0];
+              return groupValue
+                ? {
+                    ...rest,
+                    [groupId]: groupValue.title,
+                  }
+                : rest;
+            }, {})
+          : defaultEntityContentGroups;
+
+        // the groups order is determined by the order of the contents
+        // a group will appear in the order of the first item that belongs to it
+        const tabs = inputs.contents.reduce<
+          Record<string, Array<(typeof inputs.contents)[0]>>
+        >((rest, output) => {
+          const itemTitle = output.get(EntityContentBlueprint.dataRefs.title);
+          const groupId = output.get(EntityContentBlueprint.dataRefs.group);
+          const groupTitle = groupId && groups[groupId];
+          // disabled or invalid groups are ignored
+          if (!groupTitle) {
+            return {
+              ...rest,
+              [itemTitle]: [output],
+            };
+          }
+          return {
+            ...rest,
+            [groupTitle]: [...(rest[groupTitle] ?? []), output],
+          };
+        }, {});
+
         const Component = () => {
           const extraMenuItems = inputs.extraContextMenuItems.map(item =>
             item.get(coreExtensionData.reactElement),
@@ -81,9 +133,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
               <EntityLayout extraMenuItems={extraMenuItems}>
-                {inputs.contents.map(output => {
-                  return (
+                {Object.entries(tabs).flatMap(([group, items]) =>
+                  items.map(output => (
                     <EntityLayout.Route
+                      group={group}
                       key={output.get(coreExtensionData.routePath)}
                       path={output.get(coreExtensionData.routePath)}
                       title={output.get(EntityContentBlueprint.dataRefs.title)}
@@ -98,12 +151,13 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                     >
                       {output.get(coreExtensionData.reactElement)}
                     </EntityLayout.Route>
-                  );
-                })}
+                  )),
+                )}
               </EntityLayout>
             </AsyncEntityProvider>
           );
         };
+
         return compatWrapper(<Component />);
       },
     });

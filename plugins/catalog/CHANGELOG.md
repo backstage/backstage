@@ -1,5 +1,79 @@
 # @backstage/plugin-catalog
 
+## 1.27.0
+
+### Minor Changes
+
+- b07756e: The Entity Page now retains the visibility of the Inspect Dialog after a reload. This allows sharing the URL with the dialog open.
+
+### Patch Changes
+
+- 7a15cff: Revert client side paginated catalog table to using built in Material Table toolbar component
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.6
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.27.0-next.3
+
+### Patch Changes
+
+- 7a15cff: Revert client side paginated catalog table to using built in Material Table toolbar component
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.6-next.3
+
+## 1.27.0-next.2
+
+### Minor Changes
+
+- b07756e: The Entity Page now retains the visibility of the Inspect Dialog after a reload. This allows sharing the URL with the dialog open.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.6-next.2
+
 ## 1.26.2-next.1
 
 ### Patch Changes

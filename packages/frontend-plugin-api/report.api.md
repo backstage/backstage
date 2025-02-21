@@ -227,10 +227,7 @@ export interface AppNodeInstance {
 // @public
 export interface AppNodeSpec {
   // (undocumented)
-  readonly attachTo: {
-    id: string;
-    input: string;
-  };
+  readonly attachTo: ExtensionAttachToSpec;
   // (undocumented)
   readonly config?: unknown;
   // (undocumented)
@@ -593,10 +590,7 @@ export type CreateExtensionBlueprintOptions<
   },
 > = {
   kind: TKind;
-  attachTo: {
-    id: string;
-    input: string;
-  };
+  attachTo: ExtensionAttachToSpec;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -680,10 +674,7 @@ export type CreateExtensionOptions<
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: {
-    id: string;
-    input: string;
-  };
+  attachTo: ExtensionAttachToSpec;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -813,10 +804,7 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  readonly attachTo: {
-    id: string;
-    input: string;
-  };
+  readonly attachTo: ExtensionAttachToSpec;
   // (undocumented)
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
   // (undocumented)
@@ -824,6 +812,17 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
   readonly id: string;
 }
+
+// @public (undocumented)
+export type ExtensionAttachToSpec =
+  | {
+      id: string;
+      input: string;
+    }
+  | Array<{
+      id: string;
+      input: string;
+    }>;
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
@@ -834,10 +833,7 @@ export interface ExtensionBlueprint<
   // (undocumented)
   make<TNewName extends string | undefined>(args: {
     name?: TNewName;
-    attachTo?: {
-      id: string;
-      input: string;
-    };
+    attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     params: T['params'];
   }): ExtensionDefinition<{
@@ -867,10 +863,7 @@ export interface ExtensionBlueprint<
     },
   >(args: {
     name?: TNewName;
-    attachTo?: {
-      id: string;
-      input: string;
-    };
+    attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -971,8 +964,13 @@ export namespace ExtensionBoundary {
   // (undocumented)
   export function lazy(
     appNode: AppNode,
-    lazyElement: () => Promise<JSX.Element>,
+    loader: () => Promise<JSX.Element>,
   ): JSX.Element;
+  // (undocumented)
+  export function lazyComponent<TProps extends {}>(
+    appNode: AppNode,
+    loader: () => Promise<(props: TProps) => JSX.Element>,
+  ): (props: TProps) => JSX.Element;
 }
 
 // @public (undocumented)
@@ -1057,10 +1055,7 @@ export type ExtensionDefinition<
   >(
     args: Expand<
       {
-        attachTo?: {
-          id: string;
-          input: string;
-        };
+        attachTo?: ExtensionAttachToSpec;
         disabled?: boolean;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &

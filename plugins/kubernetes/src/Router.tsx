@@ -23,10 +23,10 @@ import {
 import { Route, Routes } from 'react-router-dom';
 import { KubernetesContent } from './KubernetesContent';
 import Button from '@material-ui/core/Button';
-
-const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
-const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
-  'backstage.io/kubernetes-label-selector';
+import {
+  KUBERNETES_ANNOTATION,
+  KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
+} from '@backstage/plugin-kubernetes-common';
 
 export const isKubernetesAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||

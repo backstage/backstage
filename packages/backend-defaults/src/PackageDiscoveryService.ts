@@ -22,7 +22,6 @@ import {
   RootConfigService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
-import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
 const DETECTED_PACKAGE_ROLES = [
@@ -79,7 +78,7 @@ async function findClosestPackageDir(
 }
 
 /** @internal */
-export class PackageDiscoveryService implements FeatureDiscoveryService {
+export class PackageDiscoveryService {
   constructor(
     private readonly config: RootConfigService,
     private readonly logger: RootLoggerService,

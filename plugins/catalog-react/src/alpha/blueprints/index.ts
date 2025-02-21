@@ -15,4 +15,15 @@
  */
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';
-export { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
+
+export {
+  EntityContextMenuItemBlueprint,
+  type FactoryLoaderParams,
+  type FactoryHrefParams,
+} from './EntityContextMenuItemBlueprint';
+export {
+  EntityContentLayoutBlueprint,
+  type EntityContentLayoutProps,
+} from './EntityContentLayoutBlueprint';
+export { defaultEntityContentGroups } from './extensionData';
+export type { EntityCardType } from './extensionData';

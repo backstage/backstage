@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app",
-  "version": "0.1.6-next.1",
+  "version": "0.1.6",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "app",

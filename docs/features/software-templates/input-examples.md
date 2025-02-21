@@ -189,7 +189,7 @@ parameters:
         title: Select features
         type: array
         items:
-          type: boolean
+          type: string
           enum:
             - 'Enable scraping'
             - 'Enable HPA'

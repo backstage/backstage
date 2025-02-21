@@ -20,6 +20,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
@@ -39,6 +40,7 @@ import {
   NotFoundError,
   NotModifiedError,
   ResponseError,
+  assertError,
 } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 
@@ -144,8 +146,39 @@ export class GerritUrlReader implements UrlReaderService {
     return this.readTreeFromGitiles(url, urlRevision, options);
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('GerritReader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { pathname } = new URL(url);
+
+    if (pathname.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {

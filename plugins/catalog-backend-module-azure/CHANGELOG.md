@@ -1,5 +1,39 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.2
+
+### Patch Changes
+
+- eb80a1a: Minor doc string update
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.3.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+
 ## 0.3.2-next.1
 
 ### Patch Changes

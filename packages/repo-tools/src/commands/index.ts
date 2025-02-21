@@ -262,6 +262,11 @@ export function registerCommands(program: Command) {
       lazy(() => import('./knip-reports/knip-reports'), 'buildKnipReports'),
     );
 
+  program
+    .command('package-docs [paths...]', { hidden: true })
+    .description('EXPERIMENTAL: Generate package documentation')
+    .action(lazy(() => import('./package-docs/command'), 'default'));
+
   registerPackageCommand(program);
   registerRepoCommand(program);
   registerLintCommand(program);

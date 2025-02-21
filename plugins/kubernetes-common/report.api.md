@@ -317,6 +317,16 @@ export interface JobsFetchResponse {
   type: 'jobs';
 }
 
+// @public
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+
+// @public
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
+
+// @public
+export const kubernetesClustersReadPermission: BasicPermission;
+
 // @public (undocumented)
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
@@ -346,6 +356,9 @@ export interface KubernetesRequestBody {
   // (undocumented)
   entity: Entity;
 }
+
+// @public
+export const kubernetesResourcesReadPermission: BasicPermission;
 
 // @public (undocumented)
 export interface LimitRangeFetchResponse {

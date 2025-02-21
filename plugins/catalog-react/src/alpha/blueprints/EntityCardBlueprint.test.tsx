@@ -54,6 +54,14 @@ describe('EntityCardBlueprint', () => {
               "filter": {
                 "type": "string",
               },
+              "type": {
+                "enum": [
+                  "peek",
+                  "info",
+                  "full",
+                ],
+                "type": "string",
+              },
             },
             "type": "object",
           },
@@ -80,6 +88,15 @@ describe('EntityCardBlueprint', () => {
               "optional": true,
             },
             "id": "catalog.entity-filter-expression",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "catalog.entity-card-type",
             "optional": [Function],
             "toString": [Function],
           },

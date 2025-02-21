@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { components, overview, layoutComponents, theme } from '@/utils/data';
-import { Box } from '../../../../packages/canon';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
@@ -53,9 +52,8 @@ export const Docs = () => {
       {data.map(section => {
         return (
           <Fragment key={section.title}>
-            <Box marginTop="lg" marginBottom="2xs">
-              <div className={styles.sectionTitle}>{section.title}</div>
-            </Box>
+            <div className={styles.sectionTitle}>{section.title}</div>
+
             {section.content.map(item => {
               const isActive = pathname === `${section.url}/${item.slug}`;
 
