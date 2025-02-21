@@ -93,4 +93,21 @@ describe('WinstonLogger', () => {
       expect.any(Function),
     );
   });
+
+  it('gracefully handles fields that contain deeper object structures', () => {
+    const log = jest.fn();
+    const mockTransport = new Transport({ log });
+
+    const logger = WinstonLogger.create({
+      transports: [mockTransport],
+    });
+
+    logger.error('something went wrong', {
+      field: { foo: { bar: { baz: 'qux' } } },
+    });
+
+    expect(log.mock.calls[0][0][MESSAGE]).toContain(
+      `={"foo":{"bar":{"baz":"qux"}}}`,
+    );
+  });
 });
