@@ -17,6 +17,7 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
+import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -151,8 +152,6 @@ const _default: FrontendPlugin<
       params: SearchResultListItemBlueprintParams;
     }>;
     'page:techdocs/reader': ExtensionDefinition<{
-      kind: 'page';
-      name: 'reader';
       config: {
         path: string | undefined;
       };
@@ -173,7 +172,21 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: 'reader';
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
@@ -234,6 +247,17 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
         emptyState: ExtensionInput<
           ConfigurableExtensionDataRef<
             React_2.JSX.Element,
