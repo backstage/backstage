@@ -18,8 +18,8 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
-  EntityCardLayoutBlueprint,
-  EntityCardLayoutProps,
+  EntityContentLayoutBlueprint,
+  EntityContentLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
+function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
   const classes = useStyles();
   return (
@@ -56,7 +56,7 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
       >
         <Grid container spacing={3}>
           {cards
-            .filter(card => card.area === 'info')
+            .filter(card => card.type === 'info')
             .map((card, index) => (
               <Grid key={index} xs={12} item>
                 {card.element}
@@ -67,14 +67,14 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
       <Grid xs={12} md={8} item>
         <Grid container spacing={3}>
           {cards
-            .filter(card => card.area === 'peek')
+            .filter(card => card.type === 'peek')
             .map((card, index) => (
               <Grid key={index} className={classes.card} xs={12} md={6} item>
                 {card.element}
               </Grid>
             ))}
           {cards
-            .filter(card => !card.area || card.area === 'full')
+            .filter(card => !card.type || card.type === 'full')
             .map((card, index) => (
               <Grid key={index} className={classes.card} xs={12} md={6} item>
                 {card.element}
@@ -89,7 +89,7 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
 export const customEntityContentOverviewLayoutModule = createFrontendModule({
   pluginId: 'app',
   extensions: [
-    EntityCardLayoutBlueprint.make({
+    EntityContentLayoutBlueprint.make({
       name: 'sticky',
       params: {
         loader: async () => StickyEntityContentOverviewLayout,

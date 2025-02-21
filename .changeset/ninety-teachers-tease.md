@@ -2,12 +2,12 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-Introduces a new `EntityCardLayoutBlueprint` that creates custom entity content layouts.
+Introduces a new `EntityContentLayoutBlueprint` that creates custom entity content layouts.
 
 The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
 
 - element: `JSx.Element`;
-- area: `"peek" | "info" | "full" | undefined`;
+- type: `"peek" | "info" | "full" | undefined`;
 
 ### Usage example
 
@@ -15,12 +15,12 @@ Creating a custom overview tab layout:
 
 ```tsx
 import {
-  EntityCardLayoutProps,
-  EntityCardLayoutBlueprint,
+  EntityContentLayoutProps,
+  EntityContentLayoutBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 // ...
 
-function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
+function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
   const classes = useStyles();
   return (
@@ -33,7 +33,7 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
       >
         <Grid container spacing={3}>
           {cards
-            .filter(card => card.area === 'info')
+            .filter(card => card.type === 'info')
             .map((card, index) => (
               <Grid key={index} xs={12} item>
                 {card.element}
@@ -44,14 +44,14 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
       <Grid xs={12} md={8} item>
         <Grid container spacing={3}>
           {cards
-            .filter(card => card.area === 'peek')
+            .filter(card => card.type === 'peek')
             .map((card, index) => (
               <Grid key={index} className={classes.card} xs={12} md={6} item>
                 {card.element}
               </Grid>
             ))}
           {cards
-            .filter(card => !card.area || card.area === 'full')
+            .filter(card => !card.type || card.type === 'full')
             .map((card, index) => (
               <Grid key={index} className={classes.card} xs={12} md={6} item>
                 {card.element}
@@ -66,7 +66,7 @@ function StickyEntityContentOverviewLayout(props: EntityCardLayoutProps) {
 export const customEntityContentOverviewStickyLayoutModule = createFrontendModule({
   pluginId: 'app',
   extensions: [
-    EntityCardLayoutBlueprint.make({
+    EntityContentLayoutBlueprint.make({
       name: 'sticky',
       params: {
         // (optional) defaults the `() => false` filter function
@@ -83,7 +83,7 @@ Disabling the custom layout:
 # app-config.yaml
 app:
   extensions:
-    - entity-card-layout:app/sticky: false
+    - entity-content-layout:app/sticky: false
 ```
 
 Overriding the custom layout filter:
@@ -92,7 +92,7 @@ Overriding the custom layout filter:
 # app-config.yaml
 app:
   extensions:
-    - entity-card-layout:app/sticky:
+    - entity-content-layout:app/sticky:
         config:
           # This layout will be used only with component entities
           filter: 'kind:component'

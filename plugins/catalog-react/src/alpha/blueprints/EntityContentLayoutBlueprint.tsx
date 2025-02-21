@@ -22,27 +22,27 @@ import {
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
-  defaultEntityCardAreas,
+  EntityCardType,
 } from './extensionData';
-import React, { lazy as reactLazy, ComponentProps } from 'react';
+import React from 'react';
 
 /** @alpha */
-export interface EntityCardLayoutProps {
+export interface EntityContentLayoutProps {
   cards: Array<{
-    area?: (typeof defaultEntityCardAreas)[number];
+    type?: EntityCardType;
     element: React.JSX.Element;
   }>;
 }
 
 const entityCardLayoutComponentDataRef = createExtensionDataRef<
-  (props: EntityCardLayoutProps) => React.JSX.Element
+  (props: EntityContentLayoutProps) => React.JSX.Element
 >().with({
-  id: 'catalog.entity-card-layout.component',
+  id: 'catalog.entity-content-layout.component',
 });
 
 /** @alpha */
-export const EntityCardLayoutBlueprint = createExtensionBlueprint({
-  kind: 'entity-card-layout',
+export const EntityContentLayoutBlueprint = createExtensionBlueprint({
+  kind: 'entity-content-layout',
   attachTo: { id: 'entity-content:catalog/overview', input: 'layouts' },
   output: [
     entityFilterFunctionDataRef.optional(),
@@ -56,44 +56,34 @@ export const EntityCardLayoutBlueprint = createExtensionBlueprint({
   },
   config: {
     schema: {
-      area: z => z.string().optional(),
+      type: z => z.string().optional(),
       filter: z => z.string().optional(),
     },
   },
   *factory(
     {
       loader,
-      defaultFilter,
+      filter,
     }: {
-      defaultFilter?:
+      filter?:
         | typeof entityFilterFunctionDataRef.T
         | typeof entityFilterExpressionDataRef.T;
       loader: () => Promise<
-        (props: EntityCardLayoutProps) => React.JSX.Element
+        (props: EntityContentLayoutProps) => React.JSX.Element
       >;
     },
     { node, config },
   ) {
     if (config.filter) {
       yield entityFilterExpressionDataRef(config.filter);
-    } else if (typeof defaultFilter === 'string') {
-      yield entityFilterExpressionDataRef(defaultFilter);
-    } else if (typeof defaultFilter === 'function') {
-      yield entityFilterFunctionDataRef(defaultFilter);
+    } else if (typeof filter === 'string') {
+      yield entityFilterExpressionDataRef(filter);
+    } else if (typeof filter === 'function') {
+      yield entityFilterFunctionDataRef(filter);
     }
 
-    const ExtensionComponent = reactLazy(() =>
-      loader().then(component => ({ default: component })),
-    );
-
     yield entityCardLayoutComponentDataRef(
-      (props: ComponentProps<typeof ExtensionComponent>) => {
-        return (
-          <ExtensionBoundary node={node}>
-            <ExtensionComponent {...props} />
-          </ExtensionBoundary>
-        );
-      },
+      ExtensionBoundary.lazyComponent(node, loader),
     );
   },
 });

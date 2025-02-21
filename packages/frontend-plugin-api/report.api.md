@@ -964,8 +964,13 @@ export namespace ExtensionBoundary {
   // (undocumented)
   export function lazy(
     appNode: AppNode,
-    lazyElement: () => Promise<JSX.Element>,
+    loader: () => Promise<JSX.Element>,
   ): JSX.Element;
+  // (undocumented)
+  export function lazyComponent<TProps extends {}>(
+    appNode: AppNode,
+    loader: () => Promise<(props: TProps) => JSX.Element>,
+  ): (props: TProps) => JSX.Element;
 }
 
 // @public (undocumented)

@@ -140,7 +140,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     // does not occur, and clean up the empty index we just created.
     if (this.processed === 0) {
       this.logger.warn(
-        `Index for ${this.type} was not ${
+        `Index for ${this.indexName} of ${this.type} was not ${
           this.removableIndices.length ? 'replaced' : 'created'
         }: indexer received 0 documents`,
       );
@@ -158,9 +158,9 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     // stale indices can be referenced for deletion in case initial attempt
     // fails. Allow errors to bubble up so that we can clean up the created index.
     this.logger.info(
-      `Indexing completed for index ${this.type} in ${duration(
-        this.startTimestamp,
-      )}`,
+      `Indexing completed for index ${this.indexName} of ${
+        this.type
+      } in ${duration(this.startTimestamp)}`,
       result,
     );
     await this.elasticSearchClientWrapper.updateAliases({

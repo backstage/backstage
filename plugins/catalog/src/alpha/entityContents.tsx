@@ -23,8 +23,8 @@ import {
 import {
   EntityCardBlueprint,
   EntityContentBlueprint,
-  EntityCardLayoutBlueprint,
-  EntityCardLayoutProps,
+  EntityContentLayoutBlueprint,
+  EntityContentLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
 import { buildFilterFn } from './filter/FilterWrapper';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -34,15 +34,15 @@ export const catalogOverviewEntityContent =
     name: 'overview',
     inputs: {
       layouts: createExtensionInput([
-        EntityCardLayoutBlueprint.dataRefs.filterFunction.optional(),
-        EntityCardLayoutBlueprint.dataRefs.filterExpression.optional(),
-        EntityCardLayoutBlueprint.dataRefs.component,
+        EntityContentLayoutBlueprint.dataRefs.filterFunction.optional(),
+        EntityContentLayoutBlueprint.dataRefs.filterExpression.optional(),
+        EntityContentLayoutBlueprint.dataRefs.component,
       ]),
       cards: createExtensionInput([
         coreExtensionData.reactElement,
         EntityContentBlueprint.dataRefs.filterFunction.optional(),
         EntityContentBlueprint.dataRefs.filterExpression.optional(),
-        EntityCardBlueprint.dataRefs.area.optional(),
+        EntityCardBlueprint.dataRefs.type.optional(),
       ]),
     },
     factory: (originalFactory, { node, inputs }) => {
@@ -56,7 +56,7 @@ export const catalogOverviewEntityContent =
             })),
           );
 
-          const DefaultLayoutComponent = (props: EntityCardLayoutProps) => {
+          const DefaultLayoutComponent = (props: EntityContentLayoutProps) => {
             return (
               <ExtensionBoundary node={node}>
                 <LazyDefaultLayoutComponent {...props} />
@@ -67,11 +67,15 @@ export const catalogOverviewEntityContent =
           const layouts = [
             ...inputs.layouts.map(layout => ({
               filter: buildFilterFn(
-                layout.get(EntityCardLayoutBlueprint.dataRefs.filterFunction),
-                layout.get(EntityCardLayoutBlueprint.dataRefs.filterExpression),
+                layout.get(
+                  EntityContentLayoutBlueprint.dataRefs.filterFunction,
+                ),
+                layout.get(
+                  EntityContentLayoutBlueprint.dataRefs.filterExpression,
+                ),
               ),
               Component: layout.get(
-                EntityCardLayoutBlueprint.dataRefs.component,
+                EntityContentLayoutBlueprint.dataRefs.component,
               ),
             })),
             {
@@ -82,7 +86,7 @@ export const catalogOverviewEntityContent =
 
           const cards = inputs.cards.map(card => ({
             element: card.get(coreExtensionData.reactElement),
-            area: card.get(EntityCardBlueprint.dataRefs.area),
+            type: card.get(EntityCardBlueprint.dataRefs.type),
             filter: buildFilterFn(
               card.get(EntityContentBlueprint.dataRefs.filterFunction),
               card.get(EntityContentBlueprint.dataRefs.filterExpression),

@@ -15,6 +15,29 @@
  */
 
 /**
+ * The annotation key used to identify Kubernetes resources in Backstage.
+ * This constant represents the standard annotation 'backstage.io/kubernetes-id'
+ * which links catalog entities to their corresponding Kubernetes resources.
+ *
+ * @public
+ */
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+
+/**
+ * Annotation used to specify a Kubernetes label selector query for filtering resources.
+ * When this annotation is added to a catalog entity, it defines criteria for selecting
+ * Kubernetes resources based on their labels.
+ *
+ * @public
+ *
+ * @remarks
+ * The value of this annotation should be a valid Kubernetes label selector query string.
+ * For example: 'app=my-app,environment=production'
+ */
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
+
+/**
  * Annotation for specifying the API server of a Kubernetes cluster
  *
  * @public

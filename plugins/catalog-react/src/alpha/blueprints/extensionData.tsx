@@ -45,21 +45,25 @@ export const defaultEntityContentGroups = {
 };
 
 /** @internal */
-export const entityContentGroupDataRef = createExtensionDataRef<
-  false | string
->().with({
+export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
   id: 'catalog.entity-content-group',
 });
 
 /**
- * @alpha
- * Default entity content groups.
+ * @internal
+ * Available entity card types
  */
-export const defaultEntityCardAreas = ['peek', 'info', 'full'] as const;
+export const entityCardTypes = [
+  'peek',
+  'info',
+  'full',
+] as const satisfies readonly EntityCardType[];
+
+/** @alpha */
+export type EntityCardType = 'peek' | 'info' | 'full';
 
 /** @internal */
-export const entityCardAreaDataRef = createExtensionDataRef<
-  (typeof defaultEntityCardAreas)[number]
->().with({
-  id: 'catalog.entity-card-area',
-});
+export const entityCardTypeDataRef =
+  createExtensionDataRef<EntityCardType>().with({
+    id: 'catalog.entity-card-type',
+  });

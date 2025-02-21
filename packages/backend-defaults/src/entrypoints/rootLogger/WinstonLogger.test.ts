@@ -94,27 +94,20 @@ describe('WinstonLogger', () => {
     );
   });
 
-  it('gracefully handles fields that are not castable to a string', () => {
-    const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
-    });
+  it('gracefully handles fields that contain deeper object structures', () => {
+    const log = jest.fn();
+    const mockTransport = new Transport({ log });
 
     const logger = WinstonLogger.create({
       transports: [mockTransport],
     });
 
     logger.error('something went wrong', {
-      field: Object.create(null),
+      field: { foo: { bar: { baz: 'qux' } } },
     });
 
-    expect(mockTransport.log).toHaveBeenCalledWith(
-      expect.objectContaining({
-        [MESSAGE]: expect.stringContaining(
-          '[field value not castable to string]',
-        ),
-      }),
-      expect.any(Function),
+    expect(log.mock.calls[0][0][MESSAGE]).toContain(
+      `={"foo":{"bar":{"baz":"qux"}}}`,
     );
   });
 });

@@ -108,7 +108,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            string | false,
+            string,
             'catalog.entity-content-group',
             {
               optional: true;
@@ -120,6 +120,7 @@ const _default: FrontendPlugin<
         defaultPath: string;
         defaultTitle: string;
         defaultGroup?:
+          | (string & {})
           | 'documentation'
           | 'development'
           | 'deployment'
