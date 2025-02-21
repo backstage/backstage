@@ -152,6 +152,9 @@ export class WinstonLogger implements RootLoggerService {
 
             try {
               stringValue = `${value}`;
+              if (stringValue === '[object Object]') {
+                stringValue = JSON.stringify(value);
+              }
             } catch (e) {
               stringValue = '[field value not castable to string]';
             }
