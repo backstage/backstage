@@ -1,5 +1,12 @@
 # @backstage/backend-defaults
 
+## 0.8.1
+
+### Patch Changes
+
+- 2d72168: The default auditor service implementation will now log low severity events with `debug` level instead of `info`.
+- 7511c78: Explicitly stringify extra logger fields with `JSON.stringify` to prevent `[object Object]` errors.
+
 ## 0.8.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.3
+
+### Patch Changes
+
+- ff55903: Fix null topics being returned from notification API
+
 ## 0.5.2
 
 ### Patch Changes
