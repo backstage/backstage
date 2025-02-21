@@ -70,7 +70,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       loader: () => Promise<JSX.Element>;
       defaultPath: string;
       defaultTitle: string;
-      defaultGroup?: keyof typeof defaultEntityContentGroups;
+      defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
       routeRef?: RouteRef;
       filter?:
         | typeof entityFilterFunctionDataRef.T

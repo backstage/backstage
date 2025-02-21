@@ -246,6 +246,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultPath: string;
     defaultTitle: string;
     defaultGroup?:
+      | (string & {})
       | 'documentation'
       | 'development'
       | 'deployment'
