@@ -110,6 +110,7 @@ dequeueing
 dialogs
 discoverability
 Discoverability
+Distance
 dls
 Dockerfile
 dockerfiles
@@ -221,6 +222,7 @@ learnings
 Leasot
 lerna
 Lerna
+Levenshtein
 lightbox
 Lightsail
 limitranges
