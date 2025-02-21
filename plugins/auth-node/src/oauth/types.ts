@@ -59,6 +59,11 @@ export interface OAuthAuthenticatorAuthenticateInput {
 
 /** @public */
 export interface OAuthAuthenticatorRefreshInput {
+  /**
+   * Signals whether the requested scope has already been granted for the session. Will only be set if the `scopes.persist` option is enabled.
+   */
+  scopeAlreadyGranted?: boolean;
+
   scope: string;
   refreshToken: string;
   req: Request;

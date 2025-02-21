@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-org-react",
-  "version": "0.1.35-next.1",
+  "version": "0.1.35",
   "backstage": {
     "role": "web-library",
     "pluginId": "org",

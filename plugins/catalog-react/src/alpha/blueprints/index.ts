@@ -15,3 +15,11 @@
  */
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';
+export {
+  EntityCardLayoutBlueprint,
+  type EntityCardLayoutProps,
+} from './EntityCardLauyoutBlueprint';
+export {
+  defaultEntityContentGroups,
+  defaultEntityCardAreas,
+} from './extensionData';

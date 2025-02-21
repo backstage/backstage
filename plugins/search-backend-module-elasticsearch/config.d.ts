@@ -22,6 +22,10 @@ export interface Config {
      */
     elasticsearch?: {
       /**
+       * Prefix to be used for all index creation. Value will be put in front of the index as is.
+       */
+      indexPrefix?: string;
+      /**
        * Batch size for elastic search indexing tasks. Defaults to 1000.
        */
       batchSize?: number;

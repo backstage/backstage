@@ -13,6 +13,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @public (undocumented)
 const _default: FrontendPlugin<
@@ -69,11 +70,13 @@ const _default: FrontendPlugin<
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
+        group: string | false | undefined;
       };
       configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -103,12 +106,25 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            string | false,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
+        defaultGroup?:
+          | 'documentation'
+          | 'development'
+          | 'deployment'
+          | 'observability'
+          | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
@@ -161,6 +177,15 @@ const _default: FrontendPlugin<
   }
 >;
 export default _default;
+
+// @alpha (undocumented)
+export const kubernetesTranslationRef: TranslationRef<
+  'kubernetes',
+  {
+    readonly 'kubernetesContentPage.permissionAlert.message': "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' and 'kubernetes.resources.read' permission.";
+    readonly 'kubernetesContentPage.permissionAlert.title': 'Permission required';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

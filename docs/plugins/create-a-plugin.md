@@ -15,8 +15,10 @@ invoking the
 from the root of your project.
 
 ```bash
-yarn new --select plugin
+yarn new
 ```
+
+And then select `frontend-plugin`.
 
 ![Example of output when creating a new plugin](../assets/getting-started/create-plugin_output.png)
 

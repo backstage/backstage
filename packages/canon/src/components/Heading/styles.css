@@ -16,7 +16,7 @@
 
 .canon-Heading {
   font-family: var(--canon-font-regular);
-  color: var(--canon-fg-text-primary);
+  color: var(--canon-fg-primary);
   line-height: 100%;
   padding: 0;
   margin: 0;

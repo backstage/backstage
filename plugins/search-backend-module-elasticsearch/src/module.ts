@@ -76,12 +76,18 @@ export default createBackendModule({
           );
           return;
         }
-
+        const indexPrefix = config.getOptionalString(
+          'search.elasticsearch.indexPrefix',
+        );
+        if (indexPrefix) {
+          logger.info(`Index prefix will be used for indices: ${indexPrefix}`);
+        }
         searchEngineRegistry.setSearchEngine(
           await ElasticSearchSearchEngine.fromConfig({
             logger,
             config,
             translator,
+            indexPrefix,
           }),
         );
       },

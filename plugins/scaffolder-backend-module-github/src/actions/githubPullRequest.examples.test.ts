@@ -617,13 +617,7 @@ describe('publish:github:pull-request examples', () => {
     expect(mockContext.output).toHaveBeenCalledWith('pullRequestNumber', 123);
   });
 
-  it('Create a pull request with all parameters', async () => {
-    mockDir.setContent({
-      [workspacePath]: {
-        source: { 'foo.txt': 'Hello there!' },
-        irrelevant: { 'bar.txt': 'Nothing to see here' },
-      },
-    });
+  it('Does not create an empty pull request', async () => {
     const input = yaml.parse(examples[12].example).steps[0].input;
 
     await action.handler({
@@ -638,8 +632,56 @@ describe('publish:github:pull-request examples', () => {
       title: 'Create my new app',
       body: 'This PR is really good',
       head: 'new-app',
-      draft: true,
+      draft: undefined,
+      createWhenEmpty: false,
+      changes: [
+        {
+          commit: 'Create my new app',
+          files: {
+            'file.txt': {
+              content: Buffer.from('Hello there!').toString('base64'),
+              encoding: 'base64',
+              mode: '100644',
+            },
+          },
+        },
+      ],
+    });
+
+    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledTimes(3);
+    expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://github.com/myorg/myrepo/pull/123',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+  });
+
+  it('Create a pull request with all parameters', async () => {
+    mockDir.setContent({
+      [workspacePath]: {
+        source: { 'foo.txt': 'Hello there!' },
+        irrelevant: { 'bar.txt': 'Nothing to see here' },
+      },
+    });
+    const input = yaml.parse(examples[13].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      workspacePath,
+      input,
+    });
+
+    expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      title: 'Create my new app',
+      body: 'This PR is really good',
+      head: 'new-app',
       base: 'test',
+      draft: true,
+      createWhenEmpty: true,
       changes: [
         {
           commit: 'Commit for foo changes',

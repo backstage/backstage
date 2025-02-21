@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-catalog",
-  "version": "0.3.1-next.1",
+  "version": "0.3.1",
   "description": "A module for the search backend that exports catalog modules",
   "backstage": {
     "role": "backend-plugin-module",
@@ -47,10 +47,8 @@
     "@backstage/plugin-search-common": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "msw": "^1.0.0"
+    "@backstage/cli": "workspace:^"
   },
   "configSchema": "config.d.ts"
 }

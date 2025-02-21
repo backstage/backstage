@@ -121,6 +121,27 @@ export const Button: React_2.ForwardRefExoticComponent<
   ButtonProps & React_2.RefAttributes<HTMLButtonElement>
 >;
 
+// @public (undocumented)
+export type ButtonOwnProps = GetPropDefTypes<typeof buttonPropDefs>;
+
+// @public (undocumented)
+export const buttonPropDefs: {
+  variant: {
+    type: 'enum';
+    values: ('primary' | 'secondary')[];
+    className: string;
+    default: 'primary';
+    responsive: true;
+  };
+  size: {
+    type: 'enum';
+    values: ('small' | 'medium')[];
+    className: string;
+    default: 'medium';
+    responsive: true;
+  };
+};
+
 // @public
 export interface ButtonProps {
   // (undocumented)
@@ -134,15 +155,11 @@ export interface ButtonProps {
   // (undocumented)
   iconStart?: IconNames;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  size?: ButtonOwnProps['size'];
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+  variant?: ButtonOwnProps['variant'];
 }
 
 // @public (undocumented)
@@ -670,14 +687,14 @@ export const marginPropDefs: (spacingValues: string[]) => {
     type: 'enum | string';
     values: string[];
     className: string;
-    customProperties: ('--ml' | '--mr')[];
+    customProperties: '--mx'[];
     responsive: true;
   };
   my: {
     type: 'enum | string';
     values: string[];
     className: string;
-    customProperties: ('--mt' | '--mb')[];
+    customProperties: '--my'[];
     responsive: true;
   };
   mt: {
@@ -732,14 +749,14 @@ export const paddingPropDefs: (spacingValues: string[]) => {
   px: {
     type: 'enum | string';
     className: string;
-    customProperties: ('--pl' | '--pr')[];
+    customProperties: '--px'[];
     values: string[];
     responsive: true;
   };
   py: {
     type: 'enum | string';
     className: string;
-    customProperties: ('--pt' | '--pb')[];
+    customProperties: '--py'[];
     values: string[];
     responsive: true;
   };

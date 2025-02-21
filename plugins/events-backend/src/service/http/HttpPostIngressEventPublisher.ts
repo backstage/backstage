@@ -90,7 +90,7 @@ export class HttpPostIngressEventPublisher {
     [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
   }): express.Router {
     const router = Router();
-    router.use(express.raw({ type: '*/*' }));
+    router.use(express.raw({ type: '*/*', limit: '5mb' }));
 
     Object.keys(ingresses).forEach(topic =>
       this.addRouteForTopic(router, topic, ingresses[topic].validator),

@@ -22,7 +22,7 @@ import {
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
 import * as inputProps from './inputProperties';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 
@@ -115,18 +115,20 @@ export function createGithubBranchProtectionAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
 
       const repository = await client.rest.repos.get({
         owner: owner,

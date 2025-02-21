@@ -1,5 +1,64 @@
 # @backstage/plugin-home
 
+## 0.8.5
+
+### Patch Changes
+
+- aff6b47: feat: add cancel button for WidgetSettingsOverlay
+- 8e86f96: Enable collision prevention by default in custom home page.
+
+  This change ensures that items in the home page will not collide with each other
+  making the user experience better.
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/core-app-api@1.15.5
+  - @backstage/plugin-home-react@0.1.23
+  - @backstage/theme@0.6.4
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+
+## 0.8.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-home-react@0.1.23-next.1
+
+## 0.8.5-next.2
+
+### Patch Changes
+
+- aff6b47: feat: add cancel button for WidgetSettingsOverlay
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/plugin-home-react@0.1.23-next.1
+
 ## 0.8.5-next.1
 
 ### Patch Changes

@@ -158,6 +158,7 @@ Gitiles
 gitlab
 GitLab
 globals
+globbing
 Gource
 Grafana
 graphql
@@ -330,6 +331,7 @@ preconfigured
 prepack
 Preprarer
 productional
+projectSlug
 Protobuf
 proxied
 proxying
@@ -427,6 +429,7 @@ subheaders
 subkey
 subpath
 subroutes
+substring
 subtree
 superfences
 Superfences
@@ -516,3 +519,4 @@ zoomable
 zsh
 scrollable
 severities
+intellij

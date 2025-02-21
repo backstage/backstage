@@ -1,5 +1,91 @@
 # @backstage/plugin-scaffolder
 
+## 1.28.0
+
+### Minor Changes
+
+- 17088d2: Updating the `TaskLogStream` to take up all space in a running task, and also show the last line of the log by default
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+
+### Patch Changes
+
+- 82300ea: Added support for experimental form decorators when dry-running templates in the template editor.
+- eb3d91a: Use the custom error page if provided for displaying errors instead of the default error page
+- 3107f1f: Fixed a bug in the BitbucketRepoBranchPicker component that crashed the scaffolder
+- fe44946: Fixed bug of passing wrong value to `onChange` handler when using `GitLab` autocomplete
+- 3edf7e7: Add schema output return type to the `makeFieldSchema` function return
+- 1e935f0: Added conditional rendering of `oneOf` output schemas on the Installed Actions page for scaffolder actions
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 65d7020: Use template title for ongoing task page header
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.14.5
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.28.0-next.3
+
+### Minor Changes
+
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+
+### Patch Changes
+
+- 1e935f0: Added conditional rendering of `oneOf` output schemas on the Installed Actions page for scaffolder actions
+- 65d7020: Use template title for ongoing task page header
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/plugin-scaffolder-react@1.14.5-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.28.0-next.2
+
+### Patch Changes
+
+- eb3d91a: Use the custom error page if provided for displaying errors instead of the default error page
+- fe44946: Fixed bug of passing wrong value to `onChange` handler when using `GitLab` autocomplete
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.14.5-next.2
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 1.28.0-next.1
 
 ### Minor Changes

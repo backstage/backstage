@@ -469,11 +469,22 @@ export const createPublishGithubPullRequestAction: (
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
     forceEmptyGitAuthor?: boolean | undefined;
+    createWhenEmpty?: boolean | undefined;
   },
   JsonObject
 >;
 
 // @public
+export function getOctokitOptions(options: {
+  integrations: ScmIntegrationRegistry;
+  credentialsProvider?: GithubCredentialsProvider;
+  token?: string;
+  host: string;
+  owner?: string;
+  repo?: string;
+}): Promise<OctokitOptions>;
+
+// @public @deprecated
 export function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;

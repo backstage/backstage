@@ -180,7 +180,11 @@ describe('TechDocsStorageClient', () => {
 
       mockFetchEventSource.mockImplementation(async (_url, options) => {
         const { onerror } = options;
-        onerror?.(new NotFoundError('Some not found warning'));
+        try {
+          onerror?.(new NotFoundError('Some not found warning'));
+        } catch (e) {
+          // do nothing
+        }
       });
 
       // we await later after we emitted the error
@@ -202,7 +206,11 @@ describe('TechDocsStorageClient', () => {
 
       mockFetchEventSource.mockImplementation(async (_url, options) => {
         const { onerror } = options;
-        onerror?.(new Error('Some other error'));
+        try {
+          onerror?.(new Error('Some other error'));
+        } catch (e) {
+          // do nothing
+        }
       });
 
       await expect(promise).rejects.toThrow(Error);

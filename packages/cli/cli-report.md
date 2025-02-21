@@ -179,6 +179,7 @@ Usage: backstage-cli new [options]
 Options:
   --select <name>
   --option <name>=<value>
+  --skip-install
   --scope <scope>
   --npm-registry <URL>
   --baseVersion <version>

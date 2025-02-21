@@ -20,6 +20,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { ReaderFactory } from './types';
@@ -31,6 +32,7 @@ import {
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import packageinfo from '../../../../package.json';
+import { assertError } from '@backstage/errors';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -117,8 +119,38 @@ export class GoogleGcsUrlReader implements UrlReaderService {
     throw new Error('GcsUrlReader does not implement readTree');
   }
 
-  async search(url: string): Promise<UrlReaderServiceSearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
     const { bucket, key: pattern } = parseURL(url);
+
+    // If it's a direct URL we use readUrl instead
+    if (!pattern?.match(/[*?]/)) {
+      try {
+        const data = await this.readUrl(url, options);
+
+        return {
+          files: [
+            {
+              url: url,
+              content: data.buffer,
+              lastModifiedAt: data.lastModifiedAt,
+            },
+          ],
+          etag: data.etag ?? '',
+        };
+      } catch (error) {
+        assertError(error);
+        if (error.name === 'NotFoundError') {
+          return {
+            files: [],
+            etag: '',
+          };
+        }
+        throw error;
+      }
+    }
 
     if (!pattern.endsWith('*') || pattern.indexOf('*') !== pattern.length - 1) {
       throw new Error('GcsUrlReader only supports prefix-based searches');

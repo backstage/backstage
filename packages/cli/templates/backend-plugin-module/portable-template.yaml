@@ -1,0 +1,5 @@
+name: backend-plugin-module
+role: backend-plugin-module
+description: A new backend module that extends an existing backend plugin
+values:
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'

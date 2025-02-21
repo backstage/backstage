@@ -208,6 +208,7 @@ export type EntityAutocompletePickerProps<
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
+  hidden?: boolean;
 };
 
 // @public
@@ -580,6 +581,8 @@ export const EntityTagPicker: (
 // @public (undocumented)
 export type EntityTagPickerProps = {
   showCounts?: boolean;
+  initialFilter?: string[];
+  hidden?: boolean;
 };
 
 // @public
@@ -685,7 +688,9 @@ export function humanizeEntityRef(
 export function InspectEntityDialog(props: {
   open: boolean;
   entity: Entity;
+  initialTab?: 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
   onClose: () => void;
+  onSelect?: (tab: string) => void;
 }): React_2.JSX.Element | null;
 
 // @public
@@ -816,12 +821,14 @@ export type UserListFilterKind = 'owned' | 'starred' | 'all';
 // @public (undocumented)
 export const UserListPicker: (
   props: UserListPickerProps,
-) => React_2.JSX.Element;
+) => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
+  hidden?: boolean;
+  alwaysKeepFilters?: boolean;
 };
 
 // @public (undocumented)

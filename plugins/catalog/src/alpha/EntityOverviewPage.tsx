@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
@@ -36,8 +35,6 @@ import {
 interface EntityOverviewPageProps {
   cards: Array<{
     element: React.JSX.Element;
-    filterFunction?: (entity: Entity) => boolean;
-    filterExpression?: string;
   }>;
 }
 

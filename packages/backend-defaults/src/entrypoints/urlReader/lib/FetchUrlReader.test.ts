@@ -266,4 +266,34 @@ describe('FetchUrlReader', () => {
       ).rejects.toThrow(Error);
     });
   });
+
+  describe('search', () => {
+    it('should return a file', async () => {
+      const data = await fetchUrlReader.search(
+        `https://backstage.io/some-resource`,
+        { etag: 'etag' },
+      );
+      expect(data.etag).toBe('foo');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(`https://backstage.io/some-resource`);
+      expect((await data.files[0].content()).toString()).toEqual('content foo');
+    });
+
+    it('should return an empty list of file if not found', async () => {
+      const data = await fetchUrlReader.search(
+        `https://backstage.io/not-exists`,
+        { etag: 'etag' },
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(0);
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        fetchUrlReader.search(`https://backstage.io/some-resource*`, {
+          etag: 'etag',
+        }),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
+  });
 });
