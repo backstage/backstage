@@ -33,6 +33,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 
 describe('MyGroupsSidebarItem Test', () => {
   describe('For guests or users with no groups', () => {
@@ -131,8 +132,9 @@ describe('MyGroupsSidebarItem Test', () => {
       ownershipEntityRefs: ['user:default/nigel.manning'],
     });
     const catalogApi = catalogApiMock.mock({
-      getEntities: async () => ({
-        items: [
+      getEntities: async (request: GetEntitiesRequest = {}) => {
+        const { fields } = request;
+        const fullItems = [
           {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Group',
@@ -173,8 +175,28 @@ describe('MyGroupsSidebarItem Test', () => {
               },
             },
           },
-        ] as Entity[],
-      }),
+        ] as Entity[];
+
+        // Filter requested fields
+        const filteredItems = fullItems.map(item => {
+          const filtered: Record<string, any> = { apiVersion: item.apiVersion };
+          (fields || []).forEach((field: string) => {
+            if (field.includes('.')) {
+              // Handle nested fields like 'spec.profile'
+              const [parent, child] = field.split('.');
+              if (!filtered[parent]) filtered[parent] = {};
+              filtered[parent][child] = (item as Record<string, any>)[parent]?.[
+                child
+              ];
+            } else {
+              filtered[field] = item[field as keyof Entity];
+            }
+          });
+          return filtered as Entity;
+        });
+
+        return { items: filteredItems };
+      },
     });
 
     await renderInTestApp(
