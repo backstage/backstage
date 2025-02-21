@@ -42,7 +42,7 @@ export const catalogOverviewEntityContent =
         coreExtensionData.reactElement,
         EntityContentBlueprint.dataRefs.filterFunction.optional(),
         EntityContentBlueprint.dataRefs.filterExpression.optional(),
-        EntityCardBlueprint.dataRefs.area.optional(),
+        EntityCardBlueprint.dataRefs.type.optional(),
       ]),
     },
     factory: (originalFactory, { node, inputs }) => {
@@ -86,7 +86,7 @@ export const catalogOverviewEntityContent =
 
           const cards = inputs.cards.map(card => ({
             element: card.get(coreExtensionData.reactElement),
-            area: card.get(EntityCardBlueprint.dataRefs.area),
+            type: card.get(EntityCardBlueprint.dataRefs.type),
             filter: buildFilterFn(
               card.get(EntityContentBlueprint.dataRefs.filterFunction),
               card.get(EntityContentBlueprint.dataRefs.filterExpression),

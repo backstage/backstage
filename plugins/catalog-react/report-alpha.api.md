@@ -100,9 +100,6 @@ export function convertLegacyEntityContentExtension(
 ): ExtensionDefinition;
 
 // @alpha
-export const defaultEntityCardAreas: readonly ['peek', 'info', 'full'];
-
-// @alpha
 export const defaultEntityContentGroups: {
   documentation: string;
   development: string;
@@ -117,7 +114,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
-    defaultArea?: 'full' | 'info' | 'peek' | undefined;
+    type?: EntityCardType | undefined;
   };
   output:
     | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -136,8 +133,8 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
-        'full' | 'info' | 'peek',
-        'catalog.entity-card-area',
+        EntityCardType,
+        'catalog.entity-card-type',
         {
           optional: true;
         }
@@ -145,11 +142,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: string | undefined;
-    area: 'full' | 'info' | 'peek' | undefined;
+    type: 'full' | 'info' | 'peek' | undefined;
   };
   configInput: {
     filter?: string | undefined;
-    area?: 'full' | 'info' | 'peek' | undefined;
+    type?: 'full' | 'info' | 'peek' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -162,13 +159,16 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
-    area: ConfigurableExtensionDataRef<
-      'full' | 'info' | 'peek',
-      'catalog.entity-card-area',
+    type: ConfigurableExtensionDataRef<
+      EntityCardType,
+      'catalog.entity-card-type',
       {}
     >;
   };
 }>;
+
+// @alpha (undocumented)
+export type EntityCardType = 'peek' | 'info' | 'full';
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
@@ -289,12 +289,12 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
       >;
   inputs: {};
   config: {
-    area: string | undefined;
+    type: string | undefined;
     filter: string | undefined;
   };
   configInput: {
     filter?: string | undefined;
-    area?: string | undefined;
+    type?: string | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -319,7 +319,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
 export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
-    area?: (typeof defaultEntityCardAreas)[number];
+    type?: EntityCardType;
     element: React_2.JSX.Element;
   }>;
 }

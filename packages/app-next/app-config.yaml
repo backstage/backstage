@@ -28,12 +28,12 @@ app:
     # Entity page cards
     - entity-card:catalog/about:
         config:
-          area: info
+          type: info
     - entity-card:catalog/labels
     - entity-card:catalog/links:
         config:
           filter: kind:component has:links
-          area: info
+          type: info
     # - entity-card:linguist/languages
     - entity-card:catalog-graph/relations:
         config:

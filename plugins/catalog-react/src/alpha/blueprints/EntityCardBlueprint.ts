@@ -22,8 +22,9 @@ import {
 import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
-  entityCardAreaDataRef,
-  defaultEntityCardAreas,
+  entityCardTypeDataRef,
+  entityCardTypes,
+  EntityCardType,
 } from './extensionData';
 
 /**
@@ -37,30 +38,30 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
-    entityCardAreaDataRef.optional(),
+    entityCardTypeDataRef.optional(),
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
-    area: entityCardAreaDataRef,
+    type: entityCardTypeDataRef,
   },
   config: {
     schema: {
       filter: z => z.string().optional(),
-      area: z => z.enum(defaultEntityCardAreas).optional(),
+      type: z => z.enum(entityCardTypes).optional(),
     },
   },
   *factory(
     {
       loader,
       filter,
-      defaultArea,
+      type,
     }: {
       loader: () => Promise<JSX.Element>;
       filter?:
         | typeof entityFilterFunctionDataRef.T
         | typeof entityFilterExpressionDataRef.T;
-      defaultArea?: (typeof defaultEntityCardAreas)[number];
+      type?: EntityCardType;
     },
     { node, config },
   ) {
@@ -74,13 +75,13 @@ export const EntityCardBlueprint = createExtensionBlueprint({
       yield entityFilterFunctionDataRef(filter);
     }
 
-    const area = config.area ?? defaultArea;
-    if (area) {
-      yield entityCardAreaDataRef(area);
+    const finalType = config.type ?? type;
+    if (finalType) {
+      yield entityCardTypeDataRef(finalType);
     } else {
       // eslint-disable-next-line no-console
       console.warn(
-        `DEPRECATION WARNING: Not providing defaultArea for entity cards is deprecated. Missing from '${node.spec.id}'`,
+        `DEPRECATION WARNING: Not providing type for entity cards is deprecated. Missing from '${node.spec.id}'`,
       );
     }
   },
