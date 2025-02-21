@@ -272,16 +272,14 @@ export class MicrosoftGraphClient {
    * @public
    * @param query - OData Query {@link ODataQuery}
    * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   * @param path - Resource endpoint in Microsoft Graph
    */
   async *getUsers(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path: string = 'users',
   ): AsyncIterable<MicrosoftGraph.User> {
-    yield* this.requestCollection<MicrosoftGraph.User>(
-      `users`,
-      query,
-      queryMode,
-    );
+    yield* this.requestCollection<MicrosoftGraph.User>(path, query, queryMode);
   }
 
   /**
@@ -314,16 +312,14 @@ export class MicrosoftGraphClient {
    * @public
    * @param query - OData Query {@link ODataQuery}
    * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   * @param path - Resource endpoint in Microsoft Graph
    */
   async *getGroups(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path: string = 'groups',
   ): AsyncIterable<MicrosoftGraph.Group> {
-    yield* this.requestCollection<MicrosoftGraph.Group>(
-      `groups`,
-      query,
-      queryMode,
-    );
+    yield* this.requestCollection<MicrosoftGraph.Group>(path, query, queryMode);
   }
 
   /**
