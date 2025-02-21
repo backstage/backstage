@@ -18,7 +18,10 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorPage } from './TemplateEditorPage';
 import { rootRouteRef } from '../../../routes';
 import { formDecoratorsApiRef } from '../../api';
@@ -39,7 +42,9 @@ describe('TemplateEditorPage', () => {
           [formDecoratorsApiRef, formDecoratorsApiMock],
         ]}
       >
-        <TemplateEditorPage />
+        <SecretsContextProvider>
+          <TemplateEditorPage />
+        </SecretsContextProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -61,7 +66,9 @@ describe('TemplateEditorPage', () => {
           [formDecoratorsApiRef, formDecoratorsApiMock],
         ]}
       >
-        <TemplateEditorPage />
+        <SecretsContextProvider>
+          <TemplateEditorPage />
+        </SecretsContextProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
