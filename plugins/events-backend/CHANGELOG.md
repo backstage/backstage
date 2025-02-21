@@ -1,5 +1,11 @@
 # @backstage/plugin-events-backend
 
+## 0.4.3
+
+### Patch Changes
+
+- 17a6512: Allow webhook content to be 5mb instead the default 100kb
+
 ## 0.4.2
 
 ### Patch Changes
