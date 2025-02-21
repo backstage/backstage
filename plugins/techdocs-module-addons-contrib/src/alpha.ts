@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 import { TechDocsAddonLocations } from '@backstage/plugin-techdocs-react';
-import { TechDocsAddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
+import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TextSizeAddon } from './TextSize';
 import { ReportIssueAddon } from './ReportIssue';
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { LightBoxAddon } from './LightBox';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 
 /** @alpha */
-export const expandableNavigationAddonExtension = TechDocsAddonBlueprint.make({
-  name: 'ExpandableNavigation',
+const techDocsExpandableNavigationAddon = AddonBlueprint.make({
+  name: 'expandable-navigation',
   params: {
     name: 'ExpandableNavigation',
     location: TechDocsAddonLocations.PrimarySidebar,
@@ -31,8 +32,14 @@ export const expandableNavigationAddonExtension = TechDocsAddonBlueprint.make({
 });
 
 /** @alpha */
-export const reportIssueAddonExtension = TechDocsAddonBlueprint.make({
-  name: 'ReportIssue',
+export const techDocsExpandableNavigationAddonModule = createFrontendModule({
+  pluginId: 'techdocs',
+  extensions: [techDocsExpandableNavigationAddon],
+});
+
+/** @alpha */
+const techDocsReportIssueAddon = AddonBlueprint.make({
+  name: 'report-issue',
   params: {
     name: 'ReportIssue',
     location: TechDocsAddonLocations.Content,
@@ -41,8 +48,14 @@ export const reportIssueAddonExtension = TechDocsAddonBlueprint.make({
 });
 
 /** @alpha */
-export const textSizeAddonExtension = TechDocsAddonBlueprint.make({
-  name: 'TextSize',
+export const techDocsReportIssueAddonModule = createFrontendModule({
+  pluginId: 'techdocs',
+  extensions: [techDocsReportIssueAddon],
+});
+
+/** @alpha */
+const techDocsTextSizeAddon = AddonBlueprint.make({
+  name: 'text-size',
   params: {
     name: 'TextSize',
     location: TechDocsAddonLocations.Settings,
@@ -51,11 +64,23 @@ export const textSizeAddonExtension = TechDocsAddonBlueprint.make({
 });
 
 /** @alpha */
-export const lightBoxAddonExtension = TechDocsAddonBlueprint.make({
-  name: 'LightBox',
+export const techDocsTextSizeAddonModule = createFrontendModule({
+  pluginId: 'techdocs',
+  extensions: [techDocsTextSizeAddon],
+});
+
+/** @alpha */
+const techDocsLightBoxAddon = AddonBlueprint.make({
+  name: 'light-box',
   params: {
     name: 'LightBox',
     location: TechDocsAddonLocations.Content,
     component: LightBoxAddon,
   },
+});
+
+/** @alpha */
+export const techDocsLightBoxAddonModule = createFrontendModule({
+  pluginId: 'techdocs',
+  extensions: [techDocsLightBoxAddon],
 });

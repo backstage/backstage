@@ -35,7 +35,7 @@ export const techDocsAddonDataRef =
  * Creates an extension to add addons to the TechDocs standalone reader and entity pages.
  * @alpha
  */
-export const TechDocsAddonBlueprint = createExtensionBlueprint({
+export const AddonBlueprint = createExtensionBlueprint({
   kind: 'addon',
   attachTo: [
     { id: 'page:techdocs/reader', input: 'addons' },

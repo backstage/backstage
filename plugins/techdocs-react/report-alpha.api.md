@@ -7,14 +7,8 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
-export const attachTechDocsAddonComponentData: <P>(
-  techDocsAddon: ComponentType<P>,
-  data: TechDocsAddonOptions,
-) => void;
-
 // @alpha
-export const TechDocsAddonBlueprint: ExtensionBlueprint<{
+export const AddonBlueprint: ExtensionBlueprint<{
   kind: 'addon';
   name: undefined;
   params: TechDocsAddonOptions;
@@ -34,6 +28,12 @@ export const TechDocsAddonBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @alpha (undocumented)
+export const attachTechDocsAddonComponentData: <P>(
+  techDocsAddon: ComponentType<P>,
+  data: TechDocsAddonOptions,
+) => void;
 
 // @alpha (undocumented)
 export const techDocsAddonDataRef: ConfigurableExtensionDataRef<

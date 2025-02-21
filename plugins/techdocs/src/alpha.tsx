@@ -38,7 +38,7 @@ import {
 } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
-import { TechDocsAddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
+import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsClient, TechDocsStorageClient } from './client';
 import {
   rootCatalogDocsRouteRef,
@@ -145,11 +145,11 @@ const techDocsPage = PageBlueprint.make({
 const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   name: 'reader',
   inputs: {
-    addons: createExtensionInput([TechDocsAddonBlueprint.dataRefs.addon]),
+    addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
   },
   factory(originalFactory, { inputs }) {
     const addons = inputs.addons.map(output => {
-      const options = output.get(TechDocsAddonBlueprint.dataRefs.addon);
+      const options = output.get(AddonBlueprint.dataRefs.addon);
       const Addon = options.component;
       attachTechDocsAddonComponentData(Addon, options);
       return <Addon key={options.name} />;
@@ -178,7 +178,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
  */
 const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   inputs: {
-    addons: createExtensionInput([TechDocsAddonBlueprint.dataRefs.addon]),
+    addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
     emptyState: createExtensionInput(
       [coreExtensionData.reactElement.optional()],
       {
@@ -196,7 +196,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
         loader: () =>
           import('./Router').then(({ EmbeddedDocsRouter }) => {
             const addons = context.inputs.addons.map(output => {
-              const options = output.get(TechDocsAddonBlueprint.dataRefs.addon);
+              const options = output.get(AddonBlueprint.dataRefs.addon);
               const Addon = options.component;
               attachTechDocsAddonComponentData(Addon, options);
               return <Addon key={options.name} />;
