@@ -125,6 +125,17 @@ microsoftGraphOrg:
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
+By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object.
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    group:
+      filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+      search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+      path: /groups/{someRootGroup}/transitiveMembers/microsoft.graph.group # This will get all the groups that are members of the group {someRootGroup} on all levels
+```
+
 ### Users
 
 There are two modes for importing users - You can import all user objects matching a `filter`.
@@ -146,6 +157,15 @@ microsoftGraphOrg:
     userGroupMember:
       filter: "displayName eq 'Backstage Users'"
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+```
+
+By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object.
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    user:
+      path: /groups/{someRootGroup}/transitiveMembers/microsoft.graph.user # This will get all the users that are members of the group {someRootGroup} on all levels
 ```
 
 ### User photos

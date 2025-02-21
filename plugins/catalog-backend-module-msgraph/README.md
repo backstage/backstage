@@ -58,6 +58,8 @@ catalog:
           loadPhotos: true
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
           select: ['id', 'displayName', 'description']
+          # Optional /users by default but allow to query users from different msgraph endpoints
+          path: /users
         # Optional configuration block
         userGroupMember:
           # Optional filter for users, use group membership to get users.
@@ -69,6 +71,8 @@ catalog:
           # (Search for groups and fetch their members.)
           # This and userFilter are mutually exclusive, only one can be specified
           search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+          # Optional /groups by default but allow to query groups from different msgraph endpoints
+          path: /groups
         # Optional configuration block
         group:
           # Optional parameter to include the expanded resource or collection referenced
@@ -87,6 +91,8 @@ catalog:
           # in order to add extra information to your groups that can be used on your custom groupTransformers
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
           select: ['id', 'displayName', 'description']
+          # Optional /groups by default but allow to query groups from different msgraph endpoints
+          path: /groups
         schedule: # optional; same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { hours: 1 }

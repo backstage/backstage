@@ -92,6 +92,7 @@ export class MicrosoftGraphClient {
   getGroups(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path?: string,
   ): AsyncIterable<MicrosoftGraph.Group>;
   getGroupUserMembers(
     groupId: string,
@@ -108,6 +109,7 @@ export class MicrosoftGraphClient {
   getUsers(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path?: string,
   ): AsyncIterable<MicrosoftGraph.User>;
   requestApi(
     path: string,
@@ -239,12 +241,15 @@ export type MicrosoftGraphProviderConfig = {
   userFilter?: string;
   userSelect?: string[];
   userExpand?: string;
+  userPath?: string;
   userGroupMemberFilter?: string;
   userGroupMemberSearch?: string;
+  userGroupMemberPath?: string;
   groupExpand?: string;
   groupFilter?: string;
   groupSearch?: string;
   groupSelect?: string[];
+  groupPath?: string;
   groupIncludeSubGroups?: boolean;
   queryMode?: 'basic' | 'advanced';
   loadUserPhotos?: boolean;
@@ -287,13 +292,16 @@ export function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    userPath?: string;
     loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    userGroupMemberPath?: string;
     groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupPath?: string;
     groupIncludeSubGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
