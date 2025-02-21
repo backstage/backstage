@@ -19,13 +19,24 @@ import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-util
 import React from 'react';
 
 import { LightBox } from '../plugin';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 describe('LightBox', () => {
+  const entityPresentationApiMock = {
+    forEntity: jest.fn(),
+  };
+  entityPresentationApiMock.forEntity.mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  });
+
   it('renders without exploding', async () => {
     const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <LightBox />,
     ])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     expect(getByText('TEST_CONTENT')).toBeInTheDocument();
@@ -42,6 +53,7 @@ describe('LightBox', () => {
           alt="dog"
         />,
       )
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     expect(getByTestId('fixture').onclick).not.toBeUndefined();
