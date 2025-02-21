@@ -43,7 +43,6 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-react": "workspace:^",
-    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -53,6 +52,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-techdocs-addons-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
