@@ -21,6 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import {
   authServiceFactory,
+  externalTokenHandlerDecoratorServiceRef,
   pluginTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
@@ -30,6 +31,7 @@ import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { ExternalTokenHandler } from './external/ExternalTokenHandler';
 
 const server = setupServer();
 
@@ -450,7 +452,36 @@ describe('authServiceFactory', () => {
         dependencies: [...mockDeps, customPluginTokenHandler],
       });
       const searchAuth = await tester.getSubject('search');
-      searchAuth.authenticate('unlimited-static-token');
+      await searchAuth.authenticate('unlimited-static-token');
+      expect(customLogic).toHaveBeenCalledWith('unlimited-static-token');
+    });
+  });
+  describe('decorate ExternalTokenHandlerr', () => {
+    it('should allow custom logic to be injected into the plugin token handler', async () => {
+      const customLogic = jest.fn();
+      const customPluginTokenHandler = createServiceFactory({
+        service: externalTokenHandlerDecoratorServiceRef,
+        deps: {},
+        async factory() {
+          return (defaultImplementation: ExternalTokenHandler) => {
+            return new (class CustomHandler implements ExternalTokenHandler {
+              verifyToken(
+                token: string,
+              ): Promise<
+                { subject: string; limitedUserToken?: string } | undefined
+              > {
+                customLogic(token);
+                return defaultImplementation.verifyToken(token);
+              }
+            })();
+          };
+        },
+      });
+      const tester = ServiceFactoryTester.from(authServiceFactory, {
+        dependencies: [...mockDeps, customPluginTokenHandler],
+      });
+      const searchAuth = await tester.getSubject('search');
+      await searchAuth.authenticate('unlimited-static-token');
       expect(customLogic).toHaveBeenCalledWith('unlimited-static-token');
     });
   });

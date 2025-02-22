@@ -20,7 +20,10 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
-import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import {
+  DefaultExternalTokenHandler,
+  ExternalTokenHandler,
+} from './external/ExternalTokenHandler';
 import {
   DefaultPluginTokenHandler,
   PluginTokenHandler,
@@ -36,6 +39,23 @@ export const pluginTokenHandlerDecoratorServiceRef = createServiceRef<
   (defaultImplementation: PluginTokenHandler) => PluginTokenHandler
 >({
   id: 'core.auth.pluginTokenHandlerDecorator',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {},
+      factory: async () => {
+        return impl => impl;
+      },
+    }),
+});
+/**
+ * @public
+ * This service is used to decorate the default plugin token handler with custom logic.
+ */
+export const externalTokenHandlerDecoratorServiceRef = createServiceRef<
+  (defaultImplementation: ExternalTokenHandler) => ExternalTokenHandler
+>({
+  id: 'core.auth.externalTokenHandlerDecorator',
   defaultFactory: async service =>
     createServiceFactory({
       service,
@@ -64,6 +84,7 @@ export const authServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     pluginTokenHandlerDecorator: pluginTokenHandlerDecoratorServiceRef,
+    externalTokenHandlerDecorator: externalTokenHandlerDecoratorServiceRef,
   },
   async factory({
     config,
@@ -72,6 +93,7 @@ export const authServiceFactory = createServiceFactory({
     logger,
     database,
     pluginTokenHandlerDecorator,
+    externalTokenHandlerDecorator,
   }) {
     const disableDefaultAuthPolicy =
       config.getOptionalBoolean(
@@ -102,11 +124,13 @@ export const authServiceFactory = createServiceFactory({
       }),
     );
 
-    const externalTokens = ExternalTokenHandler.create({
-      ownPluginId: plugin.getId(),
-      config,
-      logger,
-    });
+    const externalTokens = externalTokenHandlerDecorator(
+      DefaultExternalTokenHandler.create({
+        ownPluginId: plugin.getId(),
+        config,
+        logger,
+      }),
+    );
 
     return new DefaultAuthService(
       userTokens,

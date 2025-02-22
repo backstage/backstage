@@ -30,12 +30,26 @@ const OLD_CONFIG_KEY = 'backend.auth.keys';
 let loggedDeprecationWarning = false;
 
 /**
+ * @public
+ * Issues and verifies {@link https://backstage.io/docs/auth/service-to-service-auth/#static-tokens | external service tokens}.
+ */
+export interface ExternalTokenHandler {
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        accessRestrictions?: BackstagePrincipalAccessRestrictions;
+      }
+    | undefined
+  >;
+}
+
+/**
  * Handles all types of external caller token types (i.e. not Backstage user
  * tokens, nor Backstage backend plugin tokens).
  *
  * @internal
  */
-export class ExternalTokenHandler {
+export class DefaultExternalTokenHandler implements ExternalTokenHandler {
   static create(options: {
     ownPluginId: string;
     config: RootConfigService;
@@ -80,7 +94,10 @@ export class ExternalTokenHandler {
       legacyHandler.addOld(handlerConfig);
     }
 
-    return new ExternalTokenHandler(ownPluginId, Object.values(handlers));
+    return new DefaultExternalTokenHandler(
+      ownPluginId,
+      Object.values(handlers),
+    );
   }
 
   constructor(
