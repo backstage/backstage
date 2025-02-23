@@ -40,6 +40,10 @@ export function evaluateEntityPredicate(
   filter: EntityPredicate,
   value: JsonValue,
 ): boolean {
+  if (typeof filter !== 'object' || filter === null || Array.isArray(filter)) {
+    return valuesAreEqual(value, filter);
+  }
+
   if ('$and' in filter) {
     return filter.$and.every(f => evaluateEntityPredicate(f, value));
   }
@@ -80,17 +84,11 @@ function evaluatePredicateValue(
     return valuesAreEqual(value, filter);
   }
 
-  if ('$elemMatch' in filter) {
+  if ('$contains' in filter) {
     if (!Array.isArray(value)) {
       return false;
     }
-    return value.some(v => evaluateEntityPredicate(filter.$elemMatch, v));
-  }
-  if ('$all' in filter) {
-    if (!Array.isArray(value)) {
-      return false;
-    }
-    return filter.$all.every(v => value.includes(v));
+    return value.some(v => evaluateEntityPredicate(filter.$contains, v));
   }
   if ('$in' in filter) {
     return filter.$in.includes(value as EntityPredicatePrimitive);

@@ -17,6 +17,7 @@
 /** @alpha */
 export type EntityPredicate =
   | EntityPredicateExpression
+  | EntityPredicatePrimitive
   | { $and: EntityPredicate[] }
   | { $or: EntityPredicate[] }
   | { $not: EntityPredicate };
@@ -35,8 +36,7 @@ export type EntityPredicateValue =
   | { $eq: EntityPredicatePrimitive }
   | { $ne: EntityPredicatePrimitive }
   | { $in: EntityPredicatePrimitive[] }
-  | { $all: EntityPredicatePrimitive[] }
-  | { $elemMatch: EntityPredicateExpression };
+  | { $contains: EntityPredicateExpression };
 
 /** @alpha */
 export type EntityPredicatePrimitive = string | number | boolean;

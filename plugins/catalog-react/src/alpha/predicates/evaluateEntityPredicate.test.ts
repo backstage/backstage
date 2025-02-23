@@ -128,17 +128,25 @@ describe('evaluateEntityPredicate', () => {
 
   it.each([
     ['s', { kind: 'component', 'spec.type': 'service' }],
-    ['s', { 'metadata.tags': { $all: ['java'] } }],
-    ['s', { 'metadata.tags': { $all: ['java', 'spring'] } }],
+    ['s', { 'metadata.tags': { $contains: 'java' } }],
+    [
+      's',
+      {
+        $and: [
+          { 'metadata.tags': { $contains: 'java' } },
+          { 'metadata.tags': { $contains: 'spring' } },
+        ],
+      },
+    ],
     ['s', { 'metadata.tags': ['java', 'spring'] }],
     ['', { 1: 'foo' }],
     ['s,w,g,a', {}],
     ['', { kind: { $unknown: 'foo' } }],
     ['', { '': 'component' }],
     ['s,w,g,a', Object.create({ kind: 'component' })],
-    ['', { 'metadata.tags': { $all: ['go'] } }],
+    ['', { 'metadata.tags': { $contains: 'go' } }],
     ['', { 'metadata.tags.0': 'java' }],
-    ['w,g,a', { $not: { 'metadata.tags': { $all: ['java'] } } }],
+    ['w,g,a', { $not: { 'metadata.tags': { $contains: 'java' } } }],
     [
       's,g',
       {
@@ -160,14 +168,14 @@ describe('evaluateEntityPredicate', () => {
       's,w,a',
       {
         relations: {
-          $elemMatch: { type: 'ownedBy', targetRef: 'group:default/g' },
+          $contains: { type: 'ownedBy', targetRef: 'group:default/g' },
         },
       },
     ],
     [
       '',
       {
-        metadata: { $elemMatch: { name: 'a' } },
+        metadata: { $contains: { name: 'a' } },
       },
     ],
     ['', { $unknown: 'ignored' } as unknown as EntityPredicate],
@@ -213,7 +221,7 @@ describe('evaluateEntityPredicate', () => {
         'metadata.annotations.github.com/repo': { $exists: true },
       },
     ],
-  ])('filter entry %s', (expected, filter) => {
+  ])('filter entry %#', (expected, filter) => {
     const filtered = entities.filter(entity =>
       evaluateEntityPredicate(filter, entity),
     );

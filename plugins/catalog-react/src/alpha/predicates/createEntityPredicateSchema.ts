@@ -21,25 +21,32 @@ import type { z as zImpl, ZodType } from 'zod';
 export function createEntityPredicateSchema(z: typeof zImpl) {
   const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);
 
-  const filterValueSchema = z.union([
+  const comparableValueSchema = z.union([
     primitiveSchema,
     z.array(primitiveSchema),
+  ]);
+
+  // eslint-disable-next-line prefer-const
+  let valuePredicateSchema: ZodType<EntityPredicateValue>;
+
+  const predicateSchema = z.lazy(() =>
+    z.union([
+      comparableValueSchema,
+      z.object({ $and: z.array(predicateSchema) }),
+      z.object({ $or: z.array(predicateSchema) }),
+      z.object({ $not: predicateSchema }),
+      z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
+    ]),
+  ) as ZodType<EntityPredicate>;
+
+  valuePredicateSchema = z.union([
+    comparableValueSchema,
     z.object({ $exists: z.boolean() }),
     z.object({ $eq: z.union([primitiveSchema, z.array(primitiveSchema)]) }),
     z.object({ $ne: z.union([primitiveSchema, z.array(primitiveSchema)]) }),
     z.object({ $in: z.array(primitiveSchema) }),
-    z.object({ $all: z.array(primitiveSchema) }),
-    z.object({ $elemMatch: z.lazy(() => z.record(filterValueSchema)) }),
+    z.object({ $contains: predicateSchema }),
   ]) as ZodType<EntityPredicateValue>;
 
-  const filterSchema = z.lazy(() =>
-    z.union([
-      z.object({ $and: z.array(filterSchema) }),
-      z.object({ $or: z.array(filterSchema) }),
-      z.object({ $not: filterSchema }),
-      z.record(z.string().regex(/^(?!\$).*$/), filterValueSchema),
-    ]),
-  ) as ZodType<EntityPredicate>;
-
-  return filterSchema;
+  return predicateSchema;
 }

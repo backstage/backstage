@@ -21,23 +21,32 @@ describe('createEntityPredicateSchema', () => {
   const schema = createEntityPredicateSchema(z);
 
   it.each([
+    'string',
+    '',
+    [],
+    1,
     { kind: 'component', 'spec.type': 'service' },
-    { 'metadata.tags': { $all: ['java'] } },
-    { 'metadata.tags': { $all: ['java', 'spring'] } },
+    { 'metadata.tags': { $in: ['java'] } },
+    {
+      $and: [
+        { 'metadata.tags': { $contains: 'java' } },
+        { 'metadata.tags': { $contains: 'spring' } },
+      ],
+    },
     { 'metadata.tags': ['java', 'spring'] },
-    { 'metadata.tags': { $all: ['go'] } },
+    { 'metadata.tags': { $in: ['go'] } },
     { 'metadata.tags.0': 'java' },
-    { $not: { 'metadata.tags': { $all: ['java'] } } },
+    { $not: { 'metadata.tags': { $in: ['java'] } } },
     {
       $or: [{ kind: 'component', 'spec.type': 'service' }, { kind: 'group' }],
     },
     {
       relations: {
-        $elemMatch: { type: 'ownedBy', targetRef: 'group:default/g' },
+        $contains: { type: 'ownedBy', targetRef: 'group:default/g' },
       },
     },
     {
-      metadata: { $elemMatch: { name: 'a' } },
+      metadata: { $contains: { name: 'a' } },
     },
     { kind: 'component', 'spec.type': { $in: ['service', 'website'] } },
     {
@@ -78,10 +87,6 @@ describe('createEntityPredicateSchema', () => {
     { kind: { $in: [{ x: 'foo' }] } },
     { kind: { $in: [{ x: 'foo' }] } },
     { 'spec.type': null },
-    'string',
-    '',
-    [],
-    1,
     { $and: [{ x: { $unknown: true } }] },
     { $or: [{ x: { $unknown: true } }] },
     { $not: { x: { $unknown: true } } },
