@@ -19,7 +19,6 @@ export type EntityPredicate =
   | EntityPredicateExpression
   | { $and: EntityPredicate[] }
   | { $or: EntityPredicate[] }
-  | { $nor: EntityPredicate[] }
   | { $not: EntityPredicate };
 
 /** @alpha */

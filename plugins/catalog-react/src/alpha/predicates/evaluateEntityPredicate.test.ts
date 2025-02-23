@@ -148,10 +148,12 @@ describe('evaluateEntityPredicate', () => {
     [
       'w,a',
       {
-        $nor: [
-          { kind: 'component', 'spec.type': 'service' },
-          { kind: 'group' },
-        ],
+        $not: {
+          $or: [
+            { kind: 'component', 'spec.type': 'service' },
+            { kind: 'group' },
+          ],
+        },
       },
     ],
     [

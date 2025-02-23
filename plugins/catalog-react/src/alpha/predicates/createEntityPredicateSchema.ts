@@ -37,7 +37,6 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
     z.union([
       z.object({ $and: z.array(filterSchema) }),
       z.object({ $or: z.array(filterSchema) }),
-      z.object({ $nor: z.array(filterSchema) }),
       z.object({ $not: filterSchema }),
       z.record(z.string().regex(/^(?!\$).*$/), filterValueSchema),
     ]),

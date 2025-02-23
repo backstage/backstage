@@ -46,9 +46,6 @@ export function evaluateEntityPredicate(
   if ('$or' in filter) {
     return filter.$or.some(f => evaluateEntityPredicate(f, value));
   }
-  if ('$nor' in filter) {
-    return !filter.$nor.some(f => evaluateEntityPredicate(f, value));
-  }
   if ('$not' in filter) {
     return !evaluateEntityPredicate(filter.$not, value);
   }

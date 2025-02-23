@@ -32,9 +32,6 @@ describe('createEntityPredicateSchema', () => {
       $or: [{ kind: 'component', 'spec.type': 'service' }, { kind: 'group' }],
     },
     {
-      $nor: [{ kind: 'component', 'spec.type': 'service' }, { kind: 'group' }],
-    },
-    {
       relations: {
         $elemMatch: { type: 'ownedBy', targetRef: 'group:default/g' },
       },
@@ -68,7 +65,6 @@ describe('createEntityPredicateSchema', () => {
     },
     { $and: [{ x: { $exists: true } }] },
     { $or: [{ x: { $exists: true } }] },
-    { $nor: [{ x: { $exists: true } }] },
     { $not: { x: { $exists: true } } },
     { $not: { $and: [{ x: { $exists: true } }] } },
   ])('should accept valid predicate %j', predicate => {
@@ -89,7 +85,6 @@ describe('createEntityPredicateSchema', () => {
     1,
     { $and: [{ x: { $unknown: true } }] },
     { $or: [{ x: { $unknown: true } }] },
-    { $nor: [{ x: { $unknown: true } }] },
     { $not: { x: { $unknown: true } } },
     { $not: { $and: [{ x: { $unknown: true } }] } },
     { $unknown: 'foo' },
