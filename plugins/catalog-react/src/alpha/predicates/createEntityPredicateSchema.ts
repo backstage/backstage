@@ -32,8 +32,8 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
   const predicateSchema = z.lazy(() =>
     z.union([
       comparableValueSchema,
-      z.object({ $and: z.array(predicateSchema) }),
-      z.object({ $or: z.array(predicateSchema) }),
+      z.object({ $all: z.array(predicateSchema) }),
+      z.object({ $any: z.array(predicateSchema) }),
       z.object({ $not: predicateSchema }),
       z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
     ]),

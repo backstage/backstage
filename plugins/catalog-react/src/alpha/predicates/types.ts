@@ -18,8 +18,8 @@
 export type EntityPredicate =
   | EntityPredicateExpression
   | EntityPredicatePrimitive
-  | { $and: EntityPredicate[] }
-  | { $or: EntityPredicate[] }
+  | { $all: EntityPredicate[] }
+  | { $any: EntityPredicate[] }
   | { $not: EntityPredicate };
 
 /** @alpha */

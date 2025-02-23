@@ -132,7 +132,7 @@ describe('evaluateEntityPredicate', () => {
     [
       's',
       {
-        $and: [
+        $all: [
           { 'metadata.tags': { $contains: 'java' } },
           { 'metadata.tags': { $contains: 'spring' } },
         ],
@@ -150,14 +150,17 @@ describe('evaluateEntityPredicate', () => {
     [
       's,g',
       {
-        $or: [{ kind: 'component', 'spec.type': 'service' }, { kind: 'group' }],
+        $any: [
+          { kind: 'component', 'spec.type': 'service' },
+          { kind: 'group' },
+        ],
       },
     ],
     [
       'w,a',
       {
         $not: {
-          $or: [
+          $any: [
             { kind: 'component', 'spec.type': 'service' },
             { kind: 'group' },
           ],
@@ -186,16 +189,16 @@ describe('evaluateEntityPredicate', () => {
     [
       's,w,a',
       {
-        $or: [
+        $any: [
           {
-            $and: [
+            $all: [
               {
                 kind: 'component',
                 'spec.type': { $in: ['service', 'website'] },
               },
             ],
           },
-          { $and: [{ kind: 'api', 'spec.type': 'grpc' }] },
+          { $all: [{ kind: 'api', 'spec.type': 'grpc' }] },
         ],
       },
     ],
@@ -203,7 +206,7 @@ describe('evaluateEntityPredicate', () => {
     [
       'w',
       {
-        $and: [
+        $all: [
           { kind: 'component' },
           { $not: { 'spec.type': { $in: ['service'] } } },
         ],

@@ -28,7 +28,7 @@ describe('createEntityPredicateSchema', () => {
     { kind: 'component', 'spec.type': 'service' },
     { 'metadata.tags': { $in: ['java'] } },
     {
-      $and: [
+      $all: [
         { 'metadata.tags': { $contains: 'java' } },
         { 'metadata.tags': { $contains: 'spring' } },
       ],
@@ -38,7 +38,7 @@ describe('createEntityPredicateSchema', () => {
     { 'metadata.tags.0': 'java' },
     { $not: { 'metadata.tags': { $in: ['java'] } } },
     {
-      $or: [{ kind: 'component', 'spec.type': 'service' }, { kind: 'group' }],
+      $any: [{ kind: 'component', 'spec.type': 'service' }, { kind: 'group' }],
     },
     {
       relations: {
@@ -50,16 +50,16 @@ describe('createEntityPredicateSchema', () => {
     },
     { kind: 'component', 'spec.type': { $in: ['service', 'website'] } },
     {
-      $or: [
+      $any: [
         {
-          $and: [
+          $all: [
             {
               kind: 'component',
               'spec.type': { $in: ['service', 'website'] },
             },
           ],
         },
-        { $and: [{ kind: 'api', 'spec.type': 'grpc' }] },
+        { $all: [{ kind: 'api', 'spec.type': 'grpc' }] },
       ],
     },
     { kind: 'component', 'spec.type': { $in: ['service'] } },
@@ -71,10 +71,10 @@ describe('createEntityPredicateSchema', () => {
       kind: 'component',
       'metadata.annotations.github.com/repo': { $exists: true },
     },
-    { $and: [{ x: { $exists: true } }] },
-    { $or: [{ x: { $exists: true } }] },
+    { $all: [{ x: { $exists: true } }] },
+    { $any: [{ x: { $exists: true } }] },
     { $not: { x: { $exists: true } } },
-    { $not: { $and: [{ x: { $exists: true } }] } },
+    { $not: { $all: [{ x: { $exists: true } }] } },
   ])('should accept valid predicate %j', predicate => {
     expect(schema.parse(predicate)).toEqual(predicate);
   });
@@ -87,10 +87,10 @@ describe('createEntityPredicateSchema', () => {
     { kind: { $in: [{ x: 'foo' }] } },
     { kind: { $in: [{ x: 'foo' }] } },
     { 'spec.type': null },
-    { $and: [{ x: { $unknown: true } }] },
-    { $or: [{ x: { $unknown: true } }] },
+    { $all: [{ x: { $unknown: true } }] },
+    { $any: [{ x: { $unknown: true } }] },
     { $not: { x: { $unknown: true } } },
-    { $not: { $and: [{ x: { $unknown: true } }] } },
+    { $not: { $all: [{ x: { $unknown: true } }] } },
     { $unknown: 'foo' },
   ])('should reject invalid predicate %j', predicate => {
     const result = schema.safeParse(predicate);

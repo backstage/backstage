@@ -44,11 +44,11 @@ export function evaluateEntityPredicate(
     return valuesAreEqual(value, filter);
   }
 
-  if ('$and' in filter) {
-    return filter.$and.every(f => evaluateEntityPredicate(f, value));
+  if ('$all' in filter) {
+    return filter.$all.every(f => evaluateEntityPredicate(f, value));
   }
-  if ('$or' in filter) {
-    return filter.$or.some(f => evaluateEntityPredicate(f, value));
+  if ('$any' in filter) {
+    return filter.$any.some(f => evaluateEntityPredicate(f, value));
   }
   if ('$not' in filter) {
     return !evaluateEntityPredicate(filter.$not, value);
