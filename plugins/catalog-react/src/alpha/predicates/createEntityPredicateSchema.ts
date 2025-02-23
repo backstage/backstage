@@ -28,7 +28,6 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
     z.object({ $eq: z.union([primitiveSchema, z.array(primitiveSchema)]) }),
     z.object({ $ne: z.union([primitiveSchema, z.array(primitiveSchema)]) }),
     z.object({ $in: z.array(primitiveSchema) }),
-    z.object({ $nin: z.array(primitiveSchema) }),
     z.object({ $all: z.array(primitiveSchema) }),
     z.object({ $elemMatch: z.lazy(() => z.record(filterValueSchema)) }),
   ]) as ZodType<EntityPredicateValue>;

@@ -192,7 +192,15 @@ describe('evaluateEntityPredicate', () => {
       },
     ],
     ['s', { kind: 'component', 'spec.type': { $in: ['service'] } }],
-    ['w', { kind: 'component', 'spec.type': { $nin: ['service'] } }],
+    [
+      'w',
+      {
+        $and: [
+          { kind: 'component' },
+          { $not: { 'spec.type': { $in: ['service'] } } },
+        ],
+      },
+    ],
     ['s,w,a', { 'spec.owner': { $exists: true } }],
     ['g', { 'spec.owner': { $exists: false } }],
     ['s', { 'spec.type': { $eq: 'service' } }],

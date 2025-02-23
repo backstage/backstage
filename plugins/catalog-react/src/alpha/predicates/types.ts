@@ -35,7 +35,6 @@ export type EntityPredicateValue =
   | { $eq: EntityPredicatePrimitive }
   | { $ne: EntityPredicatePrimitive }
   | { $in: EntityPredicatePrimitive[] }
-  | { $nin: EntityPredicatePrimitive[] }
   | { $all: EntityPredicatePrimitive[] }
   | { $elemMatch: EntityPredicateExpression };
 

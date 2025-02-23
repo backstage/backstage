@@ -54,7 +54,6 @@ describe('createEntityPredicateSchema', () => {
       ],
     },
     { kind: 'component', 'spec.type': { $in: ['service'] } },
-    { kind: 'component', 'spec.type': { $nin: ['service'] } },
     { 'spec.owner': { $exists: true } },
     { 'spec.owner': { $exists: false } },
     { 'spec.type': { $eq: 'service' } },

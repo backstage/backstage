@@ -95,9 +95,6 @@ function evaluatePredicateValue(
   if ('$in' in filter) {
     return filter.$in.includes(value as EntityPredicatePrimitive);
   }
-  if ('$nin' in filter) {
-    return !filter.$nin.includes(value as EntityPredicatePrimitive);
-  }
   if ('$exists' in filter) {
     if (filter.$exists === true) {
       return value !== undefined;
