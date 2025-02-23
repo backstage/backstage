@@ -42,8 +42,6 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
   valuePredicateSchema = z.union([
     comparableValueSchema,
     z.object({ $exists: z.boolean() }),
-    z.object({ $eq: z.union([primitiveSchema, z.array(primitiveSchema)]) }),
-    z.object({ $ne: z.union([primitiveSchema, z.array(primitiveSchema)]) }),
     z.object({ $in: z.array(primitiveSchema) }),
     z.object({ $contains: predicateSchema }),
   ]) as ZodType<EntityPredicateValue>;

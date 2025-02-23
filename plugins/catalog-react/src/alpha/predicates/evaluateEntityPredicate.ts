@@ -99,12 +99,6 @@ function evaluatePredicateValue(
     }
     return value === undefined;
   }
-  if ('$eq' in filter) {
-    return valuesAreEqual(value, filter.$eq);
-  }
-  if ('$ne' in filter) {
-    return !valuesAreEqual(value, filter.$ne);
-  }
 
   return false;
 }

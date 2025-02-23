@@ -33,8 +33,6 @@ export type EntityPredicateExpression = {
 export type EntityPredicateValue =
   | EntityPredicatePrimitive
   | { $exists: boolean }
-  | { $eq: EntityPredicatePrimitive }
-  | { $ne: EntityPredicatePrimitive }
   | { $in: EntityPredicatePrimitive[] }
   | { $contains: EntityPredicateExpression };
 

@@ -211,8 +211,8 @@ describe('evaluateEntityPredicate', () => {
     ],
     ['s,w,a', { 'spec.owner': { $exists: true } }],
     ['g', { 'spec.owner': { $exists: false } }],
-    ['s', { 'spec.type': { $eq: 'service' } }],
-    ['w,g,a', { 'spec.type': { $ne: 'service' } }],
+    ['s', { 'spec.type': 'service' }],
+    ['w,g,a', { $not: { 'spec.type': 'service' } }],
     ['', { 'spec.type': null }],
     [
       's,w',

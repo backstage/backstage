@@ -65,8 +65,8 @@ describe('createEntityPredicateSchema', () => {
     { kind: 'component', 'spec.type': { $in: ['service'] } },
     { 'spec.owner': { $exists: true } },
     { 'spec.owner': { $exists: false } },
-    { 'spec.type': { $eq: 'service' } },
-    { 'spec.type': { $ne: 'service' } },
+    { 'spec.type': 'service' },
+    { $not: { 'spec.type': 'service' } },
     {
       kind: 'component',
       'metadata.annotations.github.com/repo': { $exists: true },
