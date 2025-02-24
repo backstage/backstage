@@ -62,6 +62,21 @@ export const columnFactories = Object.freeze({
     return {
       title: 'System',
       field: 'resolved.partOfSystemRelationTitle',
+      customFilterAndSearch: (query, row) => {
+        let systems: JsonArray = [];
+        if (
+          row.entity?.spec?.system &&
+          Array.isArray(row.entity?.spec?.system)
+        ) {
+          systems = row.entity?.spec?.system;
+        } else if (row.entity?.spec?.system) {
+          systems = [row.entity?.spec?.system];
+        }
+        return systems
+          .join(', ')
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US'));
+      },
       render: ({ resolved }) => (
         <EntityRefLinks
           entityRefs={resolved.partOfSystemRelations}
