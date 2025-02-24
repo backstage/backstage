@@ -26,7 +26,6 @@ import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffo
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
-import userEvent from '@testing-library/user-event';
 import { fireEvent, screen } from '@testing-library/react';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
