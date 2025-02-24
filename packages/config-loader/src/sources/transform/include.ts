@@ -21,6 +21,8 @@ import { isObject } from './utils';
 import { TransformFunc, ReadFileFunc } from './types';
 import { SubstitutionFunc } from '../types';
 
+const INCLUDE_KEYS = ['$file', '$env', '$include'];
+
 // Parsers for each type of included file
 const includeFileParser: {
   [ext in string]: (content: string) => Promise<JsonObject>;
@@ -48,7 +50,9 @@ export function createIncludeTransform(
     }
     // Check if there's any key that starts with a '$', in that case we treat
     // this entire object as an include description.
-    const [includeKey] = Object.keys(input).filter(key => key.startsWith('$'));
+    const [includeKey] = Object.keys(input).filter(key =>
+      INCLUDE_KEYS.includes(key),
+    );
     if (includeKey) {
       if (Object.keys(input).length !== 1) {
         throw new Error(
