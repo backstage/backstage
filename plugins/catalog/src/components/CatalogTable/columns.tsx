@@ -63,19 +63,16 @@ export const columnFactories = Object.freeze({
       title: 'System',
       field: 'resolved.partOfSystemRelationTitle',
       customFilterAndSearch: (query, row) => {
-        let systems: JsonArray = [];
-        if (
-          row.entity?.spec?.system &&
-          Array.isArray(row.entity?.spec?.system)
-        ) {
-          systems = row.entity?.spec?.system;
-        } else if (row.entity?.spec?.system) {
-          systems = [row.entity?.spec?.system];
+        if (!row.resolved.partOfSystemRelations) {
+          return false;
         }
-        return systems
-          .join(', ')
-          .toLocaleUpperCase('en-US')
-          .includes(query.toLocaleUpperCase('en-US'));
+
+        const systemNames = row.resolved.partOfSystemRelations.map(
+          ref => ref.name,
+        ); // Extract system names from entityRefs
+
+        const searchText = systemNames.join(', ').toLocaleUpperCase('en-US');
+        return searchText.includes(query.toLocaleUpperCase('en-US'));
       },
       render: ({ resolved }) => (
         <EntityRefLinks
