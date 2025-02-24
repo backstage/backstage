@@ -40,6 +40,7 @@ export interface Config {
                   allowedDomains?: string[];
                 }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
+              | { resolver: 'userIdMatchingUserEntityAnnotation' }
             >;
           };
           sessionDuration?: HumanDuration | string;
