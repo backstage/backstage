@@ -49,6 +49,7 @@ export const BitbucketRepoPicker = (
     rawErrors,
     state,
     accessToken,
+    isDisabled,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -176,7 +177,7 @@ export const BitbucketRepoPicker = (
               onChange={s =>
                 onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
               }
-              disabled={allowedOwners.length === 1}
+              disabled={isDisabled || allowedOwners.length === 1}
               selected={workspace}
               items={ownerItems}
             />
@@ -191,9 +192,11 @@ export const BitbucketRepoPicker = (
                 <TextField
                   {...params}
                   label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+                  disabled={isDisabled}
                   required
                 />
               )}
+              disabled={isDisabled}
               freeSolo
               autoSelect
             />
@@ -215,7 +218,7 @@ export const BitbucketRepoPicker = (
             onChange={s =>
               onChange({ project: String(Array.isArray(s) ? s[0] : s) })
             }
-            disabled={allowedProjects.length === 1}
+            disabled={isDisabled || allowedProjects.length === 1}
             selected={project}
             items={projectItems}
           />
@@ -226,10 +229,12 @@ export const BitbucketRepoPicker = (
               onChange({ project: newValue || '' });
             }}
             options={availableProjects}
+            disabled={isDisabled}
             renderInput={params => (
               <TextField
                 {...params}
                 label={t('fields.bitbucketRepoPicker.project.inputTitle')}
+                disabled={isDisabled}
                 required
               />
             )}
