@@ -46,7 +46,7 @@ We will use some libraries in the module, so let's add them to your plugin modul
 git checkout -b tutorials/new-faq-snippets-collator
 
 # Install the package containing the interface
-yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/plugin-search-common @backstage/plugin-search-backend-node
+yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add @backstage/plugin-search-common @backstage/plugin-search-backend-node
 ```
 
 #### 3. Use Backstage App configuration
