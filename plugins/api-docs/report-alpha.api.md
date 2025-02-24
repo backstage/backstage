@@ -9,6 +9,7 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -45,11 +46,11 @@ const _default: FrontendPlugin<
       kind: 'entity-card';
       name: 'consumed-apis';
       config: {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
@@ -82,7 +83,7 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
         type?: EntityCardType | undefined;
       };
     }>;
@@ -90,11 +91,11 @@ const _default: FrontendPlugin<
       kind: 'entity-card';
       name: 'consuming-components';
       config: {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
@@ -127,7 +128,7 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
         type?: EntityCardType | undefined;
       };
     }>;
@@ -135,11 +136,11 @@ const _default: FrontendPlugin<
       kind: 'entity-card';
       name: 'definition';
       config: {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
@@ -172,7 +173,7 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
         type?: EntityCardType | undefined;
       };
     }>;
@@ -180,11 +181,11 @@ const _default: FrontendPlugin<
       kind: 'entity-card';
       name: 'has-apis';
       config: {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
@@ -217,7 +218,7 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
         type?: EntityCardType | undefined;
       };
     }>;
@@ -225,11 +226,11 @@ const _default: FrontendPlugin<
       kind: 'entity-card';
       name: 'provided-apis';
       config: {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
@@ -262,7 +263,7 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
         type?: EntityCardType | undefined;
       };
     }>;
@@ -270,11 +271,11 @@ const _default: FrontendPlugin<
       kind: 'entity-card';
       name: 'providing-components';
       config: {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
@@ -307,7 +308,7 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
         type?: EntityCardType | undefined;
       };
     }>;
@@ -317,11 +318,11 @@ const _default: FrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         group: string | false | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
@@ -379,7 +380,7 @@ const _default: FrontendPlugin<
           | 'observability'
           | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
       };
     }>;
     'entity-content:api-docs/definition': ExtensionDefinition<{
@@ -388,11 +389,11 @@ const _default: FrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         group: string | false | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
@@ -450,7 +451,7 @@ const _default: FrontendPlugin<
           | 'observability'
           | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
       };
     }>;
     'nav-item:api-docs': ExtensionDefinition<{

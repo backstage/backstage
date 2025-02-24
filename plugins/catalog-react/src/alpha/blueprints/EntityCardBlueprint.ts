@@ -29,6 +29,7 @@ import {
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { EntityPredicate } from '../predicates';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * @alpha
@@ -62,7 +63,7 @@ export const EntityCardBlueprint = createExtensionBlueprint({
       type,
     }: {
       loader: () => Promise<JSX.Element>;
-      filter?: EntityPredicate | typeof entityFilterFunctionDataRef.T;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       type?: EntityCardType;
     },
     { node, config },

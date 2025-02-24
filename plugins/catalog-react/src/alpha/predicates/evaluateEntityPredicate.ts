@@ -24,6 +24,7 @@ import { valueAtPath } from './valueAtPath';
 
 /**
  * Convert an entity predicate to a filter function that can be used to filter entities.
+ * @alpha
  */
 export function entityPredicateToFilterFunction<T extends JsonValue>(
   entityPredicate: EntityPredicate,

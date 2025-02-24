@@ -28,6 +28,7 @@ import React from 'react';
 import { EntityPredicate } from '../predicates';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { Entity } from '@backstage/catalog-model';
 
 /** @alpha */
 export interface EntityContentLayoutProps {
@@ -69,7 +70,7 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
       loader,
       filter,
     }: {
-      filter?: string | EntityPredicate | typeof entityFilterFunctionDataRef.T;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       loader: () => Promise<
         (props: EntityContentLayoutProps) => React.JSX.Element
       >;

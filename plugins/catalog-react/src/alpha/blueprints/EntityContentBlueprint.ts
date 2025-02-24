@@ -30,6 +30,7 @@ import {
 import { EntityPredicate } from '../predicates';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * @alpha
@@ -76,7 +77,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       defaultTitle: string;
       defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
       routeRef?: RouteRef;
-      filter?: string | EntityPredicate | typeof entityFilterFunctionDataRef.T;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {
