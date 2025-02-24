@@ -1,7 +1,7 @@
 # example-app
 
 This package is an example of a Backstage application using
-the [new frontend](https://backstage.io/docs/frontend-system/).
+the [New Frontend System](https://backstage.io/docs/frontend-system/).
 
 To play with it, open a terminal and run the command: `yarn start`
 
