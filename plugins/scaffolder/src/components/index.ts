@@ -20,7 +20,7 @@ export { TemplateTypePicker } from './TemplateTypePicker';
 
 export type { RouterProps } from './Router';
 export { OngoingTask as TaskPage } from './OngoingTask';
-export { ListTasksPage } from './ListTasksPage';
+export { ListTasksTable } from './ListTasksPage';
 export { ActionsPage } from './ActionsPage';
 
 export type { ReviewStepProps } from '@backstage/plugin-scaffolder-react';

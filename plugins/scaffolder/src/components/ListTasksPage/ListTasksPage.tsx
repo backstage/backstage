@@ -26,7 +26,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import {
   scaffolderApiRef,
   ScaffolderTask,
@@ -44,6 +44,73 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
+interface ListTasksTableProps {
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  limit: number;
+  setLimit: Dispatch<SetStateAction<number>>;
+  tasks?: ScaffolderTask[];
+  totalTasks?: number;
+}
+
+export function ListTasksTable({
+  page,
+  setPage,
+  limit,
+  setLimit,
+  tasks,
+  totalTasks,
+}: Readonly<ListTasksTableProps>) {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const rootLink = useRouteRef(rootRouteRef);
+
+  return (
+    <Table<ScaffolderTask>
+      onRowsPerPageChange={pageSize => {
+        setPage(0);
+        setLimit(pageSize);
+      }}
+      onPageChange={newPage => setPage(newPage)}
+      options={{ pageSize: limit, emptyRowsWhenPaging: false }}
+      data={tasks ?? []}
+      page={page}
+      totalCount={totalTasks ?? 0}
+      title={t('listTaskPage.content.tableTitle')}
+      columns={[
+        {
+          title: t('listTaskPage.content.tableCell.taskID'),
+          field: 'id',
+          render: row => (
+            <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
+          ),
+        },
+        {
+          title: t('listTaskPage.content.tableCell.template'),
+          field: 'spec.templateInfo.entity.metadata.title',
+          render: row => (
+            <TemplateTitleColumn entityRef={row.spec.templateInfo?.entityRef} />
+          ),
+        },
+        {
+          title: t('listTaskPage.content.tableCell.created'),
+          field: 'createdAt',
+          render: row => <CreatedAtColumn createdAt={row.createdAt} />,
+        },
+        {
+          title: t('listTaskPage.content.tableCell.owner'),
+          field: 'createdBy',
+          render: row => <OwnerEntityColumn entityRef={row.spec?.user?.ref} />,
+        },
+        {
+          title: t('listTaskPage.content.tableCell.status'),
+          field: 'status',
+          render: row => <TaskStatusColumn status={row.status} />,
+        },
+      ]}
+    />
+  );
+}
+
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
   contextMenu?: {
@@ -60,7 +127,6 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [page, setPage] = useState(0);
 
   const scaffolderApi = useApi(scaffolderApiRef);
-  const rootLink = useRouteRef(rootRouteRef);
 
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
   const { value, loading, error } = useAsync(() => {
@@ -106,52 +172,13 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
         />
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
-        <Table<ScaffolderTask>
-          onRowsPerPageChange={pageSize => {
-            setPage(0);
-            setLimit(pageSize);
-          }}
-          onPageChange={newPage => setPage(newPage)}
-          options={{ pageSize: limit, emptyRowsWhenPaging: false }}
-          data={value?.tasks ?? []}
+        <ListTasksTable
           page={page}
-          totalCount={value?.totalTasks ?? 0}
-          title={t('listTaskPage.content.tableTitle')}
-          columns={[
-            {
-              title: t('listTaskPage.content.tableCell.taskID'),
-              field: 'id',
-              render: row => (
-                <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.template'),
-              field: 'spec.templateInfo.entity.metadata.title',
-              render: row => (
-                <TemplateTitleColumn
-                  entityRef={row.spec.templateInfo?.entityRef}
-                />
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.created'),
-              field: 'createdAt',
-              render: row => <CreatedAtColumn createdAt={row.createdAt} />,
-            },
-            {
-              title: t('listTaskPage.content.tableCell.owner'),
-              field: 'createdBy',
-              render: row => (
-                <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.status'),
-              field: 'status',
-              render: row => <TaskStatusColumn status={row.status} />,
-            },
-          ]}
+          setPage={setPage}
+          limit={limit}
+          setLimit={setLimit}
+          tasks={value?.tasks}
+          totalTasks={value?.totalTasks}
         />
       </CatalogFilterLayout.Content>
     </CatalogFilterLayout>

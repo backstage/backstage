@@ -14,6 +14,7 @@ import { createScaffolderLayout as createScaffolderLayout_2 } from '@backstage/p
 import { CustomFieldExtensionSchema as CustomFieldExtensionSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { CustomFieldValidator as CustomFieldValidator_2 } from '@backstage/plugin-scaffolder-react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { Dispatch } from 'react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent as FieldExtensionComponent_2 } from '@backstage/plugin-scaffolder-react';
@@ -49,6 +50,7 @@ import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugi
 import { ScaffolderTaskStatus as ScaffolderTaskStatus_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderUseTemplateSecrets as ScaffolderUseTemplateSecrets_2 } from '@backstage/plugin-scaffolder-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { SetStateAction } from 'react';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -56,6 +58,12 @@ import { TemplateListPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { z } from 'zod';
+
+// Warning: (ae-forgotten-export) The symbol "ActionsPageProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ActionsPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ActionsPage: (props: ActionsPageProps) => React_2.JSX.Element;
 
 // @public @deprecated (undocumented)
 export const createScaffolderFieldExtension: typeof createScaffolderFieldExtension_2;
@@ -186,6 +194,19 @@ export type LayoutTemplate = LayoutTemplate_2;
 
 // @public @deprecated (undocumented)
 export type ListActionsResponse = ListActionsResponse_2;
+
+// Warning: (ae-forgotten-export) The symbol "ListTasksTableProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ListTasksTable" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function ListTasksTable({
+  page,
+  setPage,
+  limit,
+  setLimit,
+  tasks,
+  totalTasks,
+}: Readonly<ListTasksTableProps>): React_2.JSX.Element;
 
 // @public @deprecated (undocumented)
 export type LogEvent = LogEvent_2;

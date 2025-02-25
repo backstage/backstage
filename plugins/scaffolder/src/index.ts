@@ -33,7 +33,7 @@ export {
   RepoBranchPickerFieldExtension,
   ScaffolderPage,
   ActionsPage,
-  ListTasksPage,
+  ListTasksTable,
   scaffolderPlugin,
 } from './plugin';
 
