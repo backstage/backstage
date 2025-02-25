@@ -66,6 +66,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-techdocs-addons-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
