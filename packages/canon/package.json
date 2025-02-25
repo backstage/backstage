@@ -19,6 +19,7 @@
     "directory": "packages/canon"
   },
   "license": "Apache-2.0",
+  "sideEffects": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
