@@ -42,5 +42,20 @@ export interface Config {
         enabled?: boolean;
       };
     };
+    /**
+     * Kubernetes client site authentication config
+     */
+    auth?: {
+      /**
+       * Microsoft Entra Id confg
+       */
+      microsoft?: {
+        /**
+         * Scope to obtain the authentication token
+         * @visibility frontend
+         */
+        scope?: string;
+      };
+    };
   };
 }
