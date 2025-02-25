@@ -1,5 +1,49 @@
 # @backstage/plugin-catalog
 
+## 1.28.0-next.0
+
+### Minor Changes
+
+- a3d93ca: The `Overview` entity content now supports custom cards grid layouts.
+
+### Patch Changes
+
+- ba9649a: Update the default entity page extension component to support grouping multiple entity content items in the same tab.
+
+  Disable all default groups:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Pages
+  +   - page:catalog/entity:
+  +       config:
+  +         groups: []
+  ```
+
+  Create a custom list of :
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Pages
+  +   - page:catalog/entity:
+  +       config:
+  +         groups:
+  +           # This array of groups completely replaces the default groups
+  +           - custom:
+  +               title: 'Custom'
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.7-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+  - @backstage/integration-react@1.2.4
+
 ## 1.27.0
 
 ### Minor Changes

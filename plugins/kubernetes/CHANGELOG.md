@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.5-next.0
+
+### Patch Changes
+
+- d517d13: refactor: use `KUBERNETES_ANNOTATION` and `KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION` annotations from `kubernetes-common`
+- ba9649a: Set deployment as the default group of Kubernetes entity content. It is just an example and shouldn't cause any visual difference since entity page tabs with just one entity content appear as normal tabs.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/plugin-kubernetes-react@0.5.5-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+
 ## 0.12.4
 
 ### Patch Changes

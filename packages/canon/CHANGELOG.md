@@ -1,5 +1,11 @@
 # @backstage/canon
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 5a5db29: Fix CSS imports and move CSS outputs out of the dist folder.
+
 ## 0.1.0
 
 ### Minor Changes

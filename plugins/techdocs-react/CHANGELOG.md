@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.15-next.0
+
+### Patch Changes
+
+- b5a8208: Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+
 ## 1.2.14
 
 ### Patch Changes

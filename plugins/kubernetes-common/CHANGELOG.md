@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.4-next.0
+
+### Patch Changes
+
+- d517d13: Export `backstage.io/kubernetes-id` and `backstage.io/kubernetes-label-selector` annotations as constants
+
 ## 0.9.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- 2f4d3bc: Allow webhook content to be 5mb instead the default 100kb
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-events-node@0.4.9-next.0
+  - @backstage/backend-openapi-utils@0.5.1-next.0
+
 ## 0.4.2
 
 ### Patch Changes

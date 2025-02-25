@@ -1,5 +1,13 @@
 # @backstage/plugin-app
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/integration-react@1.2.4
+
 ## 0.1.6
 
 ### Patch Changes

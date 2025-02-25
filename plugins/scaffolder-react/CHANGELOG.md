@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.6-next.0
+
+### Patch Changes
+
+- b3b7c9c: Deprecated the alpha `ScaffolderFormFieldsApi` and `formFieldsApiRef` as these are being replaced with a different solution.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+
 ## 1.14.5
 
 ### Patch Changes
