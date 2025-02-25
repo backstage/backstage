@@ -59,11 +59,21 @@ import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage
 import { TemplateWizardPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { z } from 'zod';
 
-// Warning: (ae-forgotten-export) The symbol "ActionsPageProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ActionsPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const ActionsPage: (props: ActionsPageProps) => React_2.JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ActionsPageProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ActionsPageProps = {
+  contextMenu?: {
+    editor?: boolean;
+    tasks?: boolean;
+    create?: boolean;
+  };
+};
 
 // @public @deprecated (undocumented)
 export const createScaffolderFieldExtension: typeof createScaffolderFieldExtension_2;
