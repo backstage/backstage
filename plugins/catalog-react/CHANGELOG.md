@@ -1,5 +1,195 @@
 # @backstage/plugin-catalog-react
 
+## 1.16.0-next.0
+
+### Minor Changes
+
+- ba9649a: Add a new `defaultGroup` parameter to the `EntityContentBlueprint`, here are usage examples:
+
+  Set a default group while creating the extension:
+
+  ```diff
+  const entityKubernetesContent = EntityContentBlueprint.make({
+    name: 'kubernetes',
+    params: {
+      defaultPath: '/kubernetes',
+      defaultTitle: 'Kubernetes',
+  +   defaultGroup: 'deployment',
+      filter: 'kind:component,resource',
+      loader: () =>
+        import('./KubernetesContentPage').then(m =>
+          compatWrapper(<m.KubernetesContentPage />),
+        ),
+    },
+  });
+  ```
+
+  Disassociate an entity content from a default group:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Entity page content
+  -   - entity-content:kubernetes/kubernetes
+  +   - entity-content:kubernetes/kubernetes:
+  +       config:
+  +         group: false
+  ```
+
+  Associate an entity content with a different default or custom group than the one defined in code when the extension was created:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Entity page content
+  -   - entity-content:kubernetes/kubernetes
+  +   - entity-content:kubernetes/kubernetes:
+  +       config:
+  +         group: custom # associating this extension with a custom group id, the group should have previously been created via entity page configuration
+
+  ```
+
+- a3d93ca: Introduces a new `EntityContentLayoutBlueprint` that creates custom entity content layouts.
+
+  The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
+
+  - element: `JSx.Element`;
+  - type: `"peek" | "info" | "full" | undefined`;
+
+  ### Usage example
+
+  Creating a custom overview tab layout:
+
+  ```tsx
+  import {
+    EntityContentLayoutProps,
+    EntityContentLayoutBlueprint,
+  } from '@backstage/plugin-catalog-react/alpha';
+  // ...
+
+  function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
+    const { cards } = props;
+    const classes = useStyles();
+    return (
+      <Grid container spacing={3}>
+        <Grid
+          className={classes.infoArea}
+          xs={12}
+          md={4}
+          item
+        >
+          <Grid container spacing={3}>
+            {cards
+              .filter(card => card.type === 'info')
+              .map((card, index) => (
+                <Grid key={index} xs={12} item>
+                  {card.element}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+        <Grid xs={12} md={8} item>
+          <Grid container spacing={3}>
+            {cards
+              .filter(card => card.type === 'peek')
+              .map((card, index) => (
+                <Grid key={index} className={classes.card} xs={12} md={6} item>
+                  {card.element}
+                </Grid>
+              ))}
+            {cards
+              .filter(card => !card.type || card.type === 'full')
+              .map((card, index) => (
+                <Grid key={index} className={classes.card} xs={12} md={6} item>
+                  {card.element}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  export const customEntityContentOverviewStickyLayoutModule = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      EntityContentLayoutBlueprint.make({
+        name: 'sticky',
+        params: {
+          // (optional) defaults the `() => false` filter function
+          defaultFilter: 'kind:template'
+          loader: async () => StickyEntityContentOverviewLayout,
+        },
+      }),
+    ],
+  ```
+
+  Disabling the custom layout:
+
+  ```yaml
+  # app-config.yaml
+  app:
+    extensions:
+      - entity-content-layout:app/sticky: false
+  ```
+
+  Overriding the custom layout filter:
+
+  ```yaml
+  # app-config.yaml
+  app:
+    extensions:
+      - entity-content-layout:app/sticky:
+          config:
+            # This layout will be used only with component entities
+            filter: 'kind:component'
+  ```
+
+- d78bb71: Added `hidden` prop to `EntityTagPicker`, `EntityAutocompletePicker` and `UserListPicker`.
+  Added `initialFilter` prop to `EntityTagPicker` to set an initial filter for the picker.
+  Added `alwaysKeepFilters` prop to `UserListPicker` to prevent filters from resetting when no entities match the initial filters.
+- a3d93ca: Add an optional `type` parameter to `EntityCard` extensions. A card's type determines characteristics such as its expected size and where it will be rendered by the entity content layout.
+
+  Initially the following three types are supported:
+
+  - `peek`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
+  - `info`: medium size cards with high priority and frequently used information such as common actions, entity metadata, and links.
+  - `full`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the full content view and want to show a card instead.
+
+  ### Usage examples
+
+  Defining a default type when creating a card:
+
+  ```diff
+  const myCard = EntityCardBlueprint.make({
+    name: 'myCard',
+    params: {
+  +   type: 'info',
+      loader: import('./MyCard).then(m => { default: m.MyCard }),
+    },
+  });
+  ```
+
+  Changing the card type via `app-config.yaml` file:
+
+  ```diff
+  app:
+    extensions:
+  +   - entity-card:myPlugin/myCard:
+  +       config:
+  +         type: info
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+  - @backstage/frontend-test-utils@0.2.7-next.0
+  - @backstage/integration-react@1.2.4
+
 ## 1.15.2
 
 ### Patch Changes

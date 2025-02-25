@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.19.4-next.0
+
+### Patch Changes
+
+- d517d13: refactor: use `KUBERNETES_ANNOTATION` and `KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION` annotations from `kubernetes-common`
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/plugin-kubernetes-node@0.2.4-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+
 ## 0.19.3
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/backend-defaults
 
+## 0.8.2-next.0
+
+### Patch Changes
+
+- e293b66: The default auditor service implementation will now log low severity events with `debug` level instead of `info`.
+- ecb9bab: Explicitly stringify extra logger fields with `JSON.stringify` to prevent `[object Object]` errors.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/backend-app-api@1.2.1-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.9.6
+  - @backstage/plugin-events-node@0.4.9-next.0
+
 ## 0.8.0
 
 ### Minor Changes

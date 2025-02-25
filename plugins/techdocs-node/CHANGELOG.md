@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.1-next.0
+
+### Patch Changes
+
+- 052a10a: Bumps the version of the techdocs generator container used.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
 ## 1.13.0
 
 ### Minor Changes

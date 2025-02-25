@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs
 
+## 1.12.4-next.0
+
+### Patch Changes
+
+- 065e6b9: Excludes svg styling from sanitization
+- b5a8208: Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
+- ed1cb3e: Adds the page name of techdoc to the document's title.
+- fe4abb8: Updates logic to check for SVG sources when inlining svgs.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.7-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/plugin-techdocs-react@1.2.15-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+  - @backstage/integration-react@1.2.4
+
 ## 1.12.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/frontend-plugin-api
 
+## 0.9.6-next.0
+
+### Patch Changes
+
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+
 ## 0.9.5
 
 ### Patch Changes
