@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,24 @@
 
 import { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { OpenIdConnectApi, OAuthApi } from '@backstage/core-plugin-api';
 import { KubernetesAuthProvider } from './types';
+import { useMicrosoftAccessTokenProvider } from '../hooks';
 
 /** @public */
 export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   providerName: string;
-  authProvider: OpenIdConnectApi;
-
-  constructor(providerName: string, authProvider: OpenIdConnectApi) {
+  idTokenProviderApi: OpenIdConnectApi;
+  accessTokenProviderApi?: OAuthApi;
+  microsoftAccessTokenProviderScope = useMicrosoftAccessTokenProvider();
+  constructor(
+    providerName: string,
+    idTokenProviderApi: OpenIdConnectApi,
+    accessTokenProviderApi?: OAuthApi,
+  ) {
     this.providerName = providerName;
-    this.authProvider = authProvider;
+    this.idTokenProviderApi = idTokenProviderApi;
+    this.accessTokenProviderApi = accessTokenProviderApi || undefined;
   }
 
   async decorateRequestBodyForAuth(
@@ -44,8 +51,18 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   }
 
   async getCredentials(): Promise<{ token: string }> {
+    let token: string;
+
+    if (this.providerName === 'microsoft' && this.accessTokenProviderApi) {
+      token = await this.accessTokenProviderApi.getAccessToken(
+        this.microsoftAccessTokenProviderScope,
+      );
+    } else {
+      token = await this.idTokenProviderApi.getIdToken();
+    }
+
     return {
-      token: await this.authProvider.getIdToken(),
+      token,
     };
   }
 }
