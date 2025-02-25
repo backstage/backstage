@@ -18,7 +18,10 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useEffect } from 'react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResults } from './DryRunResults';
 import { formDecoratorsApiRef } from '../../../api';
@@ -75,9 +78,11 @@ describe('DryRunResults', () => {
   it('renders without exploding', async () => {
     await renderInTestApp(
       <TestApiProvider apis={mockApis}>
-        <DryRunProvider>
-          <DryRunResults />
-        </DryRunProvider>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunResults />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
     );
     expect(screen.getByText('Dry-run results')).toBeInTheDocument();
@@ -86,10 +91,12 @@ describe('DryRunResults', () => {
   it('expands when dry-run result is added and toggles on click, and disappears when results are gone', async () => {
     const { rerender } = await renderInTestApp(
       <TestApiProvider apis={mockApis}>
-        <DryRunProvider>
-          <DryRunRemote />
-          <DryRunResults />
-        </DryRunProvider>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunRemote />
+            <DryRunResults />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
     );
 
@@ -98,10 +105,12 @@ describe('DryRunResults', () => {
     await act(async () => {
       rerender(
         <TestApiProvider apis={mockApis}>
-          <DryRunProvider>
-            <DryRunRemote execute />
-            <DryRunResults />
-          </DryRunProvider>
+          <SecretsContextProvider>
+            <DryRunProvider>
+              <DryRunRemote execute />
+              <DryRunResults />
+            </DryRunProvider>
+          </SecretsContextProvider>
         </TestApiProvider>,
       );
     });
@@ -117,10 +126,12 @@ describe('DryRunResults', () => {
     await act(async () => {
       rerender(
         <TestApiProvider apis={mockApis}>
-          <DryRunProvider>
-            <DryRunRemote remove />
-            <DryRunResults />
-          </DryRunProvider>
+          <SecretsContextProvider>
+            <DryRunProvider>
+              <DryRunRemote remove />
+              <DryRunResults />
+            </DryRunProvider>
+          </SecretsContextProvider>
         </TestApiProvider>,
       );
     });
