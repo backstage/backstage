@@ -15,15 +15,18 @@
  */
 
 import { EntityProvider } from '@backstage/plugin-catalog-node';
-import { ProviderDatabase } from '../database/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { ProviderDatabase } from '../database/types';
 
-async function getOrphanedEntityProviderNames(
-  db: ProviderDatabase,
-  providers: EntityProvider[],
-): Promise<string[]> {
+async function getOrphanedEntityProviderNames({
+  db,
+  providers,
+}: {
+  db: ProviderDatabase;
+  providers: EntityProvider[];
+}): Promise<string[]> {
   const dbProviderNames = await db.transaction(async tx =>
-    db.listEntityProviderNames(tx),
+    db.listReferenceSourceKeys(tx),
   );
 
   const providerNames = providers.map(p => p.getProviderName());
@@ -33,11 +36,15 @@ async function getOrphanedEntityProviderNames(
   );
 }
 
-async function removeEntitiesForProvider(
-  db: ProviderDatabase,
-  providerName: string,
-  logger: LoggerService,
-) {
+async function removeEntitiesForProvider({
+  db,
+  providerName,
+  logger,
+}: {
+  db: ProviderDatabase;
+  providerName: string;
+  logger: LoggerService;
+}) {
   try {
     await db.transaction(async tx => {
       await db.replaceUnprocessedEntities(tx, {
@@ -55,15 +62,16 @@ async function removeEntitiesForProvider(
   }
 }
 
-export async function evictOrphanedEntityProviders(
-  db: ProviderDatabase,
-  providers: EntityProvider[],
-  logger: LoggerService,
-) {
-  for (const providerName of await getOrphanedEntityProviderNames(
-    db,
-    providers,
-  )) {
-    await removeEntitiesForProvider(db, providerName, logger);
+export async function evictOrphanedEntityProviders(options: {
+  db: ProviderDatabase;
+  providers: EntityProvider[];
+  logger: LoggerService;
+}) {
+  for (const providerName of await getOrphanedEntityProviderNames(options)) {
+    await removeEntitiesForProvider({
+      db: options.db,
+      providerName,
+      logger: options.logger,
+    });
   }
 }

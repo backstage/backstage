@@ -199,7 +199,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     }
   }
 
-  async listEntityProviderNames(txOpaque: Transaction): Promise<string[]> {
+  async listReferenceSourceKeys(txOpaque: Transaction): Promise<string[]> {
     const tx = txOpaque as Knex | Knex.Transaction;
 
     const rows = await tx<DbRefreshStateReferencesRow>(

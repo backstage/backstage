@@ -177,7 +177,7 @@ export interface ProviderDatabase {
   /**
    * List the names of all the entity providers that have references in the provider database.
    */
-  listEntityProviderNames(txOpaque: Transaction): Promise<string[]>;
+  listReferenceSourceKeys(txOpaque: Transaction): Promise<string[]>;
 }
 
 // TODO(Rugvip): This is only partial for now

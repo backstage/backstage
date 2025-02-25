@@ -59,21 +59,21 @@ describe('DefaultProviderDatabase', () => {
     await db<DbRefreshStateRow>('refresh_state').insert(ref);
   };
 
-  describe('replaceUnprocessedEntities', () => {
-    const createLocations = async (db: Knex, entityRefs: string[]) => {
-      for (const ref of entityRefs) {
-        await insertRefreshStateRow(db, {
-          entity_id: uuid.v4(),
-          entity_ref: ref,
-          unprocessed_entity: '{}',
-          processed_entity: '{}',
-          errors: '[]',
-          next_update_at: '2021-04-01 13:37:00',
-          last_discovery_at: '2021-04-01 13:37:00',
-        });
-      }
-    };
+  const createLocations = async (db: Knex, entityRefs: string[]) => {
+    for (const ref of entityRefs) {
+      await insertRefreshStateRow(db, {
+        entity_id: uuid.v4(),
+        entity_ref: ref,
+        unprocessed_entity: '{}',
+        processed_entity: '{}',
+        errors: '[]',
+        next_update_at: '2021-04-01 13:37:00',
+        last_discovery_at: '2021-04-01 13:37:00',
+      });
+    }
+  };
 
+  describe('replaceUnprocessedEntities', () => {
     it.each(databases.eachSupportedId())(
       'replaces all existing state correctly for simple dependency chains, %p',
       async databaseId => {
@@ -985,6 +985,88 @@ describe('DefaultProviderDatabase', () => {
           unprocessed_entity: JSON.stringify(entities[0].entity),
           unprocessed_hash: generateStableHash(entities[0].entity),
         });
+      },
+    );
+  });
+
+  describe('listReferenceSourceKeys', () => {
+    it.each(databases.eachSupportedId())(
+      'returns the source_keys from "refresh_state_references", %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await createLocations(knex, [
+          'location:default/root',
+          'location:default/root-1',
+        ]);
+
+        await insertRefRow(knex, {
+          source_key: 'foo',
+          target_entity_ref: 'location:default/root',
+        });
+        await insertRefRow(knex, {
+          source_key: 'bar',
+          target_entity_ref: 'location:default/root-1',
+        });
+
+        const res = await db.transaction(async tx =>
+          db.listReferenceSourceKeys(tx),
+        );
+
+        expect(res).toEqual(['bar', 'foo']);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'returns only unique source_keys", %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await createLocations(knex, [
+          'location:default/root',
+          'location:default/root-1',
+        ]);
+
+        await insertRefRow(knex, {
+          source_key: 'foo',
+          target_entity_ref: 'location:default/root',
+        });
+        await insertRefRow(knex, {
+          source_key: 'foo',
+          target_entity_ref: 'location:default/root-1',
+        });
+
+        const res = await db.transaction(async tx =>
+          db.listReferenceSourceKeys(tx),
+        );
+
+        expect(res).toEqual(['foo']);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'does not return null source_keys", %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        await createLocations(knex, [
+          'location:default/root',
+          'location:default/root-1',
+        ]);
+
+        await insertRefRow(knex, {
+          source_key: 'foo',
+          target_entity_ref: 'location:default/root',
+        });
+        await insertRefRow(knex, {
+          target_entity_ref: 'location:default/root-1',
+        });
+
+        const res = await db.transaction(async tx =>
+          db.listReferenceSourceKeys(tx),
+        );
+
+        expect(res).toEqual(['foo']);
       },
     );
   });

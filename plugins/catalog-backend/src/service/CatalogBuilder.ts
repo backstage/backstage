@@ -647,11 +647,11 @@ export class CatalogBuilder {
     await connectEntityProviders(providerDatabase, entityProviders);
 
     if (config.getOptionalBoolean('catalog.evictOrphanedEntityProviders')) {
-      await evictOrphanedEntityProviders(
-        providerDatabase,
-        entityProviders,
+      await evictOrphanedEntityProviders({
+        db: providerDatabase,
+        providers: entityProviders,
         logger,
-      );
+      });
     }
 
     return {
