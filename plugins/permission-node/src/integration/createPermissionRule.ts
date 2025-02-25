@@ -27,36 +27,35 @@ import { NoInfer } from './util';
  * @public
  */
 export type CreatePermissionRuleOptions<
-  TResource,
-  TQuery,
-  TQueryOutput extends TQuery,
-  TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams,
-> = {
-  name: string;
-  description: string;
+> = TRef extends PermissionResourceRef<infer IResource, infer IQuery, any>
+  ? {
+      name: string;
+      description: string;
 
-  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
+      resourceRef: TRef;
 
-  /**
-   * A ZodSchema that reflects the structure of the parameters that are passed to
-   */
-  paramsSchema?: z.ZodSchema<TParams>;
+      /**
+       * A ZodSchema that reflects the structure of the parameters that are passed to
+       */
+      paramsSchema?: z.ZodSchema<TParams>;
 
-  /**
-   * Apply this rule to a resource already loaded from a backing data source. The params are
-   * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
-   * params.
-   */
-  apply(resource: TResource, params: NoInfer<TParams>): boolean;
+      /**
+       * Apply this rule to a resource already loaded from a backing data source. The params are
+       * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
+       * params.
+       */
+      apply(resource: IResource, params: NoInfer<TParams>): boolean;
 
-  /**
-   * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
-   * can be used for loading a collection of resources efficiently with conditional criteria already
-   * applied.
-   */
-  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQueryOutput>;
-};
+      /**
+       * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
+       * can be used for loading a collection of resources efficiently with conditional criteria already
+       * applied.
+       */
+      toQuery(params: NoInfer<TParams>): PermissionCriteria<IQuery>;
+    }
+  : never;
 
 /**
  * Helper function to create a {@link PermissionRule} for a specific resource type using a {@link PermissionResourceRef}.
@@ -64,20 +63,16 @@ export type CreatePermissionRuleOptions<
  * @public
  */
 export function createPermissionRule<
-  TResource,
-  TQuery,
-  TQueryOutput extends TQuery,
-  TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: CreatePermissionRuleOptions<
-    TResource,
-    TQuery,
-    TQueryOutput,
-    TResourceType,
-    TParams
-  >,
-): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+  rule: CreatePermissionRuleOptions<TRef, TParams>,
+): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
 /**
  * Helper function to ensure that {@link PermissionRule} definitions are typed correctly.
  *
@@ -95,22 +90,19 @@ export function createPermissionRule<
 export function createPermissionRule<
   TResource,
   TQuery,
-  TQueryOutput extends TQuery,
   TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams = undefined,
 >(
   rule:
     | PermissionRule<TResource, TQuery, TResourceType, TParams>
-    | CreatePermissionRuleOptions<
-        TResource,
-        TQuery,
-        TQueryOutput,
-        TResourceType,
-        TParams
-      >,
+    | CreatePermissionRuleOptions<TRef, TParams>,
 ): PermissionRule<TResource, TQuery, TResourceType, TParams> {
   if ('resourceRef' in rule) {
-    return { ...rule, resourceType: rule.resourceRef.resourceType };
+    return {
+      ...rule,
+      resourceType: rule.resourceRef.resourceType as TResourceType,
+    } as PermissionRule<TResource, TQuery, TResourceType, TParams>;
   }
   return rule;
 }
