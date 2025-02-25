@@ -69,7 +69,8 @@ describe('useMicrosoftAccessTokenProvider', () => {
 });
 
 describe('useCustomMicrosoftAccessTokenProvider', () => {
-  let microsoftAccessTokenProvider: string;
+  let microsoftAccessTokenProvider: string =
+    'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/user.read';
 
   const apiWrapper = ({ children }: PropsWithChildren) => (
     <TestApiProvider
@@ -80,7 +81,7 @@ describe('useCustomMicrosoftAccessTokenProvider', () => {
             kubernetes: {
               auth: {
                 microsoft: {
-                  scope: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/user.read',
+                  scope: microsoftAccessTokenProvider,
                 },
               },
             },
