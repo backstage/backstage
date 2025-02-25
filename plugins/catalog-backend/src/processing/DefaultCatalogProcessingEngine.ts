@@ -19,7 +19,12 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { assertError, serializeError, stringifyError } from '@backstage/errors';
+import {
+  assertError,
+  serializeError,
+  stringifyError,
+  NotFoundError,
+} from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
@@ -27,7 +32,11 @@ import { metrics, trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
-import { Stitcher, stitchingStrategyFromConfig } from '../stitching/types';
+import {
+  Stitcher,
+  StitchingStrategy,
+  stitchingStrategyFromConfig,
+} from '../stitching/types';
 import { startTaskPipeline } from './TaskPipeline';
 import { Config } from '@backstage/config';
 import {
@@ -39,6 +48,7 @@ import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphan
 import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
+import { deleteLocation } from '../database/operations/util/deleteLocation';
 
 const CACHE_TTL = 5;
 
@@ -69,6 +79,7 @@ export class DefaultCatalogProcessingEngine {
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
   private readonly eventBroker?: EventBroker | EventsService;
+  private readonly stitchingStrategy: StitchingStrategy;
 
   private stopFunc?: () => void;
 
@@ -103,6 +114,7 @@ export class DefaultCatalogProcessingEngine {
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker();
     this.eventBroker = options.eventBroker;
+    this.stitchingStrategy = stitchingStrategyFromConfig(this.config);
 
     this.stopFunc = undefined;
   }
@@ -191,6 +203,24 @@ export class DefaultCatalogProcessingEngine {
                   state: ttl > 0 ? { ...state, ttl: ttl - 1 } : {},
                 });
               });
+            }
+
+            const locationNotFoundStrategy =
+              this.config.getOptionalString(
+                'catalog.locationNotFoundStrategy',
+              ) ?? 'keep';
+
+            if (
+              locationNotFoundStrategy === 'delete' &&
+              result.errors.some(e => e instanceof NotFoundError)
+            ) {
+              await deleteLocation(id, {
+                knex: this.knex,
+                strategy: this.stitchingStrategy,
+              });
+
+              track.markSuccessfulWithChanges();
+              return;
             }
 
             const location =
@@ -349,13 +379,11 @@ export class DefaultCatalogProcessingEngine {
       return () => {};
     }
 
-    const stitchingStrategy = stitchingStrategyFromConfig(this.config);
-
     const runOnce = async () => {
       try {
         const n = await deleteOrphanedEntities({
           knex: this.knex,
-          strategy: stitchingStrategy,
+          strategy: this.stitchingStrategy,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);

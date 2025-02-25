@@ -173,6 +173,12 @@ export interface Config {
         };
 
     /**
+     * The strategy to use for locations that return a 404 when fetching the
+     * catalog-info file. The default value is "keep".
+     */
+    locationNotFoundStrategy?: 'keep' | 'delete';
+
+    /**
      * The interval at which the catalog should process its entities.
      * @remarks
      *
