@@ -100,6 +100,10 @@ const useStyles = makeStyles(
         color: theme.palette.navigation.selectedColor,
       },
     },
+    dropdownButton: {
+      textTransform: 'none',
+      justifyContent: 'flex-start',
+    },
     textContent: {
       color: theme.palette.navigation.color,
       paddingLeft: theme.spacing(4),
@@ -183,12 +187,9 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             onTouchStart={e => e.stopPropagation()}
             className={classnames(
               classes.item,
+              classes.dropdownButton,
               isActive ? classes.selected : undefined,
             )}
-            style={{
-              textTransform: 'none',
-              justifyContent: 'flex-start',
-            }}
           >
             {Icon && <Icon fontSize="small" />}
             <Typography
