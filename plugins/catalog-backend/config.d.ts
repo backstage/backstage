@@ -216,5 +216,13 @@ export interface Config {
      * This flag is temporary and will be enabled by default in future releases.
      */
     useUrlReadersSearch?: boolean;
+
+    /**
+     * Evicts entities from the catalog that are no longer referenced by any
+     * added entity providers.
+     *
+     * Defaults to false.
+     */
+    evictOrphanedEntityProviders?: boolean;
   };
 }
