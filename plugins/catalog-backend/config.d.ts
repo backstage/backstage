@@ -218,7 +218,7 @@ export interface Config {
     useUrlReadersSearch?: boolean;
 
     /**
-     * Evicts entities from the catalog that are no longer referenced by entity providers added to the catalog.
+     * Evicts entities from the catalog when their related entity provider no longer exists.
      */
     evictOrphanedEntityProviders?: boolean;
   };
