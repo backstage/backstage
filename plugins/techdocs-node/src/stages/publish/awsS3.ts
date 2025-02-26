@@ -77,6 +77,15 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   });
 };
 
+type StorageClientCredOptions = {
+  region?: string;
+  endpoint?: string;
+  forcePathStyle?: boolean;
+  maxAttempts?: number;
+  httpsProxy?: string;
+  sdkCredentialProvider: AwsCredentialIdentityProvider;
+};
+
 export class AwsS3Publish implements PublisherBase {
   private readonly storageClient: S3Client;
   private readonly bucketName: string;
@@ -84,6 +93,7 @@ export class AwsS3Publish implements PublisherBase {
   private readonly logger: LoggerService;
   private readonly bucketRootPath: string;
   private readonly sse?: 'aws:kms' | 'AES256';
+  private readonly storageClientCredOptions: StorageClientCredOptions;
 
   constructor(options: {
     storageClient: S3Client;
@@ -92,6 +102,7 @@ export class AwsS3Publish implements PublisherBase {
     logger: LoggerService;
     bucketRootPath: string;
     sse?: 'aws:kms' | 'AES256';
+    storageClientCredOptions: any;
   }) {
     this.storageClient = options.storageClient;
     this.bucketName = options.bucketName;
@@ -99,6 +110,7 @@ export class AwsS3Publish implements PublisherBase {
     this.logger = options.logger;
     this.bucketRootPath = options.bucketRootPath;
     this.sse = options.sse;
+    this.storageClientCredOptions = options.storageClientCredOptions;
   }
 
   static async fromConfig(
@@ -169,6 +181,15 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.maxAttempts',
     );
 
+    const storageClientCredOptions = {
+      region,
+      endpoint,
+      forcePathStyle,
+      maxAttempts,
+      httpsProxy,
+      sdkCredentialProvider,
+    };
+
     const storageClient = new S3Client({
       customUserAgent: 'backstage-aws-techdocs-s3-publisher',
       credentialDefaultProvider: () => sdkCredentialProvider,
@@ -195,6 +216,7 @@ export class AwsS3Publish implements PublisherBase {
       legacyPathCasing,
       logger,
       sse,
+      storageClientCredOptions,
     });
   }
 
@@ -249,6 +271,30 @@ export class AwsS3Publish implements PublisherBase {
     }
 
     return explicitCredentials;
+  }
+
+  private createStorageClient(): S3Client {
+    const {
+      sdkCredentialProvider,
+      region,
+      endpoint,
+      maxAttempts,
+      httpsProxy,
+      forcePathStyle,
+    } = this.storageClientCredOptions;
+    return new S3Client({
+      customUserAgent: 'backstage-aws-techdocs-s3-publisher',
+      credentialDefaultProvider: () => sdkCredentialProvider,
+      ...(region && { region: region }),
+      ...(endpoint && { endpoint: endpoint }),
+      ...(forcePathStyle && { forcePathStyle: true }),
+      ...(maxAttempts && { maxAttempts: maxAttempts }),
+      ...(httpsProxy && {
+        requestHandler: new NodeHttpHandler({
+          httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
+        }),
+      }),
+    });
   }
 
   /**
@@ -411,9 +457,9 @@ export class AwsS3Publish implements PublisherBase {
           );
           throw new Error(`Metadata Not Found`);
         }
-
+        const storageClient = this.createStorageClient();
         try {
-          const resp = await this.storageClient.send(
+          const resp = await storageClient.send(
             new GetObjectCommand({
               Bucket: this.bucketName,
               Key: `${entityRootDir}/techdocs_metadata.json`,
@@ -471,8 +517,10 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
+      const storageClient = this.createStorageClient();
+
       try {
-        const resp = await this.storageClient.send(
+        const resp = await storageClient.send(
           new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
         );
 
