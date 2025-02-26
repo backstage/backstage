@@ -644,8 +644,6 @@ export class CatalogBuilder {
       disableRelationsCompatibility,
     });
 
-    await connectEntityProviders(providerDatabase, entityProviders);
-
     if (
       config.getOptionalString('catalog.orphanProviderStrategy') === 'delete'
     ) {
@@ -655,6 +653,7 @@ export class CatalogBuilder {
         logger,
       });
     }
+    await connectEntityProviders(providerDatabase, entityProviders);
 
     return {
       processingEngine: {
