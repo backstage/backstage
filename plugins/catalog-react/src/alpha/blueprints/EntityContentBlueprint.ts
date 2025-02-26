@@ -24,6 +24,8 @@ import {
   entityContentTitleDataRef,
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
+  entityContentGroupDataRef,
+  defaultEntityContentGroups,
 } from './extensionData';
 
 /**
@@ -40,17 +42,20 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     coreExtensionData.routeRef.optional(),
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
+    entityContentGroupDataRef.optional(),
   ],
   dataRefs: {
     title: entityContentTitleDataRef,
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
+    group: entityContentGroupDataRef,
   },
   config: {
     schema: {
       path: z => z.string().optional(),
       title: z => z.string().optional(),
       filter: z => z.string().optional(),
+      group: z => z.literal(false).or(z.string()).optional(),
     },
   },
   *factory(
@@ -58,12 +63,14 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       loader,
       defaultPath,
       defaultTitle,
+      defaultGroup,
       filter,
       routeRef,
     }: {
       loader: () => Promise<JSX.Element>;
       defaultPath: string;
       defaultTitle: string;
+      defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
       routeRef?: RouteRef;
       filter?:
         | typeof entityFilterFunctionDataRef.T
@@ -73,6 +80,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
   ) {
     const path = config.path ?? defaultPath;
     const title = config.title ?? defaultTitle;
+    const group = config.group ?? defaultGroup;
 
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
@@ -90,6 +98,10 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       yield entityFilterExpressionDataRef(filter);
     } else if (typeof filter === 'function') {
       yield entityFilterFunctionDataRef(filter);
+    }
+
+    if (group) {
+      yield entityContentGroupDataRef(group);
     }
   },
 });

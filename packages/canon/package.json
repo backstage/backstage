@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.1.0",
+  "version": "0.2.0-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -19,11 +19,12 @@
     "directory": "packages/canon"
   },
   "license": "Apache-2.0",
-  "sideEffects": false,
+  "sideEffects": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "css"
   ],
   "scripts": {
     "build": "yarn build:app && yarn build:css",

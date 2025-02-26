@@ -49,7 +49,7 @@ export const TechDocsAddons: React.ComponentType<
 
 attachComponentData(TechDocsAddons, TECHDOCS_ADDONS_WRAPPER_KEY, true);
 
-const getDataKeyByName = (name: string) => {
+export const getDataKeyByName = (name: string) => {
   return `${TECHDOCS_ADDONS_KEY}.${name.toLocaleLowerCase('en-US')}`;
 };
 

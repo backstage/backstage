@@ -18,7 +18,10 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useEffect } from 'react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResultsList } from './DryRunResultsList';
 import { formDecoratorsApiRef } from '../../../api';
@@ -64,9 +67,11 @@ describe('DryRunResultsList', () => {
   it('renders without exploding', async () => {
     const rendered = await renderInTestApp(
       <TestApiProvider apis={mockApis}>
-        <DryRunProvider>
-          <DryRunResultsList />
-        </DryRunProvider>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunResultsList />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
     );
     expect(rendered.baseElement.querySelector('ul')).toBeEmptyDOMElement();
@@ -75,10 +80,12 @@ describe('DryRunResultsList', () => {
   it('adds new result items and deletes them', async () => {
     const { rerender } = await renderInTestApp(
       <TestApiProvider apis={mockApis}>
-        <DryRunProvider>
-          <DryRunRemote execute={1} />
-          <DryRunResultsList />
-        </DryRunProvider>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunRemote execute={1} />
+            <DryRunResultsList />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
     );
 
@@ -88,10 +95,12 @@ describe('DryRunResultsList', () => {
     await act(async () => {
       rerender(
         <TestApiProvider apis={mockApis}>
-          <DryRunProvider>
-            <DryRunRemote execute={2} />
-            <DryRunResultsList />
-          </DryRunProvider>
+          <SecretsContextProvider>
+            <DryRunProvider>
+              <DryRunRemote execute={2} />
+              <DryRunResultsList />
+            </DryRunProvider>
+          </SecretsContextProvider>
         </TestApiProvider>,
       );
     });

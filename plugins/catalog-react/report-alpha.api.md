@@ -12,6 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -99,12 +100,21 @@ export function convertLegacyEntityContentExtension(
 ): ExtensionDefinition;
 
 // @alpha
+export const defaultEntityContentGroups: {
+  documentation: string;
+  development: string;
+  deployment: string;
+  observability: string;
+};
+
+// @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
+    type?: EntityCardType | undefined;
   };
   output:
     | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -121,13 +131,22 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ConfigurableExtensionDataRef<
+        EntityCardType,
+        'catalog.entity-card-type',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
     filter: string | undefined;
+    type: 'full' | 'info' | 'peek' | undefined;
   };
   configInput: {
     filter?: string | undefined;
+    type?: 'full' | 'info' | 'peek' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -140,8 +159,16 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
+    type: ConfigurableExtensionDataRef<
+      EntityCardType,
+      'catalog.entity-card-type',
+      {}
+    >;
   };
 }>;
+
+// @alpha (undocumented)
+export type EntityCardType = 'peek' | 'info' | 'full';
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
@@ -151,6 +178,13 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     loader: () => Promise<JSX.Element>;
     defaultPath: string;
     defaultTitle: string;
+    defaultGroup?:
+      | (string & {})
+      | 'documentation'
+      | 'development'
+      | 'deployment'
+      | 'observability'
+      | undefined;
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
     filter?: string | ((entity: Entity) => boolean) | undefined;
   };
@@ -178,17 +212,26 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-content-group',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
     path: string | undefined;
     title: string | undefined;
     filter: string | undefined;
+    group: string | false | undefined;
   };
   configInput: {
     filter?: string | undefined;
     title?: string | undefined;
     path?: string | undefined;
+    group?: string | false | undefined;
   };
   dataRefs: {
     title: ConfigurableExtensionDataRef<
@@ -206,8 +249,80 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
+    group: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-content-group',
+      {}
+    >;
   };
 }>;
+
+// @alpha (undocumented)
+export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-content-layout';
+  name: undefined;
+  params: {
+    filter?: string | ((entity: Entity) => boolean) | undefined;
+    loader: () => Promise<
+      (props: EntityContentLayoutProps) => React_2.JSX.Element
+    >;
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        (props: EntityContentLayoutProps) => React_2.JSX.Element,
+        'catalog.entity-content-layout.component',
+        {}
+      >;
+  inputs: {};
+  config: {
+    type: string | undefined;
+    filter: string | undefined;
+  };
+  configInput: {
+    filter?: string | undefined;
+    type?: string | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityContentLayoutProps) => React_2.JSX.Element,
+      'catalog.entity-content-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface EntityContentLayoutProps {
+  // (undocumented)
+  cards: Array<{
+    type?: EntityCardType;
+    element: React_2.JSX.Element;
+  }>;
+}
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

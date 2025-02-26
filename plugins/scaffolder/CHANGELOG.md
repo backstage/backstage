@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder
 
+## 1.29.0-next.0
+
+### Minor Changes
+
+- 9d864ff: Allowed passing `ui:disabled` for disabling the input field of all the pickers.
+
+### Patch Changes
+
+- 6a3fa48: Fixes DryRunContext not forwarding the correct Scaffolder Secrets to the DryRun API
+- b3b7c9c: Updated the alpha `page:scaffolder` extension to accept `formFields` input, matching the updated `FormFieldBlueprint`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/plugin-scaffolder-react@1.14.6-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+  - @backstage/integration-react@1.2.4
+
 ## 1.28.0
 
 ### Minor Changes

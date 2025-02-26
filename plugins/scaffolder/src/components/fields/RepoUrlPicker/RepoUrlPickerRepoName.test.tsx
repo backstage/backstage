@@ -107,4 +107,43 @@ describe('RepoUrlPickerRepoName', () => {
     await userEvent.click(getByText(availableRepos[0].name));
     expect(onChange).toHaveBeenCalledWith(availableRepos[0]);
   });
+
+  it('should disable the repo selection when isDisabled is true', async () => {
+    const allowedRepos = ['foo', 'bar'];
+    const onChange = jest.fn();
+
+    const { getByRole } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        allowedRepos={allowedRepos}
+        rawErrors={[]}
+        isDisabled
+      />,
+    );
+
+    // Find the select element
+    const selectElement = getByRole('combobox');
+
+    // Ensure it's disabled
+    expect(selectElement).toBeDisabled();
+  });
+
+  it('should disable the text input when no options are passed and isDisabled is true', async () => {
+    const onChange = jest.fn();
+
+    const { getByRole } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        allowedRepos={[]}
+        rawErrors={[]}
+        isDisabled
+      />,
+    );
+
+    // Find the text input (autocomplete)
+    const textInput = getByRole('textbox');
+
+    // Ensure it's disabled
+    expect(textInput).toBeDisabled();
+  });
 });

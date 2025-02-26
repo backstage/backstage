@@ -24,7 +24,7 @@ import { glob } from 'glob';
 
 // Check if core.css and components.css exist
 const cssDir = 'src/css';
-const distDir = 'dist/css';
+const distDir = 'css';
 const componentsDir = 'src/components';
 
 // Core files

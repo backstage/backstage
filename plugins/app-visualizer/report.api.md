@@ -16,6 +16,27 @@ const visualizerPlugin: FrontendPlugin<
   {},
   {},
   {
+    'nav-item:app-visualizer': ExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
+    }>;
     'page:app-visualizer': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -44,27 +65,6 @@ const visualizerPlugin: FrontendPlugin<
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'nav-item:app-visualizer': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
       };
     }>;
   }
