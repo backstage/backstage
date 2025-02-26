@@ -62,7 +62,7 @@ async function removeEntitiesForProvider({
   }
 }
 
-export async function evictOrphanedEntityProviders(options: {
+export async function evictEntitiesFromOrphanedProviders(options: {
   db: ProviderDatabase;
   providers: EntityProvider[];
   logger: LoggerService;

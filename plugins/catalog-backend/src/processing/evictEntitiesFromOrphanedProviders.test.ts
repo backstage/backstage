@@ -16,9 +16,9 @@
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
-import { evictOrphanedEntityProviders } from './evictOrphanedEntityProviders';
+import { evictEntitiesFromOrphanedProviders } from './evictEntitiesFromOrphanedProviders';
 
-describe('evictOrphanedEntityProviders', () => {
+describe('evictEntitiesFromOrphanedProviders', () => {
   const db = {
     transaction: jest.fn().mockImplementation(cb => cb((() => {}) as any)),
     replaceUnprocessedEntities: jest.fn(),
@@ -34,7 +34,7 @@ describe('evictOrphanedEntityProviders', () => {
   it('replaces unprocessed entities for orphaned providers with empty items', async () => {
     db.listReferenceSourceKeys.mockResolvedValue(['foo', 'bar']);
 
-    await evictOrphanedEntityProviders({ db, providers, logger });
+    await evictEntitiesFromOrphanedProviders({ db, providers, logger });
 
     expect(db.replaceUnprocessedEntities).toHaveBeenCalledTimes(2);
     expect(db.replaceUnprocessedEntities).toHaveBeenNthCalledWith(
@@ -60,7 +60,7 @@ describe('evictOrphanedEntityProviders', () => {
   it('does not replace unprocessed entities for providers that are not orphaned', async () => {
     db.listReferenceSourceKeys.mockResolvedValue(['foo', 'provider1']);
 
-    await evictOrphanedEntityProviders({ db, providers, logger });
+    await evictEntitiesFromOrphanedProviders({ db, providers, logger });
 
     expect(db.replaceUnprocessedEntities).not.toHaveBeenCalledWith(
       expect.anything(),

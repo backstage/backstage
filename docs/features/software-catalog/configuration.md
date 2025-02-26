@@ -171,7 +171,7 @@ To remove these entities automatically, you can use the following configuration.
 
 ```yaml
 catalog:
-  evictOrphanedEntityProviders: true
+  orphanProviderStrategy: delete
 ```
 
 ## Processing Interval
