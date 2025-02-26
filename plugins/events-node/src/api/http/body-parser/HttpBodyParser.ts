@@ -15,6 +15,7 @@
  */
 
 import { Request } from 'express';
+import { ParsedMediaType } from 'content-type';
 /**
  * @public
  */
@@ -29,5 +30,6 @@ export type HttpBodyParsed = {
  */
 export type HttpBodyParser = (
   request: Request,
+  parsedMediaType: ParsedMediaType,
   topic: string,
 ) => Promise<HttpBodyParsed>;

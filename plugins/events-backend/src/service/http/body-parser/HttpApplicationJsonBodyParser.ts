@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { HttpBodyParser } from '@backstage/plugin-events-node';
-import contentType from 'content-type';
 import { UnsupportedCharsetError } from '../errors';
 
 export const HttpApplicationJsonBodyParser: HttpBodyParser = async (
   request,
+  parsedMediaType,
   topic,
 ) => {
   const requestBody = request.body;
@@ -29,16 +29,15 @@ export const HttpApplicationJsonBodyParser: HttpBodyParser = async (
   }
 
   const bodyBuffer: Buffer = requestBody;
-  const parsedContentType = contentType.parse(request);
 
-  const encoding = parsedContentType.parameters.charset ?? 'utf-8';
+  const encoding = parsedMediaType.parameters.charset ?? 'utf-8';
   if (!Buffer.isEncoding(encoding)) {
     throw new UnsupportedCharsetError(encoding);
   }
 
   const bodyString = bodyBuffer.toString(encoding);
   const bodyParsed =
-    parsedContentType.type === 'application/json'
+    parsedMediaType.type === 'application/json'
       ? JSON.parse(bodyString)
       : bodyString;
   return { bodyParsed, bodyBuffer, encoding };

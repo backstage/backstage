@@ -6728,6 +6728,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
+    content-type: ^1.0.5
     cross-fetch: ^4.0.0
     express: ^4.17.1
     msw: ^1.0.0

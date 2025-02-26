@@ -103,7 +103,7 @@ export class HttpPostIngressEventPublisher {
 
     router.post(path, async (request, response) => {
       const requestContentType = contentType.parse(request);
-      const bodyParser = this.bodyParsers[requestContentType.type];
+      const bodyParser = this.bodyParsers[requestContentType.type ?? ''];
 
       if (!bodyParser) {
         throw new UnsupportedMediaTypeError(requestContentType.type);
@@ -111,6 +111,7 @@ export class HttpPostIngressEventPublisher {
 
       const { bodyParsed, bodyBuffer, encoding } = await bodyParser(
         request,
+        requestContentType,
         topic,
       );
 

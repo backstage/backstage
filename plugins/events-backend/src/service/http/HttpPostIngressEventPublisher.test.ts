@@ -209,7 +209,7 @@ describe('HttpPostIngressEventPublisher', () => {
       expect.objectContaining({
         error: {
           message:
-            'Unsupported media type: text/plain. You need to provide a custom body parser for this media type using events extension.',
+            'Unsupported media type: text/plain. You need to provide a custom body parser for this media type using the EventsExtensionPoint.',
           name: 'UnsupportedMediaTypeError',
           statusCode: 415,
         },
@@ -259,6 +259,47 @@ describe('HttpPostIngressEventPublisher', () => {
     expect(response.status).toBe(202);
   });
 
+  it('with a invalid media type', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      logger,
+    });
+    publisher.bind(router);
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('not-valid-content/plain')
+      .timeout(1000)
+      .send('Textual information');
+    expect(response.status).toBe(415);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: {
+          message:
+            'Unsupported media type: not-valid-content/plain. You need to provide a custom body parser for this media type using the EventsExtensionPoint.',
+          name: 'UnsupportedMediaTypeError',
+          statusCode: 415,
+        },
+        request: { method: 'POST', url: '/http/testA' },
+        response: { statusCode: 415 },
+      }),
+    );
+  });
+
   it('with a custom application/json body parser implementation', async () => {
     const config = new ConfigReader({
       events: {
@@ -273,7 +314,11 @@ describe('HttpPostIngressEventPublisher', () => {
     const events = new TestEventsService();
     const customParse = jest.fn();
 
-    const bodyParser: HttpBodyParser = async (req, _topic) => {
+    const bodyParser: HttpBodyParser = async (
+      req,
+      _parsedMediaType,
+      _topic,
+    ) => {
       customParse();
       return {
         bodyParsed: JSON.parse(req.body.toString('utf-8')),
