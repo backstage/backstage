@@ -32,7 +32,7 @@ export class UnsupportedMediaTypeError extends CustomErrorBase {
     super(
       `Unsupported media type: ${
         mediaType ?? 'unknown'
-      }. You need to provide a custom body parser for this media type using events extension.`,
+      }. You need to provide a custom body parser for this media type using the EventsExtensionPoint.`,
     );
   }
 }
