@@ -47,6 +47,7 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
  * Auth provider integration for auth0 auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const auth0 = createAuthProviderIntegration({
   create(options?: {
