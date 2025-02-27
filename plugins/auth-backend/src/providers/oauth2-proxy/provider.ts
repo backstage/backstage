@@ -29,6 +29,7 @@ import {
  * Auth provider integration for oauth2-proxy auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const oauth2Proxy = createAuthProviderIntegration({
   create(options: {

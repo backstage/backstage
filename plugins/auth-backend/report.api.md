@@ -121,7 +121,7 @@ export type BitbucketServerOAuthResult = {
   refreshToken?: string;
 };
 
-// @public
+// @public @deprecated
 export class CatalogIdentityClient {
   constructor(options: {
     catalogApi: CatalogApi;
@@ -176,7 +176,7 @@ export type CloudflareAccessResult = {
 // @public @deprecated (undocumented)
 export type CookieConfigurer = CookieConfigurer_2;
 
-// @public
+// @public @deprecated
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],
   TResolvers extends {
@@ -190,13 +190,13 @@ export function createAuthProviderIntegration<
   resolvers: Readonly<string extends keyof TResolvers ? never : TResolvers>;
 }>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createOriginFilter(config: Config): (origin: string) => boolean;
 
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public
+// @public @deprecated
 export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory_2;
 };
@@ -219,7 +219,7 @@ export type GcpIapTokenInfo = GcpIapTokenInfo_2;
 // @public
 export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type GithubOAuthResult = {
   fullProfile: Profile;
   params: {
@@ -361,12 +361,12 @@ export const prepareBackstageIdentityResponse: typeof prepareBackstageIdentityRe
 // @public @deprecated (undocumented)
 export type ProfileInfo = ProfileInfo_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ProviderFactories = {
   [s: string]: AuthProviderFactory_2;
 };
 
-// @public
+// @public @deprecated
 export const providers: Readonly<{
   atlassian: Readonly<{
     create: (
@@ -676,7 +676,7 @@ export interface RouterOptions {
   tokenManager?: TokenManager;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SamlAuthResult = {
   fullProfile: any;
 };
