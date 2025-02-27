@@ -34,7 +34,7 @@ export const createRateLimitMiddleware = (options: {
   const rateLimitOptions = config.getConfig(configKey);
 
   return rateLimitMiddleware({
-    store: RateLimitStoreFactory.create(config),
+    store: RateLimitStoreFactory.create({ config, prefix: pluginId }),
     config: rateLimitOptions,
   });
 };
