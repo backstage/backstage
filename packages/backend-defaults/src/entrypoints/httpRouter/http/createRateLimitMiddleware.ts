@@ -23,7 +23,7 @@ export const createRateLimitMiddleware = (options: {
   config: Config;
 }) => {
   const { pluginId, config } = options;
-  const configKey = `backend.rateLimit.${pluginId}`;
+  const configKey = `backend.rateLimit.plugin.${pluginId}`;
   const enabled = config.has(configKey);
   if (!enabled) {
     return (_req: Request, _res: Response, next: NextFunction) => {

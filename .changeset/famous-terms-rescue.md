@@ -13,3 +13,15 @@ backend:
     window: 6s
     incomingRequestLimit: 100
 ```
+
+Plugin specific rate limiting can be configured by adding the following configuration to `app-config.yaml`:
+
+```yaml
+backend:
+  rateLimit:
+    global: false # This will disable the global rate limiting
+    plugin:
+      catalog:
+        window: 6s
+        incomingRequestLimit: 100
+```
