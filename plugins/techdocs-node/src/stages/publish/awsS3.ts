@@ -471,26 +471,27 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      try {
-        const resp = await this.storageClient.send(
-          new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
-        );
+      const resp = await this.storageClient.send(
+        new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
+      );
 
-        // Inject response headers
-        for (const [headerKey, headerValue] of Object.entries(
-          responseHeaders,
-        )) {
-          res.setHeader(headerKey, headerValue);
-        }
-
-        res.send(await streamToBuffer(resp.Body as Readable));
-      } catch (err) {
-        assertError(err);
-        this.logger.warn(
-          `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
-        );
-        res.status(404).send('File Not Found');
+      // Inject response headers
+      for (const [headerKey, headerValue] of Object.entries(responseHeaders)) {
+        res.setHeader(headerKey, headerValue);
       }
+
+      (resp.Body as Readable)
+        .on('error', err => {
+          this.logger.warn(
+            `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+          );
+          if (!res.headersSent) {
+            res.status(404).send('File Not Found');
+          } else {
+            res.destroy();
+          }
+        })
+        .pipe(res);
     };
   }
 
