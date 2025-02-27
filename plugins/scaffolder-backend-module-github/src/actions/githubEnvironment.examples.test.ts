@@ -134,10 +134,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
     expect(
       mockOctokit.rest.repos.createDeploymentBranchPolicy,
@@ -171,9 +171,9 @@ describe('github:environment:create examples', () => {
         protected_branches: true,
         custom_branch_policies: false,
       },
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -208,9 +208,9 @@ describe('github:environment:create examples', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -256,10 +256,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -331,10 +331,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -386,9 +386,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: true,
         protected_branches: false,
       },
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -440,9 +440,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: true,
         protected_branches: false,
       },
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -533,10 +533,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -566,10 +566,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -603,9 +603,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: true,
         protected_branches: false,
       },
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -662,10 +662,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -715,10 +715,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -773,9 +773,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: false,
         protected_branches: true,
       },
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -804,10 +804,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -879,10 +879,10 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
+      deployment_branch_policy: undefined,
       wait_timer: 1000,
-      reviewers: null,
-      prevent_self_review: false,
+      reviewers: undefined,
+      prevent_self_review: undefined,
     });
     expect(
       mockOctokit.rest.repos.createDeploymentBranchPolicy,
@@ -912,9 +912,9 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      reviewers: null,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      reviewers: undefined,
       prevent_self_review: true,
     });
     expect(
@@ -945,8 +945,8 @@ describe('github:environment:create examples', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
       reviewers: [
         {
           type: 'User',
@@ -957,7 +957,7 @@ describe('github:environment:create examples', () => {
           id: 2,
         },
       ],
-      prevent_self_review: false,
+      prevent_self_review: undefined,
     });
     expect(
       mockOctokit.rest.repos.createDeploymentBranchPolicy,
