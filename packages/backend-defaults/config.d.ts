@@ -798,27 +798,11 @@ export interface Config {
       | {
           store?:
             | {
-                client: 'redis';
+                type: 'redis';
                 connection: string;
               }
             | {
-                client: 'postgres';
-                connection:
-                  | string
-                  | {
-                      /**
-                       * @visibility secret
-                       */
-                      password?: string;
-                      /**
-                       * Other connection settings
-                       * @see https://node-postgres.com/apis/client
-                       */
-                      [key: string]: unknown;
-                    };
-              }
-            | {
-                client: 'memory';
+                type: 'memory';
               };
           /**
            * Time frame in milliseconds or as human duration for which requests are checked/remembered.
