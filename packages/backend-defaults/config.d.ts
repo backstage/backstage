@@ -53,11 +53,10 @@ export interface Config {
 
     /**
      * Determines if the backend should trust the X-Forwarded-For header or not.
-     * If set to true, unlimited amount of proxies will be trusted. If set to a
-     * number, that amount of proxies will be trusted. If set to false, no proxies
-     * are trusted. Required to make the rate limiting work behind proxy.
+     * If set to true, unlimited amount of proxies will be trusted. If set to false,
+     * no proxies are trusted. Required to make the rate limiting work behind proxy.
      */
-    trustProxy?: boolean | number;
+    trustProxy?: boolean;
 
     /** Address that the backend should listen to. */
     listen?:
@@ -625,27 +624,11 @@ export interface Config {
       | {
           store?:
             | {
-                client: 'redis';
+                type: 'redis';
                 connection: string;
               }
             | {
-                client: 'postgres';
-                connection:
-                  | string
-                  | {
-                      /**
-                       * @visibility secret
-                       */
-                      password?: string;
-                      /**
-                       * Other connection settings
-                       * @see https://node-postgres.com/apis/client
-                       */
-                      [key: string]: unknown;
-                    };
-              }
-            | {
-                client: 'memory';
+                type: 'memory';
               };
           /**
            * Time frame in milliseconds or as human duration for which requests are checked/remembered.
