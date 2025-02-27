@@ -45,6 +45,7 @@ import {
   LayoutOptions,
   FieldExtensionOptions,
   FormProps,
+  useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
@@ -149,6 +150,8 @@ export const Stepper = (stepperProps: StepperProps) => {
     [extensions],
   );
 
+  const { secrets } = useTemplateSecrets();
+
   const validators = useMemo(() => {
     return Object.fromEntries(
       props.extensions.map(({ name, validation }) => [name, validation]),
@@ -177,41 +180,76 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
+      // console.log(e.formData);
+
       setStepsState(current => {
         return { ...current, ...e.formData };
       });
     },
     [setStepsState],
   );
+  // console.log('******', stepsState);
+
+  // const handleNext = useCallback(
+  //   async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
+  //     // The validation should never throw, as the validators are wrapped in a try/catch.
+  //     // This makes it fine to set and unset state without try/catch.
+  //     setErrors(undefined);
+  //     setIsValidating(true);
+
+  //     const returnedValidation = await validation(formData);
+  //     console.log(formData, returnedValidation);
+
+  //     setStepsState(current => ({
+  //       ...current,
+  //       ...formData,
+  //     }));
+
+  //     setIsValidating(false);
+
+  //     if (hasErrors(returnedValidation)) {
+  //       setErrors(returnedValidation);
+  //     } else {
+  //       setErrors(undefined);
+  //       setActiveStep(prevActiveStep => {
+  //         const stepNum = prevActiveStep + 1;
+  //         analytics.captureEvent('click', `Next Step (${stepNum})`);
+  //         return stepNum;
+  //       });
+  //     }
+  //   },
+  //   [validation, analytics],
+  // );
+  // console.log('secrets', secrets);
 
   const handleNext = useCallback(
     async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
-      // The validation should never throw, as the validators are wrapped in a try/catch.
-      // This makes it fine to set and unset state without try/catch.
+      // console.log('handleNext called!', formData);
+
       setErrors(undefined);
       setIsValidating(true);
 
       const returnedValidation = await validation(formData);
-
-      setStepsState(current => ({
-        ...current,
-        ...formData,
-      }));
-
-      setIsValidating(false);
+      // console.log('Validation result:', returnedValidation);
 
       if (hasErrors(returnedValidation)) {
         setErrors(returnedValidation);
-      } else {
-        setErrors(undefined);
-        setActiveStep(prevActiveStep => {
-          const stepNum = prevActiveStep + 1;
-          analytics.captureEvent('click', `Next Step (${stepNum})`);
-          return stepNum;
-        });
+        setIsValidating(false);
+        return;
       }
+
+      const cleanedFormData = { ...formData };
+      Object.keys(secrets).forEach(secretKey => {
+        delete cleanedFormData[secretKey];
+      });
+
+      // console.log(cleanedFormData);
+
+      setStepsState(current => ({ ...current, ...cleanedFormData }));
+      setIsValidating(false);
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
     },
-    [validation, analytics],
+    [validation, secrets],
   );
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
@@ -221,6 +259,9 @@ export const Stepper = (stepperProps: StepperProps) => {
     analytics.captureEvent('click', `${createLabel}`);
   }, [props, stepsState, analytics, createLabel]);
 
+  // console.log('error', errors);
+
+  // console.log(activeStep === steps.length - 1);
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
@@ -261,7 +302,10 @@ export const Stepper = (stepperProps: StepperProps) => {
             formContext={{ ...propFormContext, formData: stepsState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
-            onSubmit={handleNext}
+            onSubmit={e => {
+              // console.log(e);
+              handleNext(e);
+            }}
             fields={fields}
             showErrorList="top"
             templates={{ ErrorListTemplate }}

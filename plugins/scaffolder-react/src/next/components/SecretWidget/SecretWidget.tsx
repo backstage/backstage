@@ -53,8 +53,8 @@ export const SecretWidget = (
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
-    onChange(Array(newValue.length).fill('*').join(''));
-    debouncedSetSecrets(newValue);
+    debouncedSetSecrets(newValue); // ✅ Store real value in secrets
+    onChange(newValue); // ✅ Ensure formState has the real value (will be removed in handleNext)
   };
 
   return (
