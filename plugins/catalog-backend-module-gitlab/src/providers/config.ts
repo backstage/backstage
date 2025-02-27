@@ -66,6 +66,11 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const includeUsersWithoutSeat =
     config.getOptionalBoolean('includeUsersWithoutSeat') ?? false;
 
+  const membership = config.getOptionalBoolean('membership');
+
+  const topicsArray = config.getOptionalStringArray('topics');
+  const topics = topicsArray?.length ? topicsArray.join(',') : undefined;
+
   return {
     id,
     group,
@@ -85,6 +90,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     excludeRepos,
     restrictUsersToGroup,
     includeUsersWithoutSeat,
+    membership,
+    topics,
   };
 }
 

@@ -72,6 +72,18 @@ export interface Config {
            * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
            */
           excludeRepos?: string[];
+
+          /**
+           * (Optional) If true, limit by repositories that the current user is a member of.
+           * See: https://docs.gitlab.com/api/projects/#list-projects
+           */
+          membership?: boolean;
+
+          /**
+           * (Optional) List of topic names. Limit results to repositories that match all of given topics.
+           * See: https://docs.gitlab.com/api/projects/#list-projects
+           */
+          topics?: string;
         };
       };
     };

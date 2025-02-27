@@ -248,6 +248,18 @@ export type GitlabProviderConfig = {
    * Defaults to `false`
    */
   includeUsersWithoutSeat?: boolean;
+
+  /**
+   * If true, the membership parameter is set to true in the GitLab API request.
+   * See: https://docs.gitlab.com/api/projects/#list-projects
+   */
+  membership?: boolean;
+
+  /**
+   * Optional comma seperated list of topics to filter projects by, as specified in the GitLab API documentation:
+   * https://docs.gitlab.com/api/projects/#list-projects
+   */
+  topics?: string;
 };
 
 /**

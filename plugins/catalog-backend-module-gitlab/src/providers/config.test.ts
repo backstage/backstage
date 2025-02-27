@@ -65,6 +65,8 @@ describe('config', () => {
         excludeRepos: [],
         restrictUsersToGroup: false,
         includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
       }),
     );
   });
@@ -109,6 +111,8 @@ describe('config', () => {
         excludeRepos: [],
         restrictUsersToGroup: false,
         includeUsersWithoutSeat: true,
+        membership: undefined,
+        topics: undefined,
       }),
     );
   });
@@ -153,6 +157,8 @@ describe('config', () => {
         skipForkedRepos: true,
         includeArchivedRepos: false,
         includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
       }),
     );
   });
@@ -197,6 +203,8 @@ describe('config', () => {
         skipForkedRepos: false,
         includeArchivedRepos: true,
         includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
       }),
     );
   });
@@ -242,6 +250,8 @@ describe('config', () => {
         includeArchivedRepos: false,
         excludeRepos: ['foo/bar', 'quz/qux'],
         includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
       }),
     );
   });
@@ -287,6 +297,8 @@ describe('config', () => {
         restrictUsersToGroup: false,
         excludeRepos: [],
         includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {
@@ -335,5 +347,189 @@ describe('config', () => {
     const result = readGitlabConfigs(config);
     expect(result).toHaveLength(1);
     expect(result[0].group).toEqual('');
+  });
+
+  it('valid config with membership', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              membership: true,
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
+        skipForkedRepos: false,
+        includeUsersWithoutSeat: false,
+        includeArchivedRepos: false,
+        membership: true,
+        topics: undefined,
+      }),
+    );
+  });
+
+  it('valid config with empyt topics', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              topics: [],
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
+        skipForkedRepos: false,
+        includeUsersWithoutSeat: false,
+        includeArchivedRepos: false,
+        membership: undefined,
+        topics: undefined,
+      }),
+    );
+  });
+
+  it('valid config with single topics', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              topics: ['topic1'],
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
+        skipForkedRepos: false,
+        includeUsersWithoutSeat: false,
+        includeArchivedRepos: false,
+        membership: undefined,
+        topics: 'topic1',
+      }),
+    );
+  });
+
+  it('valid config with multiple topics', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              topics: ['topic1', 'topic2', 'topic3'],
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
+        skipForkedRepos: false,
+        includeUsersWithoutSeat: false,
+        includeArchivedRepos: false,
+        membership: undefined,
+        topics: 'topic1,topic2,topic3',
+      }),
+    );
   });
 });

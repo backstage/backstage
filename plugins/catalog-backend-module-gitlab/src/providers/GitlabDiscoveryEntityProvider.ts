@@ -214,6 +214,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         page: 1,
         per_page: 50,
         ...(!this.config.includeArchivedRepos && { archived: false }),
+        ...(this.config.membership && { membership: true }),
+        ...(this.config.topics && { topics: this.config.topics }),
       },
     );
 
