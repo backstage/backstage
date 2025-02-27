@@ -28814,12 +28814,6 @@ __metadata:
   languageName: node
   linkType: soft
 
-"example-app@link:../app::locator=example-backend-legacy%40workspace%3Apackages%2Fbackend-legacy":
-  version: 0.0.0-use.local
-  resolution: "example-app@link:../app::locator=example-backend-legacy%40workspace%3Apackages%2Fbackend-legacy"
-  languageName: node
-  linkType: soft
-
 "example-app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "example-app@workspace:packages/app"
@@ -28898,7 +28892,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
@@ -28934,7 +28927,6 @@ __metadata:
     azure-devops-node-api: ^14.0.0
     better-sqlite3: ^11.0.0
     dockerode: ^4.0.0
-    example-app: "link:../app"
     express: ^4.17.1
     express-prom-bundle: ^7.0.0
     express-promise-router: ^4.1.0

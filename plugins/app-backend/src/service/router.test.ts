@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { AppConfig, ConfigReader } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { resolve as resolvePath } from 'path';
 import request from 'supertest';
 import { createRouter } from './router';
 import { loadConfigSchema } from '@backstage/config-loader';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 
 jest.mock('../lib/config', () => ({
   injectConfig: jest.fn(),
@@ -34,12 +34,24 @@ global.__non_webpack_require__ = {
 };
 
 describe('createRouter', () => {
+  const databases = TestDatabases.create({ ids: ['SQLITE_3'] });
+
   let app: express.Express;
 
   beforeAll(async () => {
+    const knex = databases.init('SQLITE_3');
     const router = await createRouter({
       logger: mockServices.logger.mock(),
-      config: new ConfigReader({}),
+      database: mockServices.database.mock({
+        getClient: () => knex,
+      }),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
+      config: mockServices.rootConfig({
+        data: {
+          app: { disableStaticFallbackCache: true },
+        },
+      }),
       appPackageName: 'example-app',
     });
     app = express().use(router);
@@ -97,7 +109,14 @@ describe('createRouter with static fallback handler', () => {
 
     const router = await createRouter({
       logger: mockServices.logger.mock(),
-      config: new ConfigReader({}),
+      database: mockServices.database.mock(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
+      config: mockServices.rootConfig({
+        data: {
+          app: { disableStaticFallbackCache: true },
+        },
+      }),
       appPackageName: 'example-app',
       staticFallbackHandler,
     });
@@ -132,8 +151,16 @@ describe('createRouter config schema test', () => {
   it('uses an external schema', async () => {
     await createRouter({
       logger: mockServices.logger.mock(),
-      config: new ConfigReader({
-        test: 'value',
+      database: mockServices.database.mock(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
+      config: mockServices.rootConfig({
+        data: {
+          app: {
+            disableStaticFallbackCache: true,
+          },
+          test: 'value',
+        },
       }),
       appPackageName: 'example-app',
       schema: await loadConfigSchema({
@@ -173,8 +200,16 @@ describe('createRouter config schema test', () => {
   it('uses no external schema', async () => {
     await createRouter({
       logger: mockServices.logger.mock(),
-      config: new ConfigReader({
-        test: 'value',
+      database: mockServices.database.mock(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
+      config: mockServices.rootConfig({
+        data: {
+          app: {
+            disableStaticFallbackCache: true,
+          },
+          test: 'value',
+        },
       }),
       appPackageName: 'example-app',
     });
