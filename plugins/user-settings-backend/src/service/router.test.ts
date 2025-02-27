@@ -17,7 +17,7 @@
 import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
-import { createRouterInternal } from './router';
+import { createRouter } from './router';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   mockCredentials,
@@ -38,7 +38,7 @@ describe('createRouter', () => {
   let app: express.Express;
 
   beforeEach(async () => {
-    const router = await createRouterInternal({
+    const router = await createRouter({
       userSettingsStore,
       httpAuth: mockServices.httpAuth(),
       signals: signalService as SignalsService,

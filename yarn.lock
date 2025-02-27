@@ -8525,7 +8525,6 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
@@ -8537,7 +8536,6 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^3.0.0
     supertest: ^7.0.0
-    yn: ^4.0.0
   languageName: unknown
   linkType: soft
 
