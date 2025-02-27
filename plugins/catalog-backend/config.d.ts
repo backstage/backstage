@@ -156,6 +156,13 @@ export interface Config {
     orphanStrategy?: 'keep' | 'delete';
 
     /**
+     * The strategy to use for entities that are referenced by providers that are orphaned,
+     * i.e. entities with no providers currently configured in the catalog. The default value is
+     * "keep".
+     */
+    orphanProviderStrategy?: 'keep' | 'delete';
+
+    /**
      * The strategy to use when stitching together the final entities.
      */
     stitchingStrategy?:
