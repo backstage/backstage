@@ -26,7 +26,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
-  static create(database: DatabaseService): Promise<DatabaseDocumentStore>;
+  static create(
+    database: DatabaseService,
+    textSearchConfigName?: string,
+  ): Promise<DatabaseDocumentStore>;
   // (undocumented)
   getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)
