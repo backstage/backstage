@@ -368,6 +368,7 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -421,6 +422,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -487,6 +489,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -568,6 +571,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -617,6 +621,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
