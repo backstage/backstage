@@ -23,7 +23,11 @@ import { RedisStore } from 'rate-limit-redis';
  * @internal
  */
 export class RateLimitStoreFactory {
-  static create(config: Config): Store | undefined {
+  static create(options: {
+    config: Config;
+    prefix?: string;
+  }): Store | undefined {
+    const { config, prefix } = options;
     const store = config.getOptionalConfig('backend.rateLimit.store');
     if (!store) {
       return undefined;
@@ -31,18 +35,20 @@ export class RateLimitStoreFactory {
     const type = store.getString('type');
     switch (type) {
       case 'redis':
-        return this.redis(store);
+        return this.redis({ store, prefix });
       case 'memory':
       default:
         return undefined;
     }
   }
 
-  private static redis(storeConfig: Config): Store {
-    const connectionString = storeConfig.getString('connection');
+  private static redis(options: { store: Config; prefix?: string }): Store {
+    const { store, prefix } = options;
+    const connectionString = store.getString('connection');
     const KeyvRedis = require('@keyv/redis').default;
     const keyv = new KeyvRedis(connectionString);
     return new RedisStore({
+      prefix,
       sendCommand: async (...args: string[]) => {
         const client = await keyv.getClient();
         return client.sendCommand(args);

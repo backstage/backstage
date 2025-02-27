@@ -45,7 +45,7 @@ describe('CacheRateLimitStoreFactory', () => {
         },
       },
     });
-    const store = RateLimitStoreFactory.create(config);
+    const store = RateLimitStoreFactory.create({ config });
     expect(store).toBeUndefined();
   });
 
@@ -62,7 +62,7 @@ describe('CacheRateLimitStoreFactory', () => {
         },
       },
     });
-    const store = RateLimitStoreFactory.create(config);
+    const store = RateLimitStoreFactory.create({ config });
     expect(store).toBeInstanceOf(RedisStore);
   });
 });

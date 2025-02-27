@@ -265,7 +265,7 @@ export class MiddlewareFactory {
     return rateLimitMiddleware({
       store: useDefaults
         ? undefined
-        : RateLimitStoreFactory.create(this.#config),
+        : RateLimitStoreFactory.create({ config: this.#config }),
       config: rateLimitOptions,
     });
   }
