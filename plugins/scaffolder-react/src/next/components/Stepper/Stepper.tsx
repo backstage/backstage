@@ -207,9 +207,13 @@ export const Stepper = (stepperProps: StepperProps) => {
 
       setStepsState(current => ({ ...current, ...cleanedFormData }));
       setIsValidating(false);
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
+      setActiveStep(prevActiveStep => {
+        const stepNum = prevActiveStep + 1;
+        analytics.captureEvent('click', `Next Step (${stepNum})`);
+        return stepNum;
+      });
     },
-    [validation, secrets],
+    [validation, analytics, secrets],
   );
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
@@ -259,10 +263,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             formContext={{ ...propFormContext, formData: stepsState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
-            onSubmit={e => {
-              // console.log(e);
-              handleNext(e);
-            }}
+            onSubmit={handleNext}
             fields={fields}
             showErrorList="top"
             templates={{ ErrorListTemplate }}
