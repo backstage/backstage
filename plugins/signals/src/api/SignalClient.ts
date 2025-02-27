@@ -135,7 +135,7 @@ export class SignalClient implements SignalApi {
   }
 
   private async connect() {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
       return;
     }
 
