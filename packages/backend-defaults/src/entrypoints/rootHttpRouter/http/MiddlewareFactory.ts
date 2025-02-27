@@ -43,10 +43,8 @@ import {
   ServiceUnavailableError,
 } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
-import { rateLimit } from 'express-rate-limit';
-import { readDurationFromConfig } from '@backstage/config';
-import { durationToMilliseconds } from '@backstage/types';
-import { RateLimitStoreFactory } from './RateLimitStoreFactory';
+import { RateLimitStoreFactory } from '../../../lib/RateLimitStoreFactory.ts';
+import { rateLimitMiddleware } from '../../../lib/rateLimitMiddleware.ts';
 
 type LogMeta = {
   date: string;
@@ -254,59 +252,21 @@ export class MiddlewareFactory {
       ? undefined
       : this.#config.getOptionalConfig('backend.rateLimit');
 
-    let windowMs: number = 60000;
-    if (rateLimitOptions && rateLimitOptions.has('window')) {
-      const windowDuration = readDurationFromConfig(rateLimitOptions, {
-        key: 'window',
-      });
-      windowMs = durationToMilliseconds(windowDuration);
+    // Global rate limiting disabled
+    if (
+      rateLimitOptions &&
+      rateLimitOptions.getOptionalBoolean('global') === false
+    ) {
+      return (_req: Request, _res: Response, next: NextFunction) => {
+        next();
+      };
     }
 
-    const ipAllowList = rateLimitOptions?.getOptionalStringArray(
-      'ipAllowList',
-    ) ?? ['127.0.0.1', '0:0:0:0:0:0:0:1', '::1'];
-
-    return rateLimit({
-      windowMs,
-      limit: rateLimitOptions?.getOptionalNumber('incomingRequestLimit'),
-      skipSuccessfulRequests: rateLimitOptions?.getOptionalBoolean(
-        'skipSuccessfulRequests',
-      ),
-      message: {
-        error: {
-          name: 'Error',
-          message: `Too many requests, please try again later`,
-        },
-        response: {
-          statusCode: 429,
-        },
-      },
-      statusCode: 429,
-      skipFailedRequests:
-        rateLimitOptions?.getOptionalBoolean('skipFailedRequests'),
-      passOnStoreError:
-        rateLimitOptions?.getOptionalBoolean('passOnStoreError'),
-      keyGenerator(req, _res): string {
-        if (!req.ip) {
-          return req.socket.remoteAddress!;
-        }
-        return req.ip;
-      },
-      skip: (req, _res) => {
-        return (
-          Boolean(req.ip && ipAllowList.includes(req.ip)) ||
-          Boolean(
-            req.socket.remoteAddress &&
-              ipAllowList.includes(req.socket.remoteAddress),
-          )
-        );
-      },
-      validate: {
-        trustProxy: false,
-      },
+    return rateLimitMiddleware({
       store: useDefaults
         ? undefined
         : RateLimitStoreFactory.create(this.#config),
+      config: rateLimitOptions,
     });
   }
 
