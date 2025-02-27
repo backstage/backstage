@@ -1,32 +1,69 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: test-secret-with-pattern
-  title: test ui:field secret with pattern
-  description: test-secret
+  name: notifications-demo
+  title: Test Notifications template
+  description: scaffolder v1beta3 template demo sending notification
 spec:
-  owner: test@example.com
+  owner: backstage/techdocs-core
   type: service
   parameters:
-    - title: test secret with pattern
+    - title: Notification
       required:
-        - test
+        - recipients
+        - title
       properties:
-        test:
-          title: test secret with patatern
+        recipients:
+          title: Recipients
           type: string
-          ui.autofocus: true
+          description: Notification recipients
+          default: entity
+          enum:
+            - entity
+            - broadcast
+        entityRefs:
+          title: Entities
+          type: array
+          description: Entities to send the notification. Required if recipients is entity
+          ui:field: MultiEntityPicker
           ui:options:
-            rows: 5
-          ui:widget: password
-          ui:field: Secret 
-          maxLength: 8
-          minLength: 8
-          pattern: "^[a-z]{1}[a-z0-9]{2,7}$"
+            defaultNamespace: default
+        title:
+          title: Title
+          type: string
+          description: Notification title
+        description:
+          title: Description
+          type: string
+          description: Notification longer description
+        link:
+          title: Link
+          type: string
+          description: Notification link
+        severity:
+          title: Severity
+          type: string
+          description: Notification severity
+          default: normal
+          enum:
+            - low
+            - normal
+            - high
+            - critical
+        scope:
+          title: Scope
+          type: string
+          description: Notification scope
 
   steps:
-    - id: dummy
-      name: log
-      action: debug:log
+    - id: send-notification
+      name: Send notification
+      action: notification:send
       input:
-        message: done
+        recipients: ${{ parameters.recipients }}
+        entityRefs: ${{ parameters.entityRefs }}
+        title: ${{ parameters.title }}
+        description: ${{ parameters.description }}
+        link: ${{ parameters.link }}
+        severity: ${{ parameters.severity }}
+        scope: ${{ parameters.scope }}
