@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
-import { RateLimitStoreFactory } from './RateLimitStoreFactory';
+import { RateLimitStoreFactory } from './RateLimitStoreFactory.ts';
 import { RedisStore } from 'rate-limit-redis';
 
 jest.mock('@keyv/redis', () => {
@@ -55,7 +55,7 @@ describe('CacheRateLimitStoreFactory', () => {
         backend: {
           rateLimit: {
             store: {
-              client: 'redis',
+              type: 'redis',
               connection: 'redis://localhost:6379',
             },
           },
