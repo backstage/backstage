@@ -180,57 +180,19 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
-      // console.log(e.formData);
-
       setStepsState(current => {
         return { ...current, ...e.formData };
       });
     },
     [setStepsState],
   );
-  // console.log('******', stepsState);
-
-  // const handleNext = useCallback(
-  //   async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
-  //     // The validation should never throw, as the validators are wrapped in a try/catch.
-  //     // This makes it fine to set and unset state without try/catch.
-  //     setErrors(undefined);
-  //     setIsValidating(true);
-
-  //     const returnedValidation = await validation(formData);
-  //     console.log(formData, returnedValidation);
-
-  //     setStepsState(current => ({
-  //       ...current,
-  //       ...formData,
-  //     }));
-
-  //     setIsValidating(false);
-
-  //     if (hasErrors(returnedValidation)) {
-  //       setErrors(returnedValidation);
-  //     } else {
-  //       setErrors(undefined);
-  //       setActiveStep(prevActiveStep => {
-  //         const stepNum = prevActiveStep + 1;
-  //         analytics.captureEvent('click', `Next Step (${stepNum})`);
-  //         return stepNum;
-  //       });
-  //     }
-  //   },
-  //   [validation, analytics],
-  // );
-  // console.log('secrets', secrets);
 
   const handleNext = useCallback(
     async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
-      // console.log('handleNext called!', formData);
-
       setErrors(undefined);
       setIsValidating(true);
 
       const returnedValidation = await validation(formData);
-      // console.log('Validation result:', returnedValidation);
 
       if (hasErrors(returnedValidation)) {
         setErrors(returnedValidation);
@@ -242,8 +204,6 @@ export const Stepper = (stepperProps: StepperProps) => {
       Object.keys(secrets).forEach(secretKey => {
         delete cleanedFormData[secretKey];
       });
-
-      // console.log(cleanedFormData);
 
       setStepsState(current => ({ ...current, ...cleanedFormData }));
       setIsValidating(false);
@@ -259,9 +219,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     analytics.captureEvent('click', `${createLabel}`);
   }, [props, stepsState, analytics, createLabel]);
 
-  // console.log('error', errors);
-
-  // console.log(activeStep === steps.length - 1);
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
