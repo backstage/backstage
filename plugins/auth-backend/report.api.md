@@ -216,7 +216,7 @@ export type GcpIapResult = GcpIapResult_2;
 // @public @deprecated
 export type GcpIapTokenInfo = GcpIapTokenInfo_2;
 
-// @public
+// @public @deprecated
 export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
 
 // @public (undocumented)
