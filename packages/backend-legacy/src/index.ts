@@ -42,7 +42,6 @@ import catalog from './plugins/catalog';
 import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
 import scaffolder from './plugins/scaffolder';
-import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
 import app from './plugins/app';
@@ -129,7 +128,6 @@ async function main() {
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
@@ -145,7 +143,6 @@ async function main() {
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
 
