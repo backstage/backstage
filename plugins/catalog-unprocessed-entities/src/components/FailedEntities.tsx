@@ -99,7 +99,7 @@ const convertTimeToLocalTimezone = (strDateTime: string | Date) => {
 
   const dateTimeLocalTz = dateTime.setZone(DateTime.local().zoneName);
 
-  return dateTimeLocalTz.toFormat('M/d/yyyy, h:mm:ss a');
+  return dateTimeLocalTz.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
 };
 
 export const FailedEntities = () => {
