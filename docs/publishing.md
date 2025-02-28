@@ -53,7 +53,7 @@ Additional steps for the main line release
   - Mention any security fixes
 - Create Release Notes PR
   - Add the release note file as [`/docs/releases/vx.y.0.md`](./releases)
-  - Add an entry to [`/microsite/sidebar.js`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.js) for the release note
+  - Add an entry to [`/microsite/sidebars.ts`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.ts) for the release note
   - Update the navigation bar item in [`/microsite/docusaurus.config.ts`](https://github.com/backstage/backstage/blob/master/microsite/docusaurus.config.ts) to point to the new release note
   - Finally copy the content, without the metadata header, into the description of the [`Version Packages` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages)
 
