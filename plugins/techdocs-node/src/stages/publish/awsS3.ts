@@ -471,27 +471,37 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const resp = await this.storageClient.send(
-        new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
-      );
+      try {
+        const resp = await this.storageClient.send(
+          new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
+        );
 
-      // Inject response headers
-      for (const [headerKey, headerValue] of Object.entries(responseHeaders)) {
-        res.setHeader(headerKey, headerValue);
+        // Inject response headers
+        for (const [headerKey, headerValue] of Object.entries(
+          responseHeaders,
+        )) {
+          res.setHeader(headerKey, headerValue);
+        }
+
+        (resp.Body as Readable)
+          .on('error', err => {
+            console.log(' stream on error ');
+            this.logger.warn(
+              `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+            );
+            if (!res.headersSent) {
+              res.status(404).send('File Not Found');
+            } else {
+              res.destroy();
+            }
+          })
+          .pipe(res);
+      } catch (err) {
+        this.logger.warn(
+          `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+        );
+        res.status(404).send('File Not Found');
       }
-
-      (resp.Body as Readable)
-        .on('error', err => {
-          this.logger.warn(
-            `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
-          );
-          if (!res.headersSent) {
-            res.status(404).send('File Not Found');
-          } else {
-            res.destroy();
-          }
-        })
-        .pipe(res);
     };
   }
 
