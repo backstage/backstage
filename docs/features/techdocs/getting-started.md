@@ -95,6 +95,9 @@ That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
 ## Adding TechDocs Backend plugin
 
+:::note
+These instructions are for the new backend system. For setting this up in the old backend system, see [here](https://github.com/backstage/backstage/blob/v1.36.1/docs/features/techdocs/getting-started.md)
+:::
 First we need to install the `@backstage/plugin-techdocs-backend` package.
 
 ```bash title="From your Backstage root directory"
