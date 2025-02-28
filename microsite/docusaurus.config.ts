@@ -98,7 +98,7 @@ const config: Config = {
             return `https://github.com/backstage/backstage/edit/master/docs/${docPath}`;
           },
           path: '../docs',
-          sidebarPath: 'sidebars.js',
+          sidebarPath: 'sidebars.ts',
           ...(useVersionedDocs
             ? {
                 includeCurrentVersion: true,
@@ -298,6 +298,50 @@ const config: Config = {
   ],
   themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
+    languageTabs: [
+      {
+        highlight: "javascript",
+        language: "nodejs",
+        logoClass: "nodejs",
+      },
+      {
+        highlight: "javascript",
+        language: "javascript",
+        logoClass: "javascript",
+      },
+      {
+        highlight: "bash",
+        language: "curl",
+        logoClass: "curl",
+      },
+      {
+        highlight: "powershell",
+        language: "powershell",
+        logoClass: "powershell",
+      },
+      {
+        highlight: "python",
+        language: "python",
+        logoClass: "python",
+      },
+      {
+        highlight: "java",
+        language: "java",
+        logoClass: "java",
+        variant: "unirest",
+      },
+      {
+        highlight: "go",
+        language: "go",
+        logoClass: "go",
+      },
+      {
+        highlight: "rust",
+        language: "rust",
+        logoClass: "rust",
+      },
+    ],
+    
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: true,
