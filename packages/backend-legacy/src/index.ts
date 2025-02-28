@@ -49,7 +49,6 @@ import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
@@ -76,10 +75,7 @@ function makeCreateEnv(config: Config) {
   });
 
   const eventsService = DefaultEventsService.create({ logger: root, config });
-  const eventBroker = new DefaultEventBroker(
-    root.child({ type: 'plugin' }),
-    eventsService,
-  );
+
   const signalsService = DefaultSignalsService.create({
     events: eventsService,
   });
@@ -101,7 +97,6 @@ function makeCreateEnv(config: Config) {
       database,
       config,
       reader,
-      eventBroker,
       events: eventsService,
       discovery,
       tokenManager,

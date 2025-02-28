@@ -3694,7 +3694,6 @@ __metadata:
   resolution: "@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -6754,7 +6753,6 @@ __metadata:
   resolution: "@backstage/plugin-events-backend@workspace:plugins/events-backend"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -6773,7 +6771,6 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^3.0.0
     supertest: ^7.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
