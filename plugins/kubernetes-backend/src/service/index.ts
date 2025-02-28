@@ -25,4 +25,3 @@ export type {
   KubernetesProxyCreateRequestHandlerOptions,
   KubernetesProxyOptions,
 } from './KubernetesProxy';
-export * from './router';

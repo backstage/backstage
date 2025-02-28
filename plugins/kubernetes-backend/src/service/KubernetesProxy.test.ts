@@ -155,6 +155,7 @@ describe('KubernetesProxy', () => {
       clusterSupplier,
       authStrategy,
       discovery: mockDisocveryApi,
+      httpAuth: mockServices.httpAuth(),
     });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
@@ -545,6 +546,7 @@ describe('KubernetesProxy', () => {
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
       discovery: mockDisocveryApi,
+      httpAuth: mockServices.httpAuth(),
     });
 
     worker.use(
@@ -667,6 +669,7 @@ describe('KubernetesProxy', () => {
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
       discovery: mockDisocveryApi,
+      httpAuth: mockServices.httpAuth(),
     });
 
     worker.use(

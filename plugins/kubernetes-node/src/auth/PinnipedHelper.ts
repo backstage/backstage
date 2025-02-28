@@ -18,7 +18,7 @@ import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import * as https from 'https';
 import { bufferFromFileOrString } from '@kubernetes/client-node';
 import fetch, { RequestInit } from 'node-fetch';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -51,7 +51,7 @@ export type PinnipedParameters = {
  * @public
  */
 export class PinnipedHelper {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: LoggerService) {}
 
   public async tokenCredentialRequest(
     clusterDetails: ClusterDetails,

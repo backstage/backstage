@@ -24,13 +24,11 @@ import { KubernetesObjectsProvider as KubernetesObjectsProvider_2 } from '@backs
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backstage/plugin-kubernetes-node';
-import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'http-proxy-middleware';
-import { RootConfigService } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
@@ -88,9 +86,6 @@ export class AzureIdentityStrategy implements AuthenticationStrategy_2 {
 
 // @public @deprecated (undocumented)
 export type ClusterDetails = k8sAuthTypes.ClusterDetails;
-
-// @public @deprecated
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export type CustomResource = k8sAuthTypes.CustomResource;
@@ -293,7 +288,7 @@ export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;
 // @public @deprecated (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
-  auth?: AuthService;
+  auth: AuthService;
   // (undocumented)
   catalogApi: CatalogApi;
   // (undocumented)
@@ -301,7 +296,7 @@ export interface KubernetesEnvironment {
   // (undocumented)
   discovery: DiscoveryService;
   // (undocumented)
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
   // (undocumented)
   logger: LoggerService;
   // (undocumented)
@@ -357,7 +352,7 @@ export type KubernetesProxyOptions = {
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
 };
 
 // @public @deprecated (undocumented)
@@ -383,22 +378,6 @@ export class OidcStrategy implements AuthenticationStrategy_2 {
   presentAuthMetadata(_authMetadata: AuthMetadata_2): AuthMetadata_2;
   // (undocumented)
   validateCluster(authMetadata: AuthMetadata_2): Error[];
-}
-
-// @public @deprecated (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  catalogApi: CatalogApi;
-  // (undocumented)
-  clusterSupplier?: KubernetesClustersSupplier;
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissions: PermissionEvaluator;
 }
 
 // @public (undocumented)

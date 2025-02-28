@@ -41,7 +41,6 @@ import {
 } from '../auth';
 import { getCombinedClusterSupplier } from '../cluster-locator';
 
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
@@ -87,8 +86,8 @@ export interface KubernetesEnvironment {
   catalogApi: CatalogApi;
   discovery: DiscoveryService;
   permissions: PermissionEvaluator;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
 }
 
 /**
@@ -147,12 +146,6 @@ export class KubernetesBuilder {
       } as unknown as KubernetesBuilderReturn;
     }
 
-    const { auth, httpAuth } = createLegacyAuthAdapters({
-      auth: this.env.auth,
-      httpAuth: this.env.httpAuth,
-      discovery: this.env.discovery,
-    });
-
     const customResources = this.buildCustomResources();
 
     const fetcher = this.getFetcher();
@@ -165,7 +158,7 @@ export class KubernetesBuilder {
       logger,
       clusterSupplier,
       this.env.discovery,
-      httpAuth,
+      this.env.httpAuth,
     );
 
     const serviceLocator = this.getServiceLocator();
@@ -185,8 +178,8 @@ export class KubernetesBuilder {
       this.env.catalogApi,
       proxy,
       permissions,
-      auth,
-      httpAuth,
+      this.env.auth,
+      this.env.httpAuth,
     );
 
     return {
@@ -268,14 +261,13 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
-    const { auth } = createLegacyAuthAdapters(this.env);
     this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
       new DispatchStrategy({ authStrategyMap: this.getAuthStrategyMap() }),
       this.env.logger,
       refreshInterval,
-      auth,
+      this.env.auth,
     );
 
     return this.clusterSupplier;
