@@ -24,24 +24,41 @@ import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
 
+/** @public */
+export type UserNotificationSettingsCardProps = {
+  /**
+   * Optional origin plugin display names
+   */
+  originNames?: Record<string, string>;
+  /**
+   * Optional help message for channel headers
+   */
+  channelHeaderHelpMessages?: Record<string, string>;
+  /**
+   * Optional help message for each channel toggle
+   */
+  channelToggleHelpMessages?: Record<string, Record<string, string>>;
+  /**
+   * Optional, text to display in a top banner (could be used for displaying additional context)
+   */
+  helpBannerMessage?: string;
+};
+
 /**
  *
- * @param {Record<string, string>} [props.originNames] - Optional origin plugin display names
- * @param {Record<string, string>} [props.channelHeaderHelpMessages] - Optional help message for channel headers
- * @param {Record<string, Record<string, string>>} [props.channelToggleHelpMessages] - Optional help message for each channel toggle
- * @param {string} [props.helpBannerMessage] - Optional, text to display in a top banner (could be used for displaying additional context)
+ * @param props - Component props (see {@link UserNotificationSettingsCardProps})
  *
  * @example
- * With custom channel header helper messages
- * ```ts
+ * With custom channel header helper messages:
+ * ```tsx
  * <UserNotificationSettingsCard
  *    channelHeaderHelpMessages={{ Web: 'In app notification', Email: 'Email notification' }}
  * />
  * ```
  *
  * @example
- * With custom channel toggle helper messages
- * ```ts
+ * With custom channel toggle helper messages:
+ * ```tsx
  * <UserNotificationSettingsCard
  *    channelToggleHelpMessages={{
  *      'plugin:scaffolder': {
@@ -57,12 +74,9 @@ import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
  *
  * @public
  */
-export const UserNotificationSettingsCard = (props: {
-  originNames?: Record<string, string>;
-  channelHeaderHelpMessages?: Record<string, string>;
-  channelToggleHelpMessages?: Record<string, Record<string, string>>;
-  helpBannerMessage?: string;
-}) => {
+export const UserNotificationSettingsCard = (
+  props: UserNotificationSettingsCardProps,
+) => {
   const [settings, setNotificationSettings] = React.useState<
     NotificationSettings | undefined
   >(undefined);

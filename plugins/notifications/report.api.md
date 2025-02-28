@@ -208,9 +208,17 @@ export function useNotificationsApi<T>(
     };
 
 // @public (undocumented)
-export const UserNotificationSettingsCard: (props: {
+export const UserNotificationSettingsCard: (
+  props: UserNotificationSettingsCardProps,
+) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type UserNotificationSettingsCardProps = {
   originNames?: Record<string, string>;
-}) => React_2.JSX.Element;
+  channelHeaderHelpMessages?: Record<string, string>;
+  channelToggleHelpMessages?: Record<string, Record<string, string>>;
+  helpBannerMessage?: string;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
