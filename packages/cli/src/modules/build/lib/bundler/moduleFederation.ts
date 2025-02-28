@@ -17,11 +17,11 @@
 import chalk from 'chalk';
 import { ModuleFederationOptions } from './types';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { readEntryPoints } from '../entryPoints';
+import { readEntryPoints } from '../../../../lib/entryPoints';
 import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
-} from '../typeDistProject';
+} from '../../../../lib/typeDistProject';
 
 export async function getModuleFederationOptions(
   packageJson: BackstagePackageJson,

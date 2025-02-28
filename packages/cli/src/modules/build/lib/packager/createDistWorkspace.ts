@@ -24,12 +24,12 @@ import {
 import { tmpdir } from 'os';
 import tar, { CreateOptions, FileOptions } from 'tar';
 import partition from 'lodash/partition';
-import { paths } from '../paths';
-import { run } from '../run';
+import { paths } from '../../../../lib/paths';
+import { run } from '../../../../lib/run';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
-} from '../../../package.json';
+} from '../../../../../package.json';
 import {
   BuildOptions,
   buildPackages,
@@ -42,8 +42,8 @@ import {
   PackageGraph,
   PackageGraphNode,
 } from '@backstage/cli-node';
-import { runParallelWorkers } from '../parallel';
-import { createTypeDistProject } from '../typeDistProject';
+import { runParallelWorkers } from '../../../../lib/parallel';
+import { createTypeDistProject } from '../../../../lib/typeDistProject';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [

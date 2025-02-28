@@ -18,16 +18,16 @@ import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../lib/paths';
+import { paths } from '../../../../lib/paths';
 import {
   BackstagePackage,
   PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../lib/parallel';
-import { buildFrontend } from '../build/buildFrontend';
-import { buildBackend } from '../build/buildBackend';
-import { createScriptOptionsParser } from './optionsParser';
+import { runParallelWorkers } from '../../../../lib/parallel';
+import { buildFrontend } from '../../lib/buildFrontend';
+import { buildBackend } from '../../lib/buildBackend';
+import { createScriptOptionsParser } from '../../../../commands/repo/optionsParser';
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();

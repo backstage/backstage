@@ -16,9 +16,9 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { buildBundle, getModuleFederationOptions } from '../../lib/bundler';
-import { getEnvironmentParallelism } from '../../lib/parallel';
-import { loadCliConfig } from '../../modules/config/lib/config';
+import { buildBundle, getModuleFederationOptions } from './bundler';
+import { getEnvironmentParallelism } from '../../../lib/parallel';
+import { loadCliConfig } from '../../config/lib/config';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
 interface BuildAppOptions {
