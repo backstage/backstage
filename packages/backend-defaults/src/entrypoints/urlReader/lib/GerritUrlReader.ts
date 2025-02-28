@@ -277,7 +277,6 @@ export class GerritUrlReader implements UrlReaderService {
       this.integration.config.gitilesBaseUrl,
       getGitilesAuthenticationUrl(this.integration.config),
     );
-    console.log(treeUrl);
 
     const treeResponse = await fetch(treeUrl, {
       ...getGerritRequestOptions(this.integration.config),
