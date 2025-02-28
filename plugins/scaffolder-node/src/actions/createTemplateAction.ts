@@ -71,26 +71,6 @@ type FlattenOptionalProperties<T extends { [key in string]: unknown }> = Expand<
 export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends JSONSchema7 = JSONSchema7,
-  TOutputSchema extends JSONSchema7 = JSONSchema7,
-  TActionInput extends JsonObject = TInputParams,
-  TActionOutput extends JsonObject = TOutputParams,
->(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
-    TInputSchema,
-    TOutputSchema,
-    'v1'
-  >,
-): TemplateAction<TActionInput, TActionOutput, 'v1'>;
-/**
- * @public
- * @deprecated migrate to using the new built in zod schema definitions for schemas
- */
-export function createTemplateAction<
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends z.ZodType = z.ZodType,
   TOutputSchema extends z.ZodType = z.ZodType,
   TActionInput extends JsonObject = z.infer<TInputSchema>,
@@ -133,17 +113,37 @@ export function createTemplateAction<
   }>,
   'v2'
 >;
+/**
+ * @public
+ * @deprecated migrate to using the new built in zod schema definitions for schemas
+ */
+export function createTemplateAction<
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends JSONSchema7 = JSONSchema7,
+  TOutputSchema extends JSONSchema7 = JSONSchema7,
+  TActionInput extends JsonObject = TInputParams,
+  TActionOutput extends JsonObject = TOutputParams,
+>(
+  action: TemplateActionOptions<
+    TActionInput,
+    TActionOutput,
+    TInputSchema,
+    TOutputSchema,
+    'v1'
+  >,
+): TemplateAction<TActionInput, TActionOutput, 'v1'>;
 export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends
     | JSONSchema7
     | z.ZodType
-    | { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
+    | { [key in string]: (zImpl: typeof z) => z.ZodType } = JSONSchema7,
   TOutputSchema extends
     | JSONSchema7
     | z.ZodType
-    | { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
+    | { [key in string]: (zImpl: typeof z) => z.ZodType } = JSONSchema7,
   TActionInput extends JsonObject = TInputSchema extends z.ZodType<
     any,
     any,
