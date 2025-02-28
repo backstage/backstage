@@ -20,7 +20,6 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -973,48 +972,17 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
-        headers: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              (entity: Entity) => boolean,
-              'catalog.entity-filter-function',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-filter-expression',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              JSX_2.Element,
-              'core.reactElement',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              | ReactNode
-              | {
-                  actions: ReactNode[];
-                },
-              'entity-header.titleActions',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              ReactNode,
-              'entity-header.subtitle',
-              {
-                optional: true;
-              }
-            >,
+        header: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            JSX_2.Element,
+            'core.reactElement',
+            {
+              optional: true;
+            }
+          >,
           {
-            singleton: false;
-            optional: false;
+            singleton: true;
+            optional: true;
           }
         >;
         contents: ExtensionInput<

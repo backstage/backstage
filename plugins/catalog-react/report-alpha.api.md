@@ -14,7 +14,6 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
-import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -326,93 +325,23 @@ export interface EntityContentLayoutProps {
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
   name: undefined;
-  params:
-    | {
-        defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
-        loader: () => Promise<JSX.Element>;
-      }
-    | {
-        defaultFilter?: string | ((entity: Entity) => boolean) | undefined;
-        title?:
-          | ReactNode
-          | {
-              actions: ReactNode[];
-            };
-        subtitle?: ReactNode;
-      };
-  output:
-    | ConfigurableExtensionDataRef<
-        (entity: Entity) => boolean,
-        'catalog.entity-filter-function',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        string,
-        'catalog.entity-filter-expression',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        | ReactNode
-        | {
-            actions: ReactNode[];
-          },
-        'entity-header.titleActions',
-        {
-          optional: true;
-        }
-      >
-    | ConfigurableExtensionDataRef<
-        ReactNode,
-        'entity-header.subtitle',
-        {
-          optional: true;
-        }
-      >;
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ConfigurableExtensionDataRef<
+    JSX_2.Element,
+    'core.reactElement',
+    {
+      optional: true;
+    }
+  >;
   inputs: {};
-  config: {
-    filter: string | undefined;
-  };
-  configInput: {
-    filter?: string | undefined;
-  };
+  config: {};
+  configInput: {};
   dataRefs: {
-    filterFunction: ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.entity-filter-function',
-      {}
-    >;
-    filterExpression: ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
-      {}
-    >;
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
-      {}
-    >;
-    title: ConfigurableExtensionDataRef<
-      | ReactNode
-      | {
-          actions: ReactNode[];
-        },
-      'entity-header.titleActions',
-      {}
-    >;
-    subtitle: ConfigurableExtensionDataRef<
-      ReactNode,
-      'entity-header.subtitle',
       {}
     >;
   };

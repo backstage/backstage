@@ -20,7 +20,6 @@ import React, {
   useEffect,
   ComponentProps,
   ReactNode,
-  Fragment,
 } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
@@ -98,12 +97,6 @@ function findParentRelation(
   return null;
 }
 
-function isDefaultHeaderProps(
-  title: ReactNode | { actions: ReactNode[] },
-): title is { actions: ReactNode[] } {
-  return title !== null && typeof title === 'object' && 'actions' in title;
-}
-
 const useStyles = makeStyles(theme => ({
   breadcrumbs: {
     color: theme.page.fontColor,
@@ -119,8 +112,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function EntityHeaderTitle(props: { actions?: ReactNode[] }) {
-  const { actions } = props;
+function EntityHeaderTitle() {
   const { entity } = useAsyncEntity();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { headerTitle: title } = headerProps(kind, namespace, name, entity);
@@ -135,9 +127,6 @@ function EntityHeaderTitle(props: { actions?: ReactNode[] }) {
         {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
-      {actions?.map((action, index) => (
-        <Fragment key={index}>{action}</Fragment>
-      ))}
     </Box>
   );
 }
@@ -200,14 +189,14 @@ export function EntityHeader(props: {
    * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
    */
   parentEntityRelations?: string[];
-  title?: ReactNode | { actions: ReactNode[] };
+  title?: ReactNode;
   subtitle?: ReactNode;
 }) {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
     parentEntityRelations,
-    title = { actions: [] },
+    title,
     subtitle,
   } = props;
   const { entity } = useAsyncEntity();
@@ -236,7 +225,7 @@ export function EntityHeader(props: {
     [setConfirmationDialogOpen],
   );
 
-  const cleanUpAfterUnregiterConfirmation = useCallback(async () => {
+  const cleanUpAfterUnregisterConfirmation = useCallback(async () => {
     setConfirmationDialogOpen(false);
     navigate(
       unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
@@ -279,9 +268,7 @@ export function EntityHeader(props: {
     <Header
       pageTitleOverride={entityFallbackText}
       type={type}
-      title={
-        isDefaultHeaderProps(title) ? <EntityHeaderTitle {...title} /> : title
-      }
+      title={title ?? <EntityHeaderTitle />}
       subtitle={
         subtitle ?? (
           <EntityHeaderSubtitle parentEntityRelations={parentEntityRelations} />
@@ -312,7 +299,7 @@ export function EntityHeader(props: {
             entity={entity!}
             open={confirmationDialogOpen}
             onClose={closeUnregisterEntityDialog}
-            onConfirm={cleanUpAfterUnregiterConfirmation}
+            onConfirm={cleanUpAfterUnregisterConfirmation}
           />
         </>
       )}

@@ -117,7 +117,6 @@ describe('Entity page', () => {
     params: {
       defaultPath: '/overview',
       defaultTitle: 'Overview',
-      defaultGroup: 'documentation',
       loader: async () => <div>Mock Overview content</div>,
     },
   });

@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Now multiple entity page headers can be configured based on an entity filter.
+Now a custom entity page header can be passed as input to the default entity page.
