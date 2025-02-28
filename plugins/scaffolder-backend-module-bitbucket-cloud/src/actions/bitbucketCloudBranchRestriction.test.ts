@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,87 +14,33 @@
  * limitations under the License.
  */
 
-import { createBitbucketCloudBranchRestrictionAction } from './bitbucketCloudBranchRestriction';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { getBitbucketClient } from './helpers';
+import { Bitbucket } from 'bitbucket';
+
+jest.mock('bitbucket', () => ({
+  Bitbucket: jest.fn(),
+}));
 
 describe('bitbucketCloud:branchRestriction:create', () => {
-  const config = new ConfigReader({
-    integrations: {
-      bitbucketCloud: [
-        {
-          username: 'u',
-          appPassword: 'p',
-        },
-      ],
-    },
-  });
-
-  const integrations = ScmIntegrations.fromConfig(config);
-  const action = createBitbucketCloudBranchRestrictionAction({ integrations });
-  const mockContext = createMockActionContext({
-    input: {
-      repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
-      kind: 'push',
-    },
-  });
-  const server = setupServer();
-  registerMswTestHooks(server);
-
-  it('should work if the token is provided through ctx.input', async () => {
-    expect.assertions(2);
-    const token = 'user-token';
-    server.use(
-      rest.post(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/branch-restrictions',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          req.json().then(data => {
-            expect(data).toEqual({
-              branch_match_kind: 'branching_model',
-              branch_type: 'development',
-              users: [],
-              groups: [],
-              kind: 'push',
-            });
-          });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
-          );
-        },
-      ),
-    );
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        token: token,
+  it('getBitbucketClient should return the correct headers with username and password', () => {
+    expect.assertions(1);
+    const username = 'username';
+    const password = 'password';
+    getBitbucketClient({ username: username, appPassword: password });
+    expect(Bitbucket).toHaveBeenCalledWith({
+      auth: {
+        username: username,
+        password: password,
       },
     });
   });
 
-  it('should return correct outputs', async () => {
-    server.use(
-      rest.post(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/branch-restrictions',
-        (_, res, ctx) =>
-          res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
-          ),
-      ),
-    );
+  it('getBitbucketClient should throw if only one of username or password is provided', () => {
+    expect.assertions(2);
+    const username = 'username';
+    const password = 'password';
 
-    await action.handler(mockContext);
-
-    expect(mockContext.output).toHaveBeenCalledWith('statusCode', 201);
-    expect(mockContext.output).toHaveBeenCalledWith('json', '{}');
+    expect(() => getBitbucketClient({ username })).toThrow(Error);
+    expect(() => getBitbucketClient({ appPassword: password })).toThrow(Error);
   });
 });

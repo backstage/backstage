@@ -48,6 +48,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "bitbucket": "^2.12.0",
     "fs-extra": "^11.2.0",
     "yaml": "^2.0.0"
   },

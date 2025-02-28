@@ -19,7 +19,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
-import { getAuthorizationHeader } from './helpers';
+import { getBitbucketClient } from './helpers';
 import * as inputProps from './inputProperties';
 import { examples } from './bitbucketCloudBranchRestriction.examples';
 
@@ -31,10 +31,13 @@ const createBitbucketCloudBranchRestriction = async (opts: {
   branchType?: string;
   pattern?: string;
   value?: number;
-  users?: Array<object>;
-  groups?: Array<object>;
-  authorization: string;
-  apiBaseUrl: string;
+  users?: { uuid: string; type: string }[];
+  groups?: { slug: string; type: string }[];
+  authorization: {
+    token?: string;
+    username?: string;
+    appPassword?: string;
+  };
 }) => {
   const {
     workspace,
@@ -47,64 +50,24 @@ const createBitbucketCloudBranchRestriction = async (opts: {
     users,
     groups,
     authorization,
-    apiBaseUrl,
   } = opts;
 
-  const body = new Map();
-  body.set('branch_match_kind', branchMatchKind || 'branching_model');
-  if (kind in ['push', 'restrict_merges']) {
-    body.set('users', kind in ['push', 'restrict_merges'] ? users || [] : null);
-    body.set(
-      'groups',
-      kind in ['push', 'restrict_merges'] ? groups || [] : null,
-    );
-  }
-  body.set('kind', kind);
-  if (
-    kind === 'require_approvals_to_merge' ||
-    kind === 'require_default_reviewer_approvals_to_merge' ||
-    kind === 'require_commits_behind' ||
-    kind === 'require_passing_builds_to_merge'
-  ) {
-    body.set('value', value || 1);
-  }
-  if (branchMatchKind === 'glob') {
-    body.set('pattern', pattern || '');
-  }
-  if (branchMatchKind === 'branching_model') {
-    body.set('branch_type', branchType || 'development');
-  }
-
-  const options: RequestInit = {
-    method: 'POST',
-    body: JSON.stringify(Object.fromEntries(body)),
-    headers: {
-      Authorization: authorization,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+  const bitbucket = getBitbucketClient(authorization);
+  return await bitbucket.branchrestrictions.create({
+    _body: {
+      groups: groups,
+      users: users,
+      branch_match_kind: branchMatchKind,
+      kind: kind,
+      type: 'branchrestriction',
+      value: kind === 'push' ? null : value,
+      pattern: branchMatchKind === 'glob' ? pattern : undefined,
+      branch_type:
+        branchMatchKind === 'branching_model' ? branchType : undefined,
     },
-  };
-
-  let response: Response;
-  try {
-    response = await fetch(
-      `${apiBaseUrl}/repositories/${workspace}/${repo}/branch-restrictions`,
-      options,
-    );
-  } catch (e) {
-    throw new Error(
-      `Unable to set branch restrictions for the repository, ${e}`,
-    );
-  }
-
-  if (response.status !== 201) {
-    throw new Error(
-      `Unable to set branch restrictions for the repository, ${
-        response.status
-      } ${response.statusText}, ${await response.text()}`,
-    );
-  }
-  return response;
+    repo_slug: repo,
+    workspace: workspace,
+  });
 };
 
 /**
@@ -122,8 +85,8 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
     branchType?: string;
     pattern?: string;
     value?: number;
-    users?: Array<object>;
-    groups?: Array<object>;
+    users?: { uuid: string }[];
+    groups?: { slug: string }[];
     token?: string;
   }>({
     id: 'bitbucketCloud:branchRestriction:create',
@@ -166,10 +129,11 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
         kind,
         branchMatchKind = 'branching_model',
         branchType = 'development',
-        pattern,
-        value,
-        users,
-        groups,
+        pattern = '',
+        value = 1,
+        users = [],
+        groups = [],
+        token = '',
       } = ctx.input;
 
       const { workspace, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -187,11 +151,7 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(
-        ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
-      );
-
-      const apiBaseUrl = integrationConfig.config.apiBaseUrl;
+      const authorization = token ? { token: token } : integrationConfig.config;
 
       const response = await createBitbucketCloudBranchRestriction({
         workspace: workspace,
@@ -201,13 +161,22 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
         branchType: branchType,
         pattern: pattern,
         value: value,
-        users: users,
-        groups: groups,
+        users: users.map(user => ({ uuid: user.uuid, type: 'user' })),
+        groups: groups.map(group => ({ slug: group.slug, type: 'group' })),
         authorization,
-        apiBaseUrl,
       });
+      if (response.data.errors) {
+        ctx.logger.error(
+          `Error from Bitbucket Cloud Branch Restrictions: ${JSON.stringify(
+            response.data.errors,
+          )}`,
+        );
+      }
+      ctx.logger.info(
+        `Response from Bitbucket Cloud: ${JSON.stringify(response)}`,
+      );
       ctx.output('statusCode', response.status);
-      ctx.output('json', JSON.stringify(await response.json()));
+      ctx.output('json', JSON.stringify(response));
     },
   });
 }
