@@ -94,12 +94,10 @@ const RenderErrorContext = ({
  */
 const convertTimeToLocalTimezone = (strDateTime: string | Date) => {
   const dateTime = DateTime.fromISO(strDateTime.toLocaleString(), {
-    zone: 'UTC',
+    zone: DateTime.local().zoneName,
   });
 
-  const dateTimeLocalTz = dateTime.setZone(DateTime.local().zoneName);
-
-  return dateTimeLocalTz.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
+  return dateTime.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
 };
 
 export const FailedEntities = () => {
