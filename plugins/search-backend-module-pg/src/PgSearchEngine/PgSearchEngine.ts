@@ -169,6 +169,7 @@ export class PgSearchEngine implements SearchEngine {
       await DatabaseDocumentStore.create(
         options.database,
         textSearchConfigName,
+        options.logger,
       ),
       options.config,
       options.logger,
@@ -183,6 +184,7 @@ export class PgSearchEngine implements SearchEngine {
       await DatabaseDocumentStore.create(
         options.database,
         textSearchConfigName,
+        options.logger,
       ),
       config,
       options.logger,

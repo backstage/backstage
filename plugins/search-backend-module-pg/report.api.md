@@ -24,12 +24,19 @@ export type ConcretePgSearchQuery = {
 export class DatabaseDocumentStore implements DatabaseStore {
   constructor(db: Knex);
   // (undocumented)
+  changeDocumentSchema(knex: Knex, logger?: LoggerService): Promise<void>;
+  // (undocumented)
+  checkIfTextSearchConfigExists(knex: Knex): Promise<boolean>;
+  // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
   static create(
     database: DatabaseService,
     textSearchConfigName?: string,
+    logger?: LoggerService,
   ): Promise<DatabaseDocumentStore>;
+  // (undocumented)
+  getCurrentConfigName(knex: Knex): Promise<string>;
   // (undocumented)
   getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)

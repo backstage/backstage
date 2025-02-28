@@ -15,6 +15,7 @@
  */
 import {
   DatabaseService,
+  LoggerService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
@@ -32,13 +33,15 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+const defaultTextSearchConfigName = 'english';
 /** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
-  private textSearchConfigName: string = 'english';
+  private textSearchConfigName: string = defaultTextSearchConfigName;
 
   static async create(
     database: DatabaseService,
     textSearchConfigName?: string,
+    logger?: LoggerService,
   ): Promise<DatabaseDocumentStore> {
     const knex = await database.getClient();
     try {
@@ -67,68 +70,91 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
     const instance = new DatabaseDocumentStore(knex);
 
-    // Check and set text search configuration
-    if (textSearchConfigName) {
-      // Verify if the configuration exists
-      const configExists = await knex.raw(
-        `SELECT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = ?)`,
-        [textSearchConfigName],
+    // set default text search configuration
+    let finalTextSearchConfigName = defaultTextSearchConfigName;
+    if (textSearchConfigName === undefined) {
+      logger?.warn(
+        `No text search configuration was provided. Using default configuration: ${defaultTextSearchConfigName}`,
       );
-
-      if (configExists.rows[0].exists) {
-        instance.textSearchConfigName = textSearchConfigName;
-
-        // Check current column configuration
-        const documentsTableName = 'documents';
-        const bodyColumnName = 'body';
-        const currentConfig = await knex.raw(`
-          SELECT pg_get_expr(d.adbin, d.adrelid) as column_default
-          FROM pg_catalog.pg_attribute a
-          LEFT JOIN pg_catalog.pg_attrdef d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum)
-          WHERE a.attrelid = '${documentsTableName}'::regclass
-          AND a.attname = '${bodyColumnName}'
-          AND NOT a.attisdropped;
-        `);
-
-        // Extract current config name from the expression
-        const currentConfigMatch =
-          currentConfig.rows[0]?.column_default?.match(/to_tsvector\('(\w+)'/);
-        const currentConfigName = currentConfigMatch?.[1];
-
-        if (currentConfigName !== textSearchConfigName) {
-          // Update the generated column with new text search configuration
-          await knex.transaction(async trx => {
-            // Drop the generated column
-            await trx.schema.alterTable('documents', table => {
-              table.dropColumn('body');
-            });
-
-            // Recreate the column with new configuration
-            await trx.schema.alterTable('documents', table => {
-              table.specificType(
-                'body',
-                'tsvector NOT NULL GENERATED ALWAYS AS (' +
-                  `setweight(to_tsvector('${textSearchConfigName}', document->>'title'), 'A') || ` +
-                  `setweight(to_tsvector('${textSearchConfigName}', document->>'text'), 'B') || ` +
-                  `setweight(to_tsvector('${textSearchConfigName}', document - 'location' - 'title' - 'text'), 'C')` +
-                  ') STORED',
-              );
-            });
-
-            // Create new index
-            await trx.schema.alterTable('documents', table => {
-              table.index('body', 'documents_body_idx', 'gin');
-            });
-          });
-        }
-      } else {
-        // If the text search configuration does not exist, throw an error
-        throw new Error(
-          `The text search configuration ${textSearchConfigName} does not exist`,
-        );
-      }
+    } else {
+      finalTextSearchConfigName = textSearchConfigName;
     }
+    instance.textSearchConfigName = finalTextSearchConfigName;
+    logger?.info(
+      `Using text search configuration: ${instance.textSearchConfigName}`,
+    );
+    // Verify if the configuration exists
+    if (!(await instance.checkIfTextSearchConfigExists(knex))) {
+      // If the text search configuration does not exist, throw an error
+      throw new Error(
+        `The text search configuration ${instance.textSearchConfigName} does not exist`,
+      );
+    }
+    // Update the generated column with new text search configuration
+    await instance.changeDocumentSchema(knex, logger);
     return instance;
+  }
+
+  async checkIfTextSearchConfigExists(knex: Knex): Promise<boolean> {
+    const configExists = await knex.raw(
+      `SELECT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = ?)`,
+      [this.textSearchConfigName],
+    );
+    return configExists.rows[0].exists;
+  }
+
+  async getCurrentConfigName(knex: Knex): Promise<string> {
+    // Check current column configuration
+    const documentsTableName = 'documents';
+    const bodyColumnName = 'body';
+    const currentConfig = await knex.raw(`
+      SELECT pg_get_expr(d.adbin, d.adrelid) as column_default
+      FROM pg_catalog.pg_attribute a
+      LEFT JOIN pg_catalog.pg_attrdef d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum)
+      WHERE a.attrelid = '${documentsTableName}'::regclass
+      AND a.attname = '${bodyColumnName}'
+      AND NOT a.attisdropped;
+    `);
+
+    // Extract current config name from the expression
+    const currentConfigMatch =
+      currentConfig.rows[0]?.column_default?.match(/to_tsvector\('(\w+)'/);
+    return currentConfigMatch?.[1] as string;
+  }
+
+  async changeDocumentSchema(
+    knex: Knex,
+    logger?: LoggerService,
+  ): Promise<void> {
+    const currentConfigName = await this.getCurrentConfigName(knex);
+    if (currentConfigName !== this.textSearchConfigName) {
+      logger?.warn(
+        `Changing text search configuration from ${currentConfigName} to ${this.textSearchConfigName}`,
+      );
+      await knex.transaction(async trx => {
+        // Drop the generated column
+        await trx.schema.alterTable('documents', table => {
+          table.dropColumn('body');
+        });
+
+        // Recreate the column with new configuration
+        await trx.schema.alterTable('documents', table => {
+          table.specificType(
+            'body',
+            'tsvector NOT NULL GENERATED ALWAYS AS (' +
+              `setweight(to_tsvector('${this.textSearchConfigName}', document->>'title'), 'A') || ` +
+              `setweight(to_tsvector('${this.textSearchConfigName}', document->>'text'), 'B') || ` +
+              `setweight(to_tsvector('${this.textSearchConfigName}', document - 'location' - 'title' - 'text'), 'C')` +
+              ') STORED',
+          );
+        });
+
+        // Create new index
+        await trx.schema.alterTable('documents', table => {
+          table.index('body', 'documents_body_idx', 'gin');
+        });
+      });
+    }
   }
 
   static async supported(knex: Knex): Promise<boolean> {
