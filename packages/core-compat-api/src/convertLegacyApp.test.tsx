@@ -114,7 +114,7 @@ describe('convertLegacyApp', () => {
         extensions: [
           {
             id: 'app/layout',
-            attachTo: { id: 'app', input: 'root' },
+            attachTo: { id: 'app/root', input: 'children' },
             disabled: false,
           },
           {

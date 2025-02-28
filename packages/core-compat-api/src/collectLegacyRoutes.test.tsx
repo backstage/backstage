@@ -48,8 +48,10 @@ describe('collectLegacyRoutes', () => {
       <FlatRoutes>
         <Route path="/score-board" element={<ScoreBoardPage />} />
         <Route path="/stackstorm" element={<StackstormPage />} />
+        <Route path="/other" element={<div />} />
         <Route path="/puppetdb" element={<PuppetDbPage />} />
         <Route path="/puppetdb" element={<PuppetDbPage />} />
+        <Route path="/other" element={<div />} />
       </FlatRoutes>,
     );
 
@@ -93,6 +95,23 @@ describe('collectLegacyRoutes', () => {
             id: 'api:stackstorm/plugin.stackstorm.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
+          },
+        ],
+      },
+      {
+        id: 'converted-orphan-routes',
+        extensions: [
+          {
+            id: 'page:converted-orphan-routes',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: {},
+          },
+          {
+            id: 'page:converted-orphan-routes/2',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: {},
           },
         ],
       },
@@ -378,8 +397,6 @@ describe('collectLegacyRoutes', () => {
           <Route element={<Navigate to="/somewhere" />} />
         </FlatRoutes>,
       ),
-    ).toThrow(
-      /Route with path undefined has en element that can not be converted/,
-    );
+    ).toThrow(/Route element inside FlatRoutes had no path prop value given/);
   });
 });
