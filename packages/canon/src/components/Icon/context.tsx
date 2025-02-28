@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-// Icons
-export * from './icons';
+import { createContext, useContext } from 'react';
+import { icons } from './icons';
+import type { IconContextProps } from './types';
 
-// Icon component
-export * from './Icon';
+/** @public */
+export const IconContext = createContext<IconContextProps>({
+  icons,
+});
 
-// Context and Provider
-export * from './context';
-export * from './provider';
-
-// Types
-export type * from './types';
+/** @public */
+export const useIcons = () => useContext(IconContext);

@@ -14,38 +14,21 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext } from 'react';
-import { icons } from '../components/Icon/icons';
-import { IconMap, IconNames } from '../components/Icon/types';
+import React from 'react';
+import { icons } from './icons';
+import { IconContext } from './context';
+import type { IconProviderProps } from './types';
 
 /** @public */
-export interface CanonContextProps {
-  icons: IconMap;
-}
-
-/** @public */
-export interface CanonProviderProps {
-  children?: ReactNode;
-  overrides?: Partial<Record<IconNames, React.ComponentType>>;
-}
-
-const CanonContext = createContext<CanonContextProps>({
-  icons,
-});
-
-/** @public */
-export const CanonProvider = (props: CanonProviderProps) => {
+export const IconProvider = (props: IconProviderProps) => {
   const { children, overrides } = props;
 
   // Merge provided overrides with default icons
   const combinedIcons = { ...icons, ...overrides };
 
   return (
-    <CanonContext.Provider value={{ icons: combinedIcons }}>
+    <IconContext.Provider value={{ icons: combinedIcons }}>
       {children}
-    </CanonContext.Provider>
+    </IconContext.Provider>
   );
 };
-
-/** @public */
-export const useCanon = () => useContext(CanonContext);
