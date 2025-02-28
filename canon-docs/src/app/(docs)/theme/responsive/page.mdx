@@ -105,19 +105,3 @@ the value, you add an object with the value and the breakpoint prefix.
 // Responsive value
 
 <Button size={{ xs: 'small', md: 'medium' }}>Button</Button>`} />
-
-## How to update breakpoints
-
-The set of keys are not to be changed, but you can update the minimum width of
-each breakpoint in the theme provider.
-
-<CodeBlock
-  code={`<CanonProvider breakpoints={{
-    xs: 0,
-    sm: 640,
-    md: 768,
-    lg: 1024,
-    xl: 1280,
-    '2xl': 1536,
-}} />`}
-/>
