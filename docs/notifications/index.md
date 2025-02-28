@@ -151,7 +151,7 @@ add the `UserNotificationSettingsCard` to your frontend.
 
 ![Notification Settings](notificationSettings.png)
 
-You can customize the origin names shown in the UI by passing an object where the keys are the origins and the values are the names you want to show in the UI.
+You can customize the origin names shown in the UI by passing an object where the keys are the origins and the values are the names you want to show in the UI. Additionally, helper messages for header of each channel as well as their toggle actions can be supplied and customized. In case more context needs to be provided about the setting, an optional top banner is available when the parameter `helpBannerMessage` is received. For more usage details please refer to the [doc](https://backstage.io/docs/reference/plugin-notifications.usernotificationsettingscard).
 
 Each notification processor will receive its own column in the settings page, where the user can enable or disable notifications from that processor.
 

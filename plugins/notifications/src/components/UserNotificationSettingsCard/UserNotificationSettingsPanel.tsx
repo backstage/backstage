@@ -29,6 +29,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Switch from '@material-ui/core/Switch';
 import { capitalize } from 'lodash';
 import Tooltip from '@material-ui/core/Tooltip';
+import HelpIcon from '@material-ui/icons/Help';
+import Box from '@material-ui/core/Box';
 
 const TableCell = withStyles({
   root: {
@@ -40,8 +42,15 @@ export const UserNotificationSettingsPanel = (props: {
   settings: NotificationSettings;
   onChange: (settings: NotificationSettings) => void;
   originNames?: Record<string, string>;
+  channelHeaderHelpMessages?: Record<string, string>;
+  channelToggleHelpMessages?: Record<string, Record<string, string>>;
 }) => {
-  const { settings, onChange } = props;
+  const {
+    settings,
+    onChange,
+    channelHeaderHelpMessages,
+    channelToggleHelpMessages,
+  } = props;
   const allOrigins = [
     ...new Set(
       settings.channels.flatMap(channel =>
@@ -97,27 +106,48 @@ export const UserNotificationSettingsPanel = (props: {
       <TableHead>
         <TableRow>
           <TableCell>
-            <Typography variant="subtitle1">Origin</Typography>
+            <Box display="flex" flexDirection="row">
+              <Typography variant="subtitle1">Origin</Typography>
+              <Box display="flex" alignItems="center" ml={1}>
+                <Tooltip title="Where the notification is originated from - normally a plugin such as the catalog">
+                  <HelpIcon fontSize="small" />
+                </Tooltip>
+              </Box>
+            </Box>
           </TableCell>
           {settings.channels.map(channel => (
-            <TableCell>
-              <Typography variant="subtitle1">{channel.id}</Typography>
+            <TableCell key={channel.id}>
+              <Box display="flex" flexDirection="row">
+                <Typography variant="subtitle1">{channel.id}</Typography>
+                {channelHeaderHelpMessages?.[channel.id] && (
+                  <Box display="flex" alignItems="center" ml={1}>
+                    <Tooltip title={channelHeaderHelpMessages[channel.id]}>
+                      <HelpIcon fontSize="small" />
+                    </Tooltip>
+                  </Box>
+                )}
+              </Box>
             </TableCell>
           ))}
         </TableRow>
       </TableHead>
       <TableBody>
         {allOrigins.map(origin => (
-          <TableRow>
+          <TableRow key={origin}>
             <TableCell>{formatOriginName(origin)}</TableCell>
             {settings.channels.map(channel => (
-              <TableCell>
+              <TableCell key={channel.id}>
                 <Tooltip
-                  title={`Enable or disable ${channel.id.toLocaleLowerCase(
-                    'en-US',
-                  )} notifications from ${formatOriginName(
-                    origin,
-                  ).toLocaleLowerCase('en-US')}`}
+                  title={
+                    channelToggleHelpMessages?.[origin]?.[
+                      channel.id
+                    ]?.toLocaleLowerCase('en-US') ??
+                    `Enable or disable ${channel.id.toLocaleLowerCase(
+                      'en-US',
+                    )} notifications from ${formatOriginName(
+                      origin,
+                    ).toLocaleLowerCase('en-US')}`
+                  }
                 >
                   <Switch
                     checked={isNotificationsEnabledFor(
