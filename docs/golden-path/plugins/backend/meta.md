@@ -33,7 +33,7 @@ This section should contain learnings from successful Backstage deployments abou
 
 ## Creating your first plugin
 
-This section should be extremely deliberate in showing readers every step of the way to create a plugin using Backstage's best practices. A reader that finishes this section should feel extremely comfortable adding and installing new plugins regardless of their experience with JS/TS and Backstage.
+This section should be extremely deliberate in showing readers every step of the way to create a plugin using Backstage's best practices. A reader that finishes this section should feel extremely comfortable creating new plugins and how to install and use plugins regardless of their experience with JS/TS and Backstage.
 
 ### Setting up your environment
 
