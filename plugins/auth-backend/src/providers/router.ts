@@ -34,7 +34,10 @@ import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
+ */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 export function bindProviderRouters(
@@ -145,7 +148,10 @@ export function bindProviderRouters(
   }
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated this export will be removed
+ */
 export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {

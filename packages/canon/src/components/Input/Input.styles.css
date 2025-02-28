@@ -20,6 +20,7 @@
   padding: 0 var(--canon-space-4);
   background-color: var(--canon-bg-elevated);
   font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
