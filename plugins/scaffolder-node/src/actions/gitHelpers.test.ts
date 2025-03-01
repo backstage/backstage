@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Git } from '../scm';
 import {
   commitAndPushRepo,
@@ -25,6 +24,7 @@ import {
   cloneRepo,
 } from './gitHelpers';
 import { mockServices } from '@backstage/backend-test-utils';
+import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
 jest.mock('../scm', () => ({
   Git: {

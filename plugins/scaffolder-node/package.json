@@ -54,7 +54,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -69,6 +68,7 @@
     "p-limit": "^3.1.0",
     "tar": "^6.1.12",
     "winston": "^3.2.1",
+    "winston-transport": "^4.7.0",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.20.4"
   },

@@ -38,7 +38,6 @@ import { TemplateActionRegistry } from '../actions';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import type {
   AuditorService,
   PermissionsService,
@@ -60,6 +59,7 @@ import { createDefaultFilters } from '../../lib/templating/filters';
 import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
