@@ -5,32 +5,19 @@
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthMetadata as AuthMetadata_2 } from '@backstage/plugin-kubernetes-node';
-import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { Config } from '@backstage/config';
-import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { Duration } from 'luxon';
-import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import * as k8sAuthTypes from '@backstage/plugin-kubernetes-node';
 import { KubernetesClustersSupplier as KubernetesClustersSupplier_2 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesCredential as KubernetesCredential_2 } from '@backstage/plugin-kubernetes-node';
-import { KubernetesFetcher as KubernetesFetcher_2 } from '@backstage/plugin-kubernetes-node';
-import { KubernetesObjectsProvider as KubernetesObjectsProvider_2 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backstage/plugin-kubernetes-node';
-import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'http-proxy-middleware';
-import { RootConfigService } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
@@ -88,9 +75,6 @@ export class AzureIdentityStrategy implements AuthenticationStrategy_2 {
 
 // @public @deprecated (undocumented)
 export type ClusterDetails = k8sAuthTypes.ClusterDetails;
-
-// @public @deprecated
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export type CustomResource = k8sAuthTypes.CustomResource;
@@ -155,158 +139,11 @@ export const HEADER_KUBERNETES_AUTH: string;
 export const HEADER_KUBERNETES_CLUSTER: string;
 
 // @public @deprecated (undocumented)
-export class KubernetesBuilder {
-  constructor(env: KubernetesEnvironment);
-  // (undocumented)
-  addAuthStrategy(key: string, strategy: AuthenticationStrategy_2): this;
-  // (undocumented)
-  build(): KubernetesBuilderReturn;
-  // (undocumented)
-  protected buildAuthStrategyMap(): {
-    [key: string]: AuthenticationStrategy_2;
-  };
-  // (undocumented)
-  protected buildCatalogRelationServiceLocator(
-    clusterSupplier: KubernetesClustersSupplier_2,
-  ): KubernetesServiceLocator_2;
-  // (undocumented)
-  protected buildClusterSupplier(
-    refreshInterval: Duration,
-  ): KubernetesClustersSupplier_2;
-  // (undocumented)
-  protected buildCustomResources(): CustomResource_2[];
-  // (undocumented)
-  protected buildFetcher(): KubernetesFetcher_2;
-  // (undocumented)
-  protected buildHttpServiceLocator(
-    _clusterSupplier: KubernetesClustersSupplier_2,
-  ): KubernetesServiceLocator_2;
-  // (undocumented)
-  protected buildMultiTenantServiceLocator(
-    clusterSupplier: KubernetesClustersSupplier_2,
-  ): KubernetesServiceLocator_2;
-  // (undocumented)
-  protected buildObjectsProvider(
-    options: KubernetesObjectsProviderOptions,
-  ): KubernetesObjectsProvider_2;
-  // (undocumented)
-  protected buildProxy(
-    logger: LoggerService,
-    clusterSupplier: KubernetesClustersSupplier_2,
-    discovery: DiscoveryService,
-    httpAuth: HttpAuthService,
-  ): KubernetesProxy;
-  // (undocumented)
-  protected buildRouter(
-    objectsProvider: KubernetesObjectsProvider_2,
-    clusterSupplier: KubernetesClustersSupplier_2,
-    catalogApi: CatalogApi,
-    proxy: KubernetesProxy,
-    permissionApi: PermissionEvaluator,
-    authService: AuthService,
-    httpAuth: HttpAuthService,
-  ): express.Router;
-  // (undocumented)
-  protected buildServiceLocator(
-    method: ServiceLocatorMethod,
-    clusterSupplier: KubernetesClustersSupplier_2,
-  ): KubernetesServiceLocator_2;
-  // (undocumented)
-  protected buildSingleTenantServiceLocator(
-    clusterSupplier: KubernetesClustersSupplier_2,
-  ): KubernetesServiceLocator_2;
-  // (undocumented)
-  static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
-  // (undocumented)
-  protected readonly env: KubernetesEnvironment;
-  // (undocumented)
-  protected fetchClusterDetails(
-    clusterSupplier: KubernetesClustersSupplier_2,
-    options: {
-      credentials: BackstageCredentials;
-    },
-  ): Promise<ClusterDetails_2[]>;
-  // (undocumented)
-  protected getAuthStrategyMap(): {
-    [key: string]: AuthenticationStrategy_2;
-  };
-  // (undocumented)
-  protected getClusterSupplier(): KubernetesClustersSupplier_2;
-  // (undocumented)
-  protected getFetcher(): KubernetesFetcher_2;
-  // (undocumented)
-  protected getObjectsProvider(
-    options: KubernetesObjectsProviderOptions,
-  ): KubernetesObjectsProvider_2;
-  // (undocumented)
-  protected getObjectTypesToFetch(): ObjectToFetch_2[] | undefined;
-  // (undocumented)
-  protected getProxy(
-    logger: LoggerService,
-    clusterSupplier: KubernetesClustersSupplier_2,
-    discovery: DiscoveryService,
-    httpAuth: HttpAuthService,
-  ): KubernetesProxy;
-  // (undocumented)
-  protected getServiceLocator(): KubernetesServiceLocator_2;
-  // (undocumented)
-  protected getServiceLocatorMethod(): ServiceLocatorMethod;
-  // (undocumented)
-  setAuthStrategyMap(authStrategyMap: {
-    [key: string]: AuthenticationStrategy_2;
-  }): void;
-  // (undocumented)
-  setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier_2): this;
-  // (undocumented)
-  setDefaultClusterRefreshInterval(refreshInterval: Duration): this;
-  // (undocumented)
-  setFetcher(fetcher?: KubernetesFetcher_2): this;
-  // (undocumented)
-  setObjectsProvider(objectsProvider?: KubernetesObjectsProvider_2): this;
-  // (undocumented)
-  setProxy(proxy?: KubernetesProxy): this;
-  // (undocumented)
-  setServiceLocator(serviceLocator?: KubernetesServiceLocator_2): this;
-}
-
-// @public @deprecated
-export type KubernetesBuilderReturn = Promise<{
-  router: express.Router;
-  clusterSupplier: KubernetesClustersSupplier_2;
-  customResources: CustomResource_2[];
-  fetcher: KubernetesFetcher_2;
-  proxy: KubernetesProxy;
-  objectsProvider: KubernetesObjectsProvider_2;
-  serviceLocator: KubernetesServiceLocator_2;
-  authStrategyMap: {
-    [key: string]: AuthenticationStrategy_2;
-  };
-}>;
-
-// @public @deprecated (undocumented)
 export type KubernetesClustersSupplier =
   k8sAuthTypes.KubernetesClustersSupplier;
 
 // @public @deprecated (undocumented)
 export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;
-
-// @public @deprecated (undocumented)
-export interface KubernetesEnvironment {
-  // (undocumented)
-  auth?: AuthService;
-  // (undocumented)
-  catalogApi: CatalogApi;
-  // (undocumented)
-  config: Config;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  httpAuth?: HttpAuthService;
-  // (undocumented)
-  logger: LoggerService;
-  // (undocumented)
-  permissions: PermissionEvaluator;
-}
 
 // @public @deprecated (undocumented)
 export type KubernetesFetcher = k8sAuthTypes.KubernetesFetcher;
@@ -354,10 +191,9 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
 // @public
 export type KubernetesProxyOptions = {
   logger: LoggerService;
-  clusterSupplier: KubernetesClustersSupplier;
-  authStrategy: AuthenticationStrategy;
-  discovery: DiscoveryService;
-  httpAuth?: HttpAuthService;
+  clusterSupplier: KubernetesClustersSupplier_2;
+  authStrategy: AuthenticationStrategy_2;
+  httpAuth: HttpAuthService;
 };
 
 // @public @deprecated (undocumented)
@@ -383,22 +219,6 @@ export class OidcStrategy implements AuthenticationStrategy_2 {
   presentAuthMetadata(_authMetadata: AuthMetadata_2): AuthMetadata_2;
   // (undocumented)
   validateCluster(authMetadata: AuthMetadata_2): Error[];
-}
-
-// @public @deprecated (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  catalogApi: CatalogApi;
-  // (undocumented)
-  clusterSupplier?: KubernetesClustersSupplier;
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissions: PermissionEvaluator;
 }
 
 // @public (undocumented)

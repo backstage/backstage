@@ -255,7 +255,6 @@ import {
   kubernetesAuthStrategyExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 import { PinnipedStrategy } from './PinnipedStrategy';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 export const kubernetesModulePinniped = createBackendModule({
   pluginId: 'kubernetes',
@@ -267,49 +266,11 @@ export const kubernetesModulePinniped = createBackendModule({
         authStrategy: kubernetesAuthStrategyExtensionPoint,
       },
       async init({ logger, authStrategy }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
-        const pinnipedStrategy: AuthenticationStrategy = new PinnipedStrategy(
-          winstonLogger,
-        );
-        authStrategy.addAuthStrategy('pinniped', pinnipedStrategy);
+        authStrategy.addAuthStrategy('pinniped', new PinnipedStrategy(logger));
       },
     });
   },
 });
-```
-
-### Custom Pinniped auth strategy in the old backend system
-
-To add a new AuthStrategy, You could use [`addAuthStrategy`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/service/KubernetesBuilder.ts#L211) method on `KubernetesBuilder`.
-We are going to reuse the `PinnipedStrategy` created on the previous section. So when setting up the [Kubernetes Backend plugin](./installation.md#adding-kubernetes-backend-plugin), you could add a new Strategy:
-
-```ts title="packages/backend/src/plugins/kubernetes.ts"
-import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-import { CatalogClient } from '@backstage/catalog-client';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
-import { PinnipedStrategy } from '@internal/plugin-kubernetes-backend-module-pinniped';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
-  const winstonLogger = loggerToWinstonLogger(env.logger);
-  const pinnipedStrategy: AuthenticationStrategy = new PinnipedStrategy(
-    winstonLogger,
-  );
-  const { router } = await KubernetesBuilder.createBuilder({
-    logger: env.logger,
-    config: env.config,
-    catalogApi,
-    permissions: env.permissions,
-  })
-    .addAuthStrategy('pinniped', pinnipedStrategy)
-    .build();
-  return router;
-}
 ```
 
 [1]: https://pinniped.dev

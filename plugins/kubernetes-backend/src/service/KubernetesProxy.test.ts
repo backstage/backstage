@@ -37,12 +37,7 @@ import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
-import {
-  AuthenticationStrategy,
-  AnonymousStrategy,
-  KubernetesCredential,
-} from '../auth';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import { AnonymousStrategy } from '../auth';
 import {
   APPLICATION_JSON,
   HEADER_KUBERNETES_AUTH,
@@ -53,6 +48,12 @@ import {
 import type { Request } from 'express';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import {
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesClustersSupplier,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -79,7 +80,7 @@ describe('KubernetesProxy', () => {
   };
 
   const permissionApi = mockServices.permissions.mock();
-  const mockDisocveryApi = mockServices.discovery.mock();
+  const httpAuth = mockServices.httpAuth.mock();
 
   registerMswTestHooks(worker);
 
@@ -154,7 +155,7 @@ describe('KubernetesProxy', () => {
       logger,
       clusterSupplier,
       authStrategy,
-      discovery: mockDisocveryApi,
+      httpAuth,
     });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
@@ -544,7 +545,7 @@ describe('KubernetesProxy', () => {
       logger: mockServices.logger.mock(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
-      discovery: mockDisocveryApi,
+      httpAuth,
     });
 
     worker.use(
@@ -666,7 +667,7 @@ describe('KubernetesProxy', () => {
       logger: mockServices.logger.mock(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
-      discovery: mockDisocveryApi,
+      httpAuth,
     });
 
     worker.use(

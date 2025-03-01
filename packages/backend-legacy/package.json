@@ -43,7 +43,6 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
-    "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",

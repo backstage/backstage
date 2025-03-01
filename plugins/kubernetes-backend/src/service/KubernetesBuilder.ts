@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import {
@@ -40,12 +41,9 @@ import {
   ServiceAccountStrategy,
 } from '../auth';
 import { getCombinedClusterSupplier } from '../cluster-locator';
-
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
-  DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -77,25 +75,15 @@ import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
 import { requirePermission } from '../auth/requirePermission';
 
-/**
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
- */
 export interface KubernetesEnvironment {
   logger: LoggerService;
   config: Config;
   catalogApi: CatalogApi;
-  discovery: DiscoveryService;
   permissions: PermissionEvaluator;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
 }
 
-/**
- * The return type of the `KubernetesBuilder.build` method
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
- */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
   clusterSupplier: KubernetesClustersSupplier;
@@ -107,10 +95,6 @@ export type KubernetesBuilderReturn = Promise<{
   authStrategyMap: { [key: string]: AuthenticationStrategy };
 }>;
 
-/**
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
- * */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
   private defaultClusterRefreshInterval: Duration = Duration.fromObject({
@@ -129,9 +113,7 @@ export class KubernetesBuilder {
   constructor(protected readonly env: KubernetesEnvironment) {}
 
   public async build(): KubernetesBuilderReturn {
-    const logger = this.env.logger;
-    const config = this.env.config;
-    const permissions = this.env.permissions;
+    const { auth, httpAuth, logger, config, permissions } = this.env;
 
     logger.info('Initializing Kubernetes backend');
 
@@ -147,12 +129,6 @@ export class KubernetesBuilder {
       } as unknown as KubernetesBuilderReturn;
     }
 
-    const { auth, httpAuth } = createLegacyAuthAdapters({
-      auth: this.env.auth,
-      httpAuth: this.env.httpAuth,
-      discovery: this.env.discovery,
-    });
-
     const customResources = this.buildCustomResources();
 
     const fetcher = this.getFetcher();
@@ -161,12 +137,7 @@ export class KubernetesBuilder {
 
     const authStrategyMap = this.getAuthStrategyMap();
 
-    const proxy = this.getProxy(
-      logger,
-      clusterSupplier,
-      this.env.discovery,
-      httpAuth,
-    );
+    const proxy = this.getProxy(logger, clusterSupplier, httpAuth);
 
     const serviceLocator = this.getServiceLocator();
 
@@ -267,8 +238,7 @@ export class KubernetesBuilder {
   protected buildClusterSupplier(
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
-    const config = this.env.config;
-    const { auth } = createLegacyAuthAdapters(this.env);
+    const { auth, config } = this.env;
     this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
@@ -359,7 +329,6 @@ export class KubernetesBuilder {
   protected buildProxy(
     logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier,
-    discovery: DiscoveryService,
     httpAuth: HttpAuthService,
   ): KubernetesProxy {
     const authStrategyMap = this.getAuthStrategyMap();
@@ -370,7 +339,6 @@ export class KubernetesBuilder {
       logger,
       clusterSupplier,
       authStrategy,
-      discovery,
       httpAuth,
     });
     return this.proxy;
@@ -559,13 +527,9 @@ export class KubernetesBuilder {
   protected getProxy(
     logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier,
-    discovery: DiscoveryService,
     httpAuth: HttpAuthService,
   ) {
-    return (
-      this.proxy ??
-      this.buildProxy(logger, clusterSupplier, discovery, httpAuth)
-    );
+    return this.proxy ?? this.buildProxy(logger, clusterSupplier, httpAuth);
   }
 
   protected getAuthStrategyMap() {
