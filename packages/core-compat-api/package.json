@@ -37,7 +37,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage-community/plugin-puppetdb": "^0.1.18",
+    "@backstage-community/plugin-puppetdb": "^0.4.0",
     "@backstage-community/plugin-stackstorm": "^0.1.16",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",

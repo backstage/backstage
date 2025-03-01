@@ -3387,15 +3387,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage-community/plugin-puppetdb@npm:^0.1.18":
-  version: 0.1.22
-  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.22"
+"@backstage-community/plugin-puppetdb@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@backstage-community/plugin-puppetdb@npm:0.4.0"
   dependencies:
-    "@backstage/catalog-model": ^1.7.0
-    "@backstage/core-components": ^0.15.1
-    "@backstage/core-plugin-api": ^1.10.0
-    "@backstage/errors": ^1.2.4
-    "@backstage/plugin-catalog-react": ^1.14.0
+    "@backstage/catalog-model": ^1.7.3
+    "@backstage/core-components": ^0.16.4
+    "@backstage/core-plugin-api": ^1.10.4
+    "@backstage/errors": ^1.2.7
+    "@backstage/plugin-catalog-react": ^1.15.2
     "@material-ui/core": ^4.12.2
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
@@ -3403,7 +3403,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 256a5fb944099d0a2b0c09fc25250e9c9107a0a775d7fc9fb503758b089aa72e623b8eb3ef42761ac24fe1f71abbbbede61454ed131821e003ee7532546c7961
+  checksum: 8c6ec8eed8a781531b27da53b8bcfa245264dc3a30d80ab586df0e91d578f09a50b1e8a724a6f78bbc88da6299f47536d495914e56f45bcecc3442312fbd45da
   languageName: node
   linkType: hard
 
@@ -3888,7 +3888,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.7.0, @backstage/catalog-model@^1.7.3, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.7.3, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -4224,7 +4224,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/core-compat-api@workspace:packages/core-compat-api"
   dependencies:
-    "@backstage-community/plugin-puppetdb": ^0.1.18
+    "@backstage-community/plugin-puppetdb": ^0.4.0
     "@backstage-community/plugin-stackstorm": ^0.1.16
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -6206,7 +6206,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.14.0, @backstage/plugin-catalog-react@npm:^1.9.3":
+"@backstage/plugin-catalog-react@npm:^1.15.2, @backstage/plugin-catalog-react@npm:^1.9.3":
   version: 1.15.2
   resolution: "@backstage/plugin-catalog-react@npm:1.15.2"
   dependencies:
