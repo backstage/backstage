@@ -35,6 +35,7 @@ import {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
   DefaultSignInPage,
+  dialogDisplayAppRootElement,
 } from './extensions';
 import { apis } from './defaultApis';
 
@@ -62,5 +63,6 @@ export const appPlugin = createFrontendPlugin({
     DefaultSignInPage,
     oauthRequestDialogAppRootElement,
     alertDisplayAppRootElement,
+    dialogDisplayAppRootElement,
   ],
 });
