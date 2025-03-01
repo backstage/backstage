@@ -63,11 +63,13 @@ function DialogDisplay({
           deferred.resolve(result);
           setDialogs(ds => ds.filter(d => d.dialog.id !== id));
         },
-        update(elementOrComponent) {
+        update(ElementOrComponent) {
           const element =
-            typeof elementOrComponent === 'function'
-              ? elementOrComponent({ dialog })
-              : elementOrComponent;
+            typeof ElementOrComponent === 'function' ? (
+              <ElementOrComponent dialog={dialog} />
+            ) : (
+              ElementOrComponent
+            );
           setDialogs(ds =>
             ds.map(d => (d.dialog.id === id ? { dialog, element } : d)),
           );
@@ -76,7 +78,7 @@ function DialogDisplay({
           return deferred;
         },
       };
-      const element = options.component({ dialog });
+      const element = <options.component dialog={dialog} />;
       setDialogs(ds => [...ds, { dialog, element }]);
       return dialog;
     });
