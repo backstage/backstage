@@ -3407,13 +3407,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage-community/plugin-stackstorm@npm:^0.1.16":
-  version: 0.1.20
-  resolution: "@backstage-community/plugin-stackstorm@npm:0.1.20"
+"@backstage-community/plugin-stackstorm@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@backstage-community/plugin-stackstorm@npm:0.4.0"
   dependencies:
-    "@backstage/core-components": ^0.15.1
-    "@backstage/core-plugin-api": ^1.10.0
-    "@backstage/errors": ^1.2.4
+    "@backstage/core-components": ^0.16.4
+    "@backstage/core-plugin-api": ^1.10.4
+    "@backstage/errors": ^1.2.7
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -3422,7 +3422,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: d746d02bab55cd0b9028eb7426b5082b36329ab1dfb6f01cfdacde0c02d23e9dad605ea02ccc646a03a25f931d0e73ff377be95ded0a4ef4caefb67aeeedac6f
+  checksum: f789ca108b30e74c4bc1c3b7f216d9f9544f251b36efd20f1ccdcdf6f83e6761790b76a6a1ac0da2420a510bee2cae8b42675db7182dd07698951540b773c6b1
   languageName: node
   linkType: hard
 
@@ -4225,7 +4225,7 @@ __metadata:
   resolution: "@backstage/core-compat-api@workspace:packages/core-compat-api"
   dependencies:
     "@backstage-community/plugin-puppetdb": ^0.1.18
-    "@backstage-community/plugin-stackstorm": ^0.1.16
+    "@backstage-community/plugin-stackstorm": ^0.4.0
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"

@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@backstage-community/plugin-puppetdb": "^0.1.18",
-    "@backstage-community/plugin-stackstorm": "^0.1.16",
+    "@backstage-community/plugin-stackstorm": "^0.4.0",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
