@@ -88,6 +88,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
   const options = {
     logger,
     discovery: mockDiscoveryApi,
+    auth: mockServices.auth(),
   };
 
   it('has expected type', () => {
@@ -182,6 +183,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         discovery: mockDiscoveryApi,
         logger,
+        auth: mockServices.auth(),
       });
       collator = await factory.getCollator();
 
