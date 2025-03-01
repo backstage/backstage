@@ -7,7 +7,6 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy as DocsBuildStrategy_2 } from '@backstage/plugin-techdocs-node';
 import { Entity } from '@backstage/catalog-model';
@@ -15,41 +14,14 @@ import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
-import { Permission } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
 import { PublisherBase } from '@backstage/plugin-techdocs-node';
-import type { TechDocsCollatorFactoryOptions as TechDocsCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument as TechDocsDocument_2 } from '@backstage/plugin-techdocs-node';
-import { TokenManager } from '@backstage/backend-common';
 import * as winston from 'winston';
 
 // @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
-
-// @public @deprecated
-export class DefaultTechDocsCollator {
-  // (undocumented)
-  protected applyArgsToFormat(
-    format: string,
-    args: Record<string, string>,
-  ): string;
-  // (undocumented)
-  execute(): Promise<TechDocsDocument_2[]>;
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: TechDocsCollatorOptions,
-  ): DefaultTechDocsCollator;
-  // (undocumented)
-  readonly type: string;
-  // (undocumented)
-  readonly visibilityPermission: Permission;
-}
-
-// @public @deprecated (undocumented)
-export const DefaultTechDocsCollatorFactory: typeof DefaultTechDocsCollatorFactory_2;
 
 // @public @deprecated (undocumented)
 export type DocsBuildStrategy = DocsBuildStrategy_2;
@@ -93,20 +65,6 @@ export type RouterOptions =
 // @public @deprecated (undocumented)
 export type ShouldBuildParameters = {
   entity: Entity;
-};
-
-// @public @deprecated (undocumented)
-export type TechDocsCollatorFactoryOptions = TechDocsCollatorFactoryOptions_2;
-
-// @public
-export type TechDocsCollatorOptions = {
-  discovery: DiscoveryService;
-  logger: Logger;
-  tokenManager: TokenManager;
-  locationTemplate?: string;
-  catalogClient?: CatalogApi;
-  parallelismLimit?: number;
-  legacyPathCasing?: boolean;
 };
 
 // @public @deprecated (undocumented)

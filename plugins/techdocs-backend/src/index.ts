@@ -34,15 +34,6 @@ export type {
   OutOfTheBoxDeploymentOptions,
 } from './service';
 
-export {
-  DefaultTechDocsCollator,
-  DefaultTechDocsCollatorFactory,
-} from './search';
-export type {
-  TechDocsCollatorFactoryOptions,
-  TechDocsCollatorOptions,
-} from './search';
-
 /**
  * @public
  * @deprecated import from `@backstage/plugin-techdocs-node` instead
