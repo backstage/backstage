@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
@@ -43,6 +42,8 @@ import {
   mockCredentials,
   mockErrorHandler,
   mockServices,
+  TestDatabases,
+  TestDatabaseId,
 } from '@backstage/backend-test-utils';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
@@ -66,17 +67,16 @@ jest.mock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
-function createDatabase(): DatabaseService {
-  return DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('scaffolder');
+jest.setTimeout(60_000);
+
+// TODO(freben): Rewrite to support more databases - the implementation is correct but the test needs to be adapted
+const databases = TestDatabases.create({ ids: ['SQLITE_3'] });
+
+async function createDatabase(
+  databaseId: TestDatabaseId,
+): Promise<DatabaseService> {
+  const knex = await databases.init(databaseId);
+  return { getClient: async () => knex };
 }
 
 const mockUrlReader = UrlReaders.default({
@@ -190,9 +190,10 @@ describe('createRouter', () => {
 
   describe('not providing an identity api', () => {
     beforeEach(async () => {
+      const database = await createDatabase('SQLITE_3');
       const logger = loggerToWinstonLogger(mockServices.logger.mock());
       const databaseTaskStore = await DatabaseTaskStore.create({
-        database: createDatabase(),
+        database,
       });
       taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -205,7 +206,7 @@ describe('createRouter', () => {
       const router = await createRouter({
         logger: logger,
         config: new ConfigReader({}),
-        database: createDatabase(),
+        database,
         catalogClient,
         reader: mockUrlReader,
         taskBroker,
@@ -740,9 +741,10 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
   describe('providing an identity api', () => {
     beforeEach(async () => {
+      const database = await createDatabase('SQLITE_3');
       const logger = loggerToWinstonLogger(mockServices.logger.mock());
       const databaseTaskStore = await DatabaseTaskStore.create({
-        database: createDatabase(),
+        database,
       });
       taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -755,7 +757,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const router = await createRouter({
         logger: logger,
         config: new ConfigReader({}),
-        database: createDatabase(),
+        database,
         catalogClient,
         reader: mockUrlReader,
         taskBroker,
@@ -1521,10 +1523,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           results: [{ title: 'blob' }],
         });
 
+        const database = await createDatabase('SQLITE_3');
         const router = await createRouter({
           logger: loggerToWinstonLogger(mockServices.logger.mock()),
           config: new ConfigReader({}),
-          database: createDatabase(),
+          database,
           catalogClient,
           reader: mockUrlReader,
           taskBroker,

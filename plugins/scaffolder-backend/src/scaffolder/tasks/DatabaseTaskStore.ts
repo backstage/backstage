@@ -262,7 +262,7 @@ export class DatabaseTaskStore implements TaskStore {
       createdAt: parseSqlDateToIsoString(result.created_at),
     }));
 
-    return { tasks, totalTasks: count };
+    return { tasks, totalTasks: Number(count) };
   }
 
   async getTask(taskId: string): Promise<SerializedTask> {
