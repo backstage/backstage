@@ -4,4 +4,4 @@
 '@backstage/plugin-search-backend': minor
 ---
 
-Removed support for the legacy backend system and referneces to `@backstage/backend-common`
+Removed support for the legacy backend system and references to `@backstage/backend-common`
