@@ -45,7 +45,7 @@ jest.mock('@backstage/cli-common', () => ({
   }),
 }));
 
-jest.mock('../../lib/run', () => {
+jest.mock('../../../../lib/run', () => {
   return {
     run: jest.fn(),
   };

@@ -73,15 +73,15 @@ jest.mock('@backstage/cli-common', () => ({
   }),
 }));
 
-jest.mock('../../lib/run', () => {
+jest.mock('../../../../lib/run', () => {
   return {
     run: jest.fn(),
   };
 });
 
 const mockFetchPackageInfo = jest.fn();
-jest.mock('../../lib/versioning/packages', () => {
-  const actual = jest.requireActual('../../lib/versioning/packages');
+jest.mock('../../../../lib/versioning/packages', () => {
+  const actual = jest.requireActual('../../../../lib/versioning/packages');
   return {
     ...actual,
     fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
