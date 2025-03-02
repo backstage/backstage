@@ -29,5 +29,6 @@ import chalk from 'chalk';
   initializer.add(import('./modules/build/alpha'));
   initializer.add(import('./modules/migrate/alpha'));
   initializer.add(import('./modules/test/alpha'));
+  initializer.add(import('./modules/lint/alpha'));
   await initializer.run();
 })();
