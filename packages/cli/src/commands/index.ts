@@ -26,6 +26,10 @@ import {
   registerCommands as registerBuildCommands,
 } from '../modules/build';
 import { registerCommands as registerMigrateCommand } from '../modules/migrate';
+import {
+  registerRepoCommands as registerRepoTestCommands,
+  registerPackageCommands as registerPackageTestCommands,
+} from '../modules/test';
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -33,6 +37,7 @@ export function registerRepoCommand(program: Command) {
     .description('Command that run across an entire Backstage project');
 
   registerRepoBuildCommands(command);
+  registerRepoTestCommands(command);
 
   command
     .command('lint')
@@ -84,28 +89,6 @@ export function registerRepoCommand(program: Command) {
     .description('List deprecations')
     .option('--json', 'Output as JSON')
     .action(lazy(() => import('./repo/list-deprecations'), 'command'));
-
-  command
-    .command('test')
-    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
-    .option(
-      '--since <ref>',
-      'Only test packages that changed since the specified ref',
-    )
-    .option(
-      '--successCache',
-      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
-    )
-    .option(
-      '--successCacheDir <path>',
-      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
-    )
-    .option(
-      '--jest-help',
-      'Show help for Jest CLI options, which are passed through',
-    )
-    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./repo/test'), 'command'));
 }
 
 export function registerScriptCommand(program: Command) {
@@ -129,6 +112,7 @@ export function registerScriptCommand(program: Command) {
     .action(lazy(() => import('./start'), 'command'));
 
   registerPackageBuildCommands(command);
+  registerPackageTestCommands(command);
 
   command
     .command('lint [directories...]')
@@ -148,13 +132,6 @@ export function registerScriptCommand(program: Command) {
     )
     .description('Lint a package')
     .action(lazy(() => import('./lint'), 'default'));
-
-  command
-    .command('test')
-    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
-    .helpOption(', --backstage-cli-help') // Let Jest handle help
-    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./test'), 'default'));
 
   command
     .command('clean')

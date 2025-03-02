@@ -21,10 +21,10 @@ import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../lib/paths';
-import { runCheck, runPlain } from '../../lib/run';
+import { paths } from '../../../../lib/paths';
+import { runCheck, runPlain } from '../../../../lib/run';
 import { isChildPath } from '@backstage/cli-common';
-import { SuccessCache } from '../../lib/cache/SuccessCache';
+import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 type JestProject = {
   displayName: string;
