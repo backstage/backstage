@@ -19,7 +19,7 @@ import { resolve as resolvePath, join as joinPath } from 'path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
-import { runYarnInstall } from './utils';
+import { runYarnInstall } from '../../lib/utils';
 import replace from 'replace-in-file';
 
 declare module 'replace-in-file' {

@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runPlain } from '../../lib/run';
+import { runPlain } from '../../../lib/run';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 

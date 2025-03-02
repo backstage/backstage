@@ -25,6 +25,7 @@ import {
   registerRepoCommands as registerRepoBuildCommands,
   registerCommands as registerBuildCommands,
 } from '../modules/build';
+import { registerCommands as registerMigrateCommand } from '../modules/migrate';
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -171,41 +172,6 @@ export function registerScriptCommand(program: Command) {
     .action(lazy(() => import('./pack'), 'post'));
 }
 
-export function registerMigrateCommand(program: Command) {
-  const command = program
-    .command('migrate [command]')
-    .description('Migration utilities');
-
-  command
-    .command('package-roles')
-    .description(`Add package role field to packages that don't have it`)
-    .action(lazy(() => import('./migrate/packageRole'), 'default'));
-
-  command
-    .command('package-scripts')
-    .description('Set package scripts according to each package role')
-    .action(lazy(() => import('./migrate/packageScripts'), 'command'));
-
-  command
-    .command('package-exports')
-    .description('Synchronize package subpath export definitions')
-    .action(lazy(() => import('./migrate/packageExports'), 'command'));
-
-  command
-    .command('package-lint-configs')
-    .description(
-      'Migrates all packages to use @backstage/cli/config/eslint-factory',
-    )
-    .action(lazy(() => import('./migrate/packageLintConfigs'), 'command'));
-
-  command
-    .command('react-router-deps')
-    .description(
-      'Migrates the react-router dependencies for all packages to be peer dependencies',
-    )
-    .action(lazy(() => import('./migrate/reactRouterDeps'), 'command'));
-}
-
 export function registerCommands(program: Command) {
   program
     .command('new')
@@ -248,37 +214,6 @@ export function registerCommands(program: Command) {
   registerScriptCommand(program);
   registerMigrateCommand(program);
   registerBuildCommands(program);
-
-  program
-    .command('versions:bump')
-    .option(
-      '--pattern <glob>',
-      'Override glob for matching packages to upgrade',
-    )
-    .option(
-      '--release <version|next|main>',
-      'Bump to a specific Backstage release line or version',
-      'main',
-    )
-    .option('--skip-install', 'Skips yarn install step')
-    .option('--skip-migrate', 'Skips migration of any moved packages')
-    .description('Bump Backstage packages to the latest versions')
-    .action(lazy(() => import('./versions/bump'), 'default'));
-
-  program
-    .command('versions:migrate')
-    .option(
-      '--pattern <glob>',
-      'Override glob for matching packages to upgrade',
-    )
-    .option(
-      '--skip-code-changes',
-      'Skip code changes and only update package.json files',
-    )
-    .description(
-      'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
-    )
-    .action(lazy(() => import('./versions/migrate'), 'default'));
 
   program
     .command('create-github-app <github-org>')

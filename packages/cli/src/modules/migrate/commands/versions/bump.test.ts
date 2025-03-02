@@ -16,10 +16,10 @@
 
 import fs from 'fs-extra';
 import { Command } from 'commander';
-import * as runObj from '../../lib/run';
+import * as runObj from '../../../../lib/run';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
-import { YarnInfoInspectData } from '../../lib/versioning/packages';
+import { YarnInfoInspectData } from '../../../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
