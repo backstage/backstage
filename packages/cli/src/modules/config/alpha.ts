@@ -94,5 +94,41 @@ export default createCliPlugin({
         await m.default(argv);
       },
     });
+
+    reg.addCommand({
+      path: ['config:schema'],
+      description: 'Print the JSON schema for the given configuration',
+      execute: async ({ args }) => {
+        const argv = await yargs
+          .options({
+            package: { type: 'string' },
+            format: { type: 'string' },
+            merge: { type: 'boolean' },
+            'no-merge': { type: 'boolean' },
+          })
+          .help()
+          .parse(args);
+        const m = await import('./commands/schema');
+        await m.default(argv);
+      },
+    });
+
+    reg.addCommand({
+      path: ['config', 'schema'],
+      description: 'Print the JSON schema for the given configuration',
+      execute: async ({ args }) => {
+        const argv = await yargs
+          .options({
+            package: { type: 'string' },
+            format: { type: 'string' },
+            merge: { type: 'boolean' },
+            'no-merge': { type: 'boolean' },
+          })
+          .help()
+          .parse(args);
+        const m = await import('./commands/schema');
+        await m.default(argv);
+      },
+    });
   },
 });

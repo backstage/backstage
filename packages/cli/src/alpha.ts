@@ -18,7 +18,8 @@ import { CliInitializer } from './wiring/CliInitializer';
 import chalk from 'chalk';
 
 (async () => {
-  console.warn(
+  // Logging as stdout to prevent failures from stderr during api-report generation.
+  console.log(
     chalk.yellow(
       'THIS ENTRYPOINT IS IN ALPHA AND MAY CHANGE IN THE FUTURE - DO NOT USE THIS FOR NORMAL DEVELOPMENT',
     ),

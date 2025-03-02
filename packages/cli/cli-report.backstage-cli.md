@@ -12,20 +12,20 @@ Options:
   -h, --help
 
 Commands:
-  new [options]
+  build-workspace [options] <workspace-dir> [packages...]
+  config:check [options]
   config:docs [options]
   config:print [options]
-  config:check [options]
   config:schema [options]
-  repo [command]
-  package [command]
+  create-github-app <github-org>
+  help [command]
+  info
   migrate [command]
-  build-workspace [options] <workspace-dir> [packages...]
+  new [options]
+  package [command]
+  repo [command]
   versions:bump [options]
   versions:migrate [options]
-  create-github-app <github-org>
-  info
-  help [command]
 ```
 
 ### `backstage-cli build-workspace`
@@ -44,12 +44,12 @@ Options:
 Usage: backstage-cli config:check [options]
 
 Options:
-  --package <name>
-  --lax
-  --frontend
-  --deprecated
-  --strict
   --config <path>
+  --deprecated
+  --frontend
+  --lax
+  --package <name>
+  --strict
   -h, --help
 ```
 
@@ -69,12 +69,12 @@ Options:
 Usage: backstage-cli config:print [options]
 
 Options:
-  --package <name>
-  --lax
-  --frontend
-  --with-secrets
-  --format <format>
   --config <path>
+  --format <format>
+  --frontend
+  --lax
+  --package <name>
+  --with-secrets
   -h, --help
 ```
 
@@ -84,10 +84,10 @@ Options:
 Usage: backstage-cli config:schema [options]
 
 Options:
-  --package <name>
   --format <format>
   --merge
   --no-merge
+  --package <name>
   -h, --help
 ```
 
@@ -118,12 +118,12 @@ Options:
   -h, --help
 
 Commands:
-  package-roles
-  package-scripts
+  help [command]
   package-exports
   package-lint-configs
+  package-roles
+  package-scripts
   react-router-deps
-  help [command]
 ```
 
 ### `backstage-cli migrate package-exports`
@@ -177,14 +177,14 @@ Options:
 Usage: backstage-cli new [options]
 
 Options:
-  --select <name>
-  --option <name>=<value>
-  --skip-install
-  --scope <scope>
-  --npm-registry <URL>
   --baseVersion <version>
   --license <license>
   --no-private
+  --npm-registry <URL>
+  --option <name>=<value>
+  --scope <scope>
+  --select <name>
+  --skip-install
   -h, --help
 ```
 
@@ -197,14 +197,14 @@ Options:
   -h, --help
 
 Commands:
-  start [options]
   build [options]
-  lint [options] [directories...]
-  test
   clean
-  prepack
-  postpack
   help [command]
+  lint [options] [directories...]
+  postpack
+  prepack
+  start [options]
+  test
 ```
 
 ### `backstage-cli package build`
@@ -213,11 +213,11 @@ Commands:
 Usage: backstage-cli package build [options]
 
 Options:
-  --role <name>
+  --config <path>
   --minify
+  --role <name>
   --skip-build-dependencies
   --stats
-  --config <path>
   -h, --help
 ```
 
@@ -236,10 +236,10 @@ Options:
 Usage: backstage-cli package lint [options] [directories...]
 
 Options:
-  --format <format>
-  --output-file <path>
   --fix
+  --format <format>
   --max-warnings <number>
+  --output-file <path>
   -h, --help
 ```
 
@@ -267,13 +267,13 @@ Options:
 Usage: backstage-cli package start [options]
 
 Options:
-  --config <path>
-  --role <name>
   --check
+  --config <path>
   --inspect [host]
   --inspect-brk [host]
-  --require <path>
   --link <path>
+  --require <path>
+  --role <name>
   -h, --help
 ```
 
@@ -283,11 +283,8 @@ Options:
 Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
 
 Options:
-  -h, --help
-  --version
   --all
   --automock
-  -b, --bail
   --cache
   --cacheDirectory
   --changedFilesWithAncestor
@@ -299,7 +296,6 @@ Options:
   --collectCoverageFrom
   --color
   --colors
-  -c, --config
   --coverage
   --coverageDirectory
   --coveragePathIgnorePatterns
@@ -311,7 +307,6 @@ Options:
   --detectOpenHandles
   --env
   --errorOnDeprecated
-  -e, --expand
   --filter
   --findRelatedTests
   --forceExit
@@ -327,7 +322,6 @@ Options:
   --listTests
   --logHeapUsage
   --maxConcurrency
-  -w, --maxWorkers
   --moduleDirectories
   --moduleFileExtensions
   --moduleNameMapper
@@ -336,8 +330,6 @@ Options:
   --noStackTrace
   --notify
   --notifyMode
-  -o, --onlyChanged
-  -f, --onlyFailures
   --openHandlesTimeout
   --outputFile
   --passWithNoTests
@@ -352,7 +344,6 @@ Options:
   --restoreMocks
   --rootDir
   --roots
-  -i, --runInBand
   --runTestsByPath
   --runner
   --seed
@@ -370,7 +361,6 @@ Options:
   --testFailureExitCode
   --testLocationInResults
   --testMatch
-  -t, --testNamePattern
   --testPathIgnorePatterns
   --testPathPattern
   --testRegex
@@ -381,14 +371,24 @@ Options:
   --transform
   --transformIgnorePatterns
   --unmockedModulePathPatterns
-  -u, --updateSnapshot
   --useStderr
   --verbose
+  --version
   --watch
   --watchAll
   --watchPathIgnorePatterns
   --watchman
   --workerThreads
+  -b, --bail
+  -c, --config
+  -e, --expand
+  -f, --onlyFailures
+  -h, --help
+  -i, --runInBand
+  -o, --onlyChanged
+  -t, --testNamePattern
+  -u, --updateSnapshot
+  -w, --maxWorkers
 ```
 
 ### `backstage-cli repo`
@@ -401,12 +401,12 @@ Options:
 
 Commands:
   build [options]
-  lint [options]
-  fix [options]
   clean
+  fix [options]
+  help [command]
+  lint [options]
   list-deprecations [options]
   test [options]
-  help [command]
 ```
 
 ### `backstage-cli repo build`
@@ -416,8 +416,8 @@ Usage: backstage-cli repo build [options]
 
 Options:
   --all
-  --since <ref>
   --minify
+  --since <ref>
   -h, --help
 ```
 
@@ -436,8 +436,8 @@ Options:
 Usage: backstage-cli repo fix [options]
 
 Options:
-  --publish
   --check
+  --publish
   -h, --help
 ```
 
@@ -447,12 +447,12 @@ Options:
 Usage: backstage-cli repo lint [options]
 
 Options:
+  --fix
   --format <format>
   --output-file <path>
   --since <ref>
   --successCache
   --successCacheDir <path>
-  --fix
   -h, --help
 ```
 
@@ -472,10 +472,10 @@ Options:
 Usage: backstage-cli repo test [options]
 
 Options:
+  --jest-help
   --since <ref>
   --successCache
   --successCacheDir <path>
-  --jest-help
   -h, --help
 ```
 
