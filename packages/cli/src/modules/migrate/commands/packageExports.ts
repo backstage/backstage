@@ -18,7 +18,7 @@ import {
   fixPackageExports,
   readFixablePackages,
   writeFixedPackages,
-} from '../repo/fix';
+} from '../../../commands/repo/fix';
 
 export async function command() {
   console.log(

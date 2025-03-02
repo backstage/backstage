@@ -17,7 +17,7 @@ import {
   MockDirectory,
   createMockDirectory,
 } from '@backstage/backend-test-utils';
-import * as run from '../../lib/run';
+import * as run from '../../../../lib/run';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
@@ -45,7 +45,7 @@ jest.mock('@backstage/cli-common', () => ({
   }),
 }));
 
-jest.mock('../../lib/run', () => {
+jest.mock('../../../../lib/run', () => {
   return {
     run: jest.fn(),
   };

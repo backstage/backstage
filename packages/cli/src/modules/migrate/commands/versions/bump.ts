@@ -24,23 +24,23 @@ import yaml from 'yaml';
 import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
-import { paths } from '../../lib/paths';
+import { paths } from '../../../../lib/paths';
 import {
   mapDependencies,
   fetchPackageInfo,
   Lockfile,
   YarnInfoInspectData,
-} from '../../lib/versioning';
+} from '../../../../lib/versioning';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
-import { runParallelWorkers } from '../../lib/parallel';
+import { runParallelWorkers } from '../../../../lib/parallel';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
-import { runYarnInstall } from './utils';
-import { run } from '../../lib/run';
+import { runYarnInstall } from '../../lib/utils';
+import { run } from '../../../../lib/run';
 
 function maybeBootstrapProxy() {
   // see https://www.npmjs.com/package/global-agent
