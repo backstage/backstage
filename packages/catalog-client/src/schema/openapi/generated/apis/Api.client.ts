@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,20 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
-import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
-import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
-import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
-import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
-import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
-import { Location } from '../models/Location.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
+import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
+import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
+import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
+import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
+import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
+import { Location } from '../models/Location.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -57,32 +57,9 @@ export interface RequestOptions {
 /**
  * @public
  */
-export type AnalyzeLocation = {
-  body: AnalyzeLocationRequest;
-};
-/**
- * @public
- */
-export type CreateLocation = {
-  body: CreateLocationRequest;
-  query: {
-    dryRun?: string;
-  };
-};
-/**
- * @public
- */
 export type DeleteEntityByUid = {
   path: {
     uid: string;
-  };
-};
-/**
- * @public
- */
-export type DeleteLocation = {
-  path: {
-    id: string;
   };
 };
 /**
@@ -162,6 +139,41 @@ export type GetEntityFacets = {
 /**
  * @public
  */
+export type RefreshEntity = {
+  body: RefreshEntityRequest;
+};
+/**
+ * @public
+ */
+export type ValidateEntity = {
+  body: ValidateEntityRequest;
+};
+/**
+ * @public
+ */
+export type AnalyzeLocation = {
+  body: AnalyzeLocationRequest;
+};
+/**
+ * @public
+ */
+export type CreateLocation = {
+  body: CreateLocationRequest;
+  query: {
+    dryRun?: string;
+  };
+};
+/**
+ * @public
+ */
+export type DeleteLocation = {
+  path: {
+    id: string;
+  };
+};
+/**
+ * @public
+ */
 export type GetLocation = {
   path: {
     id: string;
@@ -181,18 +193,6 @@ export type GetLocationByEntity = {
  * @public
  */
 export type GetLocations = {};
-/**
- * @public
- */
-export type RefreshEntity = {
-  body: RefreshEntityRequest;
-};
-/**
- * @public
- */
-export type ValidateEntity = {
-  body: ValidateEntityRequest;
-};
 
 /**
  * @public
@@ -207,59 +207,6 @@ export class DefaultApiClient {
   }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi || { fetch: crossFetch };
-  }
-
-  /**
-   * Validate a given location.
-   * @param analyzeLocationRequest -
-   */
-  public async analyzeLocation(
-    // @ts-ignore
-    request: AnalyzeLocation,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<AnalyzeLocationResponse>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/analyze-location`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Create a location for a given target.
-   * @param createLocationRequest -
-   * @param dryRun -
-   */
-  public async createLocation(
-    // @ts-ignore
-    request: CreateLocation,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<CreateLocation201Response>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/locations{?dryRun}`;
-
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
   }
 
   /**
@@ -289,40 +236,115 @@ export class DefaultApiClient {
   }
 
   /**
-   * Delete a location by id.
-   * @param id -
-   */
-  public async deleteLocation(
-    // @ts-ignore
-    request: DeleteLocation,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+     * Get all entities matching a given filter.
+     * @param fields - By default the full entities are returned, but you can pass in a &#x60;fields&#x60; query
+parameter which selects what parts of the entity data to retain. This makes the
+response smaller and faster to transfer, and may allow the catalog to perform
+more efficient queries.
 
-    const uriTemplate = `/locations/{id}`;
+The query parameter value is a comma separated list of simplified JSON paths
+like above. Each path corresponds to the key of either a value, or of a subtree
+root that you want to keep in the output. The rest is pruned away. For example,
+specifying &#x60;?fields&#x3D;metadata.name,metadata.annotations,spec&#x60; retains only the
+&#x60;name&#x60; and &#x60;annotations&#x60; fields of the &#x60;metadata&#x60; of each entity (it&#39;ll be an
+object with at most two keys), keeps the entire &#x60;spec&#x60; unchanged, and cuts out
+all other roots such as &#x60;relations&#x60;.
 
-    const uri = parser.parse(uriTemplate).expand({
-      id: request.path.id,
-    });
+Some more real world usable examples:
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'DELETE',
-    });
+- Return only enough data to form the full ref of each entity:
+
+  &#x60;/entities/by-query?fields&#x3D;kind,metadata.namespace,metadata.name&#x60;
+
+     * @param limit - Number of records to return in the response.
+     * @param filter - You can pass in one or more filter sets that get matched against each entity.
+Each filter set is a number of conditions that all have to match for the
+condition to be true (conditions effectively have an AND between them). At least
+one filter set has to be true for the entity to be part of the result set
+(filter sets effectively have an OR between them).
+
+Example:
+
+&#x60;&#x60;&#x60;text
+/entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type
+
+  Return entities that match
+
+    Filter set 1:
+      Condition 1: kind &#x3D; user
+                  AND
+      Condition 2: metadata.namespace &#x3D; default
+
+    OR
+
+    Filter set 2:
+      Condition 1: kind &#x3D; group
+                  AND
+      Condition 2: spec.type exists
+&#x60;&#x60;&#x60;
+
+Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;.
+The first form asserts on the existence of a certain key (with any value), and
+the second asserts that the key exists and has a certain value. All checks are
+always case _insensitive_.
+
+In all cases, the key is a simplified JSON path in a given piece of entity data.
+Each part of the path is a key of an object, and the traversal also descends
+through arrays. There are two special forms:
+
+- Array items that are simple value types (such as strings) match on a key-value
+  pair where the key is the item as a string, and the value is the string &#x60;true&#x60;
+- Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form
+
+Let&#39;s look at a simplified example to illustrate the concept:
+
+&#x60;&#x60;&#x60;json
+{
+  &quot;a&quot;: {
+    &quot;b&quot;: [&quot;c&quot;, { &quot;d&quot;: 1 }],
+    &quot;e&quot;: 7
   }
+}
+&#x60;&#x60;&#x60;
 
-  /**
-   * Get all entities matching a given filter.
-   * @param fields - Restrict to just these fields in the response.
-   * @param limit - Number of records to return in the response.
-   * @param filter - Filter for just the entities defined by this filter.
-   * @param offset - Number of records to skip in the query page.
-   * @param after - Pointer to the previous page of results.
-   * @param order -
-   */
+This would match any one of the following conditions:
+
+- &#x60;a&#x60;
+- &#x60;a.b&#x60;
+- &#x60;a.b.c&#x60;
+- &#x60;a.b.c&#x3D;true&#x60;
+- &#x60;a.b.d&#x60;
+- &#x60;a.b.d&#x3D;1&#x60;
+- &#x60;a.e&#x60;
+- &#x60;a.e&#x3D;7&#x60;
+
+Some more real world usable examples:
+
+- Return all orphaned entities:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;
+
+- Return all users and groups:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;
+
+- Return all service components:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;
+
+- Return all entities with the &#x60;java&#x60; tag:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;
+
+- Return all users who are members of the &#x60;ops&#x60; group (note that the full
+  [reference](references.md) of the group is used):
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
+
+     * @param offset - Number of records to skip in the query page.
+     * @param after - Pointer to the previous page of results.
+     * @param order - 
+     */
   public async getEntities(
     // @ts-ignore
     request: GetEntities,
@@ -346,16 +368,148 @@ export class DefaultApiClient {
   }
 
   /**
-   * Search for entities by a given query.
-   * @param fields - Restrict to just these fields in the response.
-   * @param limit - Number of records to return in the response.
-   * @param offset - Number of records to skip in the query page.
-   * @param orderField - The fields to sort returned results by.
-   * @param cursor - Cursor to a set page of results.
-   * @param filter - Filter for just the entities defined by this filter.
-   * @param fullTextFilterTerm - Text search term.
-   * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
-   */
+     * Search for entities by a given query.
+     * @param fields - By default the full entities are returned, but you can pass in a &#x60;fields&#x60; query
+parameter which selects what parts of the entity data to retain. This makes the
+response smaller and faster to transfer, and may allow the catalog to perform
+more efficient queries.
+
+The query parameter value is a comma separated list of simplified JSON paths
+like above. Each path corresponds to the key of either a value, or of a subtree
+root that you want to keep in the output. The rest is pruned away. For example,
+specifying &#x60;?fields&#x3D;metadata.name,metadata.annotations,spec&#x60; retains only the
+&#x60;name&#x60; and &#x60;annotations&#x60; fields of the &#x60;metadata&#x60; of each entity (it&#39;ll be an
+object with at most two keys), keeps the entire &#x60;spec&#x60; unchanged, and cuts out
+all other roots such as &#x60;relations&#x60;.
+
+Some more real world usable examples:
+
+- Return only enough data to form the full ref of each entity:
+
+  &#x60;/entities/by-query?fields&#x3D;kind,metadata.namespace,metadata.name&#x60;
+
+     * @param limit - Number of records to return in the response.
+     * @param offset - Number of records to skip in the query page.
+     * @param orderField - By default the entities are returned ordered by their internal uid. You can
+customize the &#x60;orderField&#x60; query parameters to affect that ordering.
+
+For example, to return entities by their name:
+
+&#x60;/entities/by-query?orderField&#x3D;metadata.name,asc&#x60;
+
+Each parameter can be followed by &#x60;asc&#x60; for ascending lexicographical order or
+&#x60;desc&#x60; for descending (reverse) lexicographical order.
+
+     * @param cursor - You may pass the &#x60;cursor&#x60; query parameters to perform cursor based pagination
+through the set of entities. The value of &#x60;cursor&#x60; will be returned in the response, under the &#x60;pageInfo&#x60; property:
+
+&#x60;&#x60;&#x60;json
+  &quot;pageInfo&quot;: {
+    &quot;nextCursor&quot;: &quot;a-cursor&quot;,
+    &quot;prevCursor&quot;: &quot;another-cursor&quot;
+  }
+&#x60;&#x60;&#x60;
+
+If &#x60;nextCursor&#x60; exists, it can be used to retrieve the next batch of entities. Following the same approach,
+if &#x60;prevCursor&#x60; exists, it can be used to retrieve the previous batch of entities.
+
+- [&#x60;filter&#x60;](#filtering), for selecting only a subset of all entities
+- [&#x60;fields&#x60;](#field-selection), for selecting only parts of the full data
+  structure of each entity
+- &#x60;limit&#x60; for limiting the number of entities returned (20 is the default)
+- [&#x60;orderField&#x60;](#ordering), for deciding the order of the entities
+- &#x60;fullTextFilter&#x60;
+  **NOTE**: [&#x60;filter&#x60;, &#x60;orderField&#x60;, &#x60;fullTextFilter&#x60;] and &#x60;cursor&#x60; are mutually exclusive. This means that,
+  it isn&#39;t possible to change any of [&#x60;filter&#x60;, &#x60;orderField&#x60;, &#x60;fullTextFilter&#x60;] when passing &#x60;cursor&#x60; as query parameters,
+  as changing any of these properties will affect pagination. If any of &#x60;filter&#x60;, &#x60;orderField&#x60;, &#x60;fullTextFilter&#x60; is specified together with &#x60;cursor&#x60;, only the latter is taken into consideration.
+
+     * @param filter - You can pass in one or more filter sets that get matched against each entity.
+Each filter set is a number of conditions that all have to match for the
+condition to be true (conditions effectively have an AND between them). At least
+one filter set has to be true for the entity to be part of the result set
+(filter sets effectively have an OR between them).
+
+Example:
+
+&#x60;&#x60;&#x60;text
+/entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type
+
+  Return entities that match
+
+    Filter set 1:
+      Condition 1: kind &#x3D; user
+                  AND
+      Condition 2: metadata.namespace &#x3D; default
+
+    OR
+
+    Filter set 2:
+      Condition 1: kind &#x3D; group
+                  AND
+      Condition 2: spec.type exists
+&#x60;&#x60;&#x60;
+
+Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;.
+The first form asserts on the existence of a certain key (with any value), and
+the second asserts that the key exists and has a certain value. All checks are
+always case _insensitive_.
+
+In all cases, the key is a simplified JSON path in a given piece of entity data.
+Each part of the path is a key of an object, and the traversal also descends
+through arrays. There are two special forms:
+
+- Array items that are simple value types (such as strings) match on a key-value
+  pair where the key is the item as a string, and the value is the string &#x60;true&#x60;
+- Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form
+
+Let&#39;s look at a simplified example to illustrate the concept:
+
+&#x60;&#x60;&#x60;json
+{
+  &quot;a&quot;: {
+    &quot;b&quot;: [&quot;c&quot;, { &quot;d&quot;: 1 }],
+    &quot;e&quot;: 7
+  }
+}
+&#x60;&#x60;&#x60;
+
+This would match any one of the following conditions:
+
+- &#x60;a&#x60;
+- &#x60;a.b&#x60;
+- &#x60;a.b.c&#x60;
+- &#x60;a.b.c&#x3D;true&#x60;
+- &#x60;a.b.d&#x60;
+- &#x60;a.b.d&#x3D;1&#x60;
+- &#x60;a.e&#x60;
+- &#x60;a.e&#x3D;7&#x60;
+
+Some more real world usable examples:
+
+- Return all orphaned entities:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;
+
+- Return all users and groups:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;
+
+- Return all service components:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;
+
+- Return all entities with the &#x60;java&#x60; tag:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;
+
+- Return all users who are members of the &#x60;ops&#x60; group (note that the full
+  [reference](references.md) of the group is used):
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
+
+     * @param fullTextFilterTerm - Text search term.
+     * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
+     */
   public async getEntitiesByQuery(
     // @ts-ignore
     request: GetEntitiesByQuery,
@@ -379,10 +533,93 @@ export class DefaultApiClient {
   }
 
   /**
-   * Get a batch set of entities given an array of entityRefs.
-   * @param filter - Filter for just the entities defined by this filter.
-   * @param getEntitiesByRefsRequest -
-   */
+     * Get a batch set of entities given an array of entityRefs.
+     * @param filter - You can pass in one or more filter sets that get matched against each entity.
+Each filter set is a number of conditions that all have to match for the
+condition to be true (conditions effectively have an AND between them). At least
+one filter set has to be true for the entity to be part of the result set
+(filter sets effectively have an OR between them).
+
+Example:
+
+&#x60;&#x60;&#x60;text
+/entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type
+
+  Return entities that match
+
+    Filter set 1:
+      Condition 1: kind &#x3D; user
+                  AND
+      Condition 2: metadata.namespace &#x3D; default
+
+    OR
+
+    Filter set 2:
+      Condition 1: kind &#x3D; group
+                  AND
+      Condition 2: spec.type exists
+&#x60;&#x60;&#x60;
+
+Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;.
+The first form asserts on the existence of a certain key (with any value), and
+the second asserts that the key exists and has a certain value. All checks are
+always case _insensitive_.
+
+In all cases, the key is a simplified JSON path in a given piece of entity data.
+Each part of the path is a key of an object, and the traversal also descends
+through arrays. There are two special forms:
+
+- Array items that are simple value types (such as strings) match on a key-value
+  pair where the key is the item as a string, and the value is the string &#x60;true&#x60;
+- Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form
+
+Let&#39;s look at a simplified example to illustrate the concept:
+
+&#x60;&#x60;&#x60;json
+{
+  &quot;a&quot;: {
+    &quot;b&quot;: [&quot;c&quot;, { &quot;d&quot;: 1 }],
+    &quot;e&quot;: 7
+  }
+}
+&#x60;&#x60;&#x60;
+
+This would match any one of the following conditions:
+
+- &#x60;a&#x60;
+- &#x60;a.b&#x60;
+- &#x60;a.b.c&#x60;
+- &#x60;a.b.c&#x3D;true&#x60;
+- &#x60;a.b.d&#x60;
+- &#x60;a.b.d&#x3D;1&#x60;
+- &#x60;a.e&#x60;
+- &#x60;a.e&#x3D;7&#x60;
+
+Some more real world usable examples:
+
+- Return all orphaned entities:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;
+
+- Return all users and groups:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;
+
+- Return all service components:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;
+
+- Return all entities with the &#x60;java&#x60; tag:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;
+
+- Return all users who are members of the &#x60;ops&#x60; group (note that the full
+  [reference](references.md) of the group is used):
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
+
+     * @param getEntitiesByRefsRequest - 
+     */
   public async getEntitiesByRefs(
     // @ts-ignore
     request: GetEntitiesByRefs,
@@ -493,10 +730,93 @@ export class DefaultApiClient {
   }
 
   /**
-   * Get all entity facets that match the given filters.
-   * @param facet -
-   * @param filter - Filter for just the entities defined by this filter.
-   */
+     * Get all entity facets that match the given filters.
+     * @param facet - 
+     * @param filter - You can pass in one or more filter sets that get matched against each entity.
+Each filter set is a number of conditions that all have to match for the
+condition to be true (conditions effectively have an AND between them). At least
+one filter set has to be true for the entity to be part of the result set
+(filter sets effectively have an OR between them).
+
+Example:
+
+&#x60;&#x60;&#x60;text
+/entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type
+
+  Return entities that match
+
+    Filter set 1:
+      Condition 1: kind &#x3D; user
+                  AND
+      Condition 2: metadata.namespace &#x3D; default
+
+    OR
+
+    Filter set 2:
+      Condition 1: kind &#x3D; group
+                  AND
+      Condition 2: spec.type exists
+&#x60;&#x60;&#x60;
+
+Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;.
+The first form asserts on the existence of a certain key (with any value), and
+the second asserts that the key exists and has a certain value. All checks are
+always case _insensitive_.
+
+In all cases, the key is a simplified JSON path in a given piece of entity data.
+Each part of the path is a key of an object, and the traversal also descends
+through arrays. There are two special forms:
+
+- Array items that are simple value types (such as strings) match on a key-value
+  pair where the key is the item as a string, and the value is the string &#x60;true&#x60;
+- Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form
+
+Let&#39;s look at a simplified example to illustrate the concept:
+
+&#x60;&#x60;&#x60;json
+{
+  &quot;a&quot;: {
+    &quot;b&quot;: [&quot;c&quot;, { &quot;d&quot;: 1 }],
+    &quot;e&quot;: 7
+  }
+}
+&#x60;&#x60;&#x60;
+
+This would match any one of the following conditions:
+
+- &#x60;a&#x60;
+- &#x60;a.b&#x60;
+- &#x60;a.b.c&#x60;
+- &#x60;a.b.c&#x3D;true&#x60;
+- &#x60;a.b.d&#x60;
+- &#x60;a.b.d&#x3D;1&#x60;
+- &#x60;a.e&#x60;
+- &#x60;a.e&#x3D;7&#x60;
+
+Some more real world usable examples:
+
+- Return all orphaned entities:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;
+
+- Return all users and groups:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;
+
+- Return all service components:
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;
+
+- Return all entities with the &#x60;java&#x60; tag:
+
+  &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;
+
+- Return all users who are members of the &#x60;ops&#x60; group (note that the full
+  [reference](references.md) of the group is used):
+
+  &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
+
+     */
   public async getEntityFacets(
     // @ts-ignore
     request: GetEntityFacets,
@@ -516,6 +836,135 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
+    });
+  }
+
+  /**
+   * Refresh the entity related to entityRef.
+   * @param refreshEntityRequest -
+   */
+  public async refreshEntity(
+    // @ts-ignore
+    request: RefreshEntity,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/refresh`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Validate that a passed in entity has no errors in schema.
+   * @param validateEntityRequest -
+   */
+  public async validateEntity(
+    // @ts-ignore
+    request: ValidateEntity,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/validate-entity`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Validate a given location.
+   * @param analyzeLocationRequest -
+   */
+  public async analyzeLocation(
+    // @ts-ignore
+    request: AnalyzeLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<AnalyzeLocationResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/analyze-location`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Create a location for a given target.
+   * @param createLocationRequest -
+   * @param dryRun -
+   */
+  public async createLocation(
+    // @ts-ignore
+    request: CreateLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<CreateLocation201Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations{?dryRun}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Delete a location by id.
+   * @param id -
+   */
+  public async deleteLocation(
+    // @ts-ignore
+    request: DeleteLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations/{id}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      id: request.path.id,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'DELETE',
     });
   }
 
@@ -595,56 +1044,6 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
-    });
-  }
-
-  /**
-   * Refresh the entity related to entityRef.
-   * @param refreshEntityRequest -
-   */
-  public async refreshEntity(
-    // @ts-ignore
-    request: RefreshEntity,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/refresh`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Validate that a passed in entity has no errors in schema.
-   * @param validateEntityRequest -
-   */
-  public async validateEntity(
-    // @ts-ignore
-    request: ValidateEntity,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/validate-entity`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
     });
   }
 }
