@@ -20,7 +20,8 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "bin": {
-    "backstage-cli": "bin/backstage-cli"
+    "backstage-cli": "bin/backstage-cli",
+    "backstage-cli-alpha": "bin/backstage-cli-alpha"
   },
   "files": [
     "asset-types",
