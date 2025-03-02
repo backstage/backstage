@@ -24,10 +24,10 @@ import {
   BackstagePackageJson,
   Lockfile,
 } from '@backstage/cli-node';
-import { paths } from '../../lib/paths';
-import { runWorkerQueueThreads } from '../../lib/parallel';
-import { createScriptOptionsParser } from './optionsParser';
-import { SuccessCache } from '../../lib/cache/SuccessCache';
+import { paths } from '../../../../lib/paths';
+import { runWorkerQueueThreads } from '../../../../lib/parallel';
+import { createScriptOptionsParser } from '../../../../commands/repo/optionsParser';
+import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
