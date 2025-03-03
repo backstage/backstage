@@ -90,6 +90,10 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
 
+  getLocations(
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<Location[]>;
+
   getLocationById(
     id: string,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
