@@ -53,6 +53,8 @@ export class InMemoryCatalogClient implements CatalogApi {
   // (undocumented)
   getLocationByRef(_locationRef: string): Promise<Location_2 | undefined>;
   // (undocumented)
+  getLocations(): Promise<Location_2[]>;
+  // (undocumented)
   queryEntities(request?: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
   // (undocumented)
   refreshEntity(_entityRef: string): Promise<void>;
