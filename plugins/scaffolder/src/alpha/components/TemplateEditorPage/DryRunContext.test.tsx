@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-import { base64EncodeContent } from './DryRunContext';
-
+import { TestApiProvider } from '@backstage/test-utils';
 // eslint-disable-next-line no-restricted-imports
 import { TextEncoder } from 'util';
+import {
+  base64EncodeContent,
+  DryRunProvider,
+  useDryRun,
+} from './DryRunContext';
+
+import { errorApiRef } from '@backstage/core-plugin-api';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
+import { renderHook } from '@testing-library/react';
+import React from 'react';
+import { formDecoratorsApiRef } from '../../api';
 
 window.TextEncoder = TextEncoder;
 
@@ -40,5 +53,58 @@ describe('base64EncodeContent', () => {
     expect(base64EncodeContent('😅'.repeat(1000000))).toBe(
       window.btoa('<file too large>'),
     );
+  });
+});
+
+describe('DryRunProvider', () => {
+  describe('execute', () => {
+    it('passes the secrets from the SecretsContext to the dryRun call', async () => {
+      const scaffolderApiMock = {
+        dryRun: jest.fn(),
+      };
+
+      const formDecoratorsApiMock = {
+        getFormDecorators: jest.fn().mockResolvedValue([]),
+      };
+      const { result } = renderHook(
+        () => ({
+          hook: useDryRun(),
+        }),
+        {
+          wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+            <TestApiProvider
+              apis={[
+                [scaffolderApiRef, scaffolderApiMock],
+                [formDecoratorsApiRef, formDecoratorsApiMock],
+                [errorApiRef, { post: jest.fn() }],
+              ]}
+            >
+              <SecretsContextProvider initialSecrets={{ foo: 'bar' }}>
+                <DryRunProvider>{children}</DryRunProvider>
+              </SecretsContextProvider>
+            </TestApiProvider>
+          ),
+        },
+      );
+
+      const {
+        hook: { execute },
+      } = result.current;
+
+      // When
+      await execute({
+        templateContent: 'content',
+        values: {},
+        files: [],
+      });
+
+      // Then
+      expect(scaffolderApiMock.dryRun).toHaveBeenCalledWith({
+        template: 'content',
+        values: {},
+        secrets: { foo: 'bar' },
+        directoryContents: [],
+      });
+    });
   });
 });

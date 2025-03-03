@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
-import { CanonProvider } from '../src/contexts/canon';
 
 // Canon specific styles
 import '../src/css/core.css';
@@ -87,11 +86,7 @@ const preview: Preview = {
         (element as HTMLElement).style.backgroundColor = 'var(--canon-bg)';
       });
 
-      return (
-        <CanonProvider>
-          <Story />
-        </CanonProvider>
-      );
+      return <Story />;
     },
   ],
 };

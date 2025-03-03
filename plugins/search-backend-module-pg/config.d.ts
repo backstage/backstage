@@ -58,6 +58,10 @@ export interface Config {
         fragmentDelimiter?: string;
       };
       /**
+       * Ranking functions use an integer bit mask to control document length impact on rank. The default value is 0
+       */
+      normalization?: number | string;
+      /**
        * Batch size to use when indexing
        */
       indexerBatchSize?: number;

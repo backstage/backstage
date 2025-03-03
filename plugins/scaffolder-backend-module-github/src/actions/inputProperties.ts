@@ -16,7 +16,8 @@
 
 const repoUrl = {
   title: 'Repository Location',
-  description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+  description:
+    'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
   type: 'string',
 };
 const description = {
@@ -29,7 +30,8 @@ const homepage = {
 };
 const access = {
   title: 'Repository Access',
-  description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
+  description:
+    'Sets an admin collaborator on the repository. Can either be a user reference different from `owner` in `repoUrl` or team reference, eg. `org/team-name`',
   type: 'string',
 };
 const requireCodeOwnerReviews = {
@@ -55,8 +57,10 @@ const requiredStatusCheckContexts = {
 };
 const requireBranchesToBeUpToDate = {
   title: 'Require Branches To Be Up To Date?',
-  description: `Require branches to be up to date before merging. The default value is 'true'`,
+  description:
+    'Require branches to be up to date before merging. The default value is `true`',
   type: 'boolean',
+  default: true,
 };
 const requiredConversationResolution = {
   title: 'Required Conversation Resolution',
@@ -67,7 +71,9 @@ const requiredConversationResolution = {
 const requireLastPushApproval = {
   title: 'Require last push approval',
   type: 'boolean',
-  description: `Whether the most recent push to a PR must be approved by someone other than the person who pushed it. The default value is 'false'`,
+  default: false,
+  description:
+    'Whether the most recent push to a PR must be approved by someone other than the person who pushed it. The default value is `false`',
 };
 const repoVisibility = {
   title: 'Repository Visibility',
@@ -77,12 +83,16 @@ const repoVisibility = {
 const deleteBranchOnMerge = {
   title: 'Delete Branch On Merge',
   type: 'boolean',
-  description: `Delete the branch after merging the PR. The default value is 'false'`,
+  default: false,
+  description:
+    'Delete the branch after merging the PR. The default value is `false`',
 };
 const gitAuthorName = {
   title: 'Default Author Name',
   type: 'string',
-  description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+  default: 'Scaffolder',
+  description:
+    'Sets the default author name for the commit. The default value is `Scaffolder`',
 };
 const gitAuthorEmail = {
   title: 'Default Author Email',
@@ -92,33 +102,44 @@ const gitAuthorEmail = {
 const allowMergeCommit = {
   title: 'Allow Merge Commits',
   type: 'boolean',
-  description: `Allow merge commits. The default value is 'true'`,
+  default: true,
+  description: 'Allow merge commits. The default value is `true`',
 };
 const allowSquashMerge = {
   title: 'Allow Squash Merges',
   type: 'boolean',
-  description: `Allow squash merges. The default value is 'true'`,
+  default: true,
+  description: 'Allow squash merges. The default value is `true`',
 };
 const squashMergeCommitTitle = {
   title: 'Default squash merge commit title',
   enum: ['PR_TITLE', 'COMMIT_OR_PR_TITLE'],
-  description: `Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'`,
+  type: 'string',
+  default: 'COMMIT_OR_PR_TITLE',
+  description:
+    'Sets the default value for a squash merge commit title. The default value is `COMMIT_OR_PR_TITLE`',
 };
 const squashMergeCommitMessage = {
   title: 'Default squash merge commit message',
   enum: ['PR_BODY', 'COMMIT_MESSAGES', 'BLANK'],
-  description: `Sets the default value for a squash merge commit message. The default value is 'COMMIT_MESSAGES'`,
+  type: 'string',
+  default: 'COMMIT_MESSAGES',
+  description:
+    'Sets the default value for a squash merge commit message. The default value is `COMMIT_MESSAGES`',
 };
 
 const allowRebaseMerge = {
   title: 'Allow Rebase Merges',
   type: 'boolean',
-  description: `Allow rebase merges. The default value is 'true'`,
+  default: true,
+  description: 'Allow rebase merges. The default value is `true`',
 };
 const allowAutoMerge = {
   title: 'Allow Auto Merges',
   type: 'boolean',
-  description: `Allow individual PRs to merge automatically when all merge requirements are met. The default value is 'false'`,
+  default: false,
+  description:
+    'Allow individual PRs to merge automatically when all merge requirements are met. The default value is `false`',
 };
 const collaborators = {
   title: 'Collaborators',
@@ -150,17 +171,21 @@ const collaborators = {
 const hasProjects = {
   title: 'Enable projects',
   type: 'boolean',
-  description: `Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects`,
+  description:
+    'Enable projects for the repository. The default value is `true` unless the organization has disabled repository projects',
 };
 const hasWiki = {
   title: 'Enable the wiki',
   type: 'boolean',
-  description: `Enable the wiki for the repository. The default value is 'true'`,
+  default: true,
+  description:
+    'Enable the wiki for the repository. The default value is `true`',
 };
 const hasIssues = {
   title: 'Enable issues',
   type: 'boolean',
-  description: `Enable issues for the repository. The default value is 'true'`,
+  default: true,
+  description: 'Enable issues for the repository. The default value is `true`',
 };
 const token = {
   title: 'Authentication Token',
@@ -177,17 +202,23 @@ const topics = {
 const defaultBranch = {
   title: 'Default Branch',
   type: 'string',
-  description: `Sets the default branch on the repository. The default value is 'master'`,
+  default: 'master',
+  description:
+    'Sets the default branch on the repository. The default value is `master`',
 };
 const protectDefaultBranch = {
   title: 'Protect Default Branch',
   type: 'boolean',
-  description: `Protect the default branch after creating the repository. The default value is 'true'`,
+  default: true,
+  description:
+    'Protect the default branch after creating the repository. The default value is `true`',
 };
 const protectEnforceAdmins = {
   title: 'Enforce Admins On Protected Branches',
   type: 'boolean',
-  description: `Enforce admins to adhere to default branch protection. The default value is 'true'`,
+  default: true,
+  description:
+    'Enforce admins to adhere to default branch protection. The default value is `true`',
 };
 
 const bypassPullRequestAllowances = {
@@ -221,7 +252,9 @@ const bypassPullRequestAllowances = {
 const gitCommitMessage = {
   title: 'Git Commit Message',
   type: 'string',
-  description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+  default: 'initial commit',
+  description:
+    'Sets the commit message on the repository. The default value is `initial commit`',
 };
 const sourcePath = {
   title: 'Source Path',
@@ -233,7 +266,8 @@ const sourcePath = {
 const requiredApprovingReviewCount = {
   title: 'Required approving review count',
   type: 'number',
-  description: `Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1.`,
+  description:
+    'Specify the number of reviewers required to approve pull requests. Use a number between `1` and `6` or `0` to not require reviewers. Defaults to `1`.',
 };
 
 const restrictions = {

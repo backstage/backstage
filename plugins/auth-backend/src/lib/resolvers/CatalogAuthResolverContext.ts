@@ -46,6 +46,7 @@ import { CatalogIdentityClient } from '../catalog';
  * A reference to the entity itself will also be included in the returned array.
  *
  * @public
+ * @deprecated use `ctx.resolveOwnershipEntityRefs(entity)` from the provided `AuthResolverContext` instead.
  */
 export function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
@@ -164,21 +165,26 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
   async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
     const { entity } = await this.findCatalogUser(query);
-    let ent: string[];
-    if (this.ownershipResolver) {
-      const { ownershipEntityRefs } =
-        await this.ownershipResolver.resolveOwnershipEntityRefs(entity);
-      ent = ownershipEntityRefs;
-    } else {
-      ent = getDefaultOwnershipEntityRefs(entity);
-    }
+
+    const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
+      entity,
+    );
 
     const token = await this.tokenIssuer.issueToken({
       claims: {
         sub: stringifyEntityRef(entity),
-        ent,
+        ent: ownershipEntityRefs,
       },
     });
     return { token };
+  }
+
+  async resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }> {
+    if (this.ownershipResolver) {
+      return this.ownershipResolver.resolveOwnershipEntityRefs(entity);
+    }
+    return { ownershipEntityRefs: getDefaultOwnershipEntityRefs(entity) };
   }
 }

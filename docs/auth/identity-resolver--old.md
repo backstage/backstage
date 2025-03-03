@@ -140,7 +140,7 @@ export default async function createPlugin(
             const {
               profile: { email },
             } = info;
-            // Profiles are not always guaranteed to to have an email address.
+            // Profiles are not always guaranteed to have an email address.
             // You can also find more provider-specific information in `info.result`.
             // It typically contains a `fullProfile` object as well as ID and/or access
             // tokens that you can use for additional lookups.

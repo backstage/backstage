@@ -135,7 +135,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
 
   async start(input, ctx) {
     const { initializedPrompt, promise } = ctx;
-    const { helper, strategy } = await promise;
+    const { helper } = await promise;
     const options: Record<string, string> = {
       scope: input.scope,
       state: input.state,
@@ -146,14 +146,8 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       options.prompt = prompt;
     }
 
-    return new Promise((resolve, reject) => {
-      strategy.error = reject;
-
-      return helper
-        .start(input, {
-          ...options,
-        })
-        .then(resolve);
+    return helper.start(input, {
+      ...options,
     });
   },
 

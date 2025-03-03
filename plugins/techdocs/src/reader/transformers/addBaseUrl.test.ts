@@ -137,6 +137,36 @@ describe('addBaseUrl', () => {
     });
   });
 
+  it('preserves anchors in the original src', async () => {
+    const svgContent = '<svg></svg>';
+    const expectedSrc = `data:image/svg+xml;base64,${Buffer.from(
+      svgContent,
+    ).toString('base64')}`;
+
+    (global.fetch as jest.Mock).mockReturnValue({
+      text: jest.fn().mockResolvedValue(svgContent),
+    });
+
+    const root = await createTestShadowDom(
+      '<img id="x" src="test.svg#dark-mode" />',
+      {
+        preTransformers: [
+          addBaseUrl({
+            techdocsStorageApi,
+            entityId: mockEntityId,
+            path: '',
+          }),
+        ],
+        postTransformers: [],
+      },
+    );
+
+    await waitFor(() => {
+      const actualSrc = root.getElementById('x')?.getAttribute('src');
+      expect(expectedSrc).toEqual(actualSrc);
+    });
+  });
+
   it('inlines absolute url svgs pointed at our backend', async () => {
     const svgContent = '<svg></svg>';
     const expectedSrc = `data:image/svg+xml;base64,${Buffer.from(

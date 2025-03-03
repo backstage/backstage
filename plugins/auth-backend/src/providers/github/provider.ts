@@ -25,7 +25,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { githubAuthenticator } from '@backstage/plugin-auth-backend-module-github-provider';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
+ */
 export type GithubOAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -41,6 +44,7 @@ export type GithubOAuthResult = {
  * Auth provider integration for GitHub auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const github = createAuthProviderIntegration({
   create(options?: {

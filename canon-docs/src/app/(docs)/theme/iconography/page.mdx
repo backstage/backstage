@@ -9,7 +9,15 @@ selection for you to use in your application. The list of names is set down
 below. To use an icon, you can use the `Icon` component and pass the name of
 the icon you want to use.
 
-<CodeBlock title="Icon component" code={`<Icon name="heart" />`} />
+<CodeBlock code={`<Icon name="heart" />`} />
+
+## Icon overrides
+
+You can override any icons in our library by using the `IconProvider` at the root of your application.
+
+<CodeBlock
+  code={`<IconProvider overrides={{ heart: () => <div>Custom Icon</div> }} />`}
+/>
 
 ## Icon library
 

@@ -17,7 +17,7 @@
 import {
   productionPack,
   revertProductionPack,
-} from '../lib/packager/productionPack';
+} from '../modules/build/lib/packager/productionPack';
 import { paths } from '../lib/paths';
 import fs from 'fs-extra';
 import { publishPreflightCheck } from '../lib/publishing';

@@ -23,5 +23,5 @@ backend.add(
     data: { app: { packageName: 'example-app' } },
   }),
 );
-backend.add(import('../src/alpha'));
+backend.add(import('../src'));
 backend.start();

@@ -29,6 +29,7 @@ import { createAuthProviderIntegration } from '../createAuthProviderIntegration'
  * Auth provider integration for AWS ALB auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const awsAlb = createAuthProviderIntegration({
   create(options?: {

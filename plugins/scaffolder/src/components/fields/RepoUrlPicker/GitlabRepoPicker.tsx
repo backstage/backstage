@@ -33,7 +33,14 @@ export const GitlabRepoPicker = (
     accessToken?: string;
   }>,
 ) => {
-  const { allowedOwners = [], state, onChange, rawErrors, accessToken } = props;
+  const {
+    allowedOwners = [],
+    state,
+    onChange,
+    rawErrors,
+    accessToken,
+    isDisabled,
+  } = props;
   const [availableGroups, setAvailableGroups] = useState<
     { title: string; id: string }[]
   >([]);
@@ -128,7 +135,7 @@ export const GitlabRepoPicker = (
                   ),
                 })
               }
-              disabled={allowedOwners.length === 1}
+              disabled={isDisabled || allowedOwners.length === 1}
               selected={owner}
               items={ownerItems}
             />
@@ -147,10 +154,12 @@ export const GitlabRepoPicker = (
               <TextField
                 {...params}
                 label={t('fields.gitlabRepoPicker.owner.title')}
+                disabled={isDisabled}
                 required
               />
             )}
             freeSolo
+            disabled={isDisabled}
             autoSelect
           />
         )}

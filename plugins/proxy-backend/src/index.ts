@@ -21,4 +21,3 @@
  */
 
 export { proxyPlugin as default } from './plugin';
-export * from './service';

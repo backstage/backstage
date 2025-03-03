@@ -61,10 +61,12 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     formData,
     idSchema,
   } = props;
+
   const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
   const catalogApi = useApi(catalogApiRef);
@@ -151,7 +153,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         multiple
         filterSelectedOptions
         disabled={
-          required && !allowArbitraryValues && entities?.entities?.length === 1
+          isDisabled ||
+          (required &&
+            !allowArbitraryValues &&
+            entities?.entities?.length === 1)
         }
         id={idSchema?.$id}
         defaultValue={formData}
@@ -175,6 +180,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
           <TextField
             {...params}
             label={title}
+            disabled={isDisabled}
             margin="dense"
             helperText={description}
             FormHelperTextProps={{

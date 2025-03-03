@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
@@ -17,6 +18,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
+import { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -28,6 +30,7 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TextFieldProps } from '@material-ui/core/TextField';
+import { TypographyProps } from '@material-ui/core/Typography';
 
 // @public (undocumented)
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -70,6 +73,38 @@ export { CatalogApi };
 
 // @public
 export const catalogApiRef: ApiRef<CatalogApi>;
+
+// @public (undocumented)
+export function CatalogAutocomplete<
+  T,
+  Multiple extends boolean | undefined = undefined,
+  DisableClearable extends boolean | undefined = undefined,
+  FreeSolo extends boolean | undefined = undefined,
+>(
+  props: CatalogAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
+): React_2.JSX.Element;
+
+// @public
+export type CatalogAutocompleteProps<
+  T,
+  Multiple extends boolean | undefined = undefined,
+  DisableClearable extends boolean | undefined = undefined,
+  FreeSolo extends boolean | undefined = undefined,
+> = Omit<
+  AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
+  'PopperComponent' | 'PaperComponent' | 'popupIcon' | 'renderInput'
+> & {
+  name: string;
+  label?: string;
+  LabelProps?: TypographyProps<'label'>;
+  TextFieldProps?: Omit<OutlinedTextFieldProps, 'variant'>;
+  renderInput?: AutocompleteProps<
+    T,
+    Multiple,
+    DisableClearable,
+    FreeSolo
+  >['renderInput'];
+};
 
 // @public (undocumented)
 export const CatalogFilterLayout: {
@@ -208,6 +243,7 @@ export type EntityAutocompletePickerProps<
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
+  hidden?: boolean;
 };
 
 // @public
@@ -580,6 +616,8 @@ export const EntityTagPicker: (
 // @public (undocumented)
 export type EntityTagPickerProps = {
   showCounts?: boolean;
+  initialFilter?: string[];
+  hidden?: boolean;
 };
 
 // @public
@@ -818,12 +856,14 @@ export type UserListFilterKind = 'owned' | 'starred' | 'all';
 // @public (undocumented)
 export const UserListPicker: (
   props: UserListPickerProps,
-) => React_2.JSX.Element;
+) => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
+  hidden?: boolean;
+  alwaysKeepFilters?: boolean;
 };
 
 // @public (undocumented)

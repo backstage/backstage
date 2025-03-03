@@ -21,7 +21,7 @@
  */
 
 // Providers
-export * from './contexts/canon';
+export * from './components/Icon/context';
 
 // Layout components
 export * from './components/Box';

@@ -15,7 +15,7 @@
  */
 
 /* Normalize */
-@import './base.css';
+@import './normalize.css';
 @import './utilities.css';
 
 /* Light theme tokens */

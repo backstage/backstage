@@ -96,6 +96,86 @@ describe('HttpPostIngressEventPublisher', () => {
     );
   });
 
+  it('should allow large input', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+    const data = {
+      testA: 'a'.repeat(1024 * 1024),
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      ingresses: {
+        testB: {},
+      },
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json')
+      .set('X-Custom-Header', 'test-value')
+      .timeout(1000)
+      .send(JSON.stringify(data));
+    expect(response.status).toBe(202);
+
+    expect(events.published).toHaveLength(1);
+    expect(events.published[0].topic).toEqual('testA');
+    expect(events.published[0].eventPayload).toEqual(data);
+    expect(events.published[0].metadata).toEqual(
+      expect.objectContaining({
+        'content-type': 'application/json',
+        'x-custom-header': 'test-value',
+      }),
+    );
+  });
+
+  it('should fail on too large input', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+    const data = {
+      testA: 'a'.repeat(10 * 1024 * 1024),
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      ingresses: {
+        testB: {},
+      },
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json')
+      .set('X-Custom-Header', 'test-value')
+      .timeout(1000)
+      .send(JSON.stringify(data));
+    expect(response.status).toBe(413);
+  });
+
   it('no raw body', async () => {
     const config = new ConfigReader({
       events: {

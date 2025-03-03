@@ -27,7 +27,7 @@ Records should be stored under the `architecture-decisions` directory.
 - Address and integrate feedback from the community
 - Eventually, assign a number
 - Add the path of the ADR to the microsite sidebar in
-  [`sidebars.js`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.js)
+  [`sidebars.ts`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.ts)
 - Add the path of the ADR to the
   [`mkdocs.yml`](https://github.com/backstage/backstage/blob/master/mkdocs.yml)
 - Merge the pull request

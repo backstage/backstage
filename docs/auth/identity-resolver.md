@@ -256,7 +256,7 @@ an example:
 async signInResolver(info, ctx) {
   const { profile: { email } } = info;
 
-  // Profiles are not always guaranteed to to have an email address.
+  // Profiles are not always guaranteed to have an email address.
   // You can also find more provider-specific information in `info.result`.
   // It typically contains a `fullProfile` object as well as ID and/or access
   // tokens that you can use for additional lookups.
@@ -298,10 +298,9 @@ of lower-level calls:
 
 ```ts
 // File: packages/backend/src/plugins/auth.ts
-import { getDefaultOwnershipEntityRefs } from '@backstage/plugin-auth-backend';
 
 // ...
-async signInResolver({ profile: { email} }, ctx) {
+async signInResolver({ profile: { email } }, ctx) {
   if (!email) {
     throw new Error('User profile contained no email');
   }
@@ -323,19 +322,19 @@ async signInResolver({ profile: { email} }, ctx) {
   //
   // You might also replace it if you for example want to filter out certain groups.
   //
-  // Note that `getDefaultOwnershipEntityRefs` only includes groups to which the
-  // user has a direct MEMBER_OF relationship. It's perfectly fine to include
-  // groups that the user is transitively part of in the claims array, but the
-  // catalog doesn't currently provide a direct way of accessing this list of
-  // groups.
-  const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
+  // Note that `ctx.resolveOwnershipEntityRefs(...)` by default only includes groups
+  // to which the user has a direct MEMBER_OF relationship.
+  // It's perfectly fine to include groups that the user is transitively part of
+  // in the claims array, but the catalog doesn't currently provide a direct
+  // way of accessing this list of groups.
+  const { ownershipEntityRefs } = await ctx.resolveOwnershipEntityRefs(entity);
 
   // The last step is to issue the token, where we might provide more options in the
   // future.
   return ctx.issueToken({
     claims: {
       sub: stringifyEntityRef(entity),
-      ent: ownershipRefs,
+      ent: ownershipEntityRefs,
     },
   });
 }

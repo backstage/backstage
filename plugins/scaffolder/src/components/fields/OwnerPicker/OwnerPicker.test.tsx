@@ -26,6 +26,7 @@ import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffo
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { fireEvent, screen } from '@testing-library/react';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -111,6 +112,73 @@ describe('<OwnerPicker />', () => {
           ],
         }),
       );
+    });
+  });
+
+  describe('ui:disabled OwnerPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.uiSchema = { 'ui:disabled': true };
+      props.formData = 'group:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // Expect input to be disabled
+      expect(input).toBeDisabled();
+      expect(input).toHaveValue('group:default/myentity');
+    });
+
+    it('Allows user to edit when ui:disabled is false', async () => {
+      props.uiSchema = { 'ui:disabled': false };
+      props.formData = 'group:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).not.toBeDisabled();
+
+      fireEvent.change(input, {
+        target: { value: 'group:default/mynewentity' },
+      });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('group:default/mynewentity');
+      expect(onChange).toHaveBeenCalledWith('group:default/mynewentity');
     });
   });
 

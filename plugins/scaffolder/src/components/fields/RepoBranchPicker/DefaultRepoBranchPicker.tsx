@@ -32,6 +32,7 @@ export const DefaultRepoBranchPicker = ({
   onChange,
   state,
   rawErrors,
+  isDisabled,
   required,
 }: BaseRepoBranchPickerProps) => {
   const { branch } = state;
@@ -45,6 +46,7 @@ export const DefaultRepoBranchPicker = ({
       <TextField
         id="branchInput"
         label="Branch"
+        disabled={isDisabled}
         onChange={e => onChange({ branch: e.target.value })}
         value={branch}
       />

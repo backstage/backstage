@@ -32,3 +32,38 @@ export const entityFilterExpressionDataRef =
   createExtensionDataRef<string>().with({
     id: 'catalog.entity-filter-expression',
   });
+
+/**
+ * @alpha
+ * Default entity content groups.
+ */
+export const defaultEntityContentGroups = {
+  documentation: 'Documentation',
+  development: 'Development',
+  deployment: 'Deployment',
+  observability: 'Observability',
+};
+
+/** @internal */
+export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
+  id: 'catalog.entity-content-group',
+});
+
+/**
+ * @internal
+ * Available entity card types
+ */
+export const entityCardTypes = [
+  'peek',
+  'info',
+  'full',
+] as const satisfies readonly EntityCardType[];
+
+/** @alpha */
+export type EntityCardType = 'peek' | 'info' | 'full';
+
+/** @internal */
+export const entityCardTypeDataRef =
+  createExtensionDataRef<EntityCardType>().with({
+    id: 'catalog.entity-card-type',
+  });

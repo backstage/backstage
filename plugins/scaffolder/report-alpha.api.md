@@ -108,8 +108,6 @@ const _default: FrontendPlugin<
       };
     }>;
     'page:scaffolder': ExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
       config: {
         path: string | undefined;
       };
@@ -126,7 +124,21 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        formFields: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<FormField>,
+            'scaffolder.form-field-loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: undefined;
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;

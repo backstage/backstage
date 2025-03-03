@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { useCanon } from '../../contexts/canon';
+import { useIcons } from './context';
 import type { IconProps } from './types';
 import clsx from 'clsx';
 
 /** @public */
 export const Icon = (props: IconProps) => {
   const { name, size, className, style, ...restProps } = props;
-  const { icons } = useCanon();
+  const { icons } = useIcons();
 
   const CanonIcon = icons[name] as React.ComponentType<Omit<IconProps, 'name'>>;
 

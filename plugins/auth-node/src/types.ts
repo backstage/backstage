@@ -161,6 +161,14 @@ export type AuthResolverContext = {
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
   ): Promise<BackstageSignInResult>;
+
+  /**
+   * Resolves the ownership entity references for the provided entity.
+   * This will use the `AuthOwnershipResolver` if one is installed, and otherwise fall back to the default resolution logic.
+   */
+  resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }>;
 };
 
 /**

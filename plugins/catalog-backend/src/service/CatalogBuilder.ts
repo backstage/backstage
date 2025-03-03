@@ -87,6 +87,7 @@ import {
   ProcessingIntervalFunction,
 } from '../processing';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { evictEntitiesFromOrphanedProviders } from '../processing/evictEntitiesFromOrphanedProviders';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import {
@@ -643,6 +644,15 @@ export class CatalogBuilder {
       disableRelationsCompatibility,
     });
 
+    if (
+      config.getOptionalString('catalog.orphanProviderStrategy') === 'delete'
+    ) {
+      await evictEntitiesFromOrphanedProviders({
+        db: providerDatabase,
+        providers: entityProviders,
+        logger,
+      });
+    }
     await connectEntityProviders(providerDatabase, entityProviders);
 
     return {

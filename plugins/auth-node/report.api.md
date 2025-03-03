@@ -113,6 +113,9 @@ export type AuthResolverContext = {
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
   ): Promise<BackstageSignInResult>;
+  resolveOwnershipEntityRefs(entity: Entity): Promise<{
+    ownershipEntityRefs: string[];
+  }>;
 };
 
 // @public

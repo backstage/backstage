@@ -34,7 +34,10 @@ const formFieldExtensionDataRef = createExtensionDataRef<
  * */
 export const FormFieldBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-form-field',
-  attachTo: { id: 'api:scaffolder/form-fields', input: 'formFields' },
+  attachTo: [
+    { id: 'page:scaffolder', input: 'formFields' },
+    { id: 'api:scaffolder/form-fields', input: 'formFields' },
+  ],
   dataRefs: {
     formFieldLoader: formFieldExtensionDataRef,
   },

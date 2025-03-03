@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export * from './Icon';
+// Icons
 export * from './icons';
+
+// Icon component
+export * from './Icon';
+
+// Context and Provider
+export * from './context';
+export * from './provider';
+
+// Types
 export type * from './types';

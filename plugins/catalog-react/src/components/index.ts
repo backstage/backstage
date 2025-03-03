@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './CatalogAutocomplete';
 export * from './CatalogFilterLayout';
 export * from './DefaultFilters';
 export * from './EntityKindPicker';

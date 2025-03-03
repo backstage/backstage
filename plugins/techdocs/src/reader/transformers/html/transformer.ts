@@ -83,7 +83,7 @@ export const useSanitizerTransformer = (): Transformer => {
       return DOMPurify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
         FORBID_TAGS: ['style'],
-        ADD_ATTR: ['http-equiv', 'content'],
+        ADD_ATTR: ['http-equiv', 'content', 'dominant-baseline'],
         WHOLE_DOCUMENT: true,
         RETURN_DOM: true,
         CUSTOM_ELEMENT_HANDLING: {

@@ -31,6 +31,7 @@ import { AuthHandler } from '../types';
  * Auth provider integration for OneLogin auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const onelogin = createAuthProviderIntegration({
   create(options?: {

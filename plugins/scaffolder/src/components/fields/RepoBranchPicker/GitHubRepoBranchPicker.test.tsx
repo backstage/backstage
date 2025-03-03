@@ -20,7 +20,13 @@ import {
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { GitHubRepoBranchPicker } from './GitHubRepoBranchPicker';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  waitFor,
+  screen,
+} from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 
@@ -42,6 +48,25 @@ describe('GitHubRepoBranchPicker', () => {
 
     expect(getByRole('textbox')).toBeInTheDocument();
     expect(getByRole('textbox')).toHaveValue('main');
+  });
+
+  it('input field disabled', () => {
+    render(
+      <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+        <GitHubRepoBranchPicker
+          onChange={jest.fn()}
+          isDisabled
+          state={{ branch: 'main' }}
+          rawErrors={[]}
+        />
+      </TestApiProvider>,
+    );
+
+    const input = screen.getByRole('textbox');
+
+    // Expect input to be disabled
+    expect(input).toBeDisabled();
+    expect(input).toHaveValue('main');
   });
 
   it('calls onChange when the input field changes', () => {

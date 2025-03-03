@@ -31,7 +31,7 @@ import {
   useTemplateSecrets,
   ScaffolderRJSFField,
 } from '@backstage/plugin-scaffolder-react';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { RepoBranchPicker } from './RepoBranchPicker';
 
 describe('RepoBranchPicker', () => {
@@ -90,6 +90,40 @@ describe('RepoBranchPicker', () => {
         }),
         expect.anything(),
       );
+    });
+
+    it('should disable the picker when ui:disabled', async () => {
+      const onSubmit = jest.fn();
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, {}],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{ 'ui:field': 'RepoBranchPicker', 'ui:disabled': true }}
+              fields={{
+                RepoBranchPicker:
+                  RepoBranchPicker as ScaffolderRJSFField<string>,
+              }}
+              onSubmit={onSubmit}
+              formContext={{
+                formData: { repoUrl: 'github.com' },
+              }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      expect(input).toBeDisabled();
     });
 
     it('should render properly with title and description', async () => {

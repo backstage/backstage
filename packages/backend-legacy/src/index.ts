@@ -42,10 +42,8 @@ import catalog from './plugins/catalog';
 import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
 import scaffolder from './plugins/scaffolder';
-import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
-import app from './plugins/app';
 import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
@@ -129,11 +127,9 @@ async function main() {
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
-  const appEnv = useHotMemoize(module, () => createEnv('app'));
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
 
@@ -145,7 +141,6 @@ async function main() {
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
 
@@ -153,8 +148,7 @@ async function main() {
     .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('', metricsHandler())
-    .addRouter('/api', apiRouter)
-    .addRouter('', await app(appEnv));
+    .addRouter('/api', apiRouter);
 
   await service.start().catch(err => {
     logger.error(err);

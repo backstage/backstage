@@ -407,6 +407,38 @@ describe('<MultiEntityPicker />', () => {
     });
   });
 
+  describe('ui:disabled MultiEntityPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          allowArbitraryValues: true,
+        },
+        'ui:disabled': true,
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.formData = ['component/default:myentity'];
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeDisabled();
+    });
+  });
+
   describe('Optional MultiEntityPicker', () => {
     beforeEach(() => {
       uiSchema = {

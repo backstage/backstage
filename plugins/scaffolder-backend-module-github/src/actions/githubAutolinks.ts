@@ -54,7 +54,8 @@ export function createGithubAutolinksAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           keyPrefix: {
@@ -66,14 +67,15 @@ export function createGithubAutolinksAction(options: {
           urlTemplate: {
             title: 'URL Template',
             description:
-              'The URL must contain <num> for the reference number. <num> matches different characters depending on the value of isAlphanumeric.',
+              'The URL must contain `<num>` for the reference number. `<num>` matches different characters depending on the value of isAlphanumeric.',
             type: 'string',
           },
           isAlphanumeric: {
             title: 'Alphanumeric',
             description:
-              'Whether this autolink reference matches alphanumeric characters. If true, the <num> parameter of the url_template matches alphanumeric characters A-Z (case insensitive), 0-9, and -. If false, this autolink reference only matches numeric characters. Default: true',
+              'Whether this autolink reference matches alphanumeric characters. If `true`, the `<num>` parameter of the `url_template` matches alphanumeric characters `A-Z` (case insensitive), `0-9`, and `-`. If `false`, this autolink reference only matches numeric characters. Default: `true`',
             type: 'boolean',
+            default: true,
           },
           token: {
             title: 'Authentication Token',

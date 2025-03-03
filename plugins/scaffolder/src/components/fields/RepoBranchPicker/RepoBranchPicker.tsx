@@ -133,6 +133,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
               uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
               secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
             }
+            isDisabled={uiSchema?.['ui:disabled'] ?? false}
             required={required}
           />
         );
@@ -146,6 +147,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
               uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
               secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
             }
+            isDisabled={uiSchema?.['ui:disabled'] ?? false}
             required={required}
           />
         );
@@ -155,6 +157,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
             onChange={updateLocalState}
             state={state}
             rawErrors={rawErrors}
+            isDisabled={uiSchema?.['ui:disabled'] ?? false}
             required={required}
           />
         );

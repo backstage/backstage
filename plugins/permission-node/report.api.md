@@ -201,20 +201,16 @@ export function createPermissionResourceRef<TResource, TQuery>(): {
 
 // @public
 export function createPermissionRule<
-  TResource,
-  TQuery,
-  TQueryOutput extends TQuery,
-  TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: CreatePermissionRuleOptions<
-    TResource,
-    TQuery,
-    TQueryOutput,
-    TResourceType,
-    TParams
-  >,
-): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+  rule: CreatePermissionRuleOptions<TRef, TParams>,
+): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
 
 // @public @deprecated
 export function createPermissionRule<
@@ -228,19 +224,18 @@ export function createPermissionRule<
 
 // @public (undocumented)
 export type CreatePermissionRuleOptions<
-  TResource,
-  TQuery,
-  TQueryOutput extends TQuery,
-  TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams,
-> = {
-  name: string;
-  description: string;
-  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
-  paramsSchema?: z.ZodSchema<TParams>;
-  apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
-  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQueryOutput>;
-};
+> = TRef extends PermissionResourceRef<infer IResource, infer IQuery, any>
+  ? {
+      name: string;
+      description: string;
+      resourceRef: TRef;
+      paramsSchema?: z.ZodSchema<TParams>;
+      apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
+      toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
+    }
+  : never;
 
 // @public
 export const isAndCriteria: <T>(

@@ -18,6 +18,21 @@ const _default: FrontendPlugin<
   },
   {},
   {
+    'api:notifications': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'page:notifications': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -46,21 +61,6 @@ const _default: FrontendPlugin<
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'api:notifications': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
       };
     }>;
   }

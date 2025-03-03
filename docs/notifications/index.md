@@ -31,21 +31,21 @@ Example of use-cases:
 - Notifications for individuals: e.g., updates you have subscribed to, new required training courses
 - Notifications pertaining to a particular entity in the catalog: A notification might apply to an entity and the owning team.
 
-## Installation in Older Environments
+## Installation
 
-Newer versions of instances created by the create-app have both the notifications and signals plugins included by default; this section can be skipped right to the Configuration.
-
-Following installation instructions are valid for enabling the plugins in older environments.
+The following sections will walk you through the installation of the various parts of the Backstage Notification System.
 
 ### Add Notifications Backend
 
-```bash
-yarn workspace backend add @backstage/plugin-notifications-backend
+First we need to add the backend package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-notifications-backend
 ```
 
-Add the notifications to your `backend/src/index.ts`:
+Then we need to add it to our backend:
 
-```ts
+```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 // ...
 backend.add(import('@backstage/plugin-notifications-backend'));
@@ -53,13 +53,15 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 
 ### Add Notifications Frontend
 
-```bash
-yarn workspace app add @backstage/plugin-notifications
+First we need to add the frontend package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/app add @backstage/plugin-notifications
 ```
 
-To add the notifications main menu, add following to your `packages/app/src/components/Root/Root.tsx`:
+To add the notifications main menu, add the following:
 
-```tsx
+```tsx title="packages/app/src/components/Root/Root.tsx"
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 
 <SidebarPage>
@@ -72,9 +74,9 @@ import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 </SidebarPage>;
 ```
 
-Also add the route to notifications to `packages/app/src/App.tsx`:
+Also add the route to notifications:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 import { NotificationsPage } from '@backstage/plugin-notifications';
 
 <FlatRoutes>
@@ -83,35 +85,37 @@ import { NotificationsPage } from '@backstage/plugin-notifications';
 </FlatRoutes>;
 ```
 
-### Optional: Add Signals Backend
+### Optional: Add Signals
 
-Optionally add Signals to your backend by
+The use of signals is optional but improves user experience.
 
-```bash
-yarn workspace backend add @backstage/plugin-signals-backend
+#### Optional: Add Signals Backend
+
+Add Signals to your backend by first adding the backend package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-signals-backend
 ```
 
-Add the signals to your `backend/src/index.ts`:
+The add the signals to your backend:
 
-```ts
+```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 // ...
 backend.add(import('@backstage/plugin-signals-backend'));
 ```
 
-### Optional: Signals Frontend
+#### Optional: Signals Frontend
 
-The use of signals is optional but improves user experience.
+Start with adding the frontend package:
 
-Start with:
-
-```bash
-yarn workspace app add @backstage/plugin-signals
+```bash title="From your Backstage root directory"
+yarn --cwd packages/app add @backstage/plugin-signals
 ```
 
-To install the plugin, add the `SignalsDisplay` to your app root in `packages/app/src/App.tsx`:
+To install the plugin, add the `SignalsDisplay` to your app root:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 import { SignalsDisplay } from '@backstage/plugin-signals';
 
 export default app.createRoot(
@@ -135,8 +139,7 @@ If the signals plugin is properly configured, it will be automatically discovere
 The notifications plugin provides a way for users to manage their notification settings. To enable this, you must
 add the `UserNotificationSettingsCard` to your frontend.
 
-```tsx
-// App.tsx example
+```tsx title="packages/app/src/App.tsx"
 <Route path="/settings" element={<UserSettingsPage />}>
   <SettingsLayout.Route path="/advanced" title="Advanced">
     <AdvancedSettings />

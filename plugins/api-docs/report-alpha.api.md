@@ -8,6 +8,7 @@ import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -108,9 +109,11 @@ const _default: FrontendPlugin<
       name: 'has-apis';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -131,11 +134,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:api-docs/definition': ExtensionDefinition<{
@@ -143,9 +154,11 @@ const _default: FrontendPlugin<
       name: 'definition';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -166,11 +179,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
@@ -178,9 +199,11 @@ const _default: FrontendPlugin<
       name: 'consumed-apis';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -201,11 +224,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:api-docs/provided-apis': ExtensionDefinition<{
@@ -213,9 +244,11 @@ const _default: FrontendPlugin<
       name: 'provided-apis';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -236,11 +269,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:api-docs/consuming-components': ExtensionDefinition<{
@@ -248,9 +289,11 @@ const _default: FrontendPlugin<
       name: 'consuming-components';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -271,11 +314,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:api-docs/providing-components': ExtensionDefinition<{
@@ -283,9 +334,11 @@ const _default: FrontendPlugin<
       name: 'providing-components';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -306,11 +359,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-content:api-docs/definition': ExtensionDefinition<{
@@ -320,11 +381,13 @@ const _default: FrontendPlugin<
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
+        group: string | false | undefined;
       };
       configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -358,12 +421,26 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
+        defaultGroup?:
+          | (string & {})
+          | 'documentation'
+          | 'development'
+          | 'deployment'
+          | 'observability'
+          | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
@@ -375,11 +452,13 @@ const _default: FrontendPlugin<
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
+        group: string | false | undefined;
       };
       configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -413,12 +492,26 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
+        defaultGroup?:
+          | (string & {})
+          | 'documentation'
+          | 'development'
+          | 'deployment'
+          | 'observability'
+          | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };

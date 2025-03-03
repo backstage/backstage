@@ -156,7 +156,7 @@ export const createGitlabRepoPushAction = (options: {
         await api.Branches.show(repoID, branchName);
         branchExists = true;
       } catch (e: any) {
-        if (e.response?.statusCode !== 404) {
+        if (e.cause?.response?.status !== 404) {
           throw new InputError(
             `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
               e,

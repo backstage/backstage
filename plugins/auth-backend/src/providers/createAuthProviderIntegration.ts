@@ -27,6 +27,7 @@ import {
  * supplies built-in sign-in resolvers for the specific provider.
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],

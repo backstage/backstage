@@ -38,6 +38,7 @@ import {
  * A catalog client tailored for reading out identity data from the catalog.
  *
  * @public
+ * @deprecated Use the provided `AuthResolverContext` instead, see https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers
  */
 export class CatalogIdentityClient {
   private readonly catalogApi: CatalogApi;

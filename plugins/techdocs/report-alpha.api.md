@@ -17,6 +17,7 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
+import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -31,36 +32,6 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'page:techdocs': ExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
     'nav-item:techdocs': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -112,6 +83,36 @@ const _default: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
+    'page:techdocs': ExtensionDefinition<{
+      kind: 'page';
+      name: undefined;
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
+    }>;
     'search-result-list-item:techdocs': ExtensionDefinition<{
       config: {
         title: string | undefined;
@@ -151,8 +152,6 @@ const _default: FrontendPlugin<
       params: SearchResultListItemBlueprintParams;
     }>;
     'page:techdocs/reader': ExtensionDefinition<{
-      kind: 'page';
-      name: 'reader';
       config: {
         path: string | undefined;
       };
@@ -173,7 +172,21 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: 'reader';
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
@@ -185,11 +198,13 @@ const _default: FrontendPlugin<
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
+        group: string | false | undefined;
       };
       configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -223,8 +238,26 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
           >;
       inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
         emptyState: ExtensionInput<
           ConfigurableExtensionDataRef<
             React_2.JSX.Element,
@@ -245,6 +278,13 @@ const _default: FrontendPlugin<
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
+        defaultGroup?:
+          | (string & {})
+          | 'documentation'
+          | 'development'
+          | 'deployment'
+          | 'observability'
+          | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
