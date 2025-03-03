@@ -84,18 +84,18 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: build OpenAPI API docs
-        working-directory: microsite
-        # TODO: Remove `|| true` once stable release supports gen-api-docs
-        run: yarn docusaurus gen-api-docs all || true
+      # TODO: Enable after 1.37 is released
+      # - name: build OpenAPI API docs
+      #   working-directory: microsite
+      #   run: yarn docusaurus gen-api-docs all
 
-      - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
-        with:
-          name: stable-openapi-docs
-          path: docs/**/*.api.mdx
-          if-no-files-found: error
-          retention-days: 1
+      # - name: upload OpenAPI API docs
+      #   uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+      #   with:
+      #     name: stable-openapi-docs
+      #     path: docs/**/*.api.mdx
+      #     if-no-files-found: error
+      #     retention-days: 1
 
   next:
     runs-on: ubuntu-latest
@@ -217,11 +217,12 @@ jobs:
           name: stable-reference
           path: docs/reference
 
-      - name: download stable OpenAPI API docs
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
-        with:
-          name: stable-openapi-docs
-          path: docs/**/*.api.mdx
+      # TODO: Enable after 1.37 is released
+      # - name: download stable OpenAPI API docs
+      #   uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+      #   with:
+      #     name: stable-openapi-docs
+      #     path: docs/**/*.api.mdx
 
       - name: grab lastest releases docs
         run: |
