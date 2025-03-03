@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { Context } from 'react';
 import type { CSSProperties } from 'react';
 import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
@@ -121,6 +122,27 @@ export const Button: React_2.ForwardRefExoticComponent<
   ButtonProps & React_2.RefAttributes<HTMLButtonElement>
 >;
 
+// @public (undocumented)
+export type ButtonOwnProps = GetPropDefTypes<typeof buttonPropDefs>;
+
+// @public (undocumented)
+export const buttonPropDefs: {
+  variant: {
+    type: 'enum';
+    values: ('primary' | 'secondary')[];
+    className: string;
+    default: 'primary';
+    responsive: true;
+  };
+  size: {
+    type: 'enum';
+    values: ('small' | 'medium')[];
+    className: string;
+    default: 'medium';
+    responsive: true;
+  };
+};
+
 // @public
 export interface ButtonProps {
   // (undocumented)
@@ -134,32 +156,11 @@ export interface ButtonProps {
   // (undocumented)
   iconStart?: IconNames;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  size?: ButtonOwnProps['size'];
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
-}
-
-// @public (undocumented)
-export interface CanonContextProps {
-  // (undocumented)
-  icons: IconMap;
-}
-
-// @public (undocumented)
-export const CanonProvider: (props: CanonProviderProps) => React_2.JSX.Element;
-
-// @public (undocumented)
-export interface CanonProviderProps {
-  // (undocumented)
-  children?: ReactNode;
-  // (undocumented)
-  overrides?: Partial<Record<IconNames, React_2.ComponentType>>;
+  variant?: ButtonOwnProps['variant'];
 }
 
 // @public (undocumented)
@@ -601,6 +602,15 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 export const Icon: (props: IconProps) => React_2.JSX.Element;
 
 // @public (undocumented)
+export const IconContext: Context<IconContextProps>;
+
+// @public (undocumented)
+export interface IconContextProps {
+  // (undocumented)
+  icons: IconMap;
+}
+
+// @public (undocumented)
 export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
 
 // @public (undocumented)
@@ -633,6 +643,17 @@ export type IconProps = {
   className?: string;
   style?: React.CSSProperties;
 };
+
+// @public (undocumented)
+export const IconProvider: (props: IconProviderProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export interface IconProviderProps {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  overrides?: Partial<Record<IconNames, React.ComponentType>>;
+}
 
 // @public (undocumented)
 export const icons: IconMap;
@@ -951,7 +972,7 @@ export interface TextProps {
 }
 
 // @public (undocumented)
-export const useCanon: () => CanonContextProps;
+export const useIcons: () => IconContextProps;
 
 // @public (undocumented)
 export interface UtilityProps extends SpaceProps {

@@ -18,13 +18,20 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorPage } from './TemplateEditorPage';
 import { rootRouteRef } from '../../../routes';
+import { formDecoratorsApiRef } from '../../api';
 
 describe('TemplateEditorPage', () => {
   const catalogApiMock = { getEntities: jest.fn().mockResolvedValue([]) };
   const scaffolderApiMock = {};
+  const formDecoratorsApiMock = {
+    getFormDecorators: jest.fn().mockResolvedValue([]),
+  };
 
   it('Should render without exploding', async () => {
     await renderInTestApp(
@@ -32,9 +39,12 @@ describe('TemplateEditorPage', () => {
         apis={[
           [catalogApiRef, catalogApiMock],
           [scaffolderApiRef, scaffolderApiMock],
+          [formDecoratorsApiRef, formDecoratorsApiMock],
         ]}
       >
-        <TemplateEditorPage />
+        <SecretsContextProvider>
+          <TemplateEditorPage />
+        </SecretsContextProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -53,9 +63,12 @@ describe('TemplateEditorPage', () => {
         apis={[
           [catalogApiRef, catalogApiMock],
           [scaffolderApiRef, scaffolderApiMock],
+          [formDecoratorsApiRef, formDecoratorsApiMock],
         ]}
       >
-        <TemplateEditorPage />
+        <SecretsContextProvider>
+          <TemplateEditorPage />
+        </SecretsContextProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {

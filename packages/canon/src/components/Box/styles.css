@@ -1,4 +1,5 @@
 .canon-Box {
   font-family: var(--canon-font-regular);
-  color: var(--canon-fg-text-primary);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
 }

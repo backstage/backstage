@@ -315,7 +315,12 @@ export function createOAuthRouteHandlers<TProfile>(
         const scopeRefresh = await scopeManager.refresh(req);
 
         const result = await authenticator.refresh(
-          { req, scope: scopeRefresh.scope, refreshToken },
+          {
+            req,
+            scope: scopeRefresh.scope,
+            scopeAlreadyGranted: scopeRefresh.scopeAlreadyGranted,
+            refreshToken,
+          },
           authenticatorCtx,
         );
 

@@ -1,0 +1,12 @@
+---
+title: Scaffolder jenkins client actions
+author: robertonav20
+authorUrl: https://github.com/robertonav20
+category: Scaffolder
+description: Collection of actions to integrate backstage template with jenkins. For example job creation, run, deletion and so on.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/jenkins/plugins/scaffolder-backend-module-jenkins
+iconUrl: /img/jenkins.png
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-jenkins'
+addedDate: '2024-12-06'
+tags:
+  - Scaffolder

@@ -17,7 +17,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Icon } from './Icon';
-import { CanonProvider } from '../../contexts/canon';
+import { IconProvider } from './provider';
 import { icons } from './icons';
 
 const meta = {
@@ -52,9 +52,9 @@ export const WithCustomIcon: Story = {
   },
   decorators: [
     Story => (
-      <CanonProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
+      <IconProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
         <Story />
-      </CanonProvider>
+      </IconProvider>
     ),
   ],
 };

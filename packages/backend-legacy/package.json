@@ -1,6 +1,6 @@
 {
   "name": "example-backend-legacy",
-  "version": "0.2.107-next.2",
+  "version": "0.2.108-next.0",
   "backstage": {
     "role": "backend"
   },
@@ -35,7 +35,6 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
@@ -48,7 +47,6 @@
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
-    "@backstage/plugin-proxy-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^",
@@ -68,7 +66,6 @@
     "azure-devops-node-api": "^14.0.0",
     "better-sqlite3": "^11.0.0",
     "dockerode": "^4.0.0",
-    "example-app": "link:../app",
     "express": "^4.17.1",
     "express-prom-bundle": "^7.0.0",
     "express-promise-router": "^4.1.0",

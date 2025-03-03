@@ -56,6 +56,26 @@ export const Router = () => {
   );
 };
 
+export const TechDocsReaderRouter = (props: PropsWithChildren) => {
+  const { children } = props;
+
+  // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
+  const element = useRoutes([
+    {
+      path: '*',
+      element: <TechDocsReaderPage />,
+      children: [
+        {
+          path: '*',
+          element: children,
+        },
+      ],
+    },
+  ]);
+
+  return element;
+};
+
 export const EmbeddedDocsRouter = (
   props: PropsWithChildren<{
     emptyState?: React.ReactElement;
@@ -90,7 +110,6 @@ export const EmbeddedDocsRouter = (
       )
     );
   }
-
   return element;
 };
 

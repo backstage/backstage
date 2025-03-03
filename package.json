@@ -1,10 +1,20 @@
 {
   "name": "root",
-  "version": "1.36.0-next.2",
+  "version": "1.37.0-next.0",
   "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage"
+  },
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "private": false,
+          "namePrefix": "@backstage/"
+        }
+      }
+    }
   },
   "workspaces": {
     "packages": [
@@ -33,7 +43,7 @@
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:peer-deps": "backstage-repo-tools peer-deps",
     "lint:type-deps": "backstage-repo-tools type-deps",
-    "new": "backstage-cli new --scope backstage --baseVersion 0.0.0 --no-private",
+    "new": "backstage-cli new",
     "prepare": "husky",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
@@ -134,6 +144,7 @@
     "shx": "^0.3.2",
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
+    "typedoc": "^0.27.6",
     "typescript": "~5.2.0"
   },
   "packageManager": "yarn@3.8.1",

@@ -1,5 +1,26 @@
 # @backstage/plugin-signals
 
+## 0.0.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+
+## 0.0.16
+
+### Patch Changes
+
+- 005d241: Added support for the new frontend system via `/alpha` export.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-signals-react@0.0.10
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+
 ## 0.0.16-next.1
 
 ### Patch Changes

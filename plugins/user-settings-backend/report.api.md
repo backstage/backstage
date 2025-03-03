@@ -4,24 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { DatabaseService } from '@backstage/backend-plugin-api';
-import express from 'express';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { SignalsService } from '@backstage/plugin-signals-node';
-
-// @public @deprecated
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
 const _default: BackendFeature;
 export default _default;
-
-// @public @deprecated
-export type RouterOptions = {
-  database: DatabaseService;
-  identity: IdentityApi;
-  signals?: SignalsService;
-};
 
 // (No @packageDocumentation comment for this package)
 ```

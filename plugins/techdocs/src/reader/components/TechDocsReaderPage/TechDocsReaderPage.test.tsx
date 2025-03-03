@@ -17,7 +17,10 @@
 import React from 'react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   mockApis,
   renderInTestApp,
@@ -81,6 +84,16 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const entityPresentationApiMock: jest.Mocked<
+  typeof entityPresentationApiRef.T
+> = {
+  forEntity: jest.fn().mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  }),
+};
+
 const fetchApiMock = {
   fetch: jest.fn().mockResolvedValue({
     ok: true,
@@ -115,6 +128,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],
         [techdocsStorageApiRef, techdocsStorageApiMock],
+        [entityPresentationApiRef, entityPresentationApiMock],
       ]}
     >
       {children}

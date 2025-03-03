@@ -1,5 +1,48 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.46-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.7-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/plugin-catalog@1.28.0-next.0
+  - @backstage/plugin-techdocs@1.12.4-next.0
+  - @backstage/plugin-techdocs-react@1.2.15-next.0
+  - @backstage/integration-react@1.2.4
+
+## 1.0.45
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.6
+  - @backstage/plugin-techdocs@1.12.3
+  - @backstage/plugin-catalog@1.27.0
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-techdocs-react@1.2.14
+  - @backstage/core-app-api@1.15.5
+  - @backstage/test-utils@1.7.5
+
+## 1.0.45-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.27.0-next.3
+  - @backstage/plugin-techdocs@1.12.3-next.3
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/test-utils@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-search-react@1.8.6-next.3
+  - @backstage/plugin-techdocs-react@1.2.14-next.1
+
 ## 1.0.45-next.2
 
 ### Patch Changes

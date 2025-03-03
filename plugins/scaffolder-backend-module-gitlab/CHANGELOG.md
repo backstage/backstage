@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 06eee14: Support empty repository creation in gitlab without workspace pushing and conditionally skip if the repository already exists.
+
+### Patch Changes
+
+- a0419a6: Made gitlab:group:ensureExists action idempotent
+- 9d04e91: Fix automated assignment of reviewers for instances without premium/ultimate license (404). Introduce opt-in flag for automatic reviewer assignment based on approval rules
+- 9545c5f: `createGitlabProjectMigrateAction` can now output the `migrationId`
+- e52cee6: Made gitlab:issues:create action idempotent.
+- fe44946: Fixed bug of passing wrong value to `onChange` handler when using `GitLab` autocomplete
+- 66e392f: Making publish:gitlab:merge-request idempotent.
+- a7b22eb: Fixed bug in gitlabRepoPush where it was looking in the wrong place in the exception response from gitbeaker when checking if the branch already exists
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.8.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
 ## 0.8.0-next.2
 
 ### Patch Changes

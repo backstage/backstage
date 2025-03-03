@@ -19,9 +19,9 @@ Commands:
   config:schema [options]
   repo [command]
   package [command]
-  migrate [command]
   versions:bump [options]
   versions:migrate [options]
+  migrate [command]
   build-workspace [options] <workspace-dir> [packages...]
   create-github-app <github-org>
   info
@@ -179,6 +179,7 @@ Usage: backstage-cli new [options]
 Options:
   --select <name>
   --option <name>=<value>
+  --skip-install
   --scope <scope>
   --npm-registry <URL>
   --baseVersion <version>

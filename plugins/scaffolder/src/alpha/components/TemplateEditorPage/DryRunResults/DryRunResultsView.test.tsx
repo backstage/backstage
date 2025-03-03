@@ -19,9 +19,13 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { ReactNode, useEffect } from 'react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResultsView } from './DryRunResultsView';
+import { formDecoratorsApiRef } from '../../../api';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
 jest.mock('react-virtualized-auto-sizer', () => ({
@@ -70,12 +74,20 @@ describe('DryRunResultsView', () => {
               }),
             },
           ],
+          [
+            formDecoratorsApiRef,
+            {
+              getFormDecorators: async () => [],
+            },
+          ],
         ]}
       >
-        <DryRunProvider>
-          <DryRunResultsView />
-          <DryRunRemote />
-        </DryRunProvider>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunResultsView />
+            <DryRunRemote />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {

@@ -51,7 +51,7 @@ describe('useFormDecorators', () => {
   };
 
   it('should run the form decorators for a given manifest with the correct input', async () => {
-    const renderedHook = renderHook(() => useFormDecorators({ manifest }), {
+    const renderedHook = renderHook(() => useFormDecorators(), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
@@ -76,6 +76,7 @@ describe('useFormDecorators', () => {
       await result.run({
         formState: {},
         secrets: {},
+        manifest,
       });
 
       expect(mockApiImplementation.test).toHaveBeenCalledWith('hello');
@@ -83,7 +84,7 @@ describe('useFormDecorators', () => {
   });
 
   it('should return existing secrets and formstate', async () => {
-    const renderedHook = renderHook(() => useFormDecorators({ manifest }), {
+    const renderedHook = renderHook(() => useFormDecorators(), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
@@ -107,6 +108,7 @@ describe('useFormDecorators', () => {
       const { secrets, formState } = await result.run({
         formState: { test: 'formState' },
         secrets: { test: 'hello' },
+        manifest,
       });
 
       expect(secrets).toEqual({ test: 'hello' });
@@ -122,7 +124,7 @@ describe('useFormDecorators', () => {
         setSecrets(state => ({ ...state, new: 'hello' }));
       },
     });
-    const renderedHook = renderHook(() => useFormDecorators({ manifest }), {
+    const renderedHook = renderHook(() => useFormDecorators(), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
@@ -146,6 +148,7 @@ describe('useFormDecorators', () => {
       const { secrets, formState } = await result.run({
         formState: { test: 'formState' },
         secrets: { test: 'hello' },
+        manifest,
       });
 
       expect(secrets).toEqual({ test: 'hello', new: 'hello' });

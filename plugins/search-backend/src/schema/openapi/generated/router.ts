@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,6 +114,7 @@ export const spec = {
       get: {
         operationId: 'Query',
         description: 'Query documents with a given filter.',
+        tags: ['Search'],
         responses: {
           '200': {
             description: 'Ok',

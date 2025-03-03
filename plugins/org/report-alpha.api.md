@@ -5,6 +5,7 @@
 ```ts
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -22,9 +23,11 @@ const _default: FrontendPlugin<
       name: 'group-profile';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -45,11 +48,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:org/members-list': ExtensionDefinition<{
@@ -57,9 +68,11 @@ const _default: FrontendPlugin<
       name: 'members-list';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -80,11 +93,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:org/ownership': ExtensionDefinition<{
@@ -92,9 +113,11 @@ const _default: FrontendPlugin<
       name: 'ownership';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -115,11 +138,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
     'entity-card:org/user-profile': ExtensionDefinition<{
@@ -127,9 +158,11 @@ const _default: FrontendPlugin<
       name: 'user-profile';
       config: {
         filter: string | undefined;
+        type: 'full' | 'info' | 'peek' | undefined;
       };
       configInput: {
         filter?: string | undefined;
+        type?: 'full' | 'info' | 'peek' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -150,11 +183,19 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | ((entity: Entity) => boolean) | undefined;
+        type?: EntityCardType | undefined;
       };
     }>;
   }

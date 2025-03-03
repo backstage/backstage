@@ -31,6 +31,7 @@ import { oauth2Authenticator } from '@backstage/plugin-auth-backend-module-oauth
  * Auth provider integration for generic OAuth2 auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const oauth2 = createAuthProviderIntegration({
   create(options?: {

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import {
-  MockEntityListContextProvider,
   catalogApiMock,
+  MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityAutocompletePicker } from './EntityAutocompletePicker';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
-import { DefaultEntityFilters } from '../../hooks';
+import { DefaultEntityFilters, useEntityList } from '../../hooks';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '../../types';
 import { EntityKindFilter, EntityTypeFilter } from '../../filters';
@@ -281,15 +281,28 @@ describe('<EntityAutocompletePicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', async () => {
+  it('responds to external filter changes', async () => {
     const mockCatalogApi = makeMockCatalogApi();
-    const updateFilters = jest.fn();
-    const rendered = render(
+    const ChangeFilterButton = () => {
+      const { updateFilters } = useEntityList<EntityFilters>();
+
+      return (
+        <button
+          data-testid="external-filter-change-button"
+          onClick={() =>
+            updateFilters({ options: new EntityOptionFilter(['option3']) })
+          }
+        >
+          Trigger external filter change
+        </button>
+      );
+    };
+
+    render(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
         <MockEntityListContextProvider<EntityFilters>
           value={{
-            updateFilters,
-            queryParameters: { options: ['option1'] },
+            filters: { options: new EntityOptionFilter(['option2']) },
           }}
         >
           <EntityAutocompletePicker<EntityFilters>
@@ -298,34 +311,21 @@ describe('<EntityAutocompletePicker/>', () => {
             name="options"
             Filter={EntityOptionFilter}
           />
+          <ChangeFilterButton />
         </MockEntityListContextProvider>
       </TestApiProvider>,
     );
+
     await waitFor(() =>
-      expect(updateFilters).toHaveBeenLastCalledWith({
-        options: new EntityOptionFilter(['option1']),
-      }),
+      expect(screen.queryByText('Options')).toBeInTheDocument(),
     );
-    rendered.rerender(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
-        <MockEntityListContextProvider<EntityFilters>
-          value={{
-            updateFilters,
-            queryParameters: { options: ['option2'] },
-          }}
-        >
-          <EntityAutocompletePicker<EntityFilters>
-            label="Options"
-            path="spec.options"
-            name="options"
-            Filter={EntityOptionFilter}
-          />
-        </MockEntityListContextProvider>
-      </TestApiProvider>,
+    expect(screen.queryByText('option2')).toBeInTheDocument();
+
+    screen.getByTestId('external-filter-change-button').click();
+    await waitFor(() =>
+      expect(screen.queryByText('option3')).toBeInTheDocument(),
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      options: new EntityOptionFilter(['option2']),
-    });
+    expect(screen.queryByText('option2')).not.toBeInTheDocument();
   });
 
   it('filters available values by kind as default', async () => {
@@ -392,5 +392,23 @@ describe('<EntityAutocompletePicker/>', () => {
         },
       }),
     );
+  });
+
+  it("doesn't render when hidden", async () => {
+    const catalogApi = makeMockCatalogApi();
+    render(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+            hidden
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => expect(screen.queryByText('Options')).toBeNull());
   });
 });

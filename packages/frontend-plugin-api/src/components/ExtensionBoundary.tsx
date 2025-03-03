@@ -96,14 +96,29 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 export namespace ExtensionBoundary {
   export function lazy(
     appNode: AppNode,
-    lazyElement: () => Promise<JSX.Element>,
+    loader: () => Promise<JSX.Element>,
   ): JSX.Element {
     const ExtensionComponent = reactLazy(() =>
-      lazyElement().then(element => ({ default: () => element })),
+      loader().then(element => ({ default: () => element })),
     );
     return (
       <ExtensionBoundary node={appNode}>
         <ExtensionComponent />
+      </ExtensionBoundary>
+    );
+  }
+
+  export function lazyComponent<TProps extends {}>(
+    appNode: AppNode,
+    loader: () => Promise<(props: TProps) => JSX.Element>,
+  ): (props: TProps) => JSX.Element {
+    const ExtensionComponent = reactLazy(() =>
+      loader().then(Component => ({ default: Component })),
+    ) as unknown as React.ComponentType<TProps>;
+
+    return (props: TProps) => (
+      <ExtensionBoundary node={appNode}>
+        <ExtensionComponent {...props} />
       </ExtensionBoundary>
     );
   }

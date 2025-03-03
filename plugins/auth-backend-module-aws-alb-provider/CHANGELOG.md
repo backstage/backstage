@@ -1,5 +1,38 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.24.4-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 61f464e: Added `auth.providers.<providerId>.sessionDuration` config for auth providers to allow the lifespan of user sessions to be configured.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-auth-backend@0.24.3
+
+## 0.4.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-auth-backend@0.24.3-next.3
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/errors@1.2.7
+
 ## 0.4.0-next.2
 
 ### Minor Changes

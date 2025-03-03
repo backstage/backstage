@@ -1,5 +1,80 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- bb8302b: **BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.
+
+### Patch Changes
+
+- 5c187f9: **DEPRECATION**: The `getOctokitOptions` function signature with `repoUrl` option has been deprecated in favour of a function signature with individual `host`, `owner`, and `repo` parameters:
+
+  ```diff
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider,
+      token,
+  -   repoUrl,
+  +   host,
+  +   owner,
+  +   repo,
+    });
+  ```
+
+- b98d511: clean up github action schemas
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- bb8302b: **BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.
+
+### Patch Changes
+
+- 5c187f9: **DEPRECATION**: The `getOctokitOptions` function signature with `repoUrl` option has been deprecated in favour of a function signature with individual `host`, `owner`, and `repo` parameters:
+
+  ```diff
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider,
+      token,
+  -   repoUrl,
+  +   host,
+  +   owner,
+  +   repo,
+    });
+  ```
+
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
 ## 0.5.6-next.1
 
 ### Patch Changes

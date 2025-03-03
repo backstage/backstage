@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.12.2-next.2",
+  "version": "0.13.1-next.0",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -89,7 +89,8 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/node": "^20.16.0",
-    "@types/prettier": "^2.0.0"
+    "@types/prettier": "^2.0.0",
+    "typedoc": "^0.27.6"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",
@@ -97,10 +98,14 @@
     "@microsoft/tsdoc-config": "*",
     "@useoptic/optic": "^1.0.0",
     "prettier": "^2.8.1",
+    "typedoc": "^0.27.0",
     "typescript": "> 3.0.0"
   },
   "peerDependenciesMeta": {
     "prettier": {
+      "optional": true
+    },
+    "typedoc": {
       "optional": true
     }
   }

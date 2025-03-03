@@ -37,7 +37,10 @@ import {
   SignInResolver,
 } from '@backstage/plugin-auth-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
+ */
 export type SamlAuthResult = {
   fullProfile: any;
 };

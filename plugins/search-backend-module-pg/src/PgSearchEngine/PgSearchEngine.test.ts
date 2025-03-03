@@ -86,7 +86,10 @@ describe('PgSearchEngine', () => {
           term: 'testTerm',
           filters: {},
         },
-        { highlightOptions },
+        {
+          highlightOptions,
+          normalization: 0,
+        },
       );
     });
 
@@ -237,6 +240,7 @@ describe('PgSearchEngine', () => {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 0,
         limit: 26,
+        normalization: 0,
         options: highlightOptions,
       });
     });
@@ -294,6 +298,7 @@ describe('PgSearchEngine', () => {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 0,
         limit: 26,
+        normalization: 0,
         options: highlightOptions,
       });
     });
@@ -354,6 +359,7 @@ describe('PgSearchEngine', () => {
         pgTerm: '("Hello" | "Hello":*)&("World" | "World":*)',
         offset: 25,
         limit: 26,
+        normalization: 0,
         options: highlightOptions,
       });
     });

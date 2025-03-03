@@ -1,5 +1,76 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.0
+  - @backstage/plugin-events-backend@0.4.4-next.0
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/plugin-catalog-backend@1.31.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.9.6
+  - @backstage/plugin-events-node@0.4.9-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+  - @backstage/plugin-app-node@0.1.31-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 92a56f6: **BREAKING**: removed the deprecated `dynamicPluginsFeatureDiscoveryServiceFactory`.
+
+### Patch Changes
+
+- 96c20cd: Make sure changes are successfully tracked before starting up scanner.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/backend-defaults@0.8.0
+  - @backstage/config-loader@1.9.6
+  - @backstage/plugin-catalog-backend@1.31.0
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-search-backend-node@1.3.8
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.30
+  - @backstage/plugin-events-backend@0.4.2
+  - @backstage/plugin-events-node@0.4.8
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.6.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/plugin-catalog-backend@1.31.0-next.3
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-defaults@0.8.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-events-backend@0.4.2-next.3
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/plugin-search-backend-node@1.3.8-next.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.30-next.2
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
 ## 0.6.0-next.2
 
 ### Minor Changes

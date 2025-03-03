@@ -31,6 +31,7 @@ export type EasyAuthResult = AzureEasyAuthResult;
  * Auth provider integration for Azure EasyAuth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const easyAuth = createAuthProviderIntegration({
   create(options?: {

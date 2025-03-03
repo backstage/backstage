@@ -113,6 +113,9 @@ export type AuthResolverContext = {
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
   ): Promise<BackstageSignInResult>;
+  resolveOwnershipEntityRefs(entity: Entity): Promise<{
+    ownershipEntityRefs: string[];
+  }>;
 };
 
 // @public
@@ -326,6 +329,7 @@ export interface OAuthAuthenticatorRefreshInput {
   req: Request_2;
   // (undocumented)
   scope: string;
+  scopeAlreadyGranted?: boolean;
 }
 
 // @public (undocumented)

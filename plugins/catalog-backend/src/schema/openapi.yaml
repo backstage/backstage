@@ -2,7 +2,24 @@ openapi: 3.0.3
 info:
   title: catalog
   version: '1'
-  description: The Backstage backend plugin that provides the Backstage catalog
+  description: |
+    The API surface consists of a few distinct groups of functionality. Each has a
+    dedicated section below.
+
+    > **Note:** This page only describes some of the most commonly used parts of the
+    > API, and is a work in progress.
+
+    All of the URL paths in this article are assumed to be on top of some base URL
+    pointing at your catalog installation. For example, if the path given in a
+    section below is `/entities`, and the catalog is located at
+    `http://localhost:7007/api/catalog` during local development, the full URL would
+    be `http://localhost:7007/api/catalog/entities`. The actual URL may vary from
+    one organization to the other, especially in production, but is commonly your
+    `backend.baseUrl` in your app config, plus `/api/catalog` at the end.
+
+    Some or all of the endpoints may accept or require an `Authorization` header
+    with a `Bearer` token, which should then be the Backstage token returned by the
+    [`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).
   license:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -44,7 +61,29 @@ components:
     cursor:
       name: cursor
       in: query
-      description: Cursor to a set page of results.
+      description: |
+        You may pass the `cursor` query parameters to perform cursor based pagination
+        through the set of entities. The value of `cursor` will be returned in the response, under the `pageInfo` property:
+
+        ```json
+          "pageInfo": {
+            "nextCursor": "a-cursor",
+            "prevCursor": "another-cursor"
+          }
+        ```
+
+        If `nextCursor` exists, it can be used to retrieve the next batch of entities. Following the same approach,
+        if `prevCursor` exists, it can be used to retrieve the previous batch of entities.
+
+        - [`filter`](#filtering), for selecting only a subset of all entities
+        - [`fields`](#field-selection), for selecting only parts of the full data
+          structure of each entity
+        - `limit` for limiting the number of entities returned (20 is the default)
+        - [`orderField`](#ordering), for deciding the order of the entities
+        - `fullTextFilter`
+          **NOTE**: [`filter`, `orderField`, `fullTextFilter`] and `cursor` are mutually exclusive. This means that,
+          it isn't possible to change any of [`filter`, `orderField`, `fullTextFilter`] when passing `cursor` as query parameters,
+          as changing any of these properties will affect pagination. If any of `filter`, `orderField`, `fullTextFilter` is specified together with `cursor`, only the latter is taken into consideration.
       required: false
       allowReserved: true
       schema:
@@ -62,7 +101,25 @@ components:
     fields:
       name: fields
       in: query
-      description: Restrict to just these fields in the response.
+      description: |
+        By default the full entities are returned, but you can pass in a `fields` query
+        parameter which selects what parts of the entity data to retain. This makes the
+        response smaller and faster to transfer, and may allow the catalog to perform
+        more efficient queries.
+
+        The query parameter value is a comma separated list of simplified JSON paths
+        like above. Each path corresponds to the key of either a value, or of a subtree
+        root that you want to keep in the output. The rest is pruned away. For example,
+        specifying `?fields=metadata.name,metadata.annotations,spec` retains only the
+        `name` and `annotations` fields of the `metadata` of each entity (it'll be an
+        object with at most two keys), keeps the entire `spec` unchanged, and cuts out
+        all other roots such as `relations`.
+
+        Some more real world usable examples:
+
+        - Return only enough data to form the full ref of each entity:
+
+          `/entities/by-query?fields=kind,metadata.namespace,metadata.name`
       required: false
       allowReserved: true
       explode: false
@@ -83,7 +140,91 @@ components:
     filter:
       name: filter
       in: query
-      description: Filter for just the entities defined by this filter.
+      description: |
+        You can pass in one or more filter sets that get matched against each entity.
+        Each filter set is a number of conditions that all have to match for the
+        condition to be true (conditions effectively have an AND between them). At least
+        one filter set has to be true for the entity to be part of the result set
+        (filter sets effectively have an OR between them).
+
+        Example:
+
+        ```text
+        /entities/by-query?filter=kind=user,metadata.namespace=default&filter=kind=group,spec.type
+
+          Return entities that match
+
+            Filter set 1:
+              Condition 1: kind = user
+                          AND
+              Condition 2: metadata.namespace = default
+
+            OR
+
+            Filter set 2:
+              Condition 1: kind = group
+                          AND
+              Condition 2: spec.type exists
+        ```
+
+        Each condition is either on the form `<key>`, or on the form `<key>=<value>`.
+        The first form asserts on the existence of a certain key (with any value), and
+        the second asserts that the key exists and has a certain value. All checks are
+        always case _insensitive_.
+
+        In all cases, the key is a simplified JSON path in a given piece of entity data.
+        Each part of the path is a key of an object, and the traversal also descends
+        through arrays. There are two special forms:
+
+        - Array items that are simple value types (such as strings) match on a key-value
+          pair where the key is the item as a string, and the value is the string `true`
+        - Relations can be matched on a `relations.<type>=<targetRef>` form
+
+        Let's look at a simplified example to illustrate the concept:
+
+        ```json
+        {
+          "a": {
+            "b": ["c", { "d": 1 }],
+            "e": 7
+          }
+        }
+        ```
+
+        This would match any one of the following conditions:
+
+        - `a`
+        - `a.b`
+        - `a.b.c`
+        - `a.b.c=true`
+        - `a.b.d`
+        - `a.b.d=1`
+        - `a.e`
+        - `a.e=7`
+
+        Some more real world usable examples:
+
+        - Return all orphaned entities:
+
+          `/entities/by-query?filter=metadata.annotations.backstage.io/orphan=true`
+
+        - Return all users and groups:
+
+          `/entities/by-query?filter=kind=user&filter=kind=group`
+
+        - Return all service components:
+
+          `/entities/by-query?filter=kind=component,spec.type=service`
+
+        - Return all entities with the `java` tag:
+
+          `/entities/by-query?filter=metadata.tags.java`
+
+        - Return all users who are members of the `ops` group (note that the full
+          [reference](references.md) of the group is used):
+
+          `/entities/by-query?filter=kind=user,relations.memberof=group:default/ops`
+
       required: false
       allowReserved: true
       schema:
@@ -118,7 +259,16 @@ components:
     orderField:
       name: orderField
       in: query
-      description: The fields to sort returned results by.
+      description: |
+        By default the entities are returned ordered by their internal uid. You can
+        customize the `orderField` query parameters to affect that ordering.
+
+        For example, to return entities by their name:
+
+        `/entities/by-query?orderField=metadata.name,asc`
+
+        Each parameter can be followed by `asc` for ascending lexicographical order or
+        `desc` for descending (reverse) lexicographical order.
       required: false
       allowReserved: true
       schema:
@@ -674,6 +824,8 @@ paths:
   /refresh:
     post:
       operationId: RefreshEntity
+      tags:
+        - Entity
       description: Refresh the entity related to entityRef.
       responses:
         '200':
@@ -705,6 +857,8 @@ paths:
   /entities:
     get:
       operationId: GetEntities
+      tags:
+        - Entity
       description: Get all entities matching a given filter.
       responses:
         '200':
@@ -739,6 +893,8 @@ paths:
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
+      tags:
+        - Entity
       description: Get a single entity by the UID.
       responses:
         '200':
@@ -758,6 +914,8 @@ paths:
         - $ref: '#/components/parameters/uid'
     delete:
       operationId: DeleteEntityByUid
+      tags:
+        - Entity
       description: Delete a single entity by UID.
       responses:
         '204':
@@ -774,6 +932,8 @@ paths:
   /entities/by-name/{kind}/{namespace}/{name}:
     get:
       operationId: GetEntityByName
+      tags:
+        - Entity
       description: Get an entity by an entity ref.
       responses:
         '200':
@@ -796,6 +956,8 @@ paths:
   /entities/by-name/{kind}/{namespace}/{name}/ancestry:
     get:
       operationId: GetEntityAncestryByName
+      tags:
+        - Entity
       description: Get an entity's ancestry by entity ref.
       responses:
         '200':
@@ -818,6 +980,8 @@ paths:
   /entities/by-refs:
     post:
       operationId: GetEntitiesByRefs
+      tags:
+        - Entity
       description: Get a batch set of entities given an array of entityRefs.
       responses:
         '200':
@@ -867,6 +1031,8 @@ paths:
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery
+      tags:
+        - Entity
       description: Search for entities by a given query.
       responses:
         '200':
@@ -910,6 +1076,8 @@ paths:
   /entity-facets:
     get:
       operationId: GetEntityFacets
+      tags:
+        - Entity
       description: Get all entity facets that match the given filters.
       responses:
         '200':
@@ -945,6 +1113,8 @@ paths:
   /locations:
     post:
       operationId: CreateLocation
+      tags:
+        - Locations
       description: Create a location for a given target.
       responses:
         '201':
@@ -995,6 +1165,8 @@ paths:
                 - type
     get:
       operationId: GetLocations
+      tags:
+        - Locations
       description: Get all locations
       responses:
         '200':
@@ -1019,6 +1191,8 @@ paths:
   /locations/{id}:
     get:
       operationId: GetLocation
+      tags:
+        - Locations
       description: Get a location by id.
       responses:
         '200':
@@ -1041,6 +1215,8 @@ paths:
             type: string
     delete:
       operationId: DeleteLocation
+      tags:
+        - Locations
       description: Delete a location by id.
       responses:
         '204':
@@ -1062,6 +1238,8 @@ paths:
   /locations/by-entity/{kind}/{namespace}/{name}:
     get:
       operationId: getLocationByEntity
+      tags:
+        - Locations
       description: Get a location for entity.
       responses:
         '200':
@@ -1097,6 +1275,8 @@ paths:
   /analyze-location:
     post:
       operationId: AnalyzeLocation
+      tags:
+        - Locations
       description: Validate a given location.
       responses:
         '200':
@@ -1129,6 +1309,8 @@ paths:
   /validate-entity:
     post:
       operationId: ValidateEntity
+      tags:
+        - Entity
       description: Validate that a passed in entity has no errors in schema.
       responses:
         '200':
