@@ -23,8 +23,8 @@ Commands:
   versions:migrate [options]
   migrate [command]
   build-workspace [options] <workspace-dir> [packages...]
-  create-github-app <github-org>
   info
+  create-github-app <github-org>
   help [command]
 ```
 

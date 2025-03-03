@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import yargs from 'yargs';
+import { createCliPlugin } from '../../wiring/factory';
 
-import { CliInitializer } from './wiring/CliInitializer';
-import chalk from 'chalk';
-
-(async () => {
-  console.warn(
-    chalk.yellow(
-      'THIS ENTRYPOINT IS IN ALPHA AND MAY CHANGE IN THE FUTURE - DO NOT USE THIS FOR NORMAL DEVELOPMENT',
-    ),
-  );
-  const initializer = new CliInitializer();
-  initializer.add(import('./modules/info/alpha'));
-  initializer.add(import('./modules/config/alpha'));
-  initializer.add(import('./modules/build/alpha'));
-  initializer.add(import('./modules/migrate/alpha'));
-  await initializer.run();
-})();
+export default createCliPlugin({
+  pluginId: 'info',
+  init: async reg => {
+    reg.addCommand({
+      path: ['info'],
+      description: 'Show helpful information for debugging and reporting bugs',
+      execute: async ({ args }) => {
+        yargs().parse(args);
+        const { default: command } =
+          require('./commands/info') as typeof import('./commands/info');
+        await command();
+      },
+    });
+  },
+});
