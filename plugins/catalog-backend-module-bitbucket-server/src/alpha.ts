@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-import { default as feature } from './module';
-
-/** @alpha */
-const _feature = feature;
-export default _feature;
+import {} from './module';

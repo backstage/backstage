@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { eventsModuleBitbucketServerEventRouter } from './service/eventsModuleBitbucketServerEventRouter';
-export { eventsModuleBitbucketServerEventRouter as default } from './service/eventsModuleBitbucketServerEventRouter';
+import {} from './service/eventsModuleBitbucketServerEventRouter';

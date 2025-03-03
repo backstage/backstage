@@ -6,7 +6,7 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
@@ -77,7 +77,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       parser?: BitbucketServerLocationParser;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
-      catalogApi?: CatalogApi;
+      catalogApi?: CatalogService;
       auth?: AuthService;
     },
   ): BitbucketServerEntityProvider[];

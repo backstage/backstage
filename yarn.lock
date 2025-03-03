@@ -5749,10 +5749,8 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.7.0
     p-throttle: ^4.1.1
     uuid: ^11.0.0
   languageName: unknown
@@ -20110,7 +20108,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.5.12, @types/node-fetch@npm:^2.6.4, @types/node-fetch@npm:^2.6.9":
+"@types/node-fetch@npm:^2.6.4, @types/node-fetch@npm:^2.6.9":
   version: 2.6.12
   resolution: "@types/node-fetch@npm:2.6.12"
   dependencies:

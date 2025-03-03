@@ -25,6 +25,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   DeferredEntity,
+  CatalogService,
 } from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { BitbucketServerClient, paginated } from '../lib';
@@ -38,13 +39,13 @@ import {
 } from './BitbucketServerLocationParser';
 import {
   AuthService,
+  BackstageCredentials,
   LoggerService,
   SchedulerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
 import { BitbucketServerEvents } from '../lib';
 import { EventsService } from '@backstage/plugin-events-node';
-import { CatalogApi } from '@backstage/catalog-client';
 
 const TOPIC_REPO_REFS_CHANGED = 'bitbucketServer.repo:refs_changed';
 
@@ -63,7 +64,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
-  private readonly catalogApi?: CatalogApi;
+  private readonly catalogApi?: CatalogService;
   private readonly events?: EventsService;
   private readonly auth?: AuthService;
   private eventConfigErrorThrown = false;
@@ -78,7 +79,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       parser?: BitbucketServerLocationParser;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
-      catalogApi?: CatalogApi;
+      catalogApi?: CatalogService;
       auth?: AuthService;
     },
   ): BitbucketServerEntityProvider[] {
@@ -127,7 +128,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     logger: LoggerService,
     taskRunner: SchedulerServiceTaskRunner,
     parser?: BitbucketServerLocationParser,
-    catalogApi?: CatalogApi,
+    catalogApi?: CatalogService,
     events?: EventsService,
     auth?: AuthService,
   ) {
@@ -294,19 +295,14 @@ export class BitbucketServerEntityProvider implements EntityProvider {
    * @returns Boolean
    */
   private canHandleEvents(): boolean {
-    if (
-      this.catalogApi !== undefined &&
-      this.catalogApi !== null &&
-      this.auth !== undefined &&
-      this.auth !== null
-    ) {
+    if (this.catalogApi && this.auth) {
       return true;
     }
 
     if (!this.eventConfigErrorThrown) {
       this.eventConfigErrorThrown = true;
       throw new Error(
-        `${this.getProviderName()} not well configured to handle repo:push. Missing CatalogApi and/or TokenManager.`,
+        `${this.getProviderName()} not well configured to handle repo:push. Missing CatalogApi and/or AuthService.`,
       );
     }
 
@@ -387,11 +383,10 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       this.logger.error('Failed to create location entity.');
       return;
     }
-    const { token } = await this.auth!.getPluginRequestToken({
-      onBehalfOf: await this.auth!.getOwnServiceCredentials(),
-      targetPluginId: 'catalog', // e.g. 'catalog'
-    });
-    const existing = await this.findExistingLocations(catalogRepoUrl, token);
+    const existing = await this.findExistingLocations(
+      catalogRepoUrl,
+      await this.auth!.getOwnServiceCredentials(),
+    );
     const stillExisting: LocationEntity[] = [];
     const removed: DeferredEntity[] = [];
     existing.forEach(item => {
@@ -486,13 +481,13 @@ export class BitbucketServerEntityProvider implements EntityProvider {
 
   private async findExistingLocations(
     catalogRepoUrl: string,
-    token: string,
+    credentials: BackstageCredentials,
   ): Promise<LocationEntity[]> {
     const filter: Record<string, string> = {};
     filter.kind = 'Location';
     filter[`metadata.annotations.${this.targetAnnotation}`] = catalogRepoUrl;
 
-    return this.catalogApi!.getEntities({ filter }, { token }).then(
+    return this.catalogApi!.getEntities({ filter }, { credentials }).then(
       result => result.items,
     ) as Promise<LocationEntity[]>;
   }

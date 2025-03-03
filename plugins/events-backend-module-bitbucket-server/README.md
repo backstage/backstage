@@ -32,17 +32,5 @@ yarn add --cwd packages/backend @backstage/plugin-events-backend-module-bitbucke
 
 ```ts
 // packages/backend/src/index.ts
-backend.add(
-  import('@backstage/plugin-events-backend-module-bitbucket-server/alpha'),
-);
-```
-
-### Legacy Backend System
-
-```ts
-// packages/backend/src/plugins/events.ts
-const eventRouter = new BitbucketCloudEventRouter({
-  events: env.events,
-});
-await eventRouter.subscribe();
+backend.add(import('@backstage/plugin-events-backend-module-bitbucket-server'));
 ```

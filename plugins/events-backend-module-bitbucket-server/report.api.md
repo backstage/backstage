@@ -4,18 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { EventParams } from '@backstage/plugin-events-node';
-import { EventsService } from '@backstage/plugin-events-node';
-import { SubTopicEventRouter } from '@backstage/plugin-events-node';
-
-// @public
-export class BitbucketServerEventRouter extends SubTopicEventRouter {
-  constructor(options: { events: EventsService });
-  // (undocumented)
-  protected determineSubTopic(params: EventParams): string | undefined;
-  // (undocumented)
-  protected getSubscriberId(): string;
-}
 
 // @public
 const eventsModuleBitbucketServerEventRouter: BackendFeature;

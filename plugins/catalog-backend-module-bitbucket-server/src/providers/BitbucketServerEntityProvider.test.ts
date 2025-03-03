@@ -18,7 +18,7 @@ import {
   SchedulerService,
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskInvocationDefinition,
-  AuthService,
+  BackstageCredentials,
 } from '@backstage/backend-plugin-api';
 import {
   mockServices,
@@ -26,6 +26,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
+  CatalogService,
   DeferredEntity,
   EntityProviderConnection,
   locationSpecToLocationEntity,
@@ -39,8 +40,8 @@ import {
 import { BitbucketServerPagedResponse } from '../lib';
 import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { BitbucketServerEvents } from '../lib/index';
-import { CatalogApi } from '@backstage/catalog-client';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -163,11 +164,6 @@ function setupRepositoryReqHandler(defaultBranch: string) {
   );
 }
 
-// const authService = {
-//   getPluginRequestToken: async ({onBehalfOf, targetPluginId}) => {
-//     return { token: 'fake-token' };
-//   },
-// } as any as AuthService;
 const repoPushEvent: BitbucketServerEvents.RefsChangedEvent = {
   eventKey: 'repo:refs_changed',
   date: '2017-09-19T09:45:32+1000',
@@ -771,9 +767,7 @@ describe('BitbucketServerEntityProvider', () => {
 
     setupRepositoryReqHandler('master');
 
-    authService.getPluginRequestToken.mockResolvedValue({
-      token: 'fake-token',
-    });
+    // authService.getOwnServiceCredentials();
 
     const config = new ConfigReader({
       integrations: {
@@ -797,13 +791,14 @@ describe('BitbucketServerEntityProvider', () => {
       },
     });
 
-    const catalogApi = {
+    const catalogApi = catalogServiceMock.mock({
       getEntities: async (
         request: { filter: Record<string, string> },
-        options: { token: string },
+        credentials: { credentials: BackstageCredentials },
       ): Promise<{ items: Entity[] }> => {
         if (
-          options.token !== 'fake-token' ||
+          credentials.credentials !==
+            (await authService.getOwnServiceCredentials()) ||
           request.filter.kind !== 'Location' ||
           request.filter[`metadata.annotations.${host}/repo-url`] !==
             `${test1RepoUrl}/kept-module:${targetPath}`
@@ -814,14 +809,14 @@ describe('BitbucketServerEntityProvider', () => {
           items: [keptModule],
         };
       },
-    };
+    });
 
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
-      catalogApi: catalogApi as any as CatalogApi,
+      catalogApi: catalogApi,
       logger,
       schedule,
       events,
-      auth: authService as any as AuthService,
+      auth: authService,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -869,13 +864,14 @@ describe('BitbucketServerEntityProvider', () => {
       },
     });
 
-    const catalogApi = {
+    const catalogApi = catalogServiceMock.mock({
       getEntities: async (
         request: { filter: Record<string, string> },
-        options: { token: string },
+        credentials: { credentials: BackstageCredentials },
       ): Promise<{ items: Entity[] }> => {
         if (
-          options.token !== 'fake-token' ||
+          credentials.credentials !==
+            (await authService.getOwnServiceCredentials()) ||
           request.filter.kind !== 'Location' ||
           request.filter[`metadata.annotations.${host}/repo-url`] !==
             `${test1RepoUrl}/kept-module:${targetPath}`
@@ -886,13 +882,14 @@ describe('BitbucketServerEntityProvider', () => {
           items: [keptModule],
         };
       },
-    };
+    });
+
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
-      catalogApi: catalogApi as any as CatalogApi,
+      catalogApi: catalogApi,
       logger,
       schedule,
       events,
-      auth: authService as any as AuthService,
+      auth: authService,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -940,22 +937,13 @@ describe('BitbucketServerEntityProvider', () => {
       },
     });
 
-    const catalogApi = {
-      getEntities: async (
-        _request: { filter: Record<string, string> },
-        _options: { token: string },
-      ): Promise<{ items: Entity[] }> => {
-        return {
-          items: [],
-        };
-      },
-    };
+    const catalogApi = catalogServiceMock({ entities: [] });
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
-      catalogApi: catalogApi as any as CatalogApi,
+      catalogApi: catalogApi,
       logger,
       schedule,
       events,
-      auth: authService as any as AuthService,
+      auth: authService,
     })[0];
 
     await provider.connect(entityProviderConnection);
@@ -1010,22 +998,13 @@ describe('BitbucketServerEntityProvider', () => {
       },
     });
 
-    const catalogApi = {
-      getEntities: async (
-        _request: { filter: Record<string, string> },
-        _options: { token: string },
-      ): Promise<{ items: Entity[] }> => {
-        return {
-          items: [],
-        };
-      },
-    };
+    const catalogApi = catalogServiceMock({ entities: [] });
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
-      catalogApi: catalogApi as any as CatalogApi,
+      catalogApi: catalogApi as any as CatalogService,
       logger,
       schedule,
       events,
-      auth: authService as any as AuthService,
+      auth: authService,
     })[0];
 
     await provider.connect(entityProviderConnection);

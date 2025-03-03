@@ -18,10 +18,8 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  catalogProcessingExtensionPoint,
-  catalogServiceRef,
-} from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { BitbucketServerEntityProvider } from '../providers/BitbucketServerEntityProvider';
 
