@@ -358,6 +358,21 @@ const appPlugin: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
+    'api:app/dialog': ExtensionDefinition<{
+      kind: 'api';
+      name: 'dialog';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'api:app/discovery': ExtensionDefinition<{
       kind: 'api';
       name: 'discovery';
@@ -694,6 +709,29 @@ const appPlugin: FrontendPlugin<
       };
       kind: 'app-root-element';
       name: 'alert-display';
+      params: {
+        element: JSX.Element | (() => JSX.Element);
+      };
+    }>;
+    'app-root-element:app/dialog-display': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      };
+      kind: 'app-root-element';
+      name: 'dialog-display';
       params: {
         element: JSX.Element | (() => JSX.Element);
       };

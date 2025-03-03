@@ -782,6 +782,38 @@ export { createTranslationRef };
 
 export { createTranslationResource };
 
+// @public
+export interface DialogApi {
+  show<TResult = {}>(
+    elementOrComponent:
+      | JSX.Element
+      | ((props: {
+          dialog: DialogApiDialog<TResult | undefined>;
+        }) => JSX.Element),
+  ): DialogApiDialog<TResult | undefined>;
+  showModal<TResult = {}>(
+    elementOrComponent:
+      | JSX.Element
+      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
+  ): DialogApiDialog<TResult>;
+}
+
+// @public
+export interface DialogApiDialog<TResult = unknown> {
+  close(
+    ...args: undefined extends TResult ? [result?: TResult] : [result: TResult]
+  ): void;
+  result(): Promise<TResult>;
+  update(
+    elementOrComponent:
+      | React.JSX.Element
+      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
+  ): void;
+}
+
+// @public
+export const dialogApiRef: ApiRef<DialogApi>;
+
 export { DiscoveryApi };
 
 export { discoveryApiRef };
