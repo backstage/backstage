@@ -643,8 +643,10 @@ describe('publish:gitlab', () => {
 
   it('should show proper error message when token has insufficient permissions or namespace not found', async () => {
     mockGitlabClient.Namespaces.show.mockRejectedValue({
-      response: {
-        statusCode: 404,
+      cause: {
+        response: {
+          status: 404,
+        },
       },
     });
     const owner = 'infrastructure/devex';
