@@ -31,8 +31,12 @@ import {
   EntityProcessingErrorsPanel,
   hasCatalogProcessingErrors,
 } from '../components/EntityProcessingErrorsPanel';
+import { HorizontalScrollGrid } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
+  peekCard: {
+    flex: '0 0 auto',
+  },
   [theme.breakpoints.up('sm')]: {
     infoArea: {
       order: 1,
@@ -103,11 +107,21 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
         <Grid xs={12} md={infoCards.length ? 8 : undefined} item>
           {peekCards.length > 0 ? (
             <Grid container spacing={3}>
-              {peekCards.map((card, index) => (
-                <Grid key={index} xs={12} md={4} item>
-                  {card.element}
-                </Grid>
-              ))}
+              <Grid item xs={12}>
+                <HorizontalScrollGrid spacing={3}>
+                  {peekCards.map((card, index) => (
+                    <Grid
+                      key={index}
+                      xs={12}
+                      md="auto"
+                      item
+                      className={classes.peekCard}
+                    >
+                      {card.element}
+                    </Grid>
+                  ))}
+                </HorizontalScrollGrid>
+              </Grid>
             </Grid>
           ) : null}
           {fullCards.length > 0 ? (

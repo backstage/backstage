@@ -20,6 +20,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import { GridSpacing } from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
