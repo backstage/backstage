@@ -26,7 +26,7 @@ import { generateTargetKey } from '../../util';
  * processing loop.
  */
 export async function refreshByRefreshKeys(options: {
-  tx: Knex.Transaction;
+  tx: Knex | Knex.Transaction;
   keys: string[];
 }): Promise<void> {
   const { tx, keys } = options;
@@ -35,7 +35,7 @@ export async function refreshByRefreshKeys(options: {
 
   await tx<DbRefreshStateRow>('refresh_state')
     .whereIn('entity_id', function selectEntityRefs(inner) {
-      inner
+      return inner
         .whereIn('key', hashedKeys)
         .select({
           entity_id: 'refresh_keys.entity_id',
