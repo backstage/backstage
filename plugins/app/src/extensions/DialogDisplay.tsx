@@ -109,9 +109,9 @@ export const dialogDisplayAppRootElement =
     factory(originalFactory, { apis }) {
       const dialogApi = apis.get(dialogApiRef);
       if (!isInternalDialogApi(dialogApi)) {
-        throw new Error(
-          `Invalid dialog API implementation, dialog API has been overridden without also overriding the dialog-display element, got ${dialogApi}`,
-        );
+        return originalFactory({
+          element: <React.Fragment />,
+        });
       }
       return originalFactory({
         element: <DialogDisplay dialogApi={dialogApi} />,
