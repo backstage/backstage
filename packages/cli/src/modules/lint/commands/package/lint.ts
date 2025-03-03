@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
-import { paths } from '../lib/paths';
+import { paths } from '../../../../lib/paths';
 import { ESLint } from 'eslint';
 
 export default async (directories: string[], opts: OptionValues) => {
