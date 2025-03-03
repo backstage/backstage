@@ -199,8 +199,8 @@ Options:
 Commands:
   start [options]
   build [options]
-  lint [options] [directories...]
   test
+  lint [options] [directories...]
   clean
   prepack
   postpack
@@ -401,11 +401,11 @@ Options:
 
 Commands:
   build [options]
+  test [options]
   lint [options]
   fix [options]
   clean
   list-deprecations [options]
-  test [options]
   help [command]
 ```
 
