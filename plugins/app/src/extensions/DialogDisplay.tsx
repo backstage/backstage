@@ -51,7 +51,7 @@ function DialogDisplay({
   const [dialogs, setDialogs] = useState<
     { dialog: DialogState; element: React.JSX.Element }[]
   >([]);
-  // const [state, dispatch] = React.useReducer(dialogReducer)
+
   useEffect(() => {
     dialogApi.connect(options => {
       const id = getDialogId();

@@ -27,7 +27,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
  */
 export interface DialogApiDialog<TResult = unknown> {
   /**
-   * Closes the dialog with thet provided result.
+   * Closes the dialog with that provided result.
    *
    * @remarks
    *
