@@ -21,7 +21,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateActionOptions } from './createTemplateAction';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { z } from 'zod';
-import { JSONSchema7 } from 'json-schema';
+import { Schema } from 'jsonschema';
 
 /**
  * @public
@@ -145,16 +145,16 @@ const isNativeZodSchema = (
 
 export const parseSchemas = (
   action: TemplateActionOptions,
-): { inputSchema?: JSONSchema7; outputSchema?: JSONSchema7 } => {
+): { inputSchema?: Schema; outputSchema?: Schema } => {
   if (!action.schema) {
     return { inputSchema: undefined, outputSchema: undefined };
   }
 
   if (isZodSchema(action.schema.input)) {
     return {
-      inputSchema: zodToJsonSchema(action.schema.input) as JSONSchema7,
+      inputSchema: zodToJsonSchema(action.schema.input) as Schema,
       outputSchema: isZodSchema(action.schema.output)
-        ? (zodToJsonSchema(action.schema.output) as JSONSchema7)
+        ? (zodToJsonSchema(action.schema.output) as Schema)
         : undefined,
     };
   }
@@ -167,7 +167,7 @@ export const parseSchemas = (
     );
 
     return {
-      inputSchema: zodToJsonSchema(input) as JSONSchema7,
+      inputSchema: zodToJsonSchema(input) as Schema,
       outputSchema: isNativeZodSchema(action.schema.output)
         ? (zodToJsonSchema(
             z.object(
@@ -175,7 +175,7 @@ export const parseSchemas = (
                 Object.entries(action.schema.output).map(([k, v]) => [k, v(z)]),
               ),
             ),
-          ) as JSONSchema7)
+          ) as Schema)
         : undefined,
     };
   }
