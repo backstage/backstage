@@ -8,11 +8,11 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Expand } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
+import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
@@ -184,8 +184,8 @@ export function createBranch(options: {
 export function createTemplateAction<
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends Schema = Schema,
-  TOutputSchema extends Schema = Schema,
+  TInputSchema extends JsonObject = JsonObject,
+  TOutputSchema extends JsonObject = JsonObject,
   TActionInput extends JsonObject = TInputParams,
   TActionOutput extends JsonObject = TOutputParams,
 >(
@@ -519,8 +519,8 @@ export type TemplateAction<
   }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: Schema;
-    output?: Schema;
+    input?: JSONSchema7;
+    output?: JSONSchema7;
   };
   handler: (
     ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
@@ -532,17 +532,17 @@ export type TemplateActionOptions<
   TActionInput extends JsonObject = {},
   TActionOutput extends JsonObject = {},
   TInputSchema extends
-    | Schema
+    | JsonObject
     | z.ZodType
     | {
         [key in string]: (zImpl: typeof z) => z.ZodType;
-      } = Schema,
+      } = JsonObject,
   TOutputSchema extends
-    | Schema
+    | JsonObject
     | z.ZodType
     | {
         [key in string]: (zImpl: typeof z) => z.ZodType;
-      } = Schema,
+      } = JsonObject,
   TSchemaType extends 'v1' | 'v2' = 'v1' | 'v2',
 > = {
   id: string;

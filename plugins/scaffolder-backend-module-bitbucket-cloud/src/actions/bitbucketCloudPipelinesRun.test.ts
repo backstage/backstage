@@ -21,7 +21,6 @@ import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun'
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 describe('bitbucket:pipelines:run', () => {
   const config = new ConfigReader({

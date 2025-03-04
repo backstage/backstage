@@ -23,7 +23,11 @@ export const createBitbucketPipelinesRunAction: (options: {
     body?: object | undefined;
     token?: string | undefined;
   },
-  JsonObject,
+  {
+    buildNumber: number;
+    repoUrl: string;
+    pipelinesUrl: string;
+  },
   'v1'
 >;
 
