@@ -577,6 +577,8 @@ export interface HasSubcomponentsCardProps {
   // (undocumented)
   columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
+  kind?: string;
+  // (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
