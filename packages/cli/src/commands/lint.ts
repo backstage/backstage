@@ -30,7 +30,7 @@ export default async (directories: string[], opts: OptionValues) => {
     directories.length ? directories : ['.'],
   );
 
-  const maxWarnings = opts.maxWarnings ?? 0;
+  const maxWarnings = opts.maxWarnings ?? -1;
   const ignoreWarnings = +maxWarnings === -1;
 
   const failed =
