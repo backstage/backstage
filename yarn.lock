@@ -7716,7 +7716,7 @@ __metadata:
     globby: ^11.0.0
     isbinaryfile: ^5.0.0
     isolated-vm: ^5.0.1
-    json-schema: ^0.4.0
+    jsonschema: ^1.5.0
     knex: ^3.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
@@ -7794,7 +7794,7 @@ __metadata:
     fs-extra: ^11.2.0
     globby: ^11.0.0
     isomorphic-git: ^1.23.0
-    json-schema: ^0.4.0
+    jsonschema: ^1.5.0
     p-limit: ^3.1.0
     tar: ^6.1.12
     winston: ^3.2.1
@@ -34244,10 +34244,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonschema@npm:^1.2.6":
-  version: 1.4.1
-  resolution: "jsonschema@npm:1.4.1"
-  checksum: 1ef02a6cd9bc32241ec86bbf1300bdbc3b5f2d8df6eb795517cf7d1cd9909e7beba1e54fdf73990fd66be98a182bda9add9607296b0cb00b1348212988e424b2
+"jsonschema@npm:^1.2.6, jsonschema@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "jsonschema@npm:1.5.0"
+  checksum: 170b9c375967bc135f4d029fedc31f5686f2c3bb07e7472cebddbb907b5369bf75a1a50287d6af9c31f61c76fe0b7786e78044c188aaddd329b77d856475e6db
   languageName: node
   linkType: hard
 
