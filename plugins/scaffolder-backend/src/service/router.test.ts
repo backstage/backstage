@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DatabaseManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
@@ -52,6 +49,7 @@ import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { EventsService } from '@backstage/plugin-events-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '../util/loggerToWinstonLogger';
 
 const mockAccess = jest.fn();
 

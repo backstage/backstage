@@ -40,10 +40,12 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/types": "workspace:^"
+    "@backstage/types": "workspace:^",
+    "winston": "^3.2.1",
+    "winston-transport": "^4.7.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

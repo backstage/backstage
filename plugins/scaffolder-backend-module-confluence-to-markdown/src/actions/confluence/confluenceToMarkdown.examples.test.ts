@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   createMockDirectory,
-  mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
@@ -58,9 +57,6 @@ describe('confluence:transform:markdown examples', () => {
     repoUrl: string;
   }>;
 
-  const logger = loggerToWinstonLogger(mockServices.logger.mock());
-  jest.spyOn(logger, 'info');
-
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
@@ -75,8 +71,8 @@ describe('confluence:transform:markdown examples', () => {
     mockContext = createMockActionContext({
       input: yaml.parse(examples[0].example).steps[0].input,
       workspacePath,
-      logger,
     });
+    jest.spyOn(mockContext.logger, 'info');
 
     mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
   });
@@ -139,10 +135,10 @@ describe('confluence:transform:markdown examples', () => {
 
     await action.handler(mockContext);
 
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(mockContext.logger.info).toHaveBeenCalledWith(
       `Fetching the mkdocs.yml catalog from https://github.com/organization-name/repo-name/blob/main/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(5);
+    expect(mockContext.logger.info).toHaveBeenCalledTimes(5);
 
     expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
       img: { 'testing.pdf': Buffer.from('hello') },

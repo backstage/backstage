@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  HostDiscovery,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuditorService,
   AuthService,
@@ -112,6 +109,7 @@ import {
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 /**
  *

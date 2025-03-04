@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
@@ -26,6 +25,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './cookiecutter.examples';
 import yaml from 'yaml';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { ContainerRunner } from './ContainerRunner';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();

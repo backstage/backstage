@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -52,6 +51,7 @@ import {
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
+import { loggerToWinstonLogger } from './util/loggerToWinstonLogger';
 
 /**
  * Scaffolder plugin

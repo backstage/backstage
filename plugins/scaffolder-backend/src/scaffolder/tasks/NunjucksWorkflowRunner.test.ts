@@ -38,8 +38,8 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 describe('NunjucksWorkflowRunner', () => {
   let logger: LoggerService;
