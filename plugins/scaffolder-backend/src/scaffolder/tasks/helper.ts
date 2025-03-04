@@ -18,7 +18,7 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 
 import { isArray } from 'lodash';
-import { JSONSchema7 } from 'json-schema';
+import { Schema } from 'jsonschema';
 
 /**
  * Returns true if the input is not `false`, `undefined`, `null`, `""`, `0`, or
@@ -29,7 +29,7 @@ export function isTruthy(value: any): boolean {
   return isArray(value) ? value.length > 0 : !!value;
 }
 
-export function generateExampleOutput(schema: JSONSchema7): unknown {
+export function generateExampleOutput(schema: Schema): unknown {
   const { examples } = schema as { examples?: unknown };
   if (examples && Array.isArray(examples)) {
     return examples[0];
@@ -38,13 +38,13 @@ export function generateExampleOutput(schema: JSONSchema7): unknown {
     return Object.fromEntries(
       Object.entries(schema.properties ?? {}).map(([key, value]) => [
         key,
-        generateExampleOutput(value as JSONSchema7),
+        generateExampleOutput(value as Schema),
       ]),
     );
   } else if (schema.type === 'array') {
     const [firstSchema] = [schema.items]?.flat();
     if (firstSchema) {
-      return [generateExampleOutput(firstSchema as JSONSchema7)];
+      return [generateExampleOutput(firstSchema as Schema)];
     }
     return [];
   } else if (schema.type === 'string') {
