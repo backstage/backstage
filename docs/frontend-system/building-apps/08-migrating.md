@@ -27,7 +27,7 @@ Let's start by addressing the change to `app.createRoot(...)`, which no longer a
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
-The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package, which you will need to add as a dependency to your app package:
+The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package. We will also be using the `convertLegacyAppOptions` helper that lets us re-use the existing app options, also exported from the same package. You will need to add it as a dependency to your app package:
 
 ```bash
 yarn --cwd packages/app add @backstage/core-compat-api
@@ -54,6 +54,11 @@ export default app.createRoot(
 Migrate it to the following:
 
 ```tsx title="in packages/app/src/App.tsx"
+import {
+  convertLegacyApp,
+  convertLegacyAppOptions,
+} from '@backstage/core-compat-api';
+
 const legacyFeatures = convertLegacyApp(
   <>
     <AlertDisplay transientTimeoutMs={2500} />
@@ -64,9 +69,12 @@ const legacyFeatures = convertLegacyApp(
   </>,
 );
 
-const app = createApp({
+const optionsModule = convertLegacyAppOptions({
   /* other options */
-  features: [...legacyFeatures],
+});
+
+const app = createApp({
+  features: [optionsModule, ...legacyFeatures],
 });
 
 export default app.createRoot();

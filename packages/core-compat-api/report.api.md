@@ -7,15 +7,20 @@ import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsApi as AnalyticsApi_2 } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { AnalyticsEvent as AnalyticsEvent_2 } from '@backstage/frontend-plugin-api';
+import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyRouteRefParams } from '@backstage/core-plugin-api';
+import { AppComponents } from '@backstage/core-plugin-api';
+import { AppTheme } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
+import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -30,6 +35,18 @@ export function compatWrapper(element: ReactNode): React_2.JSX.Element;
 export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
 ): (FrontendPlugin | FrontendModule | ExtensionOverrides)[];
+
+// @public (undocumented)
+export function convertLegacyAppOptions(options?: {
+  apis?: Iterable<AnyApiFactory>;
+  icons?: {
+    [key in string]: IconComponent;
+  };
+  plugins?: Array<BackstagePlugin>;
+  components?: Partial<AppComponents>;
+  themes?: AppTheme[];
+  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
+}): FrontendModule;
 
 // @public (undocumented)
 export function convertLegacyPageExtension(
