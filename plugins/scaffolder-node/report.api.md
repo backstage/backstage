@@ -8,11 +8,11 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Expand } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
+import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
@@ -519,8 +519,8 @@ export type TemplateAction<
   }[];
   supportsDryRun?: boolean;
   schema?: {
-    input?: JSONSchema7;
-    output?: JSONSchema7;
+    input?: Schema;
+    output?: Schema;
   };
   handler: (
     ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
