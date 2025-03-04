@@ -16,14 +16,12 @@
 
 import React, { JSX, ReactNode } from 'react';
 import { ConfigApi, coreExtensionData } from '@backstage/frontend-plugin-api';
-import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
-import { getAvailableFeatures } from './discovery';
+import { resolveFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
-import appPlugin from '@backstage/plugin-app';
 import {
   CreateAppRouteBinder,
   ExtensionFactoryMiddleware,
@@ -89,29 +87,12 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures(config);
-
-    const providedFeatures: FrontendFeature[] = [];
-    for (const entry of options?.features ?? []) {
-      if ('load' in entry) {
-        try {
-          const result = await entry.load({ config });
-          providedFeatures.push(...result.features);
-        } catch (e) {
-          throw new Error(
-            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
-              e,
-            )}`,
-          );
-        }
-      } else {
-        providedFeatures.push(entry);
-      }
-    }
-
     const app = createSpecializedApp({
       config,
-      features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
+      features: await resolveFeatures({
+        config,
+        providedFeatures: options?.features,
+      }),
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
     });
