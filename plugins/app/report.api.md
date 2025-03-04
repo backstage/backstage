@@ -29,6 +29,21 @@ const appPlugin: FrontendPlugin<
   {},
   {},
   {
+    'sign-in-page:app': ExtensionDefinition<{
+      kind: 'sign-in-page';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        ComponentType<SignInPageProps>,
+        'core.sign-in-page.component',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<ComponentType<SignInPageProps>>;
+      };
+    }>;
     app: ExtensionDefinition<{
       config: {};
       configInput: {};
@@ -381,21 +396,6 @@ const appPlugin: FrontendPlugin<
       name: 'translations';
       params: {
         factory: AnyApiFactory;
-      };
-    }>;
-    'sign-in-page:app': ExtensionDefinition<{
-      kind: 'sign-in-page';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        ComponentType<SignInPageProps>,
-        'core.sign-in-page.component',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<ComponentType<SignInPageProps>>;
       };
     }>;
     'app-root-element:app/oauth-request-dialog': ExtensionDefinition<{

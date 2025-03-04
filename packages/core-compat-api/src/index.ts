@@ -18,6 +18,7 @@ export * from './compatWrapper';
 export * from './apis';
 
 export { convertLegacyApp } from './convertLegacyApp';
+export { convertLegacyAppOptions } from './convertLegacyAppOptions';
 export { convertLegacyPlugin } from './convertLegacyPlugin';
 export { convertLegacyPageExtension } from './convertLegacyPageExtension';
 export {
