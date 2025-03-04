@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { version as cliVersion } from '../../package.json';
+import { version as cliVersion } from '../../../../package.json';
 import os from 'os';
-import { runPlain } from '../lib/run';
-import { paths } from '../lib/paths';
-import { Lockfile } from '../lib/versioning';
+import { runPlain } from '../../../lib/run';
+import { paths } from '../../../lib/paths';
+import { Lockfile } from '../../../lib/versioning';
 import fs from 'fs-extra';
 
 export default async () => {
