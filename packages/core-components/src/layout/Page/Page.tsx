@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
 export type PageClassKey = 'root';
 
@@ -44,11 +45,12 @@ const useStyles = makeStyles(
 
 type Props = {
   themeId: string;
+  className?: string;
   children?: React.ReactNode;
 };
 
 export function Page(props: Props) {
-  const { themeId, children } = props;
+  const { themeId, className, children } = props;
   const classes = useStyles();
   return (
     <ThemeProvider
@@ -57,7 +59,7 @@ export function Page(props: Props) {
         page: baseTheme.getPageTheme({ themeId }),
       })}
     >
-      <main className={classes.root}>{children}</main>
+      <main className={classNames(classes.root, className)}>{children}</main>
     </ThemeProvider>
   );
 }
