@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend
 
+## 1.32.0-next.1
+
+### Minor Changes
+
+- ca9c51b: Added opt-in ability to evict entities from the catalog whose provider is no longer configured. See [Catalog configuration documentation](https://backstage.io/docs/features/software-catalog/configuration#clean-up-entities-from-orphaned-entity-providers)
+
+### Patch Changes
+
+- fbc1666: Correctly use the `catalog.useUrlReadersSearch` config.
+- 75cadc1: Minor internal tweak to `refreshByRefreshKeys`
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-events-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.2-next.1
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.31.1-next.0
 
 ### Patch Changes

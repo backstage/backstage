@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-react
 
+## 1.16.0-next.1
+
+### Patch Changes
+
+- bec1e15: update EntityAutocompletePicker selected options when filter value is changed externally
+- 75a3551: Export CatalogAutocomplete so it can be used externally
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/frontend-test-utils@0.2.7-next.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
 ## 1.16.0-next.0
 
 ### Minor Changes

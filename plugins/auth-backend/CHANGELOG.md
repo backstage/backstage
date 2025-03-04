@@ -1,5 +1,62 @@
 # @backstage/plugin-auth-backend
 
+## 0.24.4-next.1
+
+### Patch Changes
+
+- 7956beb: Marked the remaining exports related to `createRouter` and the old backend system as deprecated.
+
+  For more information about migrating to the new backend system, see the [migration guide](https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin).
+
+  Support for the old backend system will be removed in the next release of this plugin.
+
+- b6702ea: Deprecated `getDefaultOwnershipEntityRefs` in favor of the new `.resolveOwnershipEntityRefs(...)` method in the `AuthResolverContext`.
+
+  The following code in a custom sign-in resolver:
+
+  ```ts
+  import { getDefaultOwnershipEntityRefs } from '@backstage/plugin-auth-backend';
+
+  // ...
+
+  const ent = getDefaultOwnershipEntityRefs(entity);
+  ```
+
+  Can be replaced with the following:
+
+  ```ts
+  const { ownershipEntityRefs: ent } = await ctx.resolveOwnershipEntityRefs(
+    entity,
+  );
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.4.1-next.1
+  - @backstage/plugin-auth-backend-module-auth0-provider@0.2.1-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.4.1-next.1
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.2.6-next.1
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.3.1-next.1
+  - @backstage/plugin-auth-backend-module-bitbucket-server-provider@0.2.1-next.1
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.4.1-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.4.1-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.1-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.3.1-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.3.1-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.3.1-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.4.1-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.2.6-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.4.1-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.2.1-next.1
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.3.1-next.1
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+
 ## 0.24.4-next.0
 
 ### Patch Changes

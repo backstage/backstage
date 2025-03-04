@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.13.1-next.1
+
+### Patch Changes
+
+- c7a58b2: Fix issue where generate-patch incorrectly encodes the locator not aligning with result of yarn patch
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.9.6
+  - @backstage/errors@1.2.7
+
 ## 0.13.1-next.0
 
 ### Patch Changes

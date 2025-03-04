@@ -1,5 +1,25 @@
 # @backstage/cli
 
+## 0.30.1-next.0
+
+### Patch Changes
+
+- 0586d4c: Internal change to move the `migrate` and `version:*` commands into a new migrate module.
+- 485b3ba: Internal update to move `test` commands to a separate module.
+- 8df78bf: Internal update to move build commands to a CLI module.
+- d0fc357: Internal update to move `info` commands to a separate module.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.1
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.30.0
 
 ### Minor Changes
