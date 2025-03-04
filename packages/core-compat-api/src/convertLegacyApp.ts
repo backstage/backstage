@@ -32,6 +32,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { getComponentData } from '@backstage/core-plugin-api';
 import { collectLegacyRoutes } from './collectLegacyRoutes';
+import { compatWrapper } from './compatWrapper';
 
 function selectChildren(
   rootNode: ReactNode,
@@ -106,7 +107,7 @@ export function convertLegacyApp(
 
   const CoreLayoutOverride = createExtension({
     name: 'layout',
-    attachTo: { id: 'app', input: 'root' },
+    attachTo: { id: 'app/root', input: 'children' },
     inputs: {
       content: createExtensionInput([coreExtensionData.reactElement], {
         singleton: true,
@@ -117,10 +118,12 @@ export function convertLegacyApp(
       // Clone the root element, this replaces the FlatRoutes declared in the app with out content input
       return [
         coreExtensionData.reactElement(
-          React.cloneElement(
-            rootEl,
-            undefined,
-            inputs.content.get(coreExtensionData.reactElement),
+          compatWrapper(
+            React.cloneElement(
+              rootEl,
+              undefined,
+              inputs.content.get(coreExtensionData.reactElement),
+            ),
           ),
         ),
       ];
