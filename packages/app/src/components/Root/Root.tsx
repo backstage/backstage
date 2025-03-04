@@ -132,25 +132,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
               to="catalog?filters[kind]=user"
               icon={useApp().getSystemIcon('kind:user')}
             />
-            <SidebarDivider />
-            <SidebarSubmenuItem
-              title="Templates"
-              icon={useApp().getSystemIcon('kind:template')}
-              dropdownItems={[
-                {
-                  title: 'Documentation',
-                  to: 'catalog?filters[kind]=template&filters[type]=documentation',
-                },
-                {
-                  title: 'Service',
-                  to: 'catalog?filters[kind]=template&filters[type]=service',
-                },
-                {
-                  title: 'Website',
-                  to: 'catalog?filters[kind]=template&filters[type]=website',
-                },
-              ]}
-            />
           </SidebarSubmenu>
         </SidebarItem>
         <MyGroupsSidebarItem
