@@ -940,10 +940,9 @@ const _default: FrontendPlugin<
         groups:
           | Record<
               string,
-              | false
-              | {
-                  title: string;
-                }
+              {
+                title: string;
+              }
             >[]
           | undefined;
       } & {
@@ -953,10 +952,9 @@ const _default: FrontendPlugin<
         groups?:
           | Record<
               string,
-              | false
-              | {
-                  title: string;
-                }
+              {
+                title: string;
+              }
             >[]
           | undefined;
       } & {
