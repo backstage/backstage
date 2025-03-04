@@ -69,7 +69,11 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { FrontendFeature, RouteInfo } from './types';
+import {
+  ExtensionFactoryMiddleware,
+  FrontendFeature,
+  RouteInfo,
+} from './types';
 import { matchRoutes } from 'react-router-dom';
 
 function deduplicateFeatures(
@@ -198,7 +202,9 @@ export function createSpecializedApp(options?: {
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-}): { createRoot(): JSX.Element } {
+  apis?: ApiHolder;
+  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+}): { apis: ApiHolder; createRoot(): JSX.Element; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
 
@@ -227,15 +233,17 @@ export function createSpecializedApp(options?: {
   );
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder = createApiHolder({
-    factories,
-    staticFactories: [
-      createApiFactory(appTreeApiRef, appTreeApi),
-      createApiFactory(configApiRef, config),
-      createApiFactory(routeResolutionApiRef, routeResolutionApi),
-      createApiFactory(identityApiRef, appIdentityProxy),
-    ],
-  });
+  const apiHolder =
+    options?.apis ??
+    createApiHolder({
+      factories,
+      staticFactories: [
+        createApiFactory(appTreeApiRef, appTreeApi),
+        createApiFactory(configApiRef, config),
+        createApiFactory(routeResolutionApiRef, routeResolutionApi),
+        createApiFactory(identityApiRef, appIdentityProxy),
+      ],
+    });
 
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {
@@ -260,7 +268,11 @@ export function createSpecializedApp(options?: {
   }
 
   // Now instantiate the entire tree, which will skip anything that's already been instantiated
-  instantiateAppNodeTree(tree.root, apiHolder);
+  instantiateAppNodeTree(
+    tree.root,
+    apiHolder,
+    options?.extensionFactoryMiddleware,
+  );
 
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
 
@@ -272,6 +284,8 @@ export function createSpecializedApp(options?: {
   const AppComponent = () => rootEl;
 
   return {
+    apis: apiHolder,
+    tree,
     createRoot() {
       return <AppComponent />;
     },
