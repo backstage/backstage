@@ -28,7 +28,6 @@ export {
   createExtensionInput,
   type ExtensionInput,
 } from './createExtensionInput';
-export { type ExtensionDataContainer } from './createExtensionDataContainer';
 export {
   createExtensionDataRef,
   type AnyExtensionDataRef,
@@ -51,6 +50,7 @@ export { type Extension } from './resolveExtensionDefinition';
 export {
   type AnyRoutes,
   type AnyExternalRoutes,
+  type ExtensionDataContainer,
   type ExtensionOverrides,
   type FeatureFlagConfig,
   type FrontendFeature,
