@@ -1,5 +1,64 @@
 # @backstage/core-compat-api
 
+## 0.3.7-next.1
+
+### Patch Changes
+
+- d34e0e5: Added a new `convertLegacyAppOptions` helper that converts many of the options passed to `createApp` in the old frontend system to a module with app overrides for the new system. The supported options are `apis`, `icons`, `plugins`, `components`, and `themes`.
+
+  For example, given the following options for the old `createApp`:
+
+  ```ts
+  import { createApp } from '@backstage/app-deafults';
+
+  const app = createApp({
+    apis,
+    plugins,
+    icons: {
+      custom: MyIcon,
+    },
+    components: {
+      SignInPage: MySignInPage,
+    },
+    themes: [myTheme],
+  });
+  ```
+
+  They can be converted to the new system like this:
+
+  ```ts
+  import { createApp } from '@backstage/frontend-deafults';
+  import { convertLegacyAppOptions } from '@backstage/core-compat-api';
+
+  const app = createApp({
+    features: [
+      convertLegacyAppOptions({
+        apis,
+        plugins,
+        icons: {
+          custom: MyIcon,
+        },
+        components: {
+          SignInPage: MySignInPage,
+        },
+        themes: [myTheme],
+      }),
+    ],
+  });
+  ```
+
+- 18faf65: The `convertLegacyApp` has received the following changes:
+
+  - `null` routes will now be ignored.
+  - Converted routes no longer need to belong to a plugin, falling back to a `converted-orphan-routes` plugin instead.
+  - The generate layout override extension is now properly attached to the `app/root` extension.
+  - Converted root elements are now automatically wrapped with `compatWrapper`.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.3.7-next.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/canon
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 8689010: We are renaming CanonProvider to IconProvider to improve clarity on how to override icons.
+
+### Patch Changes
+
+- 89e8686: To avoid conflicts with Backstage, we removed global styles and set font-family and font-weight for each components.
+
 ## 0.2.0-next.0
 
 ### Minor Changes

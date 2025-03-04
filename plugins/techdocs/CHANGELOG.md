@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs
 
+## 1.12.4-next.1
+
+### Patch Changes
+
+- fffe3c0: Fixed double scrollbar issue that would appear on the Entity TechDocs view page that would stop the page from full scrolling to the top when navigating to a new page
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-auth-react@0.1.13-next.0
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.7-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.15-next.1
+
 ## 1.12.4-next.0
 
 ### Patch Changes

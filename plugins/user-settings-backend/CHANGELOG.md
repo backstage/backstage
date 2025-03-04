@@ -1,5 +1,24 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- e202017: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-user-settings-backend/alpha`, please update your import to `@backstage/plugin-user-settings-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-defaults@0.8.2-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.18-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.2.31-next.0
 
 ### Patch Changes
