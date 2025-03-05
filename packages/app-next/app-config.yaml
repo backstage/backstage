@@ -75,11 +75,6 @@ app:
     # - entity-content:azure-devops/pull-requests
     # - entity-content:azure-devops/git-tags
 
-    - entity-content-layout:app/sticky:
-        config:
-          # this layout will apply to entities of kind component
-          filter: 'kind:component'
-
   # scmAuthExtension: >-
   #   createScmAuthExtension({
   #     id: 'apis.scmAuth.addons.ghe',
