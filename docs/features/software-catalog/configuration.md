@@ -345,4 +345,4 @@ catalog:
   publishEntityLifecycleEvents: true
 ```
 
-Events are published under the `CATALOG_ENTITY_LIFECYCLE_TOPIC` which is exported by '@backstage/plugin-catalog-backend' and are of the `EntityLifecycleEventsPayload` type. They contain a list of entityRefs as well as the action which triggered the event. The actions are currently `upserted` or `deleted`.
+Events are published under the `CATALOG_ENTITY_LIFECYCLE_TOPIC` which is exported by '@backstage/plugin-catalog-backend' and are of the `EntityLifecycleEventsPayload` type. They contain a list of `entityRefs` as well as the action which triggered the event. The actions are currently `upserted` or `deleted`.

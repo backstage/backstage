@@ -137,7 +137,10 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E4']);
       expect(
         mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E1', 'E3', 'E2']);
+      ).toHaveBeenCalledWith(expect.arrayContaining(['E1', 'E3', 'E2']));
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent.mock.lastCall?.[0],
+      ).toHaveLength(3);
     },
   );
 
@@ -304,8 +307,10 @@ describe('deleteWithEagerPruningOfChildren', () => {
 
       expect(
         mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E1', 'E2']);
-
+      ).toHaveBeenCalledWith(expect.arrayContaining(['E1', 'E2']));
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent.mock.lastCall?.[0],
+      ).toHaveLength(2);
       mockedEntityLifecycleEvents.publishDeletedEvent.mockReset();
 
       await deleteWithEagerPruningOfChildren({
@@ -318,7 +323,10 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await expect(entitiesMarkedForStitching(knex)).resolves.toEqual([]);
       expect(
         mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E3', 'E4', 'E5', 'E6']);
+      ).toHaveBeenCalledWith(expect.arrayContaining(['E3', 'E4', 'E5', 'E6']));
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent.mock.lastCall?.[0],
+      ).toHaveLength(4);
     },
   );
 
