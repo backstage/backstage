@@ -35,9 +35,9 @@ export function entityPredicateToFilterFunction<T extends JsonValue>(
 /**
  * Evaluate a entity predicate against a value, typically an entity.
  *
- * @alpha
+ * @internal
  */
-export function evaluateEntityPredicate(
+function evaluateEntityPredicate(
   filter: EntityPredicate,
   value: JsonValue,
 ): boolean {

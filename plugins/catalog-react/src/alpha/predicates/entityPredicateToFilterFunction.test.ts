@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { evaluateEntityPredicate } from './evaluateEntityPredicate';
+import { entityPredicateToFilterFunction } from './entityPredicateToFilterFunction';
 import { EntityPredicate } from './types';
 
-describe('evaluateEntityPredicate', () => {
+describe('entityPredicateToFilterFunction', () => {
   const entities = [
     {
       apiVersion: 'backstage.io/v1alpha1',
@@ -228,7 +228,7 @@ describe('evaluateEntityPredicate', () => {
     ],
   ])('filter entry %#', (expected, filter) => {
     const filtered = entities.filter(entity =>
-      evaluateEntityPredicate(filter, entity),
+      entityPredicateToFilterFunction(filter)(entity),
     );
     expect(filtered.map(e => e.metadata.name).sort()).toEqual(
       expected.split(',').filter(Boolean).sort(),

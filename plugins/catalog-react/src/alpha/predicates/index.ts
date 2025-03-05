@@ -20,7 +20,4 @@ export type {
   EntityPredicatePrimitive,
   EntityPredicateValue,
 } from './types';
-export {
-  evaluateEntityPredicate,
-  entityPredicateToFilterFunction,
-} from './evaluateEntityPredicate';
+export { entityPredicateToFilterFunction } from './entityPredicateToFilterFunction';

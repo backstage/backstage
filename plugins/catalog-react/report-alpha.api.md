@@ -364,12 +364,6 @@ export type EntityPredicateValue =
     };
 
 // @alpha
-export function evaluateEntityPredicate(
-  filter: EntityPredicate,
-  value: JsonValue,
-): boolean;
-
-// @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
 // @alpha
