@@ -744,12 +744,7 @@ export function createFrontendPlugin<
 ): FrontendPlugin<
   TRoutes,
   TExternalRoutes,
-  {
-    [KExtension in TExtensions[number] as ResolveExtensionId<
-      KExtension,
-      TId
-    >]: KExtension;
-  }
+  MakeSortedExtensionsMap<TExtensions[number], TId>
 >;
 
 // @public

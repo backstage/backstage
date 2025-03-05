@@ -53,7 +53,9 @@ const _default: FrontendPlugin<
     }>;
   },
   {
-    'api:scaffolder/form-fields': ExtensionDefinition<{
+    'api:scaffolder': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<
@@ -61,21 +63,7 @@ const _default: FrontendPlugin<
         'core.api.factory',
         {}
       >;
-      inputs: {
-        formFields: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            () => Promise<FormField>,
-            'scaffolder.form-field-loader',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'form-fields';
+      inputs: {};
       params: {
         factory: AnyApiFactory;
       };
@@ -105,6 +93,54 @@ const _default: FrontendPlugin<
       name: 'form-decorators';
       params: {
         factory: AnyApiFactory;
+      };
+    }>;
+    'api:scaffolder/form-fields': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
+        formFields: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<FormField>,
+            'scaffolder.form-field-loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'form-fields';
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
+    'nav-item:scaffolder': ExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
       };
     }>;
     'page:scaffolder': ExtensionDefinition<{
@@ -145,27 +181,6 @@ const _default: FrontendPlugin<
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
       };
     }>;
-    'nav-item:scaffolder': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
     'scaffolder-form-field:scaffolder/repo-url-picker': ExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'repo-url-picker';
@@ -179,21 +194,6 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         field: () => Promise<FormField>;
-      };
-    }>;
-    'api:scaffolder': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
       };
     }>;
   }
