@@ -108,6 +108,7 @@ describe('evaluateEntityPredicate', () => {
         type: 'grpc',
         owner: 'g',
         definition: 'mock',
+        nothing: null,
       },
       relations: [
         {
@@ -215,6 +216,7 @@ describe('evaluateEntityPredicate', () => {
     ['s,w,a', { 'spec.owner': { $exists: true } }],
     ['g', { 'spec.owner': { $exists: false } }],
     ['s', { 'spec.type': 'service' }],
+    ['', { 'spec.nothing': null }],
     ['w,g,a', { $not: { 'spec.type': 'service' } }],
     ['', { 'spec.type': null }],
     [

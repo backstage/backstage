@@ -108,6 +108,9 @@ function valuesAreEqual(
   a: JsonValue | undefined,
   b: JsonValue | undefined,
 ): boolean {
+  if (a === null || b === null) {
+    return false;
+  }
   if (a === b) {
     return true;
   }
