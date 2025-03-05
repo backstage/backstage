@@ -25,12 +25,21 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultStitcher } from './DefaultStitcher';
+import { EntityLifecycleEvents } from '../events';
 
 jest.setTimeout(60_000);
 
 describe('Stitcher', () => {
   const databases = TestDatabases.create();
   const logger = mockServices.logger.mock();
+  const mockedEntityLifecycleEvents: jest.Mocked<EntityLifecycleEvents> = {
+    publishUpsertedEvent: jest.fn(),
+    publishDeletedEvent: jest.fn(),
+  };
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
   it.each(databases.eachSupportedId())(
     'runs the happy path for %p',
@@ -42,6 +51,7 @@ describe('Stitcher', () => {
         knex: db,
         logger,
         strategy: { mode: 'immediate' },
+        entityLifecycleEvents: mockedEntityLifecycleEvents,
       });
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
@@ -164,6 +174,10 @@ describe('Stitcher', () => {
           },
         ]),
       );
+      expect(
+        mockedEntityLifecycleEvents.publishUpsertedEvent,
+      ).toHaveBeenCalledWith(['k:ns/n']);
+      mockedEntityLifecycleEvents.publishUpsertedEvent.mockReset();
 
       // Re-stitch without any changes
       await stitcher.stitch({ entityRefs: ['k:ns/n'] });
@@ -173,6 +187,9 @@ describe('Stitcher', () => {
       entity = JSON.parse(entities[0].final_entity!);
       expect(entities[0].hash).toEqual(firstHash);
       expect(entity.metadata.etag).toEqual(firstHash);
+      expect(
+        mockedEntityLifecycleEvents.publishUpsertedEvent,
+      ).not.toHaveBeenCalled();
 
       // Now add one more relation and re-stitch
       await db<DbRelationsRow>('relations').insert([
@@ -269,6 +286,9 @@ describe('Stitcher', () => {
           },
         ]),
       );
+      expect(
+        mockedEntityLifecycleEvents.publishUpsertedEvent,
+      ).toHaveBeenCalledWith(['k:ns/n']);
     },
   );
 });

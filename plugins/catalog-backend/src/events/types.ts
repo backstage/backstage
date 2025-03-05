@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/** @public */
-export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
-/** @public */
-export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
-/** @public */
-export const CATALOG_ENTITY_LIFECYCLE_TOPIC =
-  'experimental.catalog.entity_lifecycle';
+export interface EntityLifecycleEvents {
+  publishUpsertedEvent(entityRefs: string[]): Promise<void>;
+  publishDeletedEvent(entityRefs: string[]): Promise<void>;
+}

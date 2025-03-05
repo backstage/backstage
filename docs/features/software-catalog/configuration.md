@@ -335,3 +335,14 @@ Now install your module.
 ```ts title="packages/backend/src/index.ts"
 backend.add(eventsModuleCatalogErrors);
 ```
+
+## Publishing Entity Lifecycle Events
+
+The catalog can be configured to publish events when an entity is [finalized](./life-of-an-entity.md#stitching) or deleted by setting the `publishEntityLifecycleEvents` value to true. Setting the value to false or omitting the setting will result in no events being published.
+
+```yaml title="app-config.yaml"
+catalog:
+  publishEntityLifecycleEvents: true
+```
+
+Events are published under the `CATALOG_ENTITY_LIFECYCLE_TOPIC` which is exported by '@backstage/plugin-catalog-backend' and are of the `EntityLifecycleEventsPayload` type. They contain a list of entityRefs as well as the action which triggered the event. The actions are currently `upserted` or `deleted`.
