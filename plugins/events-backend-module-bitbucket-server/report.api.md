@@ -8,5 +8,4 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 // @public
 const eventsModuleBitbucketServerEventRouter: BackendFeature;
 export default eventsModuleBitbucketServerEventRouter;
-export { eventsModuleBitbucketServerEventRouter };
 ```

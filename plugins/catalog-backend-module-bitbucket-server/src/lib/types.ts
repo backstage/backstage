@@ -46,7 +46,6 @@ type BitbucketServerDefaultBranch = {
   isDefault: boolean;
 };
 
-/** @public */
 namespace BitbucketServerEvents {
   interface Event {
     eventKey: string;

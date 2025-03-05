@@ -87,52 +87,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
 }
 
 // @public (undocumented)
-export namespace BitbucketServerEvents {
-  // (undocumented)
-  export type Actor = {
-    name?: string;
-    id: number;
-  };
-  // (undocumented)
-  export type Change = {
-    ref: {
-      id: string;
-      displayId: string;
-      type: string;
-    };
-  };
-  // (undocumented)
-  export interface Event {
-    // (undocumented)
-    eventKey: string;
-  }
-  // (undocumented)
-  export interface RefsChangedEvent extends Event {
-    // (undocumented)
-    actor: Actor;
-    // (undocumented)
-    changes: Change[];
-    // (undocumented)
-    commits: undefined;
-    // (undocumented)
-    date: string;
-    // (undocumented)
-    repository: Repository;
-    // (undocumented)
-    ToCommit: undefined;
-  }
-  // (undocumented)
-  export type Repository = {
-    slug: string;
-    id: number;
-    name: string;
-    project: BitbucketServerProject;
-  };
-  {
-  }
-}
-
-// @public (undocumented)
 export type BitbucketServerListOptions = {
   [key: string]: number | undefined;
   limit?: number | undefined;
@@ -181,12 +135,4 @@ export type BitbucketServerRepository = {
 // @public (undocumented)
 const catalogModuleBitbucketServerEntityProvider: BackendFeature;
 export default catalogModuleBitbucketServerEntityProvider;
-
-// @public (undocumented)
-export function paginated(
-  request: (
-    options: BitbucketServerListOptions,
-  ) => Promise<BitbucketServerPagedResponse<any>>,
-  options?: BitbucketServerListOptions,
-): AsyncGenerator<any, void, unknown>;
 ```
