@@ -136,6 +136,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor_2 {
 export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 
 // @public (undocumented)
+export const CATALOG_ENTITY_LIFECYCLE_TOPIC =
+  'experimental.catalog.entity_lifecycle';
+
+// @public (undocumented)
 export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 
 // @public @deprecated
@@ -168,6 +172,10 @@ export class CatalogBuilder {
   replaceProcessors(processors: CatalogProcessor_2[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser_2): CatalogBuilder;
+  setEntityLifecycleEvents(
+    config: Config,
+    broker: EventBroker | EventsService,
+  ): CatalogBuilder;
   setEventBroker(broker: EventBroker | EventsService): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer_2): CatalogBuilder;

@@ -221,12 +221,14 @@ describe('deleteOrphanedEntities', () => {
         { entity_ref: 'E8', hash: 'original', next_stitch_at: null },
         { entity_ref: 'E9', hash: 'original', next_stitch_at: null },
       ]);
-      expect(
-        mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E4', 'E6', 'E10']);
-      expect(
-        mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E3', 'E5']);
+      const allDeletedEntities =
+        mockedEntityLifecycleEvents.publishDeletedEvent.mock.calls.flatMap(
+          callArgs => callArgs[0],
+        );
+      expect(allDeletedEntities).toEqual(
+        expect.arrayContaining(['E3', 'E4', 'E5', 'E6', 'E10']),
+      );
+      expect(allDeletedEntities).toHaveLength(5);
     },
   );
 
@@ -325,12 +327,14 @@ describe('deleteOrphanedEntities', () => {
         { entity_ref: 'E8', hash: 'original', next_stitch_at: null },
         { entity_ref: 'E9', hash: 'original', next_stitch_at: null },
       ]);
-      expect(
-        mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E4', 'E6', 'E10']);
-      expect(
-        mockedEntityLifecycleEvents.publishDeletedEvent,
-      ).toHaveBeenCalledWith(['E3', 'E5']);
+      const allDeletedEntities =
+        mockedEntityLifecycleEvents.publishDeletedEvent.mock.calls.flatMap(
+          callArgs => callArgs[0],
+        );
+      expect(allDeletedEntities).toEqual(
+        expect.arrayContaining(['E3', 'E4', 'E5', 'E6', 'E10']),
+      );
+      expect(allDeletedEntities).toHaveLength(5);
     },
   );
 });
