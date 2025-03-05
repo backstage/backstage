@@ -15,6 +15,12 @@
  */
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';
+
+export {
+  EntityContextMenuItemBlueprint,
+  type FactoryLoaderParams,
+  type FactoryHrefParams,
+} from './EntityContextMenuItemBlueprint';
 export {
   EntityContentLayoutBlueprint,
   type EntityContentLayoutProps,

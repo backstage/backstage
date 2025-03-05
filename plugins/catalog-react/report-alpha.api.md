@@ -324,6 +324,40 @@ export interface EntityContentLayoutProps {
   }>;
 }
 
+// @alpha (undocumented)
+export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
+  kind: 'entity-context-menu-item';
+  name: undefined;
+  params: FactoryLoaderParams | FactoryHrefParams;
+  output: ConfigurableExtensionDataRef<
+    React_2.JSX.Element,
+    'core.reactElement',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @alpha (undocumented)
+export type FactoryHrefParams =
+  | {
+      title: string;
+      icon: JSX.Element;
+      useHref: () => string;
+    }
+  | {
+      title: string;
+      icon: JSX.Element;
+      href: string;
+    };
+
+// @alpha (undocumented)
+export type FactoryLoaderParams = {
+  loader: () => Promise<JSX.Element>;
+};
+
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
