@@ -72,12 +72,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
     schema: {
       groups: z =>
         z
-          .array(
-            z.record(
-              z.string(),
-              z.literal(false).or(z.object({ title: z.string() })),
-            ),
-          )
+          .array(z.record(z.string(), z.object({ title: z.string() })))
           .optional(),
     },
   },
@@ -88,48 +83,53 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
 
-        // config groups override default groups
-        const groups: Record<string, string> = config.groups?.length
-          ? config.groups.reduce<Record<string, string>>((rest, group) => {
-              const [groupId, groupValue] = Object.entries(group)[0];
-              return groupValue
-                ? {
-                    ...rest,
-                    [groupId]: groupValue.title,
-                  }
-                : rest;
-            }, {})
-          : defaultEntityContentGroups;
+        type Groups = Record<
+          string,
+          { title: string; items: Array<(typeof inputs.contents)[0]> }
+        >;
 
-        // the groups order is determined by the order of the contents
-        // a group will appear in the order of the first item that belongs to it
-        const tabs = inputs.contents.reduce<
-          Record<string, Array<(typeof inputs.contents)[0]>>
-        >((rest, output) => {
-          const itemTitle = output.get(EntityContentBlueprint.dataRefs.title);
-          const groupId = output.get(EntityContentBlueprint.dataRefs.group);
-          const groupTitle = groupId && groups[groupId];
-          // disabled or invalid groups are ignored
-          if (!groupTitle) {
+        let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
+          (rest, group) => {
+            const [groupId, groupValue] = group;
             return {
               ...rest,
-              [itemTitle]: [output],
+              [groupId]: { title: groupValue, items: [] },
             };
+          },
+          {},
+        );
+
+        // config groups override default groups
+        if (config.groups) {
+          groups = config.groups.reduce<Groups>((rest, group) => {
+            const [groupId, groupValue] = Object.entries(group)[0];
+            return {
+              ...rest,
+              [groupId]: { title: groupValue.title, items: [] },
+            };
+          }, {});
+        }
+
+        for (const output of inputs.contents) {
+          const itemId = output.node.spec.id;
+          const itemTitle = output.get(EntityContentBlueprint.dataRefs.title);
+          const itemGroup = output.get(EntityContentBlueprint.dataRefs.group);
+          const group = itemGroup && groups[itemGroup];
+          if (!group) {
+            groups[itemId] = { title: itemTitle, items: [output] };
+            continue;
           }
-          return {
-            ...rest,
-            [groupTitle]: [...(rest[groupTitle] ?? []), output],
-          };
-        }, {});
+          group.items.push(output);
+        }
 
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
               <EntityLayout>
-                {Object.entries(tabs).flatMap(([group, items]) =>
+                {Object.values(groups).flatMap(({ title, items }) =>
                   items.map(output => (
                     <EntityLayout.Route
-                      group={group}
+                      group={title}
                       key={output.get(coreExtensionData.routePath)}
                       path={output.get(coreExtensionData.routePath)}
                       title={output.get(EntityContentBlueprint.dataRefs.title)}

@@ -114,7 +114,6 @@ describe('Index page', () => {
     params: {
       defaultPath: '/overview',
       defaultTitle: 'Overview',
-      defaultGroup: 'documentation',
       loader: async () => <div>Mock Overview content</div>,
     },
   });
@@ -251,61 +250,6 @@ describe('Index page', () => {
         'href',
         '/apidocs',
       ),
-    );
-  });
-
-  it('Should disable a default group', async () => {
-    const tester = createExtensionTester(
-      Object.assign({ namespace: 'catalog' }, catalogEntityPage),
-      {
-        config: {
-          groups: [
-            {
-              documentation: false,
-            },
-          ],
-        },
-      },
-    )
-      .add(techdocsEntityContent)
-      .add(apidocsEntityContent);
-
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ]}
-      >
-        {tester.reactElement()}
-      </TestApiProvider>,
-      {
-        config: {
-          app: {
-            title: 'Custom app',
-          },
-          backend: { baseUrl: 'http://localhost:7000' },
-        },
-        mountedRoutes: {
-          '/catalog': convertLegacyRouteRef(rootRouteRef),
-          '/catalog/:namespace/:kind/:name':
-            convertLegacyRouteRef(entityRouteRef),
-        },
-      },
-    );
-
-    await waitFor(() =>
-      expect(
-        screen.queryByRole('tab', { name: /Documentation/ }),
-      ).not.toBeInTheDocument(),
-    );
-
-    await waitFor(() =>
-      expect(screen.getByRole('tab', { name: /TechDocs/ })).toBeInTheDocument(),
-    );
-
-    await waitFor(() =>
-      expect(screen.getByRole('tab', { name: /ApiDocs/ })).toBeInTheDocument(),
     );
   });
 
@@ -473,5 +417,93 @@ describe('Index page', () => {
         screen.queryByRole('tab', { name: /Development/ }),
       ).not.toBeInTheDocument(),
     );
+  });
+
+  it('Should render groups first', async () => {
+    const tester = createExtensionTester(
+      Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+    )
+      .add(techdocsEntityContent)
+      .add(apidocsEntityContent)
+      .add(overviewEntityContent);
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ]}
+      >
+        {tester.reactElement()}
+      </TestApiProvider>,
+      {
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      },
+    );
+
+    await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
+
+    expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Documentation');
+    expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Overview');
+  });
+
+  it('Should render groups on the correct order', async () => {
+    const tester = createExtensionTester(
+      Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      {
+        config: {
+          groups: [
+            { overview: { title: 'Overview' } },
+            { documentation: { title: 'Documentation' } },
+          ],
+        },
+      },
+    )
+      .add(techdocsEntityContent)
+      .add(apidocsEntityContent)
+      .add(overviewEntityContent, {
+        config: {
+          group: 'overview',
+        },
+      });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ]}
+      >
+        {tester.reactElement()}
+      </TestApiProvider>,
+      {
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      },
+    );
+
+    await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
+
+    expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Overview');
+    expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Documentation');
   });
 });
