@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,11 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
-import { createFrontendFeatureLoader } from './createFrontendFeatureLoader';
+import {
+  CreateFrontendFeatureLoaderOptions,
+  InternalFrontendFeatureLoader,
+  createFrontendFeatureLoader,
+} from './createFrontendFeatureLoader';
 import { FrontendFeature } from './types';
 
 const nameExtensionDataRef = createExtensionDataRef<string>().with({
@@ -34,13 +38,16 @@ const nameExtensionDataRef = createExtensionDataRef<string>().with({
 
 function createTestAppRoot({
   features,
+  featureLoaderRecursionDepth,
   config = {},
 }: {
   features: FrontendFeature[];
+  featureLoaderRecursionDepth?: number;
   config: JsonObject;
 }) {
   return createApp({
     features: [...features],
+    featureLoaderRecursionDepth,
     configLoader: async () => ({ config: mockApis.config({ data: config }) }),
   }).createRoot();
 }
@@ -48,78 +55,75 @@ function createTestAppRoot({
 describe('createFrontendFeatureLoader', () => {
   it('should create several plugins with only one feature loader', async () => {
     const featureLoader: FrontendFeature = createFrontendFeatureLoader({
-      name: 'test-frontend-feature-loader',
-      async load({ config }) {
+      loader({ config }) {
         const pluginIdPrefix = config.getOptionalString('pluginIdPrefix');
         const extensionNamePrefix = config.getOptionalString(
           'extensionNamePrefix',
         );
-        return {
-          features: [
-            createFrontendPlugin({
-              id: `${pluginIdPrefix}-1`,
-              extensions: [
-                createExtension({
-                  name: '1',
-                  attachTo: {
-                    id: `${pluginIdPrefix}-output/output`,
-                    input: 'names',
-                  },
-                  output: [nameExtensionDataRef],
-                  factory() {
-                    return [nameExtensionDataRef(`${extensionNamePrefix}-1`)];
-                  },
-                }),
-              ],
-            }),
-            createFrontendPlugin({
-              id: `${pluginIdPrefix}-2`,
-              extensions: [
-                createExtension({
-                  name: '2',
-                  attachTo: {
-                    id: `${pluginIdPrefix}-output/output`,
-                    input: 'names',
-                  },
-                  output: [nameExtensionDataRef],
-                  factory() {
-                    return [nameExtensionDataRef(`${extensionNamePrefix}-2`)];
-                  },
-                }),
-              ],
-            }),
-            createFrontendPlugin({
-              id: `${pluginIdPrefix}-output`,
-              extensions: [
-                createExtension({
-                  name: 'output',
-                  attachTo: { id: 'app', input: 'root' },
-                  inputs: {
-                    names: createExtensionInput([nameExtensionDataRef]),
-                  },
-                  output: [coreExtensionData.reactElement],
-                  factory({ inputs }) {
-                    return [
-                      coreExtensionData.reactElement(
-                        React.createElement('span', {}, [
-                          `Names: ${inputs.names
-                            .map(n => n.get(nameExtensionDataRef))
-                            .join(', ')}`,
-                        ]),
-                      ),
-                    ];
-                  },
-                }),
-              ],
-            }),
-          ],
-        };
+        return [
+          createFrontendPlugin({
+            id: `${pluginIdPrefix}-1`,
+            extensions: [
+              createExtension({
+                name: '1',
+                attachTo: {
+                  id: `${pluginIdPrefix}-output/output`,
+                  input: 'names',
+                },
+                output: [nameExtensionDataRef],
+                factory() {
+                  return [nameExtensionDataRef(`${extensionNamePrefix}-1`)];
+                },
+              }),
+            ],
+          }) as FrontendFeature,
+          createFrontendPlugin({
+            id: `${pluginIdPrefix}-2`,
+            extensions: [
+              createExtension({
+                name: '2',
+                attachTo: {
+                  id: `${pluginIdPrefix}-output/output`,
+                  input: 'names',
+                },
+                output: [nameExtensionDataRef],
+                factory() {
+                  return [nameExtensionDataRef(`${extensionNamePrefix}-2`)];
+                },
+              }),
+            ],
+          }) as FrontendFeature,
+          createFrontendPlugin({
+            id: `${pluginIdPrefix}-output`,
+            extensions: [
+              createExtension({
+                name: 'output',
+                attachTo: { id: 'app', input: 'root' },
+                inputs: {
+                  names: createExtensionInput([nameExtensionDataRef]),
+                },
+                output: [coreExtensionData.reactElement],
+                factory({ inputs }) {
+                  return [
+                    coreExtensionData.reactElement(
+                      React.createElement('span', {}, [
+                        `Names: ${inputs.names
+                          .map(n => n.get(nameExtensionDataRef))
+                          .join(', ')}`,
+                      ]),
+                    ),
+                  ];
+                },
+              }),
+            ],
+          }) as FrontendFeature,
+        ];
       },
-    });
+    } as CreateFrontendFeatureLoaderOptions);
 
     expect(featureLoader).toBeDefined();
-    expect(String(featureLoader)).toBe(
-      'FeatureLoader{name=test-frontend-feature-loader}',
+    expect(String(featureLoader)).toMatch(
+      /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
     await renderWithEffects(
@@ -140,8 +144,7 @@ describe('createFrontendFeatureLoader', () => {
 
   it('should propagate errors thrown by feature loaders', async () => {
     const featureLoader: FrontendFeature = createFrontendFeatureLoader({
-      name: 'test-frontend-feature-loader',
-      async load(_) {
+      async loader(_) {
         throw new TypeError('boom');
       },
     });
@@ -153,95 +156,86 @@ describe('createFrontendFeatureLoader', () => {
           config: {},
         }),
       ),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Failed to read frontend features from loader 'test-frontend-feature-loader', TypeError: boom"`,
+    ).rejects.toThrow(
+      /^Failed to read frontend features from loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*': TypeError: boom$/,
     );
   });
 
   it('should support loading feature loaders', async () => {
     const featureLoader: FrontendFeature = createFrontendFeatureLoader({
-      name: 'test-frontend-feature-loader',
-      async load(_) {
-        return {
-          features: [
-            createFrontendFeatureLoader({
-              name: 'nested-frontent-feature-loader',
-              load: async __ => ({
-                features: [
+      async loader(_) {
+        return [
+          createFrontendFeatureLoader({
+            async *loader(__) {
+              yield createFrontendPlugin({
+                id: 'plugin-1',
+                extensions: [
+                  createExtension({
+                    name: '1',
+                    attachTo: {
+                      id: 'plugin-output/output',
+                      input: 'names',
+                    },
+                    output: [nameExtensionDataRef],
+                    factory() {
+                      return [nameExtensionDataRef('extension-1')];
+                    },
+                  }),
+                ],
+              });
+              yield createFrontendFeatureLoader({
+                loader: async ___ => [
                   createFrontendPlugin({
-                    id: 'plugin-1',
+                    id: 'plugin-2',
                     extensions: [
                       createExtension({
-                        name: '1',
+                        name: '2',
                         attachTo: {
                           id: 'plugin-output/output',
                           input: 'names',
                         },
                         output: [nameExtensionDataRef],
                         factory() {
-                          return [nameExtensionDataRef('extension-1')];
+                          return [nameExtensionDataRef('extension-2')];
                         },
                       }),
                     ],
                   }),
-                  createFrontendFeatureLoader({
-                    name: 'nested-nested-frontent-feature-loader',
-                    load: async ___ => ({
-                      features: [
-                        createFrontendPlugin({
-                          id: 'plugin-2',
-                          extensions: [
-                            createExtension({
-                              name: '2',
-                              attachTo: {
-                                id: 'plugin-output/output',
-                                input: 'names',
-                              },
-                              output: [nameExtensionDataRef],
-                              factory() {
-                                return [nameExtensionDataRef('extension-2')];
-                              },
-                            }),
-                          ],
-                        }),
-                      ],
-                    }),
-                  }),
                 ],
+              });
+            },
+          }),
+          createFrontendPlugin({
+            id: 'plugin-output',
+            extensions: [
+              createExtension({
+                name: 'output',
+                attachTo: { id: 'app', input: 'root' },
+                inputs: {
+                  names: createExtensionInput([nameExtensionDataRef]),
+                },
+                output: [coreExtensionData.reactElement],
+                factory({ inputs }) {
+                  return [
+                    coreExtensionData.reactElement(
+                      React.createElement('span', {}, [
+                        `Names: ${inputs.names
+                          .map(n => n.get(nameExtensionDataRef))
+                          .join(', ')}`,
+                      ]),
+                    ),
+                  ];
+                },
               }),
-            }),
-            createFrontendPlugin({
-              id: 'plugin-output',
-              extensions: [
-                createExtension({
-                  name: 'output',
-                  attachTo: { id: 'app', input: 'root' },
-                  inputs: {
-                    names: createExtensionInput([nameExtensionDataRef]),
-                  },
-                  output: [coreExtensionData.reactElement],
-                  factory({ inputs }) {
-                    return [
-                      coreExtensionData.reactElement(
-                        React.createElement('span', {}, [
-                          `Names: ${inputs.names
-                            .map(n => n.get(nameExtensionDataRef))
-                            .join(', ')}`,
-                        ]),
-                      ),
-                    ];
-                  },
-                }),
-              ],
-            }),
-          ],
-        };
+            ],
+          }),
+        ];
       },
     });
 
     expect(featureLoader).toBeDefined();
-    expect(String(featureLoader)).toBe(
-      'FeatureLoader{name=test-frontend-feature-loader}',
+    expect(String(featureLoader)).toMatch(
+      /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
     await renderWithEffects(
@@ -263,20 +257,16 @@ describe('createFrontendFeatureLoader', () => {
       loader?: FrontendFeature;
     } = {};
     const featureLoader: FrontendFeature = createFrontendFeatureLoader({
-      name: 'test-frontend-feature-loader',
-      async load(_) {
-        return {
-          features: [nestedFeatureLoaderHolder.loader].filter<FrontendFeature>(
-            (f): f is FrontendFeature => f !== undefined,
-          ),
-        };
-      },
+      loader: () =>
+        [nestedFeatureLoaderHolder.loader].filter<FrontendFeature>(
+          (f): f is FrontendFeature => f !== undefined,
+        ),
     });
     nestedFeatureLoaderHolder.loader = featureLoader;
 
     expect(featureLoader).toBeDefined();
-    expect(String(featureLoader)).toBe(
-      'FeatureLoader{name=test-frontend-feature-loader}',
+    expect(String(featureLoader)).toMatch(
+      /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
     await expect(
@@ -288,8 +278,157 @@ describe('createFrontendFeatureLoader', () => {
           },
         }),
       ),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Duplicate feature loaders with name: 'test-frontend-feature-loader'"`,
+    ).rejects.toThrow(
+      /^Added several instances of feature loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'$/,
+    );
+  });
+
+  it('should support multiple output formats', async () => {
+    const feature = createFrontendPlugin({
+      id: 'test',
+    });
+    const dynamicFeature = Promise.resolve({ default: feature });
+
+    async function extractResult(f: FrontendFeature) {
+      const internal = f as InternalFrontendFeatureLoader;
+      return internal.loader({ config: mockApis.config() });
+    }
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          loader() {
+            return [feature];
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          async loader() {
+            return [feature];
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          *loader() {
+            yield feature;
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          async *loader() {
+            yield feature;
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          loader() {
+            return [dynamicFeature];
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          async loader() {
+            return [dynamicFeature];
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          *loader() {
+            yield dynamicFeature;
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+
+    await expect(
+      extractResult(
+        createFrontendFeatureLoader({
+          async *loader() {
+            yield dynamicFeature;
+          },
+        }),
+      ),
+    ).resolves.toEqual([feature]);
+  });
+
+  it('should limit feature loading recursion', async () => {
+    const featureLoader: FrontendFeature = createFrontendFeatureLoader({
+      loader: () => [
+        createFrontendFeatureLoader({
+          loader: () => [
+            createFrontendFeatureLoader({
+              loader: () => [
+                createFrontendPlugin({
+                  id: 'plugin',
+                  extensions: [
+                    createExtension({
+                      name: 'output',
+                      attachTo: { id: 'app', input: 'root' },
+                      inputs: {},
+                      output: [coreExtensionData.reactElement],
+                      factory() {
+                        return [
+                          coreExtensionData.reactElement(
+                            React.createElement('span', {}, [`My Content`]),
+                          ),
+                        ];
+                      },
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await expect(
+      renderWithEffects(
+        createTestAppRoot({
+          features: [featureLoader],
+          featureLoaderRecursionDepth: 2,
+          config: {
+            app: { extensions: [{ 'app/root': false }] },
+          },
+        }),
+      ),
+    ).rejects.toThrow(
+      /^Maximum feature loading recursion depth \(2\) reached for the feature loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'$/,
+    );
+
+    await renderWithEffects(
+      createTestAppRoot({
+        features: [featureLoader],
+        featureLoaderRecursionDepth: 3,
+        config: {
+          app: { extensions: [{ 'app/root': false }] },
+        },
+      }),
     );
   });
 });

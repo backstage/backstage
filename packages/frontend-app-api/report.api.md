@@ -32,8 +32,6 @@ export function createSpecializedApp(options?: {
   createRoot(): JSX_2.Element;
 };
 
-// Warning: (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
-//
 // @public @deprecated (undocumented)
 export type FrontendFeature = FrontendFeature_2;
 ```

@@ -15,8 +15,6 @@ export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX_2.Element;
 };
 
-// Warning: (tsdoc-reference-missing-dot) Expecting a period before the next component of a declaration reference
-//
 // @public @deprecated
 export interface CreateAppFeatureLoader {
   getLoaderName(): string;
@@ -33,6 +31,8 @@ export interface CreateAppOptions {
   configLoader?: () => Promise<{
     config: ConfigApi;
   }>;
+  // (undocumented)
+  featureLoaderRecursionDepth?: number;
   // (undocumented)
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   loadingComponent?: ReactNode;

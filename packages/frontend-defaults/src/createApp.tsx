@@ -39,7 +39,7 @@ import {
  * A source of dynamically loaded frontend features.
  *
  * @public
- * @deprecated Please use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader function}
+ * @deprecated Use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader} function instead.
  */
 export interface CreateAppFeatureLoader {
   /**
@@ -62,6 +62,7 @@ export interface CreateAppFeatureLoader {
  */
 export interface CreateAppOptions {
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  featureLoaderRecursionDepth?: number;
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   /**
@@ -123,9 +124,13 @@ export function createApp(options?: CreateAppOptions): {
       }
     }
 
-    const featureLoaderNames: string[] = [];
+    const featureLoaderNames: InternalFrontendFeatureLoader[] = [];
+    const maxRecursionDepth = options?.featureLoaderRecursionDepth ?? 10;
 
-    async function applyFeatureLoaders(features: FrontendFeature[]) {
+    async function applyFeatureLoaders(
+      features: FrontendFeature[],
+      recursionDepth: number,
+    ) {
       if (features.length === 0) {
         return;
       }
@@ -144,31 +149,34 @@ export function createApp(options?: CreateAppOptions): {
       );
       loadedFeatures.push(...otherFeatures);
       for (const featureLoader of featureLoaders) {
-        if (featureLoaderNames.includes(featureLoader.name)) {
+        if (featureLoaderNames.some(l => l === featureLoader)) {
           throw new Error(
-            `Duplicate feature loaders with name: '${featureLoader.name}'`,
+            `Added several instances of feature loader ${featureLoader.description}`,
           );
         }
-        featureLoaderNames.push(featureLoader.name);
-        let result: {
-          features: FrontendFeature[];
-        };
+        if (recursionDepth > maxRecursionDepth) {
+          throw new Error(
+            `Maximum feature loading recursion depth (${maxRecursionDepth}) reached for the feature loader ${featureLoader.description}`,
+          );
+        }
+        featureLoaderNames.push(featureLoader);
+        let result: FrontendFeature[];
         try {
-          result = await featureLoader.load({ config });
+          result = await featureLoader.loader({ config });
         } catch (e) {
           throw new Error(
-            `Failed to read frontend features from loader '${
-              featureLoader.name
-            }', ${stringifyError(e)}`,
+            `Failed to read frontend features from loader ${
+              featureLoader.description
+            }: ${stringifyError(e)}`,
           );
         }
-        await applyFeatureLoaders(result.features);
+        await applyFeatureLoaders(result, recursionDepth + 1);
       }
     }
 
     const discoveredFeatures = getAvailableFeatures(config);
 
-    await applyFeatureLoaders([...discoveredFeatures, ...providedFeatures]);
+    await applyFeatureLoaders([...discoveredFeatures, ...providedFeatures], 1);
 
     const app = createSpecializedApp({
       config,

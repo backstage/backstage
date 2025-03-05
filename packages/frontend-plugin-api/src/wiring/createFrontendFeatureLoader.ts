@@ -15,42 +15,57 @@
  */
 
 import { ConfigApi } from '../apis/definitions';
+import { describeParentCallSite } from '../routing/describeParentCallSite';
 import { FrontendFeature } from './types';
 
 /** @public */
 export interface CreateFrontendFeatureLoaderOptions {
-  name: string;
-  load(deps: { config: ConfigApi }): Promise<{
-    features: FrontendFeature[];
-  }>;
+  loader(deps: {
+    config: ConfigApi;
+  }):
+    | Iterable<FrontendFeature | Promise<{ default: FrontendFeature }>>
+    | Promise<Iterable<FrontendFeature | Promise<{ default: FrontendFeature }>>>
+    | AsyncIterable<FrontendFeature | { default: FrontendFeature }>;
 }
 
 /** @public */
 export interface FrontendFeatureLoader {
   readonly $$type: '@backstage/FrontendFeatureLoader';
-  readonly name: string;
 }
 
 /** @internal */
 export interface InternalFrontendFeatureLoader extends FrontendFeatureLoader {
   readonly version: 'v1';
-  readonly load: CreateFrontendFeatureLoaderOptions['load'];
+  readonly description: string;
+  readonly loader: (deps: { config: ConfigApi }) => Promise<FrontendFeature[]>;
 }
 
 /** @public */
 export function createFrontendFeatureLoader(
   options: CreateFrontendFeatureLoaderOptions,
 ): FrontendFeatureLoader {
-  const { name, load } = options;
-
+  const description = `created at '${describeParentCallSite()}'`;
   return {
     $$type: '@backstage/FrontendFeatureLoader',
     version: 'v1',
+    description,
     toString() {
-      return `FeatureLoader{name=${name}}`;
+      return `FeatureLoader{description=${description}}`;
     },
-    name,
-    load,
+    async loader(deps: { config: ConfigApi }): Promise<FrontendFeature[]> {
+      const it = await options.loader(deps);
+      const result = new Array<FrontendFeature>();
+      for await (const item of it) {
+        if (isBackstageFeature(item)) {
+          result.push(item);
+        } else if ('default' in item) {
+          result.push(item.default);
+        } else {
+          throw new Error(`Invalid item "${item}"`);
+        }
+      }
+      return result;
+    },
   } as InternalFrontendFeatureLoader;
 }
 
@@ -80,4 +95,15 @@ export function toInternalFrontendFeatureLoader(
     );
   }
   return internal;
+}
+
+function isBackstageFeature(obj: unknown): obj is FrontendFeature {
+  if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
+    return (
+      obj.$$type === '@backstage/FrontendPlugin' ||
+      obj.$$type === '@backstage/FrontendModule' ||
+      obj.$$type === '@backstage/FrontendFeatureLoader'
+    );
+  }
+  return false;
 }

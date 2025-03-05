@@ -18,7 +18,7 @@ import { FrontendFeature as PluginApiFrontendFeature } from '@backstage/frontend
 import { BackstageRouteObject } from '../routing/types';
 
 /** @public
- * @deprecated
+ * @deprecated Use {@link @backstage/frontend-plugin-api#FrontendFeature} instead.
  */
 export type FrontendFeature = PluginApiFrontendFeature;
 

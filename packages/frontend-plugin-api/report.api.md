@@ -722,11 +722,27 @@ export function createFrontendFeatureLoader(
 // @public (undocumented)
 export interface CreateFrontendFeatureLoaderOptions {
   // (undocumented)
-  load(deps: { config: ConfigApi }): Promise<{
-    features: FrontendFeature[];
-  }>;
-  // (undocumented)
-  name: string;
+  loader(deps: { config: ConfigApi }):
+    | Iterable<
+        | FrontendFeature
+        | Promise<{
+            default: FrontendFeature;
+          }>
+      >
+    | Promise<
+        Iterable<
+          | FrontendFeature
+          | Promise<{
+              default: FrontendFeature;
+            }>
+        >
+      >
+    | AsyncIterable<
+        | FrontendFeature
+        | {
+            default: FrontendFeature;
+          }
+      >;
 }
 
 // @public (undocumented)
@@ -1236,8 +1252,6 @@ export type FrontendFeature =
 export interface FrontendFeatureLoader {
   // (undocumented)
   readonly $$type: '@backstage/FrontendFeatureLoader';
-  // (undocumented)
-  readonly name: string;
 }
 
 // @public (undocumented)
