@@ -387,7 +387,7 @@ export function createPublishGitlabAction(options: {
 
         targetNamespaceId = namespaceResponse.id;
       } catch (e) {
-        if (e.response && e.response.statusCode === 404) {
+        if (e.cause?.response?.status === 404) {
           throw new InputError(
             `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
           );
