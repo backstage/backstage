@@ -15,7 +15,6 @@
  */
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -51,21 +50,15 @@ export namespace bitbucketServerSignInResolvers {
             );
           }
 
-          try {
-            return await ctx.signInWithCatalogUser({
+          return ctx.signInWithCatalogUser(
+            {
               filter: {
                 'spec.profile.email': profile.email,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: profile.email,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            profile.email,
+            options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          );
         };
       },
     });

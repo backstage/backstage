@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { GcpIapResult } from './types';
@@ -45,21 +44,15 @@ export namespace gcpIapSignInResolvers {
           throw new Error('Google IAP sign-in result is missing email');
         }
 
-        try {
-          return await ctx.signInWithCatalogUser({
+        return ctx.signInWithCatalogUser(
+          {
             annotations: {
               'google.com/email': email,
             },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: email,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          email,
+          options?.dangerouslyAllowSignInWithoutUserInCatalog,
+        );
       };
     },
   });
@@ -76,21 +69,16 @@ export namespace gcpIapSignInResolvers {
     create(options = {}) {
       return async (info: SignInInfo<GcpIapResult>, ctx) => {
         const userId = info.result.iapToken.sub.split(':')[1];
-        try {
-          return await ctx.signInWithCatalogUser({
+
+        return ctx.signInWithCatalogUser(
+          {
             annotations: {
               'google.com/user-id': userId,
             },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: userId,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          userId,
+          options?.dangerouslyAllowSignInWithoutUserInCatalog,
+        );
       };
     },
   });

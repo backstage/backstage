@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -51,21 +50,15 @@ export namespace bitbucketSignInResolvers {
             throw new Error('Bitbucket user profile does not contain an ID');
           }
 
-          try {
-            return await ctx.signInWithCatalogUser({
+          return ctx.signInWithCatalogUser(
+            {
               annotations: {
                 'bitbucket.org/user-id': id,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: id,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            id,
+            options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          );
         };
       },
     },
@@ -95,21 +88,15 @@ export namespace bitbucketSignInResolvers {
             );
           }
 
-          try {
-            return await ctx.signInWithCatalogUser({
+          return ctx.signInWithCatalogUser(
+            {
               annotations: {
                 'bitbucket.org/username': username,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: username,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            username,
+            options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          );
         };
       },
     });

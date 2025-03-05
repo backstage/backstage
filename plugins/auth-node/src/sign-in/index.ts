@@ -23,8 +23,4 @@ export {
   readDeclarativeSignInResolver,
   type ReadDeclarativeSignInResolverOptions,
 } from './readDeclarativeSignInResolver';
-export {
-  handleSignInUserNotFound,
-  type HandleSignInUserNotFoundOptions,
-} from './handleSignInUserNotFound';
 export { commonSignInResolvers } from './commonSignInResolvers';

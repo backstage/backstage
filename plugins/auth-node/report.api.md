@@ -112,6 +112,8 @@ export type AuthResolverContext = {
   }>;
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
+    fallbackUserRef?: string | undefined,
+    dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined,
   ): Promise<BackstageSignInResult>;
   resolveOwnershipEntityRefs(entity: Entity): Promise<{
     ownershipEntityRefs: string[];
@@ -148,6 +150,7 @@ export namespace commonSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
     | {
+        allowedDomains?: string[] | undefined;
         dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined
@@ -155,8 +158,8 @@ export namespace commonSignInResolvers {
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
     | {
-        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
         allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined
   >;
@@ -249,23 +252,6 @@ export function encodeOAuthState(state: OAuthState): string;
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;
-
-// @public (undocumented)
-export function handleSignInUserNotFound(
-  options: HandleSignInUserNotFoundOptions,
-): Promise<BackstageSignInResult>;
-
-// @public (undocumented)
-export interface HandleSignInUserNotFoundOptions {
-  // (undocumented)
-  ctx: AuthResolverContext;
-  // (undocumented)
-  dangerouslyAllowSignInWithoutUserInCatalog: boolean | undefined;
-  // (undocumented)
-  error: any;
-  // (undocumented)
-  userEntityName: string;
-}
 
 // @public
 export interface IdentityApi {

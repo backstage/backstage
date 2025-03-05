@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -50,17 +49,13 @@ export namespace oauth2SignInResolvers {
           throw new Error(`Oauth2 user profile does not contain a username`);
         }
 
-        try {
-          return await ctx.signInWithCatalogUser({ entityRef: { name: id } });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: id,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+        return ctx.signInWithCatalogUser(
+          {
+            entityRef: { name: id },
+          },
+          id,
+          options?.dangerouslyAllowSignInWithoutUserInCatalog,
+        );
       };
     },
   });

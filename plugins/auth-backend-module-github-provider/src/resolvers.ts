@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -49,19 +48,14 @@ export namespace githubSignInResolvers {
         if (!userId) {
           throw new Error(`GitHub user profile does not contain a username`);
         }
-        try {
-          return await ctx.signInWithCatalogUser({
+
+        return ctx.signInWithCatalogUser(
+          {
             entityRef: { name: userId },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: userId,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          userId,
+          options?.dangerouslyAllowSignInWithoutUserInCatalog,
+        );
       };
     },
   });

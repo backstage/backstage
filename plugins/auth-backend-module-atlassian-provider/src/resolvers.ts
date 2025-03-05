@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -50,17 +49,11 @@ export namespace atlassianSignInResolvers {
           throw new Error(`Atlassian user profile does not contain a username`);
         }
 
-        try {
-          return await ctx.signInWithCatalogUser({ entityRef: { name: id } });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: id,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+        return ctx.signInWithCatalogUser(
+          { entityRef: { name: id } },
+          id,
+          options?.dangerouslyAllowSignInWithoutUserInCatalog,
+        );
       };
     },
   });

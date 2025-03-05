@@ -160,6 +160,8 @@ export type AuthResolverContext = {
    */
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
+    fallbackUserRef?: string | undefined,
+    dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined,
   ): Promise<BackstageSignInResult>;
 
   /**

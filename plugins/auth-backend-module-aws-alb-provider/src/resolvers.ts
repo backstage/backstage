@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
@@ -42,22 +41,17 @@ export namespace awsAlbSignInResolvers {
               'Login failed, user profile does not contain an email',
             );
           }
-          try {
-            return await ctx.signInWithCatalogUser({
+
+          return ctx.signInWithCatalogUser(
+            {
               filter: {
                 kind: ['User'],
                 'spec.profile.email': info.result.fullProfile.emails[0].value,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: info.result.fullProfile.emails[0].value,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            info.result.fullProfile.emails[0].value,
+            options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          );
         };
       },
     });
