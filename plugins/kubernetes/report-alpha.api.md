@@ -37,30 +37,49 @@ const _default: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
-    'page:kubernetes': ExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
+    'api:kubernetes/auth-providers': ExtensionDefinition<{
+      kind: 'api';
+      name: 'auth-providers';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
       inputs: {};
       params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        factory: AnyApiFactory;
+      };
+    }>;
+    'api:kubernetes/cluster-link-formatter': ExtensionDefinition<{
+      kind: 'api';
+      name: 'cluster-link-formatter';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
+    'api:kubernetes/proxy': ExtensionDefinition<{
+      kind: 'api';
+      name: 'proxy';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
       };
     }>;
     'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
@@ -130,49 +149,30 @@ const _default: FrontendPlugin<
         filter?: string | ((entity: Entity) => boolean) | undefined;
       };
     }>;
-    'api:kubernetes/proxy': ExtensionDefinition<{
-      kind: 'api';
-      name: 'proxy';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
+    'page:kubernetes': ExtensionDefinition<{
+      kind: 'page';
+      name: undefined;
+      config: {
+        path: string | undefined;
       };
-    }>;
-    'api:kubernetes/auth-providers': ExtensionDefinition<{
-      kind: 'api';
-      name: 'auth-providers';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
+      configInput: {
+        path?: string | undefined;
       };
-    }>;
-    'api:kubernetes/cluster-link-formatter': ExtensionDefinition<{
-      kind: 'api';
-      name: 'cluster-link-formatter';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: {
-        factory: AnyApiFactory;
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
       };
     }>;
   }

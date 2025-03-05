@@ -21,10 +21,10 @@ import {
 import { ExtensionDefinition } from './createExtension';
 import {
   Extension,
-  ResolveExtensionId,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
 import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
+import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 
 /** @public */
 export interface FrontendPlugin<
@@ -69,12 +69,7 @@ export function createFrontendPlugin<
 ): FrontendPlugin<
   TRoutes,
   TExternalRoutes,
-  {
-    [KExtension in TExtensions[number] as ResolveExtensionId<
-      KExtension,
-      TId
-    >]: KExtension;
-  }
+  MakeSortedExtensionsMap<TExtensions[number], TId>
 > {
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
