@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Box from '@material-ui/core/Box';
-import Grid, { GridSpacing } from '@material-ui/core/Grid';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -54,7 +54,6 @@ type Props = {
   scrollStep?: number;
   scrollSpeed?: number; // lower is faster
   minScrollDistance?: number; // limits how small steps the scroll can take in px
-  spacing?: GridSpacing;
 };
 
 /** @public */
@@ -210,7 +209,6 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
     scrollStep = 100,
     scrollSpeed = 50,
     minScrollDistance = 5,
-    spacing,
     children,
     ...otherProps
   } = props;
@@ -236,7 +234,6 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
         wrap="nowrap"
         className={classes.container}
         ref={ref as any}
-        spacing={spacing}
       >
         {children}
       </Grid>

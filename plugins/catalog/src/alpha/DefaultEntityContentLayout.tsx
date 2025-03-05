@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntitySwitch } from '../components/EntitySwitch';
 import {
@@ -33,23 +33,61 @@ import {
 } from '../components/EntityProcessingErrorsPanel';
 import { HorizontalScrollGrid } from '@backstage/core-components';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<
+  Theme,
+  { infoCards: boolean; peekCards: boolean; fullCards: boolean }
+>(theme => ({
+  root: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    gap: theme.spacing(3),
+  },
+  fullArea: {
+    display: 'flex',
+    flexFlow: 'column',
+    gap: theme.spacing(3),
+    alignItems: 'stretch',
+    minWidth: 0,
+  },
+  infoArea: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    alignItems: 'stretch',
+    gap: theme.spacing(3),
+    minWidth: 0,
+  },
+  peekArea: {
+    margin: theme.spacing(1.5), // To counteract MUI negative grid margin
+  },
   peekCard: {
     flex: '0 0 auto',
-  },
-  [theme.breakpoints.up('sm')]: {
-    infoArea: {
-      order: 1,
-      position: 'sticky',
-      top: -16,
-      alignSelf: 'flex-start',
+    '& + &': {
+      marginLeft: theme.spacing(3),
     },
-    card: {
-      alignSelf: 'stretch',
-      '& > *': {
-        height: '100%',
-        minHeight: 400,
-      },
+  },
+  [theme.breakpoints.up('md')]: {
+    root: {
+      display: 'grid',
+      gap: 0,
+      gridTemplateAreas: ({ peekCards }) => `
+        "${peekCards ? 'peek' : 'full'} info"
+        "full info"
+      `,
+      gridTemplateColumns: ({ infoCards }) => (infoCards ? '2fr 1fr' : '1fr'),
+      alignItems: 'start',
+    },
+    infoArea: {
+      gridArea: 'info',
+      position: 'sticky',
+      top: theme.spacing(3),
+      marginLeft: theme.spacing(3),
+    },
+    fullArea: {
+      gridArea: 'full',
+    },
+    peekArea: {
+      gridArea: 'peek',
+      marginBottom: theme.spacing(3),
     },
   },
 }));
@@ -84,57 +122,41 @@ const entityWarningContent = (
 
 export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
-  const classes = useStyles();
 
   const infoCards = cards.filter(card => card.type === 'info');
   const peekCards = cards.filter(card => card.type === 'peek');
   const fullCards = cards.filter(card => !card.type || card.type === 'full');
+
+  const classes = useStyles({
+    infoCards: !!infoCards.length,
+    peekCards: !!peekCards.length,
+    fullCards: !!fullCards.length,
+  });
+
   return (
-    <Grid container spacing={3}>
+    <>
       {entityWarningContent}
-      {infoCards.length > 0 ? (
-        <Grid className={classes.infoArea} xs={12} md={4} item>
-          <Grid container spacing={3}>
-            {infoCards.map((card, index) => (
-              <Grid key={index} xs={12} item>
-                {card.element}
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
-      ) : null}
-      {peekCards.length > 0 || fullCards.length > 0 ? (
-        <Grid xs={12} md={infoCards.length ? 8 : undefined} item>
-          {peekCards.length > 0 ? (
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <HorizontalScrollGrid spacing={3}>
-                  {peekCards.map((card, index) => (
-                    <Grid
-                      key={index}
-                      xs={12}
-                      md="auto"
-                      item
-                      className={classes.peekCard}
-                    >
-                      {card.element}
-                    </Grid>
-                  ))}
-                </HorizontalScrollGrid>
-              </Grid>
-            </Grid>
-          ) : null}
-          {fullCards.length > 0 ? (
-            <Grid container spacing={3}>
-              {fullCards.map((card, index) => (
-                <Grid key={index} xs={12} item>
-                  {card.element}
-                </Grid>
+      <div className={classes.root}>
+        {infoCards.length > 0 ? (
+          <div className={classes.infoArea}>
+            {infoCards.map(card => card.element)}
+          </div>
+        ) : null}
+        {peekCards.length > 0 ? (
+          <div className={classes.peekArea}>
+            <HorizontalScrollGrid>
+              {peekCards.map(card => (
+                <div className={classes.peekCard}>{card.element}</div>
               ))}
-            </Grid>
-          ) : null}
-        </Grid>
-      ) : null}
-    </Grid>
+            </HorizontalScrollGrid>
+          </div>
+        ) : null}
+        {fullCards.length > 0 ? (
+          <div className={classes.fullArea}>
+            {fullCards.map(card => card.element)}
+          </div>
+        ) : null}
+      </div>
+    </>
   );
 }
