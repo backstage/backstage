@@ -16,33 +16,11 @@
 
 import {
   AnyExtensionDataRef,
+  ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionDataValue,
-} from './createExtensionDataRef';
+} from '@backstage/frontend-plugin-api';
 
-/** @public */
-export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
-  Iterable<
-    UExtensionData extends ExtensionDataRef<
-      infer IData,
-      infer IId,
-      infer IConfig
-    >
-      ? IConfig['optional'] extends true
-        ? never
-        : ExtensionDataValue<IData, IId>
-      : never
-  > & {
-    get<TId extends UExtensionData['id']>(
-      ref: ExtensionDataRef<any, TId, any>,
-    ): UExtensionData extends ExtensionDataRef<infer IData, TId, infer IConfig>
-      ? IConfig['optional'] extends true
-        ? IData | undefined
-        : IData
-      : never;
-  };
-
-/** @internal */
 export function createExtensionDataContainer<UData extends AnyExtensionDataRef>(
   values: Iterable<
     UData extends ExtensionDataRef<infer IData, infer IId>

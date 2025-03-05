@@ -16,6 +16,11 @@
 
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
+import {
+  AnyExtensionDataRef,
+  ExtensionDataRef,
+  ExtensionDataValue,
+} from './createExtensionDataRef';
 import { FrontendPlugin } from './createFrontendPlugin';
 
 /**
@@ -51,3 +56,25 @@ export interface ExtensionOverrides {
  * @deprecated import from {@link @backstage/frontend-app-api#FrontendFeature} instead
  */
 export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
+
+/** @public */
+export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
+  Iterable<
+    UExtensionData extends ExtensionDataRef<
+      infer IData,
+      infer IId,
+      infer IConfig
+    >
+      ? IConfig['optional'] extends true
+        ? never
+        : ExtensionDataValue<IData, IId>
+      : never
+  > & {
+    get<TId extends UExtensionData['id']>(
+      ref: ExtensionDataRef<any, TId, any>,
+    ): UExtensionData extends ExtensionDataRef<infer IData, TId, infer IConfig>
+      ? IConfig['optional'] extends true
+        ? IData | undefined
+        : IData
+      : never;
+  };
