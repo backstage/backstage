@@ -40,14 +40,15 @@ export namespace oidcSignInResolvers {
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
     | {
-        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
         allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined
   >;
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
     | {
+        allowedDomains?: string[] | undefined;
         dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined

@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -51,21 +50,19 @@ export namespace bitbucketSignInResolvers {
             throw new Error('Bitbucket user profile does not contain an ID');
           }
 
-          try {
-            return await ctx.signInWithCatalogUser({
+          return ctx.signInWithCatalogUser(
+            {
               annotations: {
                 'bitbucket.org/user-id': id,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: id,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { name: id }
+                  : undefined,
+            },
+          );
         };
       },
     },
@@ -95,21 +92,19 @@ export namespace bitbucketSignInResolvers {
             );
           }
 
-          try {
-            return await ctx.signInWithCatalogUser({
+          return ctx.signInWithCatalogUser(
+            {
               annotations: {
                 'bitbucket.org/username': username,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: username,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { name: username }
+                  : undefined,
+            },
+          );
         };
       },
     });

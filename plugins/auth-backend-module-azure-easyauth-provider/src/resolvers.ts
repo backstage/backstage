@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AzureEasyAuthResult } from './types';
@@ -39,22 +38,19 @@ export namespace azureEasyAuthSignInResolvers {
         if (!id) {
           throw new Error('User profile contained no id');
         }
-
-        try {
-          return await ctx.signInWithCatalogUser({
+        return ctx.signInWithCatalogUser(
+          {
             annotations: {
               'graph.microsoft.com/user-id': id,
             },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: id,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { name: id }
+                : undefined,
+          },
+        );
       };
     },
   });

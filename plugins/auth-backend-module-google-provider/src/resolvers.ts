@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -49,21 +48,19 @@ export namespace googleSignInResolvers {
           throw new Error('Google profile contained no email');
         }
 
-        try {
-          return await ctx.signInWithCatalogUser({
+        return ctx.signInWithCatalogUser(
+          {
             annotations: {
               'google.com/email': profile.email,
             },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: profile.email,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { name: profile.email }
+                : undefined,
+          },
+        );
       };
     },
   });

@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -49,17 +48,18 @@ export namespace gitlabSignInResolvers {
         if (!id) {
           throw new Error(`GitLab user profile does not contain a username`);
         }
-        try {
-          return await ctx.signInWithCatalogUser({ entityRef: { name: id } });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: id,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+
+        return ctx.signInWithCatalogUser(
+          {
+            entityRef: { name: id },
+          },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { name: id }
+                : undefined,
+          },
+        );
       };
     },
   });

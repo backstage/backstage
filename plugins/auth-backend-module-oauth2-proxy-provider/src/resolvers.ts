@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { OAuth2ProxyResult } from './types';
@@ -39,19 +38,18 @@ export namespace oauth2ProxySignInResolvers {
           if (!name) {
             throw new Error('Request did not contain a user');
           }
-          try {
-            return await ctx.signInWithCatalogUser({
+
+          return ctx.signInWithCatalogUser(
+            {
               entityRef: { name },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: name,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { name }
+                  : undefined,
+            },
+          );
         };
       },
     });

@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -49,21 +48,20 @@ export namespace oktaSignInResolvers {
         if (!profile.email) {
           throw new Error('Okta profile contained no email');
         }
-        try {
-          return await ctx.signInWithCatalogUser({
+
+        return ctx.signInWithCatalogUser(
+          {
             annotations: {
               'okta.com/email': profile.email,
             },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: profile.email,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { name: profile.email }
+                : undefined,
+          },
+        );
       };
     },
   });

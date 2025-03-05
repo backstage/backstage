@@ -17,7 +17,6 @@
 import {
   OAuthAuthenticatorResult,
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
@@ -49,21 +48,19 @@ export namespace microsoftSignInResolvers {
           throw new Error('Microsoft profile contained no email');
         }
 
-        try {
-          return await ctx.signInWithCatalogUser({
+        return ctx.signInWithCatalogUser(
+          {
             annotations: {
               'microsoft.com/email': profile.email,
             },
-          });
-        } catch (error) {
-          return await handleSignInUserNotFound({
-            ctx,
-            error,
-            userEntityName: profile.email,
-            dangerouslyAllowSignInWithoutUserInCatalog:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog,
-          });
-        }
+          },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { name: profile.email }
+                : undefined,
+          },
+        );
       };
     },
   });
@@ -90,21 +87,19 @@ export namespace microsoftSignInResolvers {
             throw new Error('Microsoft profile contained no id');
           }
 
-          try {
-            return await ctx.signInWithCatalogUser({
+          return ctx.signInWithCatalogUser(
+            {
               annotations: {
                 'graph.microsoft.com/user-id': id,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: id,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { name: id }
+                  : undefined,
+            },
+          );
         };
       },
     },

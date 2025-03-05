@@ -16,7 +16,6 @@
 
 import {
   createSignInResolverFactory,
-  handleSignInUserNotFound,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { CloudflareAccessResult } from './types';
@@ -47,21 +46,20 @@ export namespace cloudflareAccessSignInResolvers {
               'Login failed, user profile does not contain an email',
             );
           }
-          try {
-            return await ctx.signInWithCatalogUser({
+
+          return ctx.signInWithCatalogUser(
+            {
               filter: {
                 'spec.profile.email': profile.email,
               },
-            });
-          } catch (error) {
-            return await handleSignInUserNotFound({
-              ctx,
-              error,
-              userEntityName: profile.email,
-              dangerouslyAllowSignInWithoutUserInCatalog:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog,
-            });
-          }
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { name: profile.email }
+                  : undefined,
+            },
+          );
         };
       },
     });

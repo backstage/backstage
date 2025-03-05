@@ -408,7 +408,11 @@ async signInResolver({ profile }, ctx) {
 
 ##### Using the `dangerouslyAllowSignInWithoutUserInCatalog` Option
 
-Another way to bypass this requirement is to enable the `dangerouslyAllowSignInWithoutUserInCatalog` option for resolvers. This will allow users to sign in even if their user entity has not been synced into the catalog. For example:
+Another way to bypass this requirement is to enable the `dangerouslyAllowSignInWithoutUserInCatalog` option for resolvers.
+Users will still be authenticated as usual but this config will bypass the check that ensures the user is present in the catalog.
+If the user entity is not found in the catalog, a Backstage user token will still be issued based on the identifying information available at the resolver level.
+
+For example:
 
 ```yaml title="Within the provider configuration"
 auth:
@@ -421,6 +425,16 @@ auth:
             - resolver: emailLocalPartMatchingUserEntityName
               dangerouslyAllowSignInWithoutUserInCatalog: true
 ```
+
+:::warning
+Enabling this option in production poses security risks.
+:::
+
+This option may grant access to unexpected users who haven’t been onboarded into
+Backstage. Since there is no user entity to associate with the signed-in user, permissions
+may not apply as expected and they will have the same permissions as a guest user.
+Careful consideration should be given to the permissions assigned to such users,
+particularly when using the permission system.
 
 ## Profile Transforms
 
