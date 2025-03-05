@@ -117,6 +117,9 @@ function valuesAreEqual(
   if (typeof a === 'string' && typeof b === 'string') {
     return a.toLocaleUpperCase('en-US') === b.toLocaleUpperCase('en-US');
   }
+  if (typeof a === 'number' || typeof b === 'number') {
+    return String(a) === String(b);
+  }
   if (Array.isArray(a) && Array.isArray(b)) {
     return a.length === b.length && a.every((v, i) => valuesAreEqual(v, b[i]));
   }

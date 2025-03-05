@@ -109,6 +109,8 @@ describe('entityPredicateToFilterFunction', () => {
         owner: 'g',
         definition: 'mock',
         nothing: null,
+        oneNum: 1,
+        oneStr: '1',
       },
       relations: [
         {
@@ -219,6 +221,10 @@ describe('entityPredicateToFilterFunction', () => {
     ['', { 'spec.nothing': null }],
     ['w,g,a', { $not: { 'spec.type': 'service' } }],
     ['', { 'spec.type': null }],
+    ['a', { 'spec.oneNum': 1 }],
+    ['a', { 'spec.oneStr': 1 }],
+    ['a', { 'spec.oneNum': '1' }],
+    ['a', { 'spec.oneStr': '1' }],
     [
       's,w',
       {
