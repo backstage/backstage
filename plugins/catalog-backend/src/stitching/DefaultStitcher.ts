@@ -31,6 +31,7 @@ import {
   stitchingStrategyFromConfig,
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { EntityLifecycleEvents } from '../events';
 
 type DeferredStitchItem = Awaited<
   ReturnType<typeof getDeferredStitchableEntities>
@@ -48,6 +49,7 @@ export class DefaultStitcher implements Stitcher {
   private readonly logger: LoggerService;
   private readonly strategy: StitchingStrategy;
   private readonly tracker: StitchProgressTracker;
+  private readonly entityLifecycleEvents?: EntityLifecycleEvents;
   private stopFunc?: () => void;
 
   static fromConfig(
@@ -55,11 +57,13 @@ export class DefaultStitcher implements Stitcher {
     options: {
       knex: Knex;
       logger: LoggerService;
+      entityLifecycleEvents?: EntityLifecycleEvents;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
+      entityLifecycleEvents: options.entityLifecycleEvents,
       strategy: stitchingStrategyFromConfig(config),
     });
   }
@@ -68,11 +72,13 @@ export class DefaultStitcher implements Stitcher {
     knex: Knex;
     logger: LoggerService;
     strategy: StitchingStrategy;
+    entityLifecycleEvents?: EntityLifecycleEvents;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;
     this.strategy = options.strategy;
     this.tracker = progressTracker(options.knex, options.logger);
+    this.entityLifecycleEvents = options.entityLifecycleEvents;
   }
 
   async stitch(options: {
@@ -184,6 +190,11 @@ export class DefaultStitcher implements Stitcher {
         stitchTicket: options.stitchTicket,
       });
       track.markComplete(result);
+      if (result === 'changed') {
+        await this.entityLifecycleEvents?.publishUpsertedEvent([
+          options.entityRef,
+        ]);
+      }
     } catch (error) {
       track.markFailed(error);
     }

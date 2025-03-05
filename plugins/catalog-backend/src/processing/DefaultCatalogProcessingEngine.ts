@@ -39,6 +39,7 @@ import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphan
 import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
+import { EntityLifecycleEvents } from '../events';
 
 const CACHE_TTL = 5;
 
@@ -69,6 +70,7 @@ export class DefaultCatalogProcessingEngine {
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
   private readonly eventBroker?: EventBroker | EventsService;
+  private readonly entityLifecycleEvents?: EntityLifecycleEvents;
 
   private stopFunc?: () => void;
 
@@ -89,6 +91,7 @@ export class DefaultCatalogProcessingEngine {
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
     eventBroker?: EventBroker | EventsService;
+    entityLifecycleEvents?: EntityLifecycleEvents;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -103,6 +106,7 @@ export class DefaultCatalogProcessingEngine {
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker();
     this.eventBroker = options.eventBroker;
+    this.entityLifecycleEvents = options.entityLifecycleEvents;
 
     this.stopFunc = undefined;
   }
@@ -356,6 +360,7 @@ export class DefaultCatalogProcessingEngine {
         const n = await deleteOrphanedEntities({
           knex: this.knex,
           strategy: stitchingStrategy,
+          entityLifecycleEvents: this.entityLifecycleEvents,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);

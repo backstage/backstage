@@ -37,6 +37,7 @@ import {
   LoggerService,
   isDatabaseConflictError,
 } from '@backstage/backend-plugin-api';
+import { EntityLifecycleEvents } from '../events';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -49,6 +50,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     private readonly options: {
       database: Knex;
       logger: LoggerService;
+      entityLifecycleEvents?: EntityLifecycleEvents;
     },
   ) {}
 
@@ -86,6 +88,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         knex: tx,
         entityRefs: toRemove,
         sourceKey: options.sourceKey,
+        entityLifecycleEvents: this.options.entityLifecycleEvents,
       });
       this.options.logger.debug(
         `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,

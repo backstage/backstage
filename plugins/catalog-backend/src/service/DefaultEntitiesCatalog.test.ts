@@ -39,6 +39,7 @@ import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
+import { EntityLifecycleEvents } from '../events';
 
 jest.setTimeout(60_000);
 
@@ -52,6 +53,11 @@ describe('DefaultEntitiesCatalog', () => {
   const databases = TestDatabases.create();
   const stitch = jest.fn();
   const stitcher: Stitcher = { stitch } as any;
+
+  const mockedEntityLifecycleEvents: jest.Mocked<EntityLifecycleEvents> = {
+    publishUpsertedEvent: jest.fn(),
+    publishDeletedEvent: jest.fn(),
+  };
 
   async function createDatabase(databaseId: TestDatabaseId) {
     knex = await databases.init(databaseId);
@@ -2042,6 +2048,7 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: mockServices.logger.mock(),
           stitcher,
+          entityLifecycleEvents: mockedEntityLifecycleEvents,
         });
         await catalog.removeEntityByUid(uid);
 
@@ -2060,6 +2067,9 @@ describe('DefaultEntitiesCatalog', () => {
         expect(stitch).toHaveBeenCalledWith({
           entityRefs: new Set(['k:default/unrelated1', 'k:default/unrelated2']),
         });
+        expect(
+          mockedEntityLifecycleEvents.publishDeletedEvent,
+        ).toHaveBeenCalledWith(['k:default/root']);
       },
     );
   });

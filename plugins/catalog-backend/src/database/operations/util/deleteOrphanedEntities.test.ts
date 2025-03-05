@@ -25,10 +25,16 @@ import {
   DbRelationsRow,
 } from '../../tables';
 import { deleteOrphanedEntities } from './deleteOrphanedEntities';
+import { EntityLifecycleEvents } from '../../../events';
 
 jest.setTimeout(60_000);
 
 describe('deleteOrphanedEntities', () => {
+  const mockedEntityLifecycleEvents: jest.Mocked<EntityLifecycleEvents> = {
+    publishUpsertedEvent: jest.fn(),
+    publishDeletedEvent: jest.fn(),
+  };
+
   const databases = TestDatabases.create();
 
   async function createDatabase(databaseId: TestDatabaseId) {
@@ -37,6 +43,10 @@ describe('deleteOrphanedEntities', () => {
     return knex;
   }
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   async function run(knex: Knex, strategy: StitchingStrategy): Promise<number> {
     let result: number;
     await knex.transaction(
@@ -44,7 +54,11 @@ describe('deleteOrphanedEntities', () => {
         // We can't return here, as knex swallows the return type in case the
         // transaction is rolled back:
         // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-        result = await deleteOrphanedEntities({ knex: tx, strategy });
+        result = await deleteOrphanedEntities({
+          knex: tx,
+          strategy,
+          entityLifecycleEvents: mockedEntityLifecycleEvents,
+        });
       },
       {
         // If we explicitly trigger a rollback, don't fail.
@@ -207,6 +221,12 @@ describe('deleteOrphanedEntities', () => {
         { entity_ref: 'E8', hash: 'original', next_stitch_at: null },
         { entity_ref: 'E9', hash: 'original', next_stitch_at: null },
       ]);
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent,
+      ).toHaveBeenCalledWith(['E4', 'E6', 'E10']);
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent,
+      ).toHaveBeenCalledWith(['E3', 'E5']);
     },
   );
 
@@ -305,6 +325,12 @@ describe('deleteOrphanedEntities', () => {
         { entity_ref: 'E8', hash: 'original', next_stitch_at: null },
         { entity_ref: 'E9', hash: 'original', next_stitch_at: null },
       ]);
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent,
+      ).toHaveBeenCalledWith(['E4', 'E6', 'E10']);
+      expect(
+        mockedEntityLifecycleEvents.publishDeletedEvent,
+      ).toHaveBeenCalledWith(['E3', 'E5']);
     },
   );
 });
