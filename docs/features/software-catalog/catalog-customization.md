@@ -609,7 +609,7 @@ filter:
   $all:
     - kind: component
     - $not:
-      spec.type: service
+        spec.type: service
 ```
 
 #### `$any`
@@ -637,7 +637,7 @@ The `$not` operator has the following syntax:
 { $not: { <expression> } }
 ```
 
-The `$not` operator inverts the result of the provided express. If the expression evalutes to `true` then `$not` will evaluate to false, and the other way around.
+The `$not` operator inverts the result of the provided express. If the expression evaluates to `true` then `$not` will evaluate to false, and the other way around.
 
 ```yaml title="Example usage of $not"
 filter:
@@ -657,7 +657,7 @@ The `$exists` operator has the following syntax:
 { field: { $exists: <boolean> } }
 ```
 
-The `$exists` operator will evaluate to `true` if the existence of the value it matches against matches the provided boolean. That is `{ $exists: true }` will evaluate to `true` if and only if the value is defined, and `{ $exists: false }` will evalute to `true` if and only if the value is `undefined`.
+The `$exists` operator will evaluate to `true` if the existence of the value it matches against matches the provided boolean. That is `{ $exists: true }` will evaluate to `true` if and only if the value is defined, and `{ $exists: false }` will evaluate to `true` if and only if the value is not defined.
 
 ```yaml title="Example usage of $exists"
 filter:
