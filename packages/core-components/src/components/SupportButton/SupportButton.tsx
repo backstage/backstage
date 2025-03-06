@@ -15,7 +15,7 @@
  */
 
 import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
+import Box, { BoxProps } from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
@@ -38,6 +38,7 @@ type SupportButtonProps = {
   title?: string;
   items?: SupportItem[];
   children?: React.ReactNode;
+  boxProps?: BoxProps;
 };
 
 export type SupportButtonClassKey = 'popoverList';
@@ -88,7 +89,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 
 export function SupportButton(props: SupportButtonProps) {
   const { t } = useTranslationRef(coreComponentsTranslationRef);
-  const { title, items, children } = props;
+  const { title, items, children, boxProps } = props;
   const { items: configItems } = useSupportConfig();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -114,7 +115,7 @@ export function SupportButton(props: SupportButtonProps) {
 
   return (
     <>
-      <Box display="flex" ml={1}>
+      <Box display="flex" ml={1} {...boxProps}>
         {isSmallScreen ? (
           <IconButton
             color="primary"
