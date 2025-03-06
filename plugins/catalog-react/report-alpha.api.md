@@ -322,6 +322,32 @@ export interface EntityContentLayoutProps {
 }
 
 // @alpha (undocumented)
+export const EntityHeaderBlueprint: ExtensionBlueprint<{
+  kind: 'entity-header';
+  name: undefined;
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ConfigurableExtensionDataRef<
+    JSX_2.Element,
+    'core.reactElement',
+    {
+      optional: true;
+    }
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    element: ConfigurableExtensionDataRef<
+      JSX_2.Element,
+      'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
 export type EntityPredicate =
   | EntityPredicateExpression
   | EntityPredicatePrimitive

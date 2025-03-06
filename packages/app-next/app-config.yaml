@@ -23,7 +23,7 @@ app:
             # - development: false
             # example overriding a default group title
             - documentation:
-                title: Docs 2
+                title: Docs
             - deployment:
                 title: Deployments
             # example adding a new group

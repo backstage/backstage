@@ -29,12 +29,14 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  EntityHeaderBlueprint,
   EntityContentBlueprint,
   defaultEntityContentGroups,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import { EntityHeader } from './components/EntityHeader';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -58,6 +60,10 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
 export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   name: 'entity',
   inputs: {
+    header: createExtensionInput(
+      [EntityHeaderBlueprint.dataRefs.element.optional()],
+      { singleton: true, optional: true },
+    ),
     contents: createExtensionInput([
       coreExtensionData.reactElement,
       coreExtensionData.routePath,
@@ -87,6 +93,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           string,
           { title: string; items: Array<(typeof inputs.contents)[0]> }
         >;
+
+        const header = inputs.header?.get(
+          EntityHeaderBlueprint.dataRefs.element,
+        ) ?? <EntityHeader />;
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -125,7 +135,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout>
+              <EntityLayout header={header}>
                 {Object.values(groups).flatMap(({ title, items }) =>
                   items.map(output => (
                     <EntityLayout.Route

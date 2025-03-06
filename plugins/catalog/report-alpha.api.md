@@ -972,6 +972,19 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {
+        header: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            JSX_2.Element,
+            'core.reactElement',
+            {
+              optional: true;
+            }
+          >,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
         contents: ExtensionInput<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
