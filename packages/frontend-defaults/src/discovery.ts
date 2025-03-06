@@ -101,11 +101,11 @@ function isBackstageFeature(obj: unknown): obj is FrontendFeature {
 /** @public */
 export async function resolveFeatures(options: {
   config: Config;
-  providedFeatures?: (FrontendFeature | CreateAppFeatureLoader)[];
+  features?: (FrontendFeature | CreateAppFeatureLoader)[];
 }): Promise<FrontendFeature[]> {
   const discoveredFeatures = getAvailableFeatures(options.config);
   const features = [appPlugin, ...discoveredFeatures];
-  for (const entry of options.providedFeatures ?? []) {
+  for (const entry of options.features ?? []) {
     if ('load' in entry) {
       try {
         const result = await entry.load({ config: options.config });
