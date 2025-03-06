@@ -245,7 +245,6 @@ export class ScmAuth implements ScmAuthApi {
       'pullrequest:write',
       'snippet:write',
       'issue:write',
-      'repository:admin',
     ];
     return new ScmAuth('bitbucket', bitbucketAuthApi, host, {
       default: defaultScopes,

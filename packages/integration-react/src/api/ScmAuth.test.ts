@@ -138,7 +138,7 @@ describe('ScmAuth', () => {
       }),
     ).resolves.toMatchObject({
       token:
-        'account team pullrequest snippet issue project pullrequest:write snippet:write issue:write repository:admin',
+        'account team pullrequest snippet issue project pullrequest:write snippet:write issue:write',
     });
   });
 

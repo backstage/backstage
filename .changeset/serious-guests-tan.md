@@ -2,4 +2,4 @@
 '@backstage/integration-react': patch
 ---
 
-Added scopes `project` and `repository:admin` for Bitbucket Cloud.
+Added scope `project` for Bitbucket Cloud.
