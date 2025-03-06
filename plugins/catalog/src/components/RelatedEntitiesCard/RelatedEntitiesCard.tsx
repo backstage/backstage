@@ -59,6 +59,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
+  showCount?: boolean;
 };
 
 /**
@@ -86,6 +87,7 @@ export const RelatedEntitiesCard = <T extends Entity>(
     emptyHelpLink,
     asRenderableEntities,
     tableOptions = {},
+    showCount,
   } = props;
   const { t } = useTranslationRef(catalogTranslationRef);
   const { entity } = useEntity();
@@ -110,9 +112,13 @@ export const RelatedEntitiesCard = <T extends Entity>(
     );
   }
 
+  const finalEntities = asRenderableEntities(entities || []);
+  const currentCount = showCount ? `(${finalEntities.length})` : '';
+  const finalTitle = [title, currentCount].filter(s => s).join(' ');
+
   return (
     <EntityTable
-      title={title}
+      title={finalTitle}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
@@ -125,7 +131,7 @@ export const RelatedEntitiesCard = <T extends Entity>(
         </div>
       }
       columns={columns}
-      entities={asRenderableEntities(entities || [])}
+      entities={finalEntities}
       tableOptions={tableOptions}
     />
   );
