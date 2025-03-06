@@ -25,13 +25,20 @@ import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
 
+export interface DefaultOptions {
+  columnOptions?: TableColumn<CatalogTableRow>;
+}
+
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
 /** @public */
 export const columnFactories = Object.freeze({
-  createNameColumn(options?: {
-    defaultKind?: string;
-  }): TableColumn<CatalogTableRow> {
+  createNameColumn(
+    options?: DefaultOptions & {
+      defaultKind?: string;
+      linkStyle?: React.CSSProperties;
+    },
+  ): TableColumn<CatalogTableRow> {
     function formatContent(entity: Entity): string {
       return (
         entity.metadata?.title ||
@@ -54,11 +61,15 @@ export const columnFactories = Object.freeze({
         <EntityRefLink
           entityRef={entity}
           defaultKind={options?.defaultKind || 'Component'}
+          style={options?.linkStyle || {}}
         />
       ),
+      ...(options?.columnOptions || {}),
     };
   },
-  createSystemColumn(): TableColumn<CatalogTableRow> {
+  createSystemColumn(
+    options?: DefaultOptions & { linkStyle?: React.CSSProperties },
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'System',
       field: 'resolved.partOfSystemRelationTitle',
@@ -66,11 +77,15 @@ export const columnFactories = Object.freeze({
         <EntityRefLinks
           entityRefs={resolved.partOfSystemRelations}
           defaultKind="system"
+          style={options?.linkStyle || {}}
         />
       ),
+      ...(options?.columnOptions || {}),
     };
   },
-  createOwnerColumn(): TableColumn<CatalogTableRow> {
+  createOwnerColumn(
+    options?: DefaultOptions & { linkStyle?: React.CSSProperties },
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Owner',
       field: 'resolved.ownedByRelationsTitle',
@@ -78,11 +93,15 @@ export const columnFactories = Object.freeze({
         <EntityRefLinks
           entityRefs={resolved.ownedByRelations}
           defaultKind="group"
+          style={options?.linkStyle || {}}
         />
       ),
+      ...(options?.columnOptions || {}),
     };
   },
-  createSpecTargetsColumn(): TableColumn<CatalogTableRow> {
+  createSpecTargetsColumn(
+    options?: DefaultOptions,
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Targets',
       field: 'entity.spec.targets',
@@ -113,10 +132,11 @@ export const columnFactories = Object.freeze({
           )}
         </>
       ),
+      ...(options?.columnOptions || {}),
     };
   },
   createSpecTypeColumn(
-    options: {
+    options: DefaultOptions & {
       hidden: boolean;
     } = { hidden: false },
   ): TableColumn<CatalogTableRow> {
@@ -125,15 +145,21 @@ export const columnFactories = Object.freeze({
       field: 'entity.spec.type',
       hidden: options.hidden,
       width: 'auto',
+      ...(options.columnOptions || {}),
     };
   },
-  createSpecLifecycleColumn(): TableColumn<CatalogTableRow> {
+  createSpecLifecycleColumn(
+    options?: DefaultOptions,
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Lifecycle',
       field: 'entity.spec.lifecycle',
+      ...(options?.columnOptions || {}),
     };
   },
-  createMetadataDescriptionColumn(): TableColumn<CatalogTableRow> {
+  createMetadataDescriptionColumn(
+    options?: DefaultOptions,
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Description',
       field: 'entity.metadata.description',
@@ -144,9 +170,10 @@ export const columnFactories = Object.freeze({
         />
       ),
       width: 'auto',
+      ...(options?.columnOptions || {}),
     };
   },
-  createTagsColumn(): TableColumn<CatalogTableRow> {
+  createTagsColumn(options?: DefaultOptions): TableColumn<CatalogTableRow> {
     return {
       title: 'Tags',
       field: 'entity.metadata.tags',
@@ -168,6 +195,7 @@ export const columnFactories = Object.freeze({
         </>
       ),
       width: 'auto',
+      ...(options?.columnOptions || {}),
     };
   },
   createTitleColumn(options?: {
@@ -182,7 +210,7 @@ export const columnFactories = Object.freeze({
   },
   createLabelColumn(
     key: string,
-    options?: { title?: string; defaultValue?: string },
+    options?: DefaultOptions & { title?: string; defaultValue?: string },
   ): TableColumn<CatalogTableRow> {
     function formatContent(keyLabel: string, entity: Entity): string {
       const labels: Record<string, string> | undefined =
@@ -220,13 +248,17 @@ export const columnFactories = Object.freeze({
         );
       },
       width: 'auto',
+      ...(options?.columnOptions || {}),
     };
   },
-  createNamespaceColumn(): TableColumn<CatalogTableRow> {
+  createNamespaceColumn(
+    options?: DefaultOptions,
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Namespace',
       field: 'entity.metadata.namespace',
       width: 'auto',
+      ...(options?.columnOptions || {}),
     };
   },
 });
