@@ -115,7 +115,7 @@ export function SupportButton(props: SupportButtonProps) {
 
   return (
     <>
-      <Box display="flex" ml={1} {...boxProps}>
+      <Box display="flex" ml={1} {...(boxProps || {})}>
         {isSmallScreen ? (
           <IconButton
             color="primary"
