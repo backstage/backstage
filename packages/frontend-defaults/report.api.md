@@ -48,6 +48,6 @@ export function createPublicSignInApp(options?: CreateAppOptions): {
 // @public (undocumented)
 export function resolveFeatures(options: {
   config: Config;
-  providedFeatures?: (FrontendFeature | CreateAppFeatureLoader)[];
+  features?: (FrontendFeature | CreateAppFeatureLoader)[];
 }): Promise<FrontendFeature[]>;
 ```

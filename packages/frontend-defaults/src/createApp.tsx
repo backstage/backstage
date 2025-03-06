@@ -91,7 +91,7 @@ export function createApp(options?: CreateAppOptions): {
       config,
       features: await resolveFeatures({
         config,
-        providedFeatures: options?.features,
+        features: options?.features,
       }),
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
