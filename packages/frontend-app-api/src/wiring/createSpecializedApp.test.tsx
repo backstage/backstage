@@ -29,7 +29,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
-import { mockApis } from '@backstage/test-utils';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 import {
   configApiRef,
@@ -37,7 +37,7 @@ import {
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
-import { ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
@@ -166,6 +166,81 @@ describe('createSpecializedApp', () => {
     render(app.createRoot());
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
+
+    expect(app.apis).toMatchInlineSnapshot(`
+      ApiResolver {
+        "apis": Map {
+          "core.featureflags" => {
+            "getRegisteredFlags": [Function],
+            "registerFlag": [Function],
+          },
+        },
+        "factories": ApiFactoryRegistry {
+          "factories": Map {
+            "core.featureflags" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.featureflags",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 10,
+            },
+            "core.app-tree" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.app-tree",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.config" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.config",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.route-resolution" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.route-resolution",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.identity" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.identity",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+          },
+        },
+      }
+    `);
   });
 
   it('should intitialize the APIs in the correct order to allow for overrides', () => {
@@ -237,10 +312,59 @@ describe('createSpecializedApp', () => {
     expect(mockAnalyticsApi).toHaveBeenCalled();
   });
 
+  it('should use provided apis', async () => {
+    const app = createSpecializedApp({
+      apis: TestApiRegistry.from([
+        configApiRef,
+        new ConfigReader({ anything: 'config' }),
+      ]),
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              output: [coreExtensionData.reactElement],
+              factory: ({ apis }) => [
+                coreExtensionData.reactElement(
+                  <div>
+                    providedApis:
+                    {apis.get(configApiRef)!.getString('anything')}
+                  </div>,
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    render(app.createRoot());
+
+    expect(screen.getByText('providedApis:config')).toBeInTheDocument();
+
+    expect(app.apis).toMatchInlineSnapshot(`
+      TestApiRegistry {
+        "apis": Map {
+          "core.config" => ConfigReader {
+            "context": "mock-config",
+            "data": {
+              "anything": "config",
+            },
+            "fallback": undefined,
+            "filteredKeys": undefined,
+            "notifiedFilteredKeys": Set {},
+            "prefix": "",
+          },
+        },
+      }
+    `);
+  });
+
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    createSpecializedApp({
+    const { tree } = createSpecializedApp({
       features: [
         createFrontendPlugin({
           id: 'test',
@@ -264,6 +388,55 @@ describe('createSpecializedApp', () => {
           <test out=[core.reactElement] />
         ]
       </root>"
+    `);
+
+    expect(tree).toMatchInlineSnapshot(`
+      {
+        "nodes": Map {
+          "test" => {
+            "attachments": undefined,
+            "id": "test",
+            "output": [
+              "core.reactElement",
+            ],
+          },
+          "root" => {
+            "attachments": {
+              "app": [
+                {
+                  "attachments": undefined,
+                  "id": "test",
+                  "output": [
+                    "core.reactElement",
+                  ],
+                },
+              ],
+            },
+            "id": "root",
+            "output": [
+              "core.reactElement",
+            ],
+          },
+        },
+        "orphans": [],
+        "root": {
+          "attachments": {
+            "app": [
+              {
+                "attachments": undefined,
+                "id": "test",
+                "output": [
+                  "core.reactElement",
+                ],
+              },
+            ],
+          },
+          "id": "root",
+          "output": [
+            "core.reactElement",
+          ],
+        },
+      }
     `);
   });
 
