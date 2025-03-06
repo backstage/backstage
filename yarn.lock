@@ -6345,6 +6345,7 @@ __metadata:
     react-use: ^17.2.4
     yaml: ^2.0.0
     zen-observable: ^0.10.0
+    zod: ^3.22.4
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0

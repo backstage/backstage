@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-export * from './blueprints';
-export * from './converters';
-export * from './predicates';
-export { catalogReactTranslationRef } from '../translation';
-export { isOwnerOf } from '../utils/isOwnerOf';
-export { useEntityPermission } from '../hooks/useEntityPermission';
+export type {
+  EntityPredicate,
+  EntityPredicateExpression,
+  EntityPredicatePrimitive,
+  EntityPredicateValue,
+} from './types';
+export { entityPredicateToFilterFunction } from './entityPredicateToFilterFunction';

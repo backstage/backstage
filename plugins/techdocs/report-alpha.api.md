@@ -8,6 +8,7 @@ import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -89,11 +90,11 @@ const _default: FrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         group: string | false | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
@@ -178,7 +179,7 @@ const _default: FrontendPlugin<
           | 'observability'
           | undefined;
         routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
       };
     }>;
     'nav-item:techdocs': ExtensionDefinition<{

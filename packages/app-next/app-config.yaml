@@ -37,7 +37,11 @@ app:
     - entity-card:catalog/labels
     - entity-card:catalog/links:
         config:
-          filter: kind:component has:links
+          filter:
+            kind: component
+            metadata.links:
+              $exists: true
+          # filter: kind:component has:links
           type: info
     # - entity-card:linguist/languages
     - entity-card:catalog-graph/relations:

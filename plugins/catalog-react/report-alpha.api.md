@@ -11,6 +11,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
@@ -80,9 +81,7 @@ export function convertLegacyEntityCardExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    filter?:
-      | typeof EntityCardBlueprint.dataRefs.filterFunction.T
-      | typeof EntityCardBlueprint.dataRefs.filterExpression.T;
+    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
   },
 ): ExtensionDefinition;
 
@@ -91,9 +90,7 @@ export function convertLegacyEntityContentExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    filter?:
-      | typeof EntityContentBlueprint.dataRefs.filterFunction.T
-      | typeof EntityContentBlueprint.dataRefs.filterExpression.T;
+    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     defaultPath?: string;
     defaultTitle?: string;
   },
@@ -113,7 +110,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
-    filter?: string | ((entity: Entity) => boolean) | undefined;
+    filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
     type?: EntityCardType | undefined;
   };
   output:
@@ -141,11 +138,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       >;
   inputs: {};
   config: {
-    filter: string | undefined;
+    filter: EntityPredicate | undefined;
     type: 'full' | 'info' | 'peek' | undefined;
   };
   configInput: {
-    filter?: string | undefined;
+    filter?: EntityPredicate | undefined;
     type?: 'full' | 'info' | 'peek' | undefined;
   };
   dataRefs: {
@@ -186,7 +183,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       | 'observability'
       | undefined;
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-    filter?: string | ((entity: Entity) => boolean) | undefined;
+    filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
   };
   output:
     | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -224,11 +221,11 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   config: {
     path: string | undefined;
     title: string | undefined;
-    filter: string | undefined;
+    filter: EntityPredicate | undefined;
     group: string | false | undefined;
   };
   configInput: {
-    filter?: string | undefined;
+    filter?: EntityPredicate | undefined;
     title?: string | undefined;
     path?: string | undefined;
     group?: string | false | undefined;
@@ -262,7 +259,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
   name: undefined;
   params: {
-    filter?: string | ((entity: Entity) => boolean) | undefined;
+    filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
     loader: () => Promise<
       (props: EntityContentLayoutProps) => React_2.JSX.Element
     >;
@@ -290,10 +287,10 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     type: string | undefined;
-    filter: string | undefined;
+    filter: EntityPredicate | undefined;
   };
   configInput: {
-    filter?: string | undefined;
+    filter?: EntityPredicate | undefined;
     type?: string | undefined;
   };
   dataRefs: {
@@ -323,6 +320,48 @@ export interface EntityContentLayoutProps {
     element: React_2.JSX.Element;
   }>;
 }
+
+// @alpha (undocumented)
+export type EntityPredicate =
+  | EntityPredicateExpression
+  | EntityPredicatePrimitive
+  | {
+      $all: EntityPredicate[];
+    }
+  | {
+      $any: EntityPredicate[];
+    }
+  | {
+      $not: EntityPredicate;
+    };
+
+// @alpha (undocumented)
+export type EntityPredicateExpression = {
+  [KPath in string]: EntityPredicateValue;
+} & {
+  [KPath in `$${string}`]: never;
+};
+
+// @alpha (undocumented)
+export type EntityPredicatePrimitive = string | number | boolean;
+
+// @alpha
+export function entityPredicateToFilterFunction<T extends JsonValue>(
+  entityPredicate: EntityPredicate,
+): (value: T) => boolean;
+
+// @alpha (undocumented)
+export type EntityPredicateValue =
+  | EntityPredicatePrimitive
+  | {
+      $exists: boolean;
+    }
+  | {
+      $in: EntityPredicatePrimitive[];
+    }
+  | {
+      $contains: EntityPredicateExpression;
+    };
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
