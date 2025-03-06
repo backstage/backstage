@@ -99,6 +99,7 @@ const config: Config = {
           },
           path: '../docs',
           sidebarPath: 'sidebars.ts',
+          sidebarCollapsed: false,
           ...(useVersionedDocs
             ? {
                 includeCurrentVersion: true,
