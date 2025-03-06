@@ -18,3 +18,4 @@ export { CatalogTable } from './CatalogTable';
 export type { CatalogTableProps } from './CatalogTable';
 export type { CatalogTableToolbarClassKey } from './CatalogTableToolbar';
 export type { CatalogTableRow, CatalogTableColumnsFunc } from './types';
+export type { CatalogTableColumnDefaultOptions } from './columns';

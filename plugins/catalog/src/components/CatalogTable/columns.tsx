@@ -25,7 +25,7 @@ import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
 
-export interface DefaultOptions {
+export interface CatalogTableColumnDefaultOptions {
   columnOptions?: TableColumn<CatalogTableRow>;
 }
 
@@ -34,7 +34,7 @@ export interface DefaultOptions {
 /** @public */
 export const columnFactories = Object.freeze({
   createNameColumn(
-    options?: DefaultOptions & {
+    options?: CatalogTableColumnDefaultOptions & {
       defaultKind?: string;
       linkStyle?: React.CSSProperties;
     },
@@ -68,7 +68,9 @@ export const columnFactories = Object.freeze({
     };
   },
   createSystemColumn(
-    options?: DefaultOptions & { linkStyle?: React.CSSProperties },
+    options?: CatalogTableColumnDefaultOptions & {
+      linkStyle?: React.CSSProperties;
+    },
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'System',
@@ -84,7 +86,9 @@ export const columnFactories = Object.freeze({
     };
   },
   createOwnerColumn(
-    options?: DefaultOptions & { linkStyle?: React.CSSProperties },
+    options?: CatalogTableColumnDefaultOptions & {
+      linkStyle?: React.CSSProperties;
+    },
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Owner',
@@ -100,7 +104,7 @@ export const columnFactories = Object.freeze({
     };
   },
   createSpecTargetsColumn(
-    options?: DefaultOptions,
+    options?: CatalogTableColumnDefaultOptions,
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Targets',
@@ -136,7 +140,7 @@ export const columnFactories = Object.freeze({
     };
   },
   createSpecTypeColumn(
-    options: DefaultOptions & {
+    options: CatalogTableColumnDefaultOptions & {
       hidden: boolean;
     } = { hidden: false },
   ): TableColumn<CatalogTableRow> {
@@ -149,7 +153,7 @@ export const columnFactories = Object.freeze({
     };
   },
   createSpecLifecycleColumn(
-    options?: DefaultOptions,
+    options?: CatalogTableColumnDefaultOptions,
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Lifecycle',
@@ -158,7 +162,7 @@ export const columnFactories = Object.freeze({
     };
   },
   createMetadataDescriptionColumn(
-    options?: DefaultOptions,
+    options?: CatalogTableColumnDefaultOptions,
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Description',
@@ -173,7 +177,9 @@ export const columnFactories = Object.freeze({
       ...(options?.columnOptions || {}),
     };
   },
-  createTagsColumn(options?: DefaultOptions): TableColumn<CatalogTableRow> {
+  createTagsColumn(
+    options?: CatalogTableColumnDefaultOptions,
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Tags',
       field: 'entity.metadata.tags',
@@ -210,7 +216,10 @@ export const columnFactories = Object.freeze({
   },
   createLabelColumn(
     key: string,
-    options?: DefaultOptions & { title?: string; defaultValue?: string },
+    options?: CatalogTableColumnDefaultOptions & {
+      title?: string;
+      defaultValue?: string;
+    },
   ): TableColumn<CatalogTableRow> {
     function formatContent(keyLabel: string, entity: Entity): string {
       const labels: Record<string, string> | undefined =
@@ -252,7 +261,7 @@ export const columnFactories = Object.freeze({
     };
   },
   createNamespaceColumn(
-    options?: DefaultOptions,
+    options?: CatalogTableColumnDefaultOptions,
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Namespace',
