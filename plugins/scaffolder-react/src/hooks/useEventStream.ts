@@ -191,6 +191,30 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let logPusher: NodeJS.Timeout | undefined;
     let retryCount = 1;
     let isTaskRecoverable = false;
+
+    // Track already seen log events by ID to prevent duplicates
+    const processedEventIds = new Set<string>();
+    const collectedLogEvents = new Array<LogEvent>();
+
+    function emitLogs() {
+      if (collectedLogEvents.length) {
+        // Only process logs we haven't seen before
+        const newLogs = collectedLogEvents.filter(
+          event => !processedEventIds.has(event.id),
+        );
+
+        // Mark these logs as processed
+        newLogs.forEach(log => processedEventIds.add(log.id));
+
+        if (newLogs.length > 0) {
+          dispatch({ type: 'LOGS', data: newLogs });
+        }
+
+        // Clear the collection array but keep our processed IDs set
+        collectedLogEvents.length = 0;
+      }
+    }
+
     const startStreamLogProcess = () =>
       scaffolderApi.getTask(taskId).then(
         task => {
@@ -213,18 +237,6 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
             taskId,
           });
 
-          const collectedLogEvents = new Array<LogEvent>();
-
-          function emitLogs() {
-            if (collectedLogEvents.length) {
-              const logs = collectedLogEvents.splice(
-                0,
-                collectedLogEvents.length,
-              );
-              dispatch({ type: 'LOGS', data: logs });
-            }
-          }
-
           logPusher = setInterval(emitLogs, 500);
 
           subscription = observable.subscribe({
@@ -232,17 +244,23 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               retryCount = 1;
               switch (event.type) {
                 case 'log':
-                  return collectedLogEvents.push(event);
+                  // Only collect if we haven't seen this event before
+                  if (!processedEventIds.has(event.id)) {
+                    collectedLogEvents.push(event);
+                  }
+                  return;
                 case 'cancelled':
                   dispatch({ type: 'CANCELLED' });
-                  return undefined;
+                  return;
                 case 'completion':
                   emitLogs();
                   dispatch({ type: 'COMPLETED', data: event });
-                  return undefined;
+                  return;
                 case 'recovered':
                   dispatch({ type: 'RECOVERED', data: event });
-                  return undefined;
+                  // Clear processed events on recovery to see everything again
+                  processedEventIds.clear();
+                  return;
                 default:
                   throw new Error(
                     `Unhandled event type ${event.type} in observer`,
@@ -250,6 +268,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               }
             },
             error: error => {
+              if (didCancel) return;
               emitLogs();
               // in some cases the error is a refused connection from backend
               // this can happen from internet issues or proxy problems
@@ -280,10 +299,12 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
           }
         },
       );
+
     void startStreamLogProcess();
+
     return () => {
+      didCancel = true;
       if (!isTaskRecoverable) {
-        didCancel = true;
         if (subscription) {
           subscription.unsubscribe();
         }
