@@ -7,6 +7,7 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ButtonProps } from '@material-ui/core';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -163,20 +164,43 @@ export const CatalogTable: {
   columns: Readonly<{
     createNameColumn(
       options?:
-        | {
+        | (CatalogTableColumnDefaultOptions & {
             defaultKind?: string | undefined;
-          }
+            linkStyle?: React_2.CSSProperties | undefined;
+          })
         | undefined,
     ): TableColumn<CatalogTableRow>;
-    createSystemColumn(): TableColumn<CatalogTableRow>;
-    createOwnerColumn(): TableColumn<CatalogTableRow>;
-    createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
-    createSpecTypeColumn(options?: {
-      hidden: boolean;
-    }): TableColumn<CatalogTableRow>;
-    createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
-    createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
-    createTagsColumn(): TableColumn<CatalogTableRow>;
+    createSystemColumn(
+      options?:
+        | (CatalogTableColumnDefaultOptions & {
+            linkStyle?: React_2.CSSProperties | undefined;
+          })
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
+    createOwnerColumn(
+      options?:
+        | (CatalogTableColumnDefaultOptions & {
+            linkStyle?: React_2.CSSProperties | undefined;
+          })
+        | undefined,
+    ): TableColumn<CatalogTableRow>;
+    createSpecTargetsColumn(
+      options?: CatalogTableColumnDefaultOptions | undefined,
+    ): TableColumn<CatalogTableRow>;
+    createSpecTypeColumn(
+      options?: CatalogTableColumnDefaultOptions & {
+        hidden: boolean;
+      },
+    ): TableColumn<CatalogTableRow>;
+    createSpecLifecycleColumn(
+      options?: CatalogTableColumnDefaultOptions | undefined,
+    ): TableColumn<CatalogTableRow>;
+    createMetadataDescriptionColumn(
+      options?: CatalogTableColumnDefaultOptions | undefined,
+    ): TableColumn<CatalogTableRow>;
+    createTagsColumn(
+      options?: CatalogTableColumnDefaultOptions | undefined,
+    ): TableColumn<CatalogTableRow>;
     createTitleColumn(
       options?:
         | {
@@ -187,16 +211,26 @@ export const CatalogTable: {
     createLabelColumn(
       key: string,
       options?:
-        | {
+        | (CatalogTableColumnDefaultOptions & {
             title?: string | undefined;
             defaultValue?: string | undefined;
-          }
+          })
         | undefined,
     ): TableColumn<CatalogTableRow>;
-    createNamespaceColumn(): TableColumn<CatalogTableRow>;
+    createNamespaceColumn(
+      options?: CatalogTableColumnDefaultOptions | undefined,
+    ): TableColumn<CatalogTableRow>;
   }>;
   defaultColumnsFunc: CatalogTableColumnsFunc;
 };
+
+// Warning: (ae-missing-release-tag) "CatalogTableColumnDefaultOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CatalogTableColumnDefaultOptions {
+  // (undocumented)
+  columnOptions?: TableColumn<CatalogTableRow>;
+}
 
 // @public
 export type CatalogTableColumnsFunc = (
@@ -520,6 +554,7 @@ export const FilterContainer: (props: {
           | 'xl'
           | undefined;
         drawerAnchor?: 'left' | 'top' | 'bottom' | 'right' | undefined;
+        buttonProps?: ButtonProps | undefined;
       }
     | undefined;
 }) => JSX_2.Element;
@@ -667,6 +702,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
+  showCount?: boolean;
 };
 
 // @public (undocumented)

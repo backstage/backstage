@@ -10,6 +10,7 @@ import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { BottomNavigationActionProps } from '@material-ui/core/BottomNavigationAction';
+import { BoxProps } from '@material-ui/core/Box';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';

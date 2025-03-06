@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
+import { ButtonProps } from '@material-ui/core/Button';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
@@ -29,6 +30,7 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
+import { TableProps } from '@backstage/core-components';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { TypographyProps } from '@material-ui/core/Typography';
 
@@ -114,6 +116,7 @@ export const CatalogFilterLayout: {
     options?: {
       drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
       drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
+      buttonProps?: ButtonProps;
     };
   }) => React_2.JSX.Element;
   Content: (props: { children: React_2.ReactNode }) => React_2.JSX.Element;
@@ -581,6 +584,8 @@ export const EntityTable: {
 
 // @public
 export interface EntityTableProps<T extends Entity> {
+  // (undocumented)
+  actions?: TableProps<T>['actions'];
   // (undocumented)
   columns: TableColumn<T>[];
   // (undocumented)
