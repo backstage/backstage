@@ -358,6 +358,11 @@ const config: Config = {
           position: 'left',
         },
         {
+          href: 'https://discord.gg/backstage-687207715902193673',
+          label: 'Discord',
+          position: 'left',
+        },
+        {
           to: 'docs/overview/what-is-backstage',
           label: 'Docs',
           position: 'left',
