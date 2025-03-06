@@ -258,9 +258,27 @@ describe('createFrontendFeatureLoader', () => {
     } = {};
     const featureLoader: FrontendFeature = createFrontendFeatureLoader({
       loader: () =>
-        [nestedFeatureLoaderHolder.loader].filter<FrontendFeature>(
-          (f): f is FrontendFeature => f !== undefined,
-        ),
+        [
+          nestedFeatureLoaderHolder.loader,
+          createFrontendPlugin({
+            id: 'plugin',
+            extensions: [
+              createExtension({
+                name: 'output',
+                attachTo: { id: 'app', input: 'root' },
+                inputs: {},
+                output: [coreExtensionData.reactElement],
+                factory() {
+                  return [
+                    coreExtensionData.reactElement(
+                      React.createElement('span', {}, [`My Content`]),
+                    ),
+                  ];
+                },
+              }),
+            ],
+          }),
+        ].filter<FrontendFeature>((f): f is FrontendFeature => f !== undefined),
     });
     nestedFeatureLoaderHolder.loader = featureLoader;
 
@@ -269,17 +287,13 @@ describe('createFrontendFeatureLoader', () => {
       /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
-    await expect(
-      renderWithEffects(
-        createTestAppRoot({
-          features: [featureLoader],
-          config: {
-            app: { extensions: [{ 'app/root': false }] },
-          },
-        }),
-      ),
-    ).rejects.toThrow(
-      /^Added several instances of feature loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'$/,
+    await renderWithEffects(
+      createTestAppRoot({
+        features: [featureLoader],
+        config: {
+          app: { extensions: [{ 'app/root': false }] },
+        },
+      }),
     );
   });
 
@@ -430,5 +444,7 @@ describe('createFrontendFeatureLoader', () => {
         },
       }),
     );
+
+    await expect(screen.findByText('My Content')).resolves.toBeInTheDocument();
   });
 });

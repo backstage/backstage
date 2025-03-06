@@ -98,33 +98,25 @@ export function createApp(options?: CreateAppOptions): {
 
     // Separate deprecated CreateAppFeatureLoader elements from the frontend features,
     // and manage the deprecated elements first.
-    const [providedFeatures, createAppFeatureLoaders] = (
-      options?.features ?? []
-    ).reduce<[FrontendFeature[], CreateAppFeatureLoader[]]>(
-      (acc, item) => {
-        if ('$$type' in item) {
-          acc[0].push(item);
-        } else {
-          acc[1].push(item);
+    const providedFeatures: FrontendFeature[] = [];
+    for (const item of options?.features ?? []) {
+      if ('$$type' in item) {
+        providedFeatures.push(item);
+      } else {
+        try {
+          const result = await item.load({ config });
+          providedFeatures.push(...result.features);
+        } catch (e) {
+          throw new Error(
+            `Failed to read frontend features from loader '${item.getLoaderName()}', ${stringifyError(
+              e,
+            )}`,
+          );
         }
-        return acc;
-      },
-      [[], []],
-    );
-    for (const entry of createAppFeatureLoaders) {
-      try {
-        const result = await entry.load({ config });
-        providedFeatures.push(...result.features);
-      } catch (e) {
-        throw new Error(
-          `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
-            e,
-          )}`,
-        );
       }
     }
 
-    const featureLoaderNames: InternalFrontendFeatureLoader[] = [];
+    const alreadyMetFeatureLoaders: InternalFrontendFeatureLoader[] = [];
     const maxRecursionDepth = options?.featureLoaderRecursionDepth ?? 10;
 
     async function applyFeatureLoaders(
@@ -134,32 +126,26 @@ export function createApp(options?: CreateAppOptions): {
       if (features.length === 0) {
         return;
       }
-      const [featureLoaders, otherFeatures] = features.reduce<
-        [InternalFrontendFeatureLoader[], FrontendFeature[]]
-      >(
-        (acc, item) => {
-          if (isInternalFrontendFeatureLoader(item)) {
-            acc[0].push(item);
-          } else {
-            acc[1].push(item);
-          }
-          return acc;
-        },
-        [[], []],
-      );
-      loadedFeatures.push(...otherFeatures);
+
+      const featureLoaders: InternalFrontendFeatureLoader[] = [];
+      for (const item of features) {
+        if (isInternalFrontendFeatureLoader(item)) {
+          featureLoaders.push(item);
+        } else {
+          loadedFeatures.push(item);
+        }
+      }
+
       for (const featureLoader of featureLoaders) {
-        if (featureLoaderNames.some(l => l === featureLoader)) {
-          throw new Error(
-            `Added several instances of feature loader ${featureLoader.description}`,
-          );
+        if (alreadyMetFeatureLoaders.some(l => l === featureLoader)) {
+          continue;
         }
         if (recursionDepth > maxRecursionDepth) {
           throw new Error(
             `Maximum feature loading recursion depth (${maxRecursionDepth}) reached for the feature loader ${featureLoader.description}`,
           );
         }
-        featureLoaderNames.push(featureLoader);
+        alreadyMetFeatureLoaders.push(featureLoader);
         let result: FrontendFeature[];
         try {
           result = await featureLoader.loader({ config });
