@@ -38,16 +38,13 @@ const nameExtensionDataRef = createExtensionDataRef<string>().with({
 
 function createTestAppRoot({
   features,
-  featureLoaderRecursionDepth,
   config = {},
 }: {
   features: FrontendFeature[];
-  featureLoaderRecursionDepth?: number;
   config: JsonObject;
 }) {
   return createApp({
     features: [...features],
-    featureLoaderRecursionDepth,
     configLoader: async () => ({ config: mockApis.config({ data: config }) }),
   }).createRoot();
 }
@@ -390,27 +387,39 @@ describe('createFrontendFeatureLoader', () => {
   });
 
   it('should limit feature loading recursion', async () => {
+    const plugin = createFrontendPlugin({
+      id: 'plugin',
+      extensions: [
+        createExtension({
+          name: 'output',
+          attachTo: { id: 'app', input: 'root' },
+          inputs: {},
+          output: [coreExtensionData.reactElement],
+          factory() {
+            return [
+              coreExtensionData.reactElement(
+                React.createElement('span', {}, [`My Content`]),
+              ),
+            ];
+          },
+        }),
+      ],
+    });
+
     const featureLoader: FrontendFeature = createFrontendFeatureLoader({
       loader: () => [
         createFrontendFeatureLoader({
           loader: () => [
             createFrontendFeatureLoader({
               loader: () => [
-                createFrontendPlugin({
-                  id: 'plugin',
-                  extensions: [
-                    createExtension({
-                      name: 'output',
-                      attachTo: { id: 'app', input: 'root' },
-                      inputs: {},
-                      output: [coreExtensionData.reactElement],
-                      factory() {
-                        return [
-                          coreExtensionData.reactElement(
-                            React.createElement('span', {}, [`My Content`]),
-                          ),
-                        ];
-                      },
+                createFrontendFeatureLoader({
+                  loader: () => [
+                    createFrontendFeatureLoader({
+                      loader: () => [
+                        createFrontendFeatureLoader({
+                          loader: () => [plugin],
+                        }),
+                      ],
                     }),
                   ],
                 }),
@@ -425,20 +434,21 @@ describe('createFrontendFeatureLoader', () => {
       renderWithEffects(
         createTestAppRoot({
           features: [featureLoader],
-          featureLoaderRecursionDepth: 2,
           config: {
             app: { extensions: [{ 'app/root': false }] },
           },
         }),
       ),
     ).rejects.toThrow(
-      /^Maximum feature loading recursion depth \(2\) reached for the feature loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'$/,
+      /^Maximum feature loading recursion depth \(5\) reached for the feature loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'$/,
     );
 
+    const nestedLoaders = await (
+      featureLoader as InternalFrontendFeatureLoader
+    ).loader({ config: mockApis.config() });
     await renderWithEffects(
       createTestAppRoot({
-        features: [featureLoader],
-        featureLoaderRecursionDepth: 3,
+        features: [nestedLoaders[0]],
         config: {
           app: { extensions: [{ 'app/root': false }] },
         },

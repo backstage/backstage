@@ -32,8 +32,6 @@ export interface CreateAppOptions {
     config: ConfigApi;
   }>;
   // (undocumented)
-  featureLoaderRecursionDepth?: number;
-  // (undocumented)
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   loadingComponent?: ReactNode;
 }

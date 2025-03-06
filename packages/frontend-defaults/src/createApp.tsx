@@ -62,7 +62,6 @@ export interface CreateAppFeatureLoader {
  */
 export interface CreateAppOptions {
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
-  featureLoaderRecursionDepth?: number;
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   /**
@@ -117,7 +116,7 @@ export function createApp(options?: CreateAppOptions): {
     }
 
     const alreadyMetFeatureLoaders: InternalFrontendFeatureLoader[] = [];
-    const maxRecursionDepth = options?.featureLoaderRecursionDepth ?? 10;
+    const maxRecursionDepth = 5;
 
     async function applyFeatureLoaders(
       features: FrontendFeature[],
