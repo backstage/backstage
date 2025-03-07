@@ -715,6 +715,37 @@ export function createExternalRouteRef<
 >;
 
 // @public (undocumented)
+export function createFrontendFeatureLoader(
+  options: CreateFrontendFeatureLoaderOptions,
+): FrontendFeatureLoader;
+
+// @public (undocumented)
+export interface CreateFrontendFeatureLoaderOptions {
+  // (undocumented)
+  loader(deps: { config: ConfigApi }):
+    | Iterable<
+        | FrontendFeature
+        | Promise<{
+            default: FrontendFeature;
+          }>
+      >
+    | Promise<
+        Iterable<
+          | FrontendFeature
+          | Promise<{
+              default: FrontendFeature;
+            }>
+        >
+      >
+    | AsyncIterable<
+        | FrontendFeature
+        | {
+            default: FrontendFeature;
+          }
+      >;
+}
+
+// @public (undocumented)
 export function createFrontendModule<
   TId extends string,
   TExtensions extends readonly ExtensionDefinition[] = [],
@@ -1237,8 +1268,23 @@ export { FetchApi };
 
 export { fetchApiRef };
 
-// @public @deprecated (undocumented)
-export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
+// @public (undocumented)
+export type FrontendFeature =
+  | FrontendPlugin
+  | FrontendModule
+  | FrontendFeatureLoader
+  | {
+      $$type: '@backstage/ExtensionOverrides';
+    }
+  | {
+      $$type: '@backstage/BackstagePlugin';
+    };
+
+// @public (undocumented)
+export interface FrontendFeatureLoader {
+  // (undocumented)
+  readonly $$type: '@backstage/FrontendFeatureLoader';
+}
 
 // @public (undocumented)
 export interface FrontendModule {

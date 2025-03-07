@@ -71,6 +71,8 @@ import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations
 import { BackstageRouteObject } from '../routing/types';
 import { FrontendFeature, RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { isInternalFrontendFeatureLoader } from '../../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -200,6 +202,15 @@ export function createSpecializedApp(options?: {
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): { createRoot(): JSX.Element } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
+  const featureLoaders = options?.features?.filter(
+    isInternalFrontendFeatureLoader,
+  );
+  if (featureLoaders && featureLoaders.length > 0) {
+    throw new Error(
+      `FrontendFeatureLoader is an async construct. It should be passed to createApp(), not to createSpecializedApp().`,
+    );
+  }
+
   const features = deduplicateFeatures(options?.features ?? []);
 
   const tree = resolveAppTree(

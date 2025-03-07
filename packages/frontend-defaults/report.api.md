@@ -5,7 +5,7 @@
 ```ts
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
-import { FrontendFeature } from '@backstage/frontend-app-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -15,7 +15,7 @@ export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX_2.Element;
 };
 
-// @public
+// @public @deprecated
 export interface CreateAppFeatureLoader {
   getLoaderName(): string;
   load(options: { config: ConfigApi }): Promise<{

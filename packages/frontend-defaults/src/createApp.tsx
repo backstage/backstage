@@ -15,7 +15,7 @@
  */
 
 import React, { JSX, ReactNode } from 'react';
-import { ConfigApi } from '@backstage/frontend-plugin-api';
+import { ConfigApi, FrontendFeature } from '@backstage/frontend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
@@ -26,14 +26,20 @@ import { ConfigReader } from '@backstage/config';
 import appPlugin from '@backstage/plugin-app';
 import {
   CreateAppRouteBinder,
-  FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
+
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  InternalFrontendFeatureLoader,
+  isInternalFrontendFeatureLoader,
+} from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
 
 /**
  * A source of dynamically loaded frontend features.
  *
  * @public
+ * @deprecated Use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader} function instead.
  */
 export interface CreateAppFeatureLoader {
   /**
@@ -87,29 +93,79 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures(config);
+    const loadedFeatures: FrontendFeature[] = [];
 
+    // Separate deprecated CreateAppFeatureLoader elements from the frontend features,
+    // and manage the deprecated elements first.
     const providedFeatures: FrontendFeature[] = [];
-    for (const entry of options?.features ?? []) {
-      if ('load' in entry) {
+    for (const item of options?.features ?? []) {
+      if ('$$type' in item) {
+        providedFeatures.push(item);
+      } else {
         try {
-          const result = await entry.load({ config });
+          const result = await item.load({ config });
           providedFeatures.push(...result.features);
         } catch (e) {
           throw new Error(
-            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
+            `Failed to read frontend features from loader '${item.getLoaderName()}', ${stringifyError(
               e,
             )}`,
           );
         }
-      } else {
-        providedFeatures.push(entry);
       }
     }
 
+    const alreadyMetFeatureLoaders: InternalFrontendFeatureLoader[] = [];
+    const maxRecursionDepth = 5;
+
+    async function applyFeatureLoaders(
+      features: FrontendFeature[],
+      recursionDepth: number,
+    ) {
+      if (features.length === 0) {
+        return;
+      }
+
+      const featureLoaders: InternalFrontendFeatureLoader[] = [];
+      for (const item of features) {
+        if (isInternalFrontendFeatureLoader(item)) {
+          featureLoaders.push(item);
+        } else {
+          loadedFeatures.push(item);
+        }
+      }
+
+      for (const featureLoader of featureLoaders) {
+        if (alreadyMetFeatureLoaders.some(l => l === featureLoader)) {
+          continue;
+        }
+        if (recursionDepth > maxRecursionDepth) {
+          throw new Error(
+            `Maximum feature loading recursion depth (${maxRecursionDepth}) reached for the feature loader ${featureLoader.description}`,
+          );
+        }
+        alreadyMetFeatureLoaders.push(featureLoader);
+        let result: FrontendFeature[];
+        try {
+          result = await featureLoader.loader({ config });
+        } catch (e) {
+          throw new Error(
+            `Failed to read frontend features from loader ${
+              featureLoader.description
+            }: ${stringifyError(e)}`,
+          );
+        }
+        await applyFeatureLoaders(result, recursionDepth + 1);
+      }
+    }
+
+    const discoveredFeatures = getAvailableFeatures(config);
+
+    await applyFeatureLoaders([...discoveredFeatures, ...providedFeatures], 1);
+
     const app = createSpecializedApp({
       config,
-      features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
+      features: [appPlugin, ...loadedFeatures],
       bindRoutes: options?.bindRoutes,
     }).createRoot();
 
