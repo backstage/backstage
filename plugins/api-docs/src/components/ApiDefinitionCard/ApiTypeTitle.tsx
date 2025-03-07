@@ -29,5 +29,9 @@ export const ApiTypeTitle = (props: { apiEntity: ApiEntity }) => {
   const definition = config.getApiDefinitionWidget(apiEntity);
   const type = definition ? definition.title : apiEntity.spec.type;
 
-  return <Typography component="span">{type}</Typography>;
+  return (
+    <Typography component="span" variant="inherit">
+      {type}
+    </Typography>
+  );
 };
