@@ -10172,14 +10172,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/cloud-sql-connector@npm:^1.4.0":
-  version: 1.6.0
-  resolution: "@google-cloud/cloud-sql-connector@npm:1.6.0"
+  version: 1.6.1
+  resolution: "@google-cloud/cloud-sql-connector@npm:1.6.1"
   dependencies:
     "@googleapis/sqladmin": ^24.0.0
     gaxios: ^6.1.1
     google-auth-library: ^9.2.0
     p-throttle: ^7.0.0
-  checksum: 62acc32cadebf45ccb5a87516e1bc4c97d3f948c15997d3f081298cda0d420f191024341abe3a2f521132ebde60aed9ba529695e087d3b5750e943ac0a7c2c97
+  checksum: a39c93029ef0ca0462f3a4d0d5ef503cb2c5cd8ffa99952429336005b017933688909f6c937ac1f65ad2d5c2285f0c91c0f04781830b3fe8b8864abbaa495f56
   languageName: node
   linkType: hard
 
