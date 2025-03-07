@@ -21,11 +21,11 @@ import {
   createTemplateGlobalValue,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import {
-  templateFilterImpls,
-  templateFilterMetadata,
-  templateGlobalFunctionMetadata,
-  templateGlobals,
-  templateGlobalValueMetadata,
+  convertFiltersToRecord,
+  extractFilterMetadata,
+  extractGlobalFunctionMetadata,
+  convertGlobalsToRecord,
+  extractGlobalValueMetadata,
 } from './templating';
 import { JsonValue } from '@backstage/types';
 import builtInFilters from '../lib/templating/filters';
@@ -37,8 +37,8 @@ describe('templating utilities', () => {
     const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
     const filters = builtInFilters({ integrations });
     it('generates equivalent filter metadata', () => {
-      const metadata = templateFilterMetadata(filters);
-      expect(metadata).toMatchObject(templateFilterMetadata(filters));
+      const metadata = extractFilterMetadata(filters);
+      expect(metadata).toMatchObject(extractFilterMetadata(filters));
     });
   });
   describe('api filters', () => {
@@ -71,7 +71,7 @@ describe('templating utilities', () => {
       }),
     ];
     it('extracts filter implementations', () => {
-      const impls = templateFilterImpls(filters);
+      const impls = convertFiltersToRecord(filters);
       expect(impls).toHaveProperty('nop');
       expect(impls.nop(42)).toBe(42);
       expect(impls).toHaveProperty('nul');
@@ -81,7 +81,7 @@ describe('templating utilities', () => {
       expect(impls.repeat('foo', 3, '-')).toBe('foo-foo-foo');
     });
     it('extracts filter metadata', () => {
-      const metadata = templateFilterMetadata(filters);
+      const metadata = extractFilterMetadata(filters);
       expect(metadata).toHaveProperty('nop');
       expect(metadata.nop).toHaveProperty('description', 'nop');
       expect(metadata.nop).toHaveProperty(
@@ -121,14 +121,14 @@ describe('templating utilities', () => {
       nul: _ => null,
     } as Record<string, TemplateFilter>;
     it('extracts filter implementations', () => {
-      const impls = templateFilterImpls(filters);
+      const impls = convertFiltersToRecord(filters);
       expect(impls).toHaveProperty('nop');
       expect(impls.nop(42)).toBe(42);
       expect(impls).toHaveProperty('nul');
       expect(impls.nul('anything')).toBeNull();
     });
     it('extracts filter metadata', () => {
-      const metadata = templateFilterMetadata(filters);
+      const metadata = extractFilterMetadata(filters);
       expect(metadata).toHaveProperty('nop', {});
       expect(metadata).toHaveProperty('nul', {});
     });
@@ -154,7 +154,7 @@ describe('templating utilities', () => {
     }),
   ];
   it('extracts global function metadata', () => {
-    const metadata = templateGlobalFunctionMetadata(documentedGlobals);
+    const metadata = extractGlobalFunctionMetadata(documentedGlobals);
     expect(metadata).toHaveProperty('foo');
     expect(metadata.foo).toHaveProperty('description', 'foo something');
     expect(metadata).not.toHaveProperty('bar');
@@ -171,13 +171,13 @@ describe('templating utilities', () => {
     );
   });
   it('extracts global value metadata', () => {
-    const metadata = templateGlobalValueMetadata(documentedGlobals);
+    const metadata = extractGlobalValueMetadata(documentedGlobals);
     expect(metadata).not.toHaveProperty('foo');
     expect(metadata).toHaveProperty('bar');
     expect(metadata.bar).toHaveProperty('description', 'bar value');
     expect(metadata).not.toHaveProperty('respond');
   });
-  const globals = templateGlobals(documentedGlobals);
+  const globals = convertGlobalsToRecord(documentedGlobals);
   it('extracts documented globals', () => {
     expect(globals).toHaveProperty('foo');
     expect((globals.foo as (x: any) => string)('something')).toBe(
@@ -189,6 +189,6 @@ describe('templating utilities', () => {
     expect((globals.respond as Function)('knock knock')).toBe("who's there?");
   });
   it('extracts backward-compatible/undocumented globals', () => {
-    expect(templateGlobals(globals)).toBe(globals);
+    expect(convertGlobalsToRecord(globals)).toBe(globals);
   });
 });

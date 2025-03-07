@@ -26,30 +26,27 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonValue } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import {
-  filter,
-  fromPairs,
-  isEmpty,
-  keyBy,
-  mapValues,
-  negate,
-  pick,
-  pickBy,
-  toPairs,
-  wrap,
-} from 'lodash';
-import { z, ZodType } from 'zod';
+import { ZodType, z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 
-export function templateFilterImpls(
+/**
+ * Converts template filters to a record of filter functions
+ */
+export function convertFiltersToRecord(
   filters?: Record<string, TemplateFilter> | CreatedTemplateFilter<any, any>[],
 ): Record<string, TemplateFilter> {
   if (!filters) {
     return {};
   }
+
   if (Array.isArray(filters)) {
-    return mapValues(keyBy(filters, 'id'), f => f.filter as TemplateFilter);
+    const result: Record<string, TemplateFilter> = {};
+    for (const filter of filters) {
+      result[filter.id] = filter.filter as TemplateFilter;
+    }
+    return result;
   }
+
   return filters;
 }
 
@@ -62,29 +59,52 @@ type ExportFilterSchema = {
   input?: Schema;
 } & ExportFunctionSchema;
 
-function zodFunctionToJsonSchema(
+/**
+ * Converts a Zod function schema to JSON schema
+ */
+function convertZodFunctionToJsonSchema(
   t: ReturnType<TemplateGlobalFunctionSchema<any, any>>,
 ): ExportFunctionSchema {
   const args = (t.parameters().items as ZodType[]).map(
     zt => zodToJsonSchema(zt) as Schema,
   );
-  const output = wrap(t.returnType(), rt =>
-    rt._unknown ? undefined : (zodToJsonSchema(rt) as Schema),
-  )();
-  return pickBy({ output, arguments: args }, negate(isEmpty));
+
+  let output: Schema | undefined = undefined;
+  const returnType = t.returnType();
+  if (!returnType._unknown) {
+    output = zodToJsonSchema(returnType) as Schema;
+  }
+
+  const result: ExportFunctionSchema = {};
+  if (args.length > 0) {
+    result.arguments = args;
+  }
+  if (output) {
+    result.output = output;
+  }
+
+  return result;
 }
 
-function toExportFilterSchema(
+/**
+ * Converts a function schema to a filter schema
+ */
+function convertToFilterSchema(
   fnSchema: ExportFunctionSchema,
 ): ExportFilterSchema {
   if (fnSchema.arguments?.length) {
     const [input, ...rest] = fnSchema.arguments;
-    const { output } = fnSchema;
-    return {
-      input,
-      ...(rest.length ? { arguments: rest } : {}),
-      ...(output ? { output } : {}),
-    };
+    const result: ExportFilterSchema = { input };
+
+    if (rest.length > 0) {
+      result.arguments = rest;
+    }
+
+    if (fnSchema.output) {
+      result.output = fnSchema.output;
+    }
+
+    return result;
   }
   return fnSchema;
 }
@@ -96,30 +116,56 @@ type ExportFilter = Pick<
   schema?: ExportFilterSchema;
 };
 
-export function templateFilterMetadata(
+/**
+ * Extracts metadata from template filters
+ */
+export function extractFilterMetadata(
   filters?: Record<string, TemplateFilter> | CreatedTemplateFilter<any, any>[],
 ): Record<string, ExportFilter> {
   if (!filters) {
     return {};
   }
+
   if (Array.isArray(filters)) {
-    return mapValues(
-      keyBy(filters, 'id'),
-      <F extends CreatedTemplateFilter<any, any>>(f: F): ExportFilter => {
-        const schema = f.schema
-          ? toExportFilterSchema(zodFunctionToJsonSchema(f.schema(z)))
-          : undefined;
-        return {
-          ...pick(f, 'description', 'examples'),
-          ...pickBy({ schema }),
-        };
-      },
-    );
+    const result: Record<string, ExportFilter> = {};
+
+    for (const filter of filters) {
+      const metadata: ExportFilter = {};
+
+      if (filter.description) {
+        metadata.description = filter.description;
+      }
+
+      if (filter.examples) {
+        metadata.examples = filter.examples;
+      }
+
+      if (filter.schema) {
+        metadata.schema = convertToFilterSchema(
+          convertZodFunctionToJsonSchema(filter.schema(z)),
+        );
+      }
+
+      result[filter.id] = metadata;
+    }
+
+    return result;
   }
-  return mapValues(filters, _ => ({}));
+
+  // For non-array filters, return empty metadata
+  const result: Record<string, ExportFilter> = {};
+  for (const key in filters) {
+    if (filters.hasOwnProperty(key)) {
+      result[key] = {};
+    }
+  }
+  return result;
 }
 
-function isGlobalFunctionInfo(
+/**
+ * Checks if a global is a function
+ */
+function isGlobalFunction(
   global: CreatedTemplateGlobal,
 ): global is CreatedTemplateGlobalFunction<
   TemplateGlobalFunctionSchema<any, any> | undefined,
@@ -128,9 +174,10 @@ function isGlobalFunctionInfo(
   return 'fn' in global;
 }
 
-type GlobalRecordRow = [string, TemplateGlobal];
-
-export function templateGlobalFunctionMetadata(
+/**
+ * Extracts metadata from template global functions
+ */
+export function extractGlobalFunctionMetadata(
   globals?: Record<string, TemplateGlobal> | CreatedTemplateGlobal[],
 ): Record<
   string,
@@ -141,64 +188,92 @@ export function templateGlobalFunctionMetadata(
   if (!globals) {
     return {};
   }
-  if (Array.isArray(globals)) {
-    return mapValues(keyBy(filter(globals, isGlobalFunctionInfo), 'id'), v => {
-      const schema = v.schema
-        ? zodFunctionToJsonSchema(v.schema(z))
-        : undefined;
 
-      return {
-        ...pick(v, 'description', 'examples'),
-        ...pickBy({ schema }),
-      };
-    });
+  if (Array.isArray(globals)) {
+    const result: Record<string, any> = {};
+
+    for (const global of globals) {
+      if (isGlobalFunction(global)) {
+        const metadata: any = {
+          description: global.description,
+          examples: global.examples,
+        };
+
+        if (global.schema) {
+          metadata.schema = convertZodFunctionToJsonSchema(global.schema(z));
+        }
+
+        result[global.id] = metadata;
+      }
+    }
+
+    return result;
   }
-  const rows = toPairs(globals) as GlobalRecordRow[];
-  const fns = rows.filter(([_, g]) => typeof g === 'function') as [
-    string,
-    Exclude<TemplateGlobal, JsonValue>,
-  ][];
-  return fromPairs(fns.map(([k, _]) => [k, {}]));
+
+  // For non-array globals, extract function metadata
+  const result: Record<string, any> = {};
+  for (const key in globals) {
+    if (typeof globals[key] === 'function') {
+      result[key] = {};
+    }
+  }
+  return result;
 }
 
-export function templateGlobalValueMetadata(
+/**
+ * Extracts metadata from template global values
+ */
+export function extractGlobalValueMetadata(
   globals?: Record<string, TemplateGlobal> | CreatedTemplateGlobal[],
 ): Record<string, Omit<CreatedTemplateGlobalValue, 'id'>> {
   if (!globals) {
     return {};
   }
+
   if (Array.isArray(globals)) {
-    return mapValues(
-      keyBy(
-        filter(
-          globals,
-          negate(isGlobalFunctionInfo),
-        ) as CreatedTemplateGlobalValue[],
-        'id',
-      ),
-      v => pick(v, 'value', 'description'),
-    );
+    const result: Record<string, Omit<CreatedTemplateGlobalValue, 'id'>> = {};
+
+    for (const global of globals) {
+      if (!isGlobalFunction(global)) {
+        result[global.id] = {
+          value: (global as CreatedTemplateGlobalValue).value,
+          description: global.description,
+        };
+      }
+    }
+
+    return result;
   }
-  const rows = toPairs(globals) as GlobalRecordRow[];
-  const vals = rows.filter(([_, g]) => typeof g !== 'function') as [
-    string,
-    JsonValue,
-  ][];
-  return fromPairs(vals.map(([k, value]) => [k, { value }]));
+
+  // For non-array globals, extract value metadata
+  const result: Record<string, Omit<CreatedTemplateGlobalValue, 'id'>> = {};
+  for (const key in globals) {
+    if (typeof globals[key] !== 'function') {
+      result[key] = { value: globals[key] as JsonValue };
+    }
+  }
+  return result;
 }
 
-export function templateGlobals(
+/**
+ * Converts template globals to a record of global values and functions
+ */
+export function convertGlobalsToRecord(
   globals?: Record<string, TemplateGlobal> | CreatedTemplateGlobal[],
 ): Record<string, TemplateGlobal> {
   if (!globals) {
     return {};
   }
+
   if (!Array.isArray(globals)) {
     return globals;
   }
-  return mapValues(keyBy(globals, 'id'), v =>
-    isGlobalFunctionInfo(v)
-      ? (v.fn as TemplateGlobal)
-      : (v as CreatedTemplateGlobalValue).value,
-  );
+
+  const result: Record<string, TemplateGlobal> = {};
+  for (const global of globals) {
+    result[global.id] = isGlobalFunction(global)
+      ? (global.fn as TemplateGlobal)
+      : (global as CreatedTemplateGlobalValue).value;
+  }
+  return result;
 }

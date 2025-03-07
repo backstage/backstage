@@ -52,7 +52,10 @@ import {
 } from './scaffolder';
 import { createRouter } from './service/router';
 import { loggerToWinstonLogger } from './util/loggerToWinstonLogger';
-import { templateFilterImpls, templateGlobals } from './util/templating';
+import {
+  convertFiltersToRecord,
+  convertGlobalsToRecord,
+} from './util/templating';
 
 /**
  * Scaffolder plugin
@@ -157,10 +160,12 @@ export const scaffolderPlugin = createBackendPlugin({
         const integrations = ScmIntegrations.fromConfig(config);
 
         const templateExtensions = {
-          additionalTemplateFilters: templateFilterImpls(
+          additionalTemplateFilters: convertFiltersToRecord(
             additionalTemplateFilters,
           ),
-          additionalTemplateGlobals: templateGlobals(additionalTemplateGlobals),
+          additionalTemplateGlobals: convertGlobalsToRecord(
+            additionalTemplateGlobals,
+          ),
         };
         const actions = [
           // actions provided from other modules

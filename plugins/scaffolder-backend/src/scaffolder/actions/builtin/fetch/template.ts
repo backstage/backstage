@@ -31,7 +31,7 @@ import { isBinaryFile } from 'isbinaryfile';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
 import createDefaultFilters from '../../../../lib/templating/filters';
 import { examples } from './template.examples';
-import { templateFilterImpls } from '../../../../util/templating';
+import { convertFiltersToRecord } from '../../../../util/templating';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -53,7 +53,7 @@ export function createFetchTemplateAction(options: {
     additionalTemplateGlobals,
   } = options;
 
-  const defaultTemplateFilters = templateFilterImpls(
+  const defaultTemplateFilters = convertFiltersToRecord(
     createDefaultFilters({ integrations }),
   );
 

@@ -28,7 +28,7 @@ import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
 import createDefaultFilters from '../../../../lib/templating/filters';
 import path from 'path';
 import fs from 'fs-extra';
-import { templateFilterImpls } from '../../../../util/templating';
+import { convertFiltersToRecord } from '../../../../util/templating';
 
 /**
  * Downloads a single file and templates variables into file.
@@ -49,7 +49,7 @@ export function createFetchTemplateFileAction(options: {
     additionalTemplateGlobals,
   } = options;
 
-  const defaultTemplateFilters = templateFilterImpls(
+  const defaultTemplateFilters = convertFiltersToRecord(
     createDefaultFilters({ integrations }),
   );
 

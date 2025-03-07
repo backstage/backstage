@@ -60,7 +60,7 @@ import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
-import { templateFilterImpls } from '../../util/templating';
+import { convertFiltersToRecord } from '../../util/templating';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -152,7 +152,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
-    this.defaultTemplateFilters = templateFilterImpls(
+    this.defaultTemplateFilters = convertFiltersToRecord(
       createDefaultFilters({
         integrations: this.options.integrations,
       }),
