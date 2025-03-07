@@ -27,6 +27,7 @@ import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi, scaffolderApiRef } from '../../../api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { SecretsContextProvider } from '../../../secrets';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),
@@ -83,29 +84,31 @@ describe('<Workflow />', () => {
 
     const { getByRole, getAllByRole, getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <Workflow
-          title="Different title than template"
-          description={`
+        <SecretsContextProvider>
+          <Workflow
+            title="Different title than template"
+            description={`
       ## This is markdown
       - overriding the template description
             `}
-          onCreate={onCreate}
-          onError={onError}
-          namespace="default"
-          templateName="docs-template"
-          initialState={{
-            name: 'prefilled-name',
-            age: '53',
-          }}
-          components={{
-            ReviewStateComponent: () => (
-              <h1>This is a different wrapper for the review page</h1>
-            ),
-            reviewButtonText: <i>Onwards</i>,
-            createButtonText: <b>Make</b>,
-          }}
-          extensions={[]}
-        />
+            onCreate={onCreate}
+            onError={onError}
+            namespace="default"
+            templateName="docs-template"
+            initialState={{
+              name: 'prefilled-name',
+              age: '53',
+            }}
+            components={{
+              ReviewStateComponent: () => (
+                <h1>This is a different wrapper for the review page</h1>
+              ),
+              reviewButtonText: <i>Onwards</i>,
+              createButtonText: <b>Make</b>,
+            }}
+            extensions={[]}
+          />
+        </SecretsContextProvider>
       </ApiProvider>,
     );
 
