@@ -33,6 +33,7 @@
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "lodash": "^4.17.21"
   },
