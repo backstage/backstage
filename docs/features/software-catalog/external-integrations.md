@@ -686,9 +686,8 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
     try {
       // Use the builtin reader facility to grab data from the
-      // API. If you prefer, you can just use plain fetch here
-      // (from the node-fetch package), or any other method of
-      // your choosing.
+      // API. If you prefer, you can just use plain fetch here,
+      // or any other method of your choosing.
       const response = await this.reader.readUrl(location.target);
       const json = JSON.parse((await response.buffer()).toString());
       // Repeatedly call emit(processingResult.entity(location, <entity>))
