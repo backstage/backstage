@@ -212,7 +212,7 @@ jobs:
         working-directory: microsite
 
       - name: download stable reference
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
         with:
           name: stable-reference
           path: docs/reference
@@ -250,13 +250,13 @@ jobs:
         working-directory: microsite
 
       - name: download next reference
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
         with:
           name: next-reference
           path: docs/reference
 
       - name: download next OpenAPI API docs
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
         with:
           name: next-openapi-docs
           path: docs/**/*.api.mdx
@@ -265,7 +265,7 @@ jobs:
         run: yarn build
         working-directory: microsite
 
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+      - uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
         with:
           name: storybook
           path: microsite/build/storybook
