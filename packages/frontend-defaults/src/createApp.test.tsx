@@ -397,6 +397,46 @@ describe('createApp', () => {
     expect(screen.queryByText('Custom app root element')).toBeNull();
   });
 
+  it('should use a custom extensionFactoryMiddleware', async () => {
+    const app = createApp({
+      configLoader: async () => ({ config: mockApis.config() }),
+      features: [
+        appPlugin,
+        createFrontendPlugin({
+          id: 'test-plugin',
+          extensions: [
+            PageBlueprint.make({
+              name: 'test-page',
+              params: {
+                defaultPath: '/',
+                loader: async () => <>Test Page</>,
+              },
+            }),
+          ],
+        }),
+      ],
+      *extensionFactoryMiddleware(originalFactory, context) {
+        const output = originalFactory();
+        yield* output;
+        const element = output.get(coreExtensionData.reactElement);
+
+        if (element) {
+          yield coreExtensionData.reactElement(
+            <div data-testid={`wrapped(${context.node.spec.id})`}>
+              {element}
+            </div>,
+          );
+        }
+      },
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByTestId('wrapped(page:test-plugin/test-page)'),
+    ).resolves.toHaveTextContent('Test Page');
+  });
+
   describe('modules', () => {
     it('should be able to override extensions with a plugin extension override', async () => {
       const mod = createFrontendModule({

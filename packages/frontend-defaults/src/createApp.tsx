@@ -26,6 +26,7 @@ import { ConfigReader } from '@backstage/config';
 import appPlugin from '@backstage/plugin-app';
 import {
   CreateAppRouteBinder,
+  ExtensionFactoryMiddleware,
   FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
@@ -65,6 +66,7 @@ export interface CreateAppOptions {
    * If set to "null" then no loading fallback component is rendered.   *
    */
   loadingComponent?: ReactNode;
+  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
 }
 
 /**
@@ -111,6 +113,7 @@ export function createApp(options?: CreateAppOptions): {
       config,
       features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
       bindRoutes: options?.bindRoutes,
+      extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
     }).createRoot();
 
     return { default: () => app };
