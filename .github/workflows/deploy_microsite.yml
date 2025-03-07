@@ -73,7 +73,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: stable-reference
           path: docs/reference/
@@ -130,7 +130,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: next-reference
           path: docs/reference/
@@ -147,7 +147,7 @@ jobs:
         working-directory: storybook
 
       - name: storybook upload
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: storybook
           path: storybook/dist/
@@ -163,7 +163,7 @@ jobs:
         run: yarn docusaurus gen-api-docs all
 
       - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: next-openapi-docs
           path: docs/**/*.api.mdx
