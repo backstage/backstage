@@ -17507,17 +17507,17 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-runtime@npm:^1.1.2":
-  version: 1.1.3
-  resolution: "@stoplight/spectral-runtime@npm:1.1.3"
+  version: 1.1.4
+  resolution: "@stoplight/spectral-runtime@npm:1.1.4"
   dependencies:
     "@stoplight/json": ^3.20.1
     "@stoplight/path": ^1.3.2
     "@stoplight/types": ^13.6.0
     abort-controller: ^3.0.0
     lodash: ^4.17.21
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     tslib: ^2.8.1
-  checksum: 33af5713fd98de76e8007c9969d41440ef2abbff34e92db9a4b00b37a58dc7e7d4f0a0612c45183fb1aa9cd1a42dfe5ebfa59abf3b784e22d5f4b54c9f9d3d4c
+  checksum: cc0a993a44bb6e580e99531368c1bbadab32db257dbb482a2d9f8e4aa107d94eba053c6fa2b0f38b84706f6b9e488e32cfb6067dfcd9487d53ce4fdbbba46f30
   languageName: node
   linkType: hard
 
