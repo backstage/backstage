@@ -7739,6 +7739,7 @@ __metadata:
     yaml: ^2.0.0
     zen-observable: ^0.10.0
     zod: ^3.22.4
+    zod-to-json-schema: ^3.20.4
   languageName: unknown
   linkType: soft
 

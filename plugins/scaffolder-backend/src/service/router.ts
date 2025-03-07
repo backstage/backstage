@@ -110,6 +110,10 @@ import {
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import {
+  convertFiltersToRecord,
+  convertGlobalsToRecord,
+} from '../util/templating';
 
 /**
  *
@@ -368,22 +372,12 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
   const templateExtensions = {
-    additionalTemplateFilters: Array.isArray(additionalTemplateFilters)
-      ? Object.fromEntries(
-          additionalTemplateFilters.map(f => [
-            f.id,
-            f.filter as TemplateFilter,
-          ]),
-        )
-      : additionalTemplateFilters,
-    additionalTemplateGlobals: Array.isArray(additionalTemplateGlobals)
-      ? Object.fromEntries(
-          additionalTemplateGlobals.map(g => [
-            g.id,
-            ('value' in g ? g.value : g.fn) as TemplateGlobal,
-          ]),
-        )
-      : additionalTemplateGlobals,
+    additionalTemplateFilters: convertFiltersToRecord(
+      additionalTemplateFilters,
+    ),
+    additionalTemplateGlobals: convertGlobalsToRecord(
+      additionalTemplateGlobals,
+    ),
   };
 
   const workers: TaskWorker[] = [];
