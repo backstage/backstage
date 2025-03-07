@@ -17440,8 +17440,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-functions@npm:^1.6.1, @stoplight/spectral-functions@npm:^1.7.2, @stoplight/spectral-functions@npm:^1.9.1":
-  version: 1.9.3
-  resolution: "@stoplight/spectral-functions@npm:1.9.3"
+  version: 1.9.4
+  resolution: "@stoplight/spectral-functions@npm:1.9.4"
   dependencies:
     "@stoplight/better-ajv-errors": 1.0.3
     "@stoplight/json": ^3.17.1
@@ -17451,10 +17451,10 @@ __metadata:
     ajv: ^8.17.1
     ajv-draft-04: ~1.0.0
     ajv-errors: ~3.0.0
-    ajv-formats: ~2.1.0
+    ajv-formats: ~2.1.1
     lodash: ~4.17.21
     tslib: ^2.8.1
-  checksum: bdb1c95b12b4ebef4f429621dd9f1b30134b07c23086573ad1e937cfc7b15d60c52cb2810939e030a8f8edb59100d198a40ee1278b832869ca71b058a0e857b1
+  checksum: c12871665afc0d5788424b0f263bd8d6cb8c2268f5df25203a8b360e8169452a6c0d8d6692ccf370ddb73bc49a17e4c0e577d6e892b60d571be8bbaae51fd97d
   languageName: node
   linkType: hard
 
