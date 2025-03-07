@@ -28,6 +28,7 @@ import {
   withStyles,
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import CancelIcon from '@material-ui/icons/Cancel';
 import React, { useEffect, useState } from 'react';
 
 import ClosedDropdown from './static/ClosedDropdown';
@@ -225,6 +226,11 @@ export function SelectComponent(props: SelectProps) {
                       key={item?.value}
                       label={item?.label}
                       clickable
+                      deleteIcon={
+                        <CancelIcon
+                          onMouseDown={event => event.stopPropagation()}
+                        />
+                      }
                       onDelete={handleDelete(selectedValue)}
                       className={classes.chip}
                     />
