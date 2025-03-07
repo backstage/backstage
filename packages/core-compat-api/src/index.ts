@@ -19,6 +19,7 @@ export * from './apis';
 
 export { convertLegacyApp } from './convertLegacyApp';
 export { convertLegacyAppOptions } from './convertLegacyAppOptions';
+export { convertLegacyEntityPage } from './convertLegacyEntityPage';
 export { convertLegacyPlugin } from './convertLegacyPlugin';
 export { convertLegacyPageExtension } from './convertLegacyPageExtension';
 export {
