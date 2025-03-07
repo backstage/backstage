@@ -14,6 +14,32 @@
  * limitations under the License.
  */
 
+import { Bitbucket } from 'bitbucket';
+
+export const getBitbucketClient = (config: {
+  token?: string;
+  username?: string;
+  appPassword?: string;
+}) => {
+  if (config.username && config.appPassword) {
+    return new Bitbucket({
+      auth: {
+        username: config.username,
+        password: config.appPassword,
+      },
+    });
+  } else if (config.token) {
+    return new Bitbucket({
+      auth: {
+        token: config.token,
+      },
+    });
+  }
+  throw new Error(
+    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+  );
+};
+
 export const getAuthorizationHeader = (config: {
   username?: string;
   appPassword?: string;
