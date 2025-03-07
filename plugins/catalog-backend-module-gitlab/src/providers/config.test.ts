@@ -65,6 +65,7 @@ describe('config', () => {
         excludeRepos: [],
         restrictUsersToGroup: false,
         includeUsersWithoutSeat: false,
+        disablePolling: false,
       }),
     );
   });
@@ -109,6 +110,7 @@ describe('config', () => {
         excludeRepos: [],
         restrictUsersToGroup: false,
         includeUsersWithoutSeat: true,
+        disablePolling: false,
       }),
     );
   });
@@ -153,6 +155,7 @@ describe('config', () => {
         skipForkedRepos: true,
         includeArchivedRepos: false,
         includeUsersWithoutSeat: false,
+        disablePolling: false,
       }),
     );
   });
@@ -197,6 +200,7 @@ describe('config', () => {
         skipForkedRepos: false,
         includeArchivedRepos: true,
         includeUsersWithoutSeat: false,
+        disablePolling: false,
       }),
     );
   });
@@ -242,6 +246,53 @@ describe('config', () => {
         includeArchivedRepos: false,
         excludeRepos: ['foo/bar', 'quz/qux'],
         includeUsersWithoutSeat: false,
+        disablePolling: false,
+      }),
+    );
+  });
+
+  it('valid config with disablePolling', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              skipForkedRepos: false,
+              disablePolling: true,
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        skipForkedRepos: false,
+        includeArchivedRepos: false,
+        excludeRepos: [],
+        includeUsersWithoutSeat: false,
+        disablePolling: true,
       }),
     );
   });
@@ -287,6 +338,7 @@ describe('config', () => {
         restrictUsersToGroup: false,
         excludeRepos: [],
         includeUsersWithoutSeat: false,
+        disablePolling: false,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {

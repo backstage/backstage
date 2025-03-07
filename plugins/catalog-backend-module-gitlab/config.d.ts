@@ -72,6 +72,10 @@ export interface Config {
            * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
            */
           excludeRepos?: string[];
+          /**
+           * (Optional) A flag to disable scheduled polling, it can be used if you're relying on events.
+           */
+          disablePolling?: boolean;
         };
       };
     };

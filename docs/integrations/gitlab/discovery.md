@@ -137,7 +137,7 @@ to the catalog configuration.
 
 :::note Note
 
-If you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+If you are using the New Backend System, the `schedule` has to be setup in the config (unless disable polling is true), as shown below.
 
 :::
 
@@ -155,7 +155,8 @@ catalog:
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
-        schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
+        disablePolling: false # Optional. If true then the provider only relies on events and does not need a schedule defined.
+        schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System or if disablePolling is true
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

@@ -248,6 +248,12 @@ export type GitlabProviderConfig = {
    * Defaults to `false`
    */
   includeUsersWithoutSeat?: boolean;
+  /**
+   * If true, scheduled polling will be disabled.
+   * This setting should only be set to true if events are enabled.
+   * Defaults to `false`
+   */
+  disablePolling?: boolean;
 };
 
 /**
