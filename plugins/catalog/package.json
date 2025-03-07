@@ -79,7 +79,6 @@
     "@mui/utils": "^5.14.15",
     "classnames": "^2.3.1",
     "dataloader": "^2.0.0",
-    "expiry-map": "^2.0.0",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
