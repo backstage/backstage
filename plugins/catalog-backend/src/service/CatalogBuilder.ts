@@ -557,7 +557,13 @@ export class CatalogBuilder {
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
       permissionsService,
-      createConditionTransformer(this.permissionRules),
+      permissionsRegistry
+        ? createConditionTransformer(
+            permissionsRegistry.getPermissionRuleset(
+              catalogEntityPermissionResourceRef,
+            ),
+          )
+        : createConditionTransformer(this.permissionRules),
     );
 
     const getResources = async (resourceRefs: string[]) => {
