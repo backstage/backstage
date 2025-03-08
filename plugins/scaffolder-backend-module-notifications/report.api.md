@@ -15,13 +15,13 @@ export function createSendNotificationAction(options: {
 }): TemplateAction<
   {
     recipients: string;
-    entityRefs?: string[] | undefined;
+    entityRefs?: string[];
     title: string;
-    info?: string | undefined;
-    link?: string | undefined;
-    severity?: NotificationSeverity | undefined;
-    scope?: string | undefined;
-    optional?: boolean | undefined;
+    info?: string;
+    link?: string;
+    severity?: NotificationSeverity;
+    scope?: string;
+    optional?: boolean;
   },
   JsonObject
 >;

@@ -14,7 +14,7 @@ export function createVersionedContext<
 
 // @public
 export function createVersionedContextForTesting(key: string): {
-  set(versions: { [x: number]: unknown }): void;
+  set(versions: { [version in number]: unknown }): void;
   reset(): void;
 };
 

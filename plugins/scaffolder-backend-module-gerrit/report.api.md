@@ -17,11 +17,11 @@ export function createPublishGerritAction(options: {
   {
     repoUrl: string;
     description: string;
-    defaultBranch?: string | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
-    sourcePath?: string | undefined;
+    defaultBranch?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    sourcePath?: string;
   },
   JsonObject
 >;
@@ -33,11 +33,11 @@ export function createPublishGerritReviewAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    branch?: string | undefined;
-    sourcePath?: string | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
+    branch?: string;
+    sourcePath?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   },
   JsonObject
 >;
