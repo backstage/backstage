@@ -188,7 +188,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
         expect.anything(),
-        { host: 'dev.azure.com' },
+        { host: 'dev.azure.com', apiVersion: '6.0' },
         'shopify',
         'engineering',
         '',
@@ -239,7 +239,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
         expect.anything(),
-        { host: 'dev.azure.com' },
+        { host: 'dev.azure.com', apiVersion: '6.0' },
         'shopify',
         'engineering',
         'backstage',
@@ -282,7 +282,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
         expect.anything(),
-        { host: 'dev.azure.com' },
+        { host: 'dev.azure.com', apiVersion: '6.0' },
         'shopify',
         'engineering',
         'backstage',
@@ -325,7 +325,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
         expect.anything(),
-        { host: 'dev.azure.com' },
+        { host: 'dev.azure.com', apiVersion: '6.0' },
         'shopify',
         'engineering',
         '',
@@ -356,7 +356,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
         expect.anything(),
-        { host: 'dev.azure.com' },
+        { host: 'dev.azure.com', apiVersion: '6.0' },
         'shopify',
         'engineering',
         'backstage',
