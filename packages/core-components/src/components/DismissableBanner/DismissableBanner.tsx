@@ -102,11 +102,14 @@ export const DismissableBanner = (props: Props) => {
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
-  const rawDismissedBanners =
-    notificationsStore.snapshot<string[]>('dismissedBanners').value ?? [];
+  const dismissedBannersSnapshot =
+    notificationsStore.snapshot<string[]>('dismissedBanners');
 
   const [dismissedBanners, setDismissedBanners] = useState(
-    new Set(rawDismissedBanners),
+    new Set(dismissedBannersSnapshot.value ?? []),
+  );
+  const [loadingSettings, setLoadingSettings] = useState(
+    dismissedBannersSnapshot.presence === 'unknown',
   );
 
   const observedItems = useObservable(
@@ -114,11 +117,21 @@ export const DismissableBanner = (props: Props) => {
   );
 
   useEffect(() => {
+    if (observedItems?.presence === 'unknown' || observedItems === undefined) {
+      setLoadingSettings(true);
+    }
+
     if (observedItems?.value) {
       const currentValue = observedItems?.value ?? [];
       setDismissedBanners(new Set(currentValue));
     }
-  }, [observedItems?.value]);
+    if (
+      observedItems?.presence === 'absent' ||
+      observedItems?.presence === 'present'
+    ) {
+      setLoadingSettings(false);
+    }
+  }, [observedItems]);
 
   const handleClick = () => {
     notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
@@ -131,7 +144,7 @@ export const DismissableBanner = (props: Props) => {
           ? { vertical: 'bottom', horizontal: 'center' }
           : { vertical: 'top', horizontal: 'center' }
       }
-      open={!dismissedBanners.has(id)}
+      open={!loadingSettings && !dismissedBanners.has(id)}
       classes={{
         root: classNames(classes.root, !fixed && classes.topPosition),
       }}
