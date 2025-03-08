@@ -6811,7 +6811,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/container": ^5.0.0
     "@jest-mock/express": ^2.0.1
-    "@kubernetes/client-node": 1.0.0-rc7
+    "@kubernetes/client-node": 1.0.0
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^1.0.0
@@ -6886,7 +6886,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@kubernetes/client-node": 1.0.0-rc7
+    "@kubernetes/client-node": 1.0.0
     kubernetes-models: ^4.3.1
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -6907,7 +6907,7 @@ __metadata:
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@kubernetes/client-node": 1.0.0-rc7
+    "@kubernetes/client-node": 1.0.0
     msw: ^1.3.1
     node-fetch: ^2.7.0
     supertest: ^7.0.0
@@ -6930,7 +6930,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@kubernetes-models/apimachinery": ^2.0.0
     "@kubernetes-models/base": ^5.0.0
-    "@kubernetes/client-node": 1.0.0-rc7
+    "@kubernetes/client-node": 1.0.0
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
@@ -6980,7 +6980,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@kubernetes-models/apimachinery": ^2.0.0
     "@kubernetes-models/base": ^5.0.0
-    "@kubernetes/client-node": 1.0.0-rc7
+    "@kubernetes/client-node": 1.0.0
     "@material-ui/core": ^4.12.2
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -11443,9 +11443,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes/client-node@npm:1.0.0-rc7":
-  version: 1.0.0-rc7
-  resolution: "@kubernetes/client-node@npm:1.0.0-rc7"
+"@kubernetes/client-node@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@kubernetes/client-node@npm:1.0.0"
   dependencies:
     "@types/js-yaml": ^4.0.1
     "@types/node": ^22.0.0
@@ -11456,17 +11456,16 @@ __metadata:
     form-data: ^4.0.0
     isomorphic-ws: ^5.0.0
     js-yaml: ^4.1.0
-    jsonpath-plus: ^10.0.0
+    jsonpath-plus: ^10.2.0
     node-fetch: ^2.6.9
-    openid-client: ^5.6.5
+    openid-client: ^6.1.3
     rfc4648: ^1.3.0
     stream-buffers: ^3.0.2
     tar: ^7.0.0
     tmp-promise: ^3.0.2
     tslib: ^2.5.0
-    url-parse: ^1.4.3
     ws: ^8.18.0
-  checksum: 82dca69f28e24c635badf866c1f548078d9ce2db5d4911c1831d257b9db3748fe306e35bdb3c04b54d9d6e5565625c0f3a43fc4bd75945b83475654b74ce5c31
+  checksum: 1503923ff9b755897c9ab6ff5a568a5fc83f64955249eaab4128fb940b99178a775fd70430354a28811f234085bcd02d8ad55ac9b04d9bb2e60342a2468b76f7
   languageName: node
   linkType: hard
 
@@ -33772,6 +33771,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^6.0.6":
+  version: 6.0.8
+  resolution: "jose@npm:6.0.8"
+  checksum: 900aba372cc929300f98ed8900af186258cabfb6c4d19f4f2a08ef3b99b9c71f98c23629080b772c0526cbe18cae8df66d4db92ad850c77fce389ef5c6453d08
+  languageName: node
+  linkType: hard
+
 "js-base64@npm:^3.6.0":
   version: 3.7.7
   resolution: "js-base64@npm:3.7.7"
@@ -34251,7 +34257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonpath-plus@npm:^10.0.0, jsonpath-plus@npm:^10.3.0, jsonpath-plus@npm:^6.0.1 || ^10.1.0":
+"jsonpath-plus@npm:^10.0.0, jsonpath-plus@npm:^10.2.0, jsonpath-plus@npm:^10.3.0, jsonpath-plus@npm:^6.0.1 || ^10.1.0":
   version: 10.3.0
   resolution: "jsonpath-plus@npm:10.3.0"
   dependencies:
@@ -38143,6 +38149,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oauth4webapi@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "oauth4webapi@npm:3.3.0"
+  checksum: 8f80190b333ea419811690ad5d61297106dd89e1f548866e804558df9dbe2a94f7c6e4d00f23c992f63627f585ac6b6ea8b3c387798df3b95064ee08a0c6ae94
+  languageName: node
+  linkType: hard
+
 "oauth@npm:0.10.x":
   version: 0.10.0
   resolution: "oauth@npm:0.10.0"
@@ -38496,7 +38509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3, openid-client@npm:^5.5.0, openid-client@npm:^5.6.5":
+"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3, openid-client@npm:^5.5.0":
   version: 5.7.1
   resolution: "openid-client@npm:5.7.1"
   dependencies:
@@ -38505,6 +38518,16 @@ __metadata:
     object-hash: ^2.2.0
     oidc-token-hash: ^5.0.3
   checksum: 497aad2c8a022cef112ade19ed88fba6c8ca0e79607ebe5efdcf75c4095d7924ca479085c1c94f689f6dbc9442c61aab3c2443eb347bcbc6ef51df68827c7c47
+  languageName: node
+  linkType: hard
+
+"openid-client@npm:^6.1.3":
+  version: 6.3.3
+  resolution: "openid-client@npm:6.3.3"
+  dependencies:
+    jose: ^6.0.6
+    oauth4webapi: ^3.3.0
+  checksum: a25293becf28f8c1ece71ae6203f67fd563f90c1b48292b139c48fed0fa5b84c25b943474b16b099b436f4aa61dbb262994124b66eb8c67a234df2035250cda7
   languageName: node
   linkType: hard
 
@@ -46614,7 +46637,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-parse@npm:^1.4.3, url-parse@npm:^1.5.10, url-parse@npm:^1.5.3":
+"url-parse@npm:^1.5.10, url-parse@npm:^1.5.3":
   version: 1.5.10
   resolution: "url-parse@npm:1.5.10"
   dependencies:
