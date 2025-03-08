@@ -223,11 +223,13 @@ export function SelectComponent(props: SelectProps) {
                   const item = items.find(el => el.value === selectedValue);
                   return item ? (
                     <Chip
+                      data-testid="chip"
                       key={item?.value}
                       label={item?.label}
                       clickable
                       deleteIcon={
                         <CancelIcon
+                          data-testid="cancel-icon"
                           onMouseDown={event => event.stopPropagation()}
                         />
                       }

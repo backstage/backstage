@@ -93,4 +93,62 @@ describe('<Select />', () => {
     const input = getByTestId('custom-select');
     expect(input.textContent).toBe('All results');
   });
+
+  it('should not open dropdown when deleting Chip component from Select', () => {
+    const items = [
+      { value: 'test_1', label: 'test 1' },
+      { value: 'test_2', label: 'test 2' },
+    ];
+
+    const handleChange = jest.fn();
+
+    const { getByTestId, queryByText } = render(
+      <Select
+        label="Default"
+        items={items}
+        multiple
+        selected={['test_1']} // Creates Chip Component initially
+        onChange={handleChange}
+        placeholder="All results"
+      />,
+    );
+
+    // Verify Chip component exist
+    const chip = getByTestId('chip');
+    expect(chip).toBeInTheDocument();
+    expect(chip.textContent).toContain('test 1');
+
+    // Find cancel icon
+    const cancelIcon = getByTestId('cancel-icon');
+    expect(cancelIcon).toBeInTheDocument();
+
+    // Verify dropdown is initially closed
+    expect(queryByText('test 2')).not.toBeInTheDocument();
+
+    // Fire mouseDown on Chip's CancelIcon that tests if onMouseDown={event => event.stopPropagation()} is working properly
+    fireEvent.mouseDown(cancelIcon);
+
+    // Verify dropdown is closed after mouseDown on Chip's CancelIcon
+    expect(queryByText('test 2')).not.toBeInTheDocument();
+
+    // Delete the Chip
+    fireEvent.click(cancelIcon);
+
+    // Verify dropdown is still closed after the removal of Chip
+    expect(queryByText('test 2')).not.toBeInTheDocument();
+
+    // Verify Chip is removed
+    expect(chip).not.toBeInTheDocument();
+    expect(queryByText('test 1')).not.toBeInTheDocument();
+
+    // Verify we can still open the dropdown with a click on the select
+    const selectInput = getByTestId('select');
+    expect(selectInput.textContent).toBe('All results');
+
+    // Simulate click on select
+    fireEvent.mouseDown(within(selectInput).getByRole('button'));
+
+    // Now dropdown should be open
+    expect(queryByText('test 2')).toBeInTheDocument();
+  });
 });
