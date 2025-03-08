@@ -55,6 +55,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const excludeRepos: string[] =
     config.getOptionalStringArray('excludeRepos') ?? [];
 
+  const disablePolling: boolean =
+    config.getOptionalBoolean('disablePolling') ?? false;
+
   const schedule = config.has('schedule')
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
         config.getConfig('schedule'),
@@ -85,6 +88,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     excludeRepos,
     restrictUsersToGroup,
     includeUsersWithoutSeat,
+    disablePolling,
   };
 }
 
