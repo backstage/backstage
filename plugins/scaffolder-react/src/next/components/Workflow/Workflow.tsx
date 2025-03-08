@@ -95,7 +95,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const workflowOnCreate = useCallback(
     async (formState: Record<string, JsonValue>) => {
-      onCreate(formState);
+      await onCreate(formState);
 
       const name =
         typeof formState.name === 'string' ? formState.name : undefined;

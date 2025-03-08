@@ -115,7 +115,7 @@ export type StepperProps = {
  */
 export const Stepper = (stepperProps: StepperProps) => {
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
-  const { layouts = [], components = {}, ...props } = stepperProps;
+  const { layouts = [], components = {}, onCreate, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     ReviewStepComponent,
@@ -220,10 +220,17 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const handleCreate = useCallback(() => {
-    props.onCreate(stepsState);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreate = useCallback(async () => {
+    setIsCreating(true);
     analytics.captureEvent('click', `${createLabel}`);
-  }, [props, stepsState, analytics, createLabel]);
+    try {
+      await onCreate(stepsState);
+    } finally {
+      setIsCreating(false);
+    }
+  }, [analytics, createLabel, onCreate, stepsState]);
 
   return (
     <>
@@ -318,6 +325,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 {backLabel}
               </Button>
               <Button
+                disabled={isCreating}
                 variant="contained"
                 color="primary"
                 onClick={handleCreate}
