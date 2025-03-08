@@ -42,6 +42,7 @@ import { version as coreComponents } from '../../../../packages/core-components/
 import { version as corePluginApi } from '../../../../packages/core-plugin-api/package.json';
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
 import { version as errors } from '../../../../packages/errors/package.json';
+import { version as frontendPluginApi } from '../../../../packages/frontend-plugin-api/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
@@ -63,6 +64,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/core-plugin-api': corePluginApi,
   '@backstage/dev-utils': devUtils,
   '@backstage/errors': errors,
+  '@backstage/frontend-plugin-api': frontendPluginApi,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
