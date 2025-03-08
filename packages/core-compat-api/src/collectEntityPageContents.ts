@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { ApiHolder, getComponentData } from '@backstage/core-plugin-api';
 import {
-  createFrontendPlugin,
-  ExtensionDefinition,
-  FrontendModule,
-  FrontendPlugin,
-} from '@backstage/frontend-plugin-api';
+  ApiHolder,
+  getComponentData,
+  BackstagePlugin as LegacyBackstagePlugin,
+} from '@backstage/core-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import React from 'react';
 import {
   EntityCardBlueprint,
@@ -72,13 +71,17 @@ function invertFilter(ifFunc?: EntityFilter): EntityFilter {
   return (entity, ctx) => !ifFunc(entity, ctx);
 }
 
-export function convertLegacyEntityPage(
+export function collectEntityPageContents(
   entityPageElement: React.JSX.Element,
-): (FrontendModule | FrontendPlugin)[] {
+  context: {
+    discoveryExtension(
+      extension: ExtensionDefinition,
+      plugin?: LegacyBackstagePlugin,
+    ): void;
+  },
+) {
   let cardCounter = 1;
   let routeCounter = 1;
-
-  const collected: ExtensionDefinition[] = [];
 
   function traverse(element: React.ReactNode, parentFilter?: EntityFilter) {
     if (!React.isValidElement(element)) {
@@ -91,9 +94,9 @@ export function convertLegacyEntityPage(
         const mergedIf = allFilters(parentFilter, pageNode.if);
 
         if (pageNode.path === '/') {
-          collected.push(
+          context.discoveryExtension(
             EntityCardBlueprint.makeWithOverrides({
-              name: `discovered-entity-cards-${cardCounter++}`,
+              name: `discovered-${cardCounter++}`,
               factory(originalFactory, { apis }) {
                 return originalFactory({
                   type: 'full',
@@ -104,9 +107,11 @@ export function convertLegacyEntityPage(
             }),
           );
         } else {
-          collected.push(
+          const name = `discovered-${routeCounter++}`;
+
+          context.discoveryExtension(
             EntityContentBlueprint.makeWithOverrides({
-              name: `discovered-entity-route-${routeCounter++}`,
+              name,
               factory(originalFactory, { apis }) {
                 return originalFactory({
                   defaultPath: pageNode.path,
@@ -116,6 +121,10 @@ export function convertLegacyEntityPage(
                 });
               },
             }),
+            getComponentData<LegacyBackstagePlugin>(
+              pageNode.children,
+              'core.plugin',
+            ),
           );
         }
       }
@@ -151,13 +160,6 @@ export function convertLegacyEntityPage(
   }
 
   traverse(entityPageElement);
-
-  return [
-    createFrontendPlugin({
-      id: 'converted-orphan-entity-content',
-      extensions: collected,
-    }),
-  ];
 }
 
 type EntityRoute = {
@@ -192,7 +194,7 @@ function wrapAsyncEntityFilter(
       if (!loggedError) {
         // eslint-disable-next-line no-console
         console.error(
-          `convertLegacyEntityPage does not support async entity filters, skipping filter ${asyncFilter}`,
+          `collectEntityPageContents does not support async entity filters, skipping filter ${asyncFilter}`,
         );
         loggedError = true;
       }
