@@ -7,6 +7,7 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -171,15 +172,9 @@ const _default: FrontendPlugin<
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
-        defaultGroup?:
-          | (string & {})
-          | 'documentation'
-          | 'development'
-          | 'deployment'
-          | 'observability'
-          | undefined;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
+        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
+        routeRef?: RouteRef;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:techdocs': ExtensionDefinition<{
@@ -230,7 +225,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
     'page:techdocs/reader': ExtensionDefinition<{
@@ -272,7 +267,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
     'search-result-list-item:techdocs': ExtensionDefinition<{
@@ -294,7 +289,7 @@ const _default: FrontendPlugin<
       };
       output: ConfigurableExtensionDataRef<
         {
-          predicate?: SearchResultItemExtensionPredicate | undefined;
+          predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
         },
         'search.search-result-list-item.item',
@@ -337,7 +332,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   };
   output: ConfigurableExtensionDataRef<
     {
-      predicate?: SearchResultItemExtensionPredicate | undefined;
+      predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
     },
     'search.search-result-list-item.item',
