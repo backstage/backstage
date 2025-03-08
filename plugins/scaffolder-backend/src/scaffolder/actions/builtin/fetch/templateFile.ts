@@ -15,20 +15,16 @@
  */
 
 import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { examples } from './templateFile.examples';
 import {
   createTemplateAction,
   fetchFile,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import createDefaultFilters from '../../../../lib/templating/filters';
 import path from 'path';
-import fs from 'fs-extra';
-import { convertFiltersToRecord } from '../../../../util/templating';
+import { examples } from './templateFile.examples';
+import { createTemplateFileActionHandler } from './templateFileActionHandler';
 
 /**
  * Downloads a single file and templates variables into file.
@@ -42,17 +38,6 @@ export function createFetchTemplateFileAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
-  const {
-    reader,
-    integrations,
-    additionalTemplateFilters,
-    additionalTemplateGlobals,
-  } = options;
-
-  const defaultTemplateFilters = convertFiltersToRecord(
-    createDefaultFilters({ integrations }),
-  );
-
   return createTemplateAction<{
     url: string;
     targetPath: string;
@@ -110,63 +95,24 @@ export function createFetchTemplateFileAction(options: {
       },
     },
     supportsDryRun: true,
-    async handler(ctx) {
-      ctx.logger.info('Fetching template file content from remote URL');
+    handler: createTemplateFileActionHandler({
+      resolveTemplateFile: async ctx => {
+        ctx.logger.info('Fetching template file content from remote URL');
 
-      const workDir = await ctx.createTemporaryDirectory();
-      // Write to a tmp file, render the template, then copy to workspace.
-      const tmpFilePath = path.join(workDir, 'tmp');
+        const workDir = await ctx.createTemporaryDirectory();
+        // Write to a tmp file, render the template, then copy to workspace.
+        const tmpFilePath = path.join(workDir, 'tmp');
 
-      const outputPath = resolveSafeChildPath(
-        ctx.workspacePath,
-        ctx.input.targetPath,
-      );
-
-      if (fs.existsSync(outputPath) && !ctx.input.replace) {
-        ctx.logger.info(
-          `File ${ctx.input.targetPath} already exists in workspace, not replacing.`,
-        );
-        return;
-      }
-
-      await fetchFile({
-        reader,
-        integrations,
-        baseUrl: ctx.templateInfo?.baseUrl,
-        fetchUrl: ctx.input.url,
-        outputPath: tmpFilePath,
-        token: ctx.input.token,
-      });
-
-      const { cookiecutterCompat, values } = ctx.input;
-      const context = {
-        [cookiecutterCompat ? 'cookiecutter' : 'values']: values,
-      };
-
-      ctx.logger.info(
-        `Processing template file with input values`,
-        ctx.input.values,
-      );
-
-      const renderTemplate = await SecureTemplater.loadRenderer({
-        cookiecutterCompat,
-        templateFilters: {
-          ...defaultTemplateFilters,
-          ...additionalTemplateFilters,
-        },
-        templateGlobals: additionalTemplateGlobals,
-        nunjucksConfigs: {
-          trimBlocks: ctx.input.trimBlocks,
-          lstripBlocks: ctx.input.lstripBlocks,
-        },
-      });
-
-      const contents = await fs.readFile(tmpFilePath, 'utf-8');
-      const result = renderTemplate(contents, context);
-      await fs.ensureDir(path.dirname(outputPath));
-      await fs.outputFile(outputPath, result);
-
-      ctx.logger.info(`Template file has been written to ${outputPath}`);
-    },
+        await fetchFile({
+          baseUrl: ctx.templateInfo?.baseUrl,
+          fetchUrl: ctx.input.url,
+          outputPath: tmpFilePath,
+          token: ctx.input.token,
+          ...options,
+        });
+        return tmpFilePath;
+      },
+      ...options,
+    }),
   });
 }
