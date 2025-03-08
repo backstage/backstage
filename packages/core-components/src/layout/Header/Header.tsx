@@ -59,6 +59,7 @@ const useStyles = makeStyles(
     },
     leftItemsBox: {
       maxWidth: '100%',
+      width: '80%', // space for the right items
       flexGrow: 1,
     },
     rightItemsBox: {
@@ -70,6 +71,10 @@ const useStyles = makeStyles(
       wordBreak: 'break-word',
       fontSize: theme.typography.h3.fontSize,
       marginBottom: 0,
+      '& > div > span > span': {
+        display: 'unset',
+        // to fix title overflow issue
+      },
     },
     subtitle: {
       color: theme.page.fontColor,
