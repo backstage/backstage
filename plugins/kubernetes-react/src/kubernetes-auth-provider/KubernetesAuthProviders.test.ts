@@ -49,6 +49,7 @@ describe('KubernetesAuthProviders tests', () => {
       googleAuthApi: new MockAuthApi('googleToken'),
       oidcProviders: {
         okta: new MockAuthApi('oktaToken'),
+        microsoft: new MockAuthApi('microsoftToken'),
       },
     });
   });
@@ -75,6 +76,20 @@ describe('KubernetesAuthProviders tests', () => {
     );
 
     expect(details).toMatchObject({ auth: { oidc: { okta: 'oktaToken' } } });
+  });
+
+  it('adds access token to request body for oidc authProvider', async () => {
+    const details = await kap.decorateRequestBodyForAuth(
+      'oidc.microsoft',
+      requestBody,
+    );
+
+    expect(details).toMatchObject({
+      auth: { oidc: { microsoft: 'microsoftToken' } },
+    });
+    expect(microsoftAuthApi.getAccessToken).toHaveBeenCalledWith(
+      '6dae42f8-4368-4678-94ff-3960e28e3630/user.read',
+    );
   });
 
   it('returns error for unknown authProvider', async () => {

@@ -640,9 +640,13 @@ export interface ManifestYamlProps {
 
 // @public (undocumented)
 export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
-  constructor(providerName: string, authProvider: OpenIdConnectApi);
+  constructor(
+    providerName: string,
+    idTokenProviderApi: OpenIdConnectApi,
+    accessTokenProviderApi?: OAuthApi,
+  );
   // (undocumented)
-  authProvider: OpenIdConnectApi;
+  accessTokenProviderApi?: OAuthApi;
   // (undocumented)
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
@@ -651,6 +655,10 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   getCredentials(): Promise<{
     token: string;
   }>;
+  // (undocumented)
+  idTokenProviderApi: OpenIdConnectApi;
+  // (undocumented)
+  microsoftAccessTokenProviderScope: string;
   // (undocumented)
   providerName: string;
 }
