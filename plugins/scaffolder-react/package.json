@@ -81,7 +81,7 @@
     "ajv": "^8.0.1",
     "ajv-errors": "^3.0.0",
     "classnames": "^2.2.6",
-    "flatted": "3.3.2",
+    "flatted": "3.3.3",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.6",
     "json-schema": "^0.4.0",
