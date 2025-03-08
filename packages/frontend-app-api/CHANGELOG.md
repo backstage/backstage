@@ -1,5 +1,20 @@
 # @backstage/frontend-app-api
 
+## 0.10.6-next.2
+
+### Patch Changes
+
+- 4d18b55: It's now possible to provide a middleware that wraps all extension factories by passing an `extensionFactoryMiddleware` to either `createApp()` or `createSpecializedApp()`.
+- Updated dependencies
+  - @backstage/frontend-defaults@0.1.7-next.2
+  - @backstage/frontend-plugin-api@0.9.6-next.2
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.15.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.10.6-next.1
 
 ### Patch Changes
