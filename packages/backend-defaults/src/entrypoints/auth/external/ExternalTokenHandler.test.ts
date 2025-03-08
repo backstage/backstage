@@ -15,7 +15,7 @@
  */
 
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
-import { ExternalTokenHandler } from './ExternalTokenHandler';
+import { DefaultExternalTokenHandler } from './ExternalTokenHandler';
 import { TokenHandler } from './types';
 import {
   mockServices,
@@ -93,6 +93,7 @@ describe('ExternalTokenHandler', () => {
       add: jest.fn(),
       verifyToken: jest.fn().mockResolvedValue({
         subject: 'sub',
+
         allAccessRestrictions: new Map(
           Object.entries({
             plugin1: {
@@ -103,8 +104,14 @@ describe('ExternalTokenHandler', () => {
       }),
     };
 
-    const plugin1 = new ExternalTokenHandler('plugin1', [handler1, handler2]);
-    const plugin2 = new ExternalTokenHandler('plugin2', [handler1, handler2]);
+    const plugin1 = new DefaultExternalTokenHandler('plugin1', [
+      handler1,
+      handler2,
+    ]);
+    const plugin2 = new DefaultExternalTokenHandler('plugin2', [
+      handler1,
+      handler2,
+    ]);
 
     await expect(plugin1.verifyToken('token')).resolves.toEqual({
       subject: 'sub',
@@ -135,7 +142,7 @@ describe('ExternalTokenHandler', () => {
       ),
     );
 
-    const handler = ExternalTokenHandler.create({
+    const handler = DefaultExternalTokenHandler.create({
       ownPluginId: 'catalog',
       logger: mockServices.logger.mock(),
       config: mockServices.rootConfig({
