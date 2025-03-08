@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.1-next.2
+
+### Patch Changes
+
+- ac58f84: Made gitlab:issue:edit action idempotent.
+- a75e18f: Change the if statement in the catch block to match what the new version of Gitbeaker will return
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+
 ## 0.8.1-next.1
 
 ### Patch Changes

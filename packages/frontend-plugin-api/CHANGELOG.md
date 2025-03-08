@@ -1,5 +1,17 @@
 # @backstage/frontend-plugin-api
 
+## 0.9.6-next.2
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.9.6-next.1
 
 ### Patch Changes
