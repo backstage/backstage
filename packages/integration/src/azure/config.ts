@@ -66,7 +66,8 @@ export type AzureIntegrationConfig = {
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
-  | 'ManagedIdentity';
+  | 'ManagedIdentity'
+  | 'ManagedIdentityClientAssertion';
 
 /**
  * Common fields for the Azure DevOps credentials.
@@ -105,6 +106,31 @@ export type AzureClientSecretCredential = AzureCredentialBase & {
 };
 
 /**
+ * A client assertion credential that uses a managed identity to generate a client assertion (JWT).
+ * @public
+ */
+export type AzureManagedIdentityClientAssertionCredential =
+  AzureCredentialBase & {
+    kind: 'ManagedIdentityClientAssertion';
+    /**
+     * The Entra ID tenant
+     */
+    tenantId: string;
+
+    /**
+     * The client ID of the app registration you want to authenticate as.
+     */
+    clientId: string;
+
+    /**
+     * The client ID of the managed identity used to generate a client assertion (JWT).
+     * Set to "system-assigned" to automatically use the system-assigned managed identity.
+     * For user-assigned managed identities, specify the client ID of the managed identity you want to use.
+     */
+    managedIdentityClientId: 'system-assigned' | string;
+  };
+
+/**
  * A managed identity credential.
  * @public
  */
@@ -113,7 +139,7 @@ export type AzureManagedIdentityCredential = AzureCredentialBase & {
   /**
    * The clientId
    */
-  clientId: string;
+  clientId: 'system-assigned' | string;
 };
 
 /**
@@ -131,6 +157,7 @@ export type PersonalAccessTokenCredential = AzureCredentialBase & {
  */
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,
   'kind'
@@ -142,12 +169,14 @@ export type AzureDevOpsCredentialLike = Omit<
  */
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
 
 const AzureDevOpsCredentialFields = [
   'clientId',
   'clientSecret',
+  'managedIdentityClientId',
   'tenantId',
   'personalAccessToken',
 ] as const;
@@ -159,6 +188,10 @@ const AzureDevopsCredentialFieldMap = new Map<
 >([
   ['ClientSecret', ['clientId', 'clientSecret', 'tenantId']],
   ['ManagedIdentity', ['clientId']],
+  [
+    'ManagedIdentityClientAssertion',
+    ['clientId', 'managedIdentityClientId', 'tenantId'],
+  ],
   ['PersonalAccessToken', ['personalAccessToken']],
 ]);
 
@@ -208,9 +241,12 @@ export function readAzureIntegrationConfig(
         personalAccessToken: credential
           .getOptionalString('personalAccessToken')
           ?.trim(),
-        tenantId: credential.getOptionalString('tenantId'),
-        clientId: credential.getOptionalString('clientId'),
+        tenantId: credential.getOptionalString('tenantId')?.trim(),
+        clientId: credential.getOptionalString('clientId')?.trim(),
         clientSecret: credential.getOptionalString('clientSecret')?.trim(),
+        managedIdentityClientId: credential
+          .getOptionalString('managedIdentityClientId')
+          ?.trim(),
       };
 
       return result;
