@@ -69,7 +69,7 @@ export const MyGroupsSidebarItem = (props: {
           ...(filter ?? {}),
         },
       ],
-      fields: ['metadata', 'kind'],
+      fields: ['metadata', 'kind', 'spec.profile'],
     });
     return response.items;
   }, []);
