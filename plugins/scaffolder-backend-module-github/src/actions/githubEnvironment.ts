@@ -250,10 +250,10 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         owner: owner,
         repo: repo,
         environment_name: name,
-        deployment_branch_policy: deploymentBranchPolicy ?? null,
-        wait_timer: waitTimer ?? 0,
-        prevent_self_review: preventSelfReview ?? false,
-        reviewers: githubReviewers.length ? githubReviewers : null,
+        deployment_branch_policy: deploymentBranchPolicy ?? undefined,
+        wait_timer: waitTimer ?? undefined,
+        prevent_self_review: preventSelfReview ?? undefined,
+        reviewers: githubReviewers.length ? githubReviewers : undefined,
       });
 
       if (customBranchPolicyNames) {
