@@ -65,6 +65,11 @@ export interface Config {
        * Batch size to use when indexing
        */
       indexerBatchSize?: number;
+
+      /**
+       * text search configuration name for pg text search
+       */
+      textSearchConfigName?: string;
     };
   };
 }

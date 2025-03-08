@@ -56,3 +56,9 @@ search:
 ```
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
+
+```yaml
+search:
+  pg:
+    textSearchConfigName: simple; # text search configuration name for pg text search
+```

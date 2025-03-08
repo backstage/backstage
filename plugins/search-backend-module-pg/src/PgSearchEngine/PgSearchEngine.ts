@@ -162,16 +162,30 @@ export class PgSearchEngine implements SearchEngine {
     config: Config;
     logger?: LoggerService;
   }): Promise<PgSearchEngine> {
+    const textSearchConfigName = options.config.getOptionalString(
+      'search.pg.textSearchConfigName',
+    );
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(options.database),
+      await DatabaseDocumentStore.create(
+        options.database,
+        textSearchConfigName,
+        options.logger,
+      ),
       options.config,
       options.logger,
     );
   }
 
   static async fromConfig(config: Config, options: PgSearchOptions) {
+    const textSearchConfigName = config.getOptionalString(
+      'search.pg.textSearchConfigName',
+    );
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(options.database),
+      await DatabaseDocumentStore.create(
+        options.database,
+        textSearchConfigName,
+        options.logger,
+      ),
       config,
       options.logger,
     );
