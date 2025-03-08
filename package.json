@@ -103,7 +103,9 @@
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
+    "ast-types@^0.14.1": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
+    "ast-types@0.14.2": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
@@ -145,7 +147,7 @@
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
     "typedoc": "^0.27.6",
-    "typescript": "~5.2.0"
+    "typescript": "~5.6.0"
   },
   "packageManager": "yarn@3.8.1",
   "engines": {

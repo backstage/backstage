@@ -11,8 +11,8 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 export function createRunYeomanAction(): TemplateAction<
   {
     namespace: string;
-    args?: string[] | undefined;
-    options?: JsonObject | undefined;
+    args?: string[];
+    options?: JsonObject;
   },
   JsonObject
 >;

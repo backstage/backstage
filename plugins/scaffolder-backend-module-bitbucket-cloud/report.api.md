@@ -20,8 +20,8 @@ export const createBitbucketPipelinesRunAction: (options: {
   {
     workspace: string;
     repo_slug: string;
-    body?: object | undefined;
-    token?: string | undefined;
+    body?: object;
+    token?: string;
   },
   JsonObject
 >;
@@ -33,12 +33,12 @@ export function createPublishBitbucketCloudAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string | undefined;
-    defaultBranch?: string | undefined;
-    repoVisibility?: 'private' | 'public' | undefined;
-    gitCommitMessage?: string | undefined;
-    sourcePath?: string | undefined;
-    token?: string | undefined;
+    description?: string;
+    defaultBranch?: string;
+    repoVisibility?: 'private' | 'public';
+    gitCommitMessage?: string;
+    sourcePath?: string;
+    token?: string;
   },
   JsonObject
 >;
@@ -51,12 +51,12 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
-    description?: string | undefined;
-    targetBranch?: string | undefined;
+    description?: string;
+    targetBranch?: string;
     sourceBranch: string;
-    token?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
+    token?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   },
   JsonObject
 >;

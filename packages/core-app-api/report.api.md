@@ -365,7 +365,7 @@ export class ErrorAlerter implements ErrorApi {
   // (undocumented)
   error$(): Observable<{
     error: ErrorApiError;
-    context?: ErrorApiErrorContext | undefined;
+    context?: ErrorApiErrorContext;
   }>;
   // (undocumented)
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;

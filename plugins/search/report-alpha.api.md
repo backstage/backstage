@@ -88,7 +88,7 @@ const _default: FrontendPlugin<
         items: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              predicate?: SearchResultItemExtensionPredicate | undefined;
+              predicate?: SearchResultItemExtensionPredicate;
               component: SearchResultItemExtensionComponent;
             },
             'search.search-result-list-item.item',
@@ -133,7 +133,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }
@@ -202,7 +202,7 @@ export const searchPage: ExtensionDefinition<{
     items: ExtensionInput<
       ConfigurableExtensionDataRef<
         {
-          predicate?: SearchResultItemExtensionPredicate | undefined;
+          predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
         },
         'search.search-result-list-item.item',
@@ -247,7 +247,7 @@ export const searchPage: ExtensionDefinition<{
   params: {
     defaultPath: string;
     loader: () => Promise<JSX.Element>;
-    routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+    routeRef?: RouteRef;
   };
 }>;
 

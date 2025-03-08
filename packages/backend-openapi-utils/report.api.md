@@ -96,7 +96,7 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
     validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
     middleware?: RequestHandler[];
   },
-): ApiRouter<T>;
+): ApiRouter<typeof spec>;
 
 // @public
 export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
