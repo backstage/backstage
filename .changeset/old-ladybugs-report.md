@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend-module-github': patch
 ---
 
-Fix createOrUpdateEnvironment not working when optional field of request is not undefine on GitHub Team plan.
+Pass `undefined` to some parameters for `createOrUpdateEnvironment` as these values are not always supported in different plans of GitHub
