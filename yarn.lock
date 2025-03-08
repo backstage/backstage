@@ -32994,12 +32994,12 @@ __metadata:
   linkType: hard
 
 "isolated-vm@npm:^5.0.1":
-  version: 5.0.3
-  resolution: "isolated-vm@npm:5.0.3"
+  version: 5.0.4
+  resolution: "isolated-vm@npm:5.0.4"
   dependencies:
     node-gyp: latest
     prebuild-install: ^7.1.2
-  checksum: 71ec0c45fe00ed5e48b598281682e46bea7b478177d303326a0ba0602a3186059164d89935820b6648d3ea68aa73d23cd47378752189a7a6877bdfcec140985a
+  checksum: f452d3c0b42c22fa1b6e965a5a5b38ab1efaadca7d9b9baebf9e9f1c9e8b1184998e819585390568ba6dddced40f1ecdd2b0345e203a02e9171c00af710fb6ef
   languageName: node
   linkType: hard
 
