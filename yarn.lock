@@ -39713,13 +39713,13 @@ __metadata:
   linkType: hard
 
 "portfinder@npm:^1.0.28, portfinder@npm:^1.0.32":
-  version: 1.0.32
-  resolution: "portfinder@npm:1.0.32"
+  version: 1.0.33
+  resolution: "portfinder@npm:1.0.33"
   dependencies:
     async: ^2.6.4
     debug: ^3.2.7
     mkdirp: ^0.5.6
-  checksum: 116b4aed1b9e16f6d5503823d966d9ffd41b1c2339e27f54c06cd2f3015a9d8ef53e2a53b57bc0a25af0885977b692007353aa28f9a0a98a44335cb50487240d
+  checksum: 87d93c07463c54a51523d05451070449a3bb8a710e9f3b0c4fc84c5682f662dae6ef09cdd85fddc09723ab7203f470bc67eaacab0b6f58051d7383a82ff3e970
   languageName: node
   linkType: hard
 
