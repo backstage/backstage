@@ -7849,7 +7849,7 @@ __metadata:
     ajv: ^8.0.1
     ajv-errors: ^3.0.0
     classnames: ^2.2.6
-    flatted: 3.3.2
+    flatted: 3.3.3
     humanize-duration: ^3.25.1
     immer: ^9.0.6
     json-schema: ^0.4.0
@@ -29867,10 +29867,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatted@npm:3.3.2, flatted@npm:^3.1.0, flatted@npm:^3.2.7":
-  version: 3.3.2
-  resolution: "flatted@npm:3.3.2"
-  checksum: ac3c159742e01d0e860a861164bcfd35bb567ccbebb8a0dd041e61cf3c64a435b917dd1e7ed1c380c2ebca85735fb16644485ec33665bc6aafc3b316aa1eed44
+"flatted@npm:3.3.3, flatted@npm:^3.1.0, flatted@npm:^3.2.7":
+  version: 3.3.3
+  resolution: "flatted@npm:3.3.3"
+  checksum: 8c96c02fbeadcf4e8ffd0fa24983241e27698b0781295622591fc13585e2f226609d95e422bcf2ef044146ffacb6b68b1f20871454eddf75ab3caa6ee5f4a1fe
   languageName: node
   linkType: hard
 
