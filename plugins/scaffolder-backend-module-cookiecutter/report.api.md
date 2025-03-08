@@ -56,6 +56,7 @@ export function createFetchCookiecutterAction(options: {
     extensions?: string[] | undefined;
     imageName?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```

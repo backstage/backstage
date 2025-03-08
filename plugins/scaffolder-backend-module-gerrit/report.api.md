@@ -23,7 +23,8 @@ export function createPublishGerritAction(options: {
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -39,7 +40,8 @@ export function createPublishGerritReviewAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

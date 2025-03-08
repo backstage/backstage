@@ -24,7 +24,8 @@ export function createPublishGiteaAction(options: {
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

@@ -32,6 +32,7 @@ import { createPublishGerritAction as createPublishGerritAction_2 } from '@backs
 import { createPublishGerritReviewAction as createPublishGerritReviewAction_2 } from '@backstage/plugin-scaffolder-backend-module-gerrit';
 import { createPublishGithubAction as createPublishGithubAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
 import { createPublishGitlabAction as createPublishGitlabAction_2 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
+import { createTemplateAction as createTemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
@@ -56,7 +57,6 @@ import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-co
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SerializedTask as SerializedTask_2 } from '@backstage/plugin-scaffolder-node';
@@ -73,15 +73,12 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
-import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
-import { ZodType } from 'zod';
-import { ZodTypeDef } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
@@ -128,7 +125,8 @@ export function createCatalogRegisterAction(options: {
       catalogInfoPath?: string | undefined;
       optional?: boolean | undefined;
     },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -137,17 +135,12 @@ export function createCatalogWriteAction(): TemplateAction_2<
     entity: Record<string, any>;
     filePath?: string | undefined;
   },
-  JsonObject
+  any,
+  'v1'
 >;
 
 // @public
-export function createDebugLogAction(): TemplateAction_2<
-  {
-    message?: string | undefined;
-    listWorkspace?: boolean | 'with-contents' | 'with-filenames' | undefined;
-  },
-  JsonObject
->;
+export function createDebugLogAction(): TemplateAction_2<any, any, 'v1'>;
 
 // @public
 export function createFetchCatalogEntityAction(options: {
@@ -155,16 +148,17 @@ export function createFetchCatalogEntityAction(options: {
   auth?: AuthService;
 }): TemplateAction_2<
   {
+    entityRef?: string | undefined;
+    entityRefs?: string[] | undefined;
     optional?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | undefined;
-    entityRef?: string | undefined;
-    entityRefs?: string[] | undefined;
   },
   {
-    entities?: any[] | undefined;
     entity?: any;
-  }
+    entities?: any[] | undefined;
+  },
+  'v2'
 >;
 
 // @public
@@ -177,7 +171,8 @@ export function createFetchPlainAction(options: {
     targetPath?: string | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -190,7 +185,8 @@ export function createFetchPlainFileAction(options: {
     targetPath: string;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -213,7 +209,8 @@ export function createFetchTemplateAction(options: {
     lstripBlocks?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -233,7 +230,8 @@ export function createFetchTemplateFileAction(options: {
     lstripBlocks?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -241,14 +239,15 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
   {
     files: string[];
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
 export const createFilesystemReadDirAction: () => TemplateAction_2<
   {
+    recursive: boolean;
     paths: string[];
-    recursive?: boolean | undefined;
   },
   {
     files: {
@@ -261,7 +260,8 @@ export const createFilesystemReadDirAction: () => TemplateAction_2<
       path: string;
       fullPath: string;
     }[];
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -273,7 +273,8 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
       overwrite?: boolean;
     }>;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public @deprecated (undocumented)
@@ -349,7 +350,8 @@ export const createPublishGithubPullRequestAction: (
     forceEmptyGitAuthor?: boolean | undefined;
     createWhenEmpty?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public @deprecated (undocumented)
@@ -375,45 +377,20 @@ export const createPublishGitlabMergeRequestAction: (options: {
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
-export const createTemplateAction: <
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
-  TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
-  TActionInput extends JsonObject = TInputSchema extends ZodType<
-    any,
-    any,
-    infer IReturn
-  >
-    ? IReturn
-    : TInputParams,
-  TActionOutput extends JsonObject = TOutputSchema extends ZodType<
-    any,
-    any,
-    infer IReturn_1
-  >
-    ? IReturn_1
-    : TOutputParams,
->(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
-    TInputSchema,
-    TOutputSchema
-  >,
-) => TemplateAction_2<TActionInput, TActionOutput>;
+export const createTemplateAction: typeof createTemplateAction_2;
 
 // @public
 export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
-}): TemplateAction_2<HumanDuration, JsonObject>;
+}): TemplateAction_2<HumanDuration, JsonObject, 'v1'>;
 
 // @public
 export type CreateWorkerOptions = {
@@ -550,7 +527,7 @@ export const fetchContents: typeof fetchContents_2;
 // @public @deprecated
 export interface RouterOptions {
   // (undocumented)
-  actions?: TemplateAction_2<any, any>[];
+  actions?: TemplateAction_2<any, any, any>[];
   // (undocumented)
   additionalTemplateFilters?:
     | Record<string, TemplateFilter_2>
