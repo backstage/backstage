@@ -33,7 +33,7 @@ import { convertFiltersToRecord } from '../../../../util/templating';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
 import { extname } from 'path';
 
-type TemplateActionInput = {
+export type TemplateActionInput = {
   targetPath?: string;
   values: any;
   templateFileExtension?: string | boolean;
