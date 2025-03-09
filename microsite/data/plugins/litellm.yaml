@@ -1,0 +1,12 @@
+---
+title: LiteLLM
+author: Sebastian Sosa
+authorUrl: https://github.com/CakeCrusher # A link to information about the author E.g. Company url, github user profile, etc
+category: Development # A single category e.g. CI, Machine Learning, Services, Monitoring
+description: Integrates LiteLLM's key management system into Backstage, enabling teams to generate, track, and manage API keys for LLM services with budget controls and usage monitoring in a centralized interface. # Max 170 characters
+documentation: https://github.com/CakeCrusher/backstage-litellm # A link to your documentation E.g. Your github README
+iconUrl: https://pbs.twimg.com/profile_images/1783589223406415872/3KMxGGrF_400x400.jpg # Used as the src attribute for your logo.
+# You can provide an external url or add your logo under static/img and provide a path
+# relative to static/ e.g. /img/my-logo.png
+npmPackageName: @cakecrusher/plugin-litellm # Your npm package name E.g. '@backstage/plugin-<etc>' quotes are required
+addedDate: 2025-03-05 # The date plugin added to directory E.g. '2022-10-01' quotes are required
