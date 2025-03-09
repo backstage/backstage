@@ -16,8 +16,8 @@
 
 import { AddressInfo } from 'net';
 import { Server } from 'http';
-import express, { Router, RequestHandler } from 'express';
-import { RestContext, rest } from 'msw';
+import express, { RequestHandler, Router } from 'express';
+import { rest, RestContext } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import {
@@ -132,6 +132,23 @@ describe('PermissionIntegrationClient', () => {
         expect.anything(),
         expect.anything(),
       );
+    });
+
+    it('should spolit the conditions to multiple patches', async () => {
+      const decisions = Array.from({ length: 100 }, (_, i) => ({
+        id: String(i),
+        resourceRef: 'testResource1',
+        resourceType: 'test-resource',
+        conditions: mockConditions,
+      }));
+
+      await client.applyConditions(
+        'plugin-1',
+        mockCredentials.none(),
+        decisions,
+      );
+
+      expect(mockApplyConditionsHandler).toHaveBeenCalledTimes(2);
     });
 
     it('should return the response from the fetch request', async () => {

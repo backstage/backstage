@@ -41,6 +41,8 @@ const responseSchema = z.object({
   ),
 });
 
+const MAX_ITEMS_PER_REQUEST = 50;
+
 export type ResourcePolicyDecision = ConditionalPolicyDecision & {
   resourceRef: string;
 };
@@ -71,30 +73,44 @@ export class PermissionIntegrationClient {
           })
           .then(t => t.token);
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      body: JSON.stringify({
-        items: decisions.map(
-          ({ id, resourceRef, resourceType, conditions }) => ({
-            id,
-            resourceRef,
-            resourceType,
-            conditions,
-          }),
-        ),
+    const allItems = decisions.map(
+      ({ id, resourceRef, resourceType, conditions }) => ({
+        id,
+        resourceRef,
+        resourceType,
+        conditions,
       }),
-      headers: {
-        ...(token ? { authorization: `Bearer ${token}` } : {}),
-        'content-type': 'application/json',
-      },
+    );
+
+    const itemChunks = Array.from(
+      { length: Math.ceil(allItems.length / MAX_ITEMS_PER_REQUEST) },
+      (_, i) =>
+        allItems.slice(
+          i * MAX_ITEMS_PER_REQUEST,
+          (i + 1) * MAX_ITEMS_PER_REQUEST,
+        ),
+    );
+
+    const requests = itemChunks.map(async items => {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify({
+          items,
+        }),
+        headers: {
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+          'content-type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw await ResponseError.fromResponse(response);
+      }
+
+      return responseSchema.parse(await response.json());
     });
 
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    const result = responseSchema.parse(await response.json());
-
-    return result.items;
+    const results = await Promise.all(requests);
+    return results.flatMap(result => result.items);
   }
 }
