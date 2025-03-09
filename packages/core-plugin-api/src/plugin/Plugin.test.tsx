@@ -28,6 +28,13 @@ describe('Plugin Feature Flag', () => {
     expect(
       createPlugin({
         id: 'test',
+        featureFlags: [{ name: 'test', description: 'test' }],
+      }).getFeatureFlags(),
+    ).toEqual([{ name: 'test', description: 'test' }]);
+
+    expect(
+      createPlugin({
+        id: 'test',
       }).getFeatureFlags(),
     ).toEqual([]);
   });

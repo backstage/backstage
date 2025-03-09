@@ -430,6 +430,10 @@ describe('Integration Test', () => {
             {
               name: 'foo',
             },
+            {
+              name: 'bar',
+              description: 'test',
+            },
           ],
         }),
         // We still support consuming the old feature flag API for a little while longer
@@ -477,6 +481,11 @@ describe('Integration Test', () => {
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
       name: 'foo',
       pluginId: 'test',
+    });
+    expect(storageFlags.registerFlag).toHaveBeenCalledWith({
+      name: 'bar',
+      pluginId: 'test',
+      description: 'test',
     });
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
       name: 'old-feature-flag',
