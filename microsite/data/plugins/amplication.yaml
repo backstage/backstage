@@ -1,0 +1,10 @@
+---
+title: Amplication Resources
+author: Amplication
+authorUrl: https://amplication.com
+category: Development
+description: A plugin that integrates Amplication services into Backstage, enabling seamless development and management of your applications.
+documentation: https://docs.amplication.com/day-zero/integrate-with-backstage
+iconUrl: /img/amplication_logo.png
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-amplication'
+addedDate: '2025-03-07'
