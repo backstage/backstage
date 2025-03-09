@@ -15,8 +15,6 @@
  */
 
 import os from 'os';
-import { DatabaseManager } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
@@ -31,7 +29,11 @@ import {
 import { WorkflowRunner } from './types';
 import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
-import { mockServices } from '@backstage/backend-test-utils';
+import {
+  TestDatabases,
+  TestDatabaseId,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 jest.mock('./NunjucksWorkflowRunner');
@@ -39,25 +41,21 @@ const MockedNunjucksWorkflowRunner =
   NunjucksWorkflowRunner as jest.Mock<NunjucksWorkflowRunner>;
 MockedNunjucksWorkflowRunner.mockImplementation();
 
-async function createStore(): Promise<DatabaseTaskStore> {
-  const manager = DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('scaffolder');
+jest.setTimeout(60_000);
+
+// TODO(freben): Rewrite to support more databases - the implementation is correct but the test needs to be adapted
+const databases = TestDatabases.create({ ids: ['SQLITE_3'] });
+
+async function createStore(
+  databaseId: TestDatabaseId,
+): Promise<DatabaseTaskStore> {
+  const knex = await databases.init(databaseId);
   return await DatabaseTaskStore.create({
-    database: manager,
+    database: knex,
   });
 }
 
 describe('TaskWorker', () => {
-  let storage: DatabaseTaskStore;
-
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
@@ -67,10 +65,6 @@ describe('TaskWorker', () => {
     execute: jest.fn(),
   } as unknown as NunjucksWorkflowRunner;
 
-  beforeAll(async () => {
-    storage = await createStore();
-  });
-
   beforeEach(() => {
     jest.resetAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
@@ -78,70 +72,76 @@ describe('TaskWorker', () => {
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
-  it('should call the default workflow runner when the apiVersion is beta3', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
-      logger,
-      workingDirectory,
-      integrations,
-      taskBroker: broker,
-      actionRegistry,
-    });
+  it.each(databases.eachSupportedId())(
+    'should call the default workflow runner when the apiVersion is beta3',
+    async databaseId => {
+      const storage = await createStore(databaseId);
+      const broker = new StorageTaskBroker(storage, logger);
+      const taskWorker = await TaskWorker.create({
+        logger,
+        workingDirectory,
+        integrations,
+        taskBroker: broker,
+        actionRegistry,
+      });
 
-    await broker.dispatch({
-      spec: {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-        output: {
-          result: '{{ steps.test.output.testOutput }}',
+      await broker.dispatch({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+          output: {
+            result: '{{ steps.test.output.testOutput }}',
+          },
+          parameters: {},
         },
-        parameters: {},
-      },
-    });
+      });
 
-    const task = await broker.claim();
-    await taskWorker.runOneTask(task);
+      const task = await broker.claim();
+      await taskWorker.runOneTask(task);
 
-    expect(workflowRunner.execute).toHaveBeenCalled();
-  });
+      expect(workflowRunner.execute).toHaveBeenCalled();
+    },
+  );
 
-  it('should save the output to the task', async () => {
-    (workflowRunner.execute as jest.Mock).mockResolvedValue({
-      output: { testOutput: 'testmockoutput' },
-    });
+  it.each(databases.eachSupportedId())(
+    'should save the output to the task',
+    async databaseId => {
+      const storage = await createStore(databaseId);
+      (workflowRunner.execute as jest.Mock).mockResolvedValue({
+        output: { testOutput: 'testmockoutput' },
+      });
 
-    const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
-      logger,
-      workingDirectory,
-      integrations,
-      taskBroker: broker,
-      actionRegistry,
-    });
+      const broker = new StorageTaskBroker(storage, logger);
+      const taskWorker = await TaskWorker.create({
+        logger,
+        workingDirectory,
+        integrations,
+        taskBroker: broker,
+        actionRegistry,
+      });
 
-    const { taskId } = await broker.dispatch({
-      spec: {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-        output: {
-          result: '{{ steps.test.output.testOutput }}',
+      const { taskId } = await broker.dispatch({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+          output: {
+            result: '{{ steps.test.output.testOutput }}',
+          },
+          parameters: {},
         },
-        parameters: {},
-      },
-    });
+      });
 
-    const task = await broker.claim();
-    await taskWorker.runOneTask(task);
+      const task = await broker.claim();
+      await taskWorker.runOneTask(task);
 
-    const { events } = await storage.listEvents({ taskId });
-    const event = events.find(e => e.type === 'completion');
-    expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
-  });
+      const { events } = await storage.listEvents({ taskId });
+      const event = events.find(e => e.type === 'completion');
+      expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
+    },
+  );
 });
 
 describe('Concurrent TaskWorker', () => {
-  let storage: DatabaseTaskStore;
-
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
@@ -159,10 +159,6 @@ describe('Concurrent TaskWorker', () => {
     },
   } as unknown as NunjucksWorkflowRunner;
 
-  beforeAll(async () => {
-    storage = await createStore();
-  });
-
   beforeEach(() => {
     asyncTasksCount = 0;
     jest.resetAllMocks();
@@ -171,44 +167,47 @@ describe('Concurrent TaskWorker', () => {
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
-  it('should be able to run multiple tasks at once', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+  it.each(databases.eachSupportedId())(
+    'should be able to run multiple tasks at once',
+    async databaseId => {
+      const storage = await createStore(databaseId);
+      const broker = new StorageTaskBroker(storage, logger);
 
-    const dispatchANewTask = () =>
-      broker.dispatch({
-        spec: {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-          output: {
-            result: '{{ steps.test.output.testOutput }}',
+      const dispatchANewTask = () =>
+        broker.dispatch({
+          spec: {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+            output: {
+              result: '{{ steps.test.output.testOutput }}',
+            },
+            parameters: {},
           },
-          parameters: {},
-        },
+        });
+
+      const expectedConcurrentTasks = 3;
+      const taskWorker = await TaskWorker.create({
+        logger,
+        workingDirectory,
+        integrations,
+        taskBroker: broker,
+        actionRegistry,
+        concurrentTasksLimit: expectedConcurrentTasks,
       });
 
-    const expectedConcurrentTasks = 3;
-    const taskWorker = await TaskWorker.create({
-      logger,
-      workingDirectory,
-      integrations,
-      taskBroker: broker,
-      actionRegistry,
-      concurrentTasksLimit: expectedConcurrentTasks,
-    });
+      taskWorker.start();
 
-    taskWorker.start();
+      await dispatchANewTask();
+      await dispatchANewTask();
+      await dispatchANewTask();
+      await dispatchANewTask();
 
-    await dispatchANewTask();
-    await dispatchANewTask();
-    await dispatchANewTask();
-    await dispatchANewTask();
-
-    expect(asyncTasksCount).toEqual(expectedConcurrentTasks);
-  });
+      expect(asyncTasksCount).toEqual(expectedConcurrentTasks);
+    },
+  );
 });
 
 describe('Cancellable TaskWorker', () => {
-  let storage: DatabaseTaskStore;
   const integrations: ScmIntegrations = {} as ScmIntegrations;
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = os.tmpdir();
@@ -221,10 +220,6 @@ describe('Cancellable TaskWorker', () => {
     },
   } as unknown as NunjucksWorkflowRunner;
 
-  beforeAll(async () => {
-    storage = await createStore();
-  });
-
   beforeEach(() => {
     jest.resetAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
@@ -232,40 +227,44 @@ describe('Cancellable TaskWorker', () => {
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
-  it('should be able to cancel the running task', async () => {
-    const taskBroker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
-      logger,
-      workingDirectory,
-      integrations,
-      taskBroker,
-      actionRegistry,
-    });
+  it.each(databases.eachSupportedId())(
+    'should be able to cancel the running task',
+    async databaseId => {
+      const storage = await createStore(databaseId);
+      const taskBroker = new StorageTaskBroker(storage, logger);
+      const taskWorker = await TaskWorker.create({
+        logger,
+        workingDirectory,
+        integrations,
+        taskBroker,
+        actionRegistry,
+      });
 
-    const steps = [...Array(10)].map(n => ({
-      id: `test${n}`,
-      name: `test${n}`,
-      action: 'not-found-action',
-    }));
+      const steps = [...Array(10)].map(n => ({
+        id: `test${n}`,
+        name: `test${n}`,
+        action: 'not-found-action',
+      }));
 
-    const { taskId } = await taskBroker.dispatch({
-      spec: {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        steps,
-        output: {
-          result: '{{ steps.test.output.testOutput }}',
+      const { taskId } = await taskBroker.dispatch({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps,
+          output: {
+            result: '{{ steps.test.output.testOutput }}',
+          },
+          parameters: {},
         },
-        parameters: {},
-      },
-    });
+      });
 
-    taskWorker.start();
-    await taskBroker.cancel(taskId);
+      taskWorker.start();
+      await taskBroker.cancel(taskId);
 
-    await waitForExpect(() => {
-      expect(myTask?.cancelSignal.aborted).toBeTruthy();
-    });
-  });
+      await waitForExpect(() => {
+        expect(myTask?.cancelSignal.aborted).toBeTruthy();
+      });
+    },
+  );
 });
 
 describe('TaskWorker internals', () => {
