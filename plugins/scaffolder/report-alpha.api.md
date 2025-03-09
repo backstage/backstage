@@ -13,6 +13,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+import { FilterOptions } from '@backstage/plugin-scaffolder-react';
 import { FormField } from '@internal/scaffolder';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
@@ -455,6 +456,7 @@ export type TemplateListPageProps = {
     title?: string;
     subtitle?: string;
   };
+  additionalFilters?: FilterOptions[];
 };
 
 // @alpha (undocumented)

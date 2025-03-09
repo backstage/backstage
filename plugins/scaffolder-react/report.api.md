@@ -72,6 +72,11 @@ export function createScaffolderFieldExtension<
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @public
+export function createScaffolderFilter(
+  options: FilterOptions,
+): Extension<FilterTemplate>;
+
+// @public
 export function createScaffolderLayout<TInputProps = unknown>(
   options: LayoutOptions,
 ): Extension<LayoutComponent<TInputProps>>;
@@ -139,6 +144,21 @@ export interface FieldSchema<TReturn, TUiOptions> {
   // @deprecated (undocumented)
   readonly uiOptionsType: TUiOptions;
 }
+
+// @public
+export interface FilterOptions<P = any> {
+  // (undocumented)
+  component: FilterTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type FilterTemplate<T = any> = React_2.ComponentType<
+  {
+    onChange: (value: any) => void;
+  } & T
+>;
 
 // @public
 export type FormProps = Pick<
@@ -495,6 +515,11 @@ export type ScaffolderTaskStatus =
   | 'skipped';
 
 // @public
+export const ScaffolderTemplateFilter: React_2.ComponentType<
+  React_2.PropsWithChildren<{}>
+>;
+
+// @public
 export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   secrets: Record<string, string>;
@@ -551,6 +576,11 @@ export type TemplateParameterSchema = {
 export const useCustomFieldExtensions: <
   TComponentDataType = FieldExtensionOptions,
 >(
+  outlet: React.ReactNode,
+) => TComponentDataType[];
+
+// @public
+export const useCustomFilters: <TComponentDataType = FilterOptions<any>>(
   outlet: React.ReactNode,
 ) => TComponentDataType[];
 
