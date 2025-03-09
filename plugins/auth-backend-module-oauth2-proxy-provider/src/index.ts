@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 export { authModuleOauth2ProxyProvider as default } from './module';
+export { oauth2ProxySignInResolvers } from './resolvers';
 export {
   oauth2ProxyAuthenticator,
   OAUTH2_PROXY_JWT_HEADER,

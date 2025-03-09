@@ -43,7 +43,10 @@ export namespace awsAlbSignInResolvers {
   const // (undocumented)
     emailMatchingUserEntityProfileEmail: SignInResolverFactory<
       AwsAlbResult,
-      unknown
+      | {
+          dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+        }
+      | undefined
     >;
 }
 ```

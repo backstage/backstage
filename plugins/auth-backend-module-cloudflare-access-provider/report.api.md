@@ -52,7 +52,10 @@ export type CloudflareAccessResult = {
 export namespace cloudflareAccessSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     CloudflareAccessResult,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 

@@ -32,12 +32,18 @@ export interface Config {
           additionalScopes?: string | string[];
           signIn?: {
             resolvers: Array<
-              | { resolver: 'usernameMatchingUserEntityName' }
               | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
+                  resolver: 'usernameMatchingUserEntityName';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
                 }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+              | {
+                  resolver: 'emailMatchingUserEntityProfileEmail';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
+              | {
+                  resolver: 'preferredUsernameMatchingUserEntityName';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
             >;
           };
           sessionDuration?: HumanDuration | string;

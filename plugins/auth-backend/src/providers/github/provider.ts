@@ -18,12 +18,17 @@ import { Profile as PassportProfile } from 'passport';
 import { AuthHandler, StateEncoder } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
+  commonSignInResolvers,
   createOAuthProviderFactory,
   OAuthAuthenticatorResult,
   ProfileTransform,
   SignInResolver,
 } from '@backstage/plugin-auth-node';
-import { githubAuthenticator } from '@backstage/plugin-auth-backend-module-github-provider';
+import { adaptOAuthSignInResolverToLegacy } from '../../lib/legacy';
+import {
+  githubAuthenticator,
+  githubSignInResolvers,
+} from '@backstage/plugin-auth-backend-module-github-provider';
 
 /**
  * @public
@@ -132,21 +137,12 @@ export const github = createAuthProviderIntegration({
           )) as SignInResolver<OAuthAuthenticatorResult<PassportProfile>>),
     });
   },
-  resolvers: {
-    /**
-     * Looks up the user by matching their GitHub username to the entity name.
-     */
-    usernameMatchingUserEntityName: (): SignInResolver<GithubOAuthResult> => {
-      return async (info, ctx) => {
-        const { fullProfile } = info.result;
-
-        const userId = fullProfile.username;
-        if (!userId) {
-          throw new Error(`GitHub user profile does not contain a username`);
-        }
-
-        return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
-      };
-    },
-  },
+  resolvers: adaptOAuthSignInResolverToLegacy({
+    emailLocalPartMatchingUserEntityName:
+      commonSignInResolvers.emailLocalPartMatchingUserEntityName(),
+    emailMatchingUserEntityProfileEmail:
+      commonSignInResolvers.emailMatchingUserEntityProfileEmail(),
+    emailMatchingUserEntityAnnotation:
+      githubSignInResolvers.usernameMatchingUserEntityName(),
+  }),
 });

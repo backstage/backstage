@@ -112,6 +112,8 @@ export type AuthResolverContext = {
   }>;
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
+    fallbackUserRef?: string | undefined,
+    dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined,
   ): Promise<BackstageSignInResult>;
   resolveOwnershipEntityRefs(entity: Entity): Promise<{
     ownershipEntityRefs: string[];
@@ -147,12 +149,17 @@ export type ClientAuthResponse<TProviderInfo> = {
 export namespace commonSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
     | {
         allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined
   >;
