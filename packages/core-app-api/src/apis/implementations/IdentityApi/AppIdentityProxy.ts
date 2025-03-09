@@ -128,8 +128,14 @@ export class AppIdentityProxy implements IdentityApi {
     });
   }
 
-  async signOut(): Promise<void> {
-    await this.waitForTarget.then(target => target.signOut());
+  async signOut(): Promise<any> {
+    await this.waitForTarget.then(async target => {
+      if (target.signOut) {
+        const res = await target.signOut();
+        this.signOutTargetUrl =
+          res && res.redirectUrl ? res.redirectUrl : this.signOutTargetUrl;
+      }
+    });
 
     await this.#cookieAuthSignOut?.();
 
