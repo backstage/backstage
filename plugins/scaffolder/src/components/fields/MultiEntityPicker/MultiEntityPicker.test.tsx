@@ -97,6 +97,20 @@ describe('<MultiEntityPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledWith(undefined);
     });
 
+    it('should not auto-select an option on focus', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.focus(input);
+
+      expect(input).not.toHaveValue('team-a');
+    });
+
     it('updates even if there is not an exact match', async () => {
       const { getByRole } = await renderInTestApp(
         <Wrapper>
@@ -109,7 +123,7 @@ describe('<MultiEntityPicker />', () => {
       fireEvent.change(input, { target: { value: 'squ' } });
       fireEvent.blur(input);
 
-      expect(onChange).toHaveBeenCalledWith(['squ']);
+      expect(onChange).not.toHaveBeenCalledWith(['squ']);
     });
   });
 
