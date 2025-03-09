@@ -228,6 +228,10 @@ export class InMemoryCatalogClient implements CatalogApi {
     };
   }
 
+  async getLocations(): Promise<Location[]> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
   async getLocationById(_id: string): Promise<Location | undefined> {
     throw new NotImplementedError('Method not implemented.');
   }

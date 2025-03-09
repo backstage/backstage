@@ -591,6 +591,13 @@ export interface CatalogApi {
   // Locations
 
   /**
+   * List locations
+   *
+   * @param options - Additional options
+   */
+  getLocations(options?: CatalogRequestOptions): Promise<Location[]>;
+
+  /**
    * Gets a registered location by its ID.
    *
    * @param id - A location ID

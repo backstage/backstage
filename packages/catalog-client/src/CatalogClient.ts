@@ -76,6 +76,16 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
+   * {@inheritdoc CatalogApi.getLocations}
+   */
+  async getLocations(options?: CatalogRequestOptions): Promise<Location[]> {
+    const res = await this.requestRequired(
+      await this.apiClient.getLocations({}, options),
+    );
+    return res.map(item => item.data);
+  }
+
+  /**
    * {@inheritdoc CatalogApi.getLocationById}
    */
   async getLocationById(

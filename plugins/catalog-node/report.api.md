@@ -166,6 +166,8 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
+  getLocations(options: CatalogServiceRequestOptions): Promise<Location_2[]>;
+  // (undocumented)
   queryEntities(
     request: QueryEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
