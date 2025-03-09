@@ -83,6 +83,32 @@ export interface Config {
         };
 
     /**
+     * Options used by the default auditor service.
+     */
+    auditor?: {
+      /**
+       * Defines how audit event severity levels are mapped to log levels.
+       * This allows you to control the verbosity of audit logs based on the
+       * severity of the event. For example, you might want to log 'low' severity
+       * events as 'debug' messages, while logging 'critical' events as 'error'
+       * messages. Each severity level ('low', 'medium', 'high', 'critical')
+       * can be mapped to one of the standard log levels ('debug', 'info', 'warn', 'error').
+       *
+       * By default, audit events are mapped to log levels as follows:
+       * - `low`: `debug`
+       * - `medium`: `info`
+       * - `high`: `info`
+       * - `critical`: `info`
+       */
+      severityLogLevelMappings?: {
+        low?: 'debug' | 'info' | 'warn' | 'error';
+        medium?: 'debug' | 'info' | 'warn' | 'error';
+        high?: 'debug' | 'info' | 'warn' | 'error';
+        critical?: 'debug' | 'info' | 'warn' | 'error';
+      };
+    };
+
+    /**
      * Options used by the default auth, httpAuth and userInfo services.
      */
     auth?: {
