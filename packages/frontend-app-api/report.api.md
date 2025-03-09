@@ -10,7 +10,6 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -36,7 +35,6 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
 }): {
   apis: ApiHolder;
-  createRoot(): JSX_2.Element;
   tree: AppTree;
 };
 

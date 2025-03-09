@@ -15,7 +15,7 @@
  */
 
 import React, { JSX, ReactNode } from 'react';
-import { ConfigApi } from '@backstage/frontend-plugin-api';
+import { ConfigApi, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
@@ -114,9 +114,13 @@ export function createApp(options?: CreateAppOptions): {
       features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
-    }).createRoot();
+    });
 
-    return { default: () => app };
+    const rootEl = app.tree.root.instance!.getData(
+      coreExtensionData.reactElement,
+    );
+
+    return { default: () => rootEl };
   }
 
   return {
