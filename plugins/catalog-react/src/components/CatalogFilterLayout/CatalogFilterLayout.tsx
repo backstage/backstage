@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Button, { ButtonProps } from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -32,11 +32,12 @@ export const Filters = (props: {
   options?: {
     drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
     drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
+    buttonProps?: ButtonProps;
   };
 }) => {
+  const { drawerBreakpoint, drawerAnchor, buttonProps } = props.options || {};
   const isScreenSmallerThanBreakpoint = useMediaQuery(
-    (theme: Theme) =>
-      theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
+    (theme: Theme) => theme.breakpoints.down(drawerBreakpoint ?? 'md'),
     { noSsr: true },
   );
   const theme = useTheme();
@@ -46,16 +47,20 @@ export const Filters = (props: {
   return isScreenSmallerThanBreakpoint ? (
     <>
       <Button
-        style={{ marginTop: theme.spacing(1), marginLeft: theme.spacing(1) }}
+        style={{
+          marginTop: theme.spacing(1),
+          marginLeft: theme.spacing(1),
+        }}
         onClick={() => setFilterDrawerOpen(true)}
         startIcon={<FilterListIcon />}
+        {...(buttonProps || {})}
       >
         {t('catalogFilter.buttonTitle')}
       </Button>
       <Drawer
         open={filterDrawerOpen}
         onClose={() => setFilterDrawerOpen(false)}
-        anchor={props.options?.drawerAnchor ?? 'left'}
+        anchor={drawerAnchor ?? 'left'}
         disableAutoFocus
         keepMounted
         variant="temporary"

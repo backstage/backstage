@@ -24,6 +24,7 @@ import {
   Table,
   TableColumn,
   TableOptions,
+  TableProps,
 } from '@backstage/core-components';
 
 /**
@@ -38,6 +39,7 @@ export interface EntityTableProps<T extends Entity> {
   emptyContent?: ReactNode;
   columns: TableColumn<T>[];
   tableOptions?: TableOptions;
+  actions?: TableProps<T>['actions'];
 }
 
 const useStyles = makeStyles(theme => ({
@@ -62,6 +64,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
     variant = 'gridItem',
     columns,
     tableOptions = {},
+    actions = [],
   } = props;
 
   const classes = useStyles();
@@ -92,6 +95,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
         ...tableOptions,
       }}
       data={entities}
+      actions={actions}
     />
   );
 };
