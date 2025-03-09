@@ -32,6 +32,10 @@ const main = (argv: string[]) => {
     .version(version)
     .description('Creates a new app in a new directory or specified path')
     .option(
+      '--experimental-frontend',
+      'Use the default template with the experimental frontend',
+    )
+    .option(
       '--path [directory]',
       'Location to store the app defaulting to a new folder with the app name',
     )
