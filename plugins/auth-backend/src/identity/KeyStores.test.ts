@@ -20,9 +20,11 @@ import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { KeyStores } from './KeyStores';
 import { MemoryKeyStore } from './MemoryKeyStore';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 
 describe('KeyStores', () => {
+  const dbs = TestDatabases.create({ ids: ['SQLITE_3'] });
+
   const defaultConfigOptions = {
     auth: {
       keyStore: {
@@ -36,7 +38,7 @@ describe('KeyStores', () => {
     const configSpy = jest.spyOn(defaultConfig, 'getOptionalConfig');
     const keyStore = await KeyStores.fromConfig(defaultConfig, {
       logger: mockServices.logger.mock(),
-      database: AuthDatabase.forTesting(),
+      database: AuthDatabase.create(mockServices.database.mock()),
     });
 
     expect(keyStore).toBeInstanceOf(MemoryKeyStore);
@@ -51,7 +53,9 @@ describe('KeyStores', () => {
   it('can handle without auth config', async () => {
     const keyStore = await KeyStores.fromConfig(new ConfigReader({}), {
       logger: mockServices.logger.mock(),
-      database: AuthDatabase.forTesting(),
+      database: AuthDatabase.create(
+        mockServices.database({ knex: await dbs.init('SQLITE_3') }),
+      ),
     });
     expect(keyStore).toBeInstanceOf(DatabaseKeyStore);
   });
@@ -79,7 +83,7 @@ describe('KeyStores', () => {
     const config = new ConfigReader(configOptions);
     const keyStore = await KeyStores.fromConfig(config, {
       logger: mockServices.logger.mock(),
-      database: AuthDatabase.forTesting(),
+      database: AuthDatabase.create(mockServices.database.mock()),
     });
 
     expect(keyStore).toBeInstanceOf(FirestoreKeyStore);

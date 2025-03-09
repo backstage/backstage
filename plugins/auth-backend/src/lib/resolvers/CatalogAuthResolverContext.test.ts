@@ -17,7 +17,6 @@
 import { CatalogAuthResolverContext } from './CatalogAuthResolverContext';
 import { mockServices } from '@backstage/backend-test-utils';
 import { TokenIssuer } from '../../identity/types';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { NotFoundError } from '@backstage/errors';
 
@@ -34,9 +33,7 @@ describe('CatalogAuthResolverContext', () => {
       logger: mockServices.logger.mock(),
       catalogApi,
       tokenIssuer: {} as TokenIssuer,
-      discovery: {} as DiscoveryService,
       auth: mockServices.auth(),
-      httpAuth: mockServices.httpAuth(),
     });
 
     await expect(
