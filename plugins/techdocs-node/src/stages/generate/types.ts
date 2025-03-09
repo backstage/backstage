@@ -45,6 +45,7 @@ export type GeneratorConfig = {
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
   defaultPlugins?: string[];
+  timeout?: number;
 };
 
 /**
