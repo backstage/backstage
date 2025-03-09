@@ -24,15 +24,25 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
+import { mockApis, MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('<SelectedRelationsFilter/>', () => {
   test('should render current value', () => {
     render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={() => {}}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <SelectedRelationsFilter
+          relationPairs={ALL_RELATION_PAIRS}
+          value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
+          onChange={() => {}}
+        />
+      </TestApiProvider>,
     );
 
     expect(screen.getByText(RELATION_OWNED_BY)).toBeInTheDocument();
@@ -42,11 +52,18 @@ describe('<SelectedRelationsFilter/>', () => {
   test('should select value', async () => {
     const onChange = jest.fn();
     render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={onChange}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <SelectedRelationsFilter
+          relationPairs={ALL_RELATION_PAIRS}
+          value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
+          onChange={onChange}
+        />
+      </TestApiProvider>,
     );
 
     await userEvent.click(screen.getByLabelText('Open'));
@@ -69,13 +86,20 @@ describe('<SelectedRelationsFilter/>', () => {
   test('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
     render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
-          r => r !== RELATION_HAS_MEMBER,
-        )}
-        onChange={onChange}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <SelectedRelationsFilter
+          relationPairs={ALL_RELATION_PAIRS}
+          value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
+            r => r !== RELATION_HAS_MEMBER,
+          )}
+          onChange={onChange}
+        />
+      </TestApiProvider>,
     );
 
     await userEvent.click(screen.getByLabelText('Open'));
@@ -94,11 +118,18 @@ describe('<SelectedRelationsFilter/>', () => {
   test('should return all values when cleared', async () => {
     const onChange = jest.fn();
     render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[]}
-        onChange={onChange}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <SelectedRelationsFilter
+          relationPairs={ALL_RELATION_PAIRS}
+          value={[]}
+          onChange={onChange}
+        />
+      </TestApiProvider>,
     );
 
     await userEvent.click(screen.getByRole('combobox'));
