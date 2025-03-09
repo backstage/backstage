@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import React, { JSX } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   ApiBlueprint,
   AppTree,
   AppTreeApi,
   appTreeApiRef,
-  coreExtensionData,
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
@@ -191,6 +189,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#routeObjects;
   }
 }
+
 /**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically wou want to use
@@ -204,7 +203,7 @@ export function createSpecializedApp(options?: {
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   apis?: ApiHolder;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
-}): { apis: ApiHolder; createRoot(): JSX.Element; tree: AppTree } {
+}): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
 
@@ -233,7 +232,7 @@ export function createSpecializedApp(options?: {
   );
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder =
+  const apis =
     options?.apis ??
     createApiHolder({
       factories,
@@ -245,7 +244,7 @@ export function createSpecializedApp(options?: {
       ],
     });
 
-  const featureFlagApi = apiHolder.get(featureFlagsApiRef);
+  const featureFlagApi = apis.get(featureFlagsApiRef);
   if (featureFlagApi) {
     for (const feature of features) {
       if (OpaqueFrontendPlugin.isType(feature)) {
@@ -268,28 +267,14 @@ export function createSpecializedApp(options?: {
   }
 
   // Now instantiate the entire tree, which will skip anything that's already been instantiated
-  instantiateAppNodeTree(
-    tree.root,
-    apiHolder,
-    options?.extensionFactoryMiddleware,
-  );
+  instantiateAppNodeTree(tree.root, apis, options?.extensionFactoryMiddleware);
 
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
 
   routeResolutionApi.initialize(routeInfo);
   appTreeApi.initialize(routeInfo);
 
-  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
-
-  const AppComponent = () => rootEl;
-
-  return {
-    apis: apiHolder,
-    tree,
-    createRoot() {
-      return <AppComponent />;
-    },
-  };
+  return { apis, tree };
 }
 
 function createApiFactories(options: { tree: AppTree }): AnyApiFactory[] {

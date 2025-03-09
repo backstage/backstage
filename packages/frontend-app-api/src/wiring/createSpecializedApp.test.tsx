@@ -56,7 +56,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
@@ -91,7 +91,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
@@ -117,7 +117,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
@@ -163,7 +163,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
 
@@ -307,7 +307,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(mockAnalyticsApi).toHaveBeenCalled();
   });
@@ -339,7 +339,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('providedApis:config')).toBeInTheDocument();
 
@@ -518,7 +518,7 @@ describe('createSpecializedApp', () => {
         bindRoutes({ bind }) {
           bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
         },
-      }).createRoot(),
+      }).tree.root.instance!.getData(coreExtensionData.reactElement),
     );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
