@@ -7,6 +7,5 @@
 You can replace existing usage of `app.createRoot()` with the following:
 
 ```ts
-const root = tree.root.instance?.getData(coreExtensionData.reactEleme
-nt);
+const root = tree.root.instance?.getData(coreExtensionData.reactElement);
 ```
