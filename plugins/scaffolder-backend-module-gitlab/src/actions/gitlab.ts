@@ -379,13 +379,15 @@ export function createPublishGitlabAction(options: {
       });
 
       let targetNamespaceId;
-
+      let targetNamespaceKind;
       try {
         const namespaceResponse = (await client.Namespaces.show(owner)) as {
           id: number;
+          kind: string;
         };
 
         targetNamespaceId = namespaceResponse.id;
+        targetNamespaceKind = namespaceResponse.kind;
       } catch (e) {
         if (e.cause?.response?.status === 404) {
           throw new InputError(
@@ -401,13 +403,16 @@ export function createPublishGitlabAction(options: {
 
       if (!targetNamespaceId) {
         targetNamespaceId = userId;
+        targetNamespaceKind = 'user';
       }
 
-      const existingProjects = await client.Groups.allProjects(owner, {
-        search: repo,
-      });
+      const existingProjects =
+        targetNamespaceKind === 'user'
+          ? await client.Users.allProjects(owner, { search: repo })
+          : await client.Groups.allProjects(owner, { search: repo });
+
       const existingProject = existingProjects.find(
-        searchPathElem => searchPathElem.path === repo,
+        project => project.path === repo,
       );
 
       if (!skipExisting || (skipExisting && !existingProject)) {
