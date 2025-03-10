@@ -1207,12 +1207,6 @@ export interface ExtensionInput<
   }>;
 }
 
-// @public (undocumented)
-export interface ExtensionOverrides {
-  // (undocumented)
-  readonly $$type: '@backstage/ExtensionOverrides';
-}
-
 // @public
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
@@ -1241,9 +1235,6 @@ export { FeatureFlagState };
 export { FetchApi };
 
 export { fetchApiRef };
-
-// @public @deprecated (undocumented)
-export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
 
 // @public (undocumented)
 export interface FrontendModule {
