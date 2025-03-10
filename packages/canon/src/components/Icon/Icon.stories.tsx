@@ -23,9 +23,6 @@ import { icons } from './icons';
 const meta = {
   title: 'Components/Icon',
   component: Icon,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     name: {
       control: 'select',
