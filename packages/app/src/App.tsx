@@ -86,6 +86,10 @@ import {
   UserNotificationSettingsCard,
 } from '@backstage/plugin-notifications';
 
+// Canon styles
+import '@backstage/canon/css/core.css';
+import '@backstage/canon/css/components.css';
+
 const app = createApp({
   apis,
   icons: {

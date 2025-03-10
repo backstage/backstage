@@ -35,6 +35,8 @@
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
+    "postinstall": "yarn setup-dev",
+    "setup-dev": "bash scripts/setup-dev.sh",
     "start": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
