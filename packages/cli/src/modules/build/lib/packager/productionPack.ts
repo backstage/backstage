@@ -143,7 +143,7 @@ async function rewriteEntryPoints(
 
   // Clear to ensure a clean slate before adding entries back in further down
   if (pkg.typesVersions) {
-    pkg.typesVersions = { '*': {} };
+    pkg.typesVersions = undefined;
   }
 
   for (const entryPoint of entryPoints) {
@@ -166,9 +166,8 @@ async function rewriteEntryPoints(
       if (!pkg.typesVersions) {
         pkg.typesVersions = { '*': {} };
       }
-      pkg.typesVersions['*'][entryPoint.name] = [
-        `dist/${entryPoint.name}.d.ts`,
-      ];
+      const mount = entryPoint.name === 'index' ? '*' : entryPoint.name;
+      pkg.typesVersions['*'][mount] = [`dist/${entryPoint.name}.d.ts`];
     }
 
     exp.default = exp.require ?? exp.import;
@@ -215,6 +214,14 @@ async function rewriteEntryPoints(
 
     if (Object.keys(exp).length > 0) {
       outputExports[entryPoint.mount] = exp;
+    }
+  }
+
+  // Clean up the typesVersions field if it only contains a wildcard
+  if (pkg.typesVersions?.['*']) {
+    const keys = Object.keys(pkg.typesVersions['*']);
+    if (keys.length === 1 && keys[0] === '*') {
+      delete pkg.typesVersions;
     }
   }
 
