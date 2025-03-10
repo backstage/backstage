@@ -22,7 +22,7 @@ import { Box } from '../Box/Box';
 import { Flex } from '../Flex';
 
 const meta = {
-  title: 'Components/Grid',
+  title: 'Layout/Grid',
   component: Grid,
   argTypes: {
     children: {
