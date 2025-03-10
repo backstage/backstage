@@ -120,13 +120,6 @@ export function renderInTestApp(
   options?: TestAppOptions,
 ): RenderResult;
 
-// @public @deprecated (undocumented)
-export function setupRequestMockHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void;
-
 export { TestApiProvider };
 
 export { TestApiProviderProps };
