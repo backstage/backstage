@@ -30,6 +30,7 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
+  ExtensionFactoryMiddleware,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -40,10 +41,16 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
-import { OpaqueFrontendPlugin } from '@internal/frontend';
+import {
+  createExtensionDataContainer,
+  OpaqueFrontendPlugin,
+} from '@internal/frontend';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import {
+  resolveExtensionDefinition,
+  toInternalExtension,
+} from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 
@@ -67,11 +74,7 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import {
-  ExtensionFactoryMiddleware,
-  FrontendFeature,
-  RouteInfo,
-} from './types';
+import { FrontendFeature, RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
 
 function deduplicateFeatures(
@@ -202,7 +205,9 @@ export function createSpecializedApp(options?: {
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   apis?: ApiHolder;
-  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+  extensionFactoryMiddleware?:
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
 }): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
@@ -267,7 +272,11 @@ export function createSpecializedApp(options?: {
   }
 
   // Now instantiate the entire tree, which will skip anything that's already been instantiated
-  instantiateAppNodeTree(tree.root, apis, options?.extensionFactoryMiddleware);
+  instantiateAppNodeTree(
+    tree.root,
+    apis,
+    mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
+  );
 
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
 
@@ -312,4 +321,38 @@ function createApiHolder(options: {
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
   return new ApiResolver(factoryRegistry);
+}
+
+function mergeExtensionFactoryMiddleware(
+  middlewares?: ExtensionFactoryMiddleware | ExtensionFactoryMiddleware[],
+): ExtensionFactoryMiddleware | undefined {
+  if (!middlewares) {
+    return undefined;
+  }
+  if (!Array.isArray(middlewares)) {
+    return middlewares;
+  }
+  if (middlewares.length <= 1) {
+    return middlewares[0];
+  }
+  return middlewares.reduce((prev, next) => {
+    if (!prev || !next) {
+      return prev ?? next;
+    }
+    return (orig, ctx) => {
+      const internalExt = toInternalExtension(ctx.node.spec.extension);
+      if (internalExt.version !== 'v2') {
+        return orig();
+      }
+      return next(ctxOverrides => {
+        return createExtensionDataContainer(
+          prev(orig, {
+            node: ctx.node,
+            apis: ctx.apis,
+            config: ctxOverrides?.config ?? ctx.config,
+          }),
+        );
+      }, ctx);
+    };
+  });
 }

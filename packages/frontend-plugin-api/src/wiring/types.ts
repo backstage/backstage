@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
 import {
@@ -22,6 +23,7 @@ import {
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { FrontendPlugin } from './createFrontendPlugin';
+import { ApiHolder, AppNode } from '../apis';
 
 /**
  * Feature flag configuration.
@@ -78,3 +80,15 @@ export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
         : IData
       : never;
   };
+
+/** @public */
+export type ExtensionFactoryMiddleware = (
+  originalFactory: (contextOverrides?: {
+    config?: JsonObject;
+  }) => ExtensionDataContainer<AnyExtensionDataRef>,
+  context: {
+    node: AppNode;
+    apis: ApiHolder;
+    config?: JsonObject;
+  },
+) => Iterable<ExtensionDataValue<any, any>>;
