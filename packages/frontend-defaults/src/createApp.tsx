@@ -20,7 +20,6 @@ import { ConfigApi, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
-import { resolveFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
@@ -28,6 +27,9 @@ import {
   FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
+import appPlugin from '@backstage/plugin-app';
+import { getAvailableFeatures } from './discovery';
+import { resolveFeatures } from './resolveFeatures';
 
 /**
  * A source of dynamically loaded frontend features.
@@ -87,12 +89,15 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
+    const discoveredFeatures = getAvailableFeatures(config);
+    const providedFeatures = await resolveFeatures({
+      config,
+      features: options?.features,
+    });
+
     const app = createSpecializedApp({
       config,
-      features: await resolveFeatures({
-        config,
-        features: options?.features,
-      }),
+      features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
     });

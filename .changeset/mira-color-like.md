@@ -2,4 +2,4 @@
 '@backstage/frontend-defaults': patch
 ---
 
-Feature resolution logic used in `createApp` is now exposed via the `resolveFeatures` function.
+Feature discovery and resolution logic used in `createApp` is now exposed via the `getAvailableFeatures` and `resolveFeatures` functions respectively.
