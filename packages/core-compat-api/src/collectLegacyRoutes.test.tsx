@@ -57,7 +57,7 @@ describe('collectLegacyRoutes', () => {
 
     expect(
       collected.map(p => ({
-        id: p.id,
+        id: p.$$type === '@backstage/FrontendPlugin' ? p.id : p.pluginId,
         extensions: OpaqueFrontendPlugin.toInternal(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
@@ -177,7 +177,7 @@ describe('collectLegacyRoutes', () => {
 
     expect(
       collected.map(p => ({
-        id: p.id,
+        id: p.$$type === '@backstage/FrontendPlugin' ? p.id : p.pluginId,
         extensions: OpaqueFrontendPlugin.toInternal(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
