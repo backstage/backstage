@@ -19,12 +19,12 @@ import {
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { CreateAppFeatureLoader } from './createApp';
-import { resolveFeatures } from './resolveFeatures';
+import { resolveAsyncFeatures } from './resolution';
 import { mockApis } from '@backstage/test-utils';
 
-describe('resolveFeatures', () => {
+describe('resolveAsyncFeatures', () => {
   it('returns empty array when no features are provided', async () => {
-    const features = await resolveFeatures({
+    const { features } = await resolveAsyncFeatures({
       config: mockApis.config(),
     });
 
@@ -32,7 +32,7 @@ describe('resolveFeatures', () => {
   });
 
   it('returns expected array when features are directly provided', async () => {
-    const features = await resolveFeatures({
+    const { features } = await resolveAsyncFeatures({
       config: mockApis.config(),
       features: [
         createFrontendPlugin({
@@ -93,7 +93,7 @@ describe('resolveFeatures', () => {
       },
     };
 
-    const features = await resolveFeatures({
+    const { features } = await resolveAsyncFeatures({
       config: mockApis.config(),
       features: [loader],
     });
@@ -129,7 +129,7 @@ describe('resolveFeatures', () => {
     };
 
     await expect(() =>
-      resolveFeatures({
+      resolveAsyncFeatures({
         config: mockApis.config(),
         features: [loader],
       }),

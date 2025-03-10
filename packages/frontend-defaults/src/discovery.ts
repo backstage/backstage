@@ -55,30 +55,33 @@ function readPackageDetectionConfig(config: Config) {
 /**
  * @public
  */
-export function getAvailableFeatures(config: Config): FrontendFeature[] {
+export function discoverAvailableFeatures(config: Config): {
+  features: FrontendFeature[];
+} {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
   )['__@backstage/discovered__'];
 
   const detection = readPackageDetectionConfig(config);
   if (!detection) {
-    return [];
+    return { features: [] };
   }
 
-  return (
-    discovered?.modules
-      .filter(({ name }) => {
-        if (detection.exclude?.includes(name)) {
-          return false;
-        }
-        if (detection.include && !detection.include.includes(name)) {
-          return false;
-        }
-        return true;
-      })
-      .map(m => m.default)
-      .filter(isBackstageFeature) ?? []
-  );
+  return {
+    features:
+      discovered?.modules
+        .filter(({ name }) => {
+          if (detection.exclude?.includes(name)) {
+            return false;
+          }
+          if (detection.include && !detection.include.includes(name)) {
+            return false;
+          }
+          return true;
+        })
+        .map(m => m.default)
+        .filter(isBackstageFeature) ?? [],
+  };
 }
 
 function isBackstageFeature(obj: unknown): obj is FrontendFeature {

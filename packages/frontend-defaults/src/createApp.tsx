@@ -28,8 +28,8 @@ import {
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
-import { getAvailableFeatures } from './discovery';
-import { resolveFeatures } from './resolveFeatures';
+import { discoverAvailableFeatures } from './discovery';
+import { resolveAsyncFeatures } from './resolution';
 
 /**
  * A source of dynamically loaded frontend features.
@@ -89,8 +89,8 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures(config);
-    const providedFeatures = await resolveFeatures({
+    const { features: discoveredFeatures } = discoverAvailableFeatures(config);
+    const { features: providedFeatures } = await resolveAsyncFeatures({
       config,
       features: options?.features,
     });

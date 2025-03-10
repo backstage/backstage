@@ -46,11 +46,15 @@ export function createPublicSignInApp(options?: CreateAppOptions): {
 };
 
 // @public (undocumented)
-export function getAvailableFeatures(config: Config): FrontendFeature[];
+export function discoverAvailableFeatures(config: Config): {
+  features: FrontendFeature[];
+};
 
 // @public (undocumented)
-export function resolveFeatures(options: {
+export function resolveAsyncFeatures(options: {
   config: Config;
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
-}): Promise<FrontendFeature[]>;
+}): Promise<{
+  features: FrontendFeature[];
+}>;
 ```

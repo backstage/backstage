@@ -20,10 +20,10 @@ import { FrontendFeature } from '@backstage/frontend-app-api';
 import { CreateAppFeatureLoader } from './createApp';
 
 /** @public */
-export async function resolveFeatures(options: {
+export async function resolveAsyncFeatures(options: {
   config: Config;
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
-}): Promise<FrontendFeature[]> {
+}): Promise<{ features: FrontendFeature[] }> {
   const features = [];
   for (const entry of options.features ?? []) {
     if ('load' in entry) {
@@ -41,5 +41,5 @@ export async function resolveFeatures(options: {
       features.push(entry);
     }
   }
-  return features;
+  return { features };
 }
