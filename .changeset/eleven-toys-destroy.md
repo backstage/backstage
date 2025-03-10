@@ -1,6 +1,6 @@
 ---
-'@backstage/backend-dynamic-feature-service': patch
-'@backstage/plugin-events-backend': patch
+'@backstage/backend-dynamic-feature-service': minor
+'@backstage/plugin-events-backend': minor
 ---
 
 **BREAKING** Removed deprecated events related code
