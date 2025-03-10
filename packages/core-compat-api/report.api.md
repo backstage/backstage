@@ -14,7 +14,6 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
@@ -34,7 +33,7 @@ export function compatWrapper(element: ReactNode): React_2.JSX.Element;
 // @public (undocumented)
 export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
-): (FrontendPlugin | FrontendModule | ExtensionOverrides)[];
+): (FrontendPlugin | FrontendModule)[];
 
 // @public (undocumented)
 export function convertLegacyAppOptions(options?: {

@@ -22,7 +22,6 @@ import {
   ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
-import { FrontendPlugin } from './createFrontendPlugin';
 import { ApiHolder, AppNode } from '../apis';
 
 /**
@@ -47,17 +46,6 @@ export type ExtensionMap<
 > = {
   get<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
 };
-
-/** @public */
-export interface ExtensionOverrides {
-  readonly $$type: '@backstage/ExtensionOverrides';
-}
-
-/**
- * @public
- * @deprecated import from {@link @backstage/frontend-app-api#FrontendFeature} instead
- */
-export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
 
 /** @public */
 export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
