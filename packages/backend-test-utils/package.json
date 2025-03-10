@@ -75,10 +75,8 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@types/jest": "*",
     "@types/supertest": "^2.0.8",
     "supertest": "^7.0.0"
-  },
-  "peerDependencies": {
-    "@types/jest": "*"
   }
 }
