@@ -107,6 +107,9 @@
   --canon-border-danger: #f87a7a;
   --canon-border-warning: #e36d05;
   --canon-border-success: #53db83;
+
+  /* Ring Colors */
+  --canon-ring: #1f5493;
 }
 
 /* Dark theme tokens */
