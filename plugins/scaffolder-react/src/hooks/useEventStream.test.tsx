@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, PropsWithChildren, useEffect } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTaskEventStream } from './useEventStream';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -197,22 +197,6 @@ describe('useTaskEventStream', () => {
   });
 
   it('should not duplicate logs when component is remounted (tab switching scenario)', async () => {
-    // Component that uses taskEventStream and tracks remounting
-    const TaskComponent: FC<{ taskId: string; onMount: () => void }> = ({
-      taskId,
-      onMount,
-    }) => {
-      const taskStream = useTaskEventStream(taskId);
-
-      useEffect(() => {
-        onMount();
-      }, [onMount]);
-
-      return <div>{JSON.stringify(taskStream.stepLogs)}</div>;
-    };
-
-    const onMount = jest.fn();
-
     // First render
     const { result, unmount } = renderHook(
       () => useTaskEventStream('test-task-id'),
