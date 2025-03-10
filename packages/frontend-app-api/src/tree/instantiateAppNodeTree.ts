@@ -19,6 +19,7 @@ import {
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
+  ExtensionFactoryMiddleware,
   ExtensionInput,
   ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
@@ -26,7 +27,6 @@ import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { ExtensionFactoryMiddleware } from '../wiring';
 import { createExtensionDataContainer } from '@internal/frontend';
 
 type Mutable<T> = {
@@ -302,20 +302,16 @@ export function createAppNodeInstance(options: {
       };
       const outputDataValues = options.extensionFactoryMiddleware
         ? createExtensionDataContainer(
-            options.extensionFactoryMiddleware(
-              ({ config: configOverride } = {}) =>
-                createExtensionDataContainer(
-                  internalExtension.factory(
-                    configOverride
-                      ? {
-                          ...context,
-                          config: configOverride,
-                        }
-                      : context,
-                  ),
-                ),
-              context,
-            ),
+            options.extensionFactoryMiddleware(overrideContext => {
+              return createExtensionDataContainer(
+                internalExtension.factory({
+                  node: context.node,
+                  apis: context.apis,
+                  inputs: context.inputs,
+                  config: overrideContext?.config ?? context.config,
+                }),
+              );
+            }, context),
           )
         : internalExtension.factory(context);
 

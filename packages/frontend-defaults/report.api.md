@@ -6,7 +6,7 @@
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
-import { ExtensionFactoryMiddleware } from '@backstage/frontend-app-api';
+import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-app-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
@@ -34,7 +34,9 @@ export interface CreateAppOptions {
     config: ConfigApi;
   }>;
   // (undocumented)
-  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+  extensionFactoryMiddleware?:
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
   // (undocumented)
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   loadingComponent?: ReactNode;

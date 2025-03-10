@@ -7,6 +7,7 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
@@ -83,8 +84,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:api-docs/consuming-components': ExtensionDefinition<{
@@ -128,8 +129,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:api-docs/definition': ExtensionDefinition<{
@@ -173,8 +174,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:api-docs/has-apis': ExtensionDefinition<{
@@ -218,8 +219,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:api-docs/provided-apis': ExtensionDefinition<{
@@ -263,8 +264,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:api-docs/providing-components': ExtensionDefinition<{
@@ -308,8 +309,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-content:api-docs/apis': ExtensionDefinition<{
@@ -372,15 +373,9 @@ const _default: FrontendPlugin<
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
-        defaultGroup?:
-          | (string & {})
-          | 'documentation'
-          | 'development'
-          | 'deployment'
-          | 'observability'
-          | undefined;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
+        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
+        routeRef?: RouteRef;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'entity-content:api-docs/definition': ExtensionDefinition<{
@@ -443,15 +438,9 @@ const _default: FrontendPlugin<
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
-        defaultGroup?:
-          | (string & {})
-          | 'documentation'
-          | 'development'
-          | 'deployment'
-          | 'observability'
-          | undefined;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
+        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
+        routeRef?: RouteRef;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:api-docs': ExtensionDefinition<{
@@ -514,7 +503,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }

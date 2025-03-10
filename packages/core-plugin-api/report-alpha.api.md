@@ -231,11 +231,7 @@ export type TranslationSnapshot<
     };
 
 // @alpha (undocumented)
-export const useTranslationRef: <
-  TMessages extends {
-    [x: string]: string;
-  },
->(
+export const useTranslationRef: <TMessages extends { [key in string]: string }>(
   translationRef: TranslationRef<string, TMessages>,
 ) => {
   t: TranslationFunction<TMessages>;

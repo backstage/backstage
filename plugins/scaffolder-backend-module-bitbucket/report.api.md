@@ -22,8 +22,8 @@ export const createBitbucketPipelinesRunAction: (options: {
   {
     workspace: string;
     repo_slug: string;
-    body?: object | undefined;
-    token?: string | undefined;
+    body?: object;
+    token?: string;
   },
   JsonObject
 >;
@@ -35,15 +35,15 @@ export function createPublishBitbucketAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string | undefined;
-    defaultBranch?: string | undefined;
-    repoVisibility?: 'private' | 'public' | undefined;
-    sourcePath?: string | undefined;
-    enableLFS?: boolean | undefined;
-    token?: string | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
+    description?: string;
+    defaultBranch?: string;
+    repoVisibility?: 'private' | 'public';
+    sourcePath?: string;
+    enableLFS?: boolean;
+    token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   },
   JsonObject
 >;

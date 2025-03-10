@@ -15,7 +15,11 @@
  */
 
 import React, { JSX, ReactNode } from 'react';
-import { ConfigApi, coreExtensionData } from '@backstage/frontend-plugin-api';
+import {
+  ConfigApi,
+  coreExtensionData,
+  ExtensionFactoryMiddleware,
+} from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -23,7 +27,6 @@ import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseU
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
@@ -66,7 +69,9 @@ export interface CreateAppOptions {
    * If set to "null" then no loading fallback component is rendered.   *
    */
   loadingComponent?: ReactNode;
-  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+  extensionFactoryMiddleware?:
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
 }
 
 /**
