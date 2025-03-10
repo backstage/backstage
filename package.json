@@ -1,11 +1,6 @@
 {
   "name": "root",
   "version": "1.37.0-next.1",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage"
-  },
   "backstage": {
     "cli": {
       "new": {
@@ -15,6 +10,11 @@
         }
       }
     }
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
   },
   "workspaces": {
     "packages": [
@@ -145,7 +145,7 @@
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
     "typedoc": "^0.27.6",
-    "typescript": "~5.2.0"
+    "typescript": "~5.6.0"
   },
   "packageManager": "yarn@3.8.1",
   "engines": {
