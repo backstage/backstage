@@ -201,5 +201,7 @@ export function renderInTestApp(
     ]),
   });
 
-  return render(app.createRoot());
+  return render(
+    app.tree.root.instance!.getData(coreExtensionData.reactElement),
+  );
 }
