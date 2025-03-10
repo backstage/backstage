@@ -74,7 +74,7 @@ function invertFilter(ifFunc?: EntityFilter): EntityFilter {
 export function collectEntityPageContents(
   entityPageElement: React.JSX.Element,
   context: {
-    discoveryExtension(
+    discoverExtension(
       extension: ExtensionDefinition,
       plugin?: LegacyBackstagePlugin,
     ): void;
@@ -94,7 +94,7 @@ export function collectEntityPageContents(
         const mergedIf = allFilters(parentFilter, pageNode.if);
 
         if (pageNode.path === '/') {
-          context.discoveryExtension(
+          context.discoverExtension(
             EntityCardBlueprint.makeWithOverrides({
               name: `discovered-${cardCounter++}`,
               factory(originalFactory, { apis }) {
@@ -109,7 +109,7 @@ export function collectEntityPageContents(
         } else {
           const name = `discovered-${routeCounter++}`;
 
-          context.discoveryExtension(
+          context.discoverExtension(
             EntityContentBlueprint.makeWithOverrides({
               name,
               factory(originalFactory, { apis }) {

@@ -270,7 +270,7 @@ export function collectLegacyRoutes(
 
   if (entityPage) {
     collectEntityPageContents(entityPage, {
-      discoveryExtension(extension, plugin) {
+      discoverExtension(extension, plugin) {
         if (!plugin || plugin.getId() === 'catalog') {
           getPluginExtensions(orphanRoutesPlugin).push(extension);
         } else {
