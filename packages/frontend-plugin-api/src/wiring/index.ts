@@ -54,6 +54,7 @@ export {
   type ExtensionOverrides,
   type FeatureFlagConfig,
   type FrontendFeature,
+  type ExtensionFactoryMiddleware,
 } from './types';
 export {
   type CreateExtensionBlueprintOptions,
