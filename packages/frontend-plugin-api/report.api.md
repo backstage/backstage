@@ -610,11 +610,6 @@ export type CreateExtensionBlueprintOptions<
   dataRefs?: TDataRefs;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
-// @public @deprecated (undocumented)
-export function createExtensionDataRef<TData>(
-  id: string,
-): ConfigurableExtensionDataRef<TData, string>;
-
 // @public (undocumented)
 export function createExtensionDataRef<TData>(): {
   with<TId extends string>(options: {
