@@ -148,7 +148,7 @@ interface CacheEntry {
   entity: Entity | undefined;
 }
 
-// Simply expory map for the data loader, which only expects a map that implements set, get, and delete and clear
+// Simple expiry map for the data loader, which only expects a map that implements set, get, and delete and clear
 export class ExpiryMap<K, V> extends Map<K, V> {
   #ttlMs: number;
   #timestamps: Map<K, number> = new Map();
