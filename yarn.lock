@@ -3832,7 +3832,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/canon@workspace:packages/canon":
+"@backstage/canon@workspace:^, @backstage/canon@workspace:packages/canon":
   version: 0.0.0-use.local
   resolution: "@backstage/canon@workspace:packages/canon"
   dependencies:
@@ -28845,6 +28845,7 @@ __metadata:
   resolution: "example-app@workspace:packages/app"
   dependencies:
     "@backstage/app-defaults": "workspace:^"
+    "@backstage/canon": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"

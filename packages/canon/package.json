@@ -30,14 +30,15 @@
     "build": "yarn build:app && yarn build:css",
     "build:app": "backstage-cli package build",
     "build:css": "node scripts/build-css.mjs",
+    "build:css:watch": "node scripts/build-css.mjs --watch",
     "build-storybook": "storybook build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
+    "postinstall": "yarn build:css",
     "postpack": "backstage-cli package postpack",
-    "postinstall": "yarn setup-dev",
-    "setup-dev": "bash scripts/setup-dev.sh",
-    "start": "storybook dev -p 6006",
+    "start": "yarn build:css:watch && yarn storybook",
+    "storybook": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
   "dependencies": {
