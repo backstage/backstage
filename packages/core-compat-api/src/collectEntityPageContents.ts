@@ -99,7 +99,7 @@ export function collectEntityPageContents(
               name: `discovered-${cardCounter++}`,
               factory(originalFactory, { apis }) {
                 return originalFactory({
-                  type: 'full',
+                  type: 'content',
                   filter: mergedIf && (entity => mergedIf(entity, { apis })),
                   loader: () => Promise.resolve(pageNode.children),
                 });
