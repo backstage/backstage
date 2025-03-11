@@ -41,13 +41,5 @@ export function createSpecializedApp(options?: {
 };
 
 // @public (undocumented)
-export type FrontendFeature =
-  | FrontendPlugin
-  | FrontendModule
-  | {
-      $$type: '@backstage/ExtensionOverrides';
-    }
-  | {
-      $$type: '@backstage/BackstagePlugin';
-    };
+export type FrontendFeature = FrontendPlugin | FrontendModule;
 ```

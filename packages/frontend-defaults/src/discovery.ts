@@ -88,11 +88,7 @@ function isBackstageFeature(obj: unknown): obj is FrontendFeature {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||
-      obj.$$type === '@backstage/FrontendModule' ||
-      // TODO: Remove this once the old plugin type and extension overrides
-      // are no longer supported
-      obj.$$type === '@backstage/BackstagePlugin' ||
-      obj.$$type === '@backstage/ExtensionOverrides'
+      obj.$$type === '@backstage/FrontendModule'
     );
   }
   return false;
