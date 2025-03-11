@@ -35,14 +35,14 @@ import { HorizontalScrollGrid } from '@backstage/core-components';
 
 const useStyles = makeStyles<
   Theme,
-  { infoCards: boolean; peekCards: boolean; fullCards: boolean }
+  { infoCards: boolean; summaryCards: boolean; contentCards: boolean }
 >(theme => ({
   root: {
     display: 'flex',
     flexFlow: 'column nowrap',
     gap: theme.spacing(3),
   },
-  fullArea: {
+  contentArea: {
     display: 'flex',
     flexFlow: 'column',
     gap: theme.spacing(3),
@@ -56,10 +56,10 @@ const useStyles = makeStyles<
     gap: theme.spacing(3),
     minWidth: 0,
   },
-  peekArea: {
+  summaryArea: {
     margin: theme.spacing(1.5), // To counteract MUI negative grid margin
   },
-  peekCard: {
+  summaryCard: {
     flex: '0 0 auto',
     '& + &': {
       marginLeft: theme.spacing(3),
@@ -69,9 +69,9 @@ const useStyles = makeStyles<
     root: {
       display: 'grid',
       gap: 0,
-      gridTemplateAreas: ({ peekCards }) => `
-        "${peekCards ? 'peek' : 'full'} info"
-        "full info"
+      gridTemplateAreas: ({ summaryCards }) => `
+        "${summaryCards ? 'summary' : 'content'} info"
+        "content info"
       `,
       gridTemplateColumns: ({ infoCards }) => (infoCards ? '2fr 1fr' : '1fr'),
       alignItems: 'start',
@@ -82,11 +82,11 @@ const useStyles = makeStyles<
       top: theme.spacing(3),
       marginLeft: theme.spacing(3),
     },
-    fullArea: {
-      gridArea: 'full',
+    contentArea: {
+      gridArea: 'content',
     },
-    peekArea: {
-      gridArea: 'peek',
+    summaryArea: {
+      gridArea: 'summary',
       marginBottom: theme.spacing(3),
     },
   },
@@ -124,13 +124,15 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
 
   const infoCards = cards.filter(card => card.type === 'info');
-  const peekCards = cards.filter(card => card.type === 'peek');
-  const fullCards = cards.filter(card => !card.type || card.type === 'full');
+  const summaryCards = cards.filter(card => card.type === 'summary');
+  const contentCards = cards.filter(
+    card => !card.type || card.type === 'content',
+  );
 
   const classes = useStyles({
     infoCards: !!infoCards.length,
-    peekCards: !!peekCards.length,
-    fullCards: !!fullCards.length,
+    summaryCards: !!summaryCards.length,
+    contentCards: !!contentCards.length,
   });
 
   return (
@@ -142,18 +144,18 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
             {infoCards.map(card => card.element)}
           </div>
         ) : null}
-        {peekCards.length > 0 ? (
-          <div className={classes.peekArea}>
+        {summaryCards.length > 0 ? (
+          <div className={classes.summaryArea}>
             <HorizontalScrollGrid>
-              {peekCards.map(card => (
-                <div className={classes.peekCard}>{card.element}</div>
+              {summaryCards.map(card => (
+                <div className={classes.summaryCard}>{card.element}</div>
               ))}
             </HorizontalScrollGrid>
           </div>
         ) : null}
-        {fullCards.length > 0 ? (
-          <div className={classes.fullArea}>
-            {fullCards.map(card => card.element)}
+        {contentCards.length > 0 ? (
+          <div className={classes.contentArea}>
+            {contentCards.map(card => card.element)}
           </div>
         ) : null}
       </div>

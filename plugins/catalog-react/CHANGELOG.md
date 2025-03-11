@@ -78,7 +78,7 @@
   The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
 
   - element: `JSx.Element`;
-  - type: `"peek" | "info" | "full" | undefined`;
+  - type: `"summary" | "info" | "content" | undefined`;
 
   ### Usage example
 
@@ -115,14 +115,14 @@
         <Grid xs={12} md={8} item>
           <Grid container spacing={3}>
             {cards
-              .filter(card => card.type === 'peek')
+              .filter(card => card.type === 'summary')
               .map((card, index) => (
                 <Grid key={index} className={classes.card} xs={12} md={6} item>
                   {card.element}
                 </Grid>
               ))}
             {cards
-              .filter(card => !card.type || card.type === 'full')
+              .filter(card => !card.type || card.type === 'content')
               .map((card, index) => (
                 <Grid key={index} className={classes.card} xs={12} md={6} item>
                   {card.element}
@@ -176,9 +176,9 @@
 
   Initially the following three types are supported:
 
-  - `peek`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
+  - `summary`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
   - `info`: medium size cards with high priority and frequently used information such as common actions, entity metadata, and links.
-  - `full`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the full content view and want to show a card instead.
+  - `content`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the content content view and want to show a card instead.
 
   ### Usage examples
 
