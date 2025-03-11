@@ -158,6 +158,13 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
+      resourceQuery: /raw/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash:8][ext]',
+      },
+    },
+    {
       test: /\.(eot|woff|woff2|ttf)$/i,
       type: 'asset/resource',
       generator: {
@@ -166,6 +173,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       test: /\.ya?ml$/,
+      resourceQuery: { not: [/raw/] },
       use: require.resolve('yml-loader'),
     },
     {
@@ -177,6 +185,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       test: /\.css$/i,
+      resourceQuery: { not: [/raw/] },
       use: [
         isDev
           ? {
