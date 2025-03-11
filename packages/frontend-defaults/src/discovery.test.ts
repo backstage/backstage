@@ -64,8 +64,7 @@ describe('discoverAvailableFeatures', () => {
       modules: [{ default: testLoader }],
     });
     expect(discoverAvailableFeatures(config)).toEqual({
-      features: [],
-      featureLoaders: [testLoader],
+      features: [testLoader],
     });
   });
 

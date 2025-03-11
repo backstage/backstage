@@ -23,7 +23,6 @@ import {
 import { CreateAppFeatureLoader } from './createApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isInternalFrontendFeatureLoader } from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
-import { isBackstageFeatureLoader } from './discovery';
 
 /** @public */
 export async function resolveAsyncFeatures(options: {
@@ -34,7 +33,7 @@ export async function resolveAsyncFeatures(options: {
     | CreateAppFeatureLoader
   )[];
 }): Promise<{ features: FrontendFeature[] }> {
-  const featuresOrLoaders: (FrontendFeature | FrontendFeatureLoader)[] = [];
+  const features: (FrontendFeature | FrontendFeatureLoader)[] = [];
 
   // Separate deprecated CreateAppFeatureLoader elements from the frontend features,
   // and manage the deprecated elements first.
@@ -42,7 +41,7 @@ export async function resolveAsyncFeatures(options: {
     if ('load' in item) {
       try {
         const result = await item.load({ config: options.config });
-        featuresOrLoaders.push(...result.features);
+        features.push(...result.features);
       } catch (e) {
         throw new Error(
           `Failed to read frontend features from loader '${item.getLoaderName()}', ${stringifyError(
@@ -51,7 +50,7 @@ export async function resolveAsyncFeatures(options: {
         );
       }
     } else {
-      featuresOrLoaders.push(item);
+      features.push(item);
     }
   }
 
@@ -60,49 +59,55 @@ export async function resolveAsyncFeatures(options: {
   const maxRecursionDepth = 5;
 
   async function applyFeatureLoaders(
-    toLoad: (FrontendFeature | FrontendFeatureLoader)[],
+    featuresOrLoaders: (FrontendFeature | FrontendFeatureLoader)[],
     recursionDepth: number,
   ) {
     if (featuresOrLoaders.length === 0) {
       return;
     }
 
-    const featureLoaders: FrontendFeatureLoader[] = [];
-    for (const item of toLoad) {
-      if (isBackstageFeatureLoader(item)) {
-        featureLoaders.push(item);
+    for (const featureOrLoader of featuresOrLoaders) {
+      if (isBackstageFeatureLoader(featureOrLoader)) {
+        if (alreadyMetFeatureLoaders.some(l => l === featureOrLoader)) {
+          continue;
+        }
+        if (isInternalFrontendFeatureLoader(featureOrLoader)) {
+          if (recursionDepth > maxRecursionDepth) {
+            throw new Error(
+              `Maximum feature loading recursion depth (${maxRecursionDepth}) reached for the feature loader ${featureOrLoader.description}`,
+            );
+          }
+          alreadyMetFeatureLoaders.push(featureOrLoader);
+          let result: (FrontendFeature | FrontendFeatureLoader)[];
+          try {
+            result = await featureOrLoader.loader({ config: options.config });
+          } catch (e) {
+            throw new Error(
+              `Failed to read frontend features from loader ${
+                featureOrLoader.description
+              }: ${stringifyError(e)}`,
+            );
+          }
+          await applyFeatureLoaders(result, recursionDepth + 1);
+        }
       } else {
-        loadedFeatures.push(item);
-      }
-    }
-
-    for (const featureLoader of featureLoaders) {
-      if (alreadyMetFeatureLoaders.some(l => l === featureLoader)) {
-        continue;
-      }
-      if (isInternalFrontendFeatureLoader(featureLoader)) {
-        if (recursionDepth > maxRecursionDepth) {
-          throw new Error(
-            `Maximum feature loading recursion depth (${maxRecursionDepth}) reached for the feature loader ${featureLoader.description}`,
-          );
-        }
-        alreadyMetFeatureLoaders.push(featureLoader);
-        let result: (FrontendFeature | FrontendFeatureLoader)[];
-        try {
-          result = await featureLoader.loader({ config: options.config });
-        } catch (e) {
-          throw new Error(
-            `Failed to read frontend features from loader ${
-              featureLoader.description
-            }: ${stringifyError(e)}`,
-          );
-        }
-        await applyFeatureLoaders(result, recursionDepth + 1);
+        loadedFeatures.push(featureOrLoader);
       }
     }
   }
 
-  await applyFeatureLoaders(featuresOrLoaders, 1);
+  await applyFeatureLoaders(features, 1);
 
   return { features: loadedFeatures };
+}
+
+export function isBackstageFeatureLoader(
+  obj: unknown,
+): obj is FrontendFeatureLoader {
+  return (
+    obj !== null &&
+    typeof obj === 'object' &&
+    '$$type' in obj &&
+    obj.$$type === '@backstage/FrontendFeatureLoader'
+  );
 }

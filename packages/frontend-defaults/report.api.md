@@ -54,8 +54,7 @@ export function createPublicSignInApp(options?: CreateAppOptions): {
 
 // @public (undocumented)
 export function discoverAvailableFeatures(config: Config): {
-  features: FrontendFeature[];
-  featureLoaders?: FrontendFeatureLoader[];
+  features: (FrontendFeature | FrontendFeatureLoader)[];
 };
 
 // @public (undocumented)
