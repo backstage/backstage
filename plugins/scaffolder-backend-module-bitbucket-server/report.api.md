@@ -29,6 +29,7 @@ export function createPublishBitbucketServerAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   },
   JsonObject
 >;

@@ -144,6 +144,7 @@ export function createPublishGitlabAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
     setUserAsOwner?: boolean;
     topics?: string[];
     settings?: {

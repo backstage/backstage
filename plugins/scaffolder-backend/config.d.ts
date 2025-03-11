@@ -28,6 +28,11 @@ export interface Config {
     };
 
     /**
+     * Default PGP signing key for signing commits.
+     * @visibility secret
+     */
+    defaultCommitSigningKey?: string;
+    /**
      * The commit message used when new components are created.
      */
     defaultCommitMessage?: string;
