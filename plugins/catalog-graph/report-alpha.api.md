@@ -45,7 +45,7 @@ const _default: FrontendPlugin<
         height: number | undefined;
       } & {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         height?: number | undefined;
@@ -61,7 +61,7 @@ const _default: FrontendPlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
