@@ -29,6 +29,7 @@ export function createPublishAzureAction(options: {
     gitAuthorEmail?: string;
     signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```

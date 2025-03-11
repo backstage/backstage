@@ -25,7 +25,8 @@ export function createPublishGiteaAction(options: {
     sourcePath?: string;
     signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
