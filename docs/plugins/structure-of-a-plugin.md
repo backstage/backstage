@@ -4,8 +4,7 @@ title: Structure of a Plugin
 description: Details about structure of a plugin
 ---
 
-Nice, you have a new plugin! We'll soon see how we can develop it into doing
-great things. But first off, let's look at what we get out of the box.
+Great, you have a new plugin! We'll soon explore how we can enhance it to achieve amazing results. But first, let's examine what we have available right from the start.
 
 ## Folder structure
 
@@ -48,8 +47,7 @@ folder.
 
 ## Base files
 
-You get a readme to populate with info about your plugin and a
-package.json to declare the plugin dependencies, metadata and scripts.
+You receive a `readme` file to fill with details about your plugin and a `package.json` file to specify the plugin’s dependencies, metadata, and scripts.
 
 ## The plugin file
 
