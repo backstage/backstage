@@ -43,6 +43,50 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
     expect(middleware.headerValue('t')).toEqual('t!');
   });
 
+  it('creates using frontend host discovery config', async () => {
+    const middleware = IdentityAuthInjectorFetchMiddleware.create({
+      identityApi: undefined as any,
+      config: new ConfigReader({
+        backend: { baseUrl: 'https://example.com/api' },
+      }),
+      header: { name: 'auth', value: t => `${t}!` },
+    });
+    expect(middleware.allowUrl('https://example.com/api')).toEqual(true);
+    expect(middleware.allowUrl('https://example.com/api/sss')).toEqual(true);
+    expect(middleware.allowUrl('https://evil.com/api')).toEqual(false);
+    expect(middleware.headerName).toEqual('auth');
+    expect(middleware.headerValue('t')).toEqual('t!');
+  });
+
+  it('creates with frontend discovery config', () => {
+    const middleware = IdentityAuthInjectorFetchMiddleware.create({
+      identityApi: undefined as any,
+      config: new ConfigReader({
+        backend: { baseUrl: 'https://example.com/api' },
+        discovery: {
+          endpoints: [
+            {
+              target: 'https://custom.url.com/api/{{pluginId}}',
+              plugins: ['plugin-1', 'plugin-2'],
+            },
+          ],
+        },
+      }),
+      header: { name: 'auth', value: t => `${t}!` },
+    });
+    expect(middleware.allowUrl('https://example.com/api')).toEqual(true);
+    expect(middleware.allowUrl('https://example.com/api/sss')).toEqual(true);
+    expect(middleware.allowUrl('https://evil.com/api')).toEqual(false);
+    expect(middleware.allowUrl('https://custom.url.com/api/plugin-1')).toEqual(
+      true,
+    );
+    expect(
+      middleware.allowUrl('https://custom.url.com/api/not-allowed-plugin'),
+    ).toEqual(false);
+    expect(middleware.headerName).toEqual('auth');
+    expect(middleware.headerValue('t')).toEqual('t!');
+  });
+
   it('creates using explicit allowlist', async () => {
     const middleware = IdentityAuthInjectorFetchMiddleware.create({
       identityApi: undefined as any,

@@ -87,7 +87,27 @@ function buildMatcher(options: {
   } else if (options.urlPrefixAllowlist) {
     return buildPrefixMatcher(options.urlPrefixAllowlist);
   } else if (options.config) {
-    return buildPrefixMatcher([options.config.getString('backend.baseUrl')]);
+    const endpoints =
+      options.config
+        .getOptionalConfigArray('discovery.endpoints')
+        ?.flatMap(e => {
+          const target =
+            typeof e.get('target') === 'object'
+              ? e.getString('target.external')
+              : e.getString('target');
+
+          return (
+            e
+              .getOptionalStringArray('plugins')
+              ?.map(pluginId =>
+                target.split(/\{\{\s*pluginId\s*\}\}/).join(pluginId),
+              ) || []
+          );
+        }) || [];
+    return buildPrefixMatcher([
+      ...endpoints,
+      options.config.getString('backend.baseUrl'),
+    ]);
   }
   return () => false;
 }
