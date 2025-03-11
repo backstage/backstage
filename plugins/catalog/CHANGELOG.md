@@ -1,5 +1,75 @@
 # @backstage/plugin-catalog
 
+## 1.28.0-next.2
+
+### Minor Changes
+
+- 247a40b: Now a custom entity page header can be passed as input to the default entity page.
+- 93533bd: The order in which group tabs appear on the entity page has been changed.
+
+  ### Before
+
+  Previously, entity contents determined the order in which groups were rendered, so a group was rendered as soon as its first entity content was detected.
+
+  ### After
+
+  Groups are now rendered first by default based on their order in the `app-config.yaml` file:
+
+  ```diff
+  app:
+    extensions:
+      - page:catalog/entity:
+  +       config:
+  +         groups:
+  +           # this will be the first tab of the default entity page
+  +           - deployment:
+  +               title: Deployment
+  +           # this will be the second tab of the default entiy page
+  +           - documentation:
+  +               title: Documentation
+  ```
+
+  If you wish to place a normal tab before a group, you must add the tab to a group and place the group in the order you wish it to appear on the entity page (groups that contains only one tab are rendered as normal tabs).
+
+  ```diff
+  app:
+    extensions:
+      - page:catalog/entity:
+          config:
+            groups:
+  +            # Example placing the overview tab first
+  +           - overview:
+  +               title: Overview
+              - deployment:
+                  title: Deployment
+              # this will be the second tab of the default entiy page
+              - documentation:
+                  title: Documentation
+      - entity-content:catalog/overview:
+  +       config:
+  +          group: 'overview'
+  ```
+
+### Patch Changes
+
+- 31731b0: Internal refactor to avoid `expiry-map` dependency.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/plugin-search-react@1.8.7-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.28.0-next.1
 
 ### Minor Changes

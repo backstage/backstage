@@ -1,5 +1,42 @@
 # @backstage/plugin-catalog-react
 
+## 1.16.0-next.2
+
+### Minor Changes
+
+- 7f57365: Add support for a new entity predicate syntax when defining `filter`s related to the blueprints exported via `/alpha` for the new frontend system. For more information, see the [entity filters documentation](https://backstage.io/docs/features/software-catalog/catalog-customization#advanced-customization#entity-filters).
+- 247a40b: Introduces a new `EntityHeaderBlueprint` that allows you to override the default entity page header.
+
+  ```jsx
+  import { EntityHeaderBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  EntityHeaderBlueprint.make({
+    name: 'my-default-header',
+    params: {
+      loader: () =>
+        import('./MyDefaultHeader').then(m => <m.MyDefaultHeader />),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/frontend-test-utils@0.3.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
 ## 1.16.0-next.1
 
 ### Patch Changes
