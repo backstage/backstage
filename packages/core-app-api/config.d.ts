@@ -163,7 +163,7 @@ export interface Config {
             /**
              * @visibility frontend
              */
-            external: string;
+            external?: string;
           };
       /**
        * Array of plugins which use the target baseUrl.
