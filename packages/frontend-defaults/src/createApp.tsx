@@ -101,17 +101,11 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const {
-      features: discoveredFeatures,
-      featureLoaders: discoveredFeatureLoaders,
-    } = discoverAvailableFeatures(config);
+    const { features: discoveredFeaturesAndLoaders } =
+      discoverAvailableFeatures(config);
     const { features: loadedFeatures } = await resolveAsyncFeatures({
       config,
-      features: [
-        ...discoveredFeatures,
-        ...(discoveredFeatureLoaders ?? []),
-        ...(options?.features ?? []),
-      ],
+      features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
     const app = createSpecializedApp({

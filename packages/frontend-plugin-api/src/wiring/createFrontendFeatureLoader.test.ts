@@ -165,6 +165,22 @@ describe('createFrontendFeatureLoader', () => {
       createFrontendFeatureLoader({
         async loader(_) {
           return [
+            createFrontendPlugin({
+              id: 'plugin-0',
+              extensions: [
+                createExtension({
+                  name: '0',
+                  attachTo: {
+                    id: 'plugin-output/output',
+                    input: 'names',
+                  },
+                  output: [nameExtensionDataRef],
+                  factory() {
+                    return [nameExtensionDataRef('extension-0')];
+                  },
+                }),
+              ],
+            }),
             createFrontendFeatureLoader({
               async *loader(__) {
                 yield createFrontendPlugin({
@@ -248,7 +264,7 @@ describe('createFrontendFeatureLoader', () => {
     );
 
     await expect(
-      screen.findByText('Names: extension-1, extension-2'),
+      screen.findByText('Names: extension-0, extension-1, extension-2'),
     ).resolves.toBeInTheDocument();
   });
 
