@@ -133,6 +133,8 @@ export const NotificationsSidebarItem: (props?: {
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
+  useIconCount?: boolean;
+  useChipCount?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
