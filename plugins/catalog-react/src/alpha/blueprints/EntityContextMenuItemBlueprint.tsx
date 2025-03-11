@@ -16,9 +16,11 @@
 
 import React from 'react';
 import {
+  DialogApiDialog,
   ExtensionBoundary,
   coreExtensionData,
   createExtensionBlueprint,
+  dialogApiRef,
 } from '@backstage/frontend-plugin-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -43,14 +45,41 @@ export type FactoryHrefParams =
     };
 
 /** @alpha */
+export type FactoryDialogParams = {
+  dialogLoader: () => Promise<
+    ({ dialog }: { dialog: DialogApiDialog }) => JSX.Element
+  >;
+  title: string;
+  icon: JSX.Element;
+};
+
+export type EntityContextMenuItemParams =
+  | FactoryLoaderParams
+  | FactoryHrefParams
+  | FactoryDialogParams;
+
+/** @alpha */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'extraContextMenuItems' },
   output: [coreExtensionData.reactElement],
-  *factory(params: FactoryLoaderParams | FactoryHrefParams, { node }) {
+  *factory(params: EntityContextMenuItemParams, { node, apis }) {
     const loaderFactory = () => {
       if ('loader' in params) {
         return params.loader;
+      }
+
+      if ('dialogLoader' in params) {
+        const dialogApi = apis.get(dialogApiRef);
+        return async () => {
+          const Dialog = await params.dialogLoader();
+          return (
+            <MenuItem onClick={() => dialogApi?.show(Dialog)}>
+              <ListItemIcon>{params.icon}</ListItemIcon>
+              <ListItemText primary={params.title} />
+            </MenuItem>
+          );
+        };
       }
 
       const useHref = 'useHref' in params ? params.useHref : () => params.href;
