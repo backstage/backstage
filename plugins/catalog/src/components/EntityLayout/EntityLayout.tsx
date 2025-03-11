@@ -181,6 +181,7 @@ export interface EntityLayoutProps {
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   children?: ReactNode;
   NotFoundComponent?: ReactNode;
+  extraMenuItems?: JSX.Element[];
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible
@@ -245,6 +246,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
+    extraMenuItems,
     children,
     NotFoundComponent,
     parentEntityRelations,
@@ -360,6 +362,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+              extraMenuItems={extraMenuItems}
               onUnregisterEntity={() => setConfirmationDialogOpen(true)}
               onInspectEntity={() => setSearchParams('inspect')}
             />

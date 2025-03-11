@@ -23,3 +23,8 @@ export {
 export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
 export { defaultEntityContentGroups } from './extensionData';
 export type { EntityCardType } from './extensionData';
+export {
+  EntityContextMenuItemBlueprint,
+  type FactoryHrefParams,
+  type FactoryLoaderParams,
+} from './EntityContextMenuItemBlueprint';
