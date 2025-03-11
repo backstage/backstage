@@ -4,5 +4,5 @@ This module provides an oauth2 auth provider implementation for `@backstage/plug
 
 ## Links
 
-- [Repository](https://oauth2.com/backstage/backstage/tree/master/plugins/auth-backend-module-oauth2-provider)
+- [Repository](https://github.com/backstage/backstage/tree/master/plugins/auth-backend-module-oauth2-provider)
 - [Backstage Project Homepage](https://backstage.io)
