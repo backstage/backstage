@@ -26,4 +26,6 @@ export {
   EntityContextMenuItemBlueprint,
   type FactoryHrefParams,
   type FactoryLoaderParams,
+  type FactoryDialogParams,
+  type EntityContextMenuItemParams,
 } from './EntityContextMenuItemBlueprint';

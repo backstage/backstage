@@ -53,6 +53,7 @@ export type FactoryDialogParams = {
   icon: JSX.Element;
 };
 
+/** @alpha */
 export type EntityContextMenuItemParams =
   | FactoryLoaderParams
   | FactoryHrefParams
