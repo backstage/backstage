@@ -30,7 +30,8 @@ export function createGithubActionsDispatchAction(options: {
     };
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -45,7 +46,8 @@ export function createGithubAutolinksAction(options: {
     isAlphanumeric?: boolean;
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -81,7 +83,8 @@ export function createGithubBranchProtectionAction(options: {
     requiredLinearHistory?: boolean;
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -96,7 +99,8 @@ export function createGithubDeployKeyAction(options: {
     privateKeySecretName?: string;
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -125,7 +129,8 @@ export function createGithubEnvironmentAction(options: {
     preventSelfReview?: boolean;
     reviewers?: string[];
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -139,7 +144,8 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -154,7 +160,8 @@ export function createGithubPagesEnableAction(options: {
     sourcePath?: '/' | '/docs';
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -255,7 +262,8 @@ export function createGithubRepoCreateAction(options: {
     };
     subscribe?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -299,7 +307,8 @@ export function createGithubRepoPushAction(options: {
     requiredLinearHistory?: boolean;
     requireLastPushApproval?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -318,7 +327,8 @@ export function createGithubWebhookAction(options: {
     insecureSsl?: boolean;
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -404,7 +414,8 @@ export function createPublishGithubAction(options: {
     };
     subscribe?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -431,7 +442,8 @@ export const createPublishGithubPullRequestAction: (
     forceEmptyGitAuthor?: boolean;
     createWhenEmpty?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

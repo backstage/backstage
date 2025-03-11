@@ -14,7 +14,8 @@ export function createRunYeomanAction(): TemplateAction<
     args?: string[];
     options?: JsonObject;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

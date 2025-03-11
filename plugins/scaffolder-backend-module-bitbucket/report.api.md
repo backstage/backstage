@@ -25,7 +25,12 @@ export const createBitbucketPipelinesRunAction: (options: {
     body?: object;
     token?: string;
   },
-  JsonObject
+  {
+    buildNumber: number;
+    repoUrl: string;
+    pipelinesUrl: string;
+  },
+  'v1'
 >;
 
 // @public @deprecated
@@ -46,7 +51,8 @@ export function createPublishBitbucketAction(options: {
     gitAuthorEmail?: string;
     signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public @deprecated (undocumented)
