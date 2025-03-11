@@ -23,7 +23,12 @@ export const createBitbucketPipelinesRunAction: (options: {
     body?: object;
     token?: string;
   },
-  JsonObject
+  {
+    buildNumber: number;
+    repoUrl: string;
+    pipelinesUrl: string;
+  },
+  'v1'
 >;
 
 // @public
@@ -40,7 +45,8 @@ export function createPublishBitbucketCloudAction(options: {
     sourcePath?: string;
     token?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -58,6 +64,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```

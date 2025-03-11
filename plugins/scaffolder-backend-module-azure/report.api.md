@@ -28,6 +28,7 @@ export function createPublishAzureAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```

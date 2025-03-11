@@ -160,7 +160,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         },
         handler: fakeActionHandler,
-      }) as TemplateAction<any, any, any>,
+      }),
     );
 
     actionRegistry.register(
@@ -215,9 +215,7 @@ describe('NunjucksWorkflowRunner', () => {
           ctx.output('key2', key2);
           ctx.output('key3', key3);
 
-          // @ts-expect-error - this is void return
           ctx.output('key4', key4);
-          // @ts-expect-error - this is void return
           ctx.output('key5', key5);
         },
       }),

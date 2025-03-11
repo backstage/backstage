@@ -30,7 +30,8 @@ export function createPublishBitbucketServerAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -49,6 +50,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```
