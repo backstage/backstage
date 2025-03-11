@@ -1004,6 +1004,13 @@ const _default: FrontendPlugin<
             optional: false;
           }
         >;
+        extraContextMenuItems: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
       };
       kind: 'page';
       name: 'entity';

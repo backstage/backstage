@@ -6,6 +6,7 @@
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { DialogApiDialog } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -326,6 +327,28 @@ export interface EntityContentLayoutProps {
 }
 
 // @alpha (undocumented)
+export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
+  kind: 'entity-context-menu-item';
+  name: undefined;
+  params: EntityContextMenuItemParams;
+  output: ConfigurableExtensionDataRef<
+    React_2.JSX.Element,
+    'core.reactElement',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @alpha (undocumented)
+export type EntityContextMenuItemParams =
+  | FactoryLoaderParams
+  | FactoryHrefParams
+  | FactoryDialogParams;
+
+// @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
   name: undefined;
@@ -392,6 +415,33 @@ export type EntityPredicateValue =
   | {
       $contains: EntityPredicateExpression;
     };
+
+// @alpha (undocumented)
+export type FactoryDialogParams = {
+  dialogLoader: () => Promise<
+    ({ dialog }: { dialog: DialogApiDialog }) => JSX.Element
+  >;
+  title: string;
+  icon: JSX.Element;
+};
+
+// @alpha (undocumented)
+export type FactoryHrefParams =
+  | {
+      title: string;
+      icon: JSX.Element;
+      useHref: () => string;
+    }
+  | {
+      title: string;
+      icon: JSX.Element;
+      href: string;
+    };
+
+// @alpha (undocumented)
+export type FactoryLoaderParams = {
+  loader: () => Promise<JSX.Element>;
+};
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
