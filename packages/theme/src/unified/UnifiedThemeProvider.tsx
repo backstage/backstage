@@ -16,6 +16,7 @@
 
 import React, { ReactNode } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Helmet from 'react-helmet';
 import {
   ThemeProvider,
   StylesProvider,
@@ -29,6 +30,8 @@ import {
 } from '@mui/material/styles';
 import { UnifiedTheme } from './types';
 import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
+import canonCoreSrc from '@backstage/canon/css/core.css?raw';
+import canonComponetsSrc from '@backstage/canon/css/components.css?raw';
 
 /**
  * Props for {@link UnifiedThemeProvider}.
@@ -39,6 +42,8 @@ export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
   noCssBaseline?: boolean;
+  cssLinks?: string[];
+  themeDataAttribute?: string;
 }
 
 /**
@@ -66,7 +71,13 @@ const generateV4ClassName = createGenerateClassName({
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
 ): JSX.Element {
-  const { children, theme, noCssBaseline = false } = props;
+  const {
+    children,
+    theme,
+    noCssBaseline = false,
+    cssLinks = [canonCoreSrc, canonComponetsSrc],
+    themeDataAttribute,
+  } = props;
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
@@ -96,6 +107,32 @@ export function UnifiedThemeProvider(
       <StyledEngineProvider injectFirst>
         <Mui5Provider theme={v5Theme}>{result}</Mui5Provider>
       </StyledEngineProvider>
+    );
+  }
+
+  if (cssLinks) {
+    result = (
+      <>
+        <Helmet
+          link={cssLinks.map(src => ({
+            type: 'text/css',
+            rel: 'stylesheet',
+            href: src,
+          }))}
+        />
+        {result}
+      </>
+    );
+  }
+
+  const data =
+    themeDataAttribute ?? v5Theme?.palette.mode ?? v4Theme?.palette.type;
+  if (data) {
+    result = (
+      <>
+        <Helmet bodyAttributes={{ 'data-theme': data }} />
+        {result}
+      </>
     );
   }
 

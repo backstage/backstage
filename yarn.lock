@@ -8780,6 +8780,7 @@ __metadata:
     "@types/react": ^18.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
+    react-helmet: 6.1.0
     react-router-dom: ^6.3.0
   peerDependencies:
     "@material-ui/core": ^4.12.2
