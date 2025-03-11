@@ -102,7 +102,7 @@ export const ReportIssueAddon = ({
       // todo(backstage/techdocs-core) handle non-repo rendering
       !repository ||
       !selection ||
-      !selection.containsNode(mainContent!, true) ||
+      !selection?.containsNode(mainContent!, true) ||
       selection?.containsNode(feedbackContainer!, true)
     ) {
       return;
