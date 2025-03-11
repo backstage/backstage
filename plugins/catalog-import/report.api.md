@@ -217,6 +217,7 @@ export interface ImportStepperProps {
   generateStepper?: (
     flow: ImportFlows,
     defaults: StepperProvider,
+    t: TranslationFunction<typeof catalogImportTranslationRef.T>,
   ) => StepperProvider;
   // (undocumented)
   initialUrl?: string;
