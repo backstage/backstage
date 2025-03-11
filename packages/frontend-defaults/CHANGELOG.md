@@ -1,5 +1,23 @@
 # @backstage/frontend-defaults
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Dropped support for the removed opaque `@backstage/ExtensionOverrides` and `@backstage/BackstagePlugin` types.
+
+### Patch Changes
+
+- 4d18b55: It's now possible to provide a middleware that wraps all extension factories by passing an `extensionFactoryMiddleware` to either `createApp()` or `createSpecializedApp()`.
+- abcdf44: Internal refactor to match updated `createSpecializedApp`.
+- e3f19db: Feature discovery and resolution logic used in `createApp` is now exposed via the `discoverAvailableFeatures` and `resolveAsyncFeatures` functions respectively.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.0-next.2
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-app@0.1.7-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.1.7-next.1
 
 ### Patch Changes

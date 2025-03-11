@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.17-next.2
+
+### Patch Changes
+
+- ac3e8c0: Fixed multiple signal connection attempts when there are multiple subscriptions at the same time
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10
+
 ## 0.0.17-next.1
 
 ### Patch Changes
