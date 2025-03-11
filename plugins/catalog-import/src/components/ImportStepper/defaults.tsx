@@ -86,6 +86,7 @@ export interface StepperProvider {
  *
  * @param flow - the name of the active flow
  * @param defaults - the default steps
+ * @param t - the translation function
  * @public
  */
 export function defaultGenerateStepper(
