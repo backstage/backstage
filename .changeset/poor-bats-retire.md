@@ -21,7 +21,7 @@ discovery:
       plugins: [catalog]
 ```
 
-This will now cause requests from the frontend towards the `catalog` plugin to be routed to `https://internal-catalog.acme.org/api/catalog`, but this might not be reachable from the frontend. To fix this, you should update the `discovery.endpoints` configuration to only override the internal URL of the plugin:
+This will now cause requests from the frontend towards the `catalog` plugin to be routed to `https://catalog.internal.acme.org/api/catalog`, but this might not be reachable from the frontend. To fix this, you should update the `discovery.endpoints` configuration to only override the internal URL of the plugin:
 
 ```yaml
 discovery:
