@@ -49,7 +49,7 @@ export interface Config {
       };
       queryOptions?: {
         /**
-         * Fuzziness allows you to define the maximum Levenshtein Distance for fuzzy queries,
+         * Fuzziness allows you to define the maximum Levenshtein distance for fuzzy queries,
          * which determines how many single-character edits (insertions, deletions, substitutions)
          * are allowed for a term to be considered a match.
          *

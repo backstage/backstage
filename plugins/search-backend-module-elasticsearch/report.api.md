@@ -371,7 +371,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
-    queryOptions?: ElasticSearchQueryConfig,
   ): ElasticSearchConcreteQuery;
 }
 

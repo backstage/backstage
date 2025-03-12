@@ -234,7 +234,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
-    queryOptions?: ElasticSearchQueryConfig,
   ): ElasticSearchConcreteQuery {
     const { term, filters = {}, types, pageCursor } = query;
 
@@ -279,15 +278,15 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       if (restTerm?.length > 0) {
         const esbRestQuery = esb
           .multiMatchQuery(['*'], restTerm.trim())
-          .fuzziness(queryOptions?.fuzziness ?? 'auto')
-          .prefixLength(queryOptions?.prefixLength ?? 0);
+          .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
+          .prefixLength(options?.queryOptions?.prefixLength ?? 0);
         esbQueries.push(esbRestQuery);
       }
     } else {
       const esbQuery = esb
         .multiMatchQuery(['*'], term)
-        .fuzziness(queryOptions?.fuzziness ?? 'auto')
-        .prefixLength(queryOptions?.prefixLength ?? 0);
+        .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
+        .prefixLength(options?.queryOptions?.prefixLength ?? 0);
       esbQueries.push(esbQuery);
     }
 
