@@ -47,11 +47,13 @@ import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TASK } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -65,6 +67,8 @@ import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backsta
 import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskFilter } from '@backstage/plugin-scaffolder-node';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -476,6 +480,7 @@ export class DatabaseTaskStore implements TaskStore {
       order: 'asc' | 'desc';
       field: string;
     }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{
     tasks: SerializedTask_2[];
     totalTasks?: number;
@@ -562,9 +567,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
+  permissionRules?: Array<ScaffolderPermissionRuleInput>;
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
@@ -582,6 +585,12 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
+
+// @public (undocumented)
+export type ScaffolderPermissionRuleInput =
+  | TemplatePermissionRuleInput
+  | ActionPermissionRuleInput
+  | TaskPermissionRuleInput;
 
 // @public
 const scaffolderPlugin: BackendFeature;
@@ -672,6 +681,19 @@ export class TaskManager implements TaskContext_2 {
         },
   ): Promise<void>;
 }
+
+// @public (undocumented)
+export type TaskPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  SerializedTask_2,
+  {
+    property: TaskFilter['property'];
+    values: any;
+  },
+  typeof RESOURCE_TYPE_SCAFFOLDER_TASK,
+  TParams
+>;
 
 // @public @deprecated (undocumented)
 export type TaskSecrets = TaskSecrets_2;

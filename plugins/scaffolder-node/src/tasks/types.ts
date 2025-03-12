@@ -15,6 +15,7 @@
  */
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 
@@ -103,6 +104,25 @@ export type TaskBrokerDispatchOptions = {
   secrets?: TaskSecrets;
   createdBy?: string;
 };
+
+/**
+ * TaskFilter
+ * @public
+ */
+export type TaskFilter = {
+  property: 'createdBy' | 'templateEntityRefs';
+  values: Array<string> | undefined;
+};
+
+/**
+ * TaskFilters
+ * @public
+ */
+export type TaskFilters =
+  | { anyOf: TaskFilter[] }
+  | { allOf: TaskFilter[] }
+  | { not: TaskFilter }
+  | TaskFilter;
 
 /**
  * Task
@@ -194,6 +214,7 @@ export interface TaskBroker {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
   /**

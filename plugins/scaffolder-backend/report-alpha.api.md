@@ -11,6 +11,8 @@ import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
+import { TaskFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
@@ -18,6 +20,12 @@ import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 export const createScaffolderActionConditionalDecision: (
   permission: ResourcePermission<'scaffolder-action'>,
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
+) => ConditionalPolicyDecision;
+
+// @alpha (undocumented)
+export const createScaffolderTaskConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-task'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-task'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha
@@ -77,6 +85,32 @@ export const scaffolderActionConditions: Conditions<{
     {
       key: string;
       value?: string | undefined;
+    }
+  >;
+}>;
+
+// @alpha
+export const scaffolderTaskConditions: Conditions<{
+  hasCreatedBy: PermissionRule<
+    SerializedTask,
+    {
+      property: TaskFilter['property'];
+      values: any;
+    },
+    'scaffolder-task',
+    {
+      createdBy: string[];
+    }
+  >;
+  hasTemplateEntityRefs: PermissionRule<
+    SerializedTask,
+    {
+      property: TaskFilter['property'];
+      values: any;
+    },
+    'scaffolder-task',
+    {
+      templateEntityRefs: string[];
     }
   >;
 }>;
