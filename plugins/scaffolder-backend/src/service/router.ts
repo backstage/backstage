@@ -177,6 +177,10 @@ function isActionPermissionRuleInput(
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
 }
 
+/**
+ *
+ * @public
+ */
 export type TaskPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<
