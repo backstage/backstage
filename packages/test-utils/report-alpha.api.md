@@ -5,6 +5,8 @@
 ```ts
 import { Observable } from '@backstage/types';
 import { TranslationApi } from '@backstage/core-plugin-api/alpha';
+import { TranslationComponent } from '@backstage/core-plugin-api/alpha';
+import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
 
@@ -20,6 +22,12 @@ export class MockTranslationApi implements TranslationApi {
   >(
     translationRef: TranslationRef<string, TMessages>,
   ): TranslationSnapshot<TMessages>;
+  // (undocumented)
+  getTranslationComponent<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(_t: TranslationFunction<TMessages>): TranslationComponent<TMessages>;
   // (undocumented)
   translation$<
     TMessages extends {
