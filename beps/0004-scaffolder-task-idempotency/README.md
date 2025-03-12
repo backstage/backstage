@@ -154,30 +154,36 @@ export function createGithubRepoCreateAction(options: {
         username: owner,
       });
 
-      await ctx.checkpoint('repo.creation', async () => {
-        const repoCreationPromise =
-          user.data.type === 'Organization'
-            ? client.rest.repos.createInOrg({
-                name: repo,
-                org: owner,
-              })
-            : client.rest.repos.createForAuthenticatedUser({
-                name: repo,
-              });
-        const { repoUrl } = await repoCreationPromise;
-        return { repoUrl };
+      await ctx.checkpoint({
+        key: 'repo.creation.v1',
+        fn: async () => {
+          const repoCreationPromise =
+            user.data.type === 'Organization'
+              ? client.rest.repos.createInOrg({
+                  name: repo,
+                  org: owner,
+                })
+              : client.rest.repos.createForAuthenticatedUser({
+                  name: repo,
+                });
+          const { repoUrl } = await repoCreationPromise;
+          return { repoUrl };
+        },
       });
 
       if (secrets) {
-        await ctx.checkpoint('repo.create.variables', async () => {
-          for (const [key, value] of Object.entries(repoVariables ?? {})) {
-            await client.rest.actions.createRepoVariable({
-              owner,
-              repo,
-              name: key,
-              value: value,
-            });
-          }
+        await ctx.checkpoint({
+          key: 'repo.create.variables',
+          fn: async () => {
+            for (const [key, value] of Object.entries(repoVariables ?? {})) {
+              await client.rest.actions.createRepoVariable({
+                owner,
+                repo,
+                name: key,
+                value: value,
+              });
+            }
+          },
         });
       }
 
@@ -202,9 +208,12 @@ Checkpoints will allow action authors to create actions where code paths are ign
 This will be provided on a context object and action of author provide a key and a callback.
 
 ```typescript
-await ctx.checkpoint('repo.creation', async () => {
-  const { repoUrl } = await client.rest.Repository.create({});
-  return { repoUrl };
+await ctx.checkpoint({
+  key: 'repo.creation',
+  fn: async () => {
+    const { repoUrl } = await client.rest.Repository.create({});
+    return { repoUrl };
+  },
 });
 ```
 
@@ -258,6 +267,12 @@ Task state will be stored in the extra column `state` in the table `tasks` with 
   }
 }
 ```
+
+Whenever you change the return type of the checkpoint, we encourage you to change the ID.
+For example, you can embed the versioning or another indicator for that.
+If you'll preserve the same key, and you'll try to restart the affected task, it will fail on this checkpoint.
+The cached result will not match with the expected updated return type.
+By changing the key, you'll invalidate the cache of the checkpoint.
 
 #### Workspace Persistence
 
