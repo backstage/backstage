@@ -109,6 +109,12 @@ export const Disabled: Story = {
     children: 'Button',
     disabled: true,
   },
+  render: args => (
+    <Flex direction="row" gap="4">
+      <Button {...args} variant="primary" />
+      <Button {...args} variant="secondary" />
+    </Flex>
+  ),
 };
 
 export const Responsive: Story = {

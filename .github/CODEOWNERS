@@ -53,3 +53,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/user-settings                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/user-settings-common                     @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+
+/packages/backend-plugin-api/src/services/definitions/AuditorService.ts   @backstage/maintainers @backstage/auditor-maintainers
+/packages/backend-defaults/src/entrypoints/auditor                        @backstage/maintainers @backstage/auditor-maintainers
+/packages/backend-defaults/report-auditor.api.md                          @backstage/maintainers @backstage/auditor-maintainers
+/docs/backend-system/core-services/auditor.md                             @backstage/maintainers @backstage/auditor-maintainers @backstage/documentation-maintainers

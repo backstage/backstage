@@ -25,7 +25,16 @@ import {
   registerRepoCommands as registerRepoBuildCommands,
   registerCommands as registerBuildCommands,
 } from '../modules/build';
+import { registerCommands as registerInfoCommands } from '../modules/info';
 import { registerCommands as registerMigrateCommand } from '../modules/migrate';
+import {
+  registerRepoCommands as registerRepoTestCommands,
+  registerPackageCommands as registerPackageTestCommands,
+} from '../modules/test';
+import {
+  registerPackageCommands as registerPackageLintCommands,
+  registerRepoCommands as registerRepoLintCommands,
+} from '../modules/lint';
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -33,33 +42,8 @@ export function registerRepoCommand(program: Command) {
     .description('Command that run across an entire Backstage project');
 
   registerRepoBuildCommands(command);
-
-  command
-    .command('lint')
-    .description('Lint all packages in the project')
-    .option(
-      '--format <format>',
-      'Lint report output format',
-      'eslint-formatter-friendly',
-    )
-    .option(
-      '--output-file <path>',
-      'Write the lint report to a file instead of stdout',
-    )
-    .option(
-      '--since <ref>',
-      'Only lint packages that changed since the specified ref',
-    )
-    .option(
-      '--successCache',
-      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
-    )
-    .option(
-      '--successCacheDir <path>',
-      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
-    )
-    .option('--fix', 'Attempt to automatically fix violations')
-    .action(lazy(() => import('./repo/lint'), 'command'));
+  registerRepoTestCommands(command);
+  registerRepoLintCommands(command);
 
   command
     .command('fix')
@@ -84,28 +68,6 @@ export function registerRepoCommand(program: Command) {
     .description('List deprecations')
     .option('--json', 'Output as JSON')
     .action(lazy(() => import('./repo/list-deprecations'), 'command'));
-
-  command
-    .command('test')
-    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
-    .option(
-      '--since <ref>',
-      'Only test packages that changed since the specified ref',
-    )
-    .option(
-      '--successCache',
-      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
-    )
-    .option(
-      '--successCacheDir <path>',
-      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
-    )
-    .option(
-      '--jest-help',
-      'Show help for Jest CLI options, which are passed through',
-    )
-    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./repo/test'), 'command'));
 }
 
 export function registerScriptCommand(program: Command) {
@@ -129,33 +91,9 @@ export function registerScriptCommand(program: Command) {
     .action(lazy(() => import('./start'), 'command'));
 
   registerPackageBuildCommands(command);
+  registerPackageTestCommands(command);
 
-  command
-    .command('lint [directories...]')
-    .option(
-      '--format <format>',
-      'Lint report output format',
-      'eslint-formatter-friendly',
-    )
-    .option(
-      '--output-file <path>',
-      'Write the lint report to a file instead of stdout',
-    )
-    .option('--fix', 'Attempt to automatically fix violations')
-    .option(
-      '--max-warnings <number>',
-      'Fail if more than this number of warnings. -1 allows warnings. (default: 0)',
-    )
-    .description('Lint a package')
-    .action(lazy(() => import('./lint'), 'default'));
-
-  command
-    .command('test')
-    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
-    .helpOption(', --backstage-cli-help') // Let Jest handle help
-    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./test'), 'default'));
-
+  registerPackageLintCommands(command);
   command
     .command('clean')
     .description('Delete cache directories')
@@ -214,16 +152,12 @@ export function registerCommands(program: Command) {
   registerScriptCommand(program);
   registerMigrateCommand(program);
   registerBuildCommands(program);
+  registerInfoCommands(program);
 
   program
     .command('create-github-app <github-org>')
     .description('Create new GitHub App in your organization.')
     .action(lazy(() => import('./create-github-app'), 'default'));
-
-  program
-    .command('info')
-    .description('Show helpful information for debugging and reporting bugs')
-    .action(lazy(() => import('./info'), 'default'));
 
   // Notifications for removed commands
   program

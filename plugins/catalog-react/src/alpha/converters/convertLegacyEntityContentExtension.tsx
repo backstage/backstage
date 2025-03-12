@@ -28,15 +28,15 @@ import kebabCase from 'lodash/kebabCase';
 import startCase from 'lodash/startCase';
 import React, { ComponentType } from 'react';
 import { EntityContentBlueprint } from '../blueprints';
+import { EntityPredicate } from '../predicates';
+import { Entity } from '@backstage/catalog-model';
 
 /** @alpha */
 export function convertLegacyEntityContentExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    filter?:
-      | typeof EntityContentBlueprint.dataRefs.filterFunction.T
-      | typeof EntityContentBlueprint.dataRefs.filterExpression.T;
+    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     defaultPath?: string;
     defaultTitle?: string;
   },

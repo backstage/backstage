@@ -162,6 +162,42 @@ describe('HostDiscovery', () => {
     );
   });
 
+  it('allows plugin overrides to only override either internal or external targets', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+          listen: { port: 80, host: 'localhost' },
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: { internal: 'http://catalog-backend:8080/api/catalog' },
+              plugins: ['catalog'],
+            },
+            {
+              target: { external: 'http://frontend/api/scaffolder' },
+              plugins: ['scaffolder'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+      'http://catalog-backend:8080/api/catalog',
+    );
+    await expect(discovery.getExternalBaseUrl('catalog')).resolves.toBe(
+      'http://localhost:40/api/catalog',
+    );
+    await expect(discovery.getBaseUrl('scaffolder')).resolves.toBe(
+      'http://localhost:80/api/scaffolder',
+    );
+    await expect(discovery.getExternalBaseUrl('scaffolder')).resolves.toBe(
+      'http://frontend/api/scaffolder',
+    );
+  });
+
   it('replaces {{pluginId}} or {{ pluginId }} in the target', async () => {
     const discovery = HostDiscovery.fromConfig(
       new ConfigReader({

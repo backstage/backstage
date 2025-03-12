@@ -36,6 +36,11 @@ import {
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
+const DEFAULT_MOCK_CONFIG = {
+  app: { baseUrl: 'http://localhost:3000' },
+  backend: { baseUrl: 'http://localhost:7007' },
+};
+
 /**
  * Options to customize the behavior of the test app.
  * @public
@@ -73,6 +78,11 @@ export type TestAppOptions = {
    * Additional features to add to the test app.
    */
   features?: FrontendFeature[];
+
+  /**
+   * Initial route entries to use for the router.
+   */
+  initialRouteEntries?: string[];
 };
 
 const NavItem = (props: {
@@ -150,7 +160,11 @@ export function renderInTestApp(
     }),
     RouterBlueprint.make({
       params: {
-        Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        Component: ({ children }) => (
+          <MemoryRouter initialEntries={options?.initialRouteEntries}>
+            {children}
+          </MemoryRouter>
+        ),
       },
     }),
   ];
@@ -197,9 +211,14 @@ export function renderInTestApp(
   const app = createSpecializedApp({
     features,
     config: ConfigReader.fromConfigs([
-      { context: 'render-config', data: options?.config ?? {} },
+      {
+        context: 'render-config',
+        data: options?.config ?? DEFAULT_MOCK_CONFIG,
+      },
     ]),
   });
 
-  return render(app.createRoot());
+  return render(
+    app.tree.root.instance!.getData(coreExtensionData.reactElement),
+  );
 }

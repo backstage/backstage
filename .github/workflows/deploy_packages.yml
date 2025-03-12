@@ -94,7 +94,7 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: backstage-cli cache
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}

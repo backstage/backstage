@@ -20,7 +20,6 @@
  * Contains utilities that can be used when testing frontend features such as extensions.
  */
 
-export * from './deprecated';
 export * from './apis';
 export * from './app';
 

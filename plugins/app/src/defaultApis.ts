@@ -60,7 +60,7 @@ import {
   atlassianAuthApiRef,
   vmwareCloudAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { ApiBlueprint } from '@backstage/frontend-plugin-api';
+import { ApiBlueprint, dialogApiRef } from '@backstage/frontend-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
@@ -70,8 +70,19 @@ import {
   permissionApiRef,
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
+import { DefaultDialogApi } from './apis/DefaultDialogApi';
 
 export const apis = [
+  ApiBlueprint.make({
+    name: 'dialog',
+    params: {
+      factory: createApiFactory({
+        api: dialogApiRef,
+        deps: {},
+        factory: () => new DefaultDialogApi(),
+      }),
+    },
+  }),
   ApiBlueprint.make({
     name: 'discovery',
     params: {

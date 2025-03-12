@@ -11,7 +11,7 @@ export const createMockActionContext: <
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 >(
-  options?: Partial<ActionContext<TActionInput, TActionOutput>> | undefined,
+  options?: Partial<ActionContext<TActionInput, TActionOutput>>,
 ) => ActionContext<TActionInput, TActionOutput>;
 
 // (No @packageDocumentation comment for this package)

@@ -26,6 +26,10 @@ import {
   entityCardTypes,
   EntityCardType,
 } from './extensionData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { EntityPredicate } from '../predicates';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * @alpha
@@ -47,7 +51,8 @@ export const EntityCardBlueprint = createExtensionBlueprint({
   },
   config: {
     schema: {
-      filter: z => z.string().optional(),
+      filter: z =>
+        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
       type: z => z.enum(entityCardTypes).optional(),
     },
   },
@@ -58,22 +63,14 @@ export const EntityCardBlueprint = createExtensionBlueprint({
       type,
     }: {
       loader: () => Promise<JSX.Element>;
-      filter?:
-        | typeof entityFilterFunctionDataRef.T
-        | typeof entityFilterExpressionDataRef.T;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       type?: EntityCardType;
     },
     { node, config },
   ) {
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
-    if (config.filter) {
-      yield entityFilterExpressionDataRef(config.filter);
-    } else if (typeof filter === 'string') {
-      yield entityFilterExpressionDataRef(filter);
-    } else if (typeof filter === 'function') {
-      yield entityFilterFunctionDataRef(filter);
-    }
+    yield* resolveEntityFilterData(filter, config, node);
 
     const finalType = config.type ?? type;
     if (finalType) {

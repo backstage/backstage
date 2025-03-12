@@ -22,7 +22,7 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../../alpha/translation';
+import { catalogTranslationRef } from '../../translation';
 
 type EntityLabelsProps = {
   entity: Entity;

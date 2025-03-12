@@ -30,14 +30,12 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
-import {
-  ExtensionDataContainer,
-  createExtensionDataContainer,
-} from './createExtensionDataContainer';
+import { createExtensionDataContainer } from '@internal/frontend';
 import {
   ResolveInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
+import { ExtensionDataContainer } from './types';
 
 /**
  * @public

@@ -219,6 +219,7 @@ export function createPublishGiteaAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     sourcePath?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:gitea',
     description:
@@ -268,6 +269,11 @@ export function createPublishGiteaAction(options: {
             type: 'string',
             description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -298,6 +304,7 @@ export function createPublishGiteaAction(options: {
         gitAuthorEmail,
         gitCommitMessage = 'initial commit',
         sourcePath,
+        signCommit,
       } = ctx.input;
 
       const { repo, host, owner } = parseRepoUrl(repoUrl, integrations);
@@ -338,6 +345,16 @@ export function createPublishGiteaAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
       // The owner to be used should be either the org name or user authenticated with the gitea server
       const remoteUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}.git`;
       const commitResult = await initRepoAndPush({

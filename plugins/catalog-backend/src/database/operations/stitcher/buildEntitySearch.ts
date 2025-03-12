@@ -110,7 +110,16 @@ export function traverse(root: unknown): Kv[] {
         // because the latter means EITHER b or c has to be present.
         visit(path, item);
         if (typeof item === 'string') {
-          output.push({ key: `${path}.${item}`, value: true });
+          const pathKey = `${path}.${item}`;
+          if (
+            !output.some(
+              kv =>
+                kv.key.toLocaleLowerCase('en-US') ===
+                pathKey.toLocaleLowerCase('en-US'),
+            )
+          ) {
+            output.push({ key: pathKey, value: true });
+          }
         }
       }
       return;

@@ -51,8 +51,8 @@ export const catalogOverviewEntityContent =
         defaultTitle: 'Overview',
         loader: async () => {
           const LazyDefaultLayoutComponent = reactLazy(() =>
-            import('./EntityOverviewPage').then(m => ({
-              default: m.EntityOverviewPage,
+            import('./DefaultEntityContentLayout').then(m => ({
+              default: m.DefaultEntityContentLayout,
             })),
           );
 

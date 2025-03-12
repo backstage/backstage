@@ -27,6 +27,10 @@ import {
   entityContentGroupDataRef,
   defaultEntityContentGroups,
 } from './extensionData';
+import { EntityPredicate } from '../predicates';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * @alpha
@@ -54,7 +58,8 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     schema: {
       path: z => z.string().optional(),
       title: z => z.string().optional(),
-      filter: z => z.string().optional(),
+      filter: z =>
+        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
       group: z => z.literal(false).or(z.string()).optional(),
     },
   },
@@ -72,9 +77,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       defaultTitle: string;
       defaultGroup?: keyof typeof defaultEntityContentGroups | (string & {});
       routeRef?: RouteRef;
-      filter?:
-        | typeof entityFilterFunctionDataRef.T
-        | typeof entityFilterExpressionDataRef.T;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {
@@ -92,13 +95,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       yield coreExtensionData.routeRef(routeRef);
     }
 
-    if (config.filter) {
-      yield entityFilterExpressionDataRef(config.filter);
-    } else if (typeof filter === 'string') {
-      yield entityFilterExpressionDataRef(filter);
-    } else if (typeof filter === 'function') {
-      yield entityFilterFunctionDataRef(filter);
-    }
+    yield* resolveEntityFilterData(filter, config, node);
 
     if (group) {
       yield entityContentGroupDataRef(group);

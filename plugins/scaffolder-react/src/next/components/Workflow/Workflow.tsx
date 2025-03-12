@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   Content,
   InfoCard,
   MarkdownContent,
   Progress,
 } from '@backstage/core-components';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { makeStyles } from '@material-ui/core/styles';
 import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
-import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
-import { Stepper, type StepperProps } from '../Stepper/Stepper';
-import { SecretsContextProvider } from '../../../secrets/SecretsContext';
-import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
-import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useCallback, useEffect } from 'react';
+
+import { SecretsContextProvider } from '../../../secrets/SecretsContext';
+import { scaffolderReactTranslationRef } from '../../../translation';
+import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
+import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
+import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
+import { Stepper, type StepperProps } from '../Stepper/Stepper';
 
 const useStyles = makeStyles({
   markdown: {
@@ -70,6 +73,7 @@ export type WorkflowProps = {
  * @alpha
  */
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const { title, description, namespace, templateName, onCreate, ...props } =
     workflowProps;
 
@@ -91,7 +95,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const workflowOnCreate = useCallback(
     async (formState: Record<string, JsonValue>) => {
-      onCreate(formState);
+      await onCreate(formState);
 
       const name =
         typeof formState.name === 'string' ? formState.name : undefined;
@@ -123,7 +127,9 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
               className={styles.markdown}
               linkTarget="_blank"
               content={
-                description ?? sortedManifest.description ?? 'No description'
+                description ??
+                sortedManifest.description ??
+                t('workflow.noDescription')
               }
             />
           }

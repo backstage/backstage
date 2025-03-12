@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Flex } from './Flex';
 
 const meta = {
-  title: 'Components/Flex',
+  title: 'Layout/Flex',
   component: Flex,
   argTypes: {
     align: {

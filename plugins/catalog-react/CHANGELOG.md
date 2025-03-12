@@ -1,5 +1,64 @@
 # @backstage/plugin-catalog-react
 
+## 1.16.0-next.2
+
+### Minor Changes
+
+- 7f57365: Add support for a new entity predicate syntax when defining `filter`s related to the blueprints exported via `/alpha` for the new frontend system. For more information, see the [entity filters documentation](https://backstage.io/docs/features/software-catalog/catalog-customization#advanced-customization#entity-filters).
+- 247a40b: Introduces a new `EntityHeaderBlueprint` that allows you to override the default entity page header.
+
+  ```jsx
+  import { EntityHeaderBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  EntityHeaderBlueprint.make({
+    name: 'my-default-header',
+    params: {
+      loader: () =>
+        import('./MyDefaultHeader').then(m => <m.MyDefaultHeader />),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/frontend-test-utils@0.3.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- bec1e15: update EntityAutocompletePicker selected options when filter value is changed externally
+- 75a3551: Export CatalogAutocomplete so it can be used externally
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/frontend-test-utils@0.2.7-next.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
 ## 1.16.0-next.0
 
 ### Minor Changes
@@ -56,7 +115,7 @@
   The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
 
   - element: `JSx.Element`;
-  - type: `"peek" | "info" | "full" | undefined`;
+  - type: `"summary" | "info" | "content" | undefined`;
 
   ### Usage example
 
@@ -93,14 +152,14 @@
         <Grid xs={12} md={8} item>
           <Grid container spacing={3}>
             {cards
-              .filter(card => card.type === 'peek')
+              .filter(card => card.type === 'summary')
               .map((card, index) => (
                 <Grid key={index} className={classes.card} xs={12} md={6} item>
                   {card.element}
                 </Grid>
               ))}
             {cards
-              .filter(card => !card.type || card.type === 'full')
+              .filter(card => !card.type || card.type === 'content')
               .map((card, index) => (
                 <Grid key={index} className={classes.card} xs={12} md={6} item>
                   {card.element}
@@ -154,9 +213,9 @@
 
   Initially the following three types are supported:
 
-  - `peek`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
+  - `summary`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
   - `info`: medium size cards with high priority and frequently used information such as common actions, entity metadata, and links.
-  - `full`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the full content view and want to show a card instead.
+  - `content`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the content content view and want to show a card instead.
 
   ### Usage examples
 

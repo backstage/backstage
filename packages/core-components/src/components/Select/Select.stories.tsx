@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { SelectComponent as Select } from './Select';
+import { SelectComponent as Select, SelectProps } from './Select';
 
 export default {
   title: 'Inputs/Select',
@@ -55,3 +55,44 @@ export const Multiple = () => (
     onChange={() => {}}
   />
 );
+
+export const Disabled = (args: SelectProps) => <Select {...args} />;
+
+Disabled.args = {
+  placeholder: 'All results',
+  label: 'Disabled',
+  items: SELECT_ITEMS,
+  disabled: true,
+};
+
+export const Selected = (args: SelectProps) => <Select {...args} />;
+
+Selected.args = {
+  placeholder: 'All results',
+  label: 'Selected',
+  items: SELECT_ITEMS,
+  disabled: false,
+  selected: 'test_2',
+};
+
+export const Native = (args: SelectProps) => <Select {...args} />;
+
+Native.args = {
+  placeholder: 'All results',
+  label: 'Native',
+  items: SELECT_ITEMS,
+  disabled: false,
+  selected: 'test_2',
+  native: true,
+};
+
+export const MarginDense = (args: SelectProps) => <Select {...args} />;
+
+MarginDense.args = {
+  placeholder: 'All results',
+  label: 'Margin Dense',
+  items: SELECT_ITEMS,
+  disabled: false,
+  selected: 'test_2',
+  margin: 'dense',
+};

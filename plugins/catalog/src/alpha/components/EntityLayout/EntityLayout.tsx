@@ -14,51 +14,32 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import useAsync from 'react-use/esm/useAsync';
+import React, { ComponentProps, ReactNode } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 
 import {
   attachComponentData,
-  IconComponent,
-  useApi,
   useElementFilter,
-  useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
-  Breadcrumbs,
   Content,
-  Header,
   Link,
   Page,
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
+import { Entity } from '@backstage/catalog-model';
 import {
-  DEFAULT_NAMESPACE,
-  Entity,
-  EntityRelation,
-} from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  EntityRefLink,
   entityRouteRef,
-  InspectEntityDialog,
-  UnregisterEntityDialog,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 
-import { catalogTranslationRef } from '../../../alpha/translation';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../../routes';
-import { EntityContextMenu } from '../../../components/EntityContextMenu/EntityContextMenu';
+import { catalogTranslationRef } from '../../translation';
+import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
-import { EntityLabels } from '../EntityLabels/EntityLabels';
-import { EntityLayoutTitle } from './EntityLayoutTitle';
 
 export type EntityLayoutRouteProps = {
   path: string;
@@ -73,84 +54,17 @@ const Route: (props: EntityLayoutRouteProps) => null = () => null;
 attachComponentData(Route, dataKey, true);
 attachComponentData(Route, 'core.gatherMountPoints', true); // This causes all mount points that are discovered within this route to use the path of the route itself
 
-function headerProps(
-  paramKind: string | undefined,
-  paramNamespace: string | undefined,
-  paramName: string | undefined,
-  entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
-  const kind = paramKind ?? entity?.kind ?? '';
-  const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
-
-  return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
-    headerType: (() => {
-      let t = kind.toLocaleLowerCase('en-US');
-      if (entity && entity.spec && 'type' in entity.spec) {
-        t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
-      }
-      return t;
-    })(),
-  };
-}
-
-function findParentRelation(
-  entityRelations: EntityRelation[] = [],
-  relationTypes: string[] = [],
-) {
-  for (const type of relationTypes) {
-    const foundRelation = entityRelations.find(
-      relation => relation.type === type,
-    );
-    if (foundRelation) {
-      return foundRelation; // Return the first found relation and stop
-    }
-  }
-  return null;
-}
-
-const useStyles = makeStyles(theme => ({
-  breadcrumbs: {
-    color: theme.page.fontColor,
-    fontSize: theme.typography.caption.fontSize,
-    textTransform: 'uppercase',
-    marginTop: theme.spacing(1),
-    opacity: 0.8,
-    '& span ': {
-      color: theme.page.fontColor,
-      textDecoration: 'underline',
-      textUnderlineOffset: '3px',
-    },
-  },
-}));
-
-// NOTE(freben): Intentionally not exported at this point, since it's part of
-// the unstable extra context menu items concept below
-interface ExtraContextMenuItem {
-  title: string;
-  Icon: IconComponent;
-  onClick: () => void;
-}
-
-type VisibleType = 'visible' | 'hidden' | 'disable';
-
-// NOTE(blam): Intentionally not exported at this point, since it's part of
-// unstable context menu option, eg: disable the unregister entity menu
-interface EntityContextMenuOptions {
-  disableUnregister: boolean | VisibleType;
-}
-
 /** @public */
 export interface EntityLayoutProps {
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  children?: React.ReactNode;
-  NotFoundComponent?: React.ReactNode;
+  UNSTABLE_contextMenuOptions?: ComponentProps<
+    typeof EntityHeader
+  >['UNSTABLE_contextMenuOptions'];
+  UNSTABLE_extraContextMenuItems?: ComponentProps<
+    typeof EntityHeader
+  >['UNSTABLE_extraContextMenuItems'];
+  children?: ReactNode;
+  header?: JSX.Element;
+  NotFoundComponent?: ReactNode;
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible
@@ -186,13 +100,12 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
     children,
+    header,
     NotFoundComponent,
     parentEntityRelations,
   } = props;
-  const classes = useStyles();
-  const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
+  const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
-  const location = useLocation();
 
   const routes = useElementFilter(
     children,
@@ -223,90 +136,17 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     [entity],
   );
 
-  const { headerTitle, headerType } = headerProps(
-    kind,
-    namespace,
-    name,
-    entity,
-  );
-
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const catalogRoute = useRouteRef(rootRouteRef);
-  const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
-
-  const cleanUpAfterRemoval = async () => {
-    setConfirmationDialogOpen(false);
-    navigate(
-      unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
-    );
-  };
-
-  const parentEntity = findParentRelation(
-    entity?.relations ?? [],
-    parentEntityRelations ?? [],
-  );
-
-  const catalogApi = useApi(catalogApiRef);
-  const { value: ancestorEntity } = useAsync(async () => {
-    if (parentEntity) {
-      return findParentRelation(
-        (await catalogApi.getEntityByRef(parentEntity?.targetRef))?.relations,
-        parentEntityRelations,
-      );
-    }
-    return null;
-  }, [parentEntity]);
-
-  // Make sure to close the dialog if the user clicks links in it that navigate
-  // to another entity.
-  useEffect(() => {
-    setConfirmationDialogOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  const selectedInspectTab = searchParams.get('inspect');
-  const showInspectTab = typeof selectedInspectTab === 'string';
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
-      <Header
-        title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
-        pageTitleOverride={headerTitle}
-        type={headerType}
-        subtitle={
-          parentEntity && (
-            <Breadcrumbs separator=">" className={classes.breadcrumbs}>
-              {ancestorEntity && (
-                <EntityRefLink
-                  entityRef={ancestorEntity.targetRef}
-                  disableTooltip
-                />
-              )}
-              <EntityRefLink
-                entityRef={parentEntity.targetRef}
-                disableTooltip
-              />
-              {name}
-            </Breadcrumbs>
-          )
-        }
-      >
-        {entity && (
-          <>
-            <EntityLabels entity={entity} />
-            <EntityContextMenu
-              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-              onUnregisterEntity={() => setConfirmationDialogOpen(true)}
-              onInspectEntity={() => setSearchParams('inspect')}
-            />
-          </>
-        )}
-      </Header>
+      {header ?? (
+        <EntityHeader
+          parentEntityRelations={parentEntityRelations}
+          UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+          UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+        />
+      )}
 
       {loading && <Progress />}
 
@@ -333,27 +173,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           )}
         </Content>
       )}
-
-      {showInspectTab && (
-        <InspectEntityDialog
-          entity={entity!}
-          initialTab={
-            (selectedInspectTab as ComponentProps<
-              typeof InspectEntityDialog
-            >['initialTab']) || undefined
-          }
-          onSelect={newTab => setSearchParams(`inspect=${newTab}`)}
-          open
-          onClose={() => setSearchParams()}
-        />
-      )}
-
-      <UnregisterEntityDialog
-        open={confirmationDialogOpen}
-        entity={entity!}
-        onConfirm={cleanUpAfterRemoval}
-        onClose={() => setConfirmationDialogOpen(false)}
-      />
     </Page>
   );
 };

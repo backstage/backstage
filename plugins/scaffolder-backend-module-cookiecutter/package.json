@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-cookiecutter",
-  "version": "0.3.8-next.0",
+  "version": "0.3.8-next.2",
   "description": "A module for the scaffolder backend that lets you template projects using cookiecutter",
   "backstage": {
     "role": "backend-plugin-module",
@@ -43,7 +43,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",

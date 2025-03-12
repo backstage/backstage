@@ -26,5 +26,5 @@ export const okta = createAuthProviderIntegration({
 
 ## Links
 
-- [Repository](https://okta.com/backstage/backstage/tree/master/plugins/auth-backend-module-okta-provider)
+- [Repository](https://github.com/backstage/backstage/tree/master/plugins/auth-backend-module-okta-provider)
 - [Backstage Project Homepage](https://backstage.io)

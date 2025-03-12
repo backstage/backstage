@@ -45,6 +45,11 @@ export type GiteaIntegrationConfig = {
    * The password or http token to use for authentication.
    */
   password?: string;
+
+  /**
+   * Signing key to to sign commits
+   */
+  commitSigningKey?: string;
 };
 
 /**
@@ -79,5 +84,6 @@ export function readGiteaConfig(config: Config): GiteaIntegrationConfig {
     baseUrl,
     username,
     password,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }

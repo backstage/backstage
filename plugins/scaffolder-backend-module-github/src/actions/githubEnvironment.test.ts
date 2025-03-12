@@ -147,10 +147,10 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      reviewers: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
   });
 
@@ -176,9 +176,9 @@ describe('github:environment:create', () => {
         protected_branches: true,
         custom_branch_policies: false,
       },
-      reviewers: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
   });
 
@@ -205,9 +205,9 @@ describe('github:environment:create', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
-      reviewers: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -253,9 +253,9 @@ describe('github:environment:create', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
-      reviewers: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -296,10 +296,10 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      reviewers: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -345,10 +345,10 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      reviewers: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -404,10 +404,32 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      reviewers: null,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
       wait_timer: 1000,
-      prevent_self_review: false,
+      prevent_self_review: undefined,
+    });
+  });
+
+  it('should work with wait_timer 0', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        waitTimer: 0,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: 0,
+      prevent_self_review: undefined,
     });
   });
 
@@ -426,9 +448,9 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      reviewers: null,
-      wait_timer: 0,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
       prevent_self_review: true,
     });
   });
@@ -448,9 +470,9 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      reviewers: null,
-      wait_timer: 0,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
       prevent_self_review: false,
     });
   });
@@ -477,9 +499,9 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
-      wait_timer: 0,
-      prevent_self_review: false,
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
       reviewers: [
         {
           id: 1,

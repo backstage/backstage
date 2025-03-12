@@ -652,7 +652,7 @@ export interface Config {
        * Can be either a string or an object with internal and external keys.
        * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
        */
-      target: string | { internal: string; external: string };
+      target: string | { internal?: string; external?: string };
       /**
        * Array of plugins which use the target base URL.
        */

@@ -102,9 +102,12 @@ export class HostDiscovery implements DiscoveryService {
   private getTargetFromConfig(pluginId: string, type: 'internal' | 'external') {
     const endpoints = this.discoveryConfig?.getOptionalConfigArray('endpoints');
 
-    const target = endpoints
+    const targetOrObj = endpoints
       ?.find(endpoint => endpoint.getStringArray('plugins').includes(pluginId))
       ?.get<Target>('target');
+
+    const target =
+      typeof targetOrObj === 'string' ? targetOrObj : targetOrObj?.[type];
 
     if (!target) {
       const baseUrl =
@@ -113,14 +116,7 @@ export class HostDiscovery implements DiscoveryService {
       return `${baseUrl}/${encodeURIComponent(pluginId)}`;
     }
 
-    if (typeof target === 'string') {
-      return target.replace(
-        /\{\{\s*pluginId\s*\}\}/g,
-        encodeURIComponent(pluginId),
-      );
-    }
-
-    return target[type].replace(
+    return target.replace(
       /\{\{\s*pluginId\s*\}\}/g,
       encodeURIComponent(pluginId),
     );

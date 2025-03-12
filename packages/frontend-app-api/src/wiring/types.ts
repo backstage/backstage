@@ -18,12 +18,7 @@ import { FrontendModule, FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from '../routing/types';
 
 /** @public  */
-export type FrontendFeature =
-  | FrontendPlugin
-  | FrontendModule
-  // TODO(blam): This is just forwards backwards compatibility, remove after v1.31.0
-  | { $$type: '@backstage/ExtensionOverrides' }
-  | { $$type: '@backstage/BackstagePlugin' };
+export type FrontendFeature = FrontendPlugin | FrontendModule;
 
 /** @internal */
 export type RouteInfo = {

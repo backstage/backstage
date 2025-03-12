@@ -123,121 +123,127 @@ export class DocsBuilder {
       }
     }
 
-    let preparedDir: string;
-    let newEtag: string;
+    let preparedDir: string | undefined;
+    let outputDir: string | undefined;
+
     try {
-      const preparerResponse = await this.preparer.prepare(this.entity, {
-        etag: storedEtag,
+      let newEtag: string;
+      try {
+        const preparerResponse = await this.preparer.prepare(this.entity, {
+          etag: storedEtag,
+          logger: this.logger,
+        });
+
+        preparedDir = preparerResponse.preparedDir;
+        newEtag = preparerResponse.etag;
+      } catch (err) {
+        if (isError(err) && err.name === 'NotModifiedError') {
+          // No need to prepare anymore since cache is valid.
+          // Set last check happened to now
+          new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
+          this.logger.debug(
+            `Docs for ${stringifyEntityRef(
+              this.entity,
+            )} are unmodified. Using cache, skipping generate and prepare`,
+          );
+          return false;
+        }
+        throw err;
+      }
+
+      this.logger.info(
+        `Prepare step completed for entity ${stringifyEntityRef(
+          this.entity,
+        )}, stored at ${preparedDir}`,
+      );
+
+      /**
+       * Generate
+       */
+
+      this.logger.info(
+        `Step 2 of 3: Generating docs for entity ${stringifyEntityRef(
+          this.entity,
+        )}`,
+      );
+
+      const workingDir = this.config.getOptionalString(
+        'backend.workingDirectory',
+      );
+      const tmpdirPath = workingDir || os.tmpdir();
+      // Fixes a problem with macOS returning a path that is a symlink
+      const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
+      outputDir = await fs.mkdtemp(
+        path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
+      );
+
+      const parsedLocationAnnotation = getLocationForEntity(
+        this.entity,
+        this.scmIntegrations,
+      );
+      await this.generator.run({
+        inputDir: preparedDir,
+        outputDir,
+        parsedLocationAnnotation,
+        etag: newEtag,
         logger: this.logger,
+        logStream: this.logStream,
+        siteOptions: {
+          name: this.entity.metadata.title ?? this.entity.metadata.name,
+        },
       });
 
-      preparedDir = preparerResponse.preparedDir;
-      newEtag = preparerResponse.etag;
-    } catch (err) {
-      if (isError(err) && err.name === 'NotModifiedError') {
-        // No need to prepare anymore since cache is valid.
-        // Set last check happened to now
-        new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
+      /**
+       * Publish
+       */
+
+      this.logger.info(
+        `Step 3 of 3: Publishing docs for entity ${stringifyEntityRef(
+          this.entity,
+        )}`,
+      );
+
+      const published = await this.publisher.publish({
+        entity: this.entity,
+        directory: outputDir,
+      });
+
+      // Invalidate the cache for any published objects.
+      if (this.cache && published && published?.objects?.length) {
         this.logger.debug(
-          `Docs for ${stringifyEntityRef(
-            this.entity,
-          )} are unmodified. Using cache, skipping generate and prepare`,
+          `Invalidating ${published.objects.length} cache objects`,
         );
-        return false;
+        await this.cache.invalidateMultiple(published.objects);
       }
-      throw err;
-    }
-
-    this.logger.info(
-      `Prepare step completed for entity ${stringifyEntityRef(
-        this.entity,
-      )}, stored at ${preparedDir}`,
-    );
-
-    /**
-     * Generate
-     */
-
-    this.logger.info(
-      `Step 2 of 3: Generating docs for entity ${stringifyEntityRef(
-        this.entity,
-      )}`,
-    );
-
-    const workingDir = this.config.getOptionalString(
-      'backend.workingDirectory',
-    );
-    const tmpdirPath = workingDir || os.tmpdir();
-    // Fixes a problem with macOS returning a path that is a symlink
-    const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
-    const outputDir = await fs.mkdtemp(
-      path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
-    );
-
-    const parsedLocationAnnotation = getLocationForEntity(
-      this.entity,
-      this.scmIntegrations,
-    );
-    await this.generator.run({
-      inputDir: preparedDir,
-      outputDir,
-      parsedLocationAnnotation,
-      etag: newEtag,
-      logger: this.logger,
-      logStream: this.logStream,
-      siteOptions: {
-        name: this.entity.metadata.title ?? this.entity.metadata.name,
-      },
-    });
-
-    // Remove Prepared directory since it is no longer needed.
-    // Caveat: Can not remove prepared directory in case of git preparer since the
-    // local git repository is used to get etag on subsequent requests.
-    if (this.preparer.shouldCleanPreparedDirectory()) {
-      this.logger.debug(
-        `Removing prepared directory ${preparedDir} since the site has been generated`,
-      );
-      try {
-        // Not a blocker hence no need to await this.
-        fs.remove(preparedDir);
-      } catch (error) {
-        assertError(error);
-        this.logger.debug(`Error removing prepared directory ${error.message}`);
+    } finally {
+      // Remove Prepared directory since it is no longer needed.
+      // Caveat: Can not remove prepared directory in case of git preparer since the
+      // local git repository is used to get etag on subsequent requests.
+      if (preparedDir && this.preparer.shouldCleanPreparedDirectory()) {
+        this.logger.debug(`Removing prepared directory ${preparedDir}`);
+        try {
+          // Not a blocker hence no need to await this.
+          fs.remove(preparedDir);
+        } catch (error) {
+          assertError(error);
+          this.logger.debug(
+            `Error removing prepared directory ${error.message}`,
+          );
+        }
       }
-    }
 
-    /**
-     * Publish
-     */
-
-    this.logger.info(
-      `Step 3 of 3: Publishing docs for entity ${stringifyEntityRef(
-        this.entity,
-      )}`,
-    );
-
-    const published = await this.publisher.publish({
-      entity: this.entity,
-      directory: outputDir,
-    });
-
-    // Invalidate the cache for any published objects.
-    if (this.cache && published && published?.objects?.length) {
-      this.logger.debug(
-        `Invalidating ${published.objects.length} cache objects`,
-      );
-      await this.cache.invalidateMultiple(published.objects);
-    }
-
-    try {
-      // Not a blocker hence no need to await this.
-      fs.remove(outputDir);
-      this.logger.debug(
-        `Removing generated directory ${outputDir} since the site has been published`,
-      );
-    } catch (error) {
-      assertError(error);
-      this.logger.debug(`Error removing generated directory ${error.message}`);
+      if (outputDir) {
+        this.logger.debug(`Removing generated directory ${outputDir}`);
+        try {
+          // Not a blocker hence no need to await this.
+          fs.remove(outputDir);
+        } catch (error) {
+          assertError(error);
+          this.logger.debug(
+            `Error removing generated directory ${error.message}`,
+          );
+        }
+      }
     }
 
     // Update the last check time for the entity

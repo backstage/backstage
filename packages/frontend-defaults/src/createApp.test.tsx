@@ -269,6 +269,7 @@ describe('createApp', () => {
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<root out=[core.reactElement]>
         apis [
+          <api:app/dialog out=[core.api.factory] />
           <api:app/discovery out=[core.api.factory] />
           <api:app/alert out=[core.api.factory] />
           <api:app/analytics out=[core.api.factory] />
@@ -328,6 +329,7 @@ describe('createApp', () => {
                 elements [
                   <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
                   <app-root-element:app/alert-display out=[core.reactElement] />
+                  <app-root-element:app/dialog-display out=[core.reactElement] />
                 ]
                 signInPage [
                   <sign-in-page:app />
@@ -393,6 +395,46 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     expect(screen.queryByText('Custom app root element')).toBeNull();
+  });
+
+  it('should use a custom extensionFactoryMiddleware', async () => {
+    const app = createApp({
+      configLoader: async () => ({ config: mockApis.config() }),
+      features: [
+        appPlugin,
+        createFrontendPlugin({
+          id: 'test-plugin',
+          extensions: [
+            PageBlueprint.make({
+              name: 'test-page',
+              params: {
+                defaultPath: '/',
+                loader: async () => <>Test Page</>,
+              },
+            }),
+          ],
+        }),
+      ],
+      *extensionFactoryMiddleware(originalFactory, context) {
+        const output = originalFactory();
+        yield* output;
+        const element = output.get(coreExtensionData.reactElement);
+
+        if (element) {
+          yield coreExtensionData.reactElement(
+            <div data-testid={`wrapped(${context.node.spec.id})`}>
+              {element}
+            </div>,
+          );
+        }
+      },
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByTestId('wrapped(page:test-plugin/test-page)'),
+    ).resolves.toHaveTextContent('Test Page');
   });
 
   describe('modules', () => {

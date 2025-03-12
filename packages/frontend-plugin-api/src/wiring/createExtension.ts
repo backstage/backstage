@@ -20,10 +20,7 @@ import {
   ResolveInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
-import {
-  ExtensionDataContainer,
-  createExtensionDataContainer,
-} from './createExtensionDataContainer';
+import { createExtensionDataContainer } from '@internal/frontend';
 import {
   AnyExtensionDataRef,
   ExtensionDataValue,
@@ -32,6 +29,7 @@ import { ExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
+import { ExtensionDataContainer } from './types';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory

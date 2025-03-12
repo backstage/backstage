@@ -16,7 +16,7 @@ This is the same [field](https://rjsf-team.github.io/react-jsonschema-form/docs/
 
 ## Registering a React component as a custom step layout
 
-The [createScaffolderLayout](https://backstage.io/docs/reference/plugin-scaffolder.createscaffolderlayout) function is used to mark a component as a custom step layout:
+The [createScaffolderLayout](https://backstage.io/docs/reference/plugin-scaffolder-react.createscaffolderlayout) function is used to mark a component as a custom step layout:
 
 ```ts
 import React from 'react';

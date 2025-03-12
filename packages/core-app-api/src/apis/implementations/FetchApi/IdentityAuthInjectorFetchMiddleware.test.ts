@@ -115,4 +115,49 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
       ['authorization', 'do-not-clobber'],
     ]);
   });
+
+  describe('.getDiscoveryUrlPrefixes', () => {
+    it('works with no endpoints', () => {
+      const config = new ConfigReader({
+        backend: { baseUrl: 'https://a.com' },
+      });
+      expect(
+        IdentityAuthInjectorFetchMiddleware.getDiscoveryUrlPrefixes(config),
+      ).toEqual([]);
+    });
+
+    it('works with endpoints', () => {
+      const config = new ConfigReader({
+        backend: { baseUrl: 'https://a.com' },
+        discovery: {
+          endpoints: [
+            { target: 'https://b.com', plugins: ['p1'] },
+            { target: 'https://c.com/{{pluginId}}', plugins: ['p2', 'p3'] },
+            { target: { external: 'https://d.com' }, plugins: ['q1'] },
+            {
+              target: { external: 'https://e.com/{{pluginId}}' },
+              plugins: ['q2', 'q3'],
+            },
+            {
+              target: {
+                external: 'https://{{ pluginId   }}.e.com/{{pluginId}}',
+              },
+              plugins: ['q4'],
+            },
+          ],
+        },
+      });
+      expect(
+        IdentityAuthInjectorFetchMiddleware.getDiscoveryUrlPrefixes(config),
+      ).toEqual([
+        'https://b.com',
+        'https://c.com/p2',
+        'https://c.com/p3',
+        'https://d.com',
+        'https://e.com/q2',
+        'https://e.com/q3',
+        'https://q4.e.com/q4',
+      ]);
+    });
+  });
 });

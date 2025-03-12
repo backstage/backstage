@@ -140,6 +140,48 @@ export const eventsModuleYourFeature = createBackendModule({
 });
 ```
 
+### Request Body Parse
+
+We need to parse the request body before we can validate it. We have some default parsers but you can provide your own when necessary.
+
+```ts
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+
+// [...]
+
+export const eventsModuleYourFeature = createBackendModule({
+  pluginId: 'events',
+  moduleId: 'your-feature',
+  register(env) {
+    // [...]
+    env.registerInit({
+      deps: {
+        // [...]
+        events: eventsExtensionPoint,
+        // [...]
+      },
+      async init({ /* ... */ events /*, ... */ }) {
+        // [...]
+        events.addHttpPostBodyParser({
+          contentType: 'application/x-www-form-urlencoded',
+          parser: async (req, _topic) => {
+            return {
+              bodyParsed: req.body.toString('utf-8'),
+              bodyBuffer: req.body,
+              encoding: 'utf-8',
+            };
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+We have the following default parsers:
+
+- `application/json`
+
 #### Legacy Backend System
 
 ```ts

@@ -144,4 +144,25 @@ describe('fs:delete', () => {
       expect(fileExists).toBe(false);
     });
   });
+
+  it('should handle windows style file paths', async () => {
+    const files = ['unit-test-a.js', 'unit-test-b.js'];
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(true);
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { files: files.map(file => `.\\${file}`) },
+    });
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(false);
+    });
+  });
 });
