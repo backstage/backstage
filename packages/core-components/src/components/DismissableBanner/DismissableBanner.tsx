@@ -102,18 +102,16 @@ export const DismissableBanner = (props: Props) => {
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
-  const dismissedBannersSnapshot =
-    notificationsStore.snapshot<string[]>('dismissedBanners');
-
-  const [dismissedBanners, setDismissedBanners] = useState(
-    new Set(dismissedBannersSnapshot.value ?? []),
-  );
-  const [loadingSettings, setLoadingSettings] = useState(
-    dismissedBannersSnapshot.presence === 'unknown',
-  );
-
   const observedItems = useObservable(
     notificationsStore.observe$<string[]>('dismissedBanners'),
+    notificationsStore.snapshot<string[]>('dismissedBanners'),
+  );
+
+  const [dismissedBanners, setDismissedBanners] = useState(
+    new Set(observedItems.value ?? []),
+  );
+  const [loadingSettings, setLoadingSettings] = useState(
+    observedItems.presence === 'unknown',
   );
 
   useEffect(() => {
