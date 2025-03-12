@@ -89,10 +89,12 @@ export const ContextMenu = (props: ContextMenuProps) => {
 
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canCreateTask } = usePermission({
