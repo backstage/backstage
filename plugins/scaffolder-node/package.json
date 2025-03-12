@@ -58,6 +58,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@isomorphic-git/pgp-plugin": "^0.0.7",

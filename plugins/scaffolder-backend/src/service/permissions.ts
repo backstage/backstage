@@ -28,7 +28,6 @@ import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   SerializedTask,
   TaskFilter,
-  TaskFilters,
 } from '@backstage/plugin-scaffolder-node';
 
 /**
@@ -52,7 +51,7 @@ export type TemplatePermissionRuleInput<
   TParams
 >;
 export function isTemplatePermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is TemplatePermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
 }
@@ -70,7 +69,7 @@ export type ActionPermissionRuleInput<
   TParams
 >;
 export function isActionPermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is ActionPermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
 }

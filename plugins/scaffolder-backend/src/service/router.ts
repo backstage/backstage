@@ -42,7 +42,6 @@ import { EventsService } from '@backstage/plugin-events-node';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
-  PermissionRule,
   createConditionTransformer,
   ConditionTransformer,
 } from '@backstage/plugin-permission-node';
@@ -132,6 +131,10 @@ import {
   scaffolderTaskRules,
 } from './rules';
 
+import {
+  TaskFilters,
+} from '@backstage/plugin-scaffolder-node';
+
 /**
  * RouterOptions
  */
@@ -158,10 +161,8 @@ export interface RouterOptions {
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<ScaffolderPermissionRuleInput>;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  identity?: IdentityApi;
-  discovery?: DiscoveryService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;

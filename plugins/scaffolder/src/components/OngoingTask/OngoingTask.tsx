@@ -139,7 +139,6 @@ function OngoingTaskContent(props: {
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
-  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
     resourceRef: taskId,
