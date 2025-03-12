@@ -50,7 +50,7 @@ Mitigate the issue of manual clean up from partially created resources during te
 Rollback is going to be performed:
 
 - when user manually decide to perform this action.
-- task has to be recovered and TaskRecoveryStrategy set to 'rollback'
+- task has to be recovered and TaskRecoverStrategy set to 'rollback'
 
 ## Design Details
 
